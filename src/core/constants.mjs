@@ -33,6 +33,11 @@ export const OWNER_HANDOFF_ACK_SLA_HOURS = {
   'workspace-owner': 24,
   'human-approver': 12,
 };
+export const OWNER_HANDOFF_REMINDER_CADENCE_HOURS = {
+  'mission-owner': 12,
+  'workspace-owner': 12,
+  'human-approver': 6,
+};
 export const REVIEWER_FOLLOW_UP_STATUSES = ['open', 'resolved'];
 export const REVIEWER_FOLLOW_UP_RESOLUTION_KINDS = ['rerun-fixed', 'superseded', 'scope-reduced', 'accepted-risk'];
 

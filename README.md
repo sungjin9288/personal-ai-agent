@@ -52,7 +52,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, next pending owner handoff due timestamp도 함께 보여줍니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, pending owner handoff reminder count, next pending owner handoff due/reminder timestamp도 함께 보여줍니다.
 
 Create missions:
 
@@ -84,7 +84,7 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff acknowledgement가 due 이후에 처리되면 timeline detail에도 overdue marker가 남습니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다.
 
 Operator flow:
 
@@ -101,6 +101,7 @@ node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced
 node src/cli.mjs action owner-handoffs
+node src/cli.mjs action owner-handoffs --needs-reminder
 node src/cli.mjs action owner-handoffs --overdue
 node src/cli.mjs action owner-handoffs --status acknowledged
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
@@ -113,6 +114,7 @@ node src/cli.mjs action escalated --needs-reminder --effective-owner human-appro
 node src/cli.mjs action sync-escalations
 node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
+node src/cli.mjs action remind-owner-handoffs --due --note "Follow up with the human approver about the pending handoff"
 node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
@@ -180,6 +182,7 @@ npm run smoke:escalation-reminder-due
 npm run smoke:escalation-reminders
 npm run smoke:escalation-owner-chain
 npm run smoke:escalation-owner-handoff
+npm run smoke:escalation-owner-handoff-reminders
 npm run smoke:escalation-owner-history
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
