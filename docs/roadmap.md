@@ -61,6 +61,7 @@
 - maintenance history and overview now support `--outcome <effective|no-op|impactful>` filtering, so sweep audit can be sliced directly by run quality without post-processing the summary payload
 - maintenance history and overview now support `--since <iso-timestamp>` filtering, so time-window audit can be combined with workspace mission outcome slicing without adding a separate trend command
 - maintenance-specific summary now exposes dailyBuckets for the current filtered slice, so time-window audit can be read as a small daily aggregate without introducing a separate reporting endpoint
+- maintenance-specific summary now exposes latestBucketDelta, so operators can read latest-vs-previous daily change without manually diffing bucket arrays
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

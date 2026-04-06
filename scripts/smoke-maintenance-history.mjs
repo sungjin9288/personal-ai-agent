@@ -304,6 +304,14 @@ assert.equal(history.summary.latestRun.totalRemindedCount, 0);
 assert.equal(history.summary.bucketCount, 2);
 assert.equal(history.summary.latestBucketDate, '2026-04-06');
 assert.equal(history.summary.oldestBucketDate, '2026-04-01');
+assert.equal(history.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(history.summary.latestBucketDelta.previousDate, '2026-04-01');
+assert.equal(history.summary.latestBucketDelta.runCountDelta, 0);
+assert.equal(history.summary.latestBucketDelta.effectiveRunCountDelta, -1);
+assert.equal(history.summary.latestBucketDelta.noOpRunCountDelta, 1);
+assert.equal(history.summary.latestBucketDelta.impactRunCountDelta, -1);
+assert.equal(history.summary.latestBucketDelta.totalRemindedCountDelta, -2);
+assert.equal(history.summary.latestBucketDelta.affectedMissionCountDelta, -2);
 assert.equal(history.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(history.summary.dailyBuckets[0].runCount, 1);
 assert.equal(history.summary.dailyBuckets[0].noOpRunCount, 1);
@@ -351,6 +359,10 @@ assert.equal(recentHistory.summary.runCount, 1);
 assert.equal(recentHistory.summary.noOpRunCount, 1);
 assert.equal(recentHistory.summary.effectiveRunCount, 0);
 assert.equal(recentHistory.summary.bucketCount, 1);
+assert.equal(recentHistory.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(recentHistory.summary.latestBucketDelta.previousDate, null);
+assert.equal(recentHistory.summary.latestBucketDelta.noOpRunCountDelta, 1);
+assert.equal(recentHistory.summary.latestBucketDelta.totalRemindedCountDelta, 0);
 assert.equal(recentHistory.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(recentHistory.items[0].id, secondMaintenance.maintenanceRun.id);
 
@@ -381,6 +393,10 @@ assert.equal(missionHistory.summary.missionImpactOwnerHandoffRemindedCountTotal,
 assert.equal(missionHistory.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
 assert.equal(missionHistory.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionHistory.summary.bucketCount, 1);
+assert.equal(missionHistory.summary.latestBucketDelta.currentDate, '2026-04-01');
+assert.equal(missionHistory.summary.latestBucketDelta.previousDate, null);
+assert.equal(missionHistory.summary.latestBucketDelta.effectiveRunCountDelta, 1);
+assert.equal(missionHistory.summary.latestBucketDelta.totalRemindedCountDelta, 2);
 assert.equal(missionHistory.summary.dailyBuckets[0].date, '2026-04-01');
 assert.equal(missionHistory.summary.dailyBuckets[0].runCount, 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].impactRunCount, 1);
@@ -395,6 +411,7 @@ const missionNoOpHistory = runCli({
 assert.equal(missionNoOpHistory.summary.runCount, 0);
 assert.equal(missionNoOpHistory.summary.noOpRunCount, 0);
 assert.equal(missionNoOpHistory.summary.bucketCount, 0);
+assert.equal(missionNoOpHistory.summary.latestBucketDelta, null);
 assert.equal(missionNoOpHistory.items.length, 0);
 
 const recentMissionHistory = runCli({
@@ -404,6 +421,7 @@ const recentMissionHistory = runCli({
 
 assert.equal(recentMissionHistory.summary.runCount, 0);
 assert.equal(recentMissionHistory.summary.bucketCount, 0);
+assert.equal(recentMissionHistory.summary.latestBucketDelta, null);
 assert.equal(recentMissionHistory.items.length, 0);
 assert.equal(recentMissionHistory.filters.since, recentMaintenanceCutoff);
 
@@ -434,6 +452,8 @@ assert.deepEqual(
   [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
 );
 assert.equal(maintenanceOverview.summary.bucketCount, 2);
+assert.equal(maintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(maintenanceOverview.summary.latestBucketDelta.previousDate, '2026-04-01');
 assert.equal(maintenanceOverview.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(maintenanceOverview.summary.dailyBuckets[1].date, '2026-04-01');
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
@@ -461,6 +481,8 @@ assert.equal(missionMaintenanceOverview.summary.missionImpactOwnerHandoffReminde
 assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
 assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-01');
+assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
 assert.equal(missionMaintenanceOverview.summary.dailyBuckets[0].date, '2026-04-01');
 assert.equal(missionMaintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(missionMaintenanceOverview.summary.currentDueCandidateCountTotal, 0);
@@ -474,6 +496,8 @@ assert.equal(filteredMaintenanceOverview.summary.runCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.effectiveRunCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.noOpRunCount, 0);
 assert.equal(filteredMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(filteredMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-01');
+assert.equal(filteredMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
 assert.equal(filteredMaintenanceOverview.items[0].id, firstMaintenance.maintenanceRun.id);
 
 const recentMaintenanceOverview = runCli({
@@ -485,6 +509,8 @@ assert.equal(recentMaintenanceOverview.summary.runCount, 1);
 assert.equal(recentMaintenanceOverview.summary.noOpRunCount, 1);
 assert.equal(recentMaintenanceOverview.summary.effectiveRunCount, 0);
 assert.equal(recentMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(recentMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(recentMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
 assert.equal(recentMaintenanceOverview.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(recentMaintenanceOverview.items[0].id, secondMaintenance.maintenanceRun.id);
 

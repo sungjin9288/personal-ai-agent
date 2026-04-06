@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Maintenance Bucket Delta
+
+- added `latestBucketDelta` to maintenance-only summaries so the newest daily bucket can be compared against the immediately previous bucket without post-processing
+- kept the delta contract derived from `dailyBuckets`, which avoids introducing a second parallel trend model and keeps maintenance audit math in one place
+- extended maintenance history smoke coverage to lock negative and positive delta cases for full history, recent slices, and mission-scoped slices
+
 ## 2026-04-06 Maintenance Daily Buckets
 
 - added `dailyBuckets` to maintenance-only summary payloads so filtered maintenance history and overview can be read as small day-level aggregates without a separate reporting command
