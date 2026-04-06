@@ -52,7 +52,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total도 함께 보여줍니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, next pending owner handoff due timestamp도 함께 보여줍니다.
 
 Create missions:
 
@@ -84,7 +84,7 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, 이 escalation은 `action inbox --class monitoring-required`에서 다시 운영 큐로 노출됩니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, 이 escalation은 `action inbox --class monitoring-required`에서 다시 운영 큐로 노출됩니다. owner handoff acknowledgement가 due 이후에 처리되면 timeline detail에도 overdue marker가 남습니다.
 
 Operator flow:
 
@@ -100,6 +100,7 @@ node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced
 node src/cli.mjs action owner-handoffs
+node src/cli.mjs action owner-handoffs --overdue
 node src/cli.mjs action owner-handoffs --status acknowledged
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind accepted-risk --note "Accept risk until the next release window"

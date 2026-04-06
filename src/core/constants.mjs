@@ -28,6 +28,11 @@ export const ESCALATION_REMINDER_CADENCE_HOURS = {
   warning: 24,
   critical: 6,
 };
+export const OWNER_HANDOFF_ACK_SLA_HOURS = {
+  'mission-owner': 24,
+  'workspace-owner': 24,
+  'human-approver': 12,
+};
 export const REVIEWER_FOLLOW_UP_STATUSES = ['open', 'resolved'];
 export const REVIEWER_FOLLOW_UP_RESOLUTION_KINDS = ['rerun-fixed', 'superseded', 'scope-reduced', 'accepted-risk'];
 

@@ -15,6 +15,7 @@ import {
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
+  OWNER_HANDOFF_ACK_SLA_HOURS,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
 } from './constants.mjs';
@@ -194,7 +195,8 @@ function formatEscalationOwnerChangeDetail(ownerChange) {
 }
 
 function formatEscalationOwnerHandoffDetail(handoff) {
-  return `${handoff.owner} acknowledged owner handoff: ${handoff.note || 'No explicit note recorded.'}`;
+  const overdueSuffix = handoff.wasOverdue ? ' [overdue]' : '';
+  return `${handoff.owner} acknowledged owner handoff${overdueSuffix}: ${handoff.note || 'No explicit note recorded.'}`;
 }
 
 function getMeaningfulOwnerTransitions(ownerHistory) {
@@ -222,6 +224,10 @@ function hasPendingOwnerHandoff({ ownerHistory, ownerHandoffHistory }) {
 
 function deriveEscalationReminderCadenceHours(tier) {
   return ESCALATION_REMINDER_CADENCE_HOURS[tier] || null;
+}
+
+function deriveOwnerHandoffSlaHours(owner) {
+  return OWNER_HANDOFF_ACK_SLA_HOURS[owner] || null;
 }
 
 function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
@@ -393,6 +399,16 @@ function enrichEscalation(item) {
   const latestOwnerTransition = getLatestOwnerTransition(ownerHistory);
   const latestOwnerHandoff = getLatestOwnerHandoff(ownerHandoffHistory);
   const pendingOwnerHandoff = item.status === 'open' && hasPendingOwnerHandoff({ ownerHistory, ownerHandoffHistory });
+  const ownerHandoffTargetOwner = latestOwnerTransition?.to || null;
+  const ownerHandoffSlaHours =
+    pendingOwnerHandoff && ownerHandoffTargetOwner ? deriveOwnerHandoffSlaHours(ownerHandoffTargetOwner) : null;
+  const ownerHandoffDueAt =
+    pendingOwnerHandoff && ownerHandoffSlaHours && latestOwnerTransition?.at
+      ? new Date(new Date(latestOwnerTransition.at).getTime() + ownerHandoffSlaHours * 60 * 60 * 1000).toISOString()
+      : null;
+  const ownerHandoffDueMs = ownerHandoffDueAt ? new Date(ownerHandoffDueAt).getTime() : Number.NaN;
+  const ownerHandoffIsOverdue =
+    pendingOwnerHandoff && Number.isFinite(ownerHandoffDueMs) ? Date.now() > ownerHandoffDueMs : false;
 
   return {
     ...item,
@@ -419,6 +435,10 @@ function enrichEscalation(item) {
     latestOwnerHandoff,
     latestOwnerHandoffAt: item.lastOwnerHandoffAt || latestOwnerHandoff?.at || null,
     latestOwnerTransition,
+    ownerHandoffDueAt,
+    ownerHandoffIsOverdue,
+    ownerHandoffSlaHours,
+    ownerHandoffTargetOwner,
     pendingOwnerHandoff,
     reminderCadenceHours,
     reminderCount: Number(item.reminderCount || 0),
@@ -447,8 +467,10 @@ function summarizeEscalations(items) {
   let latestOwnerHandoffAt = null;
   let needsReminderCount = 0;
   let pendingOwnerHandoffCount = 0;
+  let pendingOwnerHandoffOverdueCount = 0;
   let ownerHandoffCountTotal = 0;
   let ownerTransitionCountTotal = 0;
+  let nextPendingOwnerHandoffDueAt = null;
   let reminderCountTotal = 0;
 
   for (const item of enrichedItems) {
@@ -467,6 +489,15 @@ function summarizeEscalations(items) {
     }
     if (item.pendingOwnerHandoff) {
       pendingOwnerHandoffCount += 1;
+      if (item.ownerHandoffIsOverdue) {
+        pendingOwnerHandoffOverdueCount += 1;
+      }
+      if (
+        item.ownerHandoffDueAt &&
+        (!nextPendingOwnerHandoffDueAt || String(nextPendingOwnerHandoffDueAt) > String(item.ownerHandoffDueAt))
+      ) {
+        nextPendingOwnerHandoffDueAt = item.ownerHandoffDueAt;
+      }
     }
     if (item.latestOwnerHandoffAt && (!latestOwnerHandoffAt || String(latestOwnerHandoffAt) < String(item.latestOwnerHandoffAt))) {
       latestOwnerHandoffAt = item.latestOwnerHandoffAt;
@@ -501,9 +532,11 @@ function summarizeEscalations(items) {
     latestReminderAt,
     latestOwnerEscalatedAt,
     needsReminderCount,
+    nextPendingOwnerHandoffDueAt,
     ownerHandoffCountTotal,
     ownerTransitionCountTotal,
     pendingOwnerHandoffCount,
+    pendingOwnerHandoffOverdueCount,
     reminderCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
@@ -970,9 +1003,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationLatestReminderAt: escalationSummary.latestReminderAt,
       escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
       escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+      escalationNextPendingOwnerHandoffDueAt: escalationSummary.nextPendingOwnerHandoffDueAt,
       escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
       escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
       escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
+      escalationPendingOwnerHandoffOverdueCount: escalationSummary.pendingOwnerHandoffOverdueCount,
       escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
@@ -1042,9 +1077,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
         escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationNextPendingOwnerHandoffDueAt: escalationSummary.nextPendingOwnerHandoffDueAt,
         escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
         escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
         escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
+        escalationPendingOwnerHandoffOverdueCount: escalationSummary.pendingOwnerHandoffOverdueCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
@@ -2084,9 +2121,19 @@ function summarizeActionInbox(items) {
         const targetOwner =
           (effectiveStatus === 'pending' ? latestOwnerTransition?.to : latestOwnerHandoff?.owner) ||
           item.effectiveRecommendedOwner;
+        const handoffDueAt = effectiveStatus === 'pending' ? item.ownerHandoffDueAt : latestOwnerHandoff?.dueAt || null;
+        const handoffIsOverdue =
+          effectiveStatus === 'pending' ? item.ownerHandoffIsOverdue : Boolean(latestOwnerHandoff?.wasOverdue);
+        const handoffSlaHours =
+          effectiveStatus === 'pending'
+            ? item.ownerHandoffSlaHours
+            : latestOwnerHandoff?.slaHours || deriveOwnerHandoffSlaHours(targetOwner);
 
         return {
           escalationId: item.id,
+          handoffDueAt,
+          handoffIsOverdue,
+          handoffSlaHours,
           handoffStatus: effectiveStatus,
           latestOwnerHandoffAt: item.latestOwnerHandoffAt,
           ownerHandoffCount: item.ownerHandoffCount,
@@ -2108,9 +2155,10 @@ function summarizeActionInbox(items) {
           lastHandoffNote: latestOwnerHandoff?.note || null,
         };
       })
+      .filter((item) => !filter.overdueOnly || item.handoffIsOverdue)
       .sort((left, right) =>
-        String(left.ownerTransitionAt || left.latestOwnerHandoffAt || '').localeCompare(
-          String(right.ownerTransitionAt || right.latestOwnerHandoffAt || ''),
+        String(left.handoffDueAt || left.ownerTransitionAt || left.latestOwnerHandoffAt || '').localeCompare(
+          String(right.handoffDueAt || right.ownerTransitionAt || right.latestOwnerHandoffAt || ''),
         ),
       );
 
@@ -2123,12 +2171,20 @@ function summarizeActionInbox(items) {
       filters: {
         missionId: filter.missionId || null,
         owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
         status: effectiveStatus,
         workspaceId: filter.workspaceId || null,
       },
       items,
       summary: {
+        nextDueAt:
+          items
+            .map((item) => item.handoffDueAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(0) || null,
         ownerCounts,
+        overdueCount: items.filter((item) => item.handoffIsOverdue).length,
         pendingCount: items.filter((item) => item.handoffStatus === 'pending').length,
         total: items.length,
       },
@@ -2149,10 +2205,13 @@ function summarizeActionInbox(items) {
     const acknowledgedAt = now();
     const handoffEntry = {
       at: acknowledgedAt,
+      dueAt: normalizedEscalation.ownerHandoffDueAt,
       note: normalizeText(note, 'Owner handoff acknowledged.'),
       owner: normalizedEscalation.latestOwnerTransition.to,
+      slaHours: normalizedEscalation.ownerHandoffSlaHours,
       transitionAt: normalizedEscalation.latestOwnerTransition.at,
       transitionTo: normalizedEscalation.latestOwnerTransition.to,
+      wasOverdue: normalizedEscalation.ownerHandoffIsOverdue,
     };
 
     const updated = store.updateEscalation(escalationId, (current) => {
@@ -2337,9 +2396,11 @@ function summarizeActionInbox(items) {
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
         escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationNextPendingOwnerHandoffDueAt: escalationSummary.nextPendingOwnerHandoffDueAt,
         escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
         escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
         escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
+        escalationPendingOwnerHandoffOverdueCount: escalationSummary.pendingOwnerHandoffOverdueCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,

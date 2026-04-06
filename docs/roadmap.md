@@ -41,6 +41,7 @@
 - repeated due reminder pressure now derives an effective owner chain so monitoring work can escalate from workspace-owner to human-approver without external integrations
 - owner chain escalation is now persisted as history and surfaced on mission/operator timelines so reviewer follow-up pressure remains auditable across reruns
 - owner transition is now actionable through a pending handoff queue and explicit acknowledgement lifecycle, still fully local-first
+- pending owner handoffs now carry explicit SLA, due, and overdue metadata so operator queues and overview surfaces can show acknowledgement pressure instead of only raw transition state
 - memory and document logging commands
 - deterministic local-first smoke coverage
 
