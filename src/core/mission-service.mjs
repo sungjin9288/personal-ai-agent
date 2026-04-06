@@ -1041,6 +1041,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return store.listMissions();
   }
 
+  function listProviders() {
+    const providers = providerRegistry.listProviders();
+    return {
+      providers,
+      summary: {
+        configuredCount: providers.filter((provider) => provider.configured).length,
+        defaultProviderId: providers.find((provider) => provider.defaultProvider)?.id || 'stub',
+        implementedCount: providers.filter((provider) => provider.implemented).length,
+        total: providers.length,
+      },
+    };
+  }
+
+  function checkProvider(providerId) {
+    return providerRegistry.getProviderStatus(providerId);
+  }
+
   function getMission(missionId) {
     const mission = store.getMission(missionId);
     if (!mission) {
@@ -4352,6 +4369,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   return {
     addMemory,
     addWorkspace,
+    checkProvider,
     createMission,
     getActionInbox,
     getApprovalInbox,
@@ -4368,6 +4386,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listApprovals,
     listMemory,
     listMissions,
+    listProviders,
     listSessions,
     logOverdueActions,
     logDocument,

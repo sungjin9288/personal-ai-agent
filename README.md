@@ -46,6 +46,8 @@ Show or list workspaces:
 ```bash
 node src/cli.mjs overview global
 node src/cli.mjs overview operator-timeline
+node src/cli.mjs provider list
+node src/cli.mjs provider check openai
 node src/cli.mjs workspace list
 node src/cli.mjs workspace show workspace_xxx
 node src/cli.mjs workspace overview workspace_xxx
@@ -158,6 +160,8 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 
 ## Provider Notes
 
+- `provider list` shows implementation state, env readiness, required env, and default-provider status without executing a mission.
+- `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans.
 - `stub` remains the deterministic default for local development and smoke coverage.
 - `openai` now uses the OpenAI Responses API and reads:
   - `OPENAI_API_KEY` required
@@ -234,6 +238,7 @@ npm run smoke:session-history
 npm run smoke:mission-timeline
 npm run smoke:workspace-overview
 npm run smoke:global-overview
+npm run smoke:provider-surface
 npm run smoke:openai-provider
 npm run smoke:anthropic-provider
 npm run smoke:local-provider

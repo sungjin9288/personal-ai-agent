@@ -32,6 +32,9 @@ Commands:
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline
 
+  provider list
+  provider check <stub|openai|anthropic|local>
+
   workspace add <path> [--name <name>]
   workspace list
   workspace show <workspaceId>
@@ -133,6 +136,16 @@ async function main() {
 
   if (group === 'overview' && command === 'operator-timeline') {
     printJson(service.getGlobalOperatorTimeline());
+    return;
+  }
+
+  if (group === 'provider' && command === 'list') {
+    printJson(service.listProviders());
+    return;
+  }
+
+  if (group === 'provider' && command === 'check') {
+    printJson(service.checkProvider(rest[0]));
     return;
   }
 

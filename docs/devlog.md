@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Status Surface
+
+- added `provider list` and `provider check <id>` so operator-facing readiness can be inspected without creating or running a mission
+- exposed implementation state, required env, missing env, default-provider status, and redacted effective configuration through the provider registry
+- added deterministic smoke coverage for provider status queries with configured and unconfigured env paths
+
 ## 2026-04-06 Shared Structured Provider Utility
 
 - extracted shared structured-output prompt building, JSON parsing, numeric env parsing, and stage normalization into a provider utility module
