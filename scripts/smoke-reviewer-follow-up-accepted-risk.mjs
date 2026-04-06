@@ -124,6 +124,18 @@ assert.equal(overdueMonitoringInbox.summary.pendingActionCount, 1);
 assert.equal(overdueMonitoringInbox.summary.overdueCounts.overdue, 1);
 assert.equal(overdueMonitoringInbox.items[0].isOverdue, true);
 
+const monitoringNeedsReminderInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'monitoring-required', '--workspace', workspace.id, '--needs-reminder'],
+});
+
+assert.equal(monitoringNeedsReminderInbox.summary.pendingActionCount, 1);
+assert.equal(monitoringNeedsReminderInbox.summary.reminderCounts.eligible, 1);
+assert.equal(monitoringNeedsReminderInbox.summary.reminderCounts.needsReminder, 1);
+assert.equal(monitoringNeedsReminderInbox.filters.needsReminderOnly, true);
+assert.equal(monitoringNeedsReminderInbox.items[0].actionType, 'accepted-risk-monitoring');
+assert.equal(monitoringNeedsReminderInbox.items[0].needsReminder, true);
+
 const overdueEscalatedInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'escalated', '--workspace', workspace.id, '--tier', 'critical'],

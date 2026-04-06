@@ -281,12 +281,17 @@ assert.equal(inbox.summary.priorityCounts.urgent, 0);
 assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 2);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 0);
+assert.equal(inbox.summary.reminderCounts.total, 4);
+assert.equal(inbox.summary.reminderCounts.eligible, 1);
+assert.equal(inbox.summary.reminderCounts.needsReminder, 1);
+assert.equal(inbox.summary.reminderCounts.notNeeded, 0);
 assert.equal(inbox.summary.overdueCounts.total, 4);
 assert.equal(inbox.summary.overdueCounts.overdue, 3);
 assert.equal(inbox.summary.overdueCounts.onTime, 1);
 assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 3);
 assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 1);
 assert.equal(inbox.filters.actionClass, null);
+assert.equal(inbox.filters.needsReminderOnly, false);
 assert.equal(inbox.filters.priority, null);
 assert.equal(inbox.filters.owner, null);
 assert.equal(inbox.filters.overdueOnly, false);
@@ -346,7 +351,15 @@ assert.equal(handoffItem.escalationId, handoffResolution.escalation.id);
 assert.equal(handoffItem.pendingOwnerHandoff, true);
 assert.equal(handoffItem.slaHours, 12);
 assert.equal(handoffItem.isOverdue, true);
+assert.equal(handoffItem.needsReminder, true);
+assert.equal(handoffItem.handoffNeedsReminder, true);
+assert.equal(handoffItem.reminderCount, 0);
+assert.equal(handoffItem.handoffReminderCount, 0);
+assert.equal(handoffItem.reminderCadenceHours, 6);
+assert.equal(handoffItem.handoffReminderCadenceHours, 6);
 assert.ok(handoffItem.dueAt);
+assert.ok(handoffItem.nextReminderAt);
+assert.ok(handoffItem.handoffNextReminderAt);
 assert.match(handoffItem.ownerTransitionDetail, /workspace-owner -> human-approver/);
 assert.match(handoffItem.commandHint, /acknowledge-owner-handoff/);
 
@@ -406,6 +419,18 @@ assert.equal(handoffRequiredInbox.summary.pendingActionCount, 1);
 assert.equal(handoffRequiredInbox.filters.actionClass, 'handoff-required');
 assert.equal(handoffRequiredInbox.items[0].actionType, 'owner-handoff');
 
+const needsReminderInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--needs-reminder'],
+});
+
+assert.equal(needsReminderInbox.summary.pendingActionCount, 1);
+assert.equal(needsReminderInbox.summary.reminderCounts.eligible, 1);
+assert.equal(needsReminderInbox.summary.reminderCounts.needsReminder, 1);
+assert.equal(needsReminderInbox.filters.needsReminderOnly, true);
+assert.equal(needsReminderInbox.items[0].actionType, 'owner-handoff');
+assert.equal(needsReminderInbox.items[0].needsReminder, true);
+
 const overdueInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--overdue'],
@@ -421,6 +446,7 @@ console.log(
       ok: true,
       actionCount: inbox.items.length,
       actionClasses: inbox.items.map((item) => item.actionClass),
+      needsReminderCount: inbox.summary.reminderCounts.needsReminder,
       overdueCount: inbox.summary.overdueCounts.overdue,
       priorities: inbox.items.map((item) => item.priority),
       actionTypes: inbox.items.map((item) => item.actionType),

@@ -44,6 +44,7 @@
 - pending owner handoffs now carry explicit SLA, due, and overdue metadata so operator queues and overview surfaces can show acknowledgement pressure instead of only raw transition state
 - pending owner handoffs now re-enter the unified `action inbox` as `handoff-required`, so owner acknowledgement work is visible in the main operator dispatch surface instead of only the dedicated handoff queue
 - pending owner handoffs now have a local-first reminder policy with `--needs-reminder` slicing, re-notify command support, and reminder trail visibility on mission/workspace/global surfaces
+- unified `action inbox` now exposes a cross-action `--needs-reminder` slice so monitoring-required and handoff-required work can be re-triaged from the main operator queue without switching surfaces
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

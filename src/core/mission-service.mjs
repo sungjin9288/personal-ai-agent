@@ -1610,7 +1610,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               handoffReminderCadenceHours: escalation.ownerHandoffReminderCadenceHours,
               handoffReminderCount: escalation.ownerHandoffReminderCount,
               handoffSlaHours: escalation.ownerHandoffSlaHours,
+              lastReminderAt: escalation.latestOwnerHandoffReminderAt,
               missionId: escalation.missionId,
+              needsReminder: escalation.ownerHandoffNeedsReminder,
+              nextReminderAt: escalation.nextOwnerHandoffReminderAt,
               ownerTransitionAt: escalation.latestOwnerTransition?.at || null,
               ownerTransitionDetail: escalation.latestOwnerTransition
                 ? formatEscalationOwnerChangeDetail(escalation.latestOwnerTransition)
@@ -1620,6 +1623,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               pendingOwnerHandoff: escalation.pendingOwnerHandoff,
               recommendedCommand: `node src/cli.mjs action acknowledge-owner-handoff ${escalation.id} --note "<note>"`,
               recommendedOwner: escalation.latestOwnerTransition?.to || escalation.effectiveRecommendedOwner,
+              reminderCadenceHours: escalation.ownerHandoffReminderCadenceHours,
+              reminderCount: escalation.ownerHandoffReminderCount,
               sessionId: escalation.sessionId,
               title: escalation.title,
               workspaceId: escalation.workspaceId,
@@ -1642,9 +1647,35 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
-function summarizeActionInbox(items) {
-  const workspaceCounts = {};
-  const actionClassCounts = {
+  function getActionInboxReminderState(item) {
+    const nextReminderAt = item.nextReminderAt || item.handoffNextReminderAt || null;
+    const lastReminderAt = item.lastReminderAt || item.handoffLatestReminderAt || null;
+    const reminderCadenceHours = item.reminderCadenceHours || item.handoffReminderCadenceHours || null;
+    const reminderCount = Number.isFinite(Number(item.reminderCount))
+      ? Number(item.reminderCount)
+      : Number(item.handoffReminderCount || 0);
+    const needsReminder = Boolean(item.needsReminder || item.handoffNeedsReminder);
+    const hasReminder =
+      item.actionClass === 'monitoring-required' ||
+      item.actionClass === 'handoff-required' ||
+      Boolean(nextReminderAt) ||
+      Boolean(lastReminderAt) ||
+      Boolean(reminderCadenceHours) ||
+      reminderCount > 0;
+
+    return {
+      hasReminder,
+      lastReminderAt,
+      needsReminder,
+      nextReminderAt,
+      reminderCadenceHours,
+      reminderCount,
+    };
+  }
+
+  function summarizeActionInbox(items) {
+    const workspaceCounts = {};
+    const actionClassCounts = {
       awaitingHumanDecision: 0,
       blocked: 0,
       handoffRequired: 0,
@@ -1659,15 +1690,23 @@ function summarizeActionInbox(items) {
       ownerHandoff: 0,
       reviewerFollowUp: 0,
       total: items.length,
-  };
-  const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
-  const effectiveOwnerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
-  const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
+    };
+    const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
+    const effectiveOwnerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
+    const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
+    const reminderCounts = {
+      eligible: 0,
+      needsReminder: 0,
+      notNeeded: 0,
+      total: items.length,
+    };
     const overdueCounts = {
       overdue: 0,
       onTime: 0,
       total: items.length,
     };
+    let latestReminderAt = null;
+    let nextReminderAt = null;
 
     for (const item of items) {
       workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -1724,6 +1763,32 @@ function summarizeActionInbox(items) {
         priorityCounts[item.priority] += 1;
       }
 
+      const reminderState = getActionInboxReminderState(item);
+
+      if (reminderState.hasReminder) {
+        reminderCounts.eligible += 1;
+
+        if (reminderState.needsReminder) {
+          reminderCounts.needsReminder += 1;
+        } else {
+          reminderCounts.notNeeded += 1;
+        }
+
+        if (
+          reminderState.nextReminderAt &&
+          (!nextReminderAt || String(nextReminderAt) > String(reminderState.nextReminderAt))
+        ) {
+          nextReminderAt = reminderState.nextReminderAt;
+        }
+
+        if (
+          reminderState.lastReminderAt &&
+          (!latestReminderAt || String(latestReminderAt) < String(reminderState.lastReminderAt))
+        ) {
+          latestReminderAt = reminderState.lastReminderAt;
+        }
+      }
+
       if (item.isOverdue) {
         overdueCounts.overdue += 1;
       } else {
@@ -1738,6 +1803,9 @@ function summarizeActionInbox(items) {
       ownerCounts,
       pendingActionCount: items.length,
       priorityCounts,
+      reminderCounts,
+      latestReminderAt,
+      nextReminderAt,
       overdueCounts,
       workspaceCounts,
     };
@@ -1945,6 +2013,9 @@ function summarizeActionInbox(items) {
         if (filter.effectiveOwner && (item.effectiveRecommendedOwner || item.recommendedOwner) !== filter.effectiveOwner) {
           return false;
         }
+        if (filter.needsReminderOnly && !getActionInboxReminderState(item).needsReminder) {
+          return false;
+        }
         if (filter.overdueOnly && !item.isOverdue) {
           return false;
         }
@@ -1957,6 +2028,7 @@ function summarizeActionInbox(items) {
         actionClass: filter.actionClass || null,
         effectiveOwner: filter.effectiveOwner || null,
         missionId: filter.missionId || null,
+        needsReminderOnly: Boolean(filter.needsReminderOnly),
         owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
         priority: filter.priority || null,
