@@ -711,6 +711,42 @@ function summarizeMaintenancePressure(entries) {
   };
 }
 
+function summarizeMaintenanceImpact(items, scopeMissionIds = null) {
+  const affectedMissionIds = new Set();
+  let latestImpactRun = null;
+  let latestImpactRunAt = null;
+  let latestImpactAffectedMissionIds = [];
+  const allowedMissionIds = scopeMissionIds ? new Set(scopeMissionIds) : null;
+
+  for (const item of items) {
+    const runAffectedMissionIds = [...new Set([item.missionId, ...ensureArray(item.affectedMissionIds)].filter(Boolean))].filter(
+      (missionId) => !allowedMissionIds || allowedMissionIds.has(missionId),
+    );
+    for (const missionId of runAffectedMissionIds) {
+      affectedMissionIds.add(missionId);
+    }
+
+    if (
+      runAffectedMissionIds.length > 0 &&
+      (!latestImpactRunAt || String(latestImpactRunAt) < String(item.createdAt || ''))
+    ) {
+      latestImpactRunAt = item.createdAt || null;
+      latestImpactRun = item;
+      latestImpactAffectedMissionIds = [...runAffectedMissionIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      );
+    }
+  }
+
+  return {
+    affectedMissionCount: affectedMissionIds.size,
+    affectedMissionIds: [...affectedMissionIds].sort((left, right) => String(left).localeCompare(String(right))),
+    latestImpactAffectedMissionIds,
+    latestImpactRun,
+    latestImpactRunAt,
+  };
+}
+
 function summarizeReviewerFollowUps(items) {
   const statusCounts = {
     ...Object.fromEntries(REVIEWER_FOLLOW_UP_STATUSES.map((status) => [status, 0])),
@@ -1246,6 +1282,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .filter((item) => item.missionId === missionId || ensureArray(item.affectedMissionIds).includes(missionId));
   }
 
+  function listMaintenanceRunsForWorkspaceImpact(workspaceId) {
+    const missionIds = new Set(
+      store
+        .listMissions()
+        .filter((mission) => mission.workspaceId === workspaceId)
+        .map((mission) => mission.id),
+    );
+
+    return store.listMaintenanceRuns().filter((item) => {
+      if (item.workspaceId === workspaceId) {
+        return true;
+      }
+      if (item.missionId && missionIds.has(item.missionId)) {
+        return true;
+      }
+      return ensureArray(item.affectedMissionIds).some((missionId) => missionIds.has(missionId));
+    });
+  }
+
   function getMaintenanceMissionEffect(item, missionId) {
     return ensureArray(item.affectedMissionSummaries).find((entry) => entry.missionId === missionId) || null;
   }
@@ -1296,7 +1351,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const workspace = getWorkspace(workspaceId);
     syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
-    const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ workspaceId: workspace.id }));
+    const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
+    const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
+    const maintenanceImpactSummary = summarizeMaintenanceImpact(
+      maintenanceRuns,
+      missionEntries.map((entry) => entry.mission.id),
+    );
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ workspaceId: workspace.id }));
     const escalations = store.listEscalations({ workspaceId: workspace.id }).map((item) => enrichEscalation(item));
     const escalationSummary = summarizeEscalations(escalations);
@@ -1347,6 +1407,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
+        latestMaintenanceImpactRun: maintenanceImpactSummary.latestImpactRun,
+        latestMaintenanceImpactRunAt: maintenanceImpactSummary.latestImpactRunAt,
+        latestMaintenanceImpactAffectedMissionIds: maintenanceImpactSummary.latestImpactAffectedMissionIds,
         latestMaintenanceRun: maintenanceSummary.latestRun,
         latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
         latestMission: latestMissionEntry
@@ -1359,6 +1422,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
         maintenanceAcknowledgedMaintenanceRequiredCountTotal:
           maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
+        maintenanceAffectedMissionCount: maintenanceImpactSummary.affectedMissionCount,
+        maintenanceAffectedMissionIds: maintenanceImpactSummary.affectedMissionIds,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
@@ -3265,7 +3330,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function getGlobalOverview() {
     syncEscalations();
     const workspaceOverviews = store.listWorkspaces().map((workspace) => getWorkspaceOverview(workspace.id));
-    const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns());
+    const maintenanceRuns = store.listMaintenanceRuns();
+    const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
+    const maintenanceImpactSummary = summarizeMaintenanceImpact(maintenanceRuns);
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries());
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
@@ -3320,12 +3387,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
         latestEscalation: escalationSummary.latestEscalation,
+        latestMaintenanceImpactRun: maintenanceImpactSummary.latestImpactRun,
+        latestMaintenanceImpactRunAt: maintenanceImpactSummary.latestImpactRunAt,
+        latestMaintenanceImpactAffectedMissionIds: maintenanceImpactSummary.latestImpactAffectedMissionIds,
         latestMaintenanceRun: maintenanceSummary.latestRun,
         latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
         latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
         latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
         maintenanceAcknowledgedMaintenanceRequiredCountTotal:
           maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
+        maintenanceAffectedMissionCount: maintenanceImpactSummary.affectedMissionCount,
+        maintenanceAffectedMissionIds: maintenanceImpactSummary.affectedMissionIds,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,

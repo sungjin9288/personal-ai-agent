@@ -130,6 +130,22 @@ const escalationLog = runCli({
 assert.equal(escalationLog.logged, true);
 assert.equal(escalationLog.count, 2);
 
+const reminderReadyState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+reminderReadyState.escalations = reminderReadyState.escalations.map((escalation) => ({
+  ...escalation,
+  createdAt: overdueTimestamp,
+  updatedAt: overdueTimestamp,
+}));
+fs.writeFileSync(statePath, `${JSON.stringify(reminderReadyState, null, 2)}\n`, 'utf8');
+
+const maintenanceRun = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance', '--workspace', workspace.id, '--note', 'Workspace overview maintenance sweep.'],
+});
+
+assert.equal(maintenanceRun.summary.totalRemindedCount, 2);
+assert.equal(maintenanceRun.maintenanceRun.id !== undefined, true);
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'overview', workspace.id],
@@ -149,6 +165,18 @@ assert.equal(overview.summary.memoryCounts.workspaceScoped, 1);
 assert.equal(overview.summary.memoryCounts.missionScoped >= 1, true);
 assert.equal(overview.summary.openEscalationIds.length, 2);
 assert.equal(overview.summary.latestEscalation.workspaceId, workspace.id);
+assert.equal(overview.summary.maintenanceRunCount, 1);
+assert.equal(overview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(overview.summary.maintenanceAffectedMissionCount, 2);
+assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
+assert.deepEqual(
+  [...overview.summary.maintenanceAffectedMissionIds].sort(),
+  [awaitingMission.id, failedMission.id].sort(),
+);
+assert.deepEqual(
+  [...overview.summary.latestMaintenanceImpactAffectedMissionIds].sort(),
+  [awaitingMission.id, failedMission.id].sort(),
+);
 assert.equal(overview.summary.sessionCount, 3);
 assert.equal(overview.summary.activeMissionIds.includes(awaitingMission.id), true);
 assert.equal(overview.summary.latestMission.mission.id, failedMission.id);

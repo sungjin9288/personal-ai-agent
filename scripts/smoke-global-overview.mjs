@@ -133,6 +133,22 @@ const escalationLog = runCli({
 assert.equal(escalationLog.logged, true);
 assert.equal(escalationLog.count, 2);
 
+const reminderReadyState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+reminderReadyState.escalations = reminderReadyState.escalations.map((escalation) => ({
+  ...escalation,
+  createdAt: overdueTimestamp,
+  updatedAt: overdueTimestamp,
+}));
+fs.writeFileSync(statePath, `${JSON.stringify(reminderReadyState, null, 2)}\n`, 'utf8');
+
+const maintenanceRun = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance', '--note', 'Global overview maintenance sweep.'],
+});
+
+assert.equal(maintenanceRun.summary.totalRemindedCount, 2);
+assert.equal(maintenanceRun.maintenanceRun.id !== undefined, true);
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'global'],
@@ -152,6 +168,18 @@ assert.equal(overview.summary.escalationCounts.resolved, 0);
 assert.equal(overview.summary.escalationCounts.total, 2);
 assert.equal(overview.summary.inboxCount, 1);
 assert.equal(overview.summary.openEscalationCount, 2);
+assert.equal(overview.summary.maintenanceRunCount, 1);
+assert.equal(overview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(overview.summary.maintenanceAffectedMissionCount, 2);
+assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
+assert.deepEqual(
+  [...overview.summary.maintenanceAffectedMissionIds].sort(),
+  [pendingMission.id, failedMission.id].sort(),
+);
+assert.deepEqual(
+  [...overview.summary.latestMaintenanceImpactAffectedMissionIds].sort(),
+  [pendingMission.id, failedMission.id].sort(),
+);
 assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceOne.id), true);
 assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceTwo.id), false);
 assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceOne.id), true);
@@ -167,7 +195,8 @@ assert.equal(
     (entry) =>
       entry.workspace.id === workspaceOne.id &&
       entry.summary.missionCounts.awaiting_approval === 1 &&
-      entry.summary.escalationCounts.open === 1,
+      entry.summary.escalationCounts.open === 1 &&
+      entry.summary.maintenanceAffectedMissionCount === 1,
   ),
   true,
 );
@@ -176,7 +205,8 @@ assert.equal(
     (entry) =>
       entry.workspace.id === workspaceTwo.id &&
       entry.summary.missionCounts.failed === 1 &&
-      entry.summary.escalationCounts.open === 1,
+      entry.summary.escalationCounts.open === 1 &&
+      entry.summary.maintenanceAffectedMissionCount === 1,
   ),
   true,
 );
