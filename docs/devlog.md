@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Mission Maintenance History Linkback
+
+- extended `action maintenance-history --mission` and `overview maintenance --mission` to include related workspace-scope maintenance runs instead of only direct mission runs
+- kept run-level breadth metadata intact while adding mission-specific `missionImpact*` summary fields so cross-mission sweeps do not hide the effect on the selected mission
+- strengthened maintenance history smoke coverage to prove a workspace sweep appears in mission-scoped history/overview with correct run totals and mission-local reminder impact
+
 ## 2026-04-06 Managed Runtime Kickoff
 
 - shifted the project from single-pass pack rendering to a managed multi-agent runtime

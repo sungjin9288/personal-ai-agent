@@ -1307,19 +1307,47 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
   }
 
+  function listMaintenanceOverviewRuns(filter = {}) {
+    if (filter.missionId) {
+      const mission = getMission(filter.missionId);
+
+      if (filter.workspaceId && mission.workspaceId !== filter.workspaceId) {
+        return [];
+      }
+
+      return listRelatedMaintenanceRunsForMission(mission.id).filter((item) => {
+        if (filter.owner && item.owner !== filter.owner) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    if (filter.workspaceId) {
+      return listMaintenanceRunsForWorkspaceImpact(filter.workspaceId).filter((item) => {
+        if (filter.owner && item.owner !== filter.owner) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    return store.listMaintenanceRuns({ owner: filter.owner });
+  }
+
   function getMaintenanceMissionEffect(item, missionId) {
     return ensureArray(item.affectedMissionSummaries).find((entry) => entry.missionId === missionId) || null;
   }
 
-  function summarizeMissionMaintenanceImpact(missionId) {
-    const runs = listRelatedMaintenanceRunsForMission(missionId);
+  function summarizeMissionMaintenanceImpact(missionId, runs = null) {
+    const effectiveRuns = runs || listRelatedMaintenanceRunsForMission(missionId);
     let escalationRemindedCountTotal = 0;
     let latestRun = null;
     let latestRunAt = null;
     let ownerHandoffRemindedCountTotal = 0;
     let totalRemindedCount = 0;
 
-    for (const run of runs) {
+    for (const run of effectiveRuns) {
       const isDirectMissionRun = run.missionId === missionId;
       const effect = isDirectMissionRun
         ? {
@@ -1348,7 +1376,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestRun,
       latestRunAt,
       ownerHandoffRemindedCountTotal,
-      runCount: runs.length,
+      runCount: effectiveRuns.length,
       totalRemindedCount,
     };
   }
@@ -2930,12 +2958,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
     }
 
-    const items = store.listMaintenanceRuns({
-      missionId: filter.missionId,
-      owner: filter.owner,
-      workspaceId: filter.workspaceId,
-    });
+    const items = listMaintenanceOverviewRuns(filter);
     const current = listMaintenancePressureEntries(filter);
+    const missionImpactSummary = filter.missionId ? summarizeMissionMaintenanceImpact(filter.missionId, items) : null;
 
     return {
       current,
@@ -2948,6 +2973,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       summary: {
         ...summarizeMaintenanceRuns(items),
         ...summarizeMaintenancePressure(current),
+        ...(missionImpactSummary
+          ? {
+              latestMissionImpactRun: missionImpactSummary.latestRun,
+              latestMissionImpactRunAt: missionImpactSummary.latestRunAt,
+              missionImpactEscalationRemindedCountTotal: missionImpactSummary.escalationRemindedCountTotal,
+              missionImpactOwnerHandoffRemindedCountTotal: missionImpactSummary.ownerHandoffRemindedCountTotal,
+              missionImpactRunCount: missionImpactSummary.runCount,
+              missionImpactTotalRemindedCount: missionImpactSummary.totalRemindedCount,
+            }
+          : {}),
       },
     };
   }

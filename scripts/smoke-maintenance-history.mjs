@@ -259,6 +259,27 @@ assert.equal(history.summary.latestRun.totalRemindedCount, 0);
 assert.equal(history.summary.maintenanceRequiredCount, 0);
 assert.equal(history.summary.currentDueCandidateCountTotal, 0);
 
+const missionHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--mission', monitoringFlow.mission.id],
+});
+
+assert.equal(missionHistory.summary.runCount, 1);
+assert.equal(missionHistory.summary.totalRemindedCount, 2);
+assert.equal(missionHistory.summary.affectedMissionCount, 2);
+assert.deepEqual(
+  [...missionHistory.summary.affectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
+assert.equal(missionHistory.summary.missionImpactRunCount, 1);
+assert.equal(missionHistory.summary.missionImpactTotalRemindedCount, 1);
+assert.equal(missionHistory.summary.missionImpactEscalationRemindedCountTotal, 1);
+assert.equal(missionHistory.summary.missionImpactOwnerHandoffRemindedCountTotal, 0);
+assert.equal(missionHistory.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
+assert.equal(missionHistory.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
+assert.equal(missionHistory.items.length, 1);
+assert.equal(missionHistory.items[0].id, firstMaintenance.maintenanceRun.id);
+
 const maintenanceOverview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'maintenance', '--workspace', workspace.id],
@@ -282,6 +303,27 @@ assert.deepEqual(
 );
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(maintenanceOverview.summary.currentDueCandidateCountTotal, 0);
+
+const missionMaintenanceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'maintenance', '--mission', monitoringFlow.mission.id],
+});
+
+assert.equal(missionMaintenanceOverview.summary.runCount, 1);
+assert.equal(missionMaintenanceOverview.summary.totalRemindedCount, 2);
+assert.equal(missionMaintenanceOverview.summary.affectedMissionCount, 2);
+assert.deepEqual(
+  [...missionMaintenanceOverview.summary.affectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
+assert.equal(missionMaintenanceOverview.summary.missionImpactRunCount, 1);
+assert.equal(missionMaintenanceOverview.summary.missionImpactTotalRemindedCount, 1);
+assert.equal(missionMaintenanceOverview.summary.missionImpactEscalationRemindedCountTotal, 1);
+assert.equal(missionMaintenanceOverview.summary.missionImpactOwnerHandoffRemindedCountTotal, 0);
+assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
+assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
+assert.equal(missionMaintenanceOverview.summary.maintenanceRequiredCount, 0);
+assert.equal(missionMaintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
 const workspaceOverview = runCli({
   rootDir: tempRoot,
