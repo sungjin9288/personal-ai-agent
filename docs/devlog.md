@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Maintenance Outcome Filters
+
+- added `--outcome <effective|no-op|impactful>` to `action maintenance-history` and `overview maintenance` so operators can directly slice sweep audit by run quality
+- reused the same maintenance run classification helpers that feed the summary trend fields, keeping filtering semantics aligned with `effectiveRunCount`, `noOpRunCount`, and `impactRunCount`
+- extended maintenance history smoke coverage to prove workspace-scope effective/no-op filters and mission-scope empty no-op filtering behave deterministically
+
 ## 2026-04-06 Maintenance Run Trend Summary
 
 - extended maintenance-specific summaries with `effectiveRunCount`, `noOpRunCount`, `impactRunCount`, `latestEffectiveRun`, `latestNoOpRun`, and a short `recentRuns` trend window

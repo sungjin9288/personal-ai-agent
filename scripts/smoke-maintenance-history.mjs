@@ -278,6 +278,27 @@ assert.equal(history.summary.latestRun.totalRemindedCount, 0);
 assert.equal(history.summary.maintenanceRequiredCount, 0);
 assert.equal(history.summary.currentDueCandidateCountTotal, 0);
 
+const effectiveHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--workspace', workspace.id, '--outcome', 'effective'],
+});
+
+assert.equal(effectiveHistory.summary.runCount, 1);
+assert.equal(effectiveHistory.summary.effectiveRunCount, 1);
+assert.equal(effectiveHistory.summary.noOpRunCount, 0);
+assert.equal(effectiveHistory.items[0].id, firstMaintenance.maintenanceRun.id);
+
+const noOpHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--workspace', workspace.id, '--outcome', 'no-op'],
+});
+
+assert.equal(noOpHistory.summary.runCount, 1);
+assert.equal(noOpHistory.summary.effectiveRunCount, 0);
+assert.equal(noOpHistory.summary.noOpRunCount, 1);
+assert.equal(noOpHistory.summary.impactRunCount, 0);
+assert.equal(noOpHistory.items[0].id, secondMaintenance.maintenanceRun.id);
+
 const missionHistory = runCli({
   rootDir: tempRoot,
   args: ['action', 'maintenance-history', '--mission', monitoringFlow.mission.id],
@@ -298,6 +319,15 @@ assert.equal(missionHistory.summary.latestMissionImpactRun.id, firstMaintenance.
 assert.equal(missionHistory.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionHistory.items.length, 1);
 assert.equal(missionHistory.items[0].id, firstMaintenance.maintenanceRun.id);
+
+const missionNoOpHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--mission', monitoringFlow.mission.id, '--outcome', 'no-op'],
+});
+
+assert.equal(missionNoOpHistory.summary.runCount, 0);
+assert.equal(missionNoOpHistory.summary.noOpRunCount, 0);
+assert.equal(missionNoOpHistory.items.length, 0);
 
 const maintenanceOverview = runCli({
   rootDir: tempRoot,
@@ -351,6 +381,16 @@ assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRun.id, first
 assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionMaintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(missionMaintenanceOverview.summary.currentDueCandidateCountTotal, 0);
+
+const filteredMaintenanceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'maintenance', '--workspace', workspace.id, '--outcome', 'effective'],
+});
+
+assert.equal(filteredMaintenanceOverview.summary.runCount, 1);
+assert.equal(filteredMaintenanceOverview.summary.effectiveRunCount, 1);
+assert.equal(filteredMaintenanceOverview.summary.noOpRunCount, 0);
+assert.equal(filteredMaintenanceOverview.items[0].id, firstMaintenance.maintenanceRun.id);
 
 const workspaceOverview = runCli({
   rootDir: tempRoot,

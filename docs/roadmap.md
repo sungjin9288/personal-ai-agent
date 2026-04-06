@@ -58,6 +58,7 @@
 - maintenance history and maintenance overview now expose affected mission breadth and latest impact linkage, so maintenance-specific audit surfaces can answer impact questions without relying on workspace/global overview only
 - mission-scoped maintenance history and overview now include related workspace sweeps and expose mission-specific `missionImpact*` totals, so maintenance audit stays consistent with mission summary/timeline semantics
 - maintenance-specific summaries now expose effective/no-op run counts plus recent run trend metadata, so operators can distinguish active sweep effectiveness from idle audit runs without diffing raw history manually
+- maintenance history and overview now support `--outcome <effective|no-op|impactful>` filtering, so sweep audit can be sliced directly by run quality without post-processing the summary payload
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

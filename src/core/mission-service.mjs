@@ -11,6 +11,7 @@ import {
   ESCALATION_TIERS,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
+  MAINTENANCE_RUN_OUTCOMES,
   MEMORY_KINDS,
   MEMORY_SCOPES,
   MISSION_MODES,
@@ -658,12 +659,9 @@ function summarizeMaintenanceRuns(items) {
     resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
     totalRemindedCount += Number(item.totalRemindedCount || 0);
-    const affectedMissionIds = [...new Set([item.missionId, ...ensureArray(item.affectedMissionIds)].filter(Boolean))];
-    const isEffective =
-      Number(item.totalRemindedCount || 0) > 0 ||
-      Number(item.acknowledgedMaintenanceRequiredCount || 0) > 0 ||
-      Number(item.resolvedMaintenanceRequiredCount || 0) > 0;
-    const isImpactful = affectedMissionIds.length > 0;
+    const affectedMissionIds = getMaintenanceRunAffectedMissionIds(item);
+    const isEffective = isMaintenanceRunEffective(item);
+    const isImpactful = isMaintenanceRunImpactful(item);
 
     if (isEffective) {
       effectiveRunCount += 1;
@@ -773,6 +771,24 @@ function summarizeMaintenancePressure(entries) {
     nextDueAt,
     dueWorkspaceCounts,
   };
+}
+
+function getMaintenanceRunAffectedMissionIds(item) {
+  return [...new Set([item.missionId, ...ensureArray(item.affectedMissionIds)].filter(Boolean))].sort((left, right) =>
+    String(left).localeCompare(String(right)),
+  );
+}
+
+function isMaintenanceRunEffective(item) {
+  return (
+    Number(item.totalRemindedCount || 0) > 0 ||
+    Number(item.acknowledgedMaintenanceRequiredCount || 0) > 0 ||
+    Number(item.resolvedMaintenanceRequiredCount || 0) > 0
+  );
+}
+
+function isMaintenanceRunImpactful(item) {
+  return getMaintenanceRunAffectedMissionIds(item).length > 0;
 }
 
 function summarizeMaintenanceImpact(items, scopeMissionIds = null) {
@@ -1366,6 +1382,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function listMaintenanceOverviewRuns(filter = {}) {
+    let items;
+
     if (filter.missionId) {
       const mission = getMission(filter.missionId);
 
@@ -1373,24 +1391,31 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         return [];
       }
 
-      return listRelatedMaintenanceRunsForMission(mission.id).filter((item) => {
-        if (filter.owner && item.owner !== filter.owner) {
-          return false;
-        }
-        return true;
-      });
+      items = listRelatedMaintenanceRunsForMission(mission.id);
+    } else if (filter.workspaceId) {
+      items = listMaintenanceRunsForWorkspaceImpact(filter.workspaceId);
+    } else {
+      items = store.listMaintenanceRuns();
     }
 
-    if (filter.workspaceId) {
-      return listMaintenanceRunsForWorkspaceImpact(filter.workspaceId).filter((item) => {
-        if (filter.owner && item.owner !== filter.owner) {
-          return false;
-        }
+    return items.filter((item) => {
+      if (filter.owner && item.owner !== filter.owner) {
+        return false;
+      }
+      if (!filter.outcome) {
         return true;
-      });
-    }
-
-    return store.listMaintenanceRuns({ owner: filter.owner });
+      }
+      if (filter.outcome === 'effective') {
+        return isMaintenanceRunEffective(item);
+      }
+      if (filter.outcome === 'no-op') {
+        return !isMaintenanceRunEffective(item);
+      }
+      if (filter.outcome === 'impactful') {
+        return isMaintenanceRunImpactful(item);
+      }
+      return true;
+    });
   }
 
   function getMaintenanceMissionEffect(item, missionId) {
@@ -3015,6 +3040,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
     }
+    if (filter.outcome && !MAINTENANCE_RUN_OUTCOMES.includes(filter.outcome)) {
+      throw new Error(`Unsupported maintenance run outcome: ${filter.outcome}`);
+    }
 
     const items = listMaintenanceOverviewRuns(filter);
     const current = listMaintenancePressureEntries(filter);
@@ -3024,6 +3052,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       current,
       filters: {
         missionId: filter.missionId || null,
+        outcome: filter.outcome || null,
         owner: filter.owner || null,
         workspaceId: filter.workspaceId || null,
       },

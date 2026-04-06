@@ -45,6 +45,7 @@ export const OWNER_HANDOFF_REMINDER_CADENCE_HOURS = {
   'workspace-owner': 12,
   'human-approver': 6,
 };
+export const MAINTENANCE_RUN_OUTCOMES = ['effective', 'no-op', 'impactful'];
 export const REVIEWER_FOLLOW_UP_STATUSES = ['open', 'resolved'];
 export const REVIEWER_FOLLOW_UP_RESOLUTION_KINDS = ['rerun-fixed', 'superseded', 'scope-reduced', 'accepted-risk'];
 
