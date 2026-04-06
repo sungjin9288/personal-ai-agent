@@ -238,3 +238,9 @@
 - linked workspace-scoped maintenance runs back to affected mission ids so a mission timeline can show indirect maintenance activity even when the sweep was executed at workspace scope
 - kept maintenance-required acknowledgement and resolution events mission-scoped only, while mission timelines now render a mission-specific workspace maintenance detail built from affected escalation and handoff reminder counts
 - updated mission timeline smoke coverage to switch from action maintenance with mission scope to action maintenance with workspace scope and verify that related maintenance evidence still appears on the mission audit surface
+
+## 2026-04-06 Mission Maintenance Impact Summary
+
+- added combined maintenance impact fields to mission summary so direct mission maintenance totals and indirect workspace maintenance effects are both visible without replaying timeline events by hand
+- kept direct maintenance aggregate semantics unchanged and introduced impact-only fields separately to avoid overcounting existing maintenanceRunCount and maintenanceTotalRemindedCount contracts
+- extended mission timeline smoke coverage to assert the new impact totals for a workspace-scoped maintenance run that affects exactly one mission

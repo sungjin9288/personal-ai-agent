@@ -157,6 +157,11 @@ assert.equal(missionShow.summary.maintenanceResolvedMaintenanceRequiredCountTota
 assert.equal(missionShow.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
 assert.equal(missionShow.summary.latestMaintenanceRun, null);
 assert.equal(missionShow.summary.maintenanceRelatedRunCount, 1);
+assert.equal(missionShow.summary.maintenanceImpactRunCount, 1);
+assert.equal(missionShow.summary.maintenanceImpactTotalRemindedCount, 1);
+assert.equal(missionShow.summary.maintenanceImpactEscalationRemindedCountTotal, 1);
+assert.equal(missionShow.summary.maintenanceImpactOwnerHandoffRemindedCountTotal, 0);
+assert.equal(missionShow.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
 assert.equal(missionShow.summary.latestRelatedMaintenanceRun.id, maintenanceRun.maintenanceRun.id);
 assert.equal(missionShow.summary.maintenanceRequiredCount, 0);
 

@@ -1156,6 +1156,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const escalations = store.listEscalations({ missionId: mission.id });
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
+    const maintenanceImpactSummary = summarizeMissionMaintenanceImpact(mission.id);
     const relatedMaintenanceRuns = listRelatedMaintenanceRunsForMission(mission.id);
     const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
@@ -1188,6 +1189,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
+      latestMaintenanceImpactRun: maintenanceImpactSummary.latestRun,
+      latestMaintenanceImpactRunAt: maintenanceImpactSummary.latestRunAt,
       latestRelatedMaintenanceRun,
       latestRelatedMaintenanceRunAt: latestRelatedMaintenanceRun?.createdAt || null,
       latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
@@ -1199,6 +1202,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
       maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
       maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+      maintenanceImpactEscalationRemindedCountTotal: maintenanceImpactSummary.escalationRemindedCountTotal,
+      maintenanceImpactOwnerHandoffRemindedCountTotal: maintenanceImpactSummary.ownerHandoffRemindedCountTotal,
+      maintenanceImpactRunCount: maintenanceImpactSummary.runCount,
+      maintenanceImpactTotalRemindedCount: maintenanceImpactSummary.totalRemindedCount,
       maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
       maintenanceResolvedMaintenanceRequiredCountTotal:
         maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
@@ -1241,6 +1248,48 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function getMaintenanceMissionEffect(item, missionId) {
     return ensureArray(item.affectedMissionSummaries).find((entry) => entry.missionId === missionId) || null;
+  }
+
+  function summarizeMissionMaintenanceImpact(missionId) {
+    const runs = listRelatedMaintenanceRunsForMission(missionId);
+    let escalationRemindedCountTotal = 0;
+    let latestRun = null;
+    let latestRunAt = null;
+    let ownerHandoffRemindedCountTotal = 0;
+    let totalRemindedCount = 0;
+
+    for (const run of runs) {
+      const isDirectMissionRun = run.missionId === missionId;
+      const effect = isDirectMissionRun
+        ? {
+            escalationRemindedCount: Number(run.escalationRemindedCount || 0),
+            ownerHandoffRemindedCount: Number(run.ownerHandoffRemindedCount || 0),
+            totalRemindedCount: Number(run.totalRemindedCount || 0),
+          }
+        : getMaintenanceMissionEffect(run, missionId) || {
+            escalationRemindedCount: 0,
+            ownerHandoffRemindedCount: 0,
+            totalRemindedCount: 0,
+          };
+
+      escalationRemindedCountTotal += Number(effect.escalationRemindedCount || 0);
+      ownerHandoffRemindedCountTotal += Number(effect.ownerHandoffRemindedCount || 0);
+      totalRemindedCount += Number(effect.totalRemindedCount || 0);
+
+      if (!latestRunAt || String(latestRunAt) < String(run.createdAt || '')) {
+        latestRunAt = run.createdAt || null;
+        latestRun = run;
+      }
+    }
+
+    return {
+      escalationRemindedCountTotal,
+      latestRun,
+      latestRunAt,
+      ownerHandoffRemindedCountTotal,
+      runCount: runs.length,
+      totalRemindedCount,
+    };
   }
 
   function getWorkspaceOverview(workspaceId) {
