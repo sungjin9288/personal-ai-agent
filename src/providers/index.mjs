@@ -88,12 +88,12 @@ function buildProviderStatus(spec, env, provider) {
   return status;
 }
 
-export function createProviderRegistry({ rootDir, env = process.env }) {
+export function createProviderRegistry({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
   const providers = {
     stub: createStubProvider({ rootDir }),
-    openai: createOpenAIProvider({ rootDir }),
-    anthropic: createAnthropicProvider({ rootDir }),
-    local: createLocalProvider({ rootDir }),
+    openai: createOpenAIProvider({ rootDir, env, fetchImpl }),
+    anthropic: createAnthropicProvider({ rootDir, env, fetchImpl }),
+    local: createLocalProvider({ rootDir, env, fetchImpl }),
   };
   const providerSpecs = buildProviderSpecMap();
 
@@ -116,6 +116,50 @@ export function createProviderRegistry({ rootDir, env = process.env }) {
       }
 
       return buildProviderStatus(providerSpecs[normalizedProviderId], env, providers[normalizedProviderId]);
+    },
+    async probeProvider(providerId) {
+      const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
+      if (!PROVIDER_IDS.includes(normalizedProviderId) || !providers[normalizedProviderId]) {
+        throw new Error(`Unsupported provider: ${normalizedProviderId}`);
+      }
+
+      const status = buildProviderStatus(providerSpecs[normalizedProviderId], env, providers[normalizedProviderId]);
+      if (!status.implemented) {
+        return {
+          ...status,
+          attempted: false,
+          checkedAt: new Date().toISOString(),
+          ok: false,
+          reason: `Provider not implemented yet: ${normalizedProviderId}`,
+        };
+      }
+
+      if (!status.configured) {
+        return {
+          ...status,
+          attempted: false,
+          checkedAt: new Date().toISOString(),
+          ok: false,
+          reason: `Missing required env: ${status.missingEnv.join(', ')}`,
+        };
+      }
+
+      try {
+        const probeResult = await providers[normalizedProviderId].probe();
+        return {
+          ...status,
+          attempted: true,
+          ...probeResult,
+        };
+      } catch (error) {
+        return {
+          ...status,
+          attempted: true,
+          checkedAt: new Date().toISOString(),
+          ok: false,
+          reason: error instanceof Error ? error.message : String(error),
+        };
+      }
     },
   };
 }

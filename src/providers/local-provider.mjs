@@ -31,6 +31,46 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
     preparePrompt(input) {
       return delegatedProvider.preparePrompt(input);
     },
+    async probe() {
+      if (typeof fetchImpl !== 'function') {
+        throw new Error('Global fetch is not available for the local provider.');
+      }
+
+      const config = resolveLocalConfig(env);
+      const headers = {};
+
+      if (config.apiKey) {
+        headers.Authorization = `Bearer ${config.apiKey}`;
+      }
+
+      const response = await fetchImpl(`${config.baseUrl}/models`, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = typeof response.text === 'function' ? await response.text() : '';
+        throw new Error(
+          `Local provider probe failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
+        );
+      }
+
+      const payload = await response.json();
+      const models = Array.isArray(payload?.data)
+        ? payload.data.map((item) => normalizeText(item?.id)).filter(Boolean)
+        : [];
+
+      return {
+        checkedAt: new Date().toISOString(),
+        endpoint: `${config.baseUrl}/models`,
+        model: config.model,
+        modelAvailable: models.includes(config.model),
+        modelCount: models.length,
+        ok: true,
+        sampleModels: models.slice(0, 5),
+        transport: 'openai-compatible-chat-completions',
+      };
+    },
     async run(input) {
       if (typeof fetchImpl !== 'function') {
         throw new Error('Global fetch is not available for the local provider.');

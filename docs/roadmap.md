@@ -15,6 +15,7 @@
 - local provider adapter now exists behind the current provider contract, targeting OpenAI-compatible `/chat/completions` runtimes with env validation and request wiring
 - shared structured-output utility now backs OpenAI, Anthropic, and local adapters so provider parsing and normalization stay aligned
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
+- provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence

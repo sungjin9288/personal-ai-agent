@@ -34,6 +34,7 @@ Commands:
 
   provider list
   provider check <stub|openai|anthropic|local>
+  provider probe <stub|openai|anthropic|local>
 
   workspace add <path> [--name <name>]
   workspace list
@@ -146,6 +147,11 @@ async function main() {
 
   if (group === 'provider' && command === 'check') {
     printJson(service.checkProvider(rest[0]));
+    return;
+  }
+
+  if (group === 'provider' && command === 'probe') {
+    printJson(await service.probeProvider(rest[0]));
     return;
   }
 

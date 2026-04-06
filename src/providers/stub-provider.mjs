@@ -257,6 +257,18 @@ ${context}
 
       throw new Error(`Unsupported stub role: ${input.role}`);
     },
+    async probe() {
+      return {
+        checkedAt: new Date().toISOString(),
+        endpoint: 'in-process',
+        modelAvailable: true,
+        modelCount: 1,
+        note: 'Stub provider is deterministic and does not require network connectivity.',
+        ok: true,
+        sampleModels: ['stub'],
+        transport: 'deterministic-local',
+      };
+    },
     normalizeOutput(output) {
       return output;
     },

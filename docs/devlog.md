@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Probe Surface
+
+- added `provider probe <id>` so operator workflows can distinguish missing env from actual endpoint reachability and model-list responses
+- implemented lightweight `/models` probes for OpenAI, Anthropic, and local OpenAI-compatible runtimes, plus a deterministic in-process probe for `stub`
+- added deterministic smoke coverage for non-attempted missing-env results and mocked successful probe responses across all implemented providers
+
 ## 2026-04-06 Provider Status Surface
 
 - added `provider list` and `provider check <id>` so operator-facing readiness can be inspected without creating or running a mission

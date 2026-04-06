@@ -1058,6 +1058,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return providerRegistry.getProviderStatus(providerId);
   }
 
+  async function probeProvider(providerId) {
+    return providerRegistry.probeProvider(providerId);
+  }
+
   function getMission(missionId) {
     const mission = store.getMission(missionId);
     if (!mission) {
@@ -4398,6 +4402,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     resolveEscalation,
     resolveApproval,
     resolveReviewerFollowUp,
+    probeProvider,
     runMission,
     showMission,
     showSession,
