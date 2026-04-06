@@ -1449,7 +1449,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .map((escalation) => enrichEscalation(escalation))
       .filter(
         (escalation) =>
-          escalation.actionType === 'reviewer-accepted-risk' || escalation.sourceResolutionKind === 'accepted-risk',
+          (escalation.actionType === 'reviewer-accepted-risk' || escalation.sourceResolutionKind === 'accepted-risk') &&
+          !escalation.pendingOwnerHandoff,
       )
       .map((escalation) =>
         addFixedOperationalMetadata(
@@ -1498,11 +1499,66 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
+  function buildOwnerHandoffActionItems(filter = {}) {
+    return store
+      .listEscalations({
+        missionId: filter.missionId,
+        status: 'open',
+        workspaceId: filter.workspaceId,
+      })
+      .map((escalation) => enrichEscalation(escalation))
+      .filter((escalation) => escalation.pendingOwnerHandoff && escalation.latestOwnerTransition)
+      .map((escalation) =>
+        addFixedOperationalMetadata(
+          addDispatchMetadata(
+            {
+              actionClass: 'handoff-required',
+              actionId: `owner-handoff:${escalation.id}`,
+              actionType: 'owner-handoff',
+              createdAt: escalation.latestOwnerTransition?.at || escalation.createdAt,
+              deliverableType: escalation.deliverableType || null,
+              effectiveRecommendedOwner: escalation.latestOwnerTransition?.to || escalation.effectiveRecommendedOwner,
+              escalationId: escalation.id,
+              handoffDueAt: escalation.ownerHandoffDueAt,
+              handoffSlaHours: escalation.ownerHandoffSlaHours,
+              missionId: escalation.missionId,
+              ownerTransitionAt: escalation.latestOwnerTransition?.at || null,
+              ownerTransitionDetail: escalation.latestOwnerTransition
+                ? formatEscalationOwnerChangeDetail(escalation.latestOwnerTransition)
+                : null,
+              ownerTransitionFrom: escalation.latestOwnerTransition?.from || null,
+              ownerTransitionTo: escalation.latestOwnerTransition?.to || null,
+              pendingOwnerHandoff: escalation.pendingOwnerHandoff,
+              recommendedCommand: `node src/cli.mjs action acknowledge-owner-handoff ${escalation.id} --note "<note>"`,
+              recommendedOwner: escalation.latestOwnerTransition?.to || escalation.effectiveRecommendedOwner,
+              sessionId: escalation.sessionId,
+              title: escalation.title,
+              workspaceId: escalation.workspaceId,
+              workspaceName: escalation.workspaceName,
+            },
+            {
+              priority: 'high',
+              recommendedCommand: `node src/cli.mjs action acknowledge-owner-handoff ${escalation.id} --note "<note>"`,
+              recommendedOwner: escalation.latestOwnerTransition?.to || escalation.effectiveRecommendedOwner,
+            },
+          ),
+          {
+            dueAt: escalation.ownerHandoffDueAt,
+            escalationRule: 'Acknowledge the owner handoff so the escalated monitoring responsibility is explicit.',
+            slaHours: escalation.ownerHandoffSlaHours,
+          },
+        ),
+      )
+      .filter((item) => !filter.owner || item.recommendedOwner === filter.owner)
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
 function summarizeActionInbox(items) {
   const workspaceCounts = {};
   const actionClassCounts = {
       awaitingHumanDecision: 0,
       blocked: 0,
+      handoffRequired: 0,
       monitoringRequired: 0,
       retryReady: 0,
       total: items.length,
@@ -1511,6 +1567,7 @@ function summarizeActionInbox(items) {
       acceptedRiskMonitoring: 0,
       approval: 0,
       blockedFollowUp: 0,
+      ownerHandoff: 0,
       reviewerFollowUp: 0,
       total: items.length,
   };
@@ -1538,6 +1595,10 @@ function summarizeActionInbox(items) {
         actionCounts.blockedFollowUp += 1;
       }
 
+      if (item.actionType === 'owner-handoff') {
+        actionCounts.ownerHandoff += 1;
+      }
+
       if (item.actionType === 'reviewer-follow-up') {
         actionCounts.reviewerFollowUp += 1;
       }
@@ -1548,6 +1609,10 @@ function summarizeActionInbox(items) {
 
       if (item.actionClass === 'blocked') {
         actionClassCounts.blocked += 1;
+      }
+
+      if (item.actionClass === 'handoff-required') {
+        actionClassCounts.handoffRequired += 1;
       }
 
       if (item.actionClass === 'monitoring-required') {
@@ -1773,6 +1838,7 @@ function summarizeActionInbox(items) {
 
     const items = [
       ...buildApprovalInboxItems(filter),
+      ...buildOwnerHandoffActionItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),

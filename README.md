@@ -84,13 +84,14 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, 이 escalation은 `action inbox --class monitoring-required`에서 다시 운영 큐로 노출됩니다. owner handoff acknowledgement가 due 이후에 처리되면 timeline detail에도 overdue marker가 남습니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff acknowledgement가 due 이후에 처리되면 timeline detail에도 overdue marker가 남습니다.
 
 Operator flow:
 
 ```bash
 node src/cli.mjs action inbox
 node src/cli.mjs action inbox --class retry-ready
+node src/cli.mjs action inbox --class handoff-required
 node src/cli.mjs action inbox --class monitoring-required
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --priority high

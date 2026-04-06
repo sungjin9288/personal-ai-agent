@@ -42,6 +42,7 @@
 - owner chain escalation is now persisted as history and surfaced on mission/operator timelines so reviewer follow-up pressure remains auditable across reruns
 - owner transition is now actionable through a pending handoff queue and explicit acknowledgement lifecycle, still fully local-first
 - pending owner handoffs now carry explicit SLA, due, and overdue metadata so operator queues and overview surfaces can show acknowledgement pressure instead of only raw transition state
+- pending owner handoffs now re-enter the unified `action inbox` as `handoff-required`, so owner acknowledgement work is visible in the main operator dispatch surface instead of only the dedicated handoff queue
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

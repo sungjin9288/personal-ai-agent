@@ -70,6 +70,33 @@ const reviewerRun = runCli({
 
 assert.equal(reviewerRun.status, 'failed');
 
+const handoffMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspaceOne.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Owner handoff action',
+    '--objective',
+    'Create a pending owner handoff that should reappear in the action inbox.',
+    '--constraints',
+    'force-rubric-fail',
+  ],
+});
+
+const handoffRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', handoffMission.id],
+});
+
+assert.equal(handoffRun.status, 'failed');
+
 const rejectedMission = runCli({
   rootDir: tempRoot,
   args: [
@@ -109,6 +136,24 @@ const reviewerSession = runCli({
   args: ['session', 'show', reviewerMission.id],
 });
 
+const handoffFollowUps = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'reviewer-followups', '--mission', handoffMission.id],
+});
+
+const handoffResolution = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-reviewer-follow-up',
+    handoffFollowUps.items[0].actionId,
+    '--kind',
+    'accepted-risk',
+    '--note',
+    'Escalate accepted risk until a human approver explicitly acknowledges the handoff.',
+  ],
+});
+
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
@@ -143,33 +188,103 @@ state.artifacts = state.artifacts.map((artifact) => {
   return artifact;
 });
 
+state.escalations = state.escalations.map((escalation) => {
+  if (escalation.id === handoffResolution.escalation.id) {
+    return {
+      ...escalation,
+      createdAt: overdueTimestamp,
+      dueAt: '2026-03-02T00:00:00.000Z',
+      updatedAt: overdueTimestamp,
+    };
+  }
+
+  return escalation;
+});
+
 fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'sync-escalations', '--workspace', workspaceOne.id],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'remind-escalations', '--workspace', workspaceOne.id, '--due'],
+});
+
+const afterReminderState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+afterReminderState.escalations = afterReminderState.escalations.map((escalation) => {
+  if (escalation.id === handoffResolution.escalation.id) {
+    return {
+      ...escalation,
+      lastReminderAt: '2026-04-05T00:00:00.000Z',
+      updatedAt: '2026-04-05T00:00:00.000Z',
+    };
+  }
+
+  return escalation;
+});
+fs.writeFileSync(statePath, `${JSON.stringify(afterReminderState, null, 2)}\n`, 'utf8');
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'sync-escalations', '--workspace', workspaceOne.id],
+});
+
+const afterOwnerSyncState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+afterOwnerSyncState.escalations = afterOwnerSyncState.escalations.map((escalation) => {
+  if (escalation.id === handoffResolution.escalation.id) {
+    const ownerHistory = Array.isArray(escalation.ownerHistory) ? escalation.ownerHistory : [];
+    return {
+      ...escalation,
+      currentEffectiveOwner: 'human-approver',
+      lastOwnerEscalatedAt: '2026-04-05T00:00:00.000Z',
+      ownerHistory: ownerHistory.map((entry, index) =>
+        index === ownerHistory.length - 1 && entry.to === 'human-approver'
+          ? {
+              ...entry,
+              at: '2026-04-05T00:00:00.000Z',
+            }
+          : entry,
+      ),
+      updatedAt: '2026-04-05T00:00:00.000Z',
+    };
+  }
+
+  return escalation;
+});
+fs.writeFileSync(statePath, `${JSON.stringify(afterOwnerSyncState, null, 2)}\n`, 'utf8');
 
 const inbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox'],
 });
 
-assert.equal(inbox.summary.pendingActionCount, 3);
-assert.equal(inbox.summary.actionCounts.total, 3);
+assert.equal(inbox.summary.pendingActionCount, 4);
+assert.equal(inbox.summary.actionCounts.total, 4);
+assert.equal(inbox.summary.actionCounts.acceptedRiskMonitoring, 0);
 assert.equal(inbox.summary.actionCounts.approval, 1);
 assert.equal(inbox.summary.actionCounts.blockedFollowUp, 1);
+assert.equal(inbox.summary.actionCounts.ownerHandoff, 1);
 assert.equal(inbox.summary.actionCounts.reviewerFollowUp, 1);
-assert.equal(inbox.summary.actionClassCounts.total, 3);
+assert.equal(inbox.summary.actionClassCounts.total, 4);
 assert.equal(inbox.summary.actionClassCounts.awaitingHumanDecision, 1);
 assert.equal(inbox.summary.actionClassCounts.blocked, 1);
+assert.equal(inbox.summary.actionClassCounts.handoffRequired, 1);
+assert.equal(inbox.summary.actionClassCounts.monitoringRequired, 0);
 assert.equal(inbox.summary.actionClassCounts.retryReady, 1);
 assert.equal(inbox.summary.priorityCounts.low, 0);
 assert.equal(inbox.summary.priorityCounts.medium, 1);
-assert.equal(inbox.summary.priorityCounts.high, 2);
+assert.equal(inbox.summary.priorityCounts.high, 3);
 assert.equal(inbox.summary.priorityCounts.urgent, 0);
-assert.equal(inbox.summary.ownerCounts['human-approver'], 1);
+assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 2);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 0);
-assert.equal(inbox.summary.overdueCounts.total, 3);
-assert.equal(inbox.summary.overdueCounts.overdue, 2);
+assert.equal(inbox.summary.overdueCounts.total, 4);
+assert.equal(inbox.summary.overdueCounts.overdue, 3);
 assert.equal(inbox.summary.overdueCounts.onTime, 1);
-assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 2);
+assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 3);
 assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 1);
 assert.equal(inbox.filters.actionClass, null);
 assert.equal(inbox.filters.priority, null);
@@ -220,6 +335,21 @@ assert.equal(blockedItem.isOverdue, true);
 assert.ok(blockedItem.dueAt);
 assert.match(blockedItem.escalationRule, /workspace owner/i);
 
+const handoffItem = inbox.items.find((item) => item.actionType === 'owner-handoff');
+assert.ok(handoffItem);
+assert.equal(handoffItem.actionClass, 'handoff-required');
+assert.equal(handoffItem.priority, 'high');
+assert.equal(handoffItem.recommendedOwner, 'human-approver');
+assert.equal(handoffItem.effectiveRecommendedOwner, 'human-approver');
+assert.equal(handoffItem.missionId, handoffMission.id);
+assert.equal(handoffItem.escalationId, handoffResolution.escalation.id);
+assert.equal(handoffItem.pendingOwnerHandoff, true);
+assert.equal(handoffItem.slaHours, 12);
+assert.equal(handoffItem.isOverdue, true);
+assert.ok(handoffItem.dueAt);
+assert.match(handoffItem.ownerTransitionDetail, /workspace-owner -> human-approver/);
+assert.match(handoffItem.commandHint, /acknowledge-owner-handoff/);
+
 const workspaceFilteredInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--workspace', workspaceTwo.id],
@@ -251,7 +381,7 @@ const highPriorityInbox = runCli({
   args: ['action', 'inbox', '--priority', 'high'],
 });
 
-assert.equal(highPriorityInbox.summary.pendingActionCount, 2);
+assert.equal(highPriorityInbox.summary.pendingActionCount, 3);
 assert.equal(highPriorityInbox.filters.priority, 'high');
 assert.equal(highPriorityInbox.items.every((item) => item.priority === 'high'), true);
 
@@ -260,16 +390,28 @@ const ownerFilteredInbox = runCli({
   args: ['action', 'inbox', '--owner', 'human-approver'],
 });
 
-assert.equal(ownerFilteredInbox.summary.pendingActionCount, 1);
+assert.equal(ownerFilteredInbox.summary.pendingActionCount, 2);
 assert.equal(ownerFilteredInbox.filters.owner, 'human-approver');
-assert.equal(ownerFilteredInbox.items[0].actionType, 'approval');
+assert.deepEqual(
+  ownerFilteredInbox.items.map((item) => item.actionType).sort(),
+  ['approval', 'owner-handoff'],
+);
+
+const handoffRequiredInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'handoff-required'],
+});
+
+assert.equal(handoffRequiredInbox.summary.pendingActionCount, 1);
+assert.equal(handoffRequiredInbox.filters.actionClass, 'handoff-required');
+assert.equal(handoffRequiredInbox.items[0].actionType, 'owner-handoff');
 
 const overdueInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--overdue'],
 });
 
-assert.equal(overdueInbox.summary.pendingActionCount, 2);
+assert.equal(overdueInbox.summary.pendingActionCount, 3);
 assert.equal(overdueInbox.filters.overdueOnly, true);
 assert.equal(overdueInbox.items.every((item) => item.isOverdue === true), true);
 
