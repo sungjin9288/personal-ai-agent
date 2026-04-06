@@ -20,6 +20,7 @@
 - workspace overview aggregates cross-mission operational state
 - global overview aggregates all workspaces and exposes a pending approval inbox
 - approval inbox is available as a first-class command with contextual resolution guidance
+- action inbox aggregates pending approvals and reviewer follow-up items into one operator surface
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

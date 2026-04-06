@@ -53,3 +53,9 @@
 - split the pending approval inbox into a dedicated `approval inbox` command instead of keeping it only as a nested global-overview field
 - enriched inbox items with workspace, mission, session, and resolve-command context for operator use
 - added deterministic coverage for inbox filtering and exclusion of resolved approvals
+
+## 2026-04-06 Unified Action Inbox Surface
+
+- added `action inbox` as a broader operator queue that combines pending approvals with current reviewer follow-up items
+- kept `approval inbox` intact and reused the same approval aggregation logic so approval-only and mixed-action surfaces stay consistent
+- added deterministic coverage to prove resolved approvals stay out and reviewer-failed latest sessions show actionable rerun guidance

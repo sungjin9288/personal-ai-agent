@@ -83,6 +83,7 @@ node src/cli.mjs session show mission_xxx --session session_xxx
 Approval flow:
 
 ```bash
+node src/cli.mjs action inbox
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
 node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"
@@ -141,6 +142,7 @@ Run the local-first smoke suite:
 
 ```bash
 npm run smoke
+npm run smoke:action-inbox
 npm run smoke:approval-approve
 npm run smoke:approval-inbox
 npm run smoke:reviewer-fail

@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 import {
@@ -73,6 +74,28 @@ function getLatestItem(items, fieldName = 'createdAt') {
 
 function sortTimelineEvents(items) {
   return [...items].sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+}
+
+function parseMarkdownBulletSection(content, sectionName) {
+  const normalizedContent = String(content || '');
+  const header = `## ${sectionName}`;
+  const startIndex = normalizedContent.indexOf(header);
+
+  if (startIndex === -1) {
+    return [];
+  }
+
+  const nextHeaderIndex = normalizedContent.indexOf('\n## ', startIndex + header.length);
+  const sectionBody = normalizedContent
+    .slice(startIndex + header.length, nextHeaderIndex === -1 ? undefined : nextHeaderIndex)
+    .trim();
+
+  return sectionBody
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('- '))
+    .map((line) => line.replace(/^- /, '').trim())
+    .filter(Boolean);
 }
 
 function formatAgentInputSummary({ role, mission, providerId }) {
@@ -590,7 +613,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         }
 
         return {
+          actionId: approval.id,
+          actionType: 'approval',
           approvalId: approval.id,
+          commandHint: `node src/cli.mjs approval resolve ${approval.id} --decision <approve|reject> --reason "<reason>"`,
           createdAt: approval.createdAt,
           decision: approval.decision,
           deliverableType: mission.deliverableType,
@@ -611,6 +637,100 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function buildReviewerFollowUpItems(filter = {}) {
+    return store
+      .listMissions()
+      .map((mission) => {
+        if (mission.status !== 'failed') {
+          return null;
+        }
+
+        const workspace = store.getWorkspace(mission.workspaceId);
+        if (!workspace) {
+          return null;
+        }
+
+        if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+          return null;
+        }
+
+        if (filter.missionId && mission.id !== filter.missionId) {
+          return null;
+        }
+
+        const latestSession = getLatestSession(store.listSessionsByMission(mission.id));
+        if (!latestSession || latestSession.status !== 'failed') {
+          return null;
+        }
+
+        const reviewerRun = store.listAgentRunsBySession(latestSession.id).find((run) => run.role === 'reviewer') || null;
+        if (!reviewerRun || reviewerRun.status !== 'failed') {
+          return null;
+        }
+
+        const reviewerReport =
+          store
+            .listArtifactsBySession(latestSession.id)
+            .filter((artifact) => artifact.fileName === 'reviewer-report.md')
+            .at(-1) || null;
+
+        const findings =
+          reviewerReport && fs.existsSync(reviewerReport.path)
+            ? parseMarkdownBulletSection(fs.readFileSync(reviewerReport.path, 'utf8'), 'Findings')
+            : [];
+
+        return {
+          actionId: `reviewer-follow-up:${mission.id}:${latestSession.id}`,
+          actionType: 'reviewer-follow-up',
+          commandHint: `node src/cli.mjs mission run ${mission.id} --provider stub`,
+          createdAt: reviewerReport?.createdAt || latestSession.endedAt || latestSession.startedAt,
+          deliverableType: mission.deliverableType,
+          findings,
+          missionId: mission.id,
+          missionStatus: mission.status,
+          missionTitle: mission.title,
+          mode: mission.mode,
+          reason: reviewerRun.outputSummary,
+          reportPath: reviewerReport ? reviewerReport.path : null,
+          requestedByRole: 'reviewer',
+          sessionId: latestSession.id,
+          sessionStatus: latestSession.status,
+          title: `Reviewer follow-up required for ${mission.title}`,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        };
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function summarizeActionInbox(items) {
+    const workspaceCounts = {};
+    const actionCounts = {
+      approval: 0,
+      reviewerFollowUp: 0,
+      total: items.length,
+    };
+
+    for (const item of items) {
+      workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+
+      if (item.actionType === 'approval') {
+        actionCounts.approval += 1;
+      }
+
+      if (item.actionType === 'reviewer-follow-up') {
+        actionCounts.reviewerFollowUp += 1;
+      }
+    }
+
+    return {
+      actionCounts,
+      pendingActionCount: items.length,
+      workspaceCounts,
+    };
   }
 
   function getApprovalInbox(filter = {}) {
@@ -634,6 +754,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         pendingCount: items.length,
         workspaceCounts: byWorkspace,
       },
+    };
+  }
+
+  function getActionInbox(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+
+    const items = [...buildApprovalInboxItems(filter), ...buildReviewerFollowUpItems(filter)].sort((left, right) =>
+      String(left.createdAt || '').localeCompare(String(right.createdAt || '')),
+    );
+
+    return {
+      items,
+      summary: summarizeActionInbox(items),
     };
   }
 
@@ -959,6 +1097,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     addMemory,
     addWorkspace,
     createMission,
+    getActionInbox,
     getApprovalInbox,
     getGlobalOverview,
     getWorkspace,

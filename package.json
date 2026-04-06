@@ -6,6 +6,7 @@
   "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
   "scripts": {
     "smoke": "node scripts/smoke.mjs",
+    "smoke:action-inbox": "node scripts/smoke-action-inbox.mjs",
     "smoke:approval-approve": "node scripts/smoke-approval-approve.mjs",
     "smoke:approval-inbox": "node scripts/smoke-approval-inbox.mjs",
     "smoke:reviewer-fail": "node scripts/smoke-reviewer-fail.mjs",
