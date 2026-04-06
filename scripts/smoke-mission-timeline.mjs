@@ -131,6 +131,67 @@ const resolvedEscalation = runCli({
 
 assert.equal(resolvedEscalation.status, 'resolved');
 
+const providerAttentionMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Mission provider attention timeline',
+    '--objective',
+    'Verify provider execution and provider attention mission audit linkage.',
+    '--constraints',
+    'force-rubric-fail',
+  ],
+});
+
+const providerAttentionRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', providerAttentionMission.id],
+});
+
+assert.equal(providerAttentionRun.status, 'failed');
+
+const providerAttentionInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-attention', '--mission', providerAttentionMission.id],
+});
+
+assert.equal(providerAttentionInbox.items.length, 1);
+assert.equal(providerAttentionInbox.items[0].providerId, 'stub');
+
+const acknowledgedProviderAttention = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'acknowledge-provider-attention',
+    providerAttentionInbox.items[0].actionId,
+    '--note',
+    'Mission timeline provider attention acknowledged.',
+  ],
+});
+
+assert.equal(acknowledgedProviderAttention.status, 'acknowledged');
+
+const resolvedProviderAttention = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-provider-attention',
+    providerAttentionInbox.items[0].actionId,
+    '--note',
+    'Mission timeline provider attention resolved.',
+  ],
+});
+
+assert.equal(resolvedProviderAttention.status, 'resolved');
+
 const missionShow = runCli({
   rootDir: tempRoot,
   args: ['mission', 'show', mission.id],
@@ -139,6 +200,16 @@ const missionShow = runCli({
 const timeline = runCli({
   rootDir: tempRoot,
   args: ['mission', 'timeline', mission.id],
+});
+
+const providerMissionShow = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'show', providerAttentionMission.id],
+});
+
+const providerTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', providerAttentionMission.id],
 });
 
 assert.equal(missionShow.summary.sessionCount, 2);
@@ -164,12 +235,21 @@ assert.equal(missionShow.summary.maintenanceImpactOwnerHandoffRemindedCountTotal
 assert.equal(missionShow.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
 assert.equal(missionShow.summary.latestRelatedMaintenanceRun.id, maintenanceRun.maintenanceRun.id);
 assert.equal(missionShow.summary.maintenanceRequiredCount, 0);
+assert.equal(missionShow.summary.providerAttentionRequiredCount, 0);
+assert.equal(missionShow.summary.providerAttentionAcknowledgedCount, 0);
+assert.equal(missionShow.summary.providerAttentionResolvedCount, 0);
+assert.equal(missionShow.summary.providerExecutionFailedCount, 0);
+assert.equal(missionShow.summary.providerTouchedCount, 1);
+assert.deepEqual(missionShow.summary.providerTouchedIds, ['stub']);
 
 assert.equal(timeline.summary.sessionCount, 2);
 assert.equal(timeline.timeline.some((event) => event.kind === 'mission-created'), true);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'session-started').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-requested').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-resolved').length, 1);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'provider-execution-succeeded').length, 8);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'provider-execution-failed').length, 0);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'provider-attention-opened').length, 0);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-opened').length, 1);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-resolved').length, 1);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-run').length, 1);
@@ -188,12 +268,58 @@ assert.equal(
       /Workspace maintenance sweep affected this mission/i.test(event.detail) &&
       /reminded=1/i.test(event.detail) &&
       /monitoring=1/i.test(event.detail),
+    ),
+  true,
+);
+
+assert.equal(providerMissionShow.summary.sessionCount, 1);
+assert.equal(providerMissionShow.summary.status, 'failed');
+assert.equal(providerMissionShow.summary.providerAttentionRequiredCount, 0);
+assert.equal(providerMissionShow.summary.providerAttentionAcknowledgedCount, 0);
+assert.equal(providerMissionShow.summary.providerAttentionResolvedCount, 1);
+assert.equal(providerMissionShow.summary.providerAttentionStatusCounts.resolved, 1);
+assert.equal(providerMissionShow.summary.providerEventCount, 7);
+assert.equal(providerMissionShow.summary.providerEventFamilyCounts.execution, 4);
+assert.equal(providerMissionShow.summary.providerEventFamilyCounts.attention, 3);
+assert.equal(providerMissionShow.summary.providerExecutionCount, 4);
+assert.equal(providerMissionShow.summary.providerExecutionCompletedCount, 3);
+assert.equal(providerMissionShow.summary.providerExecutionFailedCount, 1);
+assert.equal(providerMissionShow.summary.providerTouchedCount, 1);
+assert.deepEqual(providerMissionShow.summary.providerTouchedIds, ['stub']);
+assert.equal(providerMissionShow.summary.latestProviderAttentionResolution.providerId, 'stub');
+assert.equal(providerMissionShow.summary.latestFailedProviderExecution.providerId, 'stub');
+assert.equal(providerMissionShow.summary.latestProviderExecution.providerId, 'stub');
+assert.equal(providerMissionShow.summary.latestProviderExecution.role, 'reviewer');
+
+assert.equal(providerTimeline.summary.sessionCount, 1);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-succeeded').length, 3);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-failed').length, 1);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-attention-opened').length, 1);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-attention-acknowledged').length, 1);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-attention-resolved').length, 1);
+assert.equal(
+  providerTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-attention-acknowledged' &&
+      /Mission timeline provider attention acknowledged/.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  providerTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-attention-resolved' &&
+      /Mission timeline provider attention resolved/.test(event.detail),
   ),
   true,
 );
 
 for (let index = 1; index < timeline.timeline.length; index += 1) {
   assert.ok(String(timeline.timeline[index - 1].at) <= String(timeline.timeline[index].at));
+}
+
+for (let index = 1; index < providerTimeline.timeline.length; index += 1) {
+  assert.ok(String(providerTimeline.timeline[index - 1].at) <= String(providerTimeline.timeline[index].at));
 }
 
 console.log(
@@ -203,6 +329,8 @@ console.log(
       mode: 'mission-timeline',
       missionId: mission.id,
       timelineLength: timeline.timeline.length,
+      providerMissionId: providerAttentionMission.id,
+      providerTimelineLength: providerTimeline.timeline.length,
     },
     null,
     2,

@@ -1705,13 +1705,42 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function summarizeWorkspaceProviderActivity(workspaceId) {
-    const pendingAttentionItems = buildProviderAttentionPendingItems({ workspaceId });
-    const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems({ workspaceId });
-    const resolvedAttentionItems = buildProviderAttentionResolvedItems({ workspaceId });
-    const executionEntries = buildProviderExecutionEntries({ workspaceId });
+  function summarizeScopedProviderActivity(filter = {}) {
+    const pendingAttentionItems = buildProviderAttentionPendingItems(filter);
+    const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems(filter);
+    const resolvedAttentionItems = buildProviderAttentionResolvedItems(filter);
+    const executionEntries = buildProviderExecutionEntries(filter);
     const executionSummary = summarizeProviderExecutions(executionEntries);
-    const eventSummary = summarizeProviderEvents(buildProviderEvents({ workspaceId }));
+    const scopedProviderEvents = sortTimelineEvents([
+      ...buildProviderAttentionTimeline(
+        store.listProviderAttentionAcknowledgements({
+          missionId: filter.missionId,
+          providerId: filter.providerId,
+          workspaceId: filter.workspaceId,
+        }),
+      ).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'acknowledged',
+      })),
+      ...buildProviderExecutionTimeline(executionEntries).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'execution',
+        eventKind: event.kind,
+        executionStatus: event.status,
+        ok: event.status === 'completed',
+        probeId: null,
+      })),
+    ]);
+    const eventSummary = summarizeProviderEvents(scopedProviderEvents);
     const touchedProviderIds = [
       ...new Set(
         [
@@ -1753,6 +1782,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         touchedProviderIds,
       },
     };
+  }
+
+  function summarizeMissionProviderActivity(missionId) {
+    return summarizeScopedProviderActivity({ missionId });
+  }
+
+  function summarizeWorkspaceProviderActivity(workspaceId) {
+    return summarizeScopedProviderActivity({ workspaceId });
   }
 
   function checkProvider(providerId) {
@@ -2144,6 +2181,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
+    const providerActivity = summarizeMissionProviderActivity(mission.id);
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
     const maintenanceImpactSummary = summarizeMissionMaintenanceImpact(mission.id);
@@ -2213,6 +2251,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         preference: memoryEntries.filter((entry) => entry.kind === 'preference').length,
         total: memoryEntries.length,
       },
+      latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+      latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
+      latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
+      latestProviderExecution: providerActivity.latestExecution,
+      latestProviderExecutionEvent: providerActivity.latestExecutionEvent,
+      latestFailedProviderExecution: providerActivity.latestFailedExecution,
+      latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
+      providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
+      providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
+      providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
+      providerEventCount: providerActivity.summary.eventCount,
+      providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+      providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
+      providerExecutionCount: providerActivity.summary.executionCount,
+      providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+      providerTouchedCount: providerActivity.summary.touchedProviderCount,
+      providerTouchedIds: providerActivity.summary.touchedProviderIds,
       sessionCount: sessions.length,
       status: mission.status,
       updatedAt: mission.updatedAt,
@@ -4761,6 +4817,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
     const reviewerFollowUps = listReviewerFollowUpRecords({ missionId: mission.id });
+    const providerExecutions = buildProviderExecutionEntries({ missionId: mission.id });
+    const providerAttentionAcknowledgements = store.listProviderAttentionAcknowledgements({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const timeline = [
       {
@@ -4842,6 +4900,54 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           status: followUp.status,
         });
       }
+    }
+
+    for (const execution of buildProviderExecutionTimeline(providerExecutions)) {
+      timeline.push({
+        at: execution.at,
+        detail: execution.detail,
+        kind: execution.kind,
+        missionId: mission.id,
+        providerId: execution.providerId,
+        role: execution.role,
+        runId: execution.runId,
+        sessionId: execution.sessionId,
+        status: execution.status,
+        workspaceId: execution.workspaceId || mission.workspaceId,
+        workspaceName: execution.workspaceName || null,
+      });
+    }
+
+    for (const attentionItem of buildProviderAttentionPendingItems({ missionId: mission.id })) {
+      timeline.push({
+        actionId: attentionItem.actionId,
+        at: attentionItem.createdAt,
+        detail: attentionItem.reason || attentionItem.title,
+        kind: 'provider-attention-opened',
+        missionId: mission.id,
+        providerDisplayName: attentionItem.providerDisplayName,
+        providerId: attentionItem.providerId,
+        sessionId: attentionItem.sessionId || null,
+        status: 'pending',
+        workspaceId: attentionItem.workspaceId || mission.workspaceId,
+        workspaceName: attentionItem.workspaceName || null,
+      });
+    }
+
+    for (const event of buildProviderAttentionTimeline(providerAttentionAcknowledgements)) {
+      timeline.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission.id,
+        providerDisplayName: event.providerDisplayName,
+        providerId: event.providerId,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || mission.workspaceId,
+        workspaceName: event.workspaceName || null,
+      });
     }
 
     for (const escalation of escalations) {

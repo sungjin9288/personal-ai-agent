@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Mission Provider Audit Surface
+
+- extended `mission show` with mission-scoped provider execution and provider attention aggregates so one mission can report its own failed provider runs and attention lifecycle state
+- extended `mission timeline` with `provider-execution-succeeded`, `provider-execution-failed`, `provider-attention-opened`, `provider-attention-acknowledged`, and `provider-attention-resolved` events
+- strengthened mission timeline smoke coverage with a dedicated provider-failure mission so maintenance or escalation audit and provider audit both stay locked at mission scope
+
 ## 2026-04-06 Provider Attention Inbox
 
 - promoted latest failed provider probe or failed provider execution into `provider-attention-required` items inside the unified `action inbox`
