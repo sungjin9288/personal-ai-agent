@@ -65,3 +65,9 @@
 - added explicit action classes so operator queues distinguish `awaiting-human-decision`, `retry-ready`, and `blocked`
 - treated rejected approval outcomes as blocked follow-up items instead of silently dropping them from all operator surfaces
 - added class-based filtering to `action inbox` so the queue can be used as a practical operational slice rather than a flat list
+
+## 2026-04-06 Action Dispatch Metadata
+
+- added `priority`, `recommendedOwner`, and `recommendedCommand` so action inbox items can be dispatched without re-deriving operator intent from raw mission state
+- added priority/owner filtering and summary counts to make the queue usable for focused operational slices like “high-priority human approvals”
+- kept the item contract backward-compatible by preserving `commandHint` while introducing the more explicit dispatch fields

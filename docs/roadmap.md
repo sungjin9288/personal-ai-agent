@@ -22,6 +22,7 @@
 - approval inbox is available as a first-class command with contextual resolution guidance
 - action inbox aggregates pending approvals and reviewer follow-up items into one operator surface
 - action inbox now classifies work as `awaiting-human-decision`, `retry-ready`, or `blocked`
+- action inbox now carries `priority` and `recommendedOwner` dispatch metadata for operator triage
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

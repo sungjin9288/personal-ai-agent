@@ -45,7 +45,7 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
   approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
@@ -196,6 +196,8 @@ function main() {
       service.getActionInbox({
         actionClass: readOption(rest, '--class', ''),
         missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
+        priority: readOption(rest, '--priority', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

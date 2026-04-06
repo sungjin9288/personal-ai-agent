@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import {
   ACTION_CLASSES,
+  ACTION_OWNERS,
+  ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
@@ -97,6 +99,16 @@ function parseMarkdownBulletSection(content, sectionName) {
     .filter((line) => line.startsWith('- '))
     .map((line) => line.replace(/^- /, '').trim())
     .filter(Boolean);
+}
+
+function addDispatchMetadata(item, { priority, recommendedOwner, recommendedCommand }) {
+  return {
+    ...item,
+    commandHint: recommendedCommand,
+    priority,
+    recommendedCommand,
+    recommendedOwner,
+  };
 }
 
 function formatAgentInputSummary({ role, mission, providerId }) {
@@ -618,7 +630,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           actionClass: 'awaiting-human-decision',
           actionType: 'approval',
           approvalId: approval.id,
-          commandHint: `node src/cli.mjs approval resolve ${approval.id} --decision <approve|reject> --reason "<reason>"`,
           createdAt: approval.createdAt,
           decision: approval.decision,
           deliverableType: mission.deliverableType,
@@ -637,6 +648,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceName: workspace.name,
         };
       })
+      .map((item) =>
+        item
+          ? addDispatchMetadata(item, {
+              priority: 'high',
+              recommendedOwner: 'human-approver',
+              recommendedCommand: item.resolveCommand,
+            })
+          : null,
+      )
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
@@ -683,7 +703,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           actionClass: 'blocked',
           actionId: `blocked-follow-up:${mission.id}:${latestSession.id}`,
           actionType: 'blocked-follow-up',
-          commandHint: `node src/cli.mjs mission show ${mission.id}`,
           createdAt: rejectedApproval.resolvedAt || rejectedApproval.createdAt,
           deliverableType: mission.deliverableType,
           missionId: mission.id,
@@ -701,6 +720,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceName: workspace.name,
         };
       })
+      .map((item) =>
+        item
+          ? addDispatchMetadata(item, {
+              priority: 'high',
+              recommendedOwner: 'mission-owner',
+              recommendedCommand: item.commandHint || `node src/cli.mjs mission show ${item.missionId}`,
+            })
+          : null,
+      )
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
@@ -751,7 +779,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           actionClass: 'retry-ready',
           actionId: `reviewer-follow-up:${mission.id}:${latestSession.id}`,
           actionType: 'reviewer-follow-up',
-          commandHint: `node src/cli.mjs mission run ${mission.id} --provider stub`,
           createdAt: reviewerReport?.createdAt || latestSession.endedAt || latestSession.startedAt,
           deliverableType: mission.deliverableType,
           findings,
@@ -769,6 +796,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceName: workspace.name,
         };
       })
+      .map((item) =>
+        item
+          ? addDispatchMetadata(item, {
+              priority: 'medium',
+              recommendedOwner: 'mission-owner',
+              recommendedCommand: item.commandHint || `node src/cli.mjs mission run ${item.missionId} --provider stub`,
+            })
+          : null,
+      )
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
@@ -787,6 +823,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       reviewerFollowUp: 0,
       total: items.length,
     };
+    const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
+    const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
 
     for (const item of items) {
       workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -814,12 +852,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       if (item.actionClass === 'retry-ready') {
         actionClassCounts.retryReady += 1;
       }
+
+      if (ownerCounts[item.recommendedOwner] !== undefined) {
+        ownerCounts[item.recommendedOwner] += 1;
+      }
+
+      if (priorityCounts[item.priority] !== undefined) {
+        priorityCounts[item.priority] += 1;
+      }
     }
 
     return {
       actionCounts,
       actionClassCounts,
+      ownerCounts,
       pendingActionCount: items.length,
+      priorityCounts,
       workspaceCounts,
     };
   }
@@ -858,6 +906,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.actionClass && !ACTION_CLASSES.includes(filter.actionClass)) {
       throw new Error(`Unsupported action class: ${filter.actionClass}`);
     }
+    if (filter.priority && !ACTION_PRIORITIES.includes(filter.priority)) {
+      throw new Error(`Unsupported action priority: ${filter.priority}`);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
 
     const items = [
       ...buildApprovalInboxItems(filter),
@@ -868,11 +922,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.actionClass && item.actionClass !== filter.actionClass) {
           return false;
         }
+        if (filter.priority && item.priority !== filter.priority) {
+          return false;
+        }
+        if (filter.owner && item.recommendedOwner !== filter.owner) {
+          return false;
+        }
         return true;
       })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
 
     return {
+      filters: {
+        actionClass: filter.actionClass || null,
+        owner: filter.owner || null,
+        priority: filter.priority || null,
+      },
       items,
       summary: summarizeActionInbox(items),
     };
