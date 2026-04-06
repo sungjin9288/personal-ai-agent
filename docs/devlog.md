@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Shared Structured Provider Utility
+
+- extracted shared structured-output prompt building, JSON parsing, numeric env parsing, and stage normalization into a provider utility module
+- rewired `openai`, `anthropic`, and `local` adapters to use the same parsing and normalization path so provider behavior does not drift by copy-pasted implementations
+- kept request-shape differences provider-local and validated the refactor with the existing provider smoke suite plus base mission regression smoke
+
 ## 2026-04-06 Local Provider Adapter
 
 - added a `local` provider adapter for OpenAI-compatible local `/chat/completions` runtimes, with fast `LOCAL_PROVIDER_MODEL` validation and optional base-url/api-key overrides

@@ -1,144 +1,12 @@
 import { createStubProvider } from './stub-provider.mjs';
-
-function normalizeText(value, fallback = '') {
-  return String(value || fallback).trim();
-}
-
-function normalizeStringArray(items) {
-  return Array.isArray(items) ? items.map((item) => normalizeText(item)).filter(Boolean) : [];
-}
-
-function stripCodeFence(text) {
-  const trimmed = normalizeText(text);
-  if (!trimmed.startsWith('```')) {
-    return trimmed;
-  }
-
-  return trimmed
-    .replace(/^```[a-zA-Z0-9_-]*\s*/, '')
-    .replace(/\s*```$/, '')
-    .trim();
-}
-
-function extractContentText(payload) {
-  const contentBlocks = Array.isArray(payload?.content) ? payload.content : [];
-  const parts = [];
-
-  for (const block of contentBlocks) {
-    if (block?.type === 'text' && typeof block.text === 'string' && block.text.trim()) {
-      parts.push(block.text);
-    } else if (typeof block?.text === 'string' && block.text.trim()) {
-      parts.push(block.text);
-    }
-  }
-
-  return parts.join('\n').trim();
-}
-
-function parseJsonText(text) {
-  const normalized = stripCodeFence(text);
-  if (!normalized) {
-    throw new Error('Anthropic provider returned an empty response.');
-  }
-
-  try {
-    return JSON.parse(normalized);
-  } catch (error) {
-    throw new Error(
-      `Anthropic provider returned non-JSON content: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
-}
-
-function buildRoleContract({ role, pack }) {
-  if (role === 'manager') {
-    return `Return only valid JSON with this shape:
-{
-  "summaryText": "short summary",
-  "artifactContent": "# Manager Context\\n..."
-}
-
-Artifact rules:
-- artifactContent must be Markdown
-- include sections Mission, Objective, Relevant Memory, Governance`;
-  }
-
-  if (role === 'planner') {
-    return `Return only valid JSON with this shape:
-{
-  "summaryText": "short summary",
-  "artifactContent": "# Planner Plan\\n...",
-  "planSteps": ["step 1", "step 2"],
-  "adaptationNotes": ["note 1"]
-}
-
-Artifact rules:
-- artifactContent must be Markdown
-- include sections Mission, Plan, Adaptation Signals, Verification Lens
-- planSteps must be bounded and concrete`;
-  }
-
-  if (role === 'executor') {
-    return `Return only valid JSON with this shape:
-{
-  "summaryText": "short summary",
-  "artifactContent": "# ${pack.artifactTitle}\\n...",
-  "adaptationNotes": ["note 1"],
-  "nextAction": "single next action sentence"
-}
-
-Artifact rules:
-- artifactContent must be Markdown
-- include all required sections exactly once
-- required sections: ${pack.requiredSections.join(', ')}`;
-  }
-
-  if (role === 'reviewer') {
-    return `Return only valid JSON with this shape:
-{
-  "verdict": "pass or fail",
-  "summaryText": "short summary",
-  "artifactContent": "# Reviewer Report\\n...",
-  "findings": ["finding 1"],
-  "checks": [
-    {
-      "id": "rule-id",
-      "description": "what was checked",
-      "passed": true
-    }
-  ]
-}
-
-Artifact rules:
-- artifactContent must be Markdown
-- include sections Verdict, Checks, Findings, Next Action
-- verdict must match findings`;
-  }
-
-  throw new Error(`Unsupported Anthropic provider role: ${role}`);
-}
-
-function buildRequestPrompt(input, delegatedPrompt) {
-  return `${delegatedPrompt.trim()}
-
-## Structured Output Contract
-${buildRoleContract(input)}
-`;
-}
-
-function parsePositiveInteger(value, fallback) {
-  const normalized = normalizeText(value);
-  if (!normalized) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(normalized, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new Error(`ANTHROPIC_MAX_TOKENS must be a positive integer. Received: ${normalized}`);
-  }
-
-  return parsed;
-}
+import {
+  buildRequestPrompt,
+  extractAnthropicContentText,
+  normalizeStructuredOutput,
+  normalizeText,
+  parseJsonText,
+  parsePositiveInteger,
+} from './structured-provider-utils.mjs';
 
 function resolveAnthropicConfig(env) {
   const apiKey = normalizeText(env.ANTHROPIC_API_KEY);
@@ -154,84 +22,9 @@ function resolveAnthropicConfig(env) {
   return {
     apiKey,
     baseUrl: normalizeText(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1').replace(/\/$/, ''),
-    maxTokens: parsePositiveInteger(env.ANTHROPIC_MAX_TOKENS, 2048),
+    maxTokens: parsePositiveInteger(env.ANTHROPIC_MAX_TOKENS, 2048, 'ANTHROPIC_MAX_TOKENS'),
     model: normalizeText(env.ANTHROPIC_MODEL, 'claude-sonnet-4-6'),
     version,
-  };
-}
-
-function normalizeManagerOutput(output) {
-  return {
-    artifactContent: normalizeText(output.artifactContent),
-    artifactFileName: 'manager-context.md',
-    artifactTitle: 'Manager Context',
-    summaryText: normalizeText(output.summaryText, 'Manager context generated.'),
-    type: 'manager',
-  };
-}
-
-function normalizePlannerOutput(output) {
-  return {
-    adaptationNotes: normalizeStringArray(output.adaptationNotes),
-    artifactContent: normalizeText(output.artifactContent),
-    artifactFileName: 'planner-plan.md',
-    artifactTitle: 'Planner Plan',
-    planSteps: normalizeStringArray(output.planSteps),
-    summaryText: normalizeText(output.summaryText, 'Planner plan generated.'),
-    type: 'planner',
-  };
-}
-
-function normalizeExecutorOutput(output, input) {
-  return {
-    adaptationNotes: normalizeStringArray(output.adaptationNotes),
-    artifactContent: normalizeText(output.artifactContent),
-    artifactFileName: input.pack.artifactFileName,
-    artifactTitle: input.pack.artifactTitle,
-    nextAction: normalizeText(
-      output.nextAction,
-      input.pack.riskProfile.requiresApproval
-        ? 'Pause for approval before any workspace mutation.'
-        : 'Share the draft with the owner and collect follow-up decisions.',
-    ),
-    proposedAction: {
-      kind: input.pack.riskProfile.actionKind,
-      reason: input.pack.riskProfile.reason,
-      requiresApproval: input.pack.riskProfile.requiresApproval,
-      title: input.pack.riskProfile.title,
-    },
-    summaryText: normalizeText(output.summaryText, `${input.pack.artifactTitle} generated.`),
-    type: 'executor',
-  };
-}
-
-function normalizeReviewerChecks(checks) {
-  return Array.isArray(checks)
-    ? checks
-        .map((check) => ({
-          description: normalizeText(check?.description),
-          id: normalizeText(check?.id),
-          passed: Boolean(check?.passed),
-        }))
-        .filter((check) => check.id && check.description)
-    : [];
-}
-
-function normalizeReviewerOutput(output) {
-  const verdict = normalizeText(output.verdict).toLowerCase();
-  if (!['pass', 'fail'].includes(verdict)) {
-    throw new Error(`Anthropic reviewer output must include verdict pass|fail. Received: ${output.verdict}`);
-  }
-
-  return {
-    artifactContent: normalizeText(output.artifactContent),
-    artifactFileName: 'reviewer-report.md',
-    artifactTitle: 'Reviewer Report',
-    checks: normalizeReviewerChecks(output.checks),
-    findings: normalizeStringArray(output.findings),
-    summaryText: normalizeText(output.summaryText, `Reviewer ${verdict} verdict generated.`),
-    type: 'reviewer',
-    verdict,
   };
 }
 
@@ -280,35 +73,16 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
       }
 
       const payload = await response.json();
-      const outputText = extractContentText(payload);
+      const outputText = extractAnthropicContentText(payload);
 
       return {
-        output: parseJsonText(outputText),
+        output: parseJsonText(outputText, 'Anthropic'),
         providerResponseId: normalizeText(payload.id),
         role: input.role,
       };
     },
     normalizeOutput(result, input) {
-      const output = result?.output || result;
-      const role = normalizeText(result?.role || input?.role);
-
-      if (role === 'manager') {
-        return normalizeManagerOutput(output);
-      }
-
-      if (role === 'planner') {
-        return normalizePlannerOutput(output);
-      }
-
-      if (role === 'executor') {
-        return normalizeExecutorOutput(output, input);
-      }
-
-      if (role === 'reviewer') {
-        return normalizeReviewerOutput(output);
-      }
-
-      throw new Error(`Unsupported Anthropic provider role: ${role}`);
+      return normalizeStructuredOutput(result, input, 'Anthropic');
     },
   };
 }
