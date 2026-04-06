@@ -20,6 +20,7 @@ import {
   MISSION_STATUSES,
   OWNER_HANDOFF_ACK_SLA_HOURS,
   OWNER_HANDOFF_REMINDER_CADENCE_HOURS,
+  PROVIDER_ATTENTION_STATUSES,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
 } from './constants.mjs';
@@ -1047,6 +1048,41 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return store.listProviderProbes({ providerId }).at(-1) || null;
   }
 
+  function getProviderAttentionEventRefId(event) {
+    return normalizeText(event?.probeId || event?.runId || event?.eventRefId || '');
+  }
+
+  function buildProviderAttentionActionId(event) {
+    const providerId = normalizeText(event?.providerId || '');
+    const eventFamily = normalizeText(event?.eventFamily || '');
+    const eventRefId = getProviderAttentionEventRefId(event);
+    return `provider-attention:${providerId}:${eventFamily}:${eventRefId || 'latest'}`;
+  }
+
+  function getLatestProviderAttentionAcknowledgement(providerId) {
+    return store.listProviderAttentionAcknowledgements({ providerId }).at(-1) || null;
+  }
+
+  function getProviderAttentionAcknowledgementForEvent(event) {
+    const providerId = normalizeText(event?.providerId || '');
+    const eventFamily = normalizeText(event?.eventFamily || '');
+    const eventRefId = getProviderAttentionEventRefId(event);
+
+    if (!providerId || !eventFamily || !eventRefId) {
+      return null;
+    }
+
+    return (
+      store
+        .listProviderAttentionAcknowledgements({
+          eventFamily,
+          eventRefId,
+          providerId,
+        })
+        .at(-1) || null
+    );
+  }
+
   function buildProviderExecutionEntries(filter = {}) {
     const state = store.loadState();
     const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
@@ -1082,6 +1118,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return false;
         }
         if (filter.providerId && entry.providerId !== filter.providerId) {
+          return false;
+        }
+        if (filter.workspaceId && entry.workspaceId !== filter.workspaceId) {
+          return false;
+        }
+        if (filter.missionId && entry.missionId !== filter.missionId) {
           return false;
         }
         if (filter.role && entry.role !== filter.role) {
@@ -1222,12 +1264,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function buildProviderStatusEntries() {
-    return providerRegistry.listProviders().map((provider) => ({
-      ...provider,
-      latestEvent: getLatestMatchingRecord(buildProviderEvents({ providerId: provider.id }), () => true),
-      latestExecution: getLatestProviderExecution(provider.id),
-      latestProbe: getLatestProviderProbe(provider.id),
-    }));
+    return providerRegistry.listProviders().map((provider) => {
+      const latestEvent = getLatestMatchingRecord(buildProviderEvents({ providerId: provider.id }), () => true);
+      const latestAttentionAcknowledgement = getLatestProviderAttentionAcknowledgement(provider.id);
+      const attentionStatus =
+        latestEvent?.eventKind === 'provider-attention-acknowledged'
+          ? 'acknowledged'
+          : latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)
+            ? 'pending'
+            : 'clear';
+
+      return {
+        ...provider,
+        attentionStatus,
+        latestAttentionAcknowledgement,
+        latestEvent,
+        latestExecution: getLatestProviderExecution(provider.id),
+        latestProbe: getLatestProviderProbe(provider.id),
+      };
+    });
   }
 
   function summarizeProviderStatusEntries(providers) {
@@ -1240,14 +1295,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function summarizeProviderOverview(providers, probes) {
-    const attentionEvents = providers
-      .map((provider) => provider.latestEvent)
-      .filter((event) => event && ['provider-probe-failed', 'provider-execution-failed'].includes(event.eventKind));
+    const pendingAttentionItems = buildProviderAttentionPendingItems({});
+    const attentionEvents = pendingAttentionItems.map((item) => ({
+      at: item.createdAt,
+      eventFamily: item.eventFamily,
+      eventKind: item.eventKind,
+      missionId: item.missionId,
+      providerDisplayName: item.providerDisplayName,
+      providerId: item.providerId,
+      sessionId: item.sessionId,
+      workspaceId: item.workspaceId,
+      workspaceName: item.workspaceName,
+    }));
+    const acknowledgedAttentionRecords = store.listProviderAttentionAcknowledgements();
     const configuredProviderIds = [];
     const latestProbeFailureProviderIds = [];
     const latestProbeSkippedProviderIds = [];
     const latestProbeSuccessProviderIds = [];
     const readyProviderIds = [];
+    const acknowledgedAttentionProviderIds = [];
     const unconfiguredProviderIds = [];
     const unprobedProviderIds = [];
 
@@ -1260,6 +1326,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (provider.configured && provider.implemented) {
         readyProviderIds.push(provider.id);
+      }
+
+      if (provider.latestEvent?.eventKind === 'provider-attention-acknowledged') {
+        acknowledgedAttentionProviderIds.push(provider.id);
       }
 
       if (!provider.latestProbe) {
@@ -1287,10 +1357,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       ...summarizeProviderStatusEntries(providers),
+      acknowledgedAttentionCount: acknowledgedAttentionProviderIds.length,
+      acknowledgedAttentionProviderIds,
       attentionRequiredCount: attentionEvents.length,
-      attentionRequiredProviderIds: providers
-        .filter((provider) => provider.latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(provider.latestEvent.eventKind))
-        .map((provider) => provider.id),
+      attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
       configuredProviderIds,
       eventCounts: eventSummary.eventCounts,
       eventFamilyCounts: eventSummary.familyCounts,
@@ -1302,7 +1372,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
+      latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionRecords, 'acknowledgedAt'),
       latestAttentionRequiredEvent: getLatestItem(attentionEvents, 'at'),
+      latestAttentionEvent: eventSummary.latestAttentionEvent,
       latestExecutionEvent: eventSummary.latestExecutionEvent,
       latestProbe: probes.at(-1) || null,
       latestProbeFailureCount: latestProbeFailureProviderIds.length,
@@ -1386,6 +1458,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function buildProviderAttentionTimeline(records) {
+    return records.map((record) => ({
+      actionId: record.actionId,
+      acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
+      at: record.acknowledgedAt || record.createdAt || null,
+      detail: record.note || 'Provider attention acknowledged.',
+      eventRefId: record.eventRefId || null,
+      kind: 'provider-attention-acknowledged',
+      missionId: record.missionId || null,
+      providerId: record.providerId,
+      providerDisplayName: record.providerDisplayName || null,
+      sessionId: record.sessionId || null,
+      workspaceId: record.workspaceId || null,
+      workspaceName: record.workspaceName || null,
+    }));
+  }
+
   function buildProviderEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
     const events = [];
@@ -1415,12 +1504,39 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       );
     }
 
+    if (!family || family === 'attention') {
+      const attentionTimeline = buildProviderAttentionTimeline(
+        store.listProviderAttentionAcknowledgements({
+          missionId: filter.missionId,
+          providerId: filter.providerId,
+          workspaceId: filter.workspaceId,
+        }),
+      );
+
+      events.push(
+        ...attentionTimeline.map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'attention',
+          eventKind: event.kind,
+          executionStatus: null,
+          ok: null,
+          probeId: null,
+          role: null,
+          runId: null,
+          status: 'acknowledged',
+        })),
+      );
+    }
+
     if (!family || family === 'execution') {
       const executionTimeline = buildProviderExecutionTimeline(
         buildProviderExecutionEntries({
+          missionId: filter.missionId,
           providerId: filter.providerId,
           role: filter.role,
           status: filter.status,
+          workspaceId: filter.workspaceId,
         }),
       );
 
@@ -1443,7 +1559,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function summarizeProviderEvents(events) {
     const eventCounts = {};
-    const familyCounts = { execution: 0, probe: 0 };
+    const familyCounts = { attention: 0, execution: 0, probe: 0 };
     const providerCounts = {};
     const executionStatusCounts = {
       ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
@@ -1474,6 +1590,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         continue;
       }
 
+      if (event.eventFamily === 'attention') {
+        familyCounts.attention += 1;
+        continue;
+      }
+
       familyCounts.execution += 1;
       executionStatusCounts.total += 1;
       if (executionStatusCounts[event.executionStatus] !== undefined) {
@@ -1487,6 +1608,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       executionFailedCount: executionStatusCounts.failed,
       executionStatusCounts,
       familyCounts,
+      latestAttentionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'attention'),
       latestEvent: events.at(-1) || null,
       latestExecutionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'execution'),
       latestProbeEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'probe'),
@@ -1518,12 +1640,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function checkProvider(providerId) {
-    return {
-      ...providerRegistry.getProviderStatus(providerId),
-      latestEvent: getLatestMatchingRecord(buildProviderEvents({ providerId }), () => true),
-      latestExecution: getLatestProviderExecution(providerId),
-      latestProbe: getLatestProviderProbe(providerId),
-    };
+    const provider = buildProviderStatusEntries().find((entry) => entry.id === providerId);
+    if (!provider) {
+      providerRegistry.getProviderStatus(providerId);
+      throw new Error(`Provider not found: ${providerId}`);
+    }
+    return provider;
   }
 
   async function probeProvider(providerId) {
@@ -2837,7 +2959,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
-  function buildProviderAttentionItems(filter = {}) {
+  function buildProviderAttentionPendingItems(filter = {}) {
     return buildProviderStatusEntries()
       .map((provider) => {
         const latestEvent = provider.latestEvent;
@@ -2845,12 +2967,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return null;
         }
 
-        const recommendedOwner =
-          latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
-        const recommendedCommand =
-          latestEvent.eventFamily === 'execution'
-            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
-            : `node src/cli.mjs provider probe ${provider.id}`;
+        if (filter.providerId && provider.id !== filter.providerId) {
+          return null;
+        }
 
         if (filter.workspaceId && latestEvent.workspaceId !== filter.workspaceId) {
           return null;
@@ -2860,21 +2979,37 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return null;
         }
 
+        const existingAcknowledgement = getProviderAttentionAcknowledgementForEvent(latestEvent);
+        if (existingAcknowledgement) {
+          return null;
+        }
+
+        const recommendedOwner =
+          latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
+        const recommendedCommand =
+          latestEvent.eventFamily === 'execution'
+            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
+            : `node src/cli.mjs provider probe ${provider.id}`;
+        const actionId = buildProviderAttentionActionId(latestEvent);
+
         return addOperationalMetadata(
           addDispatchMetadata(
             {
+              acknowledgeCommand: `node src/cli.mjs action acknowledge-provider-attention ${actionId} --note "<note>"`,
               actionClass: 'provider-attention-required',
-              actionId: `provider-attention:${provider.id}`,
+              actionId,
               actionType: 'provider-attention',
               createdAt: latestEvent.at,
               deliverableType: null,
               eventFamily: latestEvent.eventFamily,
               eventKind: latestEvent.eventKind,
+              eventRefId: getProviderAttentionEventRefId(latestEvent),
               missionId: latestEvent.missionId || null,
               providerDisplayName: provider.displayName,
               providerId: provider.id,
               reason: latestEvent.detail,
               sessionId: latestEvent.sessionId || null,
+              status: 'pending',
               title:
                 latestEvent.eventFamily === 'execution'
                   ? `Provider execution attention required for ${provider.displayName}`
@@ -2899,6 +3034,27 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function buildProviderAttentionAcknowledgedItems(filter = {}) {
+    return store
+      .listProviderAttentionAcknowledgements({
+        missionId: filter.missionId,
+        providerId: filter.providerId,
+        workspaceId: filter.workspaceId,
+      })
+      .map((record) => ({
+        ...record,
+        actionType: 'provider-attention',
+        providerDisplayName:
+          record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
+        status: 'acknowledged',
+      }))
+      .sort((left, right) => String(left.acknowledgedAt || left.createdAt || '').localeCompare(String(right.acknowledgedAt || right.createdAt || '')));
+  }
+
+  function buildProviderAttentionItems(filter = {}) {
+    return buildProviderAttentionPendingItems(filter);
   }
 
   function getActionInboxReminderState(item) {
@@ -3940,6 +4096,81 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function summarizeProviderAttentionItems(items) {
+    const eventFamilyCounts = { execution: 0, probe: 0 };
+    const providerCounts = {};
+    const statusCounts = { acknowledged: 0, pending: 0, total: items.length };
+    const workspaceCounts = {};
+    let latestAcknowledgedAt = null;
+    let latestPendingAt = null;
+
+    for (const item of items) {
+      providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+      if (item.workspaceId) {
+        workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+      }
+      if (eventFamilyCounts[item.eventFamily] !== undefined) {
+        eventFamilyCounts[item.eventFamily] += 1;
+      }
+      if (statusCounts[item.status] !== undefined) {
+        statusCounts[item.status] += 1;
+      }
+      if (item.status === 'pending' && (!latestPendingAt || String(latestPendingAt) < String(item.createdAt || ''))) {
+        latestPendingAt = item.createdAt || null;
+      }
+      if (
+        item.status === 'acknowledged' &&
+        item.acknowledgedAt &&
+        (!latestAcknowledgedAt || String(latestAcknowledgedAt) < String(item.acknowledgedAt))
+      ) {
+        latestAcknowledgedAt = item.acknowledgedAt;
+      }
+    }
+
+    return {
+      eventFamilyCounts,
+      latestAcknowledgedAt,
+      latestItem: items.at(-1) || null,
+      latestPendingAt,
+      providerCounts,
+      statusCounts,
+      total: items.length,
+      workspaceCounts,
+    };
+  }
+
+  function getProviderAttentionInbox(filter = {}) {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.status && !PROVIDER_ATTENTION_STATUSES.includes(filter.status)) {
+      throw new Error(`Unsupported provider attention status: ${filter.status}`);
+    }
+
+    const effectiveStatus = filter.status || 'pending';
+    const items =
+      effectiveStatus === 'acknowledged'
+        ? buildProviderAttentionAcknowledgedItems(filter)
+        : buildProviderAttentionPendingItems(filter);
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        providerId: filter.providerId || null,
+        status: effectiveStatus,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeProviderAttentionItems(items),
+    };
+  }
+
   function remindOwnerHandoffs(filter = {}, note = '') {
     if (filter.workspaceId) {
       getWorkspace(filter.workspaceId);
@@ -4019,6 +4250,35 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         remindedCount: items.length,
       },
     };
+  }
+
+  function acknowledgeProviderAttention(actionId, { note = '' }) {
+    const pendingItem = buildProviderAttentionPendingItems({}).find((item) => item.actionId === actionId);
+    if (!pendingItem) {
+      throw new Error(`Provider attention item not found or no longer pending: ${actionId}`);
+    }
+
+    const acknowledgedAt = now();
+    return store.saveProviderAttentionAcknowledgement({
+      acknowledgedAt,
+      actionId: pendingItem.actionId,
+      createdAt: acknowledgedAt,
+      eventFamily: pendingItem.eventFamily,
+      eventKind: pendingItem.eventKind,
+      eventRefId: pendingItem.eventRefId,
+      id: createId('provider-attention-ack'),
+      missionId: pendingItem.missionId,
+      note: normalizeText(note, 'Provider attention acknowledged.'),
+      priority: pendingItem.priority,
+      providerDisplayName: pendingItem.providerDisplayName,
+      providerId: pendingItem.providerId,
+      reason: pendingItem.reason,
+      recommendedOwner: pendingItem.recommendedOwner,
+      sessionId: pendingItem.sessionId,
+      title: pendingItem.title,
+      workspaceId: pendingItem.workspaceId,
+      workspaceName: pendingItem.workspaceName,
+    });
   }
 
   function acknowledgeOwnerHandoff(escalationId, { note = '' }) {
@@ -4274,6 +4534,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionCounts,
         openEscalationCount: openEscalations.length,
         latestProviderEvent: providerOverview.summary.latestEvent,
+        latestProviderAttentionAcknowledgement: providerOverview.summary.latestAttentionAcknowledgement,
+        latestProviderAttentionEvent: providerOverview.summary.latestAttentionEvent,
         latestProviderAttentionRequiredEvent: providerOverview.summary.latestAttentionRequiredEvent,
         latestProviderExecutionEvent: providerOverview.summary.latestExecutionEvent,
         latestFailedProviderExecution: providerOverview.summary.latestFailedExecution,
@@ -4285,6 +4547,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestSuccessfulProviderProbe: providerOverview.summary.latestSuccessfulProbe,
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
+        providerAttentionAcknowledgedCount: providerOverview.summary.acknowledgedAttentionCount,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
         providerEventCount: providerOverview.summary.eventTotal,
         providerEventFamilyCounts: providerOverview.summary.eventFamilyCounts,
@@ -5005,6 +5268,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   return {
     addMemory,
     addWorkspace,
+    acknowledgeProviderAttention,
     checkProvider,
     createMission,
     getActionInbox,
@@ -5014,6 +5278,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getGlobalOverview,
     getMaintenanceOverview,
     getOwnerHandoffInbox,
+    getProviderAttentionInbox,
     getProviderExecutionHistory,
     getProviderExecutionTimeline,
     getProviderEventTimeline,

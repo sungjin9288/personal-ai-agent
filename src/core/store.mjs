@@ -11,6 +11,7 @@ const DEFAULT_STATE = {
   escalations: [],
   reviewerFollowUps: [],
   providerProbes: [],
+  providerAttentionAcknowledgements: [],
   maintenanceRuns: [],
   memoryEntries: [],
 };
@@ -26,6 +27,7 @@ function cloneDefaultState() {
     escalations: [],
     reviewerFollowUps: [],
     providerProbes: [],
+    providerAttentionAcknowledgements: [],
     maintenanceRuns: [],
     memoryEntries: [],
   };
@@ -80,6 +82,9 @@ export function createStore({ rootDir }) {
       escalations: Array.isArray(state.escalations) ? state.escalations : [],
       reviewerFollowUps: Array.isArray(state.reviewerFollowUps) ? state.reviewerFollowUps : [],
       providerProbes: Array.isArray(state.providerProbes) ? state.providerProbes : [],
+      providerAttentionAcknowledgements: Array.isArray(state.providerAttentionAcknowledgements)
+        ? state.providerAttentionAcknowledgements
+        : [],
       maintenanceRuns: Array.isArray(state.maintenanceRuns) ? state.maintenanceRuns : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
     };
@@ -244,6 +249,31 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listProviderAttentionAcknowledgements(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('providerAttentionAcknowledgements').filter((record) => {
+          if (filter.providerId && record.providerId !== filter.providerId) {
+            return false;
+          }
+          if (filter.actionId && record.actionId !== filter.actionId) {
+            return false;
+          }
+          if (filter.eventFamily && record.eventFamily !== filter.eventFamily) {
+            return false;
+          }
+          if (filter.eventRefId && record.eventRefId !== filter.eventRefId) {
+            return false;
+          }
+          if (filter.missionId && record.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.workspaceId && record.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listMaintenanceRuns(filter = {}) {
       return sortByCreatedAt(
         listCollection('maintenanceRuns').filter((run) => {
@@ -304,6 +334,9 @@ export function createStore({ rootDir }) {
     },
     saveProviderProbe(providerProbe) {
       return saveCollectionItem('providerProbes', providerProbe);
+    },
+    saveProviderAttentionAcknowledgement(providerAttentionAcknowledgement) {
+      return saveCollectionItem('providerAttentionAcknowledgements', providerAttentionAcknowledgement);
     },
     saveMaintenanceRun(maintenanceRun) {
       return saveCollectionItem('maintenanceRuns', maintenanceRun);
