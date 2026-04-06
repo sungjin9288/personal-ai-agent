@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import { createStore } from './core/store.mjs';
+import { GLOBAL_USER_SCOPE_ID } from './core/constants.mjs';
 import { createMissionService } from './core/mission-service.mjs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, '..');
+import { resolveRootDir } from './core/root.mjs';
+import { createStore } from './core/store.mjs';
 
 function readOption(args, name, fallback = '') {
   const index = args.indexOf(name);
@@ -18,15 +13,46 @@ function readOption(args, name, fallback = '') {
   return args[index + 1] || fallback;
 }
 
+function hasOption(args, name) {
+  return args.includes(name);
+}
+
+function parseConstraints(rawValue) {
+  return String(rawValue || '')
+    .split('|')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function printHelp() {
   console.log(`Personal AI Agent
 
 Commands:
+  overview global
+
   workspace add <path> [--name <name>]
   workspace list
-  mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text>]
-  mission run <missionId>
+  workspace show <workspaceId>
+  workspace overview <workspaceId>
+
+  mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>]
+  mission list
+  mission run <missionId> [--provider <stub|openai|anthropic|local>]
   mission show <missionId>
+  mission timeline <missionId>
+
+  session list <missionId>
+  session show <missionId>
+  session show <missionId> --session <sessionId>
+
+  approval inbox [--workspace <workspaceId>] [--mission <missionId>]
+  approval list [--status <pending|approved|rejected>]
+  approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
+
+  memory list [--scope <user|workspace|mission>] [--workspace <workspaceId>] [--mission <missionId>]
+  memory add --scope <user|workspace|mission> --kind <preference|decision|fact> --content <text> [--workspace <workspaceId>] [--mission <missionId>]
+
+  doc log --type <devlog|incident|reference> --title <title> --content <text>
 `);
 }
 
@@ -34,25 +60,55 @@ function printJson(payload) {
   console.log(JSON.stringify(payload, null, 2));
 }
 
+function resolveScopeId(scope, args) {
+  if (scope === 'user') {
+    return GLOBAL_USER_SCOPE_ID;
+  }
+
+  if (scope === 'workspace') {
+    const workspaceId = readOption(args, '--workspace');
+    if (!workspaceId) {
+      throw new Error('workspace scope requires --workspace <workspaceId>.');
+    }
+    return workspaceId;
+  }
+
+  if (scope === 'mission') {
+    const missionId = readOption(args, '--mission');
+    if (!missionId) {
+      throw new Error('mission scope requires --mission <missionId>.');
+    }
+    return missionId;
+  }
+
+  return '';
+}
+
 function main() {
+  const rootDir = resolveRootDir();
+  const store = createStore({ rootDir });
+  const service = createMissionService({ store, rootDir });
+
   const args = process.argv.slice(2);
   const [group, command, ...rest] = args;
-
-  const store = createStore({ rootDir: repoRoot });
-  const service = createMissionService(store);
 
   if (!group) {
     printHelp();
     return;
   }
 
+  if (group === 'overview' && command === 'global') {
+    printJson(service.getGlobalOverview());
+    return;
+  }
+
   if (group === 'workspace' && command === 'add') {
-    const workspacePath = rest[0];
-    const workspace = service.addWorkspace({
-      workspacePath,
-      name: readOption(rest, '--name', ''),
-    });
-    printJson(workspace);
+    printJson(
+      service.addWorkspace({
+        workspacePath: rest[0],
+        name: readOption(rest, '--name', ''),
+      }),
+    );
     return;
   }
 
@@ -61,43 +117,142 @@ function main() {
     return;
   }
 
-  if (group === 'mission' && command === 'create') {
-    const constraints = readOption(rest, '--constraints', '')
-      .split('|')
-      .map((item) => item.trim())
-      .filter(Boolean);
+  if (group === 'workspace' && command === 'show') {
+    printJson(service.getWorkspace(rest[0]));
+    return;
+  }
 
-    const mission = service.createMission({
-      workspaceId: readOption(rest, '--workspace'),
-      mode: readOption(rest, '--mode', 'knowledge'),
-      title: readOption(rest, '--title', 'Untitled mission'),
-      objective: readOption(rest, '--objective', 'Clarify the next best move.'),
-      deliverableType: readOption(rest, '--deliverable', 'decision-memo'),
-      constraints,
-    });
-    printJson(mission);
+  if (group === 'workspace' && command === 'overview') {
+    printJson(service.getWorkspaceOverview(rest[0]));
+    return;
+  }
+
+  if (group === 'mission' && command === 'create') {
+    printJson(
+      service.createMission({
+        workspaceId: readOption(rest, '--workspace'),
+        mode: readOption(rest, '--mode', 'knowledge'),
+        title: readOption(rest, '--title', 'Untitled mission'),
+        objective: readOption(rest, '--objective', 'Clarify the next best move.'),
+        deliverableType: readOption(rest, '--deliverable', ''),
+        constraints: parseConstraints(readOption(rest, '--constraints', '')),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'mission' && command === 'list') {
+    printJson(service.listMissions());
     return;
   }
 
   if (group === 'mission' && command === 'run') {
     const missionId = rest[0];
-    const result = service.runMission(missionId);
+    const provider = readOption(rest, '--provider', 'stub');
+    const result = service.runMission(missionId, {
+      provider,
+      providerSpecified: hasOption(rest, '--provider'),
+    });
+
     printJson({
-      missionId: result.mission.id,
-      status: result.mission.status,
-      promptPath: result.promptPath,
+      approvalId: result.approval ? result.approval.id : null,
       artifactPath: result.artifactPath,
+      missionId: result.mission.id,
+      provider: result.provider,
+      reviewerVerdict: result.reviewerVerdict,
+      sessionId: result.session.id,
+      status: result.mission.status,
     });
     return;
   }
 
   if (group === 'mission' && command === 'show') {
-    const mission = store.getMission(rest[0]);
-    if (!mission) {
-      throw new Error(`Mission not found: ${rest[0]}`);
+    printJson(service.showMission(rest[0]));
+    return;
+  }
+
+  if (group === 'mission' && command === 'timeline') {
+    printJson(service.getMissionTimeline(rest[0]));
+    return;
+  }
+
+  if (group === 'session' && command === 'show') {
+    printJson(
+      service.showSession(rest[0], {
+        sessionId: readOption(rest, '--session', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'session' && command === 'list') {
+    printJson(service.listSessions(rest[0]));
+    return;
+  }
+
+  if (group === 'approval' && command === 'list') {
+    printJson(
+      service.listApprovals({
+        status: readOption(rest, '--status', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'approval' && command === 'inbox') {
+    printJson(
+      service.getApprovalInbox({
+        missionId: readOption(rest, '--mission', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'approval' && command === 'resolve') {
+    printJson(
+      service.resolveApproval(rest[0], {
+        decision: readOption(rest, '--decision'),
+        reason: readOption(rest, '--reason', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'memory' && command === 'list') {
+    const scope = readOption(rest, '--scope', '');
+    const filter = {};
+
+    if (scope) {
+      filter.scope = scope;
+      filter.scopeId = resolveScopeId(scope, rest);
     }
 
-    printJson(mission);
+    printJson(service.listMemory(filter));
+    return;
+  }
+
+  if (group === 'memory' && command === 'add') {
+    const scope = readOption(rest, '--scope');
+    printJson(
+      service.addMemory({
+        scope,
+        scopeId: resolveScopeId(scope, rest),
+        kind: readOption(rest, '--kind'),
+        content: readOption(rest, '--content'),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'doc' && command === 'log') {
+    printJson(
+      service.logDocument({
+        type: readOption(rest, '--type'),
+        title: readOption(rest, '--title'),
+        content: readOption(rest, '--content'),
+      }),
+    );
     return;
   }
 

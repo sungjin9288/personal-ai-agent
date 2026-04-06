@@ -1,73 +1,39 @@
 # Personal AI Agent
 
-Local-first AI agent scaffold for two modes of work:
+CLI-first local-first personal AI agent for two classes of work:
 
-- `engineering`: coding, implementation planning, verification, repo-oriented execution
-- `knowledge`: decision support, PRD drafting, research briefs, execution plans, checklists
+- `engineering`: implementation planning, verification planning, repo-oriented execution proposals
+- `knowledge`: PRDs, decision memos, research briefs, execution plans, and checklists
 
-This repo is intentionally small. The goal is to lock the control-plane shape first:
+## v1 Direction
 
-- workspace registry
-- mission creation
-- pack-aware planning artifacts
-- prompt bundle generation
-- local state and artifact retention
+This repo is building a managed multi-agent runtime first:
 
-## Why A Separate Repo
+`manager -> planner -> executor -> reviewer`
 
-`orchestration` now contains repo-specific QA and verification improvements that are useful to that project and should stay there.
+The runtime stays intentionally narrow in v1:
 
-This repo is the actual product direction for a broader personal agent that can help with:
+- Node.js ESM
+- CLI-first
+- stub provider by default
+- explicit approval gates before risky actions
+- runtime state under `var/`
+- repo-tracked strategy and incident docs under `docs/`
 
-- coding
-- decisions
-- documents
-- planning
+## Reference Direction
 
-## Inspirations
+Reference repos are design input, not vendored implementation:
 
-- `fireauto`: commandized workflows and bounded roles
-- `oh-my-codex`: thin workflow layer over a coding agent
+- `fireauto`: commandized workflow boundaries
+- `oh-my-codex`: thin workflow layer over an existing coding agent
 - `everything-claude-code`: `agents / skills / hooks / rules` separation
-- `mrstack`: persistent memory and always-on assistant mindset
-- `multi-agent-workflow`: planner / critic / checker sequencing
-- `OpenHarness`: tool-use, skills, memory, governance, and swarm coordination as first-class harness layers
+- `mrstack`: persistent memory mindset
+- `multi-agent-workflow`: deterministic role sequencing
+- `OpenHarness`: harness boundary, governance hooks, session-first orchestration
 
-## What To Borrow From OpenHarness
+See [docs/reference-repos.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/reference-repos.md) for the borrowed and rejected patterns.
 
-Borrow now:
-
-- explicit harness boundary: model intelligence vs. tools / memory / permissions
-- skill loading and prompt assembly as separate layers
-- governance hooks before risky execution
-- session state and resumable mission history
-
-Borrow later:
-
-- richer provider abstraction
-- interactive approvals and path-level command policy
-- background subagent lifecycle
-- terminal UI and channel integrations
-
-## Current Scope
-
-MVP features in this scaffold:
-
-- register workspaces
-- create missions
-- select `engineering` or `knowledge` mode
-- select `knowledge` deliverable types:
-  - `decision-memo`
-  - `prd`
-  - `execution-plan`
-  - `research-brief`
-  - `checklist`
-- generate:
-  - a prompt bundle
-  - a bounded plan artifact
-  - mission state on disk
-
-## Usage
+## Current Commands
 
 Register a workspace:
 
@@ -75,76 +41,116 @@ Register a workspace:
 node src/cli.mjs workspace add /absolute/path/to/repo --name my-repo
 ```
 
-List workspaces:
+Show or list workspaces:
 
 ```bash
+node src/cli.mjs overview global
 node src/cli.mjs workspace list
+node src/cli.mjs workspace show workspace_xxx
+node src/cli.mjs workspace overview workspace_xxx
 ```
 
-Create an engineering mission:
-
-```bash
-node src/cli.mjs mission create \
-  --workspace workspace_xxx \
-  --mode engineering \
-  --title "Stabilize release smoke" \
-  --objective "Fix flaky release evidence path" \
-  --constraints "Keep blast radius small"
-```
-
-Create a knowledge mission:
+Create missions:
 
 ```bash
 node src/cli.mjs mission create \
   --workspace workspace_xxx \
   --mode knowledge \
   --deliverable prd \
-  --title "Agent roadmap draft" \
-  --objective "Draft a PRD for the next milestone"
+  --title "Draft agent roadmap" \
+  --objective "Draft the next milestone PRD"
+
+node src/cli.mjs mission create \
+  --workspace workspace_xxx \
+  --mode engineering \
+  --title "Stabilize release smoke" \
+  --objective "Produce a bounded implementation proposal" \
+  --constraints "Keep blast radius small|Preserve release evidence flow"
 ```
 
-Run a mission:
+Run and inspect missions:
 
 ```bash
-node src/cli.mjs mission run mission_xxx
-```
-
-Show mission details:
-
-```bash
+node src/cli.mjs mission list
+node src/cli.mjs mission run mission_xxx --provider stub
 node src/cli.mjs mission show mission_xxx
+node src/cli.mjs mission timeline mission_xxx
+node src/cli.mjs session list mission_xxx
+node src/cli.mjs session show mission_xxx
+node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-Run the smoke test:
+Approval flow:
 
 ```bash
-node scripts/smoke.mjs
+node src/cli.mjs approval inbox
+node src/cli.mjs approval list
+node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"
 ```
+
+Memory and documentation:
+
+```bash
+node src/cli.mjs memory add --scope user --kind preference --content "Prefer concise decision memos."
+node src/cli.mjs memory list --scope user
+node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started managed multi-agent implementation."
+```
+
+## Runtime Behavior
+
+`mission run` in v1 performs a deterministic managed sequence:
+
+1. `manager` builds session context and loads memory
+2. `planner` produces a bounded plan and adapts it with prior mission memory when available
+3. `executor` writes a draft artifact or engineering proposal and carries forward prior mission signals
+4. `reviewer` validates required sections and next action
+5. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
+
+Engineering mode intentionally stops at proposal quality. It does not mutate registered workspaces in v1.
 
 ## State Layout
 
-Generated local state lives under:
-
 ```text
+docs/
+  roadmap.md
+  reference-repos.md
+  devlog.md
+  incidents.md
+  adr/ADR-001-runtime-and-agent-shape.md
+
 var/
   state.json
   missions/<mission-id>/
-    prompt.md
-    engineering-plan.md
-    decision-memo.md
-    prd.md
-    execution-plan.md
-    research-brief.md
-    checklist.md
+    sessions/<session-id>/
+      manager-prompt.md
+      manager-context.md
+      planner-prompt.md
+      planner-plan.md
+      executor-prompt.md
+      implementation-proposal.md
+      prd.md
+      decision-memo.md
+      reviewer-prompt.md
+      reviewer-report.md
+      approval-resolution.md
 ```
 
-## Next Steps
+## Verification
 
-Natural follow-ups after this scaffold:
+Run the local-first smoke suite:
 
-1. provider abstraction for OpenAI / Anthropic / local models
-2. memory layers for user preferences and decision logs
-3. planner / executor / reviewer role orchestration
-4. approval gates for risky actions
-5. OpenHarness-style hook and permission layer
-6. Slack / Telegram / desktop surfaces
+```bash
+npm run smoke
+npm run smoke:approval-approve
+npm run smoke:approval-inbox
+npm run smoke:reviewer-fail
+npm run smoke:approval
+npm run smoke:approval-reject
+npm run smoke:memory-rerun
+npm run smoke:session-history
+npm run smoke:mission-timeline
+npm run smoke:workspace-overview
+npm run smoke:global-overview
+```
+
+All current smokes are deterministic and require no external API key.

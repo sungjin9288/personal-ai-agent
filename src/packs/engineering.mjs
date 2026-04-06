@@ -1,14 +1,72 @@
-function joinBullets(items) {
-  if (!items.length) {
-    return '- none recorded';
+const ENGINEERING_DELIVERABLE = {
+  fileName: 'implementation-proposal.md',
+  title: 'Implementation Proposal',
+  requiredSections: ['Diagnosis', 'Implementation Plan', 'Verification Plan', 'Next Action', 'Risk Notes'],
+  reviewRules: [
+    {
+      id: 'engineering-verification-plan',
+      description: 'Verification Plan must mention a concrete smoke or test path.',
+      pattern: /## Verification Plan[\s\S]*?(smoke|test)/i,
+      message: 'Verification Plan does not mention a concrete smoke or test path.',
+    },
+    {
+      id: 'engineering-approval-next-action',
+      description: 'Next Action must explicitly call for approval before workspace execution.',
+      pattern: /## Next Action[\s\S]*?approval/i,
+      message: 'Next Action does not explicitly require approval before workspace execution.',
+    },
+  ],
+};
+
+function joinBullets(items, fallback) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!list.length) {
+    return `- ${fallback}`;
   }
 
-  return items.map((item) => `- ${item}`).join('\n');
+  return list.map((item) => `- ${item}`).join('\n');
 }
 
-export function renderEngineeringPack({ mission, workspace }) {
+export function getEngineeringPack({ mission, workspace }) {
   const constraints = mission.constraints.length ? mission.constraints : ['Keep blast radius small.'];
-  const artifactContent = `# Engineering Plan
+
+  return {
+    artifactFileName: ENGINEERING_DELIVERABLE.fileName,
+    artifactTitle: ENGINEERING_DELIVERABLE.title,
+    deliverableType: mission.deliverableType || 'implementation-proposal',
+    mode: 'engineering',
+    requiredSections: ENGINEERING_DELIVERABLE.requiredSections,
+    reviewRules: ENGINEERING_DELIVERABLE.reviewRules,
+    riskProfile: {
+      actionKind: 'workspace-shell',
+      approvalKind: 'workspace_execution',
+      requiresApproval: true,
+      reason: `Engineering missions only produce bounded implementation proposals in v1. Applying shell or file changes against workspace ${workspace.path} requires explicit approval.`,
+      title: `Approve engineering execution proposal for ${workspace.name}`,
+    },
+    plannerGuidance: [
+      'Inspect the target workspace and identify the smallest safe change surface.',
+      'Translate the objective into a bounded implementation and verification plan.',
+      'Keep direct code mutation out of v1 execution. Produce an explicit proposal instead.',
+    ],
+    renderDraft({ planSteps, forceReviewerFail = false, forceRubricFail = false, adaptationNotes = [] }) {
+      const nextActionSection = forceReviewerFail
+        ? ''
+        : `## Next Action\n${
+            forceRubricFail
+              ? `Request final review before moving ahead in ${workspace.path}.`
+              : `Request explicit approval before running shell commands or mutating files in ${workspace.path}.`
+          }`;
+
+      const verificationLines = forceRubricFail
+        ? '- confirm the proposal is readable\n- note remaining risks'
+        : '- reproduce the target issue or flow\n- run the narrowest meaningful smoke/test path\n- capture explicit remaining risk after proposal review';
+
+      const adaptationSection = adaptationNotes.length
+        ? `## Prior Memory Signals\n${joinBullets(adaptationNotes, 'No prior mission memory recorded.')}\n\n`
+        : '';
+
+      return `# ${ENGINEERING_DELIVERABLE.title}
 
 ## Mission
 - title: ${mission.title}
@@ -18,50 +76,25 @@ export function renderEngineeringPack({ mission, workspace }) {
 ## Objective
 ${mission.objective}
 
+${adaptationSection}## Diagnosis
+- identify the smallest subsystem that can satisfy the mission objective
+- confirm the verification surface before editing
+
 ## Constraints
-${joinBullets(constraints)}
+${joinBullets(constraints, 'No explicit constraints recorded.')}
 
-## Execution Plan
-1. Inspect the target workspace and identify the smallest safe change surface.
-2. Draft the implementation steps and the exact verification path before editing.
-3. Execute the bounded change, then rerun the relevant checks.
+## Implementation Plan
+${joinBullets(planSteps, 'Inspect repository shape and narrow the execution surface.')}
 
-## Verification
-- reproduce the current issue or target flow
-- run the narrowest meaningful smoke/test path
-- capture remaining risks explicitly
+## Verification Plan
+${verificationLines}
 
-## Risks
-- model output may need a reviewer pass before code mutation
-- repo-specific commands still need to be discovered from the target workspace
+${nextActionSection}
+
+## Risk Notes
+- direct workspace mutation is intentionally deferred until approval
+- repo-specific commands still need workspace-local validation before execution
 `;
-
-  const promptContent = `# Engineering Mission Prompt
-
-You are helping with a bounded engineering task.
-
-Workspace:
-- name: ${workspace.name}
-- path: ${workspace.path}
-
-Mission:
-- title: ${mission.title}
-- objective: ${mission.objective}
-
-Constraints:
-${joinBullets(constraints)}
-
-Required output:
-1. a concise diagnosis
-2. a step-by-step implementation plan
-3. a verification plan
-4. explicit risks and open questions
-`;
-
-  return {
-    artifactContent,
-    artifactFileName: 'engineering-plan.md',
-    promptContent,
-    promptFileName: 'prompt.md',
+    },
   };
 }

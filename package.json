@@ -5,6 +5,16 @@
   "type": "module",
   "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
   "scripts": {
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:approval-approve": "node scripts/smoke-approval-approve.mjs",
+    "smoke:approval-inbox": "node scripts/smoke-approval-inbox.mjs",
+    "smoke:reviewer-fail": "node scripts/smoke-reviewer-fail.mjs",
+    "smoke:approval": "node scripts/smoke-awaiting-approval.mjs",
+    "smoke:approval-reject": "node scripts/smoke-approval-reject.mjs",
+    "smoke:memory-rerun": "node scripts/smoke-mission-memory-rerun.mjs",
+    "smoke:session-history": "node scripts/smoke-session-history.mjs",
+    "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
+    "smoke:workspace-overview": "node scripts/smoke-workspace-overview.mjs",
+    "smoke:global-overview": "node scripts/smoke-global-overview.mjs"
   }
 }
