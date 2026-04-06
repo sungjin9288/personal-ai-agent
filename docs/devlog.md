@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Events
+
+- added `provider events` so probe and execution observability can be read as one chronological provider event stream instead of hopping between separate timelines
+- linked latest provider event, latest probe event, and latest execution event into `overview providers` and `overview global`
+- added deterministic smoke coverage for mixed skipped probe, successful probe, failed stub execution, and successful local execution in one unified stream
+
 ## 2026-04-06 Provider Execution Activity
 
 - added `provider activity` and `provider activity-timeline` so actual mission-stage success or failure can be inspected per provider on top of persisted `agentRuns`

@@ -20,6 +20,7 @@
 - provider probe timeline now exposes chronological success, failure, and skipped probe events on top of persisted probe history
 - provider overview surface now combines readiness and persisted probe health, and global overview now links that provider summary into the top-level control-plane
 - provider execution activity and execution timeline now expose actual mission-stage success or failure by provider on top of persisted agent run records
+- provider events surface now merges probe and execution observability into one chronological provider event stream and links latest provider events into overview surfaces
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence
