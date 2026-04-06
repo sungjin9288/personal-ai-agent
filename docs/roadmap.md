@@ -11,6 +11,7 @@
 - managed role order: `manager -> planner -> executor -> reviewer`
 - runtime/provider path is now async-safe so network-backed providers can be introduced without changing the mission/session contract again
 - OpenAI provider adapter now exists behind the current provider contract, with env validation and Responses API request wiring
+- Anthropic provider adapter now exists behind the current provider contract, with env validation and Messages API request wiring
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence
@@ -69,7 +70,7 @@
 
 ## Next Milestone Scope
 
-- live provider adapters behind the current provider contract
+- local-model provider behind the current provider contract
 - richer risk policy for path-level file and shell execution
 - resumable parallel specialist roles under manager control
 - stronger reviewer rubrics per deliverable type

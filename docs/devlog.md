@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Anthropic Provider Adapter
+
+- added an Anthropic provider adapter backed by the Messages API contract, with fast `ANTHROPIC_API_KEY` validation and request wiring for `model`, `system`, `messages`, and `max_tokens`
+- kept the current structured JSON contract identical to the OpenAI path so manager, planner, executor, and reviewer stage normalization does not fork by provider
+- added deterministic smoke coverage for the missing-key path and mocked fetch success path so Anthropic wiring can be validated locally without a live API call
+
 ## 2026-04-06 Async Provider Runtime And OpenAI Adapter
 
 - made `runMission`, `runAgentStage`, and the CLI mission-run path async-safe so provider implementations can await network calls without a larger runtime rewrite

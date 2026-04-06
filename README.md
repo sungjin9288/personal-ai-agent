@@ -15,7 +15,7 @@ The runtime stays intentionally narrow in v1:
 
 - Node.js ESM
 - CLI-first
-- stub provider by default, with an OpenAI adapter available behind `OPENAI_API_KEY`
+- stub provider by default, with OpenAI and Anthropic adapters available behind API keys
 - explicit approval gates before risky actions
 - runtime state under `var/`
 - repo-tracked strategy and incident docs under `docs/`
@@ -78,6 +78,7 @@ Run and inspect missions:
 node src/cli.mjs mission list
 node src/cli.mjs mission run mission_xxx --provider stub
 OPENAI_API_KEY=... node src/cli.mjs mission run mission_xxx --provider openai
+ANTHROPIC_API_KEY=... node src/cli.mjs mission run mission_xxx --provider anthropic
 node src/cli.mjs mission show mission_xxx
 node src/cli.mjs mission timeline mission_xxx
 node src/cli.mjs session list mission_xxx
@@ -162,6 +163,13 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
   - `OPENAI_MODEL` optional, default `gpt-5.2`
   - `OPENAI_BASE_URL` optional, default `https://api.openai.com/v1`
 - if `OPENAI_API_KEY` is missing, `mission run --provider openai` fails fast before any network call.
+- `anthropic` now uses the Anthropic Messages API and reads:
+  - `ANTHROPIC_API_KEY` required
+  - `ANTHROPIC_MODEL` optional, default `claude-sonnet-4-6`
+  - `ANTHROPIC_BASE_URL` optional, default `https://api.anthropic.com/v1`
+  - `ANTHROPIC_VERSION` optional, default `2023-06-01`
+  - `ANTHROPIC_MAX_TOKENS` optional, default `2048`
+- if `ANTHROPIC_API_KEY` is missing, `mission run --provider anthropic` fails fast before any network call.
 
 ## State Layout
 
@@ -220,6 +228,7 @@ npm run smoke:mission-timeline
 npm run smoke:workspace-overview
 npm run smoke:global-overview
 npm run smoke:openai-provider
+npm run smoke:anthropic-provider
 ```
 
 All current smokes are deterministic and require no external API key.
