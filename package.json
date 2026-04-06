@@ -1,0 +1,10 @@
+{
+  "name": "personal-ai-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
+  "scripts": {
+    "smoke": "node scripts/smoke.mjs"
+  }
+}
