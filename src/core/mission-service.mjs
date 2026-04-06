@@ -1502,6 +1502,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
         eventRefId: record.eventRefId || null,
         missionId: record.missionId || null,
+        openedAt: record.openedAt || null,
         providerDisplayName: record.providerDisplayName || null,
         providerId: record.providerId,
         resolvedAt: record.resolvedAt || null,
@@ -1513,6 +1514,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       };
 
       const events = [
+        {
+          ...baseEvent,
+          at: record.openedAt || record.acknowledgedAt || record.createdAt || null,
+          detail: record.reason || record.title || 'Provider attention opened.',
+          kind: 'provider-attention-opened',
+        },
         {
           ...baseEvent,
           at: record.acknowledgedAt || record.createdAt || null,
@@ -4358,6 +4365,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       id: createId('provider-attention-ack'),
       missionId: pendingItem.missionId,
       note: normalizeText(note, 'Provider attention acknowledged.'),
+      openedAt: pendingItem.createdAt,
       priority: pendingItem.priority,
       providerDisplayName: pendingItem.providerDisplayName,
       providerId: pendingItem.providerId,
@@ -4982,6 +4990,46 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceName: workspace.name,
         });
       }
+    }
+
+    for (const attentionItem of buildProviderAttentionPendingItems({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    })) {
+      events.push({
+        actionId: attentionItem.actionId,
+        at: attentionItem.createdAt,
+        detail: attentionItem.reason || attentionItem.title,
+        kind: 'provider-attention-opened',
+        missionId: attentionItem.missionId || null,
+        providerId: attentionItem.providerId,
+        providerDisplayName: attentionItem.providerDisplayName,
+        sessionId: attentionItem.sessionId || null,
+        status: 'pending',
+        workspaceId: attentionItem.workspaceId || null,
+        workspaceName: attentionItem.workspaceName || null,
+      });
+    }
+
+    for (const event of buildProviderAttentionTimeline(
+      store.listProviderAttentionAcknowledgements({
+        missionId: filter.missionId,
+        workspaceId: filter.workspaceId,
+      }),
+    )) {
+      events.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: event.missionId || null,
+        providerId: event.providerId,
+        providerDisplayName: event.providerDisplayName,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || null,
+        workspaceName: event.workspaceName || null,
+      });
     }
 
     for (const escalation of store.listEscalations()) {

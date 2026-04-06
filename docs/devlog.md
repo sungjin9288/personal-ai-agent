@@ -18,6 +18,12 @@
 - extended the unified provider event stream with `provider-attention-resolved` while preserving the earlier acknowledgement event for the same action
 - linked resolved provider attention counts and latest resolution pointers into `provider check`, `overview providers`, and `overview global`
 
+## 2026-04-06 Provider Attention Operator Timeline
+
+- added workspace and global operator timeline linkage for workspace-bound provider attention lifecycle events
+- provider attention now appears as `provider-attention-opened`, `provider-attention-acknowledged`, and `provider-attention-resolved` alongside approval, reviewer follow-up, escalation, and maintenance events
+- kept global provider probe failures on the provider event stream only, while workspace-bound execution failures are promoted into operator timeline because they map to a concrete workspace owner workflow
+
 ## 2026-04-06 Provider Events
 
 - added `provider events` so probe and execution observability can be read as one chronological provider event stream instead of hopping between separate timelines

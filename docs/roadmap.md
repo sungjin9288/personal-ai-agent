@@ -24,6 +24,7 @@
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces
+- workspace and global operator timeline now include provider attention opened, acknowledged, and resolved events for workspace-bound provider failures
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence

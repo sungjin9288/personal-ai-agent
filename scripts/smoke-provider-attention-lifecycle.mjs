@@ -172,11 +172,12 @@ const attentionEvents = runCli({
   args: ['provider', 'events', '--family', 'attention', '--provider', 'anthropic'],
 });
 
-assert.equal(attentionEvents.summary.total, 2);
-assert.equal(attentionEvents.summary.familyCounts.attention, 2);
+assert.equal(attentionEvents.summary.total, 3);
+assert.equal(attentionEvents.summary.familyCounts.attention, 3);
 assert.equal(attentionEvents.summary.latestAttentionEvent.providerId, 'anthropic');
-assert.equal(attentionEvents.timeline[0].eventKind, 'provider-attention-acknowledged');
-assert.equal(attentionEvents.timeline[1].eventKind, 'provider-attention-resolved');
+assert.equal(attentionEvents.timeline[0].eventKind, 'provider-attention-opened');
+assert.equal(attentionEvents.timeline[1].eventKind, 'provider-attention-acknowledged');
+assert.equal(attentionEvents.timeline[2].eventKind, 'provider-attention-resolved');
 
 const providerOverview = runCli({
   rootDir: tempRoot,

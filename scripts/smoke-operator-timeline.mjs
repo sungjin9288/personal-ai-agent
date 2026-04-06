@@ -92,6 +92,37 @@ const reviewerRun = runCli({
 
 assert.equal(reviewerRun.status, 'failed');
 
+const providerAttention = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-attention', '--workspace', workspaceTwo.id],
+});
+
+assert.equal(providerAttention.summary.statusCounts.pending, 1);
+assert.equal(providerAttention.items.length, 1);
+assert.equal(providerAttention.items[0].providerId, 'stub');
+
+runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'acknowledge-provider-attention',
+    providerAttention.items[0].actionId,
+    '--note',
+    'Workspace two provider failure acknowledged.',
+  ],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-provider-attention',
+    providerAttention.items[0].actionId,
+    '--note',
+    'Workspace two provider failure resolved.',
+  ],
+});
+
 const reviewerFollowUps = runCli({
   rootDir: tempRoot,
   args: ['action', 'reviewer-followups', '--workspace', workspaceTwo.id],
@@ -175,6 +206,9 @@ assert.equal(workspaceTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['maintenance-run'], 1);
+assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-opened'] || 0, 0);
+assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-acknowledged'] || 0, 0);
+assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.timeline.every((event) => event.workspaceId === workspaceOne.id), true);
@@ -186,6 +220,9 @@ const reviewerWorkspaceTimeline = runCli({
 
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-opened'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-acknowledged'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-resolved'], 1);
 assert.equal(reviewerWorkspaceTimeline.timeline.every((event) => event.workspaceId === workspaceTwo.id), true);
 
 const globalTimeline = runCli({
@@ -198,10 +235,13 @@ assert.equal(globalTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['maintenance-run'], 1);
+assert.equal(globalTimeline.summary.eventCounts['provider-attention-opened'], 1);
+assert.equal(globalTimeline.summary.eventCounts['provider-attention-acknowledged'], 1);
+assert.equal(globalTimeline.summary.eventCounts['provider-attention-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 2);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 5);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
 assert.equal(
@@ -217,6 +257,24 @@ assert.equal(
       event.workspaceId === workspaceTwo.id &&
       /rerun-fixed:/.test(event.detail) &&
       /resolved after remediation planning/i.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  globalTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-attention-acknowledged' &&
+      event.workspaceId === workspaceTwo.id &&
+      /acknowledged/i.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  globalTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-attention-resolved' &&
+      event.workspaceId === workspaceTwo.id &&
+      /resolved/i.test(event.detail),
   ),
   true,
 );
