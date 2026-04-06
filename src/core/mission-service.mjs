@@ -1313,8 +1313,28 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function enrichProviderStatusEntries(providers) {
+    const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
+    const pendingAttentionByProviderId = new Map(
+      pendingAttentionItems.map((item) => [item.providerId, item]),
+    );
+
+    return providers.map((provider) => {
+      const pendingAttention = pendingAttentionByProviderId.get(provider.id) || null;
+
+      return {
+        ...provider,
+        latestPendingAttention: pendingAttention,
+        pendingAttentionDueAt: pendingAttention?.dueAt || null,
+        pendingAttentionIsOverdue: Boolean(pendingAttention?.isOverdue),
+        pendingAttentionSlaHours: pendingAttention?.slaHours || null,
+      };
+    });
+  }
+
   function summarizeProviderOverview(providers, probes) {
-    const pendingAttentionItems = buildProviderAttentionPendingItems({});
+    const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
+    const pendingAttentionSummary = summarizeProviderAttentionItems(pendingAttentionItems);
     const attentionEvents = pendingAttentionItems.map((item) => ({
       at: item.createdAt,
       eventFamily: item.eventFamily,
@@ -1390,6 +1410,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         resolved: resolvedAttentionProviderIds.length,
         total: providers.length,
       },
+      attentionOverdueCount: pendingAttentionSummary.overdueCount,
+      attentionOverdueProviderIds: pendingAttentionSummary.overdueProviderIds,
+      attentionNextDueAt: pendingAttentionSummary.nextDueAt,
       attentionRequiredCount: attentionEvents.length,
       attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
       configuredProviderIds,
@@ -1688,7 +1711,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function listProviders() {
-    const providers = buildProviderStatusEntries();
+    const providers = enrichProviderStatusEntries(buildProviderStatusEntries());
     return {
       providers,
       summary: summarizeProviderStatusEntries(providers),
@@ -1696,7 +1719,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function getProviderOverview() {
-    const providers = buildProviderStatusEntries();
+    const providers = enrichProviderStatusEntries(buildProviderStatusEntries());
     const probes = store.listProviderProbes();
 
     return {
@@ -1793,7 +1816,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function checkProvider(providerId) {
-    const provider = buildProviderStatusEntries().find((entry) => entry.id === providerId);
+    const provider = enrichProviderStatusEntries(buildProviderStatusEntries()).find((entry) => entry.id === providerId);
     if (!provider) {
       providerRegistry.getProviderStatus(providerId);
       throw new Error(`Provider not found: ${providerId}`);
@@ -3151,7 +3174,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function buildProviderAttentionPendingItems(filter = {}) {
-    return buildProviderStatusEntries()
+    return buildProviderAttentionPendingItemsFromProviders(buildProviderStatusEntries(), filter);
+  }
+
+  function buildProviderAttentionPendingItemsFromProviders(providers, filter = {}) {
+    return providers
       .map((provider) => {
         const latestEvent = provider.latestEvent;
         if (!latestEvent || !['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)) {
@@ -4310,10 +4337,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const eventFamilyCounts = { execution: 0, probe: 0 };
     const providerCounts = {};
     const statusCounts = { acknowledged: 0, pending: 0, resolved: 0, total: items.length };
+    const overdueProviderIds = new Set();
     const workspaceCounts = {};
     let latestAcknowledgedAt = null;
+    let latestDueAt = null;
     let latestPendingAt = null;
+    let nextDueAt = null;
     let latestResolvedAt = null;
+    let overdueCount = 0;
 
     for (const item of items) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
@@ -4328,6 +4359,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
       if (item.status === 'pending' && (!latestPendingAt || String(latestPendingAt) < String(item.createdAt || ''))) {
         latestPendingAt = item.createdAt || null;
+      }
+      if (item.dueAt && (!latestDueAt || String(latestDueAt) < String(item.dueAt))) {
+        latestDueAt = item.dueAt;
+      }
+      if (item.dueAt && (!nextDueAt || String(nextDueAt) > String(item.dueAt))) {
+        nextDueAt = item.dueAt;
+      }
+      if (item.isOverdue) {
+        overdueCount += 1;
+        if (item.providerId) {
+          overdueProviderIds.add(item.providerId);
+        }
       }
       if (
         item.status === 'acknowledged' &&
@@ -4348,9 +4391,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       eventFamilyCounts,
       latestAcknowledgedAt,
+      latestDueAt,
       latestItem: items.at(-1) || null,
       latestPendingAt,
       latestResolvedAt,
+      nextDueAt,
+      overdueCount,
+      overdueProviderIds: [...overdueProviderIds].sort((left, right) => String(left).localeCompare(String(right))),
       providerCounts,
       statusCounts,
       total: items.length,
@@ -4790,6 +4837,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
         providerAttentionAcknowledgedCount: providerOverview.summary.acknowledgedAttentionCount,
+        providerAttentionNextDueAt: providerOverview.summary.attentionNextDueAt,
+        providerAttentionOverdueCount: providerOverview.summary.attentionOverdueCount,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
         providerAttentionResolvedCount: providerOverview.summary.resolvedAttentionCount,
         providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,

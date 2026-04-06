@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Attention Aging Summary
+
+- extended provider status and provider overview surfaces with pending provider attention due and overdue metadata so aging provider failure pressure is visible without opening `action provider-attention` or the unified action inbox
+- linked `pendingAttentionDueAt`, `pendingAttentionIsOverdue`, and `pendingAttentionSlaHours` into `provider check`, while `overview providers` and `overview global` now aggregate pending attention overdue count and next due timestamp
+- strengthened provider overview smoke coverage by aging one failed anthropic probe into an overdue pending attention item and locking the same due timestamp across provider check, provider overview, and global overview
+
 ## 2026-04-06 Operator Timeline Provider Failure Trigger
 
 - extended workspace and global operator timeline with `provider-execution-failed` so the actual failure trigger is visible before provider attention acknowledgement or resolution events

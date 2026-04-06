@@ -108,6 +108,24 @@ try {
   }
 }
 
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+
+state.providerProbes = state.providerProbes.map((probe) => {
+  if (probe.providerId === 'anthropic') {
+    return {
+      ...probe,
+      checkedAt: overdueTimestamp,
+      createdAt: overdueTimestamp,
+    };
+  }
+
+  return probe;
+});
+
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
 const configuredEnv = {
   ANTHROPIC_API_KEY: 'test-anthropic-key',
   ANTHROPIC_BASE_URL: 'https://api.anthropic.test/v1',
@@ -118,6 +136,18 @@ const configuredEnv = {
   LOCAL_PROVIDER_MODEL: 'llama3.1-local',
   OPENAI_API_KEY: '',
 };
+
+const anthropicCheckResult = runCli({
+  args: ['provider', 'check', 'anthropic'],
+  env: configuredEnv,
+});
+
+assert.equal(anthropicCheckResult.status, 0);
+const anthropicCheck = JSON.parse(anthropicCheckResult.stdout);
+assert.equal(anthropicCheck.attentionStatus, 'pending');
+assert.equal(anthropicCheck.pendingAttentionIsOverdue, true);
+assert.equal(anthropicCheck.pendingAttentionDueAt, '2026-03-02T00:00:00.000Z');
+assert.equal(anthropicCheck.latestPendingAttention.providerId, 'anthropic');
 
 const providerOverviewResult = runCli({
   args: ['overview', 'providers'],
@@ -135,6 +165,10 @@ assert.equal(providerOverview.summary.probeTotal, 4);
 assert.equal(providerOverview.summary.probeAttemptedCount, 3);
 assert.equal(providerOverview.summary.probeSuccessCount, 2);
 assert.equal(providerOverview.summary.probeFailureCount, 2);
+assert.equal(providerOverview.summary.attentionRequiredCount, 1);
+assert.equal(providerOverview.summary.attentionOverdueCount, 1);
+assert.equal(providerOverview.summary.attentionNextDueAt, '2026-03-02T00:00:00.000Z');
+assert.deepEqual(providerOverview.summary.attentionOverdueProviderIds, ['anthropic']);
 assert.equal(providerOverview.summary.latestProbeSuccessCount, 2);
 assert.equal(providerOverview.summary.latestProbeFailureCount, 1);
 assert.equal(providerOverview.summary.latestProbeSkippedCount, 1);
@@ -153,6 +187,15 @@ assert.equal(
   providerOverview.providers.some((provider) => provider.id === 'anthropic' && provider.latestProbe.ok === false),
   true,
 );
+assert.equal(
+  providerOverview.providers.some(
+    (provider) =>
+      provider.id === 'anthropic' &&
+      provider.pendingAttentionIsOverdue === true &&
+      provider.pendingAttentionDueAt === '2026-03-02T00:00:00.000Z',
+  ),
+  true,
+);
 
 const globalOverviewResult = runCli({
   args: ['overview', 'global'],
@@ -165,6 +208,9 @@ const globalOverview = JSON.parse(globalOverviewResult.stdout);
 assert.equal(globalOverview.summary.providerCount, 4);
 assert.equal(globalOverview.summary.providerConfiguredCount, 3);
 assert.equal(globalOverview.summary.providerReadyCount, 3);
+assert.equal(globalOverview.summary.providerAttentionRequiredCount, 1);
+assert.equal(globalOverview.summary.providerAttentionOverdueCount, 1);
+assert.equal(globalOverview.summary.providerAttentionNextDueAt, '2026-03-02T00:00:00.000Z');
 assert.equal(globalOverview.summary.providerUnprobedCount, 0);
 assert.equal(globalOverview.summary.providerLatestProbeFailureCount, 1);
 assert.equal(globalOverview.summary.providerLatestProbeSkippedCount, 1);
