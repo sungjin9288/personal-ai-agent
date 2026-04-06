@@ -20,6 +20,7 @@ import {
   MISSION_STATUSES,
   OWNER_HANDOFF_ACK_SLA_HOURS,
   OWNER_HANDOFF_REMINDER_CADENCE_HOURS,
+  PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_STATUSES,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
@@ -235,7 +236,7 @@ function formatEscalationOwnerHandoffReminderDetail(reminder) {
 function formatMaintenanceRunDetail(run) {
   const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
   const noteSuffix = run.note ? ` note=${run.note}` : '';
-  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
+  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
 function getMeaningfulOwnerTransitions(ownerHistory) {
@@ -271,6 +272,10 @@ function deriveOwnerHandoffSlaHours(owner) {
 
 function deriveOwnerHandoffReminderCadenceHours(owner) {
   return OWNER_HANDOFF_REMINDER_CADENCE_HOURS[owner] || null;
+}
+
+function deriveProviderAttentionReminderCadenceHours(eventFamily) {
+  return PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS[eventFamily] || null;
 }
 
 function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
@@ -317,6 +322,22 @@ function formatReviewerFailureMemory({ mission, findings }) {
 
 function formatApprovalDecisionMemory({ mission, decision, reason }) {
   return `Approval ${decision} for mission ${mission.id} (${mission.deliverableType}): ${reason || 'No explicit reason recorded.'}`;
+}
+
+function buildProviderAttentionReminderNote(item, note) {
+  const normalizedNote = normalizeText(note);
+  if (normalizedNote) {
+    return normalizedNote;
+  }
+
+  return item.eventFamily === 'execution'
+    ? `Reminder issued for failed ${item.providerDisplayName} execution attention.`
+    : `Reminder issued for failed ${item.providerDisplayName} probe attention.`;
+}
+
+function formatProviderAttentionReminderDetail(reminder) {
+  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
+  return `${reminder.providerDisplayName || reminder.providerId}${overdueSuffix} provider attention reminder: ${reminder.note || 'No explicit note recorded.'}`;
 }
 
 function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
@@ -658,6 +679,7 @@ function summarizeMaintenanceRuns(items) {
   let latestRun = null;
   let latestRunAt = null;
   let ownerHandoffRemindedCountTotal = 0;
+  let providerAttentionRemindedCountTotal = 0;
   let noOpRunCount = 0;
   let remainingMaintenanceRequiredCountTotal = 0;
   const recentRuns = [];
@@ -672,6 +694,7 @@ function summarizeMaintenanceRuns(items) {
     escalationRemindedCountTotal += Number(item.escalationRemindedCount || 0);
     dueCandidateCountTotal += Number(item.dueCandidateCountTotal || 0);
     ownerHandoffRemindedCountTotal += Number(item.ownerHandoffRemindedCount || 0);
+    providerAttentionRemindedCountTotal += Number(item.providerAttentionRemindedCount || 0);
     remainingMaintenanceRequiredCountTotal += Number(item.remainingMaintenanceRequiredCount || 0);
     resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
@@ -733,6 +756,7 @@ function summarizeMaintenanceRuns(items) {
     latestRunAt,
     noOpRunCount,
     ownerHandoffRemindedCountTotal,
+    providerAttentionRemindedCountTotal,
     recentRuns: recentRuns
       .sort((left, right) => String(right.createdAt || '').localeCompare(String(left.createdAt || '')))
       .slice(0, 5),
@@ -756,6 +780,7 @@ function summarizeMaintenancePressure(entries) {
   let currentDueCandidateCountTotal = 0;
   let currentDueMonitoringCountTotal = 0;
   let currentDueOwnerHandoffCountTotal = 0;
+  let currentDueProviderAttentionCountTotal = 0;
   let latestRequiredAction = null;
   let latestRequiredActionAt = null;
   let nextDueAt = null;
@@ -766,6 +791,7 @@ function summarizeMaintenancePressure(entries) {
     currentDueCandidateCountTotal += Number(entry.totalDueCandidateCount || 0);
     currentDueMonitoringCountTotal += Number(entry.dueMonitoringCount || 0);
     currentDueOwnerHandoffCountTotal += Number(entry.dueOwnerHandoffCount || 0);
+    currentDueProviderAttentionCountTotal += Number(entry.dueProviderAttentionCount || 0);
 
     if (entry.nextDueAt && (!nextDueAt || String(nextDueAt) > String(entry.nextDueAt))) {
       nextDueAt = entry.nextDueAt;
@@ -781,6 +807,7 @@ function summarizeMaintenancePressure(entries) {
     currentDueCandidateCountTotal,
     currentDueMonitoringCountTotal,
     currentDueOwnerHandoffCountTotal,
+    currentDueProviderAttentionCountTotal,
     latestRequiredAction,
     latestRequiredActionAt,
     maintenanceDueWorkspaceIds: [...new Set(entries.map((entry) => entry.workspaceId).filter(Boolean))],
@@ -1096,6 +1123,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     );
   }
 
+  function listProviderAttentionRemindersForEvent(event) {
+    const providerId = normalizeText(event?.providerId || '');
+    const eventFamily = normalizeText(event?.eventFamily || '');
+    const eventRefId = getProviderAttentionEventRefId(event);
+
+    if (!providerId || !eventFamily || !eventRefId) {
+      return [];
+    }
+
+    return store.listProviderAttentionReminders({
+      eventFamily,
+      eventRefId,
+      providerId,
+    });
+  }
+
   function buildProviderExecutionEntries(filter = {}) {
     const state = store.loadState();
     const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
@@ -1278,16 +1321,31 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function buildProviderStatusEntries() {
     return providerRegistry.listProviders().map((provider) => {
-      const latestEvent = getLatestMatchingRecord(buildProviderEvents({ providerId: provider.id }), () => true);
+      const providerEvents = buildProviderEvents({ providerId: provider.id });
+      const latestEvent = getLatestMatchingRecord(providerEvents, () => true);
+      const latestAttentionStateEvent = getLatestMatchingRecord(
+        providerEvents,
+        (event) =>
+          [
+            'provider-probe-failed',
+            'provider-execution-failed',
+            'provider-probe-succeeded',
+            'provider-execution-succeeded',
+            'provider-attention-acknowledged',
+            'provider-attention-resolved',
+          ].includes(event.eventKind),
+      );
       const latestAttentionRecord = getLatestProviderAttentionRecord(provider.id);
       const latestAttentionAcknowledgement = getLatestProviderAttentionAcknowledgement(provider.id);
       const latestAttentionResolution = getLatestProviderAttentionResolution(provider.id);
+      const latestAttentionReminder = store.listProviderAttentionReminders({ providerId: provider.id }).at(-1) || null;
       const attentionStatus =
-        latestEvent?.eventKind === 'provider-attention-resolved'
+        latestAttentionStateEvent?.eventKind === 'provider-attention-resolved'
           ? 'resolved'
-          : latestEvent?.eventKind === 'provider-attention-acknowledged'
+          : latestAttentionStateEvent?.eventKind === 'provider-attention-acknowledged'
             ? 'acknowledged'
-            : latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)
+            : latestAttentionStateEvent &&
+                ['provider-probe-failed', 'provider-execution-failed'].includes(latestAttentionStateEvent.eventKind)
               ? 'pending'
               : 'clear';
 
@@ -1296,7 +1354,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         attentionStatus,
         latestAttentionAcknowledgement,
         latestAttentionRecord,
+        latestAttentionReminder,
         latestAttentionResolution,
+        latestAttentionStateEvent,
         latestEvent,
         latestExecution: getLatestProviderExecution(provider.id),
         latestProbe: getLatestProviderProbe(provider.id),
@@ -1321,12 +1381,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return providers.map((provider) => {
       const pendingAttention = pendingAttentionByProviderId.get(provider.id) || null;
+      const attentionStatus = pendingAttention ? 'pending' : provider.attentionStatus;
 
       return {
         ...provider,
+        attentionStatus,
         latestPendingAttention: pendingAttention,
         pendingAttentionDueAt: pendingAttention?.dueAt || null,
         pendingAttentionIsOverdue: Boolean(pendingAttention?.isOverdue),
+        pendingAttentionLatestReminderAt: pendingAttention?.latestReminderAt || null,
+        pendingAttentionNeedsReminder: Boolean(pendingAttention?.needsReminder),
+        pendingAttentionNextReminderAt: pendingAttention?.nextReminderAt || null,
+        pendingAttentionReminderCadenceHours: pendingAttention?.reminderCadenceHours || null,
+        pendingAttentionReminderCount: Number(pendingAttention?.reminderCount || 0),
         pendingAttentionSlaHours: pendingAttention?.slaHours || null,
       };
     });
@@ -1368,11 +1435,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         readyProviderIds.push(provider.id);
       }
 
-      if (provider.latestEvent?.eventKind === 'provider-attention-acknowledged') {
+      if (provider.attentionStatus === 'acknowledged') {
         acknowledgedAttentionProviderIds.push(provider.id);
       }
 
-      if (provider.latestEvent?.eventKind === 'provider-attention-resolved') {
+      if (provider.attentionStatus === 'resolved') {
         resolvedAttentionProviderIds.push(provider.id);
       }
 
@@ -1412,7 +1479,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       attentionOverdueCount: pendingAttentionSummary.overdueCount,
       attentionOverdueProviderIds: pendingAttentionSummary.overdueProviderIds,
+      attentionNeedsReminderCount: pendingAttentionSummary.needsReminderCount,
       attentionNextDueAt: pendingAttentionSummary.nextDueAt,
+      attentionNextReminderAt: pendingAttentionSummary.nextReminderAt,
+      attentionReminderCountTotal: pendingAttentionSummary.reminderCountTotal,
       attentionRequiredCount: attentionEvents.length,
       attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
       configuredProviderIds,
@@ -1427,6 +1497,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
       latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionRecords, 'acknowledgedAt'),
+      latestAttentionReminder: getLatestItem(store.listProviderAttentionReminders(), 'remindedAt'),
       latestAttentionResolution: getLatestItem(
         acknowledgedAttentionRecords.filter((record) => (record.status || 'acknowledged') === 'resolved'),
         'resolvedAt',
@@ -1564,6 +1635,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
   }
 
+  function buildProviderAttentionReminderTimeline(records) {
+    return records.map((record) => ({
+      actionId: record.actionId,
+      at: record.remindedAt || record.createdAt || null,
+      detail: formatProviderAttentionReminderDetail(record),
+      eventRefId: record.eventRefId || null,
+      kind: 'provider-attention-reminded',
+      missionId: record.missionId || null,
+      providerDisplayName: record.providerDisplayName || null,
+      providerId: record.providerId,
+      sessionId: record.sessionId || null,
+      status: 'pending',
+      workspaceId: record.workspaceId || null,
+      workspaceName: record.workspaceName || null,
+    }));
+  }
+
   function buildProviderEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
     const events = [];
@@ -1601,6 +1689,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceId: filter.workspaceId,
         }),
       );
+      const reminderTimeline = buildProviderAttentionReminderTimeline(
+        store.listProviderAttentionReminders({
+          missionId: filter.missionId,
+          providerId: filter.providerId,
+          workspaceId: filter.workspaceId,
+        }),
+      );
 
       events.push(
         ...attentionTimeline.map((event) => ({
@@ -1614,6 +1709,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           role: null,
           runId: null,
           status: 'acknowledged',
+        })),
+        ...reminderTimeline.map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'attention',
+          eventKind: event.kind,
+          executionStatus: null,
+          ok: null,
+          probeId: null,
+          role: null,
+          runId: null,
         })),
       );
     }
@@ -1732,6 +1838,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const pendingAttentionItems = buildProviderAttentionPendingItems(filter);
     const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems(filter);
     const resolvedAttentionItems = buildProviderAttentionResolvedItems(filter);
+    const reminderRecords = store.listProviderAttentionReminders(filter);
     const executionEntries = buildProviderExecutionEntries(filter);
     const executionSummary = summarizeProviderExecutions(executionEntries);
     const scopedProviderEvents = sortTimelineEvents([
@@ -1752,6 +1859,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         role: null,
         runId: null,
         status: event.status || 'acknowledged',
+      })),
+      ...buildProviderAttentionReminderTimeline(reminderRecords).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'pending',
       })),
       ...buildProviderExecutionTimeline(executionEntries).map((event) => ({
         ...event,
@@ -1777,6 +1896,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionItems, 'acknowledgedAt'),
+      latestAttentionReminder: getLatestItem(reminderRecords, 'remindedAt'),
       latestAttentionRequiredEvent: getLatestItem(pendingAttentionItems, 'createdAt'),
       latestAttentionResolution: getLatestItem(resolvedAttentionItems, 'resolvedAt'),
       latestExecution: executionSummary.latestExecution,
@@ -1787,6 +1907,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       touchedProviderIds,
       summary: {
         attentionAcknowledgedCount: acknowledgedAttentionItems.length,
+        attentionNeedsReminderCount: pendingAttentionItems.filter((item) => item.needsReminder).length,
+        attentionNextReminderAt:
+          pendingAttentionItems
+            .map((item) => item.nextReminderAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(0) || null,
+        attentionOverdueCount: pendingAttentionItems.filter((item) => item.isOverdue).length,
+        attentionReminderCount: reminderRecords.length,
         attentionRequiredCount: pendingAttentionItems.length,
         attentionResolvedCount: resolvedAttentionItems.length,
         attentionStatusCounts: {
@@ -2255,6 +2384,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
       maintenanceImpactEscalationRemindedCountTotal: maintenanceImpactSummary.escalationRemindedCountTotal,
       maintenanceImpactOwnerHandoffRemindedCountTotal: maintenanceImpactSummary.ownerHandoffRemindedCountTotal,
+      maintenanceImpactProviderAttentionRemindedCountTotal:
+        maintenanceImpactSummary.providerAttentionRemindedCountTotal,
       maintenanceImpactRunCount: maintenanceImpactSummary.runCount,
       maintenanceImpactTotalRemindedCount: maintenanceImpactSummary.totalRemindedCount,
       maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
@@ -2264,6 +2395,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceSummary.remainingMaintenanceRequiredCountTotal,
       maintenanceRelatedRunCount: relatedMaintenanceRuns.length,
       maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
+      maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
       maintenanceRunCount: maintenanceSummary.runCount,
       maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
       maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
@@ -2275,6 +2407,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         total: memoryEntries.length,
       },
       latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+      latestProviderAttentionReminder: providerActivity.latestAttentionReminder,
       latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
       latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
       latestProviderExecution: providerActivity.latestExecution,
@@ -2282,6 +2415,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedProviderExecution: providerActivity.latestFailedExecution,
       latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
       providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
+      providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      providerAttentionNextReminderAt: providerActivity.summary.attentionNextReminderAt,
+      providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
       providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
       providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
       providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
@@ -2378,13 +2515,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return ensureArray(item.affectedMissionSummaries).find((entry) => entry.missionId === missionId) || null;
   }
 
-  function summarizeMissionMaintenanceImpact(missionId, runs = null) {
-    const effectiveRuns = runs || listRelatedMaintenanceRunsForMission(missionId);
-    let escalationRemindedCountTotal = 0;
-    let latestRun = null;
-    let latestRunAt = null;
-    let ownerHandoffRemindedCountTotal = 0;
-    let totalRemindedCount = 0;
+function summarizeMissionMaintenanceImpact(missionId, runs = null) {
+  const effectiveRuns = runs || listRelatedMaintenanceRunsForMission(missionId);
+  let escalationRemindedCountTotal = 0;
+  let latestRun = null;
+  let latestRunAt = null;
+  let ownerHandoffRemindedCountTotal = 0;
+  let providerAttentionRemindedCountTotal = 0;
+  let totalRemindedCount = 0;
 
     for (const run of effectiveRuns) {
       const isDirectMissionRun = run.missionId === missionId;
@@ -2392,16 +2530,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         ? {
             escalationRemindedCount: Number(run.escalationRemindedCount || 0),
             ownerHandoffRemindedCount: Number(run.ownerHandoffRemindedCount || 0),
+            providerAttentionRemindedCount: Number(run.providerAttentionRemindedCount || 0),
             totalRemindedCount: Number(run.totalRemindedCount || 0),
           }
         : getMaintenanceMissionEffect(run, missionId) || {
             escalationRemindedCount: 0,
             ownerHandoffRemindedCount: 0,
+            providerAttentionRemindedCount: 0,
             totalRemindedCount: 0,
           };
 
       escalationRemindedCountTotal += Number(effect.escalationRemindedCount || 0);
       ownerHandoffRemindedCountTotal += Number(effect.ownerHandoffRemindedCount || 0);
+      providerAttentionRemindedCountTotal += Number(effect.providerAttentionRemindedCount || 0);
       totalRemindedCount += Number(effect.totalRemindedCount || 0);
 
       if (!latestRunAt || String(latestRunAt) < String(run.createdAt || '')) {
@@ -2415,6 +2556,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestRun,
       latestRunAt,
       ownerHandoffRemindedCountTotal,
+      providerAttentionRemindedCountTotal,
       runCount: effectiveRuns.length,
       totalRemindedCount,
     };
@@ -2501,18 +2643,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
+        maintenanceCurrentDueProviderAttentionCountTotal: maintenancePressureSummary.currentDueProviderAttentionCountTotal,
         maintenanceResolvedMaintenanceRequiredCountTotal:
           maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
         maintenanceRemainingMaintenanceRequiredCountTotal:
           maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
+        maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
         memoryCounts,
         latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+        latestProviderAttentionReminder: providerActivity.latestAttentionReminder,
         latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
         latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
         latestProviderExecution: providerActivity.latestExecution,
@@ -2523,6 +2668,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionCounts,
         openEscalationIds: escalationSummary.openEscalationIds,
         providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
+        providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+        providerAttentionNextReminderAt: providerActivity.summary.attentionNextReminderAt,
+        providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+        providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
         providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
         providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
         providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
@@ -2603,7 +2752,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return true;
         });
 
-        const dueItems = [...dueMonitoringItems, ...dueOwnerHandoffItems];
+        const dueProviderAttentionItems = buildProviderAttentionPendingItems({
+          missionId: target.mission ? target.mission.id : undefined,
+          needsReminderOnly: true,
+          workspaceId: target.workspace.id,
+        }).filter((item) => {
+          if (filter.owner && item.recommendedOwner !== filter.owner) {
+            return false;
+          }
+          return true;
+        });
+
+        const dueItems = [...dueMonitoringItems, ...dueOwnerHandoffItems, ...dueProviderAttentionItems];
         if (!dueItems.length) {
           return null;
         }
@@ -2612,6 +2772,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           [
             ...dueMonitoringItems.map((item) => item.nextReminderAt),
             ...dueOwnerHandoffItems.map((item) => item.nextOwnerHandoffReminderAt),
+            ...dueProviderAttentionItems.map((item) => item.nextReminderAt),
           ]
             .filter(Boolean)
             .sort((left, right) => String(left).localeCompare(String(right)))
@@ -2620,6 +2781,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           [
             ...dueMonitoringItems.map((item) => item.createdAt),
             ...dueOwnerHandoffItems.map((item) => item.ownerTransitionAt || item.createdAt),
+            ...dueProviderAttentionItems.map((item) => item.createdAt),
           ]
             .filter(Boolean)
             .sort((left, right) => String(left).localeCompare(String(right)))
@@ -2634,7 +2796,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             .at(-1) || null;
         const effectiveRecommendedOwner =
           dueOwnerHandoffItems.some((item) => item.ownerHandoffTargetOwner === 'human-approver') ||
-          dueMonitoringItems.some((item) => item.effectiveRecommendedOwner === 'human-approver')
+          dueMonitoringItems.some((item) => item.effectiveRecommendedOwner === 'human-approver') ||
+          dueProviderAttentionItems.some((item) => item.recommendedOwner === 'human-approver')
             ? 'human-approver'
             : 'workspace-owner';
 
@@ -2644,6 +2807,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           createdAt: createdAt || nextDueAt || now(),
           dueMonitoringCount: dueMonitoringItems.length,
           dueOwnerHandoffCount: dueOwnerHandoffItems.length,
+          dueProviderAttentionCount: dueProviderAttentionItems.length,
           effectiveRecommendedOwner,
           latestMaintenanceRun,
           latestMaintenanceRunAt: latestMaintenanceRun?.createdAt || null,
@@ -2675,6 +2839,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (entry.dueOwnerHandoffCount > 0) {
           reasonParts.push(`${entry.dueOwnerHandoffCount} owner handoff reminder(s) due`);
         }
+        if (entry.dueProviderAttentionCount > 0) {
+          reasonParts.push(`${entry.dueProviderAttentionCount} provider attention reminder(s) due`);
+        }
 
         return addFixedOperationalMetadata(
           addDispatchMetadata(
@@ -2685,6 +2852,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               createdAt: entry.createdAt,
               dueMonitoringCount: entry.dueMonitoringCount,
               dueOwnerHandoffCount: entry.dueOwnerHandoffCount,
+              dueProviderAttentionCount: entry.dueProviderAttentionCount,
               effectiveRecommendedOwner: entry.effectiveRecommendedOwner,
               latestMaintenanceRunAt: entry.latestMaintenanceRunAt,
               latestMaintenanceRunId: entry.latestMaintenanceRun?.id || null,
@@ -3180,7 +3348,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildProviderAttentionPendingItemsFromProviders(providers, filter = {}) {
     return providers
       .map((provider) => {
-        const latestEvent = provider.latestEvent;
+        const latestEvent = provider.latestAttentionStateEvent;
         if (!latestEvent || !['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)) {
           return null;
         }
@@ -3209,8 +3377,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
             : `node src/cli.mjs provider probe ${provider.id}`;
         const actionId = buildProviderAttentionActionId(latestEvent);
-
-        return addOperationalMetadata(
+        const baseItem = addOperationalMetadata(
           addDispatchMetadata(
             {
               acknowledgeCommand: `node src/cli.mjs action acknowledge-provider-attention ${actionId} --note "<note>"`,
@@ -3249,8 +3416,36 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             slaHours: latestEvent.eventFamily === 'execution' ? 12 : 24,
           },
         );
+        const reminderRecords = listProviderAttentionRemindersForEvent(latestEvent);
+        const latestReminder = reminderRecords.at(-1) || null;
+        const reminderCadenceHours = deriveProviderAttentionReminderCadenceHours(latestEvent.eventFamily);
+        const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
+        const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
+        const nextReminderAt =
+          baseItem.isOverdue && Number.isFinite(reminderBaseMs)
+            ? latestReminder
+              ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
+              : baseItem.dueAt
+            : null;
+        const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
+        const needsReminder =
+          baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+
+        return {
+          ...baseItem,
+          lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+          latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+          needsReminder,
+          nextReminderAt,
+          remindCommand: `node src/cli.mjs action remind-provider-attention --provider ${provider.id} --note "<note>"`,
+          reminderCadenceHours,
+          reminderCount: reminderRecords.length,
+          reminderHistoryCount: reminderRecords.length,
+        };
       })
       .filter(Boolean)
+      .filter((item) => !filter.needsReminderOnly || item.needsReminder)
+      .filter((item) => !filter.overdueOnly || item.isOverdue)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
@@ -4016,6 +4211,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       note,
     );
+    const providerAttentionReminders = remindProviderAttention(
+      {
+        dueOnly: true,
+        missionId: filter.missionId,
+        owner: filter.owner,
+        workspaceId: filter.workspaceId,
+      },
+      note,
+    );
     const afterPressure = listMaintenancePressureEntries({
       missionId: filter.missionId,
       owner: filter.owner,
@@ -4027,7 +4231,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const resolvedActionIds = acknowledgedActionIds.filter((actionId) => !afterPressureIds.has(actionId));
     const remainingActionIds = afterPressure.map((entry) => entry.actionId);
 
-    const latestReminderAt = [escalationReminders.summary.latestReminderAt, ownerHandoffReminders.summary.latestReminderAt]
+    const latestReminderAt = [
+      escalationReminders.summary.latestReminderAt,
+      ownerHandoffReminders.summary.latestReminderAt,
+      providerAttentionReminders.summary.latestReminderAt,
+    ]
       .filter(Boolean)
       .sort((left, right) => String(left).localeCompare(String(right)))
       .at(-1) || null;
@@ -4042,6 +4250,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationRemindedCount: 0,
         missionId: item.missionId,
         ownerHandoffRemindedCount: 0,
+        providerAttentionRemindedCount: 0,
         totalRemindedCount: 0,
       };
       current.escalationRemindedCount += 1;
@@ -4058,9 +4267,27 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationRemindedCount: 0,
         missionId: item.missionId,
         ownerHandoffRemindedCount: 0,
+        providerAttentionRemindedCount: 0,
         totalRemindedCount: 0,
       };
       current.ownerHandoffRemindedCount += 1;
+      current.totalRemindedCount += 1;
+      affectedMissionSummaryMap.set(item.missionId, current);
+    }
+
+    for (const item of providerAttentionReminders.items) {
+      if (!item.missionId) {
+        continue;
+      }
+
+      const current = affectedMissionSummaryMap.get(item.missionId) || {
+        escalationRemindedCount: 0,
+        missionId: item.missionId,
+        ownerHandoffRemindedCount: 0,
+        providerAttentionRemindedCount: 0,
+        totalRemindedCount: 0,
+      };
+      current.providerAttentionRemindedCount += 1;
       current.totalRemindedCount += 1;
       affectedMissionSummaryMap.set(item.missionId, current);
     }
@@ -4078,16 +4305,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       beforeMaintenanceRequiredCount: Number(beforePressureSummary.maintenanceRequiredCount || 0),
       dueCandidateCountTotal:
         Number(escalationReminders.summary.dueCandidateCount || 0) +
-        Number(ownerHandoffReminders.summary.dueCandidateCount || 0),
+        Number(ownerHandoffReminders.summary.dueCandidateCount || 0) +
+        Number(providerAttentionReminders.summary.dueCandidateCount || 0),
       escalationRemindedCount: Number(escalationReminders.summary.remindedCount || 0),
       latestReminderAt,
       ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
+      providerAttentionRemindedCount: Number(providerAttentionReminders.summary.remindedCount || 0),
       remainingMaintenanceRequiredCount: remainingActionIds.length,
       resolvedMaintenanceRequiredCount: resolvedActionIds.length,
       syncedCount: Number(sync.summary.syncedCount || 0),
       totalRemindedCount:
         Number(escalationReminders.summary.remindedCount || 0) +
-        Number(ownerHandoffReminders.summary.remindedCount || 0),
+        Number(ownerHandoffReminders.summary.remindedCount || 0) +
+        Number(providerAttentionReminders.summary.remindedCount || 0),
     };
 
     const maintenanceRun = store.saveMaintenanceRun({
@@ -4114,6 +4344,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       owner: filter.owner || null,
       ownerHandoffRemindedCount: summary.ownerHandoffRemindedCount,
       ownerHandoffRemindersSummary: ownerHandoffReminders.summary,
+      providerAttentionRemindedCount: summary.providerAttentionRemindedCount,
+      providerAttentionRemindersSummary: providerAttentionReminders.summary,
       remainingActionIds,
       remainingMaintenanceRequiredCount: summary.remainingMaintenanceRequiredCount,
       resolvedActionIds,
@@ -4134,6 +4366,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       maintenanceRun,
       ownerHandoffReminders,
+      providerAttentionReminders,
       summary,
       sync,
     };
@@ -4187,6 +4420,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               latestMissionImpactRunAt: missionImpactSummary.latestRunAt,
               missionImpactEscalationRemindedCountTotal: missionImpactSummary.escalationRemindedCountTotal,
               missionImpactOwnerHandoffRemindedCountTotal: missionImpactSummary.ownerHandoffRemindedCountTotal,
+              missionImpactProviderAttentionRemindedCountTotal:
+                missionImpactSummary.providerAttentionRemindedCountTotal,
               missionImpactRunCount: missionImpactSummary.runCount,
               missionImpactTotalRemindedCount: missionImpactSummary.totalRemindedCount,
             }
@@ -4341,10 +4576,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const workspaceCounts = {};
     let latestAcknowledgedAt = null;
     let latestDueAt = null;
+    let latestReminderAt = null;
     let latestPendingAt = null;
     let nextDueAt = null;
+    let nextReminderAt = null;
     let latestResolvedAt = null;
+    let needsReminderCount = 0;
     let overdueCount = 0;
+    let reminderCountTotal = 0;
 
     for (const item of items) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
@@ -4372,6 +4611,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           overdueProviderIds.add(item.providerId);
         }
       }
+      reminderCountTotal += Number(item.reminderCount || 0);
+      if (item.needsReminder) {
+        needsReminderCount += 1;
+      }
+      if (
+        item.latestReminderAt &&
+        (!latestReminderAt || String(latestReminderAt) < String(item.latestReminderAt))
+      ) {
+        latestReminderAt = item.latestReminderAt;
+      }
+      if (
+        item.nextReminderAt &&
+        (!nextReminderAt || String(nextReminderAt) > String(item.nextReminderAt))
+      ) {
+        nextReminderAt = item.nextReminderAt;
+      }
       if (
         item.status === 'acknowledged' &&
         item.acknowledgedAt &&
@@ -4394,11 +4649,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestDueAt,
       latestItem: items.at(-1) || null,
       latestPendingAt,
+      latestReminderAt,
       latestResolvedAt,
+      needsReminderCount,
       nextDueAt,
+      nextReminderAt,
       overdueCount,
       overdueProviderIds: [...overdueProviderIds].sort((left, right) => String(left).localeCompare(String(right))),
       providerCounts,
+      reminderCountTotal,
       statusCounts,
       total: items.length,
       workspaceCounts,
@@ -4426,16 +4685,102 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         : effectiveStatus === 'resolved'
           ? buildProviderAttentionResolvedItems(filter)
           : buildProviderAttentionPendingItems(filter);
+    const filteredItems = items
+      .filter((item) => !filter.needsReminderOnly || item.needsReminder)
+      .filter((item) => !filter.overdueOnly || item.isOverdue);
 
     return {
       filters: {
         missionId: filter.missionId || null,
+        needsReminderOnly: Boolean(filter.needsReminderOnly),
+        overdueOnly: Boolean(filter.overdueOnly),
         providerId: filter.providerId || null,
         status: effectiveStatus,
         workspaceId: filter.workspaceId || null,
       },
+      items: filteredItems,
+      summary: summarizeProviderAttentionItems(filteredItems),
+    };
+  }
+
+  function remindProviderAttention(filter = {}, note = '') {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+
+    const reminderTimestamp = now();
+    const normalizedNote = normalizeText(note);
+    const candidates = buildProviderAttentionPendingItems({
+      missionId: filter.missionId,
+      needsReminderOnly: Boolean(filter.dueOnly),
+      overdueOnly: Boolean(filter.overdueOnly),
+      providerId: filter.providerId,
+      workspaceId: filter.workspaceId,
+    }).filter((item) => !filter.owner || item.recommendedOwner === filter.owner);
+
+    const items = candidates
+      .map((item) =>
+        store.saveProviderAttentionReminder({
+          actionId: item.actionId,
+          createdAt: reminderTimestamp,
+          dueAt: item.dueAt,
+          eventFamily: item.eventFamily,
+          eventKind: item.eventKind,
+          eventRefId: item.eventRefId,
+          id: createId('provider-attention-reminder'),
+          missionId: item.missionId,
+          note: buildProviderAttentionReminderNote(item, normalizedNote),
+          overdue: item.isOverdue,
+          priority: item.priority,
+          providerDisplayName: item.providerDisplayName,
+          providerId: item.providerId,
+          remindedAt: reminderTimestamp,
+          reminderCadenceHours: item.reminderCadenceHours,
+          sessionId: item.sessionId || null,
+          slaHours: item.slaHours,
+          title: item.title,
+          workspaceId: item.workspaceId || null,
+          workspaceName: item.workspaceName || null,
+        }),
+      )
+      .map((record) => ({
+        ...record,
+        detail: formatProviderAttentionReminderDetail(record),
+      }))
+      .sort((left, right) => String(left.remindedAt || left.createdAt || '').localeCompare(String(right.remindedAt || right.createdAt || '')));
+
+    return {
+      filters: {
+        dueOnly: Boolean(filter.dueOnly),
+        missionId: filter.missionId || null,
+        note: normalizedNote || null,
+        owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        providerId: filter.providerId || null,
+        workspaceId: filter.workspaceId || null,
+      },
       items,
-      summary: summarizeProviderAttentionItems(items),
+      summary: {
+        dueCandidateCount: candidates.filter((item) => item.needsReminder).length,
+        latestReminderAt:
+          [...items]
+            .map((item) => item.remindedAt || item.createdAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(-1) || null,
+        overdueReminderCount: items.filter((item) => item.overdue).length,
+        reminderCountTotal: items.length,
+        remindedCount: items.length,
+      },
     };
   }
 
@@ -4807,11 +5152,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+        maintenanceCurrentDueProviderAttentionCountTotal: maintenancePressureSummary.currentDueProviderAttentionCountTotal,
         maintenanceResolvedMaintenanceRequiredCountTotal:
           maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
+        maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
         maintenanceRemainingMaintenanceRequiredCountTotal:
           maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
@@ -4824,6 +5171,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestProviderEvent: providerOverview.summary.latestEvent,
         latestProviderAttentionAcknowledgement: providerOverview.summary.latestAttentionAcknowledgement,
         latestProviderAttentionEvent: providerOverview.summary.latestAttentionEvent,
+        latestProviderAttentionReminder: providerOverview.summary.latestAttentionReminder,
         latestProviderAttentionResolution: providerOverview.summary.latestAttentionResolution,
         latestProviderAttentionRequiredEvent: providerOverview.summary.latestAttentionRequiredEvent,
         latestProviderExecutionEvent: providerOverview.summary.latestExecutionEvent,
@@ -4837,8 +5185,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
         providerAttentionAcknowledgedCount: providerOverview.summary.acknowledgedAttentionCount,
+        providerAttentionNeedsReminderCount: providerOverview.summary.attentionNeedsReminderCount,
         providerAttentionNextDueAt: providerOverview.summary.attentionNextDueAt,
+        providerAttentionNextReminderAt: providerOverview.summary.attentionNextReminderAt,
         providerAttentionOverdueCount: providerOverview.summary.attentionOverdueCount,
+        providerAttentionReminderCount: providerOverview.summary.attentionReminderCountTotal,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
         providerAttentionResolvedCount: providerOverview.summary.resolvedAttentionCount,
         providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,
@@ -4999,6 +5350,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       });
     }
 
+    for (const event of buildProviderAttentionReminderTimeline(
+      store.listProviderAttentionReminders({ missionId: mission.id }),
+    )) {
+      timeline.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission.id,
+        providerDisplayName: event.providerDisplayName,
+        providerId: event.providerId,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || mission.workspaceId,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
     for (const escalation of escalations) {
       timeline.push({
         at: escalation.createdAt,
@@ -5105,7 +5474,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         at: maintenanceRun.createdAt,
         detail: isDirectMissionRun
           ? formatMaintenanceRunDetail(maintenanceRun)
-          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
+          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}, provider-attention=${missionEffect?.providerAttentionRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
         kind: 'maintenance-run',
         maintenanceRunId: maintenanceRun.id,
         missionId: mission.id,
@@ -5264,6 +5633,31 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         workspaceId: filter.workspaceId,
       }),
     )) {
+      events.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: event.missionId || null,
+        providerId: event.providerId,
+        providerDisplayName: event.providerDisplayName,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || null,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
+    for (const event of buildProviderAttentionReminderTimeline(
+      store.listProviderAttentionReminders({
+        missionId: filter.missionId,
+        workspaceId: filter.workspaceId,
+      }),
+    )) {
+      if (!event.workspaceId) {
+        continue;
+      }
+
       events.push({
         actionId: event.actionId,
         at: event.at,
@@ -5708,6 +6102,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     runActionMaintenance,
     remindEscalations,
     remindOwnerHandoffs,
+    remindProviderAttention,
     syncEscalations,
     resolveEscalation,
     resolveApproval,

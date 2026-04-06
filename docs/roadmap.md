@@ -27,6 +27,8 @@
 - workspace and global operator timeline now include provider attention opened, acknowledged, and resolved events for workspace-bound provider failures
 - workspace and global operator timeline now also include the underlying `provider-execution-failed` trigger so provider failure chronology is visible before operator acknowledgement starts
 - provider check and provider overview now surface pending provider attention due or overdue state so provider health summary can show aging failure pressure without opening the action inbox first
+- provider attention lifecycle now supports explicit reminder emission, needs-reminder slicing, latest reminder audit linkage, and provider check/overview reminder pressure summaries
+- provider attention reminder events now appear on mission, workspace, and provider-focused timelines so aging failure follow-up is auditable after the initial failure
 - workspace overview now includes workspace-bound provider execution and provider attention summary fields so provider failure pressure is visible without opening provider-only surfaces
 - mission summary and mission timeline now include mission-scoped provider execution and provider attention evidence so provider failure audit can be completed without leaving mission-level surfaces
 - first-class runtime entities in `var/state.json`
@@ -66,6 +68,7 @@
 - pending owner handoffs now have a local-first reminder policy with `--needs-reminder` slicing, re-notify command support, and reminder trail visibility on mission/workspace/global surfaces
 - unified `action inbox` now exposes a cross-action `--needs-reminder` slice so monitoring-required and handoff-required work can be re-triaged from the main operator queue without switching surfaces
 - `action maintenance` now runs a local-first due reminder sweep across escalation pressure and pending owner handoffs, with duplicate suppression for handoff-owned escalations
+- `action maintenance` now also sweeps due provider attention reminders, so provider failure follow-up uses the same local-first maintenance entrypoint as escalation and owner handoff pressure
 - maintenance sweeps are now persisted as first-class run history and exposed through `action maintenance-history` plus `overview maintenance`, with latest run totals surfaced on workspace/global overview
 - due maintenance pressure now re-enters the unified `action inbox` as `maintenance-required`, so operators can trigger the sweep from the same dispatch surface that shows reminder work
 - workspace/global operator timeline now includes `maintenance-run` events, so maintenance execution is visible in the same chronological operator stream as approvals, follow-ups, and escalations

@@ -61,7 +61,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, pending owner handoff reminder count, next pending owner handoff due/reminder timestamp, 그리고 maintenance가 실제로 영향을 준 mission breadth까지 함께 보여줍니다. `overview global`은 여기에 provider health summary와 nested `providerOverview`도 포함해서 configured/ready provider 수, latest probe success or failure, unprobed provider 수, pending provider attention overdue count, next provider attention due timestamp를 top-level control-plane에서 바로 확인할 수 있습니다. `workspace overview`는 workspace-scope run뿐 아니라 global sweep나 mission-scope sweep가 이 workspace mission에 남긴 maintenance impact도 함께 집계하고, 이 workspace에서 실제로 발생한 provider execution 실패와 provider attention pending 상태도 별도 summary field로 노출합니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, pending owner handoff reminder count, next pending owner handoff due/reminder timestamp, 그리고 maintenance가 실제로 영향을 준 mission breadth까지 함께 보여줍니다. `overview global`은 여기에 provider health summary와 nested `providerOverview`도 포함해서 configured/ready provider 수, latest probe success or failure, unprobed provider 수, pending provider attention overdue count, pending provider attention needs-reminder count, next provider attention due/reminder timestamp, latest provider attention reminder를 top-level control-plane에서 바로 확인할 수 있습니다. `workspace overview`는 workspace-scope run뿐 아니라 global sweep나 mission-scope sweep가 이 workspace mission에 남긴 maintenance impact도 함께 집계하고, 이 workspace에서 실제로 발생한 provider execution 실패와 provider attention pending/reminder 상태도 별도 summary field로 노출합니다.
 
 Create missions:
 
@@ -99,7 +99,7 @@ node src/cli.mjs overview maintenance --outcome effective
 node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다. mission-scoped maintenance sweep를 실행하면 mission summary와 mission timeline도 직접 maintenance evidence를 보여주고, workspace-wide maintenance sweep가 특정 mission pressure를 처리한 경우에도 mission timeline에는 related `maintenance-run` evidence가 연결됩니다. mission summary는 direct maintenance aggregate와 별도로 combined `maintenance impact` summary를 제공해, indirect workspace sweep가 이 mission에 준 reminder 효과도 한 번에 확인할 수 있습니다. mission summary는 여기에 mission-scoped provider execution and provider attention aggregate도 함께 노출해서, 해당 mission에서 어떤 provider run이 실패했고 provider attention이 pending, acknowledged, resolved 중 어디까지 진행됐는지도 바로 확인할 수 있습니다. unified `action inbox`는 이제 monitoring escalation과 owner handoff reminder pressure를 공통 `--needs-reminder` slice로도 보여줍니다. workspace/global operator timeline은 maintenance sweep 실행뿐 아니라 pressure를 실제로 처리한 `maintenance-required-acknowledged`, `maintenance-required-resolved` evidence, workspace-bound `provider-execution-failed` trigger, 그리고 이어지는 provider attention `opened/acknowledged/resolved` lifecycle도 함께 보여줍니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다. mission-scoped maintenance sweep를 실행하면 mission summary와 mission timeline도 직접 maintenance evidence를 보여주고, workspace-wide maintenance sweep가 특정 mission pressure를 처리한 경우에도 mission timeline에는 related `maintenance-run` evidence가 연결됩니다. mission summary는 direct maintenance aggregate와 별도로 combined `maintenance impact` summary를 제공해, indirect workspace sweep가 이 mission에 준 reminder 효과도 한 번에 확인할 수 있습니다. mission summary는 여기에 mission-scoped provider execution and provider attention aggregate도 함께 노출해서, 해당 mission에서 어떤 provider run이 실패했고 provider attention이 pending, acknowledged, resolved, reminded 중 어디까지 진행됐는지도 바로 확인할 수 있습니다. unified `action inbox`는 이제 monitoring escalation, owner handoff, provider attention reminder pressure를 공통 `--needs-reminder` slice로도 보여줍니다. workspace/global operator timeline은 maintenance sweep 실행뿐 아니라 pressure를 실제로 처리한 `maintenance-required-acknowledged`, `maintenance-required-resolved` evidence, workspace-bound `provider-execution-failed` trigger, 그리고 이어지는 provider attention `opened/reminded/acknowledged/resolved` lifecycle도 함께 보여줍니다.
 
 Operator flow:
 
@@ -112,12 +112,14 @@ node src/cli.mjs action inbox --class monitoring-required
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --needs-reminder
 node src/cli.mjs action provider-attention
+node src/cli.mjs action provider-attention --needs-reminder
+node src/cli.mjs action provider-attention --overdue
 node src/cli.mjs action provider-attention --status acknowledged
 node src/cli.mjs action provider-attention --status resolved
 node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
-node src/cli.mjs action maintenance --workspace workspace_xxx --note "Sweep due reminders for escalations and owner handoffs"
+node src/cli.mjs action maintenance --workspace workspace_xxx --note "Sweep due reminders for escalations, owner handoffs, and provider attention"
 node src/cli.mjs action maintenance-history
 node src/cli.mjs action maintenance-history --outcome no-op
 node src/cli.mjs action maintenance-history --since 2026-04-01T00:00:00.000Z
@@ -139,6 +141,7 @@ node src/cli.mjs action sync-escalations
 node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
 node src/cli.mjs action remind-owner-handoffs --due --note "Follow up with the human approver about the pending handoff"
+node src/cli.mjs action remind-provider-attention --due --note "Re-check the pending provider failure and confirm remediation"
 node src/cli.mjs action acknowledge-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe failure acknowledged"
 node src/cli.mjs action resolve-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe recovered"
 node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
@@ -148,7 +151,7 @@ node src/cli.mjs approval list
 node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"
 ```
 
-`action maintenance-history`와 `overview maintenance`는 이제 reminder total뿐 아니라 affected mission breadth, latest impact run, latest impact mission ids도 같이 보여줍니다. `--workspace`는 global sweep와 mission-scope run이 이 workspace mission에 남긴 impact까지 포함하고, `--mission`은 related workspace sweep를 history item으로 포함하면서도 mission-specific reminder effect는 별도 `missionImpact*` summary field로 같이 보여줍니다. 또 maintenance 전용 summary는 `effectiveRunCount`, `noOpRunCount`, `impactRunCount`, `latestEffectiveRun`, `latestNoOpRun`, `recentRuns`를 함께 반환해서 최근 sweep trend를 raw item 재해석 없이 바로 확인할 수 있고, `--outcome <effective|no-op|impactful>`로 원하는 run slice만 직접 조회할 수 있습니다. `--since <iso-timestamp>`를 함께 주면 최근 기간 run만 남겨서 time-window audit도 할 수 있습니다. 추가로 `dailyBuckets`는 filtered run set을 날짜별로 묶어 runCount, effective/no-op split, totalRemindedCount, affected mission breadth를 같이 보여주고, `latestBucketDelta`는 최신 날짜 bucket과 직전 bucket의 차이를 바로 요약합니다.
+`action maintenance-history`와 `overview maintenance`는 이제 reminder total뿐 아니라 affected mission breadth, latest impact run, latest impact mission ids도 같이 보여줍니다. `--workspace`는 global sweep와 mission-scope run이 이 workspace mission에 남긴 impact까지 포함하고, `--mission`은 related workspace sweep를 history item으로 포함하면서도 mission-specific reminder effect는 별도 `missionImpact*` summary field로 같이 보여줍니다. 또 maintenance 전용 summary는 `effectiveRunCount`, `noOpRunCount`, `impactRunCount`, `latestEffectiveRun`, `latestNoOpRun`, `recentRuns`를 함께 반환해서 최근 sweep trend를 raw item 재해석 없이 바로 확인할 수 있고, `--outcome <effective|no-op|impactful>`로 원하는 run slice만 직접 조회할 수 있습니다. `--since <iso-timestamp>`를 함께 주면 최근 기간 run만 남겨서 time-window audit도 할 수 있습니다. 추가로 `dailyBuckets`는 filtered run set을 날짜별로 묶어 runCount, effective/no-op split, totalRemindedCount, affected mission breadth를 같이 보여주고, `latestBucketDelta`는 최신 날짜 bucket과 직전 bucket의 차이를 바로 요약합니다. provider attention reminder도 maintenance sweep 대상에 포함되므로, maintenance summary와 mission/workspace/global overview에는 `providerAttentionRemindedCount` 계열 집계가 같이 올라옵니다.
 
 Memory and documentation:
 
@@ -176,14 +179,15 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans, plus the latest persisted probe and latest execution when available.
 - `provider activity` exposes provider-backed stage execution history derived from persisted `agentRuns`, with `--provider`, `--role`, and `--status` filters.
 - `provider activity-timeline` turns provider execution history into chronological success or failure events so model-backed mission execution can be inspected as a time axis.
-- `provider events` merges persisted probe events, provider execution events, and provider attention acknowledgement events into one chronological stream, with `--family <probe|execution|attention>` plus probe- and execution-specific filters.
+- `provider events` merges persisted probe events, provider execution events, and provider attention acknowledgement, resolution, reminder events into one chronological stream, with `--family <probe|execution|attention>` plus probe- and execution-specific filters.
 - `overview providers` combines current provider readiness with persisted probe audit so configured, ready, unprobed, latest-success, latest-failure, and latest-skipped probe state can be read in one response.
-- `overview providers` now also summarizes provider execution volume, latest successful or failed execution, latest provider attention acknowledgement, latest provider attention resolution, pending attention overdue count, next attention due timestamp, and it exposes the latest unified provider event so probe health, operator acknowledgement, explicit resolution, and actual mission-path usage can be inspected together.
-- `provider check <id>` now includes the current pending provider attention item when it exists, including `pendingAttentionDueAt`, `pendingAttentionIsOverdue`, and `pendingAttentionSlaHours`.
+- `overview providers` now also summarizes provider execution volume, latest successful or failed execution, latest provider attention acknowledgement, latest provider attention resolution, latest provider attention reminder, pending attention overdue count, pending attention needs-reminder count, next attention due/reminder timestamp, and it exposes the latest unified provider event so probe health, operator acknowledgement, explicit resolution, reminder pressure, and actual mission-path usage can be inspected together.
+- `provider check <id>` now includes the current pending provider attention item when it exists, including `pendingAttentionDueAt`, `pendingAttentionIsOverdue`, `pendingAttentionSlaHours`, `pendingAttentionNeedsReminder`, `pendingAttentionNextReminderAt`, and `pendingAttentionReminderCount`.
 - `action inbox --class provider-attention-required` now promotes the latest failed provider probe or failed provider execution into an operator action item. probe failure becomes a global attention item, and mission-scoped execution failure becomes a workspace-bound attention item.
-- `action provider-attention` exposes the provider attention lifecycle directly and supports `--status <pending|acknowledged|resolved>` so provider failures can be audited after they leave the main action inbox.
+- `action provider-attention` exposes the provider attention lifecycle directly and supports `--status <pending|acknowledged|resolved>`, `--needs-reminder`, and `--overdue` so provider failures can be audited and re-triaged after they leave the main action inbox.
 - `action acknowledge-provider-attention <actionId>` records that a specific latest provider failure was acknowledged; the pending attention item stays cleared until a newer failed provider event arrives for that provider.
 - `action resolve-provider-attention <actionId>` explicitly closes an acknowledged provider attention item and adds a `provider-attention-resolved` event to the unified provider event stream.
+- `action remind-provider-attention` records reminder emission against currently pending provider attention items, and `action maintenance` now includes provider attention due reminders in the same local-first sweep as escalations and owner handoffs.
 - `provider probe <id>` attempts a lightweight endpoint reachability check and model listing when the provider is configured; if required env is missing it returns a structured non-attempted result instead of throwing.
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.
@@ -264,6 +268,12 @@ npm run smoke:mission-timeline
 npm run smoke:workspace-overview
 npm run smoke:global-overview
 npm run smoke:provider-surface
+npm run smoke:provider-overview
+npm run smoke:provider-activity
+npm run smoke:provider-events
+npm run smoke:provider-action-inbox
+npm run smoke:provider-attention-lifecycle
+npm run smoke:provider-attention-reminders
 npm run smoke:provider-probe
 npm run smoke:provider-history
 npm run smoke:provider-timeline

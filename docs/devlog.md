@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Attention Reminders
+
+- added persisted provider attention reminder records plus `action remind-provider-attention`, so pending provider failures can be re-notified explicitly instead of only showing due or overdue state in read models
+- linked provider attention reminder pressure into `provider check`, `overview providers`, `overview global`, mission timeline, workspace operator timeline, and the unified `action inbox --needs-reminder` slice
+- extended `action maintenance` to sweep due provider attention reminders together with escalation and owner handoff reminders, and locked the new flow with deterministic smoke coverage for due reminder re-emission and maintenance integration
+
 ## 2026-04-06 Provider Attention Aging Summary
 
 - extended provider status and provider overview surfaces with pending provider attention due and overdue metadata so aging provider failure pressure is visible without opening `action provider-attention` or the unified action inbox
