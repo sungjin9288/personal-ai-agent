@@ -92,6 +92,7 @@ Operator flow:
 node src/cli.mjs action inbox
 node src/cli.mjs action inbox --class retry-ready
 node src/cli.mjs action inbox --class monitoring-required
+node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
@@ -104,6 +105,7 @@ node src/cli.mjs action log-overdue
 node src/cli.mjs action escalated
 node src/cli.mjs action escalated --tier critical
 node src/cli.mjs action escalated --needs-reminder
+node src/cli.mjs action escalated --needs-reminder --effective-owner human-approver
 node src/cli.mjs action sync-escalations
 node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
@@ -171,6 +173,7 @@ npm run smoke:escalated-inbox
 npm run smoke:escalation-sync
 npm run smoke:escalation-reminder-due
 npm run smoke:escalation-reminders
+npm run smoke:escalation-owner-chain
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
 npm run smoke:reviewer-follow-up-lifecycle

@@ -183,6 +183,31 @@ function deriveEscalationReminderCadenceHours(tier) {
   return ESCALATION_REMINDER_CADENCE_HOURS[tier] || null;
 }
 
+function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
+  const ownerChain = ['mission-owner', 'workspace-owner', 'human-approver'];
+  const baseOwner = ACTION_OWNERS.includes(recommendedOwner) ? recommendedOwner : 'workspace-owner';
+  const baseIndex = ownerChain.indexOf(baseOwner);
+  const safeIndex = baseIndex === -1 ? ownerChain.indexOf('workspace-owner') : baseIndex;
+
+  if (status !== 'open' || !needsReminder) {
+    return {
+      effectiveRecommendedOwner: baseOwner,
+      ownerEscalationLevel: baseOwner === 'human-approver' ? 'final' : 'base',
+      ownerEscalationStep: 0,
+    };
+  }
+
+  const step = Math.min(Number(reminderCount || 0), ownerChain.length - 1 - safeIndex);
+  const effectiveRecommendedOwner = ownerChain[safeIndex + step];
+  const ownerEscalationLevel = step === 0 ? 'base' : effectiveRecommendedOwner === 'human-approver' ? 'final' : 'escalated';
+
+  return {
+    effectiveRecommendedOwner,
+    ownerEscalationLevel,
+    ownerEscalationStep: step,
+  };
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -316,6 +341,12 @@ function enrichEscalation(item) {
       : null;
   const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
   const needsReminder = item.status === 'open' && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+  const ownerSignals = deriveEffectiveActionOwner({
+    recommendedOwner: item.recommendedOwner,
+    reminderCount: Number(item.reminderCount || 0),
+    needsReminder,
+    status: item.status,
+  });
 
   return {
     ...item,
@@ -329,6 +360,9 @@ function enrichEscalation(item) {
     lastSyncedAt: item.lastSyncedAt || null,
     needsReminder,
     nextReminderAt,
+    effectiveRecommendedOwner: ownerSignals.effectiveRecommendedOwner,
+    ownerEscalationLevel: ownerSignals.ownerEscalationLevel,
+    ownerEscalationStep: ownerSignals.ownerEscalationStep,
     reminderCadenceHours,
     reminderCount: Number(item.reminderCount || 0),
     reminderHistory: Array.isArray(item.reminderHistory) ? item.reminderHistory : [],
@@ -341,6 +375,7 @@ function summarizeEscalations(items) {
   const enrichedItems = items.map((item) => enrichEscalation(item));
   const ownerCounts = {};
   const priorityCounts = {};
+  const effectiveOwnerCounts = {};
   const statusCounts = {
     ...Object.fromEntries(ESCALATION_STATUSES.map((status) => [status, 0])),
     total: enrichedItems.length,
@@ -357,6 +392,7 @@ function summarizeEscalations(items) {
   for (const item of enrichedItems) {
     workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
     ownerCounts[item.recommendedOwner] = (ownerCounts[item.recommendedOwner] || 0) + 1;
+    effectiveOwnerCounts[item.effectiveRecommendedOwner] = (effectiveOwnerCounts[item.effectiveRecommendedOwner] || 0) + 1;
     priorityCounts[item.priority] = (priorityCounts[item.priority] || 0) + 1;
     statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
@@ -378,6 +414,7 @@ function summarizeEscalations(items) {
         )
         .at(-1) || null,
     openEscalationIds: enrichedItems.filter((item) => item.status === 'open').map((item) => item.id),
+    effectiveOwnerCounts,
     ownerCounts,
     pendingEscalationCount: enrichedItems.filter((item) => item.status === 'open').length,
     priorityCounts,
@@ -1296,6 +1333,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               createdAt: escalation.createdAt,
               deliverableType: escalation.deliverableType || null,
               escalationId: escalation.id,
+              effectiveRecommendedOwner: escalation.effectiveRecommendedOwner || escalation.recommendedOwner || 'workspace-owner',
               missionId: escalation.missionId,
               reason: escalation.reason,
               recommendedCommand: escalation.recommendedCommand,
@@ -1308,6 +1346,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               lastReminderAt: escalation.lastReminderAt || null,
               needsReminder: Boolean(escalation.needsReminder),
               nextReminderAt: escalation.nextReminderAt || null,
+              ownerEscalationLevel: escalation.ownerEscalationLevel || 'base',
+              ownerEscalationStep: Number(escalation.ownerEscalationStep || 0),
               reminderCount: Number(escalation.reminderCount || 0),
               reminderCadenceHours: escalation.reminderCadenceHours || null,
               reminderHistoryCount: Array.isArray(escalation.reminderHistory) ? escalation.reminderHistory.length : 0,
@@ -1328,9 +1368,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
-  function summarizeActionInbox(items) {
-    const workspaceCounts = {};
-    const actionClassCounts = {
+function summarizeActionInbox(items) {
+  const workspaceCounts = {};
+  const actionClassCounts = {
       awaitingHumanDecision: 0,
       blocked: 0,
       monitoringRequired: 0,
@@ -1343,9 +1383,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       blockedFollowUp: 0,
       reviewerFollowUp: 0,
       total: items.length,
-    };
-    const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
-    const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
+  };
+  const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
+  const effectiveOwnerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
+  const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
     const overdueCounts = {
       overdue: 0,
       onTime: 0,
@@ -1391,6 +1432,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         ownerCounts[item.recommendedOwner] += 1;
       }
 
+      if (effectiveOwnerCounts[item.effectiveRecommendedOwner || item.recommendedOwner] !== undefined) {
+        effectiveOwnerCounts[item.effectiveRecommendedOwner || item.recommendedOwner] += 1;
+      }
+
       if (priorityCounts[item.priority] !== undefined) {
         priorityCounts[item.priority] += 1;
       }
@@ -1405,6 +1450,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       actionCounts,
       actionClassCounts,
+      effectiveOwnerCounts,
       ownerCounts,
       pendingActionCount: items.length,
       priorityCounts,
@@ -1541,6 +1587,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
     }
+    if (filter.effectiveOwner && !ACTION_OWNERS.includes(filter.effectiveOwner)) {
+      throw new Error(`Unsupported effective action owner: ${filter.effectiveOwner}`);
+    }
 
     syncEscalations({
       missionId: filter.missionId,
@@ -1563,6 +1612,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.owner && item.recommendedOwner !== filter.owner) {
           return false;
         }
+        if (filter.effectiveOwner && (item.effectiveRecommendedOwner || item.recommendedOwner) !== filter.effectiveOwner) {
+          return false;
+        }
         if (filter.overdueOnly && !item.isOverdue) {
           return false;
         }
@@ -1573,6 +1625,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         actionClass: filter.actionClass || null,
+        effectiveOwner: filter.effectiveOwner || null,
         missionId: filter.missionId || null,
         owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
@@ -1690,6 +1743,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
     }
+    if (filter.effectiveOwner && !ACTION_OWNERS.includes(filter.effectiveOwner)) {
+      throw new Error(`Unsupported effective action owner: ${filter.effectiveOwner}`);
+    }
     if (filter.status && !ESCALATION_STATUSES.includes(filter.status)) {
       throw new Error(`Unsupported escalation status: ${filter.status}`);
     }
@@ -1714,6 +1770,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .map((item) => enrichEscalation(item))
       .filter((item) => {
+        if (filter.effectiveOwner && item.effectiveRecommendedOwner !== filter.effectiveOwner) {
+          return false;
+        }
         if (filter.tier && item.escalationTier !== filter.tier) {
           return false;
         }
@@ -1727,6 +1786,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         missionId: filter.missionId || null,
+        effectiveOwner: filter.effectiveOwner || null,
         needsReminderOnly: Boolean(filter.needsReminderOnly),
         owner: filter.owner || null,
         status: effectiveStatus,

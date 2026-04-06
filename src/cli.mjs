@@ -47,10 +47,10 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--overdue]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--overdue]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
-  action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>] [--needs-reminder]
+  action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>] [--needs-reminder]
   action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
@@ -214,6 +214,7 @@ function main() {
     printJson(
       service.getActionInbox({
         actionClass: readOption(rest, '--class', ''),
+        effectiveOwner: readOption(rest, '--effective-owner', ''),
         missionId: readOption(rest, '--mission', ''),
         owner: readOption(rest, '--owner', ''),
         overdueOnly: hasOption(rest, '--overdue'),
@@ -252,6 +253,7 @@ function main() {
   if (group === 'action' && command === 'escalated') {
     printJson(
       service.getEscalatedInbox({
+        effectiveOwner: readOption(rest, '--effective-owner', ''),
         missionId: readOption(rest, '--mission', ''),
         needsReminderOnly: hasOption(rest, '--needs-reminder'),
         owner: readOption(rest, '--owner', ''),
