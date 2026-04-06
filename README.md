@@ -52,7 +52,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure와 escalation tier 분포도 함께 보여줍니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total도 함께 보여줍니다.
 
 Create missions:
 
@@ -103,6 +103,7 @@ node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xx
 node src/cli.mjs action log-overdue
 node src/cli.mjs action escalated
 node src/cli.mjs action escalated --tier critical
+node src/cli.mjs action sync-escalations
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
@@ -164,6 +165,7 @@ Run the local-first smoke suite:
 npm run smoke
 npm run smoke:action-inbox
 npm run smoke:escalated-inbox
+npm run smoke:escalation-sync
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
 npm run smoke:reviewer-follow-up-lifecycle

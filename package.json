@@ -8,6 +8,7 @@
     "smoke": "node scripts/smoke.mjs",
     "smoke:action-inbox": "node scripts/smoke-action-inbox.mjs",
     "smoke:escalated-inbox": "node scripts/smoke-escalated-inbox.mjs",
+    "smoke:escalation-sync": "node scripts/smoke-escalation-sync.mjs",
     "smoke:action-overdue-log": "node scripts/smoke-action-overdue-log.mjs",
     "smoke:operator-timeline": "node scripts/smoke-operator-timeline.mjs",
     "smoke:reviewer-follow-up-lifecycle": "node scripts/smoke-reviewer-follow-up-lifecycle.mjs",

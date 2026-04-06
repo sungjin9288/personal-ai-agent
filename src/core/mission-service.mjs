@@ -154,6 +154,15 @@ function deriveSlaHoursFromTimestamps(createdAt, dueAt) {
   return Math.round(durationMs / (60 * 60 * 1000));
 }
 
+function buildInitialTierHistoryEntry(tier, at, reason) {
+  return {
+    at,
+    from: null,
+    reason,
+    to: tier,
+  };
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -270,10 +279,20 @@ function deriveEscalationTier(item) {
   return 'warning';
 }
 
+function isBreachTier(tier) {
+  return tier === 'warning' || tier === 'critical';
+}
+
 function enrichEscalation(item) {
   return {
     ...item,
-    escalationTier: deriveEscalationTier(item),
+    breachCount: Number(item.breachCount || 0),
+    currentTier: item.currentTier || deriveEscalationTier(item),
+    escalationTier: item.currentTier || deriveEscalationTier(item),
+    escalationTierHistoryCount: Array.isArray(item.tierHistory) ? item.tierHistory.length : 0,
+    lastBreachAt: item.lastBreachAt || null,
+    lastSyncedAt: item.lastSyncedAt || null,
+    tierHistory: Array.isArray(item.tierHistory) ? item.tierHistory : [],
   };
 }
 
@@ -289,6 +308,7 @@ function summarizeEscalations(items) {
     ...Object.fromEntries(ESCALATION_TIERS.map((tier) => [tier, 0])),
   };
   const workspaceCounts = {};
+  let breachCountTotal = 0;
 
   for (const item of enrichedItems) {
     workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -296,6 +316,7 @@ function summarizeEscalations(items) {
     priorityCounts[item.priority] = (priorityCounts[item.priority] || 0) + 1;
     statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
+    breachCountTotal += Number(item.breachCount || 0);
   }
 
   return {
@@ -311,6 +332,7 @@ function summarizeEscalations(items) {
     priorityCounts,
     statusCounts,
     tierCounts,
+    breachCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
   };
@@ -771,6 +793,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         total: approvals.length,
       },
       escalationCounts: escalationSummary.statusCounts,
+      escalationBreachCountTotal: escalationSummary.breachCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
@@ -800,6 +823,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function getWorkspaceOverview(workspaceId) {
     const workspace = getWorkspace(workspaceId);
+    syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
     const escalations = store.listEscalations({ workspaceId: workspace.id }).map((item) => enrichEscalation(item));
     const escalationSummary = summarizeEscalations(escalations);
@@ -833,6 +857,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           .map((entry) => entry.mission.id),
         approvalCounts,
         escalationCounts: escalationSummary.statusCounts,
+        escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
         latestMission: latestMissionEntry
@@ -1345,6 +1370,94 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function syncEscalations(filter = {}) {
+    const currentTimestamp = now();
+    const candidates = store.listEscalations({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      status: filter.status,
+      workspaceId: filter.workspaceId,
+    });
+    const results = [];
+
+    for (const escalation of candidates) {
+      const nextTier = deriveEscalationTier(escalation);
+      const previousTier = escalation.currentTier || deriveEscalationTier(escalation);
+      const existingHistory = Array.isArray(escalation.tierHistory) ? escalation.tierHistory : [];
+      const tierHistory =
+        existingHistory.length > 0
+          ? [...existingHistory]
+          : [buildInitialTierHistoryEntry(previousTier, escalation.createdAt || currentTimestamp, 'backfilled')];
+      let breachCount = Number.isFinite(Number(escalation.breachCount)) ? Number(escalation.breachCount) : 0;
+      let lastBreachAt = escalation.lastBreachAt || null;
+      let changed = !escalation.currentTier || !escalation.lastSyncedAt || existingHistory.length === 0;
+
+      if (nextTier !== previousTier) {
+        tierHistory.push({
+          at: currentTimestamp,
+          from: previousTier,
+          reason: 'sync',
+          to: nextTier,
+        });
+        changed = true;
+
+        if (isBreachTier(nextTier)) {
+          breachCount += 1;
+          lastBreachAt = currentTimestamp;
+        }
+      }
+
+      const basePatch = {
+        breachCount,
+        currentTier: nextTier,
+        lastBreachAt,
+        lastSyncedAt: currentTimestamp,
+        tierHistory,
+        updatedAt: escalation.updatedAt,
+      };
+
+      if (changed) {
+        const updated = store.updateEscalation(escalation.id, (current) => ({
+          ...current,
+          breachCount: basePatch.breachCount,
+          currentTier: basePatch.currentTier,
+          lastBreachAt: basePatch.lastBreachAt,
+          lastSyncedAt: basePatch.lastSyncedAt,
+          tierHistory: basePatch.tierHistory,
+        }));
+
+        results.push({
+          breachCount: updated.breachCount,
+          currentTier: updated.currentTier,
+          escalationId: updated.id,
+          transitionRecorded: nextTier !== previousTier,
+        });
+        continue;
+      }
+
+      const updated = store.updateEscalation(escalation.id, (current) => ({
+        ...current,
+        lastSyncedAt: currentTimestamp,
+      }));
+
+      results.push({
+        breachCount: updated.breachCount || breachCount,
+        currentTier: updated.currentTier || nextTier,
+        escalationId: updated.id,
+        transitionRecorded: false,
+      });
+    }
+
+    return {
+      items: results,
+      summary: {
+        breachCountTotal: results.reduce((count, item) => count + Number(item.breachCount || 0), 0),
+        syncedCount: results.length,
+        transitionedCount: results.filter((item) => item.transitionRecorded).length,
+      },
+    };
+  }
+
   function getActionInbox(filter = {}) {
     if (filter.workspaceId) {
       getWorkspace(filter.workspaceId);
@@ -1361,6 +1474,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
     }
+
+    syncEscalations({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    });
 
     const items = [
       ...buildApprovalInboxItems(filter),
@@ -1509,6 +1627,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       throw new Error(`Unsupported escalation tier: ${filter.tier}`);
     }
 
+    const syncResult = syncEscalations({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      status: filter.status,
+      workspaceId: filter.workspaceId,
+    });
+
     const effectiveStatus = filter.status || 'open';
     const items = store
       .listEscalations({
@@ -1535,7 +1660,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         workspaceId: filter.workspaceId || null,
       },
       items,
-      summary: summarizeEscalations(items),
+      summary: {
+        ...summarizeEscalations(items),
+        sync: syncResult.summary,
+      },
     };
   }
 
@@ -1663,6 +1791,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function getGlobalOverview() {
+    syncEscalations();
     const workspaceOverviews = store.listWorkspaces().map((workspace) => getWorkspaceOverview(workspace.id));
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
@@ -1699,6 +1828,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         approvalCounts,
         escalatedWorkspaceIds: [...new Set(openEscalations.map((item) => item.workspaceId))],
         escalationCounts: escalationSummary.statusCounts,
+        escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
         latestEscalation: escalationSummary.latestEscalation,
@@ -2179,6 +2309,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function showMission(missionId) {
     const mission = getMission(missionId);
+    syncEscalations({ missionId: mission.id });
     return {
       mission,
       summary: summarizeMission(mission),
@@ -2188,6 +2319,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function getMissionTimeline(missionId) {
     const mission = getMission(missionId);
+    syncEscalations({ missionId: mission.id });
     return {
       mission,
       summary: summarizeMission(mission),
@@ -2215,6 +2347,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listSessions,
     logOverdueActions,
     logDocument,
+    syncEscalations,
     resolveEscalation,
     resolveApproval,
     resolveReviewerFollowUp,

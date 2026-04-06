@@ -51,6 +51,7 @@ Commands:
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>]
+  action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
@@ -254,6 +255,18 @@ function main() {
         owner: readOption(rest, '--owner', ''),
         status: readOption(rest, '--status', ''),
         tier: readOption(rest, '--tier', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'sync-escalations') {
+    printJson(
+      service.syncEscalations({
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
+        status: readOption(rest, '--status', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );
