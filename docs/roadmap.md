@@ -23,6 +23,7 @@
 - provider events surface now merges probe and execution observability into one chronological provider event stream and links latest provider events into overview surfaces
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
+- provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence

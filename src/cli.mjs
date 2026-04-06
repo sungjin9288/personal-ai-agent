@@ -76,7 +76,7 @@ Commands:
   session show <missionId> --session <sessionId>
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|monitoring-required|handoff-required|maintenance-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
-  action provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged>]
+  action provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved>]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
@@ -88,6 +88,7 @@ Commands:
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action acknowledge-provider-attention <actionId> [--note <text>]
+  action resolve-provider-attention <actionId> [--note <text>]
   action acknowledge-owner-handoff <escalationId> [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
@@ -499,6 +500,15 @@ async function main() {
   if (group === 'action' && command === 'acknowledge-provider-attention') {
     printJson(
       service.acknowledgeProviderAttention(rest[0], {
+        note: readOption(rest, '--note', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'resolve-provider-attention') {
+    printJson(
+      service.resolveProviderAttention(rest[0], {
         note: readOption(rest, '--note', ''),
       }),
     );

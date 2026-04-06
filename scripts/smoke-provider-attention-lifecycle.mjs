@@ -121,6 +121,33 @@ assert.equal(acknowledgedList.items[0].providerId, 'anthropic');
 assert.equal(acknowledgedList.items[0].status, 'acknowledged');
 assert.equal(acknowledgedList.summary.statusCounts.acknowledged, 1);
 
+const resolved = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'resolve-provider-attention', anthropicPending.actionId, '--note', 'Anthropic probe recovered.'],
+});
+
+assert.equal(resolved.providerId, 'anthropic');
+assert.equal(resolved.status, 'resolved');
+assert.equal(resolved.resolutionNote, 'Anthropic probe recovered.');
+
+const acknowledgedAfterResolve = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-attention', '--status', 'acknowledged', '--provider', 'anthropic'],
+});
+
+assert.equal(acknowledgedAfterResolve.items.length, 0);
+assert.equal(acknowledgedAfterResolve.summary.statusCounts.acknowledged, 0);
+
+const resolvedList = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-attention', '--status', 'resolved', '--provider', 'anthropic'],
+});
+
+assert.equal(resolvedList.items.length, 1);
+assert.equal(resolvedList.items[0].providerId, 'anthropic');
+assert.equal(resolvedList.items[0].status, 'resolved');
+assert.equal(resolvedList.summary.statusCounts.resolved, 1);
+
 const providerAttentionInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--class', 'provider-attention-required'],
@@ -135,8 +162,9 @@ const providerCheck = runCli({
   args: ['provider', 'check', 'anthropic'],
 });
 
-assert.equal(providerCheck.attentionStatus, 'acknowledged');
+assert.equal(providerCheck.attentionStatus, 'resolved');
 assert.equal(providerCheck.latestAttentionAcknowledgement.providerId, 'anthropic');
+assert.equal(providerCheck.latestAttentionResolution.providerId, 'anthropic');
 assert.equal(providerCheck.latestAttentionAcknowledgement.actionId, anthropicPending.actionId);
 
 const attentionEvents = runCli({
@@ -144,10 +172,11 @@ const attentionEvents = runCli({
   args: ['provider', 'events', '--family', 'attention', '--provider', 'anthropic'],
 });
 
-assert.equal(attentionEvents.summary.total, 1);
-assert.equal(attentionEvents.summary.familyCounts.attention, 1);
+assert.equal(attentionEvents.summary.total, 2);
+assert.equal(attentionEvents.summary.familyCounts.attention, 2);
 assert.equal(attentionEvents.summary.latestAttentionEvent.providerId, 'anthropic');
 assert.equal(attentionEvents.timeline[0].eventKind, 'provider-attention-acknowledged');
+assert.equal(attentionEvents.timeline[1].eventKind, 'provider-attention-resolved');
 
 const providerOverview = runCli({
   rootDir: tempRoot,
@@ -155,9 +184,11 @@ const providerOverview = runCli({
 });
 
 assert.equal(providerOverview.summary.attentionRequiredCount, 1);
-assert.equal(providerOverview.summary.acknowledgedAttentionCount, 1);
+assert.equal(providerOverview.summary.acknowledgedAttentionCount, 0);
+assert.equal(providerOverview.summary.resolvedAttentionCount, 1);
 assert.equal(providerOverview.summary.latestAttentionRequiredEvent.providerId, 'stub');
 assert.equal(providerOverview.summary.latestAttentionAcknowledgement.providerId, 'anthropic');
+assert.equal(providerOverview.summary.latestAttentionResolution.providerId, 'anthropic');
 
 const globalOverview = runCli({
   rootDir: tempRoot,
@@ -165,14 +196,16 @@ const globalOverview = runCli({
 });
 
 assert.equal(globalOverview.summary.providerAttentionRequiredCount, 1);
-assert.equal(globalOverview.summary.providerAttentionAcknowledgedCount, 1);
+assert.equal(globalOverview.summary.providerAttentionAcknowledgedCount, 0);
+assert.equal(globalOverview.summary.providerAttentionResolvedCount, 1);
 assert.equal(globalOverview.summary.latestProviderAttentionRequiredEvent.providerId, 'stub');
 assert.equal(globalOverview.summary.latestProviderAttentionAcknowledgement.providerId, 'anthropic');
+assert.equal(globalOverview.summary.latestProviderAttentionResolution.providerId, 'anthropic');
 
 console.log(
   JSON.stringify(
     {
-      acknowledgedProviderId: acknowledged.providerId,
+      resolvedProviderId: resolved.providerId,
       mode: 'provider-attention-lifecycle',
       ok: true,
       pendingProviderAttentionCount: pendingAfterAck.items.length,

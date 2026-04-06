@@ -58,7 +58,7 @@ export const MEMORY_KINDS = ['preference', 'decision', 'fact'];
 export const DOCUMENT_LOG_TYPES = ['devlog', 'incident', 'reference'];
 
 export const PROVIDER_IDS = ['stub', 'openai', 'anthropic', 'local'];
-export const PROVIDER_ATTENTION_STATUSES = ['pending', 'acknowledged'];
+export const PROVIDER_ATTENTION_STATUSES = ['pending', 'acknowledged', 'resolved'];
 
 export const KNOWLEDGE_DELIVERABLE_TYPES = [
   'decision-memo',

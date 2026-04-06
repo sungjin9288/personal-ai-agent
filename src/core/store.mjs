@@ -368,6 +368,9 @@ export function createStore({ rootDir }) {
     updateReviewerFollowUp(followUpId, updater) {
       return updateCollectionItem('reviewerFollowUps', followUpId, updater);
     },
+    updateProviderAttentionAcknowledgement(providerAttentionAcknowledgementId, updater) {
+      return updateCollectionItem('providerAttentionAcknowledgements', providerAttentionAcknowledgementId, updater);
+    },
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);
     },

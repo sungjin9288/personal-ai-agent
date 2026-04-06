@@ -113,6 +113,7 @@ node src/cli.mjs action inbox --class monitoring-required --effective-owner huma
 node src/cli.mjs action inbox --needs-reminder
 node src/cli.mjs action provider-attention
 node src/cli.mjs action provider-attention --status acknowledged
+node src/cli.mjs action provider-attention --status resolved
 node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
@@ -139,6 +140,7 @@ node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
 node src/cli.mjs action remind-owner-handoffs --due --note "Follow up with the human approver about the pending handoff"
 node src/cli.mjs action acknowledge-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe failure acknowledged"
+node src/cli.mjs action resolve-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe recovered"
 node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
@@ -176,10 +178,11 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider activity-timeline` turns provider execution history into chronological success or failure events so model-backed mission execution can be inspected as a time axis.
 - `provider events` merges persisted probe events, provider execution events, and provider attention acknowledgement events into one chronological stream, with `--family <probe|execution|attention>` plus probe- and execution-specific filters.
 - `overview providers` combines current provider readiness with persisted probe audit so configured, ready, unprobed, latest-success, latest-failure, and latest-skipped probe state can be read in one response.
-- `overview providers` now also summarizes provider execution volume, latest successful or failed execution, latest provider attention acknowledgement, and it exposes the latest unified provider event so probe health, operator acknowledgement, and actual mission-path usage can be inspected together.
+- `overview providers` now also summarizes provider execution volume, latest successful or failed execution, latest provider attention acknowledgement, latest provider attention resolution, and it exposes the latest unified provider event so probe health, operator acknowledgement, explicit resolution, and actual mission-path usage can be inspected together.
 - `action inbox --class provider-attention-required` now promotes the latest failed provider probe or failed provider execution into an operator action item. probe failure becomes a global attention item, and mission-scoped execution failure becomes a workspace-bound attention item.
-- `action provider-attention` exposes the provider attention lifecycle directly and supports `--status <pending|acknowledged>` so acknowledged provider failures can be audited after they leave the main action inbox.
+- `action provider-attention` exposes the provider attention lifecycle directly and supports `--status <pending|acknowledged|resolved>` so provider failures can be audited after they leave the main action inbox.
 - `action acknowledge-provider-attention <actionId>` records that a specific latest provider failure was acknowledged; the pending attention item stays cleared until a newer failed provider event arrives for that provider.
+- `action resolve-provider-attention <actionId>` explicitly closes an acknowledged provider attention item and adds a `provider-attention-resolved` event to the unified provider event stream.
 - `provider probe <id>` attempts a lightweight endpoint reachability check and model listing when the provider is configured; if required env is missing it returns a structured non-attempted result instead of throwing.
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.

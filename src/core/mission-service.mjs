@@ -1063,6 +1063,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return store.listProviderAttentionAcknowledgements({ providerId }).at(-1) || null;
   }
 
+  function getLatestProviderAttentionRecord(providerId) {
+    return store.listProviderAttentionAcknowledgements({ providerId }).at(-1) || null;
+  }
+
+  function getLatestProviderAttentionResolution(providerId) {
+    return (
+      store
+        .listProviderAttentionAcknowledgements({ providerId })
+        .filter((record) => record.status === 'resolved')
+        .at(-1) || null
+    );
+  }
+
   function getProviderAttentionAcknowledgementForEvent(event) {
     const providerId = normalizeText(event?.providerId || '');
     const eventFamily = normalizeText(event?.eventFamily || '');
@@ -1266,18 +1279,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildProviderStatusEntries() {
     return providerRegistry.listProviders().map((provider) => {
       const latestEvent = getLatestMatchingRecord(buildProviderEvents({ providerId: provider.id }), () => true);
+      const latestAttentionRecord = getLatestProviderAttentionRecord(provider.id);
       const latestAttentionAcknowledgement = getLatestProviderAttentionAcknowledgement(provider.id);
+      const latestAttentionResolution = getLatestProviderAttentionResolution(provider.id);
       const attentionStatus =
-        latestEvent?.eventKind === 'provider-attention-acknowledged'
-          ? 'acknowledged'
-          : latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)
-            ? 'pending'
-            : 'clear';
+        latestEvent?.eventKind === 'provider-attention-resolved'
+          ? 'resolved'
+          : latestEvent?.eventKind === 'provider-attention-acknowledged'
+            ? 'acknowledged'
+            : latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)
+              ? 'pending'
+              : 'clear';
 
       return {
         ...provider,
         attentionStatus,
         latestAttentionAcknowledgement,
+        latestAttentionRecord,
+        latestAttentionResolution,
         latestEvent,
         latestExecution: getLatestProviderExecution(provider.id),
         latestProbe: getLatestProviderProbe(provider.id),
@@ -1314,6 +1333,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const latestProbeSuccessProviderIds = [];
     const readyProviderIds = [];
     const acknowledgedAttentionProviderIds = [];
+    const resolvedAttentionProviderIds = [];
     const unconfiguredProviderIds = [];
     const unprobedProviderIds = [];
 
@@ -1330,6 +1350,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (provider.latestEvent?.eventKind === 'provider-attention-acknowledged') {
         acknowledgedAttentionProviderIds.push(provider.id);
+      }
+
+      if (provider.latestEvent?.eventKind === 'provider-attention-resolved') {
+        resolvedAttentionProviderIds.push(provider.id);
       }
 
       if (!provider.latestProbe) {
@@ -1359,6 +1383,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...summarizeProviderStatusEntries(providers),
       acknowledgedAttentionCount: acknowledgedAttentionProviderIds.length,
       acknowledgedAttentionProviderIds,
+      attentionStatusCounts: {
+        acknowledged: acknowledgedAttentionProviderIds.length,
+        clear: providers.filter((provider) => provider.attentionStatus === 'clear').length,
+        pending: pendingAttentionItems.length,
+        resolved: resolvedAttentionProviderIds.length,
+        total: providers.length,
+      },
       attentionRequiredCount: attentionEvents.length,
       attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
       configuredProviderIds,
@@ -1373,6 +1404,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
       latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionRecords, 'acknowledgedAt'),
+      latestAttentionResolution: getLatestItem(
+        acknowledgedAttentionRecords.filter((record) => (record.status || 'acknowledged') === 'resolved'),
+        'resolvedAt',
+      ),
       latestAttentionRequiredEvent: getLatestItem(attentionEvents, 'at'),
       latestAttentionEvent: eventSummary.latestAttentionEvent,
       latestExecutionEvent: eventSummary.latestExecutionEvent,
@@ -1394,6 +1429,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       probeTotal: probeSummary.total,
       readyCount: readyProviderIds.length,
       readyProviderIds,
+      resolvedAttentionCount: resolvedAttentionProviderIds.length,
+      resolvedAttentionProviderIds,
       unconfiguredCount: unconfiguredProviderIds.length,
       unconfiguredProviderIds,
       unprobedCount: unprobedProviderIds.length,
@@ -1459,20 +1496,42 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function buildProviderAttentionTimeline(records) {
-    return records.map((record) => ({
-      actionId: record.actionId,
-      acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
-      at: record.acknowledgedAt || record.createdAt || null,
-      detail: record.note || 'Provider attention acknowledged.',
-      eventRefId: record.eventRefId || null,
-      kind: 'provider-attention-acknowledged',
-      missionId: record.missionId || null,
-      providerId: record.providerId,
-      providerDisplayName: record.providerDisplayName || null,
-      sessionId: record.sessionId || null,
-      workspaceId: record.workspaceId || null,
-      workspaceName: record.workspaceName || null,
-    }));
+    return records.flatMap((record) => {
+      const baseEvent = {
+        actionId: record.actionId,
+        acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
+        eventRefId: record.eventRefId || null,
+        missionId: record.missionId || null,
+        providerDisplayName: record.providerDisplayName || null,
+        providerId: record.providerId,
+        resolvedAt: record.resolvedAt || null,
+        resolutionNote: record.resolutionNote || null,
+        sessionId: record.sessionId || null,
+        status: record.status || 'acknowledged',
+        workspaceId: record.workspaceId || null,
+        workspaceName: record.workspaceName || null,
+      };
+
+      const events = [
+        {
+          ...baseEvent,
+          at: record.acknowledgedAt || record.createdAt || null,
+          detail: record.note || 'Provider attention acknowledged.',
+          kind: 'provider-attention-acknowledged',
+        },
+      ];
+
+      if ((record.status || 'acknowledged') === 'resolved' && record.resolvedAt) {
+        events.push({
+          ...baseEvent,
+          at: record.resolvedAt,
+          detail: record.resolutionNote || 'Provider attention resolved.',
+          kind: 'provider-attention-resolved',
+        });
+      }
+
+      return events;
+    });
   }
 
   function buildProviderEvents(filter = {}) {
@@ -3043,6 +3102,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerId: filter.providerId,
         workspaceId: filter.workspaceId,
       })
+      .filter((record) => (record.status || 'acknowledged') === 'acknowledged')
       .map((record) => ({
         ...record,
         actionType: 'provider-attention',
@@ -3051,6 +3111,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         status: 'acknowledged',
       }))
       .sort((left, right) => String(left.acknowledgedAt || left.createdAt || '').localeCompare(String(right.acknowledgedAt || right.createdAt || '')));
+  }
+
+  function buildProviderAttentionResolvedItems(filter = {}) {
+    return store
+      .listProviderAttentionAcknowledgements({
+        missionId: filter.missionId,
+        providerId: filter.providerId,
+        workspaceId: filter.workspaceId,
+      })
+      .filter((record) => (record.status || 'acknowledged') === 'resolved')
+      .map((record) => ({
+        ...record,
+        actionType: 'provider-attention',
+        providerDisplayName:
+          record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
+        status: 'resolved',
+      }))
+      .sort((left, right) => String(left.resolvedAt || left.acknowledgedAt || left.createdAt || '').localeCompare(String(right.resolvedAt || right.acknowledgedAt || right.createdAt || '')));
   }
 
   function buildProviderAttentionItems(filter = {}) {
@@ -4099,10 +4177,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function summarizeProviderAttentionItems(items) {
     const eventFamilyCounts = { execution: 0, probe: 0 };
     const providerCounts = {};
-    const statusCounts = { acknowledged: 0, pending: 0, total: items.length };
+    const statusCounts = { acknowledged: 0, pending: 0, resolved: 0, total: items.length };
     const workspaceCounts = {};
     let latestAcknowledgedAt = null;
     let latestPendingAt = null;
+    let latestResolvedAt = null;
 
     for (const item of items) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
@@ -4125,6 +4204,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ) {
         latestAcknowledgedAt = item.acknowledgedAt;
       }
+      if (
+        item.status === 'resolved' &&
+        item.resolvedAt &&
+        (!latestResolvedAt || String(latestResolvedAt) < String(item.resolvedAt))
+      ) {
+        latestResolvedAt = item.resolvedAt;
+      }
     }
 
     return {
@@ -4132,6 +4218,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestAcknowledgedAt,
       latestItem: items.at(-1) || null,
       latestPendingAt,
+      latestResolvedAt,
       providerCounts,
       statusCounts,
       total: items.length,
@@ -4157,7 +4244,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const items =
       effectiveStatus === 'acknowledged'
         ? buildProviderAttentionAcknowledgedItems(filter)
-        : buildProviderAttentionPendingItems(filter);
+        : effectiveStatus === 'resolved'
+          ? buildProviderAttentionResolvedItems(filter)
+          : buildProviderAttentionPendingItems(filter);
 
     return {
       filters: {
@@ -4275,10 +4364,29 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       reason: pendingItem.reason,
       recommendedOwner: pendingItem.recommendedOwner,
       sessionId: pendingItem.sessionId,
+      status: 'acknowledged',
       title: pendingItem.title,
       workspaceId: pendingItem.workspaceId,
       workspaceName: pendingItem.workspaceName,
     });
+  }
+
+  function resolveProviderAttention(actionId, { note = '' }) {
+    const record = store.listProviderAttentionAcknowledgements({ actionId }).at(-1) || null;
+    if (!record) {
+      throw new Error(`Provider attention acknowledgement not found: ${actionId}`);
+    }
+    if ((record.status || 'acknowledged') === 'resolved') {
+      throw new Error(`Provider attention already resolved: ${actionId}`);
+    }
+
+    const resolvedAt = now();
+    return store.updateProviderAttentionAcknowledgement(record.id, (current) => ({
+      ...current,
+      resolutionNote: normalizeText(note, 'Provider attention resolved.'),
+      resolvedAt,
+      status: 'resolved',
+    }));
   }
 
   function acknowledgeOwnerHandoff(escalationId, { note = '' }) {
@@ -4536,6 +4644,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestProviderEvent: providerOverview.summary.latestEvent,
         latestProviderAttentionAcknowledgement: providerOverview.summary.latestAttentionAcknowledgement,
         latestProviderAttentionEvent: providerOverview.summary.latestAttentionEvent,
+        latestProviderAttentionResolution: providerOverview.summary.latestAttentionResolution,
         latestProviderAttentionRequiredEvent: providerOverview.summary.latestAttentionRequiredEvent,
         latestProviderExecutionEvent: providerOverview.summary.latestExecutionEvent,
         latestFailedProviderExecution: providerOverview.summary.latestFailedExecution,
@@ -4549,6 +4658,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerCount: providerOverview.summary.total,
         providerAttentionAcknowledgedCount: providerOverview.summary.acknowledgedAttentionCount,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
+        providerAttentionResolvedCount: providerOverview.summary.resolvedAttentionCount,
+        providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,
         providerEventCount: providerOverview.summary.eventTotal,
         providerEventFamilyCounts: providerOverview.summary.eventFamilyCounts,
         providerExecutionCompletedCount: providerOverview.summary.executionCompletedCount,
@@ -5298,6 +5409,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     logOverdueActions,
     logDocument,
     acknowledgeOwnerHandoff,
+    resolveProviderAttention,
     runActionMaintenance,
     remindEscalations,
     remindOwnerHandoffs,

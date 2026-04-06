@@ -12,6 +12,12 @@
 - persisted provider attention acknowledgements and linked them into `provider check`, `overview providers`, `overview global`, and `provider events --family attention`
 - kept the lifecycle bounded so acknowledgement only clears the current latest failed provider event, while a newer provider failure still re-opens a fresh attention item
 
+## 2026-04-06 Provider Attention Resolution
+
+- added `action resolve-provider-attention` so acknowledged provider failures can be explicitly closed instead of remaining in an indefinitely acknowledged audit bucket
+- extended the unified provider event stream with `provider-attention-resolved` while preserving the earlier acknowledgement event for the same action
+- linked resolved provider attention counts and latest resolution pointers into `provider check`, `overview providers`, and `overview global`
+
 ## 2026-04-06 Provider Events
 
 - added `provider events` so probe and execution observability can be read as one chronological provider event stream instead of hopping between separate timelines
