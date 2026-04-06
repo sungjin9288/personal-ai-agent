@@ -103,8 +103,8 @@ const maintenanceRun = runCli({
   args: [
     'action',
     'maintenance',
-    '--mission',
-    mission.id,
+    '--workspace',
+    workspace.id,
     '--note',
     'Mission timeline maintenance sweep.',
   ],
@@ -115,6 +115,8 @@ assert.equal(maintenanceRun.summary.acknowledgedMaintenanceRequiredCount, 1);
 assert.equal(maintenanceRun.summary.resolvedMaintenanceRequiredCount, 1);
 assert.equal(maintenanceRun.summary.remainingMaintenanceRequiredCount, 0);
 assert.ok(maintenanceRun.maintenanceRun.id);
+assert.equal(maintenanceRun.maintenanceRun.missionId, null);
+assert.deepEqual(maintenanceRun.maintenanceRun.affectedMissionIds, [mission.id]);
 
 const resolvedEscalation = runCli({
   rootDir: tempRoot,
@@ -148,12 +150,14 @@ assert.equal(missionShow.summary.escalationCounts.total, 1);
 assert.equal(missionShow.summary.memoryCounts.decision >= 1, true);
 assert.equal(missionShow.summary.latestSession.status, 'awaiting_approval');
 assert.equal(missionShow.summary.latestEscalation.id, escalationLog.escalationIds[0]);
-assert.equal(missionShow.summary.maintenanceRunCount, 1);
-assert.equal(missionShow.summary.maintenanceTotalRemindedCount, 1);
-assert.equal(missionShow.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 1);
-assert.equal(missionShow.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 1);
+assert.equal(missionShow.summary.maintenanceRunCount, 0);
+assert.equal(missionShow.summary.maintenanceTotalRemindedCount, 0);
+assert.equal(missionShow.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 0);
+assert.equal(missionShow.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 0);
 assert.equal(missionShow.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
-assert.equal(missionShow.summary.latestMaintenanceRun.id, maintenanceRun.maintenanceRun.id);
+assert.equal(missionShow.summary.latestMaintenanceRun, null);
+assert.equal(missionShow.summary.maintenanceRelatedRunCount, 1);
+assert.equal(missionShow.summary.latestRelatedMaintenanceRun.id, maintenanceRun.maintenanceRun.id);
 assert.equal(missionShow.summary.maintenanceRequiredCount, 0);
 
 assert.equal(timeline.summary.sessionCount, 2);
@@ -164,8 +168,8 @@ assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-resolv
 assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-opened').length, 1);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-resolved').length, 1);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-run').length, 1);
-assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-required-acknowledged').length, 1);
-assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-required-resolved').length, 1);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-required-acknowledged').length, 0);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'maintenance-required-resolved').length, 0);
 assert.equal(timeline.timeline.some((event) => event.kind === 'memory-recorded' && /Timeline smoke needs a rejected first attempt/.test(event.detail)), true);
 assert.equal(
   timeline.timeline.some((event) => event.kind === 'escalation-resolved' && /Timeline escalation resolved after manual follow-up/.test(event.detail)),
@@ -176,24 +180,9 @@ assert.equal(
     (event) =>
       event.kind === 'maintenance-run' &&
       /Mission timeline maintenance sweep/i.test(event.detail) &&
-      /acknowledged=1/i.test(event.detail) &&
-      /resolved=1/i.test(event.detail),
-  ),
-  true,
-);
-assert.equal(
-  timeline.timeline.some(
-    (event) =>
-      event.kind === 'maintenance-required-acknowledged' && /covering 1 due candidate/i.test(event.detail),
-  ),
-  true,
-);
-assert.equal(
-  timeline.timeline.some(
-    (event) =>
-      event.kind === 'maintenance-required-resolved' &&
-      /resolved 1 maintenance-required action/i.test(event.detail) &&
-      /remaining=0/i.test(event.detail),
+      /Workspace maintenance sweep affected this mission/i.test(event.detail) &&
+      /reminded=1/i.test(event.detail) &&
+      /monitoring=1/i.test(event.detail),
   ),
   true,
 );

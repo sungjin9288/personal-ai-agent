@@ -232,3 +232,9 @@
 - propagated maintenance run totals and latest maintenance metadata into mission summary so a single mission can expose its own maintenance audit state without requiring workspace/global drill-down
 - extended mission timeline with mission-scoped `maintenance-run`, `maintenance-required-acknowledged`, and `maintenance-required-resolved` events
 - strengthened mission timeline smoke coverage to prove an overdue escalation can be reminded through mission-scoped maintenance before escalation resolution, while leaving explicit maintenance evidence in the mission audit stream
+
+## 2026-04-06 Workspace Maintenance Linkback In Mission Timeline
+
+- linked workspace-scoped maintenance runs back to affected mission ids so a mission timeline can show indirect maintenance activity even when the sweep was executed at workspace scope
+- kept maintenance-required acknowledgement and resolution events mission-scoped only, while mission timelines now render a mission-specific workspace maintenance detail built from affected escalation and handoff reminder counts
+- updated mission timeline smoke coverage to switch from action maintenance with mission scope to action maintenance with workspace scope and verify that related maintenance evidence still appears on the mission audit surface

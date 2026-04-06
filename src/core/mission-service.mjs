@@ -1156,6 +1156,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const escalations = store.listEscalations({ missionId: mission.id });
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
+    const relatedMaintenanceRuns = listRelatedMaintenanceRunsForMission(mission.id);
+    const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
@@ -1186,6 +1188,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
+      latestRelatedMaintenanceRun,
+      latestRelatedMaintenanceRunAt: latestRelatedMaintenanceRun?.createdAt || null,
       latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
       latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
       latestMaintenanceRun: maintenanceSummary.latestRun,
@@ -1200,6 +1204,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
       maintenanceRemainingMaintenanceRequiredCountTotal:
         maintenanceSummary.remainingMaintenanceRequiredCountTotal,
+      maintenanceRelatedRunCount: relatedMaintenanceRuns.length,
       maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
       maintenanceRunCount: maintenanceSummary.runCount,
       maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
@@ -1226,6 +1231,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         summary: summarizeMission(mission),
       }))
       .sort((left, right) => String(left.mission.updatedAt || '').localeCompare(String(right.mission.updatedAt || '')));
+  }
+
+  function listRelatedMaintenanceRunsForMission(missionId) {
+    return store
+      .listMaintenanceRuns()
+      .filter((item) => item.missionId === missionId || ensureArray(item.affectedMissionIds).includes(missionId));
+  }
+
+  function getMaintenanceMissionEffect(item, missionId) {
+    return ensureArray(item.affectedMissionSummaries).find((entry) => entry.missionId === missionId) || null;
   }
 
   function getWorkspaceOverview(workspaceId) {
@@ -2676,6 +2691,44 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .filter(Boolean)
       .sort((left, right) => String(left).localeCompare(String(right)))
       .at(-1) || null;
+    const affectedMissionSummaryMap = new Map();
+
+    for (const item of escalationReminders.items) {
+      if (!item.missionId) {
+        continue;
+      }
+
+      const current = affectedMissionSummaryMap.get(item.missionId) || {
+        escalationRemindedCount: 0,
+        missionId: item.missionId,
+        ownerHandoffRemindedCount: 0,
+        totalRemindedCount: 0,
+      };
+      current.escalationRemindedCount += 1;
+      current.totalRemindedCount += 1;
+      affectedMissionSummaryMap.set(item.missionId, current);
+    }
+
+    for (const item of ownerHandoffReminders.items) {
+      if (!item.missionId) {
+        continue;
+      }
+
+      const current = affectedMissionSummaryMap.get(item.missionId) || {
+        escalationRemindedCount: 0,
+        missionId: item.missionId,
+        ownerHandoffRemindedCount: 0,
+        totalRemindedCount: 0,
+      };
+      current.ownerHandoffRemindedCount += 1;
+      current.totalRemindedCount += 1;
+      affectedMissionSummaryMap.set(item.missionId, current);
+    }
+
+    const affectedMissionSummaries = [...affectedMissionSummaryMap.values()].sort((left, right) =>
+      String(left.missionId).localeCompare(String(right.missionId)),
+    );
+    const affectedMissionIds = affectedMissionSummaries.map((item) => item.missionId);
 
     const summary = {
       acknowledgedMaintenanceRequiredCount: acknowledgedActionIds.length,
@@ -2712,6 +2765,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         owner: filter.owner || null,
         workspaceId: filter.workspaceId || null,
       },
+      affectedMissionIds,
+      affectedMissionSummaries,
       id: createId('maintenance'),
       latestReminderAt: summary.latestReminderAt,
       missionId: filter.missionId || null,
@@ -3413,8 +3468,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
     }
 
-    for (const maintenanceRun of store.listMaintenanceRuns({ missionId: mission.id })) {
-      if (Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
+    for (const maintenanceRun of listRelatedMaintenanceRunsForMission(mission.id)) {
+      const missionEffect = getMaintenanceMissionEffect(maintenanceRun, mission.id);
+      const isDirectMissionRun = maintenanceRun.missionId === mission.id;
+
+      if (isDirectMissionRun && Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
         timeline.push({
           acknowledgedCount: maintenanceRun.acknowledgedMaintenanceRequiredCount,
           at: maintenanceRun.createdAt,
@@ -3425,7 +3483,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         });
       }
 
-      if (Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
+      if (isDirectMissionRun && Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
         timeline.push({
           at: maintenanceRun.createdAt,
           detail: `Maintenance sweep resolved ${maintenanceRun.resolvedMaintenanceRequiredCount} maintenance-required action(s); remaining=${maintenanceRun.remainingMaintenanceRequiredCount || 0}.`,
@@ -3438,7 +3496,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       timeline.push({
         at: maintenanceRun.createdAt,
-        detail: formatMaintenanceRunDetail(maintenanceRun),
+        detail: isDirectMissionRun
+          ? formatMaintenanceRunDetail(maintenanceRun)
+          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
         kind: 'maintenance-run',
         maintenanceRunId: maintenanceRun.id,
         missionId: mission.id,

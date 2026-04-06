@@ -51,6 +51,7 @@
 - workspace/global operator timeline now includes `maintenance-run` events, so maintenance execution is visible in the same chronological operator stream as approvals, follow-ups, and escalations
 - maintenance runs now persist acknowledged/resolved maintenance-pressure snapshot counts, so operator history can show when a derived `maintenance-required` obligation was actively handled and cleared
 - mission summary and mission timeline now include mission-scoped maintenance run plus maintenance-required resolution evidence, so mission audit no longer depends on workspace/global operator surfaces only
+- workspace-wide maintenance sweeps now link affected mission ids back into mission audit surfaces, so indirect maintenance effects are visible from the mission timeline without requiring operator-level drill-down
 - memory and document logging commands
 - deterministic local-first smoke coverage
 
