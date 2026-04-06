@@ -98,6 +98,7 @@ node src/cli.mjs action inbox --needs-reminder
 node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
+node src/cli.mjs action maintenance --workspace workspace_xxx --note "Sweep due reminders for escalations and owner handoffs"
 node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced

@@ -2238,6 +2238,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.tier && item.escalationTier !== filter.tier) {
           return false;
         }
+        if (filter.excludePendingOwnerHandoff && item.pendingOwnerHandoff) {
+          return false;
+        }
         if (filter.dueOnly && !item.needsReminder) {
           return false;
         }
@@ -2277,6 +2280,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         dueOnly: Boolean(filter.dueOnly),
+        excludePendingOwnerHandoff: Boolean(filter.excludePendingOwnerHandoff),
         missionId: filter.missionId || null,
         note: note || null,
         owner: filter.owner || null,
@@ -2297,6 +2301,72 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         reminderCountTotal: items.reduce((count, item) => count + Number(item.reminderCount || 0), 0),
         remindedCount: items.length,
       },
+    };
+  }
+
+  function runActionMaintenance(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+
+    const note = normalizeText(filter.note);
+    const sync = syncEscalations({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      status: 'open',
+      workspaceId: filter.workspaceId,
+    });
+    const escalationReminders = remindEscalations({
+      dueOnly: true,
+      excludePendingOwnerHandoff: true,
+      missionId: filter.missionId,
+      note,
+      owner: filter.owner,
+      workspaceId: filter.workspaceId,
+    });
+    const ownerHandoffReminders = remindOwnerHandoffs(
+      {
+        dueOnly: true,
+        missionId: filter.missionId,
+        owner: filter.owner,
+        workspaceId: filter.workspaceId,
+      },
+      note,
+    );
+
+    const latestReminderAt = [escalationReminders.summary.latestReminderAt, ownerHandoffReminders.summary.latestReminderAt]
+      .filter(Boolean)
+      .sort((left, right) => String(left).localeCompare(String(right)))
+      .at(-1) || null;
+
+    return {
+      escalationReminders,
+      filters: {
+        missionId: filter.missionId || null,
+        note: note || null,
+        owner: filter.owner || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      ownerHandoffReminders,
+      summary: {
+        dueCandidateCountTotal:
+          Number(escalationReminders.summary.dueCandidateCount || 0) +
+          Number(ownerHandoffReminders.summary.dueCandidateCount || 0),
+        escalationRemindedCount: Number(escalationReminders.summary.remindedCount || 0),
+        latestReminderAt,
+        ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
+        syncedCount: Number(sync.summary.syncedCount || 0),
+        totalRemindedCount:
+          Number(escalationReminders.summary.remindedCount || 0) +
+          Number(ownerHandoffReminders.summary.remindedCount || 0),
+      },
+      sync,
     };
   }
 
@@ -3370,6 +3440,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     logOverdueActions,
     logDocument,
     acknowledgeOwnerHandoff,
+    runActionMaintenance,
     remindEscalations,
     remindOwnerHandoffs,
     syncEscalations,
