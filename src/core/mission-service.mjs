@@ -601,8 +601,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function summarizeMission(mission) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
+    const escalations = store.listEscalations({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const latestSession = sessions.at(-1) || null;
+    const escalationSummary = summarizeEscalations(escalations);
 
     return {
       approvalCounts: {
@@ -611,7 +613,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         rejected: approvals.filter((approval) => approval.status === 'rejected').length,
         total: approvals.length,
       },
+      escalationCounts: escalationSummary.statusCounts,
       id: mission.id,
+      latestEscalation: escalationSummary.latestEscalation,
       latestSession,
       memoryCounts: {
         decision: memoryEntries.filter((entry) => entry.kind === 'decision').length,
@@ -1267,6 +1271,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildMissionTimeline(mission) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
+    const escalations = store.listEscalations({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const timeline = [
       {
@@ -1319,6 +1324,30 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           missionId: mission.id,
           sessionId: approval.sessionId,
           status: approval.status,
+        });
+      }
+    }
+
+    for (const escalation of escalations) {
+      timeline.push({
+        at: escalation.createdAt,
+        detail: escalation.title,
+        escalationId: escalation.id,
+        kind: 'escalation-opened',
+        missionId: mission.id,
+        sessionId: escalation.sessionId,
+        status: escalation.status,
+      });
+
+      if (escalation.resolvedAt) {
+        timeline.push({
+          at: escalation.resolvedAt,
+          detail: escalation.resolutionNote || 'Escalation resolved.',
+          escalationId: escalation.id,
+          kind: 'escalation-resolved',
+          missionId: mission.id,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
         });
       }
     }

@@ -27,6 +27,7 @@
 - overdue actions can now be explicitly written into `docs/incidents.md` through a dedicated CLI command
 - overdue actions now create first-class escalation records with open/resolved lifecycle
 - workspace and global overview now aggregate open escalation pressure for top-level control-plane visibility
+- mission timeline now includes escalation open/resolved lifecycle events
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

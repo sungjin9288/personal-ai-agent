@@ -82,6 +82,8 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
+`mission timeline`은 session, approval, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여줍니다.
+
 Approval flow:
 
 ```bash

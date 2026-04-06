@@ -57,6 +57,45 @@ const secondRun = runCli({
 
 assert.equal(secondRun.status, 'awaiting_approval');
 
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+
+state.approvals = state.approvals.map((approval) => {
+  if (approval.id === secondRun.approvalId) {
+    return {
+      ...approval,
+      createdAt: overdueTimestamp,
+    };
+  }
+
+  return approval;
+});
+
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+const escalationLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue', '--mission', mission.id],
+});
+
+assert.equal(escalationLog.logged, true);
+assert.equal(escalationLog.count, 1);
+assert.equal(escalationLog.escalationIds.length, 1);
+
+const resolvedEscalation = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-escalation',
+    escalationLog.escalationIds[0],
+    '--note',
+    'Timeline escalation resolved after manual follow-up.',
+  ],
+});
+
+assert.equal(resolvedEscalation.status, 'resolved');
+
 const missionShow = runCli({
   rootDir: tempRoot,
   args: ['mission', 'show', mission.id],
@@ -70,15 +109,25 @@ const timeline = runCli({
 assert.equal(missionShow.summary.sessionCount, 2);
 assert.equal(missionShow.summary.approvalCounts.rejected, 1);
 assert.equal(missionShow.summary.approvalCounts.pending, 1);
+assert.equal(missionShow.summary.escalationCounts.open, 0);
+assert.equal(missionShow.summary.escalationCounts.resolved, 1);
+assert.equal(missionShow.summary.escalationCounts.total, 1);
 assert.equal(missionShow.summary.memoryCounts.decision >= 1, true);
 assert.equal(missionShow.summary.latestSession.status, 'awaiting_approval');
+assert.equal(missionShow.summary.latestEscalation.id, escalationLog.escalationIds[0]);
 
 assert.equal(timeline.summary.sessionCount, 2);
 assert.equal(timeline.timeline.some((event) => event.kind === 'mission-created'), true);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'session-started').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-requested').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-resolved').length, 1);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-opened').length, 1);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'escalation-resolved').length, 1);
 assert.equal(timeline.timeline.some((event) => event.kind === 'memory-recorded' && /Timeline smoke needs a rejected first attempt/.test(event.detail)), true);
+assert.equal(
+  timeline.timeline.some((event) => event.kind === 'escalation-resolved' && /Timeline escalation resolved after manual follow-up/.test(event.detail)),
+  true,
+);
 
 for (let index = 1; index < timeline.timeline.length; index += 1) {
   assert.ok(String(timeline.timeline[index - 1].at) <= String(timeline.timeline[index].at));
