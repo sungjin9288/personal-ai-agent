@@ -13,6 +13,7 @@ import {
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
+  REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
@@ -148,8 +149,13 @@ function formatApprovalDecisionMemory({ mission, decision, reason }) {
   return `Approval ${decision} for mission ${mission.id} (${mission.deliverableType}): ${reason || 'No explicit reason recorded.'}`;
 }
 
-function formatReviewerFollowUpResolutionMemory({ mission, note }) {
-  return `Reviewer follow-up resolved for mission ${mission.id} (${mission.deliverableType}): ${note || 'Resolved without additional note.'}`;
+function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
+  return `Reviewer follow-up resolved for mission ${mission.id} (${mission.deliverableType}) [${resolutionKind || 'accepted-risk'}]: ${note || 'Resolved without additional note.'}`;
+}
+
+function formatReviewerFollowUpResolutionDetail({ resolutionKind, resolutionNote }) {
+  const prefix = resolutionKind ? `${resolutionKind}: ` : '';
+  return `${prefix}${resolutionNote || 'Reviewer follow-up resolved.'}`;
 }
 
 function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliverableArtifact }) {
@@ -249,11 +255,20 @@ function summarizeReviewerFollowUps(items) {
     ...Object.fromEntries(REVIEWER_FOLLOW_UP_STATUSES.map((status) => [status, 0])),
     total: items.length,
   };
+  const resolutionKindCounts = {
+    ...Object.fromEntries(REVIEWER_FOLLOW_UP_RESOLUTION_KINDS.map((kind) => [kind, 0])),
+    unresolved: 0,
+  };
   const workspaceCounts = {};
 
   for (const item of items) {
     statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
     workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+    if (item.resolutionKind) {
+      resolutionKindCounts[item.resolutionKind] = (resolutionKindCounts[item.resolutionKind] || 0) + 1;
+    } else {
+      resolutionKindCounts.unresolved += 1;
+    }
   }
 
   return {
@@ -263,6 +278,7 @@ function summarizeReviewerFollowUps(items) {
           String(left.updatedAt || left.createdAt || '').localeCompare(String(right.updatedAt || right.createdAt || '')),
         )
         .at(-1) || null,
+    resolutionKindCounts,
     statusCounts,
     total: items.length,
     workspaceCounts,
@@ -559,11 +575,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         sessionId: session.id,
         sessionStatus: 'failed',
         status: 'open',
-        title: `Reviewer follow-up required for ${mission.title}`,
-        updatedAt: reviewerStage.artifact.createdAt || now(),
-        workspaceId: workspace.id,
-        workspaceName: workspace.name,
-      });
+      title: `Reviewer follow-up required for ${mission.title}`,
+      updatedAt: reviewerStage.artifact.createdAt || now(),
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+      resolutionKind: '',
+    });
 
       harness.addMemoryEntry({
         scope: 'mission',
@@ -957,6 +974,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       reason: reviewerRun.outputSummary,
       reportPath: reviewerReport ? reviewerReport.path : null,
       requestedByRole: 'reviewer',
+      resolutionKind: '',
       resolutionNote: '',
       resolvedAt: null,
       sessionId: latestSession.id,
@@ -972,7 +990,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildReviewerFollowUpItemFromRecord(record) {
     const item = {
       ...record,
-      resolveCommand: `node src/cli.mjs action resolve-reviewer-follow-up ${record.actionId} --note "<note>"`,
+      resolveCommand: `node src/cli.mjs action resolve-reviewer-follow-up ${record.actionId} --kind <rerun-fixed|superseded|scope-reduced|accepted-risk> --note "<note>"`,
     };
 
     return addOperationalMetadata(
@@ -992,6 +1010,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.status && !REVIEWER_FOLLOW_UP_STATUSES.includes(filter.status)) {
       throw new Error(`Unsupported reviewer follow-up status: ${filter.status}`);
     }
+    if (filter.resolutionKind && !REVIEWER_FOLLOW_UP_RESOLUTION_KINDS.includes(filter.resolutionKind)) {
+      throw new Error(`Unsupported reviewer follow-up resolution kind: ${filter.resolutionKind}`);
+    }
 
     const allRecords = store.listReviewerFollowUps({
       actionId: filter.actionId,
@@ -1001,6 +1022,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
     const records = allRecords.filter((record) => {
       if (filter.status && record.status !== filter.status) {
+        return false;
+      }
+      if (filter.resolutionKind && record.resolutionKind !== filter.resolutionKind) {
         return false;
       }
       return true;
@@ -1032,6 +1056,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const items = listReviewerFollowUpRecords({
       actionId: filter.actionId,
       missionId: filter.missionId,
+      resolutionKind: filter.kind || filter.resolutionKind,
       status: effectiveStatus,
       workspaceId: filter.workspaceId,
     })
@@ -1040,6 +1065,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       filters: {
+        kind: filter.kind || filter.resolutionKind || null,
         missionId: filter.missionId || null,
         status: effectiveStatus,
         workspaceId: filter.workspaceId || null,
@@ -1375,15 +1401,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function resolveReviewerFollowUp(actionId, { note = '' }) {
+  function resolveReviewerFollowUp(actionId, { kind = '', note = '' }) {
     const followUp = ensureReviewerFollowUpRecord(actionId);
     if (followUp.status !== 'open') {
       throw new Error(`Reviewer follow-up ${actionId} is already resolved.`);
     }
 
+    const resolutionKind = normalizeText(kind, 'accepted-risk');
+    if (!REVIEWER_FOLLOW_UP_RESOLUTION_KINDS.includes(resolutionKind)) {
+      throw new Error(`Unsupported reviewer follow-up resolution kind: ${resolutionKind}`);
+    }
     const resolutionNote = normalizeText(note, 'Resolved without additional note.');
     const resolvedFollowUp = store.updateReviewerFollowUp(followUp.id, (current) => ({
       ...current,
+      resolutionKind,
       resolutionNote,
       resolvedAt: now(),
       status: 'resolved',
@@ -1398,6 +1429,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       content: formatReviewerFollowUpResolutionMemory({
         mission,
         note: resolutionNote,
+        resolutionKind,
       }),
     });
 
@@ -1551,7 +1583,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         timeline.push({
           actionId: followUp.actionId,
           at: followUp.resolvedAt,
-          detail: followUp.resolutionNote || 'Reviewer follow-up resolved.',
+          detail: formatReviewerFollowUpResolutionDetail({
+            resolutionKind: followUp.resolutionKind,
+            resolutionNote: followUp.resolutionNote,
+          }),
           kind: 'reviewer-follow-up-resolved',
           missionId: mission.id,
           sessionId: followUp.sessionId,
@@ -1670,7 +1705,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         events.push({
           actionId: followUp.actionId,
           at: followUp.resolvedAt,
-          detail: followUp.resolutionNote || 'Reviewer follow-up resolved.',
+          detail: formatReviewerFollowUpResolutionDetail({
+            resolutionKind: followUp.resolutionKind,
+            resolutionNote: followUp.resolutionNote,
+          }),
           kind: 'reviewer-follow-up-resolved',
           missionId: mission.id,
           missionTitle: mission.title,

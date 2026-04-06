@@ -112,3 +112,9 @@
 - added `action reviewer-followups` and `action resolve-reviewer-follow-up` so operator workflows can inspect and explicitly close reviewer follow-up items
 - persisted reviewer follow-up resolution notes back into mission memory so future reruns can see why a follow-up was closed
 - extended mission, workspace, and global timeline coverage so reviewer follow-up closure is tracked alongside approval and escalation lifecycle events
+
+## 2026-04-06 Reviewer Follow-Up Resolution Taxonomy
+
+- added explicit reviewer follow-up resolution kinds so closure reasons are structured as `rerun-fixed`, `superseded`, `scope-reduced`, or `accepted-risk`
+- extended `action reviewer-followups` with kind filtering and summary counts so resolved follow-ups can be sliced by remediation outcome
+- updated mission memory and operator timeline details so closure events now preserve both taxonomy and free-text note

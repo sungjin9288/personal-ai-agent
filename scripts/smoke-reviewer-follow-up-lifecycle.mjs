@@ -59,12 +59,15 @@ const resolvedFollowUp = runCli({
     'action',
     'resolve-reviewer-follow-up',
     openFollowUps.items[0].actionId,
+    '--kind',
+    'scope-reduced',
     '--note',
     'Checklist remediation was captured in a narrower follow-up plan.',
   ],
 });
 
 assert.equal(resolvedFollowUp.status, 'resolved');
+assert.equal(resolvedFollowUp.resolutionKind, 'scope-reduced');
 assert.match(resolvedFollowUp.resolutionNote, /narrower follow-up plan/i);
 
 const retryReadyInbox = runCli({
@@ -80,9 +83,21 @@ const resolvedQueue = runCli({
 });
 
 assert.equal(resolvedQueue.filters.status, 'resolved');
+assert.equal(resolvedQueue.filters.kind, null);
 assert.equal(resolvedQueue.summary.statusCounts.resolved, 1);
+assert.equal(resolvedQueue.summary.resolutionKindCounts['scope-reduced'], 1);
 assert.equal(resolvedQueue.items.length, 1);
+assert.equal(resolvedQueue.items[0].resolutionKind, 'scope-reduced');
 assert.match(resolvedQueue.items[0].resolutionNote, /narrower follow-up plan/i);
+
+const scopeReducedQueue = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'reviewer-followups', '--mission', mission.id, '--status', 'resolved', '--kind', 'scope-reduced'],
+});
+
+assert.equal(scopeReducedQueue.filters.kind, 'scope-reduced');
+assert.equal(scopeReducedQueue.items.length, 1);
+assert.equal(scopeReducedQueue.items[0].resolutionKind, 'scope-reduced');
 
 const missionMemory = runCli({
   rootDir: tempRoot,
@@ -90,7 +105,12 @@ const missionMemory = runCli({
 });
 
 assert.equal(
-  missionMemory.some((entry) => /Reviewer follow-up resolved/.test(entry.content) && /narrower follow-up plan/i.test(entry.content)),
+  missionMemory.some(
+    (entry) =>
+      /Reviewer follow-up resolved/.test(entry.content) &&
+      /\[scope-reduced\]/.test(entry.content) &&
+      /narrower follow-up plan/i.test(entry.content),
+  ),
   true,
 );
 
@@ -108,6 +128,7 @@ assert.equal(
     (event) =>
       event.kind === 'reviewer-follow-up-resolved' &&
       event.missionId === mission.id &&
+      /scope-reduced:/.test(event.detail) &&
       /narrower follow-up plan/i.test(event.detail),
   ),
   true,

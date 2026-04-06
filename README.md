@@ -84,7 +84,7 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여줍니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다.
 
 Operator flow:
 
@@ -96,7 +96,8 @@ node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
 node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
-node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --note "Handled in a narrower follow-up plan"
+node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced
+node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
 node src/cli.mjs action log-overdue
 node src/cli.mjs action escalated
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"

@@ -31,6 +31,7 @@
 - workspace and global operator timeline surfaces now aggregate approval, reviewer follow-up, and escalation events
 - reviewer follow-up items now have explicit open/resolved lifecycle records and can be resolved independently from escalation state
 - mission, workspace, and global timelines now show reviewer follow-up closure instead of only opened events
+- reviewer follow-up resolution now carries explicit taxonomy for `rerun-fixed`, `superseded`, `scope-reduced`, and `accepted-risk`
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

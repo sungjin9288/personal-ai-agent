@@ -106,6 +106,8 @@ runCli({
     'action',
     'resolve-reviewer-follow-up',
     reviewerFollowUps.items[0].actionId,
+    '--kind',
+    'rerun-fixed',
     '--note',
     'Reviewer follow-up resolved after remediation planning.',
   ],
@@ -196,6 +198,7 @@ assert.equal(
     (event) =>
       event.kind === 'reviewer-follow-up-resolved' &&
       event.workspaceId === workspaceTwo.id &&
+      /rerun-fixed:/.test(event.detail) &&
       /resolved after remediation planning/i.test(event.detail),
   ),
   true,
