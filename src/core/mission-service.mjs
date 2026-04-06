@@ -6,6 +6,7 @@ import {
   ACTION_OWNERS,
   ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
+  ESCALATION_REMINDER_CADENCE_HOURS,
   ESCALATION_STATUSES,
   ESCALATION_TIERS,
   GLOBAL_USER_SCOPE_ID,
@@ -178,6 +179,10 @@ function formatEscalationReminderDetail(reminder) {
   return `${tierPrefix}${reminder.note || 'Escalation reminder issued.'}`;
 }
 
+function deriveEscalationReminderCadenceHours(tier) {
+  return ESCALATION_REMINDER_CADENCE_HOURS[tier] || null;
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -299,19 +304,32 @@ function isBreachTier(tier) {
 }
 
 function enrichEscalation(item) {
+  const currentTier = item.currentTier || deriveEscalationTier(item);
   const dueTimestamp = item.dueAt ? new Date(item.dueAt).getTime() : Number.NaN;
   const isOverdue = item.status === 'open' && Number.isFinite(dueTimestamp) ? Date.now() > dueTimestamp : false;
+  const reminderCadenceHours = item.status === 'open' ? deriveEscalationReminderCadenceHours(currentTier) : null;
+  const reminderBaseTimestamp = item.lastReminderAt || item.createdAt || null;
+  const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
+  const nextReminderAt =
+    reminderCadenceHours && Number.isFinite(reminderBaseMs)
+      ? new Date(reminderBaseMs + reminderCadenceHours * 60 * 60 * 1000).toISOString()
+      : null;
+  const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
+  const needsReminder = item.status === 'open' && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
 
   return {
     ...item,
     breachCount: Number(item.breachCount || 0),
-    currentTier: item.currentTier || deriveEscalationTier(item),
-    escalationTier: item.currentTier || deriveEscalationTier(item),
+    currentTier,
+    escalationTier: currentTier,
     escalationTierHistoryCount: Array.isArray(item.tierHistory) ? item.tierHistory.length : 0,
     isOverdue,
     lastBreachAt: item.lastBreachAt || null,
     lastReminderAt: item.lastReminderAt || null,
     lastSyncedAt: item.lastSyncedAt || null,
+    needsReminder,
+    nextReminderAt,
+    reminderCadenceHours,
     reminderCount: Number(item.reminderCount || 0),
     reminderHistory: Array.isArray(item.reminderHistory) ? item.reminderHistory : [],
     reminderHistoryCount: Array.isArray(item.reminderHistory) ? item.reminderHistory.length : 0,
@@ -333,6 +351,7 @@ function summarizeEscalations(items) {
   const workspaceCounts = {};
   let breachCountTotal = 0;
   let latestReminderAt = null;
+  let needsReminderCount = 0;
   let reminderCountTotal = 0;
 
   for (const item of enrichedItems) {
@@ -343,6 +362,9 @@ function summarizeEscalations(items) {
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
     breachCountTotal += Number(item.breachCount || 0);
     reminderCountTotal += Number(item.reminderCount || 0);
+    if (item.needsReminder) {
+      needsReminderCount += 1;
+    }
     if (item.lastReminderAt && (!latestReminderAt || String(latestReminderAt) < String(item.lastReminderAt))) {
       latestReminderAt = item.lastReminderAt;
     }
@@ -363,6 +385,7 @@ function summarizeEscalations(items) {
     tierCounts,
     breachCountTotal,
     latestReminderAt,
+    needsReminderCount,
     reminderCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
@@ -826,6 +849,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationCounts: escalationSummary.statusCounts,
       escalationBreachCountTotal: escalationSummary.breachCountTotal,
       escalationLatestReminderAt: escalationSummary.latestReminderAt,
+      escalationNeedsReminderCount: escalationSummary.needsReminderCount,
       escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
@@ -892,6 +916,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationNeedsReminderCount: escalationSummary.needsReminderCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
@@ -1256,6 +1281,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         status: 'open',
         workspaceId: filter.workspaceId,
       })
+      .map((escalation) => enrichEscalation(escalation))
       .filter(
         (escalation) =>
           escalation.actionType === 'reviewer-accepted-risk' || escalation.sourceResolutionKind === 'accepted-risk',
@@ -1280,7 +1306,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               workspaceId: escalation.workspaceId,
               workspaceName: escalation.workspaceName,
               lastReminderAt: escalation.lastReminderAt || null,
+              needsReminder: Boolean(escalation.needsReminder),
+              nextReminderAt: escalation.nextReminderAt || null,
               reminderCount: Number(escalation.reminderCount || 0),
+              reminderCadenceHours: escalation.reminderCadenceHours || null,
               reminderHistoryCount: Array.isArray(escalation.reminderHistory) ? escalation.reminderHistory.length : 0,
             },
             {
@@ -1688,6 +1717,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.tier && item.escalationTier !== filter.tier) {
           return false;
         }
+        if (filter.needsReminderOnly && !item.needsReminder) {
+          return false;
+        }
         return true;
       })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -1695,6 +1727,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         missionId: filter.missionId || null,
+        needsReminderOnly: Boolean(filter.needsReminderOnly),
         owner: filter.owner || null,
         status: effectiveStatus,
         tier: filter.tier || null,
@@ -1731,7 +1764,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const reminderTimestamp = now();
     const note = normalizeText(filter.note);
-    const items = store
+    const candidates = store
       .listEscalations({
         missionId: filter.missionId,
         owner: filter.owner,
@@ -1743,11 +1776,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.tier && item.escalationTier !== filter.tier) {
           return false;
         }
+        if (filter.dueOnly && !item.needsReminder) {
+          return false;
+        }
         if (filter.overdueOnly && !item.isOverdue) {
           return false;
         }
         return true;
-      })
+      });
+
+    const items = candidates
       .map((item) =>
         store.updateEscalation(item.id, (current) => {
           const normalizedCurrent = enrichEscalation(current);
@@ -1776,6 +1814,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       filters: {
+        dueOnly: Boolean(filter.dueOnly),
         missionId: filter.missionId || null,
         note: note || null,
         owner: filter.owner || null,
@@ -1785,6 +1824,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       items,
       summary: {
+        dueCandidateCount: candidates.filter((item) => item.needsReminder).length,
         latestReminderAt:
           [...items]
             .map((item) => item.lastReminderAt)
@@ -1964,6 +2004,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationNeedsReminderCount: escalationSummary.needsReminderCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,

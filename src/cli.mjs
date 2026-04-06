@@ -50,8 +50,8 @@ Commands:
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--overdue]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
-  action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>]
-  action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--overdue] [--note <text>]
+  action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>] [--needs-reminder]
+  action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
@@ -253,6 +253,7 @@ function main() {
     printJson(
       service.getEscalatedInbox({
         missionId: readOption(rest, '--mission', ''),
+        needsReminderOnly: hasOption(rest, '--needs-reminder'),
         owner: readOption(rest, '--owner', ''),
         status: readOption(rest, '--status', ''),
         tier: readOption(rest, '--tier', ''),
@@ -277,6 +278,7 @@ function main() {
   if (group === 'action' && command === 'remind-escalations') {
     printJson(
       service.remindEscalations({
+        dueOnly: hasOption(rest, '--due'),
         missionId: readOption(rest, '--mission', ''),
         note: readOption(rest, '--note', ''),
         owner: readOption(rest, '--owner', ''),
