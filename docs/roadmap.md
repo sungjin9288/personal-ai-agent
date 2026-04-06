@@ -28,6 +28,7 @@
 - overdue actions now create first-class escalation records with open/resolved lifecycle
 - workspace and global overview now aggregate open escalation pressure for top-level control-plane visibility
 - mission timeline now includes escalation open/resolved lifecycle events
+- workspace and global operator timeline surfaces now aggregate approval, reviewer follow-up, and escalation events
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

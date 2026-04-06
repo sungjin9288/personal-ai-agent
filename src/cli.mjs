@@ -29,11 +29,13 @@ function printHelp() {
 
 Commands:
   overview global
+  overview operator-timeline
 
   workspace add <path> [--name <name>]
   workspace list
   workspace show <workspaceId>
   workspace overview <workspaceId>
+  workspace timeline <workspaceId>
 
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>]
   mission list
@@ -106,6 +108,11 @@ function main() {
     return;
   }
 
+  if (group === 'overview' && command === 'operator-timeline') {
+    printJson(service.getGlobalOperatorTimeline());
+    return;
+  }
+
   if (group === 'workspace' && command === 'add') {
     printJson(
       service.addWorkspace({
@@ -128,6 +135,11 @@ function main() {
 
   if (group === 'workspace' && command === 'overview') {
     printJson(service.getWorkspaceOverview(rest[0]));
+    return;
+  }
+
+  if (group === 'workspace' && command === 'timeline') {
+    printJson(service.getWorkspaceTimeline(rest[0]));
     return;
   }
 

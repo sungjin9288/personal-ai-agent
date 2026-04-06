@@ -99,3 +99,9 @@
 
 - extended `mission timeline` so mission-scoped escalation open/resolved lifecycle is visible on the same chronological axis as sessions, approvals, and memory
 - updated mission timeline smoke to create an overdue action, log it into escalation state, resolve it, and verify both timeline events plus mission summary escalation counts
+
+## 2026-04-06 Workspace And Global Operator Timeline
+
+- added workspace-level and global operator timeline surfaces that unify approval, reviewer follow-up, and escalation events into one operator-facing chronological stream
+- kept mission timeline focused on mission scope while exposing broader operational history through `workspace timeline` and `overview operator-timeline`
+- added deterministic smoke coverage for mixed workspace/global operator events and chronological ordering

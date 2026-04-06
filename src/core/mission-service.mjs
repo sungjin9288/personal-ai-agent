@@ -239,6 +239,25 @@ function summarizeEscalations(items) {
   };
 }
 
+function summarizeOperatorTimeline(events) {
+  const eventCounts = {};
+  const workspaceCounts = {};
+
+  for (const event of events) {
+    eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
+    if (event.workspaceId) {
+      workspaceCounts[event.workspaceId] = (workspaceCounts[event.workspaceId] || 0) + 1;
+    }
+  }
+
+  return {
+    eventCounts,
+    latestEvent: events.at(-1) || null,
+    total: events.length,
+    workspaceCounts,
+  };
+}
+
 export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const providerRegistry = createProviderRegistry({ rootDir });
@@ -1366,6 +1385,156 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return sortTimelineEvents(timeline);
   }
 
+  function buildOperatorTimelineEvents(filter = {}) {
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+    const missionById = new Map(store.listMissions().map((mission) => [mission.id, mission]));
+    const events = [];
+
+    for (const approval of store.listApprovals()) {
+      const mission = missionById.get(approval.missionId);
+      const workspace = mission ? workspaceById.get(mission.workspaceId) : null;
+      if (!mission || !workspace) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+      if (filter.missionId && mission.id !== filter.missionId) {
+        continue;
+      }
+
+      events.push({
+        approvalId: approval.id,
+        at: approval.createdAt,
+        detail: approval.title,
+        kind: 'approval-requested',
+        missionId: mission.id,
+        missionTitle: mission.title,
+        sessionId: approval.sessionId,
+        status: approval.status,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
+
+      if (approval.resolvedAt) {
+        events.push({
+          approvalId: approval.id,
+          at: approval.resolvedAt,
+          detail: approval.decisionReason || 'Approval resolved.',
+          kind: 'approval-resolved',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: approval.sessionId,
+          status: approval.status,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+    }
+
+    for (const mission of store.listMissions()) {
+      const workspace = workspaceById.get(mission.workspaceId);
+      if (!workspace) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+      if (filter.missionId && mission.id !== filter.missionId) {
+        continue;
+      }
+
+      for (const session of store.listSessionsByMission(mission.id)) {
+        const reviewerRun = store.listAgentRunsBySession(session.id).find((run) => run.role === 'reviewer' && run.status === 'failed');
+        if (!reviewerRun) {
+          continue;
+        }
+
+        const reviewerReport =
+          store
+            .listArtifactsBySession(session.id)
+            .filter((artifact) => artifact.fileName === 'reviewer-report.md')
+            .at(-1) || null;
+
+        events.push({
+          at: reviewerReport?.createdAt || reviewerRun.endedAt || reviewerRun.startedAt,
+          detail: reviewerRun.outputSummary,
+          kind: 'reviewer-follow-up-opened',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: session.id,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+    }
+
+    for (const escalation of store.listEscalations()) {
+      const mission = missionById.get(escalation.missionId);
+      const workspace = mission ? workspaceById.get(mission.workspaceId) : workspaceById.get(escalation.workspaceId);
+      if (!mission || !workspace) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+      if (filter.missionId && mission.id !== filter.missionId) {
+        continue;
+      }
+
+      events.push({
+        at: escalation.createdAt,
+        detail: escalation.title,
+        escalationId: escalation.id,
+        kind: 'escalation-opened',
+        missionId: mission.id,
+        missionTitle: mission.title,
+        sessionId: escalation.sessionId,
+        status: escalation.status,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
+
+      if (escalation.resolvedAt) {
+        events.push({
+          at: escalation.resolvedAt,
+          detail: escalation.resolutionNote || 'Escalation resolved.',
+          escalationId: escalation.id,
+          kind: 'escalation-resolved',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+    }
+
+    return sortTimelineEvents(events);
+  }
+
+  function getWorkspaceTimeline(workspaceId) {
+    const workspace = getWorkspace(workspaceId);
+    const timeline = buildOperatorTimelineEvents({ workspaceId: workspace.id });
+
+    return {
+      summary: summarizeOperatorTimeline(timeline),
+      timeline,
+      workspace,
+    };
+  }
+
+  function getGlobalOperatorTimeline() {
+    const timeline = buildOperatorTimelineEvents();
+
+    return {
+      summary: summarizeOperatorTimeline(timeline),
+      timeline,
+      workspaces: store.listWorkspaces(),
+    };
+  }
+
   function listSessions(missionId) {
     const mission = getMission(missionId);
     return store.listSessionsByMission(mission.id).map((session) => summarizeSession(session, mission.id));
@@ -1572,10 +1741,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     createMission,
     getActionInbox,
     getApprovalInbox,
+    getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
     getWorkspace,
     getWorkspaceOverview,
+    getWorkspaceTimeline,
     getMissionTimeline,
     listApprovals,
     listMemory,

@@ -45,9 +45,11 @@ Show or list workspaces:
 
 ```bash
 node src/cli.mjs overview global
+node src/cli.mjs overview operator-timeline
 node src/cli.mjs workspace list
 node src/cli.mjs workspace show workspace_xxx
 node src/cli.mjs workspace overview workspace_xxx
+node src/cli.mjs workspace timeline workspace_xxx
 ```
 
 `workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure도 함께 보여줍니다.
@@ -156,6 +158,7 @@ npm run smoke
 npm run smoke:action-inbox
 npm run smoke:escalated-inbox
 npm run smoke:action-overdue-log
+npm run smoke:operator-timeline
 npm run smoke:approval-approve
 npm run smoke:approval-inbox
 npm run smoke:reviewer-fail
