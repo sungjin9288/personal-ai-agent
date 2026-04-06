@@ -8,6 +8,7 @@
     "smoke": "node scripts/smoke.mjs",
     "smoke:action-inbox": "node scripts/smoke-action-inbox.mjs",
     "smoke:action-maintenance": "node scripts/smoke-action-maintenance.mjs",
+    "smoke:maintenance-history": "node scripts/smoke-maintenance-history.mjs",
     "smoke:escalated-inbox": "node scripts/smoke-escalated-inbox.mjs",
     "smoke:escalation-sync": "node scripts/smoke-escalation-sync.mjs",
     "smoke:escalation-reminder-due": "node scripts/smoke-escalation-reminder-due.mjs",

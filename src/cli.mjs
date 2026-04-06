@@ -29,6 +29,7 @@ function printHelp() {
 
 Commands:
   overview global
+  overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>]
   overview operator-timeline
 
   workspace add <path> [--name <name>]
@@ -48,6 +49,7 @@ Commands:
   session show <missionId> --session <sessionId>
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required|handoff-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
+  action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
   action maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--note <text>]
@@ -113,6 +115,17 @@ function main() {
 
   if (group === 'overview' && command === 'global') {
     printJson(service.getGlobalOverview());
+    return;
+  }
+
+  if (group === 'overview' && command === 'maintenance') {
+    printJson(
+      service.getMaintenanceOverview({
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
     return;
   }
 
@@ -224,6 +237,17 @@ function main() {
         owner: readOption(rest, '--owner', ''),
         overdueOnly: hasOption(rest, '--overdue'),
         priority: readOption(rest, '--priority', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'maintenance-history') {
+    printJson(
+      service.getMaintenanceOverview({
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

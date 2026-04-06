@@ -82,6 +82,7 @@ node src/cli.mjs mission timeline mission_xxx
 node src/cli.mjs session list mission_xxx
 node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
+node src/cli.mjs overview maintenance
 ```
 
 `mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다. unified `action inbox`는 이제 monitoring escalation과 owner handoff reminder pressure를 공통 `--needs-reminder` slice로도 보여줍니다.
@@ -99,6 +100,7 @@ node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
 node src/cli.mjs action maintenance --workspace workspace_xxx --note "Sweep due reminders for escalations and owner handoffs"
+node src/cli.mjs action maintenance-history
 node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced

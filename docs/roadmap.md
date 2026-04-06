@@ -46,6 +46,7 @@
 - pending owner handoffs now have a local-first reminder policy with `--needs-reminder` slicing, re-notify command support, and reminder trail visibility on mission/workspace/global surfaces
 - unified `action inbox` now exposes a cross-action `--needs-reminder` slice so monitoring-required and handoff-required work can be re-triaged from the main operator queue without switching surfaces
 - `action maintenance` now runs a local-first due reminder sweep across escalation pressure and pending owner handoffs, with duplicate suppression for handoff-owned escalations
+- maintenance sweeps are now persisted as first-class run history and exposed through `action maintenance-history` plus `overview maintenance`, with latest run totals surfaced on workspace/global overview
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

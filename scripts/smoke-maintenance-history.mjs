@@ -1,0 +1,255 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+import { runCli } from './cli-test-helpers.mjs';
+
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-maintenance-history-'));
+const workspacePath = path.join(tempRoot, 'workspace');
+
+fs.mkdirSync(workspacePath, { recursive: true });
+
+const workspace = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'add', workspacePath, '--name', 'maintenance-history-workspace'],
+});
+
+function createAcceptedRiskEscalation({ objective, title }) {
+  const mission = runCli({
+    rootDir: tempRoot,
+    args: [
+      'mission',
+      'create',
+      '--workspace',
+      workspace.id,
+      '--mode',
+      'knowledge',
+      '--deliverable',
+      'checklist',
+      '--title',
+      title,
+      '--objective',
+      objective,
+      '--constraints',
+      'force-rubric-fail',
+    ],
+  });
+
+  const runResult = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'run', mission.id],
+  });
+
+  assert.equal(runResult.status, 'failed');
+
+  const openFollowUps = runCli({
+    rootDir: tempRoot,
+    args: ['action', 'reviewer-followups', '--mission', mission.id],
+  });
+
+  const resolution = runCli({
+    rootDir: tempRoot,
+    args: [
+      'action',
+      'resolve-reviewer-follow-up',
+      openFollowUps.items[0].actionId,
+      '--kind',
+      'accepted-risk',
+      '--note',
+      `Track accepted risk for ${title}.`,
+    ],
+  });
+
+  return {
+    mission,
+    resolution,
+  };
+}
+
+const monitoringFlow = createAcceptedRiskEscalation({
+  title: 'Maintenance history monitoring escalation',
+  objective: 'Keep one accepted-risk monitoring escalation due for the maintenance history sweep.',
+});
+
+const handoffFlow = createAcceptedRiskEscalation({
+  title: 'Maintenance history handoff escalation',
+  objective: 'Convert one accepted-risk escalation into pending handoff pressure before maintenance history runs.',
+});
+
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const dueTimestamp = '2026-03-02T00:00:00.000Z';
+const agedReminderTimestamp = '2026-04-05T00:00:00.000Z';
+
+function writeState(mutator) {
+  const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  mutator(state);
+  fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+}
+
+writeState((state) => {
+  state.escalations = state.escalations.map((escalation) => {
+    if (
+      escalation.id === monitoringFlow.resolution.escalation.id ||
+      escalation.id === handoffFlow.resolution.escalation.id
+    ) {
+      return {
+        ...escalation,
+        createdAt: overdueTimestamp,
+        dueAt: dueTimestamp,
+        updatedAt: overdueTimestamp,
+      };
+    }
+
+    return escalation;
+  });
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'sync-escalations', '--workspace', workspace.id],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'remind-escalations', '--mission', handoffFlow.mission.id, '--due'],
+});
+
+writeState((state) => {
+  state.escalations = state.escalations.map((escalation) => {
+    if (escalation.id === handoffFlow.resolution.escalation.id) {
+      return {
+        ...escalation,
+        lastReminderAt: agedReminderTimestamp,
+        updatedAt: agedReminderTimestamp,
+      };
+    }
+
+    return escalation;
+  });
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['action', 'sync-escalations', '--mission', handoffFlow.mission.id],
+});
+
+writeState((state) => {
+  state.escalations = state.escalations.map((escalation) => {
+    if (escalation.id === handoffFlow.resolution.escalation.id) {
+      const ownerHistory = Array.isArray(escalation.ownerHistory) ? escalation.ownerHistory : [];
+      return {
+        ...escalation,
+        currentEffectiveOwner: 'human-approver',
+        lastOwnerEscalatedAt: agedReminderTimestamp,
+        ownerHistory: ownerHistory.map((entry, index) =>
+          index === ownerHistory.length - 1 && entry.to === 'human-approver'
+            ? {
+                ...entry,
+                at: agedReminderTimestamp,
+              }
+            : entry,
+        ),
+        updatedAt: agedReminderTimestamp,
+      };
+    }
+
+    return escalation;
+  });
+});
+
+const firstMaintenance = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'maintenance',
+    '--workspace',
+    workspace.id,
+    '--note',
+    'First maintenance sweep should process due monitoring and handoff reminders.',
+  ],
+});
+
+assert.equal(firstMaintenance.summary.totalRemindedCount, 2);
+assert.equal(firstMaintenance.summary.escalationRemindedCount, 1);
+assert.equal(firstMaintenance.summary.ownerHandoffRemindedCount, 1);
+assert.ok(firstMaintenance.maintenanceRun.id);
+
+const secondMaintenance = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'maintenance',
+    '--workspace',
+    workspace.id,
+    '--note',
+    'Second maintenance sweep should be a no-op after the first sweep.',
+  ],
+});
+
+assert.equal(secondMaintenance.summary.totalRemindedCount, 0);
+assert.equal(secondMaintenance.summary.escalationRemindedCount, 0);
+assert.equal(secondMaintenance.summary.ownerHandoffRemindedCount, 0);
+assert.ok(secondMaintenance.maintenanceRun.id);
+
+const history = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--workspace', workspace.id],
+});
+
+assert.equal(history.summary.runCount, 2);
+assert.equal(history.summary.totalRemindedCount, 2);
+assert.equal(history.summary.escalationRemindedCountTotal, 1);
+assert.equal(history.summary.ownerHandoffRemindedCountTotal, 1);
+assert.equal(history.summary.workspaceCounts[workspace.id], 2);
+assert.equal(history.items.length, 2);
+assert.equal(history.items[0].note.includes('First maintenance sweep'), true);
+assert.equal(history.items[1].note.includes('Second maintenance sweep'), true);
+assert.equal(history.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(history.summary.latestRun.totalRemindedCount, 0);
+
+const maintenanceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'maintenance', '--workspace', workspace.id],
+});
+
+assert.equal(maintenanceOverview.summary.runCount, 2);
+assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
+assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
+
+const workspaceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'overview', workspace.id],
+});
+
+assert.equal(workspaceOverview.summary.maintenanceRunCount, 2);
+assert.equal(workspaceOverview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(workspaceOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
+assert.equal(workspaceOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(workspaceOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
+
+const globalOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'global'],
+});
+
+assert.equal(globalOverview.summary.maintenanceRunCount, 2);
+assert.equal(globalOverview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(globalOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
+assert.equal(globalOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(globalOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
+
+console.log(
+  JSON.stringify(
+    {
+      ok: true,
+      latestMaintenanceRunId: secondMaintenance.maintenanceRun.id,
+      mode: 'maintenance-history',
+      runCount: history.summary.runCount,
+      totalRemindedCount: history.summary.totalRemindedCount,
+    },
+    null,
+    2,
+  ),
+);
