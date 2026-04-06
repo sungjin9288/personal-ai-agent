@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Local Provider Adapter
+
+- added a `local` provider adapter for OpenAI-compatible local `/chat/completions` runtimes, with fast `LOCAL_PROVIDER_MODEL` validation and optional base-url/api-key overrides
+- kept the structured JSON normalization path identical to `stub`, `openai`, and `anthropic` so provider-specific wiring does not fork the mission/session contract
+- added deterministic smoke coverage for the missing-model path and mocked fetch success path so local runtime wiring can be validated without an actual local model server
+
 ## 2026-04-06 Anthropic Provider Adapter
 
 - added an Anthropic provider adapter backed by the Messages API contract, with fast `ANTHROPIC_API_KEY` validation and request wiring for `model`, `system`, `messages`, and `max_tokens`

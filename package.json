@@ -32,6 +32,7 @@
     "smoke:workspace-overview": "node scripts/smoke-workspace-overview.mjs",
     "smoke:global-overview": "node scripts/smoke-global-overview.mjs",
     "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs",
-    "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs"
+    "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs",
+    "smoke:local-provider": "node scripts/smoke-local-provider.mjs"
   }
 }

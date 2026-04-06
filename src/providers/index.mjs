@@ -1,5 +1,6 @@
 import { PROVIDER_IDS } from '../core/constants.mjs';
 import { createAnthropicProvider } from './anthropic-provider.mjs';
+import { createLocalProvider } from './local-provider.mjs';
 import { createOpenAIProvider } from './openai-provider.mjs';
 import { createStubProvider } from './stub-provider.mjs';
 
@@ -24,7 +25,7 @@ export function createProviderRegistry({ rootDir }) {
     stub: createStubProvider({ rootDir }),
     openai: createOpenAIProvider({ rootDir }),
     anthropic: createAnthropicProvider({ rootDir }),
-    local: createPlannedProvider('local'),
+    local: createLocalProvider({ rootDir }),
   };
 
   return {

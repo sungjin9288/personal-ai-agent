@@ -15,7 +15,7 @@ The runtime stays intentionally narrow in v1:
 
 - Node.js ESM
 - CLI-first
-- stub provider by default, with OpenAI and Anthropic adapters available behind API keys
+- stub provider by default, with OpenAI, Anthropic, and local adapters available behind provider-specific configuration
 - explicit approval gates before risky actions
 - runtime state under `var/`
 - repo-tracked strategy and incident docs under `docs/`
@@ -79,6 +79,7 @@ node src/cli.mjs mission list
 node src/cli.mjs mission run mission_xxx --provider stub
 OPENAI_API_KEY=... node src/cli.mjs mission run mission_xxx --provider openai
 ANTHROPIC_API_KEY=... node src/cli.mjs mission run mission_xxx --provider anthropic
+LOCAL_PROVIDER_MODEL=llama3.1 LOCAL_PROVIDER_BASE_URL=http://127.0.0.1:11434/v1 node src/cli.mjs mission run mission_xxx --provider local
 node src/cli.mjs mission show mission_xxx
 node src/cli.mjs mission timeline mission_xxx
 node src/cli.mjs session list mission_xxx
@@ -170,6 +171,12 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
   - `ANTHROPIC_VERSION` optional, default `2023-06-01`
   - `ANTHROPIC_MAX_TOKENS` optional, default `2048`
 - if `ANTHROPIC_API_KEY` is missing, `mission run --provider anthropic` fails fast before any network call.
+- `local` targets an OpenAI-compatible local `/chat/completions` endpoint and reads:
+  - `LOCAL_PROVIDER_MODEL` required
+  - `LOCAL_PROVIDER_BASE_URL` optional, default `http://127.0.0.1:11434/v1`
+  - `LOCAL_PROVIDER_API_KEY` optional
+  - `LOCAL_PROVIDER_MAX_TOKENS` optional, default `2048`
+- if `LOCAL_PROVIDER_MODEL` is missing, `mission run --provider local` fails fast before any network call.
 
 ## State Layout
 
@@ -229,6 +236,7 @@ npm run smoke:workspace-overview
 npm run smoke:global-overview
 npm run smoke:openai-provider
 npm run smoke:anthropic-provider
+npm run smoke:local-provider
 ```
 
 All current smokes are deterministic and require no external API key.
