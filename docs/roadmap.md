@@ -39,6 +39,7 @@
 - escalation reminders are now first-class runtime events with persisted count/history so overdue pressure can be re-issued and audited locally
 - escalation reminder due policy is now derived from tier cadence and exposed through `--needs-reminder` and `--due` operator slices
 - repeated due reminder pressure now derives an effective owner chain so monitoring work can escalate from workspace-owner to human-approver without external integrations
+- owner chain escalation is now persisted as history and surfaced on mission/operator timelines so reviewer follow-up pressure remains auditable across reruns
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

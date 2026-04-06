@@ -164,6 +164,15 @@ function buildInitialTierHistoryEntry(tier, at, reason) {
   };
 }
 
+function buildInitialOwnerHistoryEntry(owner, at, reason) {
+  return {
+    at,
+    from: null,
+    reason,
+    to: owner,
+  };
+}
+
 function buildEscalationReminderNote(escalation, note) {
   const normalizedNote = normalizeText(note);
   if (normalizedNote) {
@@ -177,6 +186,11 @@ function buildEscalationReminderNote(escalation, note) {
 function formatEscalationReminderDetail(reminder) {
   const tierPrefix = reminder.tier ? `[${reminder.tier}] ` : '';
   return `${tierPrefix}${reminder.note || 'Escalation reminder issued.'}`;
+}
+
+function formatEscalationOwnerChangeDetail(ownerChange) {
+  const reasonSuffix = ownerChange.reason ? ` (${ownerChange.reason})` : '';
+  return `${ownerChange.from} -> ${ownerChange.to}${reasonSuffix}`;
 }
 
 function deriveEscalationReminderCadenceHours(tier) {
@@ -352,10 +366,12 @@ function enrichEscalation(item) {
     ...item,
     breachCount: Number(item.breachCount || 0),
     currentTier,
+    currentEffectiveOwner: item.currentEffectiveOwner || ownerSignals.effectiveRecommendedOwner,
     escalationTier: currentTier,
     escalationTierHistoryCount: Array.isArray(item.tierHistory) ? item.tierHistory.length : 0,
     isOverdue,
     lastBreachAt: item.lastBreachAt || null,
+    lastOwnerEscalatedAt: item.lastOwnerEscalatedAt || null,
     lastReminderAt: item.lastReminderAt || null,
     lastSyncedAt: item.lastSyncedAt || null,
     needsReminder,
@@ -363,6 +379,8 @@ function enrichEscalation(item) {
     effectiveRecommendedOwner: ownerSignals.effectiveRecommendedOwner,
     ownerEscalationLevel: ownerSignals.ownerEscalationLevel,
     ownerEscalationStep: ownerSignals.ownerEscalationStep,
+    ownerHistory: Array.isArray(item.ownerHistory) ? item.ownerHistory : [],
+    ownerHistoryCount: Array.isArray(item.ownerHistory) ? item.ownerHistory.length : 0,
     reminderCadenceHours,
     reminderCount: Number(item.reminderCount || 0),
     reminderHistory: Array.isArray(item.reminderHistory) ? item.reminderHistory : [],
@@ -386,7 +404,9 @@ function summarizeEscalations(items) {
   const workspaceCounts = {};
   let breachCountTotal = 0;
   let latestReminderAt = null;
+  let latestOwnerEscalatedAt = null;
   let needsReminderCount = 0;
+  let ownerTransitionCountTotal = 0;
   let reminderCountTotal = 0;
 
   for (const item of enrichedItems) {
@@ -398,8 +418,15 @@ function summarizeEscalations(items) {
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
     breachCountTotal += Number(item.breachCount || 0);
     reminderCountTotal += Number(item.reminderCount || 0);
+    ownerTransitionCountTotal += Math.max(0, Number(item.ownerHistoryCount || 0) - 1);
     if (item.needsReminder) {
       needsReminderCount += 1;
+    }
+    if (
+      item.lastOwnerEscalatedAt &&
+      (!latestOwnerEscalatedAt || String(latestOwnerEscalatedAt) < String(item.lastOwnerEscalatedAt))
+    ) {
+      latestOwnerEscalatedAt = item.lastOwnerEscalatedAt;
     }
     if (item.lastReminderAt && (!latestReminderAt || String(latestReminderAt) < String(item.lastReminderAt))) {
       latestReminderAt = item.lastReminderAt;
@@ -422,7 +449,9 @@ function summarizeEscalations(items) {
     tierCounts,
     breachCountTotal,
     latestReminderAt,
+    latestOwnerEscalatedAt,
     needsReminderCount,
+    ownerTransitionCountTotal,
     reminderCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
@@ -886,7 +915,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationCounts: escalationSummary.statusCounts,
       escalationBreachCountTotal: escalationSummary.breachCountTotal,
       escalationLatestReminderAt: escalationSummary.latestReminderAt,
+      escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
       escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+      escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
       escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
@@ -953,7 +984,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
@@ -1348,6 +1381,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               nextReminderAt: escalation.nextReminderAt || null,
               ownerEscalationLevel: escalation.ownerEscalationLevel || 'base',
               ownerEscalationStep: Number(escalation.ownerEscalationStep || 0),
+              ownerHistoryCount: Array.isArray(escalation.ownerHistory) ? escalation.ownerHistory.length : 0,
+              lastOwnerEscalatedAt: escalation.lastOwnerEscalatedAt || null,
               reminderCount: Number(escalation.reminderCount || 0),
               reminderCadenceHours: escalation.reminderCadenceHours || null,
               reminderHistoryCount: Array.isArray(escalation.reminderHistory) ? escalation.reminderHistory.length : 0,
@@ -1494,6 +1529,7 @@ function summarizeActionInbox(items) {
     const results = [];
 
     for (const escalation of candidates) {
+      const previousEffectiveOwner = escalation.currentEffectiveOwner || enrichEscalation(escalation).effectiveRecommendedOwner;
       const nextTier = deriveEscalationTier(escalation);
       const previousTier = escalation.currentTier || deriveEscalationTier(escalation);
       const existingHistory = Array.isArray(escalation.tierHistory) ? escalation.tierHistory : [];
@@ -1501,9 +1537,20 @@ function summarizeActionInbox(items) {
         existingHistory.length > 0
           ? [...existingHistory]
           : [buildInitialTierHistoryEntry(previousTier, escalation.createdAt || currentTimestamp, 'backfilled')];
+      const existingOwnerHistory = Array.isArray(escalation.ownerHistory) ? escalation.ownerHistory : [];
+      const ownerHistory =
+        existingOwnerHistory.length > 0
+          ? [...existingOwnerHistory]
+          : [buildInitialOwnerHistoryEntry(previousEffectiveOwner, escalation.createdAt || currentTimestamp, 'backfilled')];
       let breachCount = Number.isFinite(Number(escalation.breachCount)) ? Number(escalation.breachCount) : 0;
       let lastBreachAt = escalation.lastBreachAt || null;
-      let changed = !escalation.currentTier || !escalation.lastSyncedAt || existingHistory.length === 0;
+      let lastOwnerEscalatedAt = escalation.lastOwnerEscalatedAt || null;
+      let changed =
+        !escalation.currentTier ||
+        !escalation.lastSyncedAt ||
+        existingHistory.length === 0 ||
+        !escalation.currentEffectiveOwner ||
+        existingOwnerHistory.length === 0;
 
       if (nextTier !== previousTier) {
         tierHistory.push({
@@ -1520,11 +1567,34 @@ function summarizeActionInbox(items) {
         }
       }
 
-      const basePatch = {
+      const effectiveOwnerPreview = enrichEscalation({
+        ...escalation,
         breachCount,
         currentTier: nextTier,
         lastBreachAt,
         lastSyncedAt: currentTimestamp,
+        tierHistory,
+      }).effectiveRecommendedOwner;
+
+      if (effectiveOwnerPreview !== previousEffectiveOwner) {
+        ownerHistory.push({
+          at: currentTimestamp,
+          from: previousEffectiveOwner,
+          reason: 'sync-owner-chain',
+          to: effectiveOwnerPreview,
+        });
+        lastOwnerEscalatedAt = currentTimestamp;
+        changed = true;
+      }
+
+      const basePatch = {
+        breachCount,
+        currentTier: nextTier,
+        currentEffectiveOwner: effectiveOwnerPreview,
+        lastBreachAt,
+        lastOwnerEscalatedAt,
+        lastSyncedAt: currentTimestamp,
+        ownerHistory,
         tierHistory,
         updatedAt: escalation.updatedAt,
       };
@@ -1534,15 +1604,20 @@ function summarizeActionInbox(items) {
           ...current,
           breachCount: basePatch.breachCount,
           currentTier: basePatch.currentTier,
+          currentEffectiveOwner: basePatch.currentEffectiveOwner,
           lastBreachAt: basePatch.lastBreachAt,
+          lastOwnerEscalatedAt: basePatch.lastOwnerEscalatedAt,
           lastSyncedAt: basePatch.lastSyncedAt,
+          ownerHistory: basePatch.ownerHistory,
           tierHistory: basePatch.tierHistory,
         }));
 
         results.push({
           breachCount: updated.breachCount,
           currentTier: updated.currentTier,
+          effectiveRecommendedOwner: updated.currentEffectiveOwner || effectiveOwnerPreview,
           escalationId: updated.id,
+          ownerTransitionRecorded: effectiveOwnerPreview !== previousEffectiveOwner,
           transitionRecorded: nextTier !== previousTier,
         });
         continue;
@@ -1550,13 +1625,17 @@ function summarizeActionInbox(items) {
 
       const updated = store.updateEscalation(escalation.id, (current) => ({
         ...current,
+        currentEffectiveOwner: basePatch.currentEffectiveOwner,
         lastSyncedAt: currentTimestamp,
+        ownerHistory: basePatch.ownerHistory,
       }));
 
       results.push({
         breachCount: updated.breachCount || breachCount,
         currentTier: updated.currentTier || nextTier,
+        effectiveRecommendedOwner: updated.currentEffectiveOwner || effectiveOwnerPreview,
         escalationId: updated.id,
+        ownerTransitionRecorded: false,
         transitionRecorded: false,
       });
     }
@@ -1565,6 +1644,7 @@ function summarizeActionInbox(items) {
       items: results,
       summary: {
         breachCountTotal: results.reduce((count, item) => count + Number(item.breachCount || 0), 0),
+        ownerTransitionedCount: results.filter((item) => item.ownerTransitionRecorded).length,
         syncedCount: results.length,
         transitionedCount: results.filter((item) => item.transitionRecorded).length,
       },
@@ -2064,7 +2144,9 @@ function summarizeActionInbox(items) {
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
@@ -2200,6 +2282,22 @@ function summarizeActionInbox(items) {
           detail: formatEscalationReminderDetail(reminder),
           escalationId: escalation.id,
           kind: 'escalation-reminded',
+          missionId: mission.id,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+        });
+      }
+
+      for (const ownerChange of ensureArray(escalation.ownerHistory)) {
+        if (!ownerChange.from || !ownerChange.to || ownerChange.from === ownerChange.to) {
+          continue;
+        }
+
+        timeline.push({
+          at: ownerChange.at,
+          detail: formatEscalationOwnerChangeDetail(ownerChange),
+          escalationId: escalation.id,
+          kind: 'escalation-owner-changed',
           missionId: mission.id,
           sessionId: escalation.sessionId,
           status: escalation.status,
@@ -2355,6 +2453,25 @@ function summarizeActionInbox(items) {
           detail: formatEscalationReminderDetail(reminder),
           escalationId: escalation.id,
           kind: 'escalation-reminded',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+
+      for (const ownerChange of ensureArray(escalation.ownerHistory)) {
+        if (!ownerChange.from || !ownerChange.to || ownerChange.from === ownerChange.to) {
+          continue;
+        }
+
+        events.push({
+          at: ownerChange.at,
+          detail: formatEscalationOwnerChangeDetail(ownerChange),
+          escalationId: escalation.id,
+          kind: 'escalation-owner-changed',
           missionId: mission.id,
           missionTitle: mission.title,
           sessionId: escalation.sessionId,

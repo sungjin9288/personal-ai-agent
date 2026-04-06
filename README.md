@@ -52,7 +52,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count도 함께 보여줍니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total도 함께 보여줍니다.
 
 Create missions:
 
@@ -174,6 +174,7 @@ npm run smoke:escalation-sync
 npm run smoke:escalation-reminder-due
 npm run smoke:escalation-reminders
 npm run smoke:escalation-owner-chain
+npm run smoke:escalation-owner-history
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
 npm run smoke:reviewer-follow-up-lifecycle
