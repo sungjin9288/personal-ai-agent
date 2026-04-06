@@ -46,6 +46,7 @@ Commands:
   session show <missionId> --session <sessionId>
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--overdue]
+  action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
   approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
@@ -198,6 +199,19 @@ function main() {
         missionId: readOption(rest, '--mission', ''),
         owner: readOption(rest, '--owner', ''),
         overdueOnly: hasOption(rest, '--overdue'),
+        priority: readOption(rest, '--priority', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'log-overdue') {
+    printJson(
+      service.logOverdueActions({
+        actionClass: readOption(rest, '--class', ''),
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
         priority: readOption(rest, '--priority', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),

@@ -174,6 +174,37 @@ function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliv
 `;
 }
 
+function buildOverdueIncidentTitle(count) {
+  return `Overdue Action Escalation (${count} items)`;
+}
+
+function buildOverdueIncidentContent({ items, filters }) {
+  const filterSummary = [
+    filters.actionClass ? `class=${filters.actionClass}` : null,
+    filters.priority ? `priority=${filters.priority}` : null,
+    filters.owner ? `owner=${filters.owner}` : null,
+    filters.workspaceId ? `workspace=${filters.workspaceId}` : null,
+    filters.missionId ? `mission=${filters.missionId}` : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+  const lines = [
+    `overdue action count: ${items.length}`,
+    `filters: ${filterSummary || 'none'}`,
+  ];
+
+  for (const item of items) {
+    lines.push(
+      `[${item.actionClass}/${item.priority}] ${item.title} | workspace=${item.workspaceName} | mission=${item.missionId} | owner=${item.recommendedOwner} | dueAt=${item.dueAt}`,
+    );
+    lines.push(`command: ${item.recommendedCommand}`);
+    lines.push(`escalation: ${item.escalationRule}`);
+  }
+
+  return lines.join('\n');
+}
+
 export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const providerRegistry = createProviderRegistry({ rootDir });
@@ -982,12 +1013,51 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         actionClass: filter.actionClass || null,
+        missionId: filter.missionId || null,
         owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
         priority: filter.priority || null,
+        workspaceId: filter.workspaceId || null,
       },
       items,
       summary: summarizeActionInbox(items),
+    };
+  }
+
+  function logOverdueActions(filter = {}) {
+    const overdueInbox = getActionInbox({
+      ...filter,
+      overdueOnly: true,
+    });
+
+    if (!overdueInbox.items.length) {
+      return {
+        count: 0,
+        filters: overdueInbox.filters,
+        logged: false,
+        path: null,
+        title: null,
+      };
+    }
+
+    const title = buildOverdueIncidentTitle(overdueInbox.items.length);
+    const content = buildOverdueIncidentContent({
+      filters: overdueInbox.filters,
+      items: overdueInbox.items,
+    });
+    const path = docService.logDocument({
+      type: 'incident',
+      title,
+      content,
+    });
+
+    return {
+      count: overdueInbox.items.length,
+      filters: overdueInbox.filters,
+      itemIds: overdueInbox.items.map((item) => item.actionId),
+      logged: true,
+      path,
+      title,
     };
   }
 
@@ -1323,6 +1393,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listMemory,
     listMissions,
     listSessions,
+    logOverdueActions,
     logDocument,
     resolveApproval,
     runMission,

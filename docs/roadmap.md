@@ -24,6 +24,7 @@
 - action inbox now classifies work as `awaiting-human-decision`, `retry-ready`, or `blocked`
 - action inbox now carries `priority` and `recommendedOwner` dispatch metadata for operator triage
 - action inbox now carries `slaHours`, `dueAt`, `isOverdue`, and `escalationRule` for time-based dispatch
+- overdue actions can now be explicitly written into `docs/incidents.md` through a dedicated CLI command
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

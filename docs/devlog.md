@@ -77,3 +77,9 @@
 - added `slaHours`, `dueAt`, `isOverdue`, and `escalationRule` so action inbox items can be managed as time-based operational obligations
 - added `--overdue` filtering and overdue summary counts to make the queue usable for aging-based follow-up
 - strengthened the deterministic smoke by rewriting temp state timestamps so overdue behavior is verified without depending on wall-clock timing
+
+## 2026-04-06 Overdue Incident Logging
+
+- added an explicit `action log-overdue` command so overdue operational items can be promoted into the tracked incident trail instead of remaining query-only state
+- reused the existing doc logging path and generated incident entries with filters, command hints, and escalation text for each overdue item
+- added deterministic smoke coverage for logged, filtered, and no-op overdue logging behavior
