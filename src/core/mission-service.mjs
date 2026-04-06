@@ -1058,15 +1058,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     ]);
   }
 
-  function runAgentStage({ role, mission, workspace, session, provider, providerId, pack, memoryEntries, previousOutputs }) {
-    const promptContent = provider.preparePrompt({
+  async function runAgentStage({ role, mission, workspace, session, provider, providerId, pack, memoryEntries, previousOutputs }) {
+    const providerInput = {
       role,
       mission,
       workspace,
       pack,
       memoryEntries,
       previousOutputs,
-    });
+    };
+    const promptContent = await provider.preparePrompt(providerInput);
 
     const agentRun = harness.startAgentRun({
       missionId: mission.id,
@@ -1085,16 +1086,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       content: promptContent,
     });
 
-    const normalizedOutput = provider.normalizeOutput(
-      provider.run({
-        role,
-        mission,
-        workspace,
-        pack,
-        memoryEntries,
-        previousOutputs,
-      }),
-    );
+    const providerOutput = await provider.run(providerInput);
+    const normalizedOutput = provider.normalizeOutput(providerOutput, providerInput);
 
     const outputArtifact = harness.writeArtifact({
       missionId: mission.id,
@@ -1135,7 +1128,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
   }
 
-  function runMission(missionId, options = {}) {
+  async function runMission(missionId, options = {}) {
     const mission = getMission(missionId);
     const workspace = getWorkspace(mission.workspaceId);
     const providerId = normalizeText(options.provider, 'stub');
@@ -1157,7 +1150,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const previousOutputs = {};
 
-    const managerStage = runAgentStage({
+    const managerStage = await runAgentStage({
       role: 'manager',
       mission,
       workspace,
@@ -1174,7 +1167,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       currentStage: 'planner',
     });
 
-    const plannerStage = runAgentStage({
+    const plannerStage = await runAgentStage({
       role: 'planner',
       mission,
       workspace,
@@ -1192,7 +1185,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       currentStage: 'executor',
     });
 
-    const executorStage = runAgentStage({
+    const executorStage = await runAgentStage({
       role: 'executor',
       mission,
       workspace,
@@ -1210,7 +1203,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       currentStage: 'reviewer',
     });
 
-    const reviewerStage = runAgentStage({
+    const reviewerStage = await runAgentStage({
       role: 'reviewer',
       mission,
       workspace,

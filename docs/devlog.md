@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Async Provider Runtime And OpenAI Adapter
+
+- made `runMission`, `runAgentStage`, and the CLI mission-run path async-safe so provider implementations can await network calls without a larger runtime rewrite
+- added an OpenAI provider adapter backed by the Responses API contract, with fast `OPENAI_API_KEY` validation and response JSON parsing/normalization for manager, planner, executor, and reviewer stages
+- added deterministic smoke coverage for the missing-key path and mocked fetch success path so provider wiring can be validated locally without live network access
+
 ## 2026-04-06 Maintenance Bucket Delta
 
 - added `latestBucketDelta` to maintenance-only summaries so the newest daily bucket can be compared against the immediately previous bucket without post-processing

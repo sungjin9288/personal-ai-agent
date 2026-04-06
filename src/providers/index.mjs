@@ -1,4 +1,5 @@
 import { PROVIDER_IDS } from '../core/constants.mjs';
+import { createOpenAIProvider } from './openai-provider.mjs';
 import { createStubProvider } from './stub-provider.mjs';
 
 function createPlannedProvider(id) {
@@ -20,7 +21,7 @@ function createPlannedProvider(id) {
 export function createProviderRegistry({ rootDir }) {
   const providers = {
     stub: createStubProvider({ rootDir }),
-    openai: createPlannedProvider('openai'),
+    openai: createOpenAIProvider({ rootDir }),
     anthropic: createPlannedProvider('anthropic'),
     local: createPlannedProvider('local'),
   };

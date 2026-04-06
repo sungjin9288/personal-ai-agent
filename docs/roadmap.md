@@ -9,6 +9,8 @@
 
 - CLI-first Node.js ESM scaffold
 - managed role order: `manager -> planner -> executor -> reviewer`
+- runtime/provider path is now async-safe so network-backed providers can be introduced without changing the mission/session contract again
+- OpenAI provider adapter now exists behind the current provider contract, with env validation and Responses API request wiring
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence

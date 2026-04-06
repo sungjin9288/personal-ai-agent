@@ -100,7 +100,7 @@ function resolveScopeId(scope, args) {
   return '';
 }
 
-function main() {
+async function main() {
   const rootDir = resolveRootDir();
   const store = createStore({ rootDir });
   const service = createMissionService({ store, rootDir });
@@ -188,7 +188,7 @@ function main() {
   if (group === 'mission' && command === 'run') {
     const missionId = rest[0];
     const provider = readOption(rest, '--provider', 'stub');
-    const result = service.runMission(missionId, {
+    const result = await service.runMission(missionId, {
       provider,
       providerSpecified: hasOption(rest, '--provider'),
     });
@@ -465,7 +465,7 @@ function main() {
 }
 
 try {
-  main();
+  await main();
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);

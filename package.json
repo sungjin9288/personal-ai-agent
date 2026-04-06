@@ -30,6 +30,7 @@
     "smoke:session-history": "node scripts/smoke-session-history.mjs",
     "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
     "smoke:workspace-overview": "node scripts/smoke-workspace-overview.mjs",
-    "smoke:global-overview": "node scripts/smoke-global-overview.mjs"
+    "smoke:global-overview": "node scripts/smoke-global-overview.mjs",
+    "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs"
   }
 }

@@ -15,7 +15,7 @@ The runtime stays intentionally narrow in v1:
 
 - Node.js ESM
 - CLI-first
-- stub provider by default
+- stub provider by default, with an OpenAI adapter available behind `OPENAI_API_KEY`
 - explicit approval gates before risky actions
 - runtime state under `var/`
 - repo-tracked strategy and incident docs under `docs/`
@@ -77,6 +77,7 @@ Run and inspect missions:
 ```bash
 node src/cli.mjs mission list
 node src/cli.mjs mission run mission_xxx --provider stub
+OPENAI_API_KEY=... node src/cli.mjs mission run mission_xxx --provider openai
 node src/cli.mjs mission show mission_xxx
 node src/cli.mjs mission timeline mission_xxx
 node src/cli.mjs session list mission_xxx
@@ -153,6 +154,15 @@ node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started mana
 
 Engineering mode intentionally stops at proposal quality. It does not mutate registered workspaces in v1.
 
+## Provider Notes
+
+- `stub` remains the deterministic default for local development and smoke coverage.
+- `openai` now uses the OpenAI Responses API and reads:
+  - `OPENAI_API_KEY` required
+  - `OPENAI_MODEL` optional, default `gpt-5.2`
+  - `OPENAI_BASE_URL` optional, default `https://api.openai.com/v1`
+- if `OPENAI_API_KEY` is missing, `mission run --provider openai` fails fast before any network call.
+
 ## State Layout
 
 ```text
@@ -209,6 +219,7 @@ npm run smoke:session-history
 npm run smoke:mission-timeline
 npm run smoke:workspace-overview
 npm run smoke:global-overview
+npm run smoke:openai-provider
 ```
 
 All current smokes are deterministic and require no external API key.
