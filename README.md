@@ -49,6 +49,8 @@ node src/cli.mjs overview providers
 node src/cli.mjs overview operator-timeline
 node src/cli.mjs provider list
 node src/cli.mjs provider check openai
+node src/cli.mjs provider activity
+node src/cli.mjs provider activity-timeline --provider stub
 node src/cli.mjs provider probe openai
 node src/cli.mjs provider history
 node src/cli.mjs provider timeline
@@ -165,8 +167,11 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 ## Provider Notes
 
 - `provider list` shows implementation state, env readiness, required env, and default-provider status without executing a mission.
-- `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans, plus the latest persisted probe when available.
+- `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans, plus the latest persisted probe and latest execution when available.
+- `provider activity` exposes provider-backed stage execution history derived from persisted `agentRuns`, with `--provider`, `--role`, and `--status` filters.
+- `provider activity-timeline` turns provider execution history into chronological success or failure events so model-backed mission execution can be inspected as a time axis.
 - `overview providers` combines current provider readiness with persisted probe audit so configured, ready, unprobed, latest-success, latest-failure, and latest-skipped probe state can be read in one response.
+- `overview providers` now also summarizes provider execution volume and latest successful or failed execution so probe health and actual mission-path usage can be inspected together.
 - `provider probe <id>` attempts a lightweight endpoint reachability check and model listing when the provider is configured; if required env is missing it returns a structured non-attempted result instead of throwing.
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.

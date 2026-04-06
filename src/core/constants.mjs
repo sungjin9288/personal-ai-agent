@@ -13,6 +13,7 @@ export const MISSION_STATUSES = [
 export const SESSION_STATUSES = ['executing', 'awaiting_approval', 'reviewed', 'completed', 'failed'];
 
 export const AGENT_ROLES = ['manager', 'planner', 'executor', 'reviewer'];
+export const AGENT_RUN_STATUSES = ['executing', 'completed', 'failed'];
 
 export const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
 

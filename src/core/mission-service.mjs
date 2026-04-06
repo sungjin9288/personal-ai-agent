@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  AGENT_ROLES,
+  AGENT_RUN_STATUSES,
   ACTION_CLASSES,
   ACTION_OWNERS,
   ACTION_PRIORITIES,
@@ -1045,6 +1047,142 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return store.listProviderProbes({ providerId }).at(-1) || null;
   }
 
+  function buildProviderExecutionEntries(filter = {}) {
+    const state = store.loadState();
+    const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
+    const sessionById = new Map(state.sessions.map((session) => [session.id, session]));
+    const workspaceById = new Map(state.workspaces.map((workspace) => [workspace.id, workspace]));
+
+    return [...ensureArray(state.agentRuns)]
+      .map((run) => {
+        const session = sessionById.get(run.sessionId) || null;
+        const mission = missionById.get(run.missionId || session?.missionId) || null;
+        const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
+        const providerId = normalizeText(session?.provider);
+
+        return {
+          at: run.endedAt || run.startedAt || '',
+          endedAt: run.endedAt || null,
+          id: run.id,
+          inputSummary: normalizeText(run.inputSummary),
+          missionId: mission?.id || run.missionId || null,
+          missionTitle: mission?.title || null,
+          outputSummary: normalizeText(run.outputSummary),
+          providerId,
+          role: normalizeText(run.role),
+          sessionId: session?.id || run.sessionId || null,
+          startedAt: run.startedAt || null,
+          status: normalizeText(run.status),
+          workspaceId: workspace?.id || null,
+          workspaceName: workspace?.name || null,
+        };
+      })
+      .filter((entry) => {
+        if (!entry.providerId) {
+          return false;
+        }
+        if (filter.providerId && entry.providerId !== filter.providerId) {
+          return false;
+        }
+        if (filter.role && entry.role !== filter.role) {
+          return false;
+        }
+        if (filter.status && entry.status !== filter.status) {
+          return false;
+        }
+        return true;
+      })
+      .sort((left, right) => String(left.at).localeCompare(String(right.at)));
+  }
+
+  function getLatestProviderExecution(providerId) {
+    return buildProviderExecutionEntries({ providerId }).at(-1) || null;
+  }
+
+  function summarizeProviderExecutions(executions) {
+    const providerCounts = {};
+    const roleCounts = Object.fromEntries(AGENT_ROLES.map((role) => [role, 0]));
+    const statusCounts = {
+      ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
+      total: executions.length,
+    };
+
+    for (const execution of executions) {
+      providerCounts[execution.providerId] = (providerCounts[execution.providerId] || 0) + 1;
+      if (roleCounts[execution.role] !== undefined) {
+        roleCounts[execution.role] += 1;
+      }
+      if (statusCounts[execution.status] !== undefined) {
+        statusCounts[execution.status] += 1;
+      }
+    }
+
+    return {
+      latestExecution: executions.at(-1) || null,
+      latestFailedExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'failed'),
+      latestSuccessfulExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'completed'),
+      providerCounts,
+      roleCounts,
+      statusCounts,
+      total: executions.length,
+    };
+  }
+
+  function buildProviderExecutionTimeline(executions) {
+    return executions.map((execution) => ({
+      at: execution.at,
+      detail:
+        execution.outputSummary ||
+        execution.inputSummary ||
+        `Provider ${execution.providerId} ${execution.role} run ${execution.status}.`,
+      kind:
+        execution.status === 'failed'
+          ? 'provider-execution-failed'
+          : execution.status === 'completed'
+            ? 'provider-execution-succeeded'
+            : 'provider-execution-started',
+      missionId: execution.missionId,
+      missionTitle: execution.missionTitle,
+      providerId: execution.providerId,
+      role: execution.role,
+      runId: execution.id,
+      sessionId: execution.sessionId,
+      status: execution.status,
+      workspaceId: execution.workspaceId,
+      workspaceName: execution.workspaceName,
+    }));
+  }
+
+  function summarizeProviderExecutionTimeline(events) {
+    const eventCounts = {};
+    const providerCounts = {};
+    const roleCounts = Object.fromEntries(AGENT_ROLES.map((role) => [role, 0]));
+    const statusCounts = {
+      ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
+      total: events.length,
+    };
+
+    for (const event of events) {
+      eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
+      providerCounts[event.providerId] = (providerCounts[event.providerId] || 0) + 1;
+      if (roleCounts[event.role] !== undefined) {
+        roleCounts[event.role] += 1;
+      }
+      if (statusCounts[event.status] !== undefined) {
+        statusCounts[event.status] += 1;
+      }
+    }
+
+    return {
+      eventCounts,
+      latestEvent: events.at(-1) || null,
+      providerCounts,
+      roleCounts,
+      statusCounts,
+      total: events.length,
+    };
+  }
+
   function summarizeProviderProbes(probes) {
     const providerCounts = {};
     let attemptedCount = 0;
@@ -1086,6 +1224,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildProviderStatusEntries() {
     return providerRegistry.listProviders().map((provider) => ({
       ...provider,
+      latestExecution: getLatestProviderExecution(provider.id),
       latestProbe: getLatestProviderProbe(provider.id),
     }));
   }
@@ -1138,11 +1277,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     const probeSummary = summarizeProviderProbes(probes);
+    const executions = buildProviderExecutionEntries();
+    const executionSummary = summarizeProviderExecutions(executions);
 
     return {
       ...summarizeProviderStatusEntries(providers),
       configuredProviderIds,
+      executionCompletedCount: executionSummary.statusCounts.completed,
+      executionFailedCount: executionSummary.statusCounts.failed,
+      executionStatusCounts: executionSummary.statusCounts,
+      executionTotal: executionSummary.total,
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
+      latestFailedExecution: executionSummary.latestFailedExecution,
       latestProbe: probes.at(-1) || null,
       latestProbeFailureCount: latestProbeFailureProviderIds.length,
       latestProbeFailureProviderIds,
@@ -1150,7 +1296,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestProbeSkippedProviderIds,
       latestProbeSuccessCount: latestProbeSuccessProviderIds.length,
       latestProbeSuccessProviderIds,
+      latestExecution: executionSummary.latestExecution,
       latestSkippedProbe: getLatestMatchingRecord(probes, (probe) => !probe.attempted),
+      latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
       latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
       probeAttemptedCount: probeSummary.attemptedCount,
       probeFailureCount: probeSummary.failureCount,
@@ -1243,6 +1391,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function checkProvider(providerId) {
     return {
       ...providerRegistry.getProviderStatus(providerId),
+      latestExecution: getLatestProviderExecution(providerId),
       latestProbe: getLatestProviderProbe(providerId),
     };
   }
@@ -1285,6 +1434,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const timeline = buildProviderProbeTimeline(probes);
     return {
       summary: summarizeProviderProbeTimeline(timeline),
+      timeline,
+    };
+  }
+
+  function getProviderExecutionHistory(filter = {}) {
+    const executions = buildProviderExecutionEntries(filter);
+    return {
+      executions,
+      summary: summarizeProviderExecutions(executions),
+    };
+  }
+
+  function getProviderExecutionTimeline(filter = {}) {
+    const executions = buildProviderExecutionEntries(filter);
+    const timeline = buildProviderExecutionTimeline(executions);
+    return {
+      summary: summarizeProviderExecutionTimeline(timeline),
       timeline,
     };
   }
@@ -3892,11 +4058,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.missionCount, 0),
         missionCounts,
         openEscalationCount: openEscalations.length,
+        latestFailedProviderExecution: providerOverview.summary.latestFailedExecution,
+        latestProviderExecution: providerOverview.summary.latestExecution,
         latestFailedProviderProbe: providerOverview.summary.latestFailedProbe,
         latestProviderProbe: providerOverview.summary.latestProbe,
+        latestSuccessfulProviderExecution: providerOverview.summary.latestSuccessfulExecution,
         latestSuccessfulProviderProbe: providerOverview.summary.latestSuccessfulProbe,
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
+        providerExecutionCompletedCount: providerOverview.summary.executionCompletedCount,
+        providerExecutionCount: providerOverview.summary.executionTotal,
+        providerExecutionFailedCount: providerOverview.summary.executionFailedCount,
         providerLatestProbeFailureCount: providerOverview.summary.latestProbeFailureCount,
         providerLatestProbeSkippedCount: providerOverview.summary.latestProbeSkippedCount,
         providerReadyCount: providerOverview.summary.readyCount,
@@ -4620,6 +4792,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getGlobalOverview,
     getMaintenanceOverview,
     getOwnerHandoffInbox,
+    getProviderExecutionHistory,
+    getProviderExecutionTimeline,
     getProviderOverview,
     getProviderProbeTimeline,
     getReviewerFollowUpInbox,

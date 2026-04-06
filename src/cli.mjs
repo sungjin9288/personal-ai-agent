@@ -52,6 +52,8 @@ Commands:
 
   provider list
   provider check <stub|openai|anthropic|local>
+  provider activity [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer>] [--status <executing|completed|failed>]
+  provider activity-timeline [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer>] [--status <executing|completed|failed>]
   provider probe <stub|openai|anthropic|local>
   provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
   provider timeline [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
@@ -172,6 +174,28 @@ async function main() {
 
   if (group === 'provider' && command === 'check') {
     printJson(service.checkProvider(rest[0]));
+    return;
+  }
+
+  if (group === 'provider' && command === 'activity') {
+    printJson(
+      service.getProviderExecutionHistory({
+        providerId: readOption(rest, '--provider', ''),
+        role: readOption(rest, '--role', ''),
+        status: readOption(rest, '--status', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'provider' && command === 'activity-timeline') {
+    printJson(
+      service.getProviderExecutionTimeline({
+        providerId: readOption(rest, '--provider', ''),
+        role: readOption(rest, '--role', ''),
+        status: readOption(rest, '--status', ''),
+      }),
+    );
     return;
   }
 

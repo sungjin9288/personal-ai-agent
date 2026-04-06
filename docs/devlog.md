@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Execution Activity
+
+- added `provider activity` and `provider activity-timeline` so actual mission-stage success or failure can be inspected per provider on top of persisted `agentRuns`
+- linked latest provider execution into `provider check`, `provider list`, `overview providers`, and `overview global` so readiness and real execution evidence can be read together
+- added deterministic smoke coverage for mixed `stub` success or failure plus mocked `local` mission execution, including execution history and timeline filters
+
 ## 2026-04-06 Provider Overview
 
 - added `overview providers` so provider readiness and persisted probe health can be inspected in one control-plane response instead of stitching together `provider list` and `provider history`

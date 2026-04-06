@@ -33,6 +33,7 @@
     "smoke:global-overview": "node scripts/smoke-global-overview.mjs",
     "smoke:provider-surface": "node scripts/smoke-provider-surface.mjs",
     "smoke:provider-overview": "node scripts/smoke-provider-overview.mjs",
+    "smoke:provider-activity": "node scripts/smoke-provider-activity.mjs",
     "smoke:provider-probe": "node scripts/smoke-provider-probe.mjs",
     "smoke:provider-history": "node scripts/smoke-provider-history.mjs",
     "smoke:provider-timeline": "node scripts/smoke-provider-timeline.mjs",
