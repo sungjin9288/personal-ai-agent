@@ -220,3 +220,9 @@
 - added `maintenance-run` events to workspace/global operator timeline so maintenance execution is visible alongside approval, follow-up, and escalation activity
 - included run outcome detail such as sync count, reminded count, and no-op marker in the timeline event body
 - extended operator timeline smoke coverage to verify a no-op maintenance sweep still leaves an auditable operator event
+
+## 2026-04-06 Maintenance Pressure Resolution Trail
+
+- extended maintenance run records with before/after pressure snapshots plus acknowledged/resolved/remaining counts so derived `maintenance-required` work leaves explicit audit evidence
+- added `maintenance-required-acknowledged` and `maintenance-required-resolved` events to workspace/global operator timeline instead of letting maintenance pressure disappear silently after a sweep
+- strengthened maintenance history smoke coverage to verify the first sweep acknowledges and clears one maintenance-required obligation while a second no-op sweep leaves no false resolution record

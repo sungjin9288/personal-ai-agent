@@ -199,6 +199,9 @@ const firstMaintenance = runCli({
 assert.equal(firstMaintenance.summary.totalRemindedCount, 2);
 assert.equal(firstMaintenance.summary.escalationRemindedCount, 1);
 assert.equal(firstMaintenance.summary.ownerHandoffRemindedCount, 1);
+assert.equal(firstMaintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
+assert.equal(firstMaintenance.summary.resolvedMaintenanceRequiredCount, 1);
+assert.equal(firstMaintenance.summary.remainingMaintenanceRequiredCount, 0);
 assert.ok(firstMaintenance.maintenanceRun.id);
 
 const secondMaintenance = runCli({
@@ -216,6 +219,9 @@ const secondMaintenance = runCli({
 assert.equal(secondMaintenance.summary.totalRemindedCount, 0);
 assert.equal(secondMaintenance.summary.escalationRemindedCount, 0);
 assert.equal(secondMaintenance.summary.ownerHandoffRemindedCount, 0);
+assert.equal(secondMaintenance.summary.acknowledgedMaintenanceRequiredCount, 0);
+assert.equal(secondMaintenance.summary.resolvedMaintenanceRequiredCount, 0);
+assert.equal(secondMaintenance.summary.remainingMaintenanceRequiredCount, 0);
 assert.ok(secondMaintenance.maintenanceRun.id);
 
 const history = runCli({
@@ -227,6 +233,9 @@ assert.equal(history.summary.runCount, 2);
 assert.equal(history.summary.totalRemindedCount, 2);
 assert.equal(history.summary.escalationRemindedCountTotal, 1);
 assert.equal(history.summary.ownerHandoffRemindedCountTotal, 1);
+assert.equal(history.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(history.summary.resolvedMaintenanceRequiredCountTotal, 1);
+assert.equal(history.summary.remainingMaintenanceRequiredCountTotal, 0);
 assert.equal(history.summary.workspaceCounts[workspace.id], 2);
 assert.equal(history.items.length, 2);
 assert.equal(history.items[0].note.includes('First maintenance sweep'), true);
@@ -244,6 +253,9 @@ const maintenanceOverview = runCli({
 assert.equal(maintenanceOverview.summary.runCount, 2);
 assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
 assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(maintenanceOverview.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(maintenanceOverview.summary.resolvedMaintenanceRequiredCountTotal, 1);
+assert.equal(maintenanceOverview.summary.remainingMaintenanceRequiredCountTotal, 0);
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(maintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
@@ -256,6 +268,9 @@ assert.equal(workspaceOverview.summary.maintenanceRunCount, 2);
 assert.equal(workspaceOverview.summary.maintenanceTotalRemindedCount, 2);
 assert.equal(workspaceOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(workspaceOverview.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(workspaceOverview.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 1);
+assert.equal(workspaceOverview.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
 assert.equal(workspaceOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(workspaceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(workspaceOverview.summary.maintenanceDueCandidateCountTotal, 2);
@@ -269,6 +284,9 @@ assert.equal(globalOverview.summary.maintenanceRunCount, 2);
 assert.equal(globalOverview.summary.maintenanceTotalRemindedCount, 2);
 assert.equal(globalOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(globalOverview.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(globalOverview.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 1);
+assert.equal(globalOverview.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
 assert.equal(globalOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(globalOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(globalOverview.summary.maintenanceDueCandidateCountTotal, 2);
@@ -279,6 +297,32 @@ const postMaintenanceInbox = runCli({
 });
 
 assert.equal(postMaintenanceInbox.summary.pendingActionCount, 0);
+
+const workspaceTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'timeline', workspace.id],
+});
+
+assert.equal(workspaceTimeline.summary.eventCounts['maintenance-run'], 2);
+assert.equal(workspaceTimeline.summary.eventCounts['maintenance-required-acknowledged'], 1);
+assert.equal(workspaceTimeline.summary.eventCounts['maintenance-required-resolved'], 1);
+assert.equal(
+  workspaceTimeline.timeline.some(
+    (event) =>
+      event.kind === 'maintenance-required-acknowledged' &&
+      /covering 2 due candidate/i.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  workspaceTimeline.timeline.some(
+    (event) =>
+      event.kind === 'maintenance-required-resolved' &&
+      /resolved 1 maintenance-required action/i.test(event.detail) &&
+      /remaining=0/i.test(event.detail),
+  ),
+  true,
+);
 
 console.log(
   JSON.stringify(

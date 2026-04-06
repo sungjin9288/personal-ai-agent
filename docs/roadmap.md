@@ -49,6 +49,7 @@
 - maintenance sweeps are now persisted as first-class run history and exposed through `action maintenance-history` plus `overview maintenance`, with latest run totals surfaced on workspace/global overview
 - due maintenance pressure now re-enters the unified `action inbox` as `maintenance-required`, so operators can trigger the sweep from the same dispatch surface that shows reminder work
 - workspace/global operator timeline now includes `maintenance-run` events, so maintenance execution is visible in the same chronological operator stream as approvals, follow-ups, and escalations
+- maintenance runs now persist acknowledged/resolved maintenance-pressure snapshot counts, so operator history can show when a derived `maintenance-required` obligation was actively handled and cleared
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

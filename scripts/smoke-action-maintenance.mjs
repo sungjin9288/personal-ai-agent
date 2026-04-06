@@ -200,7 +200,15 @@ assert.equal(maintenance.summary.dueCandidateCountTotal, 2);
 assert.equal(maintenance.summary.escalationRemindedCount, 1);
 assert.equal(maintenance.summary.ownerHandoffRemindedCount, 1);
 assert.equal(maintenance.summary.totalRemindedCount, 2);
+assert.equal(maintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
+assert.equal(maintenance.summary.resolvedMaintenanceRequiredCount, 1);
+assert.equal(maintenance.summary.remainingMaintenanceRequiredCount, 0);
 assert.ok(maintenance.summary.latestReminderAt);
+assert.equal(maintenance.maintenanceRun.acknowledgedMaintenanceRequiredCount, 1);
+assert.equal(maintenance.maintenanceRun.resolvedMaintenanceRequiredCount, 1);
+assert.equal(maintenance.maintenanceRun.remainingMaintenanceRequiredCount, 0);
+assert.equal(maintenance.maintenanceRun.beforePressureSummary.maintenanceRequiredCount, 1);
+assert.equal(maintenance.maintenanceRun.afterPressureSummary.maintenanceRequiredCount, 0);
 
 const postMaintenanceReminderInbox = runCli({
   rootDir: tempRoot,

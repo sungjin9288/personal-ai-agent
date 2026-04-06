@@ -217,7 +217,7 @@ function formatEscalationOwnerHandoffReminderDetail(reminder) {
 function formatMaintenanceRunDetail(run) {
   const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
   const noteSuffix = run.note ? ` note=${run.note}` : '';
-  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}.${noteSuffix}`;
+  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
 function getMeaningfulOwnerTransitions(ownerHistory) {
@@ -626,21 +626,27 @@ function summarizeEscalations(items) {
 }
 
 function summarizeMaintenanceRuns(items) {
+  let acknowledgedMaintenanceRequiredCountTotal = 0;
   const workspaceCounts = {};
   let escalationRemindedCountTotal = 0;
   let dueCandidateCountTotal = 0;
   let latestRun = null;
   let latestRunAt = null;
   let ownerHandoffRemindedCountTotal = 0;
+  let remainingMaintenanceRequiredCountTotal = 0;
+  let resolvedMaintenanceRequiredCountTotal = 0;
   let syncedCountTotal = 0;
   let totalRemindedCount = 0;
 
   for (const item of items) {
     const workspaceKey = item.workspaceId || 'global';
     workspaceCounts[workspaceKey] = (workspaceCounts[workspaceKey] || 0) + 1;
+    acknowledgedMaintenanceRequiredCountTotal += Number(item.acknowledgedMaintenanceRequiredCount || 0);
     escalationRemindedCountTotal += Number(item.escalationRemindedCount || 0);
     dueCandidateCountTotal += Number(item.dueCandidateCountTotal || 0);
     ownerHandoffRemindedCountTotal += Number(item.ownerHandoffRemindedCount || 0);
+    remainingMaintenanceRequiredCountTotal += Number(item.remainingMaintenanceRequiredCount || 0);
+    resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
     totalRemindedCount += Number(item.totalRemindedCount || 0);
 
@@ -651,11 +657,14 @@ function summarizeMaintenanceRuns(items) {
   }
 
   return {
+    acknowledgedMaintenanceRequiredCountTotal,
     dueCandidateCountTotal,
     escalationRemindedCountTotal,
     latestRun,
     latestRunAt,
     ownerHandoffRemindedCountTotal,
+    remainingMaintenanceRequiredCountTotal,
+    resolvedMaintenanceRequiredCountTotal,
     runCount: items.length,
     syncedCountTotal,
     totalRemindedCount,
@@ -1264,10 +1273,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           : null,
         latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
         latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
+        maintenanceAcknowledgedMaintenanceRequiredCountTotal:
+          maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
+        maintenanceResolvedMaintenanceRequiredCountTotal:
+          maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
+        maintenanceRemainingMaintenanceRequiredCountTotal:
+          maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
@@ -2597,6 +2612,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     const note = normalizeText(filter.note);
+    const beforePressure = listMaintenancePressureEntries({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      workspaceId: filter.workspaceId,
+    });
+    const beforePressureSummary = summarizeMaintenancePressure(beforePressure);
     const sync = syncEscalations({
       missionId: filter.missionId,
       owner: filter.owner,
@@ -2620,6 +2641,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       note,
     );
+    const afterPressure = listMaintenancePressureEntries({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      workspaceId: filter.workspaceId,
+    });
+    const afterPressureSummary = summarizeMaintenancePressure(afterPressure);
+    const afterPressureIds = new Set(afterPressure.map((entry) => entry.actionId));
+    const acknowledgedActionIds = beforePressure.map((entry) => entry.actionId);
+    const resolvedActionIds = acknowledgedActionIds.filter((actionId) => !afterPressureIds.has(actionId));
+    const remainingActionIds = afterPressure.map((entry) => entry.actionId);
 
     const latestReminderAt = [escalationReminders.summary.latestReminderAt, ownerHandoffReminders.summary.latestReminderAt]
       .filter(Boolean)
@@ -2627,12 +2658,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .at(-1) || null;
 
     const summary = {
+      acknowledgedMaintenanceRequiredCount: acknowledgedActionIds.length,
+      afterDueCandidateCountTotal: Number(afterPressureSummary.currentDueCandidateCountTotal || 0),
+      afterMaintenanceRequiredCount: Number(afterPressureSummary.maintenanceRequiredCount || 0),
+      beforeDueCandidateCountTotal: Number(beforePressureSummary.currentDueCandidateCountTotal || 0),
+      beforeMaintenanceRequiredCount: Number(beforePressureSummary.maintenanceRequiredCount || 0),
       dueCandidateCountTotal:
         Number(escalationReminders.summary.dueCandidateCount || 0) +
         Number(ownerHandoffReminders.summary.dueCandidateCount || 0),
       escalationRemindedCount: Number(escalationReminders.summary.remindedCount || 0),
       latestReminderAt,
       ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
+      remainingMaintenanceRequiredCount: remainingActionIds.length,
+      resolvedMaintenanceRequiredCount: resolvedActionIds.length,
       syncedCount: Number(sync.summary.syncedCount || 0),
       totalRemindedCount:
         Number(escalationReminders.summary.remindedCount || 0) +
@@ -2640,6 +2678,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
 
     const maintenanceRun = store.saveMaintenanceRun({
+      acknowledgedActionIds,
+      acknowledgedMaintenanceRequiredCount: summary.acknowledgedMaintenanceRequiredCount,
+      afterPressureSummary,
+      beforePressureSummary,
       createdAt: now(),
       dueCandidateCountTotal: summary.dueCandidateCountTotal,
       escalationRemindedCount: summary.escalationRemindedCount,
@@ -2657,6 +2699,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       owner: filter.owner || null,
       ownerHandoffRemindedCount: summary.ownerHandoffRemindedCount,
       ownerHandoffRemindersSummary: ownerHandoffReminders.summary,
+      remainingActionIds,
+      remainingMaintenanceRequiredCount: summary.remainingMaintenanceRequiredCount,
+      resolvedActionIds,
+      resolvedMaintenanceRequiredCount: summary.resolvedMaintenanceRequiredCount,
       syncedCount: summary.syncedCount,
       syncSummary: sync.summary,
       totalRemindedCount: summary.totalRemindedCount,
@@ -3154,12 +3200,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
         latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
         latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
+        maintenanceAcknowledgedMaintenanceRequiredCountTotal:
+          maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+        maintenanceResolvedMaintenanceRequiredCountTotal:
+          maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
+        maintenanceRemainingMaintenanceRequiredCountTotal:
+          maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
         maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
@@ -3559,6 +3611,38 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
       if (filter.missionId && maintenanceRun.missionId !== filter.missionId) {
         continue;
+      }
+
+      if (Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
+        events.push({
+          acknowledgedCount: maintenanceRun.acknowledgedMaintenanceRequiredCount,
+          at: maintenanceRun.createdAt,
+          detail: `Maintenance sweep acknowledged ${maintenanceRun.acknowledgedMaintenanceRequiredCount} maintenance-required action(s) covering ${maintenanceRun.beforePressureSummary?.currentDueCandidateCountTotal || 0} due candidate(s).`,
+          kind: 'maintenance-required-acknowledged',
+          maintenanceRunId: maintenanceRun.id,
+          missionId: mission ? mission.id : maintenanceRun.missionId || null,
+          missionTitle: mission ? mission.title : null,
+          note: maintenanceRun.note || null,
+          status: 'acknowledged',
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+
+      if (Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
+        events.push({
+          at: maintenanceRun.createdAt,
+          detail: `Maintenance sweep resolved ${maintenanceRun.resolvedMaintenanceRequiredCount} maintenance-required action(s); remaining=${maintenanceRun.remainingMaintenanceRequiredCount || 0}.`,
+          kind: 'maintenance-required-resolved',
+          maintenanceRunId: maintenanceRun.id,
+          missionId: mission ? mission.id : maintenanceRun.missionId || null,
+          missionTitle: mission ? mission.title : null,
+          note: maintenanceRun.note || null,
+          resolvedCount: maintenanceRun.resolvedMaintenanceRequiredCount,
+          status: 'resolved',
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
       }
 
       events.push({
