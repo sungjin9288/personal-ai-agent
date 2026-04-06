@@ -626,6 +626,7 @@ function summarizeEscalations(items) {
 }
 
 function summarizeMaintenanceRuns(items) {
+  const maintenanceImpactSummary = summarizeMaintenanceImpact(items);
   let acknowledgedMaintenanceRequiredCountTotal = 0;
   const workspaceCounts = {};
   let escalationRemindedCountTotal = 0;
@@ -658,8 +659,13 @@ function summarizeMaintenanceRuns(items) {
 
   return {
     acknowledgedMaintenanceRequiredCountTotal,
+    affectedMissionCount: maintenanceImpactSummary.affectedMissionCount,
+    affectedMissionIds: maintenanceImpactSummary.affectedMissionIds,
     dueCandidateCountTotal,
     escalationRemindedCountTotal,
+    latestImpactAffectedMissionIds: maintenanceImpactSummary.latestImpactAffectedMissionIds,
+    latestImpactRun: maintenanceImpactSummary.latestImpactRun,
+    latestImpactRunAt: maintenanceImpactSummary.latestImpactRunAt,
     latestRun,
     latestRunAt,
     ownerHandoffRemindedCountTotal,

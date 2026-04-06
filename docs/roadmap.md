@@ -55,6 +55,7 @@
 - mission summary now exposes combined maintenance impact fields so direct mission sweep totals and indirect workspace sweep effects can both be inspected without re-aggregating timeline events manually
 - workspace and global overview now expose maintenance-affected mission breadth so higher-level control-plane summaries can show how many missions recent sweeps actually touched
 - workspace overview now treats global sweep and mission-scope sweep results as workspace impact too, so nested workspace summaries inside global overview do not miss maintenance work executed from a broader scope
+- maintenance history and maintenance overview now expose affected mission breadth and latest impact linkage, so maintenance-specific audit surfaces can answer impact questions without relying on workspace/global overview only
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

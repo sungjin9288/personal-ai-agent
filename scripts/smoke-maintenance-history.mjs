@@ -202,6 +202,10 @@ assert.equal(firstMaintenance.summary.ownerHandoffRemindedCount, 1);
 assert.equal(firstMaintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
 assert.equal(firstMaintenance.summary.resolvedMaintenanceRequiredCount, 1);
 assert.equal(firstMaintenance.summary.remainingMaintenanceRequiredCount, 0);
+assert.deepEqual(
+  [...firstMaintenance.maintenanceRun.affectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
 assert.ok(firstMaintenance.maintenanceRun.id);
 
 const secondMaintenance = runCli({
@@ -234,8 +238,18 @@ assert.equal(history.summary.totalRemindedCount, 2);
 assert.equal(history.summary.escalationRemindedCountTotal, 1);
 assert.equal(history.summary.ownerHandoffRemindedCountTotal, 1);
 assert.equal(history.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(history.summary.affectedMissionCount, 2);
+assert.deepEqual(
+  [...history.summary.affectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
 assert.equal(history.summary.resolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(history.summary.remainingMaintenanceRequiredCountTotal, 0);
+assert.equal(history.summary.latestImpactRun.id, firstMaintenance.maintenanceRun.id);
+assert.deepEqual(
+  [...history.summary.latestImpactAffectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
 assert.equal(history.summary.workspaceCounts[workspace.id], 2);
 assert.equal(history.items.length, 2);
 assert.equal(history.items[0].note.includes('First maintenance sweep'), true);
@@ -254,8 +268,18 @@ assert.equal(maintenanceOverview.summary.runCount, 2);
 assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
 assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(maintenanceOverview.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
+assert.equal(maintenanceOverview.summary.affectedMissionCount, 2);
+assert.deepEqual(
+  [...maintenanceOverview.summary.affectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
 assert.equal(maintenanceOverview.summary.resolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(maintenanceOverview.summary.remainingMaintenanceRequiredCountTotal, 0);
+assert.equal(maintenanceOverview.summary.latestImpactRun.id, firstMaintenance.maintenanceRun.id);
+assert.deepEqual(
+  [...maintenanceOverview.summary.latestImpactAffectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(maintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 

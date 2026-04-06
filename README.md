@@ -127,6 +127,8 @@ node src/cli.mjs approval list
 node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"
 ```
 
+`action maintenance-history`와 `overview maintenance`는 이제 reminder total뿐 아니라 affected mission breadth, latest impact run, latest impact mission ids도 같이 보여줍니다.
+
 Memory and documentation:
 
 ```bash

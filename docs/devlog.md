@@ -251,3 +251,9 @@
 - kept existing maintenance total/reminder counters unchanged and exposed breadth as separate affected-mission metadata to avoid changing previous summary semantics
 - extended workspace and global overview smoke coverage with maintenance sweeps so affected mission counts and latest impact run linkage are verified deterministically
 - corrected workspace impact lookup so workspace overview also counts global maintenance sweeps and mission-scope sweeps that affected missions inside the workspace, instead of only runs that were launched with the workspace id directly
+
+## 2026-04-06 Maintenance History Impact Summary
+
+- extended maintenance history and maintenance overview summaries with affected mission breadth plus latest impact linkage so maintenance-specific audit surfaces can answer reach questions directly
+- reused the same maintenance impact helper already used by mission and overview summaries instead of introducing a separate maintenance-history-only contract
+- strengthened maintenance history smoke coverage to verify the first effective sweep touched exactly two missions while the later no-op sweep does not replace the latest impact run metadata
