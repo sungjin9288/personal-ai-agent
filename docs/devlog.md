@@ -24,6 +24,12 @@
 - provider attention now appears as `provider-attention-opened`, `provider-attention-acknowledged`, and `provider-attention-resolved` alongside approval, reviewer follow-up, escalation, and maintenance events
 - kept global provider probe failures on the provider event stream only, while workspace-bound execution failures are promoted into operator timeline because they map to a concrete workspace owner workflow
 
+## 2026-04-06 Workspace Provider Attention Summary
+
+- extended `workspace overview` with workspace-scoped provider execution and provider attention aggregates so workspace owners can see failed execution pressure without jumping into provider-only commands
+- linked latest failed execution and latest pending provider attention event into workspace summary while keeping global provider readiness as a separate top-level concern
+- added deterministic smoke coverage for one workspace-bound failed provider execution so workspace overview regression now locks provider attention counts and latest pointers
+
 ## 2026-04-06 Provider Events
 
 - added `provider events` so probe and execution observability can be read as one chronological provider event stream instead of hopping between separate timelines

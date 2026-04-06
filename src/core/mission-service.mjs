@@ -1705,6 +1705,56 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function summarizeWorkspaceProviderActivity(workspaceId) {
+    const pendingAttentionItems = buildProviderAttentionPendingItems({ workspaceId });
+    const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems({ workspaceId });
+    const resolvedAttentionItems = buildProviderAttentionResolvedItems({ workspaceId });
+    const executionEntries = buildProviderExecutionEntries({ workspaceId });
+    const executionSummary = summarizeProviderExecutions(executionEntries);
+    const eventSummary = summarizeProviderEvents(buildProviderEvents({ workspaceId }));
+    const touchedProviderIds = [
+      ...new Set(
+        [
+          ...pendingAttentionItems.map((item) => item.providerId),
+          ...acknowledgedAttentionItems.map((item) => item.providerId),
+          ...resolvedAttentionItems.map((item) => item.providerId),
+          ...executionEntries.map((item) => item.providerId),
+        ].filter(Boolean),
+      ),
+    ].sort((left, right) => String(left).localeCompare(String(right)));
+
+    return {
+      latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionItems, 'acknowledgedAt'),
+      latestAttentionRequiredEvent: getLatestItem(pendingAttentionItems, 'createdAt'),
+      latestAttentionResolution: getLatestItem(resolvedAttentionItems, 'resolvedAt'),
+      latestExecution: executionSummary.latestExecution,
+      latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFailedExecution: executionSummary.latestFailedExecution,
+      latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
+      touchedProviderCount: touchedProviderIds.length,
+      touchedProviderIds,
+      summary: {
+        attentionAcknowledgedCount: acknowledgedAttentionItems.length,
+        attentionRequiredCount: pendingAttentionItems.length,
+        attentionResolvedCount: resolvedAttentionItems.length,
+        attentionStatusCounts: {
+          acknowledged: acknowledgedAttentionItems.length,
+          pending: pendingAttentionItems.length,
+          resolved: resolvedAttentionItems.length,
+          total:
+            pendingAttentionItems.length + acknowledgedAttentionItems.length + resolvedAttentionItems.length,
+        },
+        eventCount: eventSummary.total,
+        eventFamilyCounts: eventSummary.familyCounts,
+        executionCompletedCount: executionSummary.statusCounts.completed,
+        executionCount: executionSummary.total,
+        executionFailedCount: executionSummary.statusCounts.failed,
+        touchedProviderCount: touchedProviderIds.length,
+        touchedProviderIds,
+      },
+    };
+  }
+
   function checkProvider(providerId) {
     const provider = buildProviderStatusEntries().find((entry) => entry.id === providerId);
     if (!provider) {
@@ -2295,6 +2345,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const workspace = getWorkspace(workspaceId);
     syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
+    const providerActivity = summarizeWorkspaceProviderActivity(workspace.id);
     const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
     const maintenanceImpactSummary = summarizeMaintenanceImpact(
@@ -2382,9 +2433,27 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
         memoryCounts,
+        latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+        latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
+        latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
+        latestProviderExecution: providerActivity.latestExecution,
+        latestProviderExecutionEvent: providerActivity.latestExecutionEvent,
+        latestFailedProviderExecution: providerActivity.latestFailedExecution,
+        latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
         missionCount: missionEntries.length,
         missionCounts,
         openEscalationIds: escalationSummary.openEscalationIds,
+        providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
+        providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+        providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
+        providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
+        providerEventCount: providerActivity.summary.eventCount,
+        providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+        providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
+        providerExecutionCount: providerActivity.summary.executionCount,
+        providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+        providerTouchedCount: providerActivity.summary.touchedProviderCount,
+        providerTouchedIds: providerActivity.summary.touchedProviderIds,
         sessionCount: missionEntries.reduce((count, entry) => count + entry.summary.sessionCount, 0),
         workspaceId: workspace.id,
       },

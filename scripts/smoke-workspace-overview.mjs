@@ -97,6 +97,33 @@ runCli({
   ],
 });
 
+const providerAttentionMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Provider attention mission',
+    '--objective',
+    'Produce one failed provider execution in the workspace.',
+    '--constraints',
+    'force-rubric-fail',
+  ],
+});
+
+const providerAttentionRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', providerAttentionMission.id],
+});
+
+assert.equal(providerAttentionRun.status, 'failed');
+
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
@@ -151,10 +178,10 @@ const overview = runCli({
   args: ['workspace', 'overview', workspace.id],
 });
 
-assert.equal(overview.summary.missionCount, 3);
+assert.equal(overview.summary.missionCount, 4);
 assert.equal(overview.summary.missionCounts.completed, 1);
 assert.equal(overview.summary.missionCounts.awaiting_approval, 1);
-assert.equal(overview.summary.missionCounts.failed, 1);
+assert.equal(overview.summary.missionCounts.failed, 2);
 assert.equal(overview.summary.approvalCounts.pending, 1);
 assert.equal(overview.summary.approvalCounts.rejected, 1);
 assert.equal(overview.summary.approvalCounts.total, 2);
@@ -177,17 +204,33 @@ assert.deepEqual(
   [...overview.summary.latestMaintenanceImpactAffectedMissionIds].sort(),
   [awaitingMission.id, failedMission.id].sort(),
 );
-assert.equal(overview.summary.sessionCount, 3);
+assert.equal(overview.summary.providerAttentionRequiredCount, 1);
+assert.equal(overview.summary.providerAttentionAcknowledgedCount, 0);
+assert.equal(overview.summary.providerAttentionResolvedCount, 0);
+assert.equal(overview.summary.providerAttentionStatusCounts.pending, 1);
+assert.equal(overview.summary.providerExecutionFailedCount, 1);
+assert.equal(overview.summary.providerTouchedCount, 1);
+assert.deepEqual(overview.summary.providerTouchedIds, ['stub']);
+assert.equal(overview.summary.latestProviderAttentionRequiredEvent.providerId, 'stub');
+assert.equal(overview.summary.latestFailedProviderExecution.providerId, 'stub');
+assert.equal(overview.summary.latestProviderExecution.providerId, 'stub');
+assert.equal(overview.summary.sessionCount, 4);
 assert.equal(overview.summary.activeMissionIds.includes(awaitingMission.id), true);
-assert.equal(overview.summary.latestMission.mission.id, failedMission.id);
+assert.equal(overview.summary.latestMission.mission.id, providerAttentionMission.id);
 assert.equal(overview.escalations.length, 2);
-assert.equal(overview.missions.length, 3);
+assert.equal(overview.missions.length, 4);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === failedMission.id && entry.summary.latestSession.status === 'failed'),
   true,
 );
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === awaitingMission.id && entry.summary.latestSession.status === 'awaiting_approval'),
+  true,
+);
+assert.equal(
+  overview.missions.some(
+    (entry) => entry.mission.id === providerAttentionMission.id && entry.summary.latestSession.status === 'failed',
+  ),
   true,
 );
 
