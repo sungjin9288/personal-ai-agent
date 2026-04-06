@@ -209,7 +209,10 @@ function buildOverdueIncidentContent({ items, filters }) {
 function summarizeEscalations(items) {
   const ownerCounts = {};
   const priorityCounts = {};
-  const statusCounts = Object.fromEntries(ESCALATION_STATUSES.map((status) => [status, 0]));
+  const statusCounts = {
+    ...Object.fromEntries(ESCALATION_STATUSES.map((status) => [status, 0])),
+    total: items.length,
+  };
   const workspaceCounts = {};
 
   for (const item of items) {
@@ -220,6 +223,13 @@ function summarizeEscalations(items) {
   }
 
   return {
+    latestEscalation:
+      [...items]
+        .sort((left, right) =>
+          String(left.updatedAt || left.createdAt || '').localeCompare(String(right.updatedAt || right.createdAt || '')),
+        )
+        .at(-1) || null,
+    openEscalationIds: items.filter((item) => item.status === 'open').map((item) => item.id),
     ownerCounts,
     pendingEscalationCount: items.filter((item) => item.status === 'open').length,
     priorityCounts,
@@ -629,6 +639,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function getWorkspaceOverview(workspaceId) {
     const workspace = getWorkspace(workspaceId);
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
+    const escalations = store.listEscalations({ workspaceId: workspace.id });
+    const escalationSummary = summarizeEscalations(escalations);
     const workspaceMemoryEntries = store.listMemoryEntries({ scope: 'workspace', scopeId: workspace.id });
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
@@ -651,12 +663,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const latestMissionEntry = missionEntries.at(-1) || null;
 
     return {
+      escalations,
       missions: missionEntries,
       summary: {
         activeMissionIds: missionEntries
           .filter((entry) => !['completed', 'failed'].includes(entry.mission.status))
           .map((entry) => entry.mission.id),
         approvalCounts,
+        escalationCounts: escalationSummary.statusCounts,
+        latestEscalation: escalationSummary.latestEscalation,
         latestMission: latestMissionEntry
           ? {
               mission: latestMissionEntry.mission,
@@ -666,6 +681,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         memoryCounts,
         missionCount: missionEntries.length,
         missionCounts,
+        openEscalationIds: escalationSummary.openEscalationIds,
         sessionCount: missionEntries.reduce((count, entry) => count + entry.summary.sessionCount, 0),
         workspaceId: workspace.id,
       },
@@ -1201,6 +1217,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
     const memoryCounts = { missionScoped: 0, total: 0, workspaceScoped: 0 };
     const inbox = buildApprovalInboxItems();
+    const allEscalations = store.listEscalations();
+    const openEscalations = allEscalations.filter((item) => item.status === 'open');
+    const escalationSummary = summarizeEscalations(allEscalations);
 
     for (const overview of workspaceOverviews) {
       for (const status of MISSION_STATUSES) {
@@ -1220,16 +1239,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return {
+      escalations: openEscalations,
       inbox,
       summary: {
         activeWorkspaceIds: workspaceOverviews
           .filter((overview) => overview.summary.activeMissionIds.length > 0)
           .map((overview) => overview.workspace.id),
         approvalCounts,
+        escalatedWorkspaceIds: [...new Set(openEscalations.map((item) => item.workspaceId))],
+        escalationCounts: escalationSummary.statusCounts,
         inboxCount: inbox.length,
+        latestEscalation: escalationSummary.latestEscalation,
         memoryCounts,
         missionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.missionCount, 0),
         missionCounts,
+        openEscalationCount: openEscalations.length,
         sessionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.sessionCount, 0),
         workspaceCount: workspaceOverviews.length,
       },

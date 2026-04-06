@@ -89,3 +89,8 @@
 - added first-class escalation records so overdue action logging now persists open escalation state instead of only appending markdown incidents
 - added `action escalated` and `action resolve-escalation` commands so escalations can be tracked and closed explicitly
 - added deterministic smoke coverage for escalation dedupe, open/resolved filtering, and manual resolution notes
+
+## 2026-04-06 Escalation Pressure In Overviews
+
+- extended `workspace overview` and `overview global` so control-plane summaries now include escalation counts, open escalation ids, latest escalation context, and top-level escalated workspace visibility
+- updated overview smokes to generate overdue escalation state before assertions so the top-level summaries are tested against real escalation records instead of empty defaults

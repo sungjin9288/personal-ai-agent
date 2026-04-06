@@ -50,6 +50,8 @@ node src/cli.mjs workspace show workspace_xxx
 node src/cli.mjs workspace overview workspace_xxx
 ```
 
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure도 함께 보여줍니다.
+
 Create missions:
 
 ```bash

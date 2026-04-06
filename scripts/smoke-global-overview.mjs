@@ -100,6 +100,39 @@ runCli({
   ],
 });
 
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+
+state.approvals = state.approvals.map((approval) => {
+  if (approval.id === pendingRun.approvalId) {
+    return {
+      ...approval,
+      createdAt: overdueTimestamp,
+    };
+  }
+
+  if (approval.id === failedRun.approvalId) {
+    return {
+      ...approval,
+      createdAt: overdueTimestamp,
+      resolvedAt: overdueTimestamp,
+    };
+  }
+
+  return approval;
+});
+
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+const escalationLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue'],
+});
+
+assert.equal(escalationLog.logged, true);
+assert.equal(escalationLog.count, 2);
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'global'],
@@ -114,19 +147,37 @@ assert.equal(overview.summary.missionCounts.failed, 1);
 assert.equal(overview.summary.approvalCounts.pending, 1);
 assert.equal(overview.summary.approvalCounts.rejected, 1);
 assert.equal(overview.summary.approvalCounts.total, 2);
+assert.equal(overview.summary.escalationCounts.open, 2);
+assert.equal(overview.summary.escalationCounts.resolved, 0);
+assert.equal(overview.summary.escalationCounts.total, 2);
 assert.equal(overview.summary.inboxCount, 1);
+assert.equal(overview.summary.openEscalationCount, 2);
 assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceOne.id), true);
 assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceTwo.id), false);
+assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceOne.id), true);
+assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceTwo.id), true);
+assert.equal(overview.summary.latestEscalation !== null, true);
+assert.equal(overview.escalations.length, 2);
 assert.equal(overview.inbox.length, 1);
 assert.equal(overview.inbox[0].approvalId, pendingRun.approvalId);
 assert.equal(overview.inbox[0].workspaceId, workspaceOne.id);
 assert.equal(overview.workspaces.length, 2);
 assert.equal(
-  overview.workspaces.some((entry) => entry.workspace.id === workspaceOne.id && entry.summary.missionCounts.awaiting_approval === 1),
+  overview.workspaces.some(
+    (entry) =>
+      entry.workspace.id === workspaceOne.id &&
+      entry.summary.missionCounts.awaiting_approval === 1 &&
+      entry.summary.escalationCounts.open === 1,
+  ),
   true,
 );
 assert.equal(
-  overview.workspaces.some((entry) => entry.workspace.id === workspaceTwo.id && entry.summary.missionCounts.failed === 1),
+  overview.workspaces.some(
+    (entry) =>
+      entry.workspace.id === workspaceTwo.id &&
+      entry.summary.missionCounts.failed === 1 &&
+      entry.summary.escalationCounts.open === 1,
+  ),
   true,
 );
 

@@ -58,7 +58,7 @@ const awaitingMission = runCli({
   ],
 });
 
-runCli({
+const awaitingRun = runCli({
   rootDir: tempRoot,
   args: ['mission', 'run', awaitingMission.id],
 });
@@ -97,6 +97,39 @@ runCli({
   ],
 });
 
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+
+state.approvals = state.approvals.map((approval) => {
+  if (approval.id === awaitingRun.approvalId) {
+    return {
+      ...approval,
+      createdAt: overdueTimestamp,
+    };
+  }
+
+  if (approval.id === failedRun.approvalId) {
+    return {
+      ...approval,
+      createdAt: overdueTimestamp,
+      resolvedAt: overdueTimestamp,
+    };
+  }
+
+  return approval;
+});
+
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+const escalationLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue'],
+});
+
+assert.equal(escalationLog.logged, true);
+assert.equal(escalationLog.count, 2);
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'overview', workspace.id],
@@ -109,11 +142,17 @@ assert.equal(overview.summary.missionCounts.failed, 1);
 assert.equal(overview.summary.approvalCounts.pending, 1);
 assert.equal(overview.summary.approvalCounts.rejected, 1);
 assert.equal(overview.summary.approvalCounts.total, 2);
+assert.equal(overview.summary.escalationCounts.open, 2);
+assert.equal(overview.summary.escalationCounts.resolved, 0);
+assert.equal(overview.summary.escalationCounts.total, 2);
 assert.equal(overview.summary.memoryCounts.workspaceScoped, 1);
 assert.equal(overview.summary.memoryCounts.missionScoped >= 1, true);
+assert.equal(overview.summary.openEscalationIds.length, 2);
+assert.equal(overview.summary.latestEscalation.workspaceId, workspace.id);
 assert.equal(overview.summary.sessionCount, 3);
 assert.equal(overview.summary.activeMissionIds.includes(awaitingMission.id), true);
 assert.equal(overview.summary.latestMission.mission.id, failedMission.id);
+assert.equal(overview.escalations.length, 2);
 assert.equal(overview.missions.length, 3);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === failedMission.id && entry.summary.latestSession.status === 'failed'),
