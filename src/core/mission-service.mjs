@@ -214,6 +214,12 @@ function formatEscalationOwnerHandoffReminderDetail(reminder) {
   return `${reminder.owner}${overdueSuffix} owner handoff reminder: ${reminder.note || 'No explicit note recorded.'}`;
 }
 
+function formatMaintenanceRunDetail(run) {
+  const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
+  const noteSuffix = run.note ? ` note=${run.note}` : '';
+  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}.${noteSuffix}`;
+}
+
 function getMeaningfulOwnerTransitions(ownerHistory) {
   return ensureArray(ownerHistory).filter((entry) => entry.from && entry.to && entry.from !== entry.to);
 }
@@ -3540,6 +3546,34 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           workspaceName: workspace.name,
         });
       }
+    }
+
+    for (const maintenanceRun of store.listMaintenanceRuns()) {
+      const workspace = workspaceById.get(maintenanceRun.workspaceId);
+      const mission = maintenanceRun.missionId ? missionById.get(maintenanceRun.missionId) : null;
+      if (!workspace) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+      if (filter.missionId && maintenanceRun.missionId !== filter.missionId) {
+        continue;
+      }
+
+      events.push({
+        at: maintenanceRun.createdAt,
+        detail: formatMaintenanceRunDetail(maintenanceRun),
+        kind: 'maintenance-run',
+        maintenanceRunId: maintenanceRun.id,
+        missionId: mission ? mission.id : maintenanceRun.missionId || null,
+        missionTitle: mission ? mission.title : null,
+        note: maintenanceRun.note || null,
+        remindedCount: maintenanceRun.totalRemindedCount || 0,
+        status: Number(maintenanceRun.totalRemindedCount || 0) > 0 ? 'completed' : 'no-op',
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
     }
 
     return sortTimelineEvents(events);

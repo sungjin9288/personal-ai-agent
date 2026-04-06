@@ -214,3 +214,9 @@
 - surfaced current due maintenance pressure as a first-class `maintenance-required` item in the unified `action inbox`
 - grouped due monitoring reminders and due owner handoff reminders into one workspace-scoped maintenance action so operators can launch the sweep without manually re-deriving scope
 - extended maintenance history smoke coverage to verify the maintenance-required item appears before a sweep and disappears after the sweep clears due pressure
+
+## 2026-04-06 Maintenance Run In Operator Timeline
+
+- added `maintenance-run` events to workspace/global operator timeline so maintenance execution is visible alongside approval, follow-up, and escalation activity
+- included run outcome detail such as sync count, reminded count, and no-op marker in the timeline event body
+- extended operator timeline smoke coverage to verify a no-op maintenance sweep still leaves an auditable operator event

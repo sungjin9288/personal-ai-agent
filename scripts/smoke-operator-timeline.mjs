@@ -149,6 +149,21 @@ runCli({
   ],
 });
 
+const maintenanceRun = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'maintenance',
+    '--workspace',
+    workspaceOne.id,
+    '--note',
+    'Operator timeline maintenance sweep.',
+  ],
+});
+
+assert.ok(maintenanceRun.maintenanceRun.id);
+assert.equal(maintenanceRun.summary.totalRemindedCount, 0);
+
 const workspaceTimeline = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'timeline', workspaceOne.id],
@@ -159,6 +174,7 @@ assert.equal(workspaceTimeline.summary.eventCounts['approval-requested'], 2);
 assert.equal(workspaceTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-resolved'], 1);
+assert.equal(workspaceTimeline.summary.eventCounts['maintenance-run'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.timeline.every((event) => event.workspaceId === workspaceOne.id), true);
@@ -181,9 +197,10 @@ assert.equal(globalTimeline.summary.eventCounts['approval-requested'], 2);
 assert.equal(globalTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-resolved'], 1);
+assert.equal(globalTimeline.summary.eventCounts['maintenance-run'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 4, true);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 2);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
@@ -206,6 +223,16 @@ assert.equal(
 assert.equal(
   globalTimeline.timeline.some(
     (event) => event.kind === 'escalation-resolved' && /Workspace timeline escalation resolved/.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  globalTimeline.timeline.some(
+    (event) =>
+      event.kind === 'maintenance-run' &&
+      event.workspaceId === workspaceOne.id &&
+      /\[no-op\]/.test(event.detail) &&
+      /Operator timeline maintenance sweep/i.test(event.detail),
   ),
   true,
 );

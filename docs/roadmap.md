@@ -48,6 +48,7 @@
 - `action maintenance` now runs a local-first due reminder sweep across escalation pressure and pending owner handoffs, with duplicate suppression for handoff-owned escalations
 - maintenance sweeps are now persisted as first-class run history and exposed through `action maintenance-history` plus `overview maintenance`, with latest run totals surfaced on workspace/global overview
 - due maintenance pressure now re-enters the unified `action inbox` as `maintenance-required`, so operators can trigger the sweep from the same dispatch surface that shows reminder work
+- workspace/global operator timeline now includes `maintenance-run` events, so maintenance execution is visible in the same chronological operator stream as approvals, follow-ups, and escalations
 - memory and document logging commands
 - deterministic local-first smoke coverage
 
