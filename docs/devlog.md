@@ -71,3 +71,9 @@
 - added `priority`, `recommendedOwner`, and `recommendedCommand` so action inbox items can be dispatched without re-deriving operator intent from raw mission state
 - added priority/owner filtering and summary counts to make the queue usable for focused operational slices like “high-priority human approvals”
 - kept the item contract backward-compatible by preserving `commandHint` while introducing the more explicit dispatch fields
+
+## 2026-04-06 Action SLA And Escalation
+
+- added `slaHours`, `dueAt`, `isOverdue`, and `escalationRule` so action inbox items can be managed as time-based operational obligations
+- added `--overdue` filtering and overdue summary counts to make the queue usable for aging-based follow-up
+- strengthened the deterministic smoke by rewriting temp state timestamps so overdue behavior is verified without depending on wall-clock timing

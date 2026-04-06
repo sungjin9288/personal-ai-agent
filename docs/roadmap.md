@@ -23,6 +23,7 @@
 - action inbox aggregates pending approvals and reviewer follow-up items into one operator surface
 - action inbox now classifies work as `awaiting-human-decision`, `retry-ready`, or `blocked`
 - action inbox now carries `priority` and `recommendedOwner` dispatch metadata for operator triage
+- action inbox now carries `slaHours`, `dueAt`, `isOverdue`, and `escalationRule` for time-based dispatch
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

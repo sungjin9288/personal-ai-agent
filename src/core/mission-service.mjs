@@ -111,6 +111,20 @@ function addDispatchMetadata(item, { priority, recommendedOwner, recommendedComm
   };
 }
 
+function addOperationalMetadata(item, { slaHours, escalationRule }) {
+  const createdAt = String(item.createdAt || '');
+  const dueAt = createdAt ? new Date(new Date(createdAt).getTime() + slaHours * 60 * 60 * 1000).toISOString() : null;
+  const isOverdue = dueAt ? Date.now() > new Date(dueAt).getTime() : false;
+
+  return {
+    ...item,
+    dueAt,
+    escalationRule,
+    isOverdue,
+    slaHours,
+  };
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -650,11 +664,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .map((item) =>
         item
-          ? addDispatchMetadata(item, {
-              priority: 'high',
-              recommendedOwner: 'human-approver',
-              recommendedCommand: item.resolveCommand,
-            })
+          ? addOperationalMetadata(
+              addDispatchMetadata(item, {
+                priority: 'high',
+                recommendedOwner: 'human-approver',
+                recommendedCommand: item.resolveCommand,
+              }),
+              {
+                slaHours: 24,
+                escalationRule: 'If overdue, escalate to the workspace owner and request a decision on approval scope.',
+              },
+            )
           : null,
       )
       .filter(Boolean)
@@ -722,11 +742,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .map((item) =>
         item
-          ? addDispatchMetadata(item, {
-              priority: 'high',
-              recommendedOwner: 'mission-owner',
-              recommendedCommand: item.commandHint || `node src/cli.mjs mission show ${item.missionId}`,
-            })
+          ? addOperationalMetadata(
+              addDispatchMetadata(item, {
+                priority: 'high',
+                recommendedOwner: 'mission-owner',
+                recommendedCommand: item.commandHint || `node src/cli.mjs mission show ${item.missionId}`,
+              }),
+              {
+                slaHours: 12,
+                escalationRule: 'If overdue, escalate to the workspace owner and redefine scope before any rerun.',
+              },
+            )
           : null,
       )
       .filter(Boolean)
@@ -798,11 +824,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })
       .map((item) =>
         item
-          ? addDispatchMetadata(item, {
-              priority: 'medium',
-              recommendedOwner: 'mission-owner',
-              recommendedCommand: item.commandHint || `node src/cli.mjs mission run ${item.missionId} --provider stub`,
-            })
+          ? addOperationalMetadata(
+              addDispatchMetadata(item, {
+                priority: 'medium',
+                recommendedOwner: 'mission-owner',
+                recommendedCommand: item.commandHint || `node src/cli.mjs mission run ${item.missionId} --provider stub`,
+              }),
+              {
+                slaHours: 48,
+                escalationRule: 'If overdue, escalate to the workspace owner and request a narrower remediation plan.',
+              },
+            )
           : null,
       )
       .filter(Boolean)
@@ -825,6 +857,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
     const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
     const priorityCounts = Object.fromEntries(ACTION_PRIORITIES.map((priority) => [priority, 0]));
+    const overdueCounts = {
+      overdue: 0,
+      onTime: 0,
+      total: items.length,
+    };
 
     for (const item of items) {
       workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -860,6 +897,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       if (priorityCounts[item.priority] !== undefined) {
         priorityCounts[item.priority] += 1;
       }
+
+      if (item.isOverdue) {
+        overdueCounts.overdue += 1;
+      } else {
+        overdueCounts.onTime += 1;
+      }
     }
 
     return {
@@ -868,6 +911,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ownerCounts,
       pendingActionCount: items.length,
       priorityCounts,
+      overdueCounts,
       workspaceCounts,
     };
   }
@@ -928,6 +972,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.owner && item.recommendedOwner !== filter.owner) {
           return false;
         }
+        if (filter.overdueOnly && !item.isOverdue) {
+          return false;
+        }
         return true;
       })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -936,6 +983,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       filters: {
         actionClass: filter.actionClass || null,
         owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
         priority: filter.priority || null,
       },
       items,
