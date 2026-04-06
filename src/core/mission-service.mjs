@@ -1073,6 +1073,98 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function getLatestMatchingRecord(records, predicate) {
+    for (let index = records.length - 1; index >= 0; index -= 1) {
+      if (predicate(records[index])) {
+        return records[index];
+      }
+    }
+
+    return null;
+  }
+
+  function buildProviderStatusEntries() {
+    return providerRegistry.listProviders().map((provider) => ({
+      ...provider,
+      latestProbe: getLatestProviderProbe(provider.id),
+    }));
+  }
+
+  function summarizeProviderStatusEntries(providers) {
+    return {
+      configuredCount: providers.filter((provider) => provider.configured).length,
+      defaultProviderId: providers.find((provider) => provider.defaultProvider)?.id || 'stub',
+      implementedCount: providers.filter((provider) => provider.implemented).length,
+      total: providers.length,
+    };
+  }
+
+  function summarizeProviderOverview(providers, probes) {
+    const configuredProviderIds = [];
+    const latestProbeFailureProviderIds = [];
+    const latestProbeSkippedProviderIds = [];
+    const latestProbeSuccessProviderIds = [];
+    const readyProviderIds = [];
+    const unconfiguredProviderIds = [];
+    const unprobedProviderIds = [];
+
+    for (const provider of providers) {
+      if (provider.configured) {
+        configuredProviderIds.push(provider.id);
+      } else {
+        unconfiguredProviderIds.push(provider.id);
+      }
+
+      if (provider.configured && provider.implemented) {
+        readyProviderIds.push(provider.id);
+      }
+
+      if (!provider.latestProbe) {
+        unprobedProviderIds.push(provider.id);
+        continue;
+      }
+
+      if (provider.latestProbe.ok) {
+        latestProbeSuccessProviderIds.push(provider.id);
+        continue;
+      }
+
+      if (provider.latestProbe.attempted) {
+        latestProbeFailureProviderIds.push(provider.id);
+        continue;
+      }
+
+      latestProbeSkippedProviderIds.push(provider.id);
+    }
+
+    const probeSummary = summarizeProviderProbes(probes);
+
+    return {
+      ...summarizeProviderStatusEntries(providers),
+      configuredProviderIds,
+      latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
+      latestProbe: probes.at(-1) || null,
+      latestProbeFailureCount: latestProbeFailureProviderIds.length,
+      latestProbeFailureProviderIds,
+      latestProbeSkippedCount: latestProbeSkippedProviderIds.length,
+      latestProbeSkippedProviderIds,
+      latestProbeSuccessCount: latestProbeSuccessProviderIds.length,
+      latestProbeSuccessProviderIds,
+      latestSkippedProbe: getLatestMatchingRecord(probes, (probe) => !probe.attempted),
+      latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
+      probeAttemptedCount: probeSummary.attemptedCount,
+      probeFailureCount: probeSummary.failureCount,
+      probeSuccessCount: probeSummary.successCount,
+      probeTotal: probeSummary.total,
+      readyCount: readyProviderIds.length,
+      readyProviderIds,
+      unconfiguredCount: unconfiguredProviderIds.length,
+      unconfiguredProviderIds,
+      unprobedCount: unprobedProviderIds.length,
+      unprobedProviderIds,
+    };
+  }
+
   function buildProviderProbeTimeline(probes) {
     return probes.map((probe) => {
       const kind = probe.attempted
@@ -1131,18 +1223,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function listProviders() {
-    const providers = providerRegistry.listProviders().map((provider) => ({
-      ...provider,
-      latestProbe: getLatestProviderProbe(provider.id),
-    }));
+    const providers = buildProviderStatusEntries();
     return {
       providers,
-      summary: {
-        configuredCount: providers.filter((provider) => provider.configured).length,
-        defaultProviderId: providers.find((provider) => provider.defaultProvider)?.id || 'stub',
-        implementedCount: providers.filter((provider) => provider.implemented).length,
-        total: providers.length,
-      },
+      summary: summarizeProviderStatusEntries(providers),
+    };
+  }
+
+  function getProviderOverview() {
+    const providers = buildProviderStatusEntries();
+    const probes = store.listProviderProbes();
+
+    return {
+      providers,
+      summary: summarizeProviderOverview(providers, probes),
     };
   }
 
@@ -3722,6 +3816,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const allEscalations = store.listEscalations().map((item) => enrichEscalation(item));
     const openEscalations = allEscalations.filter((item) => item.status === 'open');
     const escalationSummary = summarizeEscalations(allEscalations);
+    const providerOverview = getProviderOverview();
 
     for (const overview of workspaceOverviews) {
       for (const status of MISSION_STATUSES) {
@@ -3743,6 +3838,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       escalations: openEscalations,
       inbox,
+      providerOverview,
       summary: {
         activeWorkspaceIds: workspaceOverviews
           .filter((overview) => overview.summary.activeMissionIds.length > 0)
@@ -3796,6 +3892,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.missionCount, 0),
         missionCounts,
         openEscalationCount: openEscalations.length,
+        latestFailedProviderProbe: providerOverview.summary.latestFailedProbe,
+        latestProviderProbe: providerOverview.summary.latestProbe,
+        latestSuccessfulProviderProbe: providerOverview.summary.latestSuccessfulProbe,
+        providerConfiguredCount: providerOverview.summary.configuredCount,
+        providerCount: providerOverview.summary.total,
+        providerLatestProbeFailureCount: providerOverview.summary.latestProbeFailureCount,
+        providerLatestProbeSkippedCount: providerOverview.summary.latestProbeSkippedCount,
+        providerReadyCount: providerOverview.summary.readyCount,
+        providerUnprobedCount: providerOverview.summary.unprobedCount,
         sessionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.sessionCount, 0),
         workspaceCount: workspaceOverviews.length,
       },
@@ -4515,6 +4620,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getGlobalOverview,
     getMaintenanceOverview,
     getOwnerHandoffInbox,
+    getProviderOverview,
     getProviderProbeTimeline,
     getReviewerFollowUpInbox,
     getWorkspace,

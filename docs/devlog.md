@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Overview
+
+- added `overview providers` so provider readiness and persisted probe health can be inspected in one control-plane response instead of stitching together `provider list` and `provider history`
+- linked provider summary into `overview global`, including configured or ready counts, unprobed count, and latest success, failure, skipped probe pointers
+- added deterministic smoke coverage for mixed skipped, failed, and successful provider probes plus global overview linkage
+
 ## 2026-04-06 Provider Probe Timeline
 
 - added `provider timeline` so persisted provider probe records can be read as chronological success, failure, and skipped events instead of only raw history rows

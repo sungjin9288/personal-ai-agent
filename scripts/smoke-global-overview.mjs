@@ -5,6 +5,10 @@ import path from 'node:path';
 
 import { runCli } from './cli-test-helpers.mjs';
 
+process.env.ANTHROPIC_API_KEY = '';
+process.env.LOCAL_PROVIDER_MODEL = '';
+process.env.OPENAI_API_KEY = '';
+
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-global-overview-'));
 const workspaceOnePath = path.join(tempRoot, 'workspace-one');
 const workspaceTwoPath = path.join(tempRoot, 'workspace-two');
@@ -157,6 +161,12 @@ const overview = runCli({
 assert.equal(overview.summary.workspaceCount, 2);
 assert.equal(overview.summary.missionCount, 3);
 assert.equal(overview.summary.sessionCount, 3);
+assert.equal(overview.summary.providerCount, 4);
+assert.equal(overview.summary.providerConfiguredCount, 1);
+assert.equal(overview.summary.providerReadyCount, 1);
+assert.equal(overview.summary.providerUnprobedCount, 4);
+assert.equal(overview.summary.providerLatestProbeFailureCount, 0);
+assert.equal(overview.summary.providerLatestProbeSkippedCount, 0);
 assert.equal(overview.summary.missionCounts.completed, 1);
 assert.equal(overview.summary.missionCounts.awaiting_approval, 1);
 assert.equal(overview.summary.missionCounts.failed, 1);
@@ -185,8 +195,14 @@ assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceTwo.id), fals
 assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceOne.id), true);
 assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceTwo.id), true);
 assert.equal(overview.summary.latestEscalation !== null, true);
+assert.equal(overview.summary.latestProviderProbe, null);
+assert.equal(overview.summary.latestFailedProviderProbe, null);
+assert.equal(overview.summary.latestSuccessfulProviderProbe, null);
 assert.equal(overview.escalations.length, 2);
 assert.equal(overview.inbox.length, 1);
+assert.equal(overview.providerOverview.summary.total, 4);
+assert.equal(overview.providerOverview.summary.unprobedCount, 4);
+assert.equal(overview.providerOverview.providers.length, 4);
 assert.equal(overview.inbox[0].approvalId, pendingRun.approvalId);
 assert.equal(overview.inbox[0].workspaceId, workspaceOne.id);
 assert.equal(overview.workspaces.length, 2);
