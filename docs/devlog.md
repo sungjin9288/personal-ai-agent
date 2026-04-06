@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Attention Inbox
+
+- promoted latest failed provider probe or failed provider execution into `provider-attention-required` items inside the unified `action inbox`
+- kept the contract read-model based so a later success event automatically clears the attention item without adding new persistence state
+- added deterministic smoke coverage for one global probe failure and one workspace-bound execution failure, plus overview attention summary linkage
+
 ## 2026-04-06 Provider Events
 
 - added `provider events` so probe and execution observability can be read as one chronological provider event stream instead of hopping between separate timelines

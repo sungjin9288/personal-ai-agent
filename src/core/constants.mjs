@@ -23,6 +23,7 @@ export const ACTION_CLASSES = [
   'retry-ready',
   'blocked',
   'awaiting-human-decision',
+  'provider-attention-required',
   'monitoring-required',
   'handoff-required',
   'maintenance-required',

@@ -174,6 +174,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider events` merges persisted probe events and provider execution events into one chronological stream, with `--family <probe|execution>` plus probe- and execution-specific filters.
 - `overview providers` combines current provider readiness with persisted probe audit so configured, ready, unprobed, latest-success, latest-failure, and latest-skipped probe state can be read in one response.
 - `overview providers` now also summarizes provider execution volume and latest successful or failed execution, and it exposes the latest unified provider event so probe health and actual mission-path usage can be inspected together.
+- `action inbox --class provider-attention-required` now promotes the latest failed provider probe or failed provider execution into an operator action item. probe failure becomes a global attention item, and mission-scoped execution failure becomes a workspace-bound attention item.
 - `provider probe <id>` attempts a lightweight endpoint reachability check and model listing when the provider is configured; if required env is missing it returns a structured non-attempted result instead of throwing.
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.

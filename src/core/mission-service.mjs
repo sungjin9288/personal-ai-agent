@@ -1240,6 +1240,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function summarizeProviderOverview(providers, probes) {
+    const attentionEvents = providers
+      .map((provider) => provider.latestEvent)
+      .filter((event) => event && ['provider-probe-failed', 'provider-execution-failed'].includes(event.eventKind));
     const configuredProviderIds = [];
     const latestProbeFailureProviderIds = [];
     const latestProbeSkippedProviderIds = [];
@@ -1284,6 +1287,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       ...summarizeProviderStatusEntries(providers),
+      attentionRequiredCount: attentionEvents.length,
+      attentionRequiredProviderIds: providers
+        .filter((provider) => provider.latestEvent && ['provider-probe-failed', 'provider-execution-failed'].includes(provider.latestEvent.eventKind))
+        .map((provider) => provider.id),
       configuredProviderIds,
       eventCounts: eventSummary.eventCounts,
       eventFamilyCounts: eventSummary.familyCounts,
@@ -1295,6 +1302,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
+      latestAttentionRequiredEvent: getLatestItem(attentionEvents, 'at'),
       latestExecutionEvent: eventSummary.latestExecutionEvent,
       latestProbe: probes.at(-1) || null,
       latestProbeFailureCount: latestProbeFailureProviderIds.length,
@@ -2829,6 +2837,70 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
+  function buildProviderAttentionItems(filter = {}) {
+    return buildProviderStatusEntries()
+      .map((provider) => {
+        const latestEvent = provider.latestEvent;
+        if (!latestEvent || !['provider-probe-failed', 'provider-execution-failed'].includes(latestEvent.eventKind)) {
+          return null;
+        }
+
+        const recommendedOwner =
+          latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
+        const recommendedCommand =
+          latestEvent.eventFamily === 'execution'
+            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
+            : `node src/cli.mjs provider probe ${provider.id}`;
+
+        if (filter.workspaceId && latestEvent.workspaceId !== filter.workspaceId) {
+          return null;
+        }
+
+        if (filter.missionId && latestEvent.missionId !== filter.missionId) {
+          return null;
+        }
+
+        return addOperationalMetadata(
+          addDispatchMetadata(
+            {
+              actionClass: 'provider-attention-required',
+              actionId: `provider-attention:${provider.id}`,
+              actionType: 'provider-attention',
+              createdAt: latestEvent.at,
+              deliverableType: null,
+              eventFamily: latestEvent.eventFamily,
+              eventKind: latestEvent.eventKind,
+              missionId: latestEvent.missionId || null,
+              providerDisplayName: provider.displayName,
+              providerId: provider.id,
+              reason: latestEvent.detail,
+              sessionId: latestEvent.sessionId || null,
+              title:
+                latestEvent.eventFamily === 'execution'
+                  ? `Provider execution attention required for ${provider.displayName}`
+                  : `Provider probe attention required for ${provider.displayName}`,
+              workspaceId: latestEvent.workspaceId || null,
+              workspaceName: latestEvent.workspaceName || null,
+            },
+            {
+              priority: latestEvent.eventFamily === 'execution' ? 'high' : 'medium',
+              recommendedCommand,
+              recommendedOwner,
+            },
+          ),
+          {
+            escalationRule:
+              latestEvent.eventFamily === 'execution'
+                ? 'Inspect the failed provider execution and decide whether to rerun, switch provider, or narrow scope.'
+                : 'Re-probe the provider and restore provider connectivity before the next external model run.',
+            slaHours: latestEvent.eventFamily === 'execution' ? 12 : 24,
+          },
+        );
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
   function getActionInboxReminderState(item) {
     const nextReminderAt = item.nextReminderAt || item.handoffNextReminderAt || null;
     const lastReminderAt = item.lastReminderAt || item.handoffLatestReminderAt || null;
@@ -2863,6 +2935,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       handoffRequired: 0,
       maintenanceRequired: 0,
       monitoringRequired: 0,
+      providerAttentionRequired: 0,
       retryReady: 0,
       total: items.length,
     };
@@ -2872,6 +2945,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       blockedFollowUp: 0,
       maintenanceSweep: 0,
       ownerHandoff: 0,
+      providerAttention: 0,
       reviewerFollowUp: 0,
       total: items.length,
     };
@@ -2893,7 +2967,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let nextReminderAt = null;
 
     for (const item of items) {
-      workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+      if (item.workspaceId) {
+        workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+      }
 
       if (item.actionType === 'approval') {
         actionCounts.approval += 1;
@@ -2913,6 +2989,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (item.actionType === 'owner-handoff') {
         actionCounts.ownerHandoff += 1;
+      }
+
+      if (item.actionType === 'provider-attention') {
+        actionCounts.providerAttention += 1;
       }
 
       if (item.actionType === 'reviewer-follow-up') {
@@ -2937,6 +3017,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (item.actionClass === 'monitoring-required') {
         actionClassCounts.monitoringRequired += 1;
+      }
+
+      if (item.actionClass === 'provider-attention-required') {
+        actionClassCounts.providerAttentionRequired += 1;
       }
 
       if (item.actionClass === 'retry-ready') {
@@ -3189,6 +3273,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...buildApprovalInboxItems(filter),
       ...buildMaintenanceActionItems(filter),
       ...buildOwnerHandoffActionItems(filter),
+      ...buildProviderAttentionItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
@@ -4189,6 +4274,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionCounts,
         openEscalationCount: openEscalations.length,
         latestProviderEvent: providerOverview.summary.latestEvent,
+        latestProviderAttentionRequiredEvent: providerOverview.summary.latestAttentionRequiredEvent,
         latestProviderExecutionEvent: providerOverview.summary.latestExecutionEvent,
         latestFailedProviderExecution: providerOverview.summary.latestFailedExecution,
         latestProviderExecution: providerOverview.summary.latestExecution,
@@ -4199,6 +4285,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestSuccessfulProviderProbe: providerOverview.summary.latestSuccessfulProbe,
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
+        providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
         providerEventCount: providerOverview.summary.eventTotal,
         providerEventFamilyCounts: providerOverview.summary.eventFamilyCounts,
         providerExecutionCompletedCount: providerOverview.summary.executionCompletedCount,
