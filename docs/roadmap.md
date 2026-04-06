@@ -47,6 +47,7 @@
 - unified `action inbox` now exposes a cross-action `--needs-reminder` slice so monitoring-required and handoff-required work can be re-triaged from the main operator queue without switching surfaces
 - `action maintenance` now runs a local-first due reminder sweep across escalation pressure and pending owner handoffs, with duplicate suppression for handoff-owned escalations
 - maintenance sweeps are now persisted as first-class run history and exposed through `action maintenance-history` plus `overview maintenance`, with latest run totals surfaced on workspace/global overview
+- due maintenance pressure now re-enters the unified `action inbox` as `maintenance-required`, so operators can trigger the sweep from the same dispatch surface that shows reminder work
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

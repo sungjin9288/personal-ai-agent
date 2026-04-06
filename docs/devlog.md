@@ -208,3 +208,9 @@
 - persisted `action maintenance` executions as first-class maintenance run records so local sweeps leave an audit trail even when they do not send any reminders
 - added `action maintenance-history` and `overview maintenance` so operators can inspect latest sweep results, aggregate reminder totals, and no-op runs without reading raw state
 - propagated maintenance run totals and latest run metadata into workspace/global overview so top-level control-plane surfaces now show maintenance activity as well as pressure
+
+## 2026-04-06 Maintenance Required Action
+
+- surfaced current due maintenance pressure as a first-class `maintenance-required` item in the unified `action inbox`
+- grouped due monitoring reminders and due owner handoff reminders into one workspace-scoped maintenance action so operators can launch the sweep without manually re-deriving scope
+- extended maintenance history smoke coverage to verify the maintenance-required item appears before a sweep and disappears after the sweep clears due pressure

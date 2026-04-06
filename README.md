@@ -93,6 +93,7 @@ Operator flow:
 node src/cli.mjs action inbox
 node src/cli.mjs action inbox --class retry-ready
 node src/cli.mjs action inbox --class handoff-required
+node src/cli.mjs action inbox --class maintenance-required
 node src/cli.mjs action inbox --class monitoring-required
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --needs-reminder

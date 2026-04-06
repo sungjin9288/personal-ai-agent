@@ -261,34 +261,36 @@ const inbox = runCli({
   args: ['action', 'inbox'],
 });
 
-assert.equal(inbox.summary.pendingActionCount, 4);
-assert.equal(inbox.summary.actionCounts.total, 4);
+assert.equal(inbox.summary.pendingActionCount, 5);
+assert.equal(inbox.summary.actionCounts.total, 5);
 assert.equal(inbox.summary.actionCounts.acceptedRiskMonitoring, 0);
 assert.equal(inbox.summary.actionCounts.approval, 1);
 assert.equal(inbox.summary.actionCounts.blockedFollowUp, 1);
+assert.equal(inbox.summary.actionCounts.maintenanceSweep, 1);
 assert.equal(inbox.summary.actionCounts.ownerHandoff, 1);
 assert.equal(inbox.summary.actionCounts.reviewerFollowUp, 1);
-assert.equal(inbox.summary.actionClassCounts.total, 4);
+assert.equal(inbox.summary.actionClassCounts.total, 5);
 assert.equal(inbox.summary.actionClassCounts.awaitingHumanDecision, 1);
 assert.equal(inbox.summary.actionClassCounts.blocked, 1);
 assert.equal(inbox.summary.actionClassCounts.handoffRequired, 1);
+assert.equal(inbox.summary.actionClassCounts.maintenanceRequired, 1);
 assert.equal(inbox.summary.actionClassCounts.monitoringRequired, 0);
 assert.equal(inbox.summary.actionClassCounts.retryReady, 1);
 assert.equal(inbox.summary.priorityCounts.low, 0);
 assert.equal(inbox.summary.priorityCounts.medium, 1);
-assert.equal(inbox.summary.priorityCounts.high, 3);
+assert.equal(inbox.summary.priorityCounts.high, 4);
 assert.equal(inbox.summary.priorityCounts.urgent, 0);
 assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 2);
-assert.equal(inbox.summary.ownerCounts['workspace-owner'], 0);
-assert.equal(inbox.summary.reminderCounts.total, 4);
+assert.equal(inbox.summary.ownerCounts['workspace-owner'], 1);
+assert.equal(inbox.summary.reminderCounts.total, 5);
 assert.equal(inbox.summary.reminderCounts.eligible, 1);
 assert.equal(inbox.summary.reminderCounts.needsReminder, 1);
 assert.equal(inbox.summary.reminderCounts.notNeeded, 0);
-assert.equal(inbox.summary.overdueCounts.total, 4);
-assert.equal(inbox.summary.overdueCounts.overdue, 3);
+assert.equal(inbox.summary.overdueCounts.total, 5);
+assert.equal(inbox.summary.overdueCounts.overdue, 4);
 assert.equal(inbox.summary.overdueCounts.onTime, 1);
-assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 3);
+assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 4);
 assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 1);
 assert.equal(inbox.filters.actionClass, null);
 assert.equal(inbox.filters.needsReminderOnly, false);
@@ -363,6 +365,22 @@ assert.ok(handoffItem.handoffNextReminderAt);
 assert.match(handoffItem.ownerTransitionDetail, /workspace-owner -> human-approver/);
 assert.match(handoffItem.commandHint, /acknowledge-owner-handoff/);
 
+const maintenanceItem = inbox.items.find((item) => item.actionType === 'maintenance-sweep');
+assert.ok(maintenanceItem);
+assert.equal(maintenanceItem.actionClass, 'maintenance-required');
+assert.equal(maintenanceItem.priority, 'high');
+assert.equal(maintenanceItem.recommendedOwner, 'workspace-owner');
+assert.equal(maintenanceItem.effectiveRecommendedOwner, 'human-approver');
+assert.equal(maintenanceItem.workspaceId, workspaceOne.id);
+assert.equal(maintenanceItem.missionId, null);
+assert.equal(maintenanceItem.totalDueCandidateCount, 1);
+assert.equal(maintenanceItem.dueMonitoringCount, 0);
+assert.equal(maintenanceItem.dueOwnerHandoffCount, 1);
+assert.equal(maintenanceItem.isOverdue, true);
+assert.ok(maintenanceItem.dueAt);
+assert.match(maintenanceItem.commandHint, /action maintenance/);
+assert.match(maintenanceItem.escalationRule, /action maintenance/i);
+
 const workspaceFilteredInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--workspace', workspaceTwo.id],
@@ -394,7 +412,7 @@ const highPriorityInbox = runCli({
   args: ['action', 'inbox', '--priority', 'high'],
 });
 
-assert.equal(highPriorityInbox.summary.pendingActionCount, 3);
+assert.equal(highPriorityInbox.summary.pendingActionCount, 4);
 assert.equal(highPriorityInbox.filters.priority, 'high');
 assert.equal(highPriorityInbox.items.every((item) => item.priority === 'high'), true);
 
@@ -419,6 +437,16 @@ assert.equal(handoffRequiredInbox.summary.pendingActionCount, 1);
 assert.equal(handoffRequiredInbox.filters.actionClass, 'handoff-required');
 assert.equal(handoffRequiredInbox.items[0].actionType, 'owner-handoff');
 
+const maintenanceRequiredInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'maintenance-required'],
+});
+
+assert.equal(maintenanceRequiredInbox.summary.pendingActionCount, 1);
+assert.equal(maintenanceRequiredInbox.filters.actionClass, 'maintenance-required');
+assert.equal(maintenanceRequiredInbox.items[0].actionType, 'maintenance-sweep');
+assert.equal(maintenanceRequiredInbox.items[0].workspaceId, workspaceOne.id);
+
 const needsReminderInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--needs-reminder'],
@@ -436,7 +464,7 @@ const overdueInbox = runCli({
   args: ['action', 'inbox', '--overdue'],
 });
 
-assert.equal(overdueInbox.summary.pendingActionCount, 3);
+assert.equal(overdueInbox.summary.pendingActionCount, 4);
 assert.equal(overdueInbox.filters.overdueOnly, true);
 assert.equal(overdueInbox.items.every((item) => item.isOverdue === true), true);
 

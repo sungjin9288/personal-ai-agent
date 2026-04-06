@@ -159,6 +159,31 @@ writeState((state) => {
   });
 });
 
+const preMaintenanceInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--workspace', workspace.id, '--class', 'maintenance-required'],
+});
+
+assert.equal(preMaintenanceInbox.summary.pendingActionCount, 1);
+assert.equal(preMaintenanceInbox.summary.actionCounts.maintenanceSweep, 1);
+assert.equal(preMaintenanceInbox.items[0].actionType, 'maintenance-sweep');
+assert.equal(preMaintenanceInbox.items[0].totalDueCandidateCount, 2);
+assert.equal(preMaintenanceInbox.items[0].dueMonitoringCount, 1);
+assert.equal(preMaintenanceInbox.items[0].dueOwnerHandoffCount, 1);
+assert.equal(preMaintenanceInbox.items[0].recommendedOwner, 'workspace-owner');
+assert.match(preMaintenanceInbox.items[0].commandHint, /action maintenance/);
+
+const preMaintenanceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'maintenance', '--workspace', workspace.id],
+});
+
+assert.equal(preMaintenanceOverview.summary.maintenanceRequiredCount, 1);
+assert.equal(preMaintenanceOverview.summary.currentDueCandidateCountTotal, 2);
+assert.equal(preMaintenanceOverview.summary.currentDueMonitoringCountTotal, 1);
+assert.equal(preMaintenanceOverview.summary.currentDueOwnerHandoffCountTotal, 1);
+assert.equal(preMaintenanceOverview.summary.runCount, 0);
+
 const firstMaintenance = runCli({
   rootDir: tempRoot,
   args: [
@@ -208,6 +233,8 @@ assert.equal(history.items[0].note.includes('First maintenance sweep'), true);
 assert.equal(history.items[1].note.includes('Second maintenance sweep'), true);
 assert.equal(history.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(history.summary.latestRun.totalRemindedCount, 0);
+assert.equal(history.summary.maintenanceRequiredCount, 0);
+assert.equal(history.summary.currentDueCandidateCountTotal, 0);
 
 const maintenanceOverview = runCli({
   rootDir: tempRoot,
@@ -217,6 +244,8 @@ const maintenanceOverview = runCli({
 assert.equal(maintenanceOverview.summary.runCount, 2);
 assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
 assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
+assert.equal(maintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
 const workspaceOverview = runCli({
   rootDir: tempRoot,
@@ -228,6 +257,8 @@ assert.equal(workspaceOverview.summary.maintenanceTotalRemindedCount, 2);
 assert.equal(workspaceOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
 assert.equal(workspaceOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(workspaceOverview.summary.maintenanceRequiredCount, 0);
+assert.equal(workspaceOverview.summary.maintenanceDueCandidateCountTotal, 2);
 
 const globalOverview = runCli({
   rootDir: tempRoot,
@@ -239,6 +270,15 @@ assert.equal(globalOverview.summary.maintenanceTotalRemindedCount, 2);
 assert.equal(globalOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
 assert.equal(globalOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(globalOverview.summary.maintenanceRequiredCount, 0);
+assert.equal(globalOverview.summary.maintenanceDueCandidateCountTotal, 2);
+
+const postMaintenanceInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--workspace', workspace.id, '--class', 'maintenance-required'],
+});
+
+assert.equal(postMaintenanceInbox.summary.pendingActionCount, 0);
 
 console.log(
   JSON.stringify(

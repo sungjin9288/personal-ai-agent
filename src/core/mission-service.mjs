@@ -657,6 +657,45 @@ function summarizeMaintenanceRuns(items) {
   };
 }
 
+function summarizeMaintenancePressure(entries) {
+  const dueWorkspaceCounts = {};
+  let currentDueCandidateCountTotal = 0;
+  let currentDueMonitoringCountTotal = 0;
+  let currentDueOwnerHandoffCountTotal = 0;
+  let latestRequiredAction = null;
+  let latestRequiredActionAt = null;
+  let nextDueAt = null;
+
+  for (const entry of entries) {
+    const workspaceKey = entry.workspaceId || 'global';
+    dueWorkspaceCounts[workspaceKey] = (dueWorkspaceCounts[workspaceKey] || 0) + 1;
+    currentDueCandidateCountTotal += Number(entry.totalDueCandidateCount || 0);
+    currentDueMonitoringCountTotal += Number(entry.dueMonitoringCount || 0);
+    currentDueOwnerHandoffCountTotal += Number(entry.dueOwnerHandoffCount || 0);
+
+    if (entry.nextDueAt && (!nextDueAt || String(nextDueAt) > String(entry.nextDueAt))) {
+      nextDueAt = entry.nextDueAt;
+    }
+
+    if (!latestRequiredActionAt || String(latestRequiredActionAt) < String(entry.createdAt || '')) {
+      latestRequiredActionAt = entry.createdAt || null;
+      latestRequiredAction = entry;
+    }
+  }
+
+  return {
+    currentDueCandidateCountTotal,
+    currentDueMonitoringCountTotal,
+    currentDueOwnerHandoffCountTotal,
+    latestRequiredAction,
+    latestRequiredActionAt,
+    maintenanceDueWorkspaceIds: [...new Set(entries.map((entry) => entry.workspaceId).filter(Boolean))],
+    maintenanceRequiredCount: entries.length,
+    nextDueAt,
+    dueWorkspaceCounts,
+  };
+}
+
 function summarizeReviewerFollowUps(items) {
   const statusCounts = {
     ...Object.fromEntries(REVIEWER_FOLLOW_UP_STATUSES.map((status) => [status, 0])),
@@ -1159,6 +1198,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ workspaceId: workspace.id }));
+    const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ workspaceId: workspace.id }));
     const escalations = store.listEscalations({ workspaceId: workspace.id }).map((item) => enrichEscalation(item));
     const escalationSummary = summarizeEscalations(escalations);
     const workspaceMemoryEntries = store.listMemoryEntries({ scope: 'workspace', scopeId: workspace.id });
@@ -1209,6 +1249,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
         latestMaintenanceRun: maintenanceSummary.latestRun,
+        latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
         latestMission: latestMissionEntry
           ? {
               mission: latestMissionEntry.mission,
@@ -1216,11 +1257,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             }
           : null,
         latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
+        latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+        maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
+        maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
+        maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
         memoryCounts,
         missionCount: missionEntries.length,
@@ -1231,6 +1276,178 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       workspace,
     };
+  }
+
+  function listMaintenancePressureEntries(filter = {}) {
+    const targets = [];
+
+    if (filter.missionId) {
+      const mission = getMission(filter.missionId);
+      const workspace = getWorkspace(mission.workspaceId);
+
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        return [];
+      }
+
+      targets.push({
+        mission,
+        workspace,
+      });
+    } else if (filter.workspaceId) {
+      const workspace = getWorkspace(filter.workspaceId);
+      targets.push({
+        mission: null,
+        workspace,
+      });
+    } else {
+      for (const workspace of store.listWorkspaces()) {
+        targets.push({
+          mission: null,
+          workspace,
+        });
+      }
+    }
+
+    return targets
+      .map((target) => {
+        const escalations = store
+          .listEscalations({
+            missionId: target.mission ? target.mission.id : undefined,
+            status: 'open',
+            workspaceId: target.workspace.id,
+          })
+          .map((item) => enrichEscalation(item));
+
+        const dueMonitoringItems = escalations.filter((item) => {
+          if (item.pendingOwnerHandoff) {
+            return false;
+          }
+          if (!item.needsReminder) {
+            return false;
+          }
+          if (filter.owner && item.recommendedOwner !== filter.owner) {
+            return false;
+          }
+          return true;
+        });
+
+        const dueOwnerHandoffItems = escalations.filter((item) => {
+          if (!item.pendingOwnerHandoff || !item.ownerHandoffNeedsReminder) {
+            return false;
+          }
+          if (filter.owner && item.ownerHandoffTargetOwner !== filter.owner) {
+            return false;
+          }
+          return true;
+        });
+
+        const dueItems = [...dueMonitoringItems, ...dueOwnerHandoffItems];
+        if (!dueItems.length) {
+          return null;
+        }
+
+        const nextDueAt =
+          [
+            ...dueMonitoringItems.map((item) => item.nextReminderAt),
+            ...dueOwnerHandoffItems.map((item) => item.nextOwnerHandoffReminderAt),
+          ]
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(0) || null;
+        const createdAt =
+          [
+            ...dueMonitoringItems.map((item) => item.createdAt),
+            ...dueOwnerHandoffItems.map((item) => item.ownerTransitionAt || item.createdAt),
+          ]
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(0) || null;
+        const latestMaintenanceRun =
+          store
+            .listMaintenanceRuns({
+              missionId: target.mission ? target.mission.id : undefined,
+              owner: filter.owner,
+              workspaceId: target.workspace.id,
+            })
+            .at(-1) || null;
+        const effectiveRecommendedOwner =
+          dueOwnerHandoffItems.some((item) => item.ownerHandoffTargetOwner === 'human-approver') ||
+          dueMonitoringItems.some((item) => item.effectiveRecommendedOwner === 'human-approver')
+            ? 'human-approver'
+            : 'workspace-owner';
+
+        return {
+          actionId: `maintenance-required:${target.workspace.id}:${target.mission ? target.mission.id : 'workspace'}`,
+          actionType: 'maintenance-sweep',
+          createdAt: createdAt || nextDueAt || now(),
+          dueMonitoringCount: dueMonitoringItems.length,
+          dueOwnerHandoffCount: dueOwnerHandoffItems.length,
+          effectiveRecommendedOwner,
+          latestMaintenanceRun,
+          latestMaintenanceRunAt: latestMaintenanceRun?.createdAt || null,
+          missionId: target.mission ? target.mission.id : null,
+          missionTitle: target.mission ? target.mission.title : null,
+          nextDueAt,
+          totalDueCandidateCount: dueItems.length,
+          workspaceId: target.workspace.id,
+          workspaceName: target.workspace.name,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function buildMaintenanceActionItems(filter = {}) {
+    return listMaintenancePressureEntries(filter)
+      .map((entry) => {
+        const title = entry.missionTitle
+          ? `Maintenance sweep required for ${entry.missionTitle}`
+          : `Maintenance sweep required for ${entry.workspaceName}`;
+        const recommendedCommand = entry.missionId
+          ? `node src/cli.mjs action maintenance --mission ${entry.missionId} --note "<note>"`
+          : `node src/cli.mjs action maintenance --workspace ${entry.workspaceId} --note "<note>"`;
+        const reasonParts = [];
+
+        if (entry.dueMonitoringCount > 0) {
+          reasonParts.push(`${entry.dueMonitoringCount} escalation reminder(s) due`);
+        }
+        if (entry.dueOwnerHandoffCount > 0) {
+          reasonParts.push(`${entry.dueOwnerHandoffCount} owner handoff reminder(s) due`);
+        }
+
+        return addFixedOperationalMetadata(
+          addDispatchMetadata(
+            {
+              actionClass: 'maintenance-required',
+              actionId: entry.actionId,
+              actionType: 'maintenance-sweep',
+              createdAt: entry.createdAt,
+              dueMonitoringCount: entry.dueMonitoringCount,
+              dueOwnerHandoffCount: entry.dueOwnerHandoffCount,
+              effectiveRecommendedOwner: entry.effectiveRecommendedOwner,
+              latestMaintenanceRunAt: entry.latestMaintenanceRunAt,
+              latestMaintenanceRunId: entry.latestMaintenanceRun?.id || null,
+              missionId: entry.missionId,
+              nextDueAt: entry.nextDueAt,
+              reason: reasonParts.join('; '),
+              title,
+              totalDueCandidateCount: entry.totalDueCandidateCount,
+              workspaceId: entry.workspaceId,
+              workspaceName: entry.workspaceName,
+            },
+            {
+              priority: 'high',
+              recommendedCommand,
+              recommendedOwner: 'workspace-owner',
+            },
+          ),
+          {
+            dueAt: entry.nextDueAt,
+            escalationRule: 'Run action maintenance to sync escalation state and issue due reminders for this scope.',
+            slaHours: deriveSlaHoursFromTimestamps(entry.createdAt, entry.nextDueAt),
+          },
+        );
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
   function buildApprovalInboxItems(filter = {}) {
@@ -1726,6 +1943,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       awaitingHumanDecision: 0,
       blocked: 0,
       handoffRequired: 0,
+      maintenanceRequired: 0,
       monitoringRequired: 0,
       retryReady: 0,
       total: items.length,
@@ -1734,6 +1952,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       acceptedRiskMonitoring: 0,
       approval: 0,
       blockedFollowUp: 0,
+      maintenanceSweep: 0,
       ownerHandoff: 0,
       reviewerFollowUp: 0,
       total: items.length,
@@ -1770,6 +1989,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionCounts.blockedFollowUp += 1;
       }
 
+      if (item.actionType === 'maintenance-sweep') {
+        actionCounts.maintenanceSweep += 1;
+      }
+
       if (item.actionType === 'owner-handoff') {
         actionCounts.ownerHandoff += 1;
       }
@@ -1788,6 +2011,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (item.actionClass === 'handoff-required') {
         actionClassCounts.handoffRequired += 1;
+      }
+
+      if (item.actionClass === 'maintenance-required') {
+        actionClassCounts.maintenanceRequired += 1;
       }
 
       if (item.actionClass === 'monitoring-required') {
@@ -2042,6 +2269,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const items = [
       ...buildApprovalInboxItems(filter),
+      ...buildMaintenanceActionItems(filter),
       ...buildOwnerHandoffActionItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
@@ -2460,15 +2688,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       owner: filter.owner,
       workspaceId: filter.workspaceId,
     });
+    const current = listMaintenancePressureEntries(filter);
 
     return {
+      current,
       filters: {
         missionId: filter.missionId || null,
         owner: filter.owner || null,
         workspaceId: filter.workspaceId || null,
       },
       items,
-      summary: summarizeMaintenanceRuns(items),
+      summary: {
+        ...summarizeMaintenanceRuns(items),
+        ...summarizeMaintenancePressure(current),
+      },
     };
   }
 
@@ -2857,6 +3090,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     syncEscalations();
     const workspaceOverviews = store.listWorkspaces().map((workspace) => getWorkspaceOverview(workspace.id));
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns());
+    const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries());
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
     const memoryCounts = { missionScoped: 0, total: 0, workspaceScoped: 0 };
@@ -2911,9 +3145,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         inboxCount: inbox.length,
         latestEscalation: escalationSummary.latestEscalation,
         latestMaintenanceRun: maintenanceSummary.latestRun,
+        latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
         latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
+        latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
         maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
+        maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+        maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
+        maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
