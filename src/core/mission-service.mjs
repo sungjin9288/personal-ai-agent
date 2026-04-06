@@ -6,6 +6,7 @@ import {
   ACTION_OWNERS,
   ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
+  ESCALATION_STATUSES,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
   MEMORY_KINDS,
@@ -203,6 +204,29 @@ function buildOverdueIncidentContent({ items, filters }) {
   }
 
   return lines.join('\n');
+}
+
+function summarizeEscalations(items) {
+  const ownerCounts = {};
+  const priorityCounts = {};
+  const statusCounts = Object.fromEntries(ESCALATION_STATUSES.map((status) => [status, 0]));
+  const workspaceCounts = {};
+
+  for (const item of items) {
+    workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+    ownerCounts[item.recommendedOwner] = (ownerCounts[item.recommendedOwner] || 0) + 1;
+    priorityCounts[item.priority] = (priorityCounts[item.priority] || 0) + 1;
+    statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
+  }
+
+  return {
+    ownerCounts,
+    pendingEscalationCount: items.filter((item) => item.status === 'open').length,
+    priorityCounts,
+    statusCounts,
+    total: items.length,
+    workspaceCounts,
+  };
 }
 
 export function createMissionService({ store, rootDir = store.rootDir }) {
@@ -1050,15 +1074,125 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       title,
       content,
     });
+    const escalationIds = overdueInbox.items.map((item) => {
+      const existingOpenEscalation =
+        store
+          .listEscalations({
+            actionId: item.actionId,
+            status: 'open',
+          })
+          .at(-1) || null;
+
+      if (existingOpenEscalation) {
+        const updatedEscalation = store.updateEscalation(existingOpenEscalation.id, (escalation) => ({
+          ...escalation,
+          dueAt: item.dueAt,
+          escalationRule: item.escalationRule,
+          incidentPath: path,
+          incidentTitle: title,
+          isOverdue: item.isOverdue,
+          lastSeenAt: now(),
+          priority: item.priority,
+          recommendedCommand: item.recommendedCommand,
+          recommendedOwner: item.recommendedOwner,
+          title: item.title,
+          updatedAt: now(),
+        }));
+
+        return updatedEscalation.id;
+      }
+
+      return store.saveEscalation({
+        id: createId('escalation'),
+        actionId: item.actionId,
+        actionClass: item.actionClass,
+        actionType: item.actionType,
+        dueAt: item.dueAt,
+        escalationRule: item.escalationRule,
+        incidentPath: path,
+        incidentTitle: title,
+        isOverdue: item.isOverdue,
+        lastSeenAt: now(),
+        missionId: item.missionId,
+        priority: item.priority,
+        reason: item.reason,
+        recommendedCommand: item.recommendedCommand,
+        recommendedOwner: item.recommendedOwner,
+        resolutionNote: '',
+        resolvedAt: null,
+        sessionId: item.sessionId,
+        status: 'open',
+        title: item.title,
+        workspaceId: item.workspaceId,
+        workspaceName: item.workspaceName,
+        createdAt: now(),
+        updatedAt: now(),
+      }).id;
+    });
 
     return {
       count: overdueInbox.items.length,
+      escalationIds,
       filters: overdueInbox.filters,
       itemIds: overdueInbox.items.map((item) => item.actionId),
       logged: true,
       path,
       title,
     };
+  }
+
+  function getEscalatedInbox(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+    if (filter.status && !ESCALATION_STATUSES.includes(filter.status)) {
+      throw new Error(`Unsupported escalation status: ${filter.status}`);
+    }
+
+    const effectiveStatus = filter.status || 'open';
+    const items = store
+      .listEscalations({
+        missionId: filter.missionId,
+        owner: filter.owner,
+        status: effectiveStatus,
+        workspaceId: filter.workspaceId,
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        owner: filter.owner || null,
+        status: effectiveStatus,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeEscalations(items),
+    };
+  }
+
+  function resolveEscalation(escalationId, { note = '' }) {
+    const escalation = store.getEscalation(escalationId);
+    if (!escalation) {
+      throw new Error(`Escalation not found: ${escalationId}`);
+    }
+    if (escalation.status !== 'open') {
+      throw new Error(`Escalation ${escalationId} is already resolved.`);
+    }
+
+    return store.updateEscalation(escalationId, (current) => ({
+      ...current,
+      resolutionNote: normalizeText(note, 'Resolved without additional note.'),
+      resolvedAt: now(),
+      status: 'resolved',
+      updatedAt: now(),
+    }));
   }
 
   function getGlobalOverview() {
@@ -1385,6 +1519,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     createMission,
     getActionInbox,
     getApprovalInbox,
+    getEscalatedInbox,
     getGlobalOverview,
     getWorkspace,
     getWorkspaceOverview,
@@ -1395,6 +1530,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listSessions,
     logOverdueActions,
     logDocument,
+    resolveEscalation,
     resolveApproval,
     runMission,
     showMission,

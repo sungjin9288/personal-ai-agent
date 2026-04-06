@@ -21,6 +21,7 @@ export const APPROVAL_DECISIONS = ['approve', 'reject'];
 export const ACTION_CLASSES = ['retry-ready', 'blocked', 'awaiting-human-decision'];
 export const ACTION_PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 export const ACTION_OWNERS = ['human-approver', 'mission-owner', 'workspace-owner'];
+export const ESCALATION_STATUSES = ['open', 'resolved'];
 
 export const MEMORY_SCOPES = ['user', 'workspace', 'mission'];
 

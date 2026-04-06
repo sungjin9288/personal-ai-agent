@@ -89,6 +89,8 @@ node src/cli.mjs action inbox --priority high
 node src/cli.mjs action inbox --owner human-approver
 node src/cli.mjs action inbox --overdue
 node src/cli.mjs action log-overdue
+node src/cli.mjs action escalated
+node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
 node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"
@@ -148,6 +150,7 @@ Run the local-first smoke suite:
 ```bash
 npm run smoke
 npm run smoke:action-inbox
+npm run smoke:escalated-inbox
 npm run smoke:action-overdue-log
 npm run smoke:approval-approve
 npm run smoke:approval-inbox

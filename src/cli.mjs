@@ -47,6 +47,8 @@ Commands:
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--overdue]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
+  action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
+  action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
   approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
@@ -214,6 +216,27 @@ function main() {
         owner: readOption(rest, '--owner', ''),
         priority: readOption(rest, '--priority', ''),
         workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'escalated') {
+    printJson(
+      service.getEscalatedInbox({
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
+        status: readOption(rest, '--status', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'resolve-escalation') {
+    printJson(
+      service.resolveEscalation(rest[0], {
+        note: readOption(rest, '--note', ''),
       }),
     );
     return;

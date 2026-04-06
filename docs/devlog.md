@@ -83,3 +83,9 @@
 - added an explicit `action log-overdue` command so overdue operational items can be promoted into the tracked incident trail instead of remaining query-only state
 - reused the existing doc logging path and generated incident entries with filters, command hints, and escalation text for each overdue item
 - added deterministic smoke coverage for logged, filtered, and no-op overdue logging behavior
+
+## 2026-04-06 Escalated Inbox Lifecycle
+
+- added first-class escalation records so overdue action logging now persists open escalation state instead of only appending markdown incidents
+- added `action escalated` and `action resolve-escalation` commands so escalations can be tracked and closed explicitly
+- added deterministic smoke coverage for escalation dedupe, open/resolved filtering, and manual resolution notes

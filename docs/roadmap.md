@@ -25,6 +25,7 @@
 - action inbox now carries `priority` and `recommendedOwner` dispatch metadata for operator triage
 - action inbox now carries `slaHours`, `dueAt`, `isOverdue`, and `escalationRule` for time-based dispatch
 - overdue actions can now be explicitly written into `docs/incidents.md` through a dedicated CLI command
+- overdue actions now create first-class escalation records with open/resolved lifecycle
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

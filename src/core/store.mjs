@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
   agentRuns: [],
   artifacts: [],
   approvals: [],
+  escalations: [],
   memoryEntries: [],
 };
 
@@ -19,6 +20,7 @@ function cloneDefaultState() {
     agentRuns: [],
     artifacts: [],
     approvals: [],
+    escalations: [],
     memoryEntries: [],
   };
 }
@@ -69,6 +71,7 @@ export function createStore({ rootDir }) {
       agentRuns: Array.isArray(state.agentRuns) ? state.agentRuns : [],
       artifacts: Array.isArray(state.artifacts) ? state.artifacts : [],
       approvals: Array.isArray(state.approvals) ? state.approvals : [],
+      escalations: Array.isArray(state.escalations) ? state.escalations : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
     };
   }
@@ -133,6 +136,9 @@ export function createStore({ rootDir }) {
     getArtifact(artifactId) {
       return getCollectionItem('artifacts', artifactId);
     },
+    getEscalation(escalationId) {
+      return getCollectionItem('escalations', escalationId);
+    },
     getMission(missionId) {
       return getCollectionItem('missions', missionId);
     },
@@ -160,6 +166,28 @@ export function createStore({ rootDir }) {
             return false;
           }
           if (filter.sessionId && approval.sessionId !== filter.sessionId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
+    listEscalations(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('escalations').filter((escalation) => {
+          if (filter.status && escalation.status !== filter.status) {
+            return false;
+          }
+          if (filter.actionId && escalation.actionId !== filter.actionId) {
+            return false;
+          }
+          if (filter.missionId && escalation.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.workspaceId && escalation.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          if (filter.owner && escalation.recommendedOwner !== filter.owner) {
             return false;
           }
           return true;
@@ -202,6 +230,9 @@ export function createStore({ rootDir }) {
     saveArtifact(artifact) {
       return saveCollectionItem('artifacts', artifact);
     },
+    saveEscalation(escalation) {
+      return saveCollectionItem('escalations', escalation);
+    },
     saveMemoryEntry(memoryEntry) {
       return saveCollectionItem('memoryEntries', memoryEntry);
     },
@@ -222,6 +253,9 @@ export function createStore({ rootDir }) {
     },
     updateArtifact(artifactId, updater) {
       return updateCollectionItem('artifacts', artifactId, updater);
+    },
+    updateEscalation(escalationId, updater) {
+      return updateCollectionItem('escalations', escalationId, updater);
     },
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);

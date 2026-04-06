@@ -150,6 +150,7 @@ const incidentLog = runCli({
 
 assert.equal(incidentLog.logged, true);
 assert.equal(incidentLog.count, 2);
+assert.equal(incidentLog.escalationIds.length, 2);
 assert.ok(incidentLog.path);
 assert.equal(incidentLog.itemIds.length, 2);
 
