@@ -7,6 +7,7 @@ import {
   ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
   ESCALATION_STATUSES,
+  ESCALATION_TIERS,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
   MEMORY_KINDS,
@@ -246,35 +247,71 @@ function buildOverdueIncidentContent({ items, filters }) {
   return lines.join('\n');
 }
 
+function deriveEscalationTier(item) {
+  if (item.status !== 'open') {
+    return 'resolved';
+  }
+
+  if (!item.dueAt) {
+    return 'normal';
+  }
+
+  const nowMs = Date.now();
+  const dueMs = new Date(item.dueAt).getTime();
+  if (!Number.isFinite(dueMs) || nowMs <= dueMs) {
+    return 'normal';
+  }
+
+  const overdueHours = (nowMs - dueMs) / (60 * 60 * 1000);
+  if (overdueHours >= 24) {
+    return 'critical';
+  }
+
+  return 'warning';
+}
+
+function enrichEscalation(item) {
+  return {
+    ...item,
+    escalationTier: deriveEscalationTier(item),
+  };
+}
+
 function summarizeEscalations(items) {
+  const enrichedItems = items.map((item) => enrichEscalation(item));
   const ownerCounts = {};
   const priorityCounts = {};
   const statusCounts = {
     ...Object.fromEntries(ESCALATION_STATUSES.map((status) => [status, 0])),
-    total: items.length,
+    total: enrichedItems.length,
+  };
+  const tierCounts = {
+    ...Object.fromEntries(ESCALATION_TIERS.map((tier) => [tier, 0])),
   };
   const workspaceCounts = {};
 
-  for (const item of items) {
+  for (const item of enrichedItems) {
     workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
     ownerCounts[item.recommendedOwner] = (ownerCounts[item.recommendedOwner] || 0) + 1;
     priorityCounts[item.priority] = (priorityCounts[item.priority] || 0) + 1;
     statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
+    tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
   }
 
   return {
     latestEscalation:
-      [...items]
+      [...enrichedItems]
         .sort((left, right) =>
           String(left.updatedAt || left.createdAt || '').localeCompare(String(right.updatedAt || right.createdAt || '')),
         )
         .at(-1) || null,
-    openEscalationIds: items.filter((item) => item.status === 'open').map((item) => item.id),
+    openEscalationIds: enrichedItems.filter((item) => item.status === 'open').map((item) => item.id),
     ownerCounts,
-    pendingEscalationCount: items.filter((item) => item.status === 'open').length,
+    pendingEscalationCount: enrichedItems.filter((item) => item.status === 'open').length,
     priorityCounts,
     statusCounts,
-    total: items.length,
+    tierCounts,
+    total: enrichedItems.length,
     workspaceCounts,
   };
 }
@@ -734,6 +771,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         total: approvals.length,
       },
       escalationCounts: escalationSummary.statusCounts,
+      escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
       latestSession,
@@ -763,7 +801,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function getWorkspaceOverview(workspaceId) {
     const workspace = getWorkspace(workspaceId);
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
-    const escalations = store.listEscalations({ workspaceId: workspace.id });
+    const escalations = store.listEscalations({ workspaceId: workspace.id }).map((item) => enrichEscalation(item));
     const escalationSummary = summarizeEscalations(escalations);
     const workspaceMemoryEntries = store.listMemoryEntries({ scope: 'workspace', scopeId: workspace.id });
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
@@ -795,6 +833,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           .map((entry) => entry.mission.id),
         approvalCounts,
         escalationCounts: escalationSummary.statusCounts,
+        escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
         latestMission: latestMissionEntry
           ? {
@@ -1466,6 +1505,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.status && !ESCALATION_STATUSES.includes(filter.status)) {
       throw new Error(`Unsupported escalation status: ${filter.status}`);
     }
+    if (filter.tier && !ESCALATION_TIERS.includes(filter.tier)) {
+      throw new Error(`Unsupported escalation tier: ${filter.tier}`);
+    }
 
     const effectiveStatus = filter.status || 'open';
     const items = store
@@ -1475,6 +1517,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         status: effectiveStatus,
         workspaceId: filter.workspaceId,
       })
+      .map((item) => enrichEscalation(item))
+      .filter((item) => {
+        if (filter.tier && item.escalationTier !== filter.tier) {
+          return false;
+        }
+        return true;
+      })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
 
     return {
@@ -1482,6 +1531,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionId: filter.missionId || null,
         owner: filter.owner || null,
         status: effectiveStatus,
+        tier: filter.tier || null,
         workspaceId: filter.workspaceId || null,
       },
       items,
@@ -1618,7 +1668,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
     const memoryCounts = { missionScoped: 0, total: 0, workspaceScoped: 0 };
     const inbox = buildApprovalInboxItems();
-    const allEscalations = store.listEscalations();
+    const allEscalations = store.listEscalations().map((item) => enrichEscalation(item));
     const openEscalations = allEscalations.filter((item) => item.status === 'open');
     const escalationSummary = summarizeEscalations(allEscalations);
 
@@ -1649,6 +1699,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         approvalCounts,
         escalatedWorkspaceIds: [...new Set(openEscalations.map((item) => item.workspaceId))],
         escalationCounts: escalationSummary.statusCounts,
+        escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
         latestEscalation: escalationSummary.latestEscalation,
         memoryCounts,

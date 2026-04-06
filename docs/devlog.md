@@ -130,3 +130,9 @@
 - surfaced open accepted-risk monitoring escalations back into `action inbox` as `monitoring-required` items so workspace-owner review appears in the main operator queue
 - reused escalation dueAt and rule metadata for the reopened action item instead of synthesizing a second policy clock
 - added deterministic overdue coverage by aging the monitoring escalation and verifying `action inbox --class monitoring-required --overdue`
+
+## 2026-04-06 Escalation Tiering
+
+- added derived escalation tiers so open escalation pressure can be sliced as `normal`, `warning`, or `critical`, with resolved entries exposed as `resolved`
+- extended `action escalated` with tier filtering and summary counts, and propagated tier counts into workspace, mission, and global overview summaries
+- strengthened escalation smokes to verify both initial normal accepted-risk monitoring and aged critical escalation paths

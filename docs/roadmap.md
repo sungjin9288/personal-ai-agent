@@ -34,6 +34,7 @@
 - reviewer follow-up resolution now carries explicit taxonomy for `rerun-fixed`, `superseded`, `scope-reduced`, and `accepted-risk`
 - `accepted-risk` reviewer resolution now opens a monitoring escalation automatically so accepted risk remains visible in workspace/global control-plane surfaces
 - accepted-risk monitoring escalation now re-enters `action inbox` as `monitoring-required`, including overdue slicing for workspace-owner review
+- escalations now carry tiered operator severity so `action escalated` and overview surfaces can distinguish normal, warning, critical, and resolved pressure
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

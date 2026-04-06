@@ -117,8 +117,11 @@ const openInbox = runCli({
 });
 
 assert.equal(openInbox.filters.status, 'open');
+assert.equal(openInbox.filters.tier, null);
 assert.equal(openInbox.summary.total, 2);
 assert.equal(openInbox.summary.pendingEscalationCount, 2);
+assert.equal(openInbox.summary.tierCounts.critical, 2);
+assert.equal(openInbox.items.every((item) => item.escalationTier === 'critical'), true);
 
 const secondLog = runCli({
   rootDir: tempRoot,
@@ -147,6 +150,16 @@ const approverOpenInbox = runCli({
 
 assert.equal(approverOpenInbox.summary.total, 1);
 assert.equal(approverOpenInbox.items[0].recommendedOwner, 'human-approver');
+assert.equal(approverOpenInbox.items[0].escalationTier, 'critical');
+
+const criticalInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'escalated', '--tier', 'critical'],
+});
+
+assert.equal(criticalInbox.filters.tier, 'critical');
+assert.equal(criticalInbox.summary.total, 2);
+assert.equal(criticalInbox.items.every((item) => item.escalationTier === 'critical'), true);
 
 const escalationToResolve = dedupedOpenInbox.items.find((item) => item.actionType === 'approval');
 assert.ok(escalationToResolve);
@@ -175,13 +188,15 @@ assert.equal(remainingOpenInbox.items[0].actionType, 'blocked-follow-up');
 
 const resolvedInbox = runCli({
   rootDir: tempRoot,
-  args: ['action', 'escalated', '--status', 'resolved'],
+  args: ['action', 'escalated', '--status', 'resolved', '--tier', 'resolved'],
 });
 
 assert.equal(resolvedInbox.filters.status, 'resolved');
+assert.equal(resolvedInbox.filters.tier, 'resolved');
 assert.equal(resolvedInbox.summary.total, 1);
 assert.equal(resolvedInbox.items[0].id, escalationToResolve.id);
 assert.equal(resolvedInbox.items[0].resolutionNote, 'Approval handled through manual follow-up.');
+assert.equal(resolvedInbox.items[0].escalationTier, 'resolved');
 
 console.log(
   JSON.stringify(

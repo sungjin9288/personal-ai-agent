@@ -78,9 +78,11 @@ const escalatedInbox = runCli({
 });
 
 assert.equal(escalatedInbox.summary.statusCounts.open, 1);
+assert.equal(escalatedInbox.summary.tierCounts.normal, 1);
 assert.equal(escalatedInbox.items.length, 1);
 assert.equal(escalatedInbox.items[0].actionType, 'reviewer-accepted-risk');
 assert.equal(escalatedInbox.items[0].recommendedOwner, 'workspace-owner');
+assert.equal(escalatedInbox.items[0].escalationTier, 'normal');
 assert.match(escalatedInbox.items[0].reason, /next release window/i);
 
 const monitoringInbox = runCli({
@@ -122,12 +124,22 @@ assert.equal(overdueMonitoringInbox.summary.pendingActionCount, 1);
 assert.equal(overdueMonitoringInbox.summary.overdueCounts.overdue, 1);
 assert.equal(overdueMonitoringInbox.items[0].isOverdue, true);
 
+const overdueEscalatedInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'escalated', '--workspace', workspace.id, '--tier', 'critical'],
+});
+
+assert.equal(overdueEscalatedInbox.summary.total, 1);
+assert.equal(overdueEscalatedInbox.items[0].id, resolution.escalation.id);
+assert.equal(overdueEscalatedInbox.items[0].escalationTier, 'critical');
+
 const workspaceOverview = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'overview', workspace.id],
 });
 
 assert.equal(workspaceOverview.summary.escalationCounts.open, 1);
+assert.equal(workspaceOverview.summary.escalationTierCounts.critical, 1);
 assert.equal(workspaceOverview.summary.openEscalationIds.length, 1);
 
 const globalOverview = runCli({
@@ -136,6 +148,7 @@ const globalOverview = runCli({
 });
 
 assert.equal(globalOverview.summary.openEscalationCount, 1);
+assert.equal(globalOverview.summary.escalationTierCounts.critical, 1);
 assert.equal(globalOverview.summary.escalatedWorkspaceIds.includes(workspace.id), true);
 
 const missionTimeline = runCli({

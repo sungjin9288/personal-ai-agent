@@ -22,6 +22,7 @@ export const ACTION_CLASSES = ['retry-ready', 'blocked', 'awaiting-human-decisio
 export const ACTION_PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 export const ACTION_OWNERS = ['human-approver', 'mission-owner', 'workspace-owner'];
 export const ESCALATION_STATUSES = ['open', 'resolved'];
+export const ESCALATION_TIERS = ['normal', 'warning', 'critical', 'resolved'];
 export const REVIEWER_FOLLOW_UP_STATUSES = ['open', 'resolved'];
 export const REVIEWER_FOLLOW_UP_RESOLUTION_KINDS = ['rerun-fixed', 'superseded', 'scope-reduced', 'accepted-risk'];
 
