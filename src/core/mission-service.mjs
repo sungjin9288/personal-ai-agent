@@ -163,6 +163,21 @@ function buildInitialTierHistoryEntry(tier, at, reason) {
   };
 }
 
+function buildEscalationReminderNote(escalation, note) {
+  const normalizedNote = normalizeText(note);
+  if (normalizedNote) {
+    return normalizedNote;
+  }
+
+  const tier = escalation.currentTier || deriveEscalationTier(escalation);
+  return `Reminder issued while escalation is ${tier}.`;
+}
+
+function formatEscalationReminderDetail(reminder) {
+  const tierPrefix = reminder.tier ? `[${reminder.tier}] ` : '';
+  return `${tierPrefix}${reminder.note || 'Escalation reminder issued.'}`;
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -284,14 +299,22 @@ function isBreachTier(tier) {
 }
 
 function enrichEscalation(item) {
+  const dueTimestamp = item.dueAt ? new Date(item.dueAt).getTime() : Number.NaN;
+  const isOverdue = item.status === 'open' && Number.isFinite(dueTimestamp) ? Date.now() > dueTimestamp : false;
+
   return {
     ...item,
     breachCount: Number(item.breachCount || 0),
     currentTier: item.currentTier || deriveEscalationTier(item),
     escalationTier: item.currentTier || deriveEscalationTier(item),
     escalationTierHistoryCount: Array.isArray(item.tierHistory) ? item.tierHistory.length : 0,
+    isOverdue,
     lastBreachAt: item.lastBreachAt || null,
+    lastReminderAt: item.lastReminderAt || null,
     lastSyncedAt: item.lastSyncedAt || null,
+    reminderCount: Number(item.reminderCount || 0),
+    reminderHistory: Array.isArray(item.reminderHistory) ? item.reminderHistory : [],
+    reminderHistoryCount: Array.isArray(item.reminderHistory) ? item.reminderHistory.length : 0,
     tierHistory: Array.isArray(item.tierHistory) ? item.tierHistory : [],
   };
 }
@@ -309,6 +332,8 @@ function summarizeEscalations(items) {
   };
   const workspaceCounts = {};
   let breachCountTotal = 0;
+  let latestReminderAt = null;
+  let reminderCountTotal = 0;
 
   for (const item of enrichedItems) {
     workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -317,6 +342,10 @@ function summarizeEscalations(items) {
     statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
     breachCountTotal += Number(item.breachCount || 0);
+    reminderCountTotal += Number(item.reminderCount || 0);
+    if (item.lastReminderAt && (!latestReminderAt || String(latestReminderAt) < String(item.lastReminderAt))) {
+      latestReminderAt = item.lastReminderAt;
+    }
   }
 
   return {
@@ -333,6 +362,8 @@ function summarizeEscalations(items) {
     statusCounts,
     tierCounts,
     breachCountTotal,
+    latestReminderAt,
+    reminderCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
   };
@@ -794,6 +825,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       escalationCounts: escalationSummary.statusCounts,
       escalationBreachCountTotal: escalationSummary.breachCountTotal,
+      escalationLatestReminderAt: escalationSummary.latestReminderAt,
+      escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
@@ -858,6 +891,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         approvalCounts,
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
+        escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
         latestMission: latestMissionEntry
@@ -1244,6 +1279,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               title: escalation.title,
               workspaceId: escalation.workspaceId,
               workspaceName: escalation.workspaceName,
+              lastReminderAt: escalation.lastReminderAt || null,
+              reminderCount: Number(escalation.reminderCount || 0),
+              reminderHistoryCount: Array.isArray(escalation.reminderHistory) ? escalation.reminderHistory.length : 0,
             },
             {
               priority: escalation.priority || 'medium',
@@ -1594,6 +1632,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         title: item.title,
         workspaceId: item.workspaceId,
         workspaceName: item.workspaceName,
+        reminderCount: 0,
+        reminderHistory: [],
+        lastReminderAt: null,
         createdAt: now(),
         updatedAt: now(),
       }).id;
@@ -1667,6 +1708,96 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function remindEscalations(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+    if (filter.tier && !ESCALATION_TIERS.includes(filter.tier)) {
+      throw new Error(`Unsupported escalation tier: ${filter.tier}`);
+    }
+
+    syncEscalations({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      status: 'open',
+      workspaceId: filter.workspaceId,
+    });
+
+    const reminderTimestamp = now();
+    const note = normalizeText(filter.note);
+    const items = store
+      .listEscalations({
+        missionId: filter.missionId,
+        owner: filter.owner,
+        status: 'open',
+        workspaceId: filter.workspaceId,
+      })
+      .map((item) => enrichEscalation(item))
+      .filter((item) => {
+        if (filter.tier && item.escalationTier !== filter.tier) {
+          return false;
+        }
+        if (filter.overdueOnly && !item.isOverdue) {
+          return false;
+        }
+        return true;
+      })
+      .map((item) =>
+        store.updateEscalation(item.id, (current) => {
+          const normalizedCurrent = enrichEscalation(current);
+          const reminderEntry = {
+            at: reminderTimestamp,
+            note: buildEscalationReminderNote(normalizedCurrent, note),
+            owner: normalizedCurrent.recommendedOwner || 'workspace-owner',
+            overdue: normalizedCurrent.isOverdue,
+            tier:
+              normalizedCurrent.currentTier ||
+              normalizedCurrent.escalationTier ||
+              deriveEscalationTier(normalizedCurrent),
+          };
+
+          return {
+            ...current,
+            lastReminderAt: reminderTimestamp,
+            reminderCount: Number(normalizedCurrent.reminderCount || 0) + 1,
+            reminderHistory: [...normalizedCurrent.reminderHistory, reminderEntry],
+            updatedAt: reminderTimestamp,
+          };
+        }),
+      )
+      .map((item) => enrichEscalation(item))
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        note: note || null,
+        owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        tier: filter.tier || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: {
+        latestReminderAt:
+          [...items]
+            .map((item) => item.lastReminderAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(-1) || null,
+        overdueReminderCount: items.filter((item) => item.isOverdue).length,
+        reminderCountTotal: items.reduce((count, item) => count + Number(item.reminderCount || 0), 0),
+        remindedCount: items.length,
+      },
+    };
+  }
+
   function openAcceptedRiskEscalation(followUp, resolutionNote) {
     const actionId = `accepted-risk:${followUp.actionId}`;
     const currentTimestamp = now();
@@ -1724,6 +1855,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       title: formatAcceptedRiskEscalationTitle(followUp.missionTitle),
       workspaceId: followUp.workspaceId,
       workspaceName: followUp.workspaceName,
+      reminderCount: 0,
+      reminderHistory: [],
+      lastReminderAt: null,
       createdAt: currentTimestamp,
       updatedAt: currentTimestamp,
     });
@@ -1829,6 +1963,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         escalatedWorkspaceIds: [...new Set(openEscalations.map((item) => item.workspaceId))],
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
+        escalationLatestReminderAt: escalationSummary.latestReminderAt,
+        escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
         latestEscalation: escalationSummary.latestEscalation,
@@ -1951,6 +2087,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           detail: escalation.resolutionNote || 'Escalation resolved.',
           escalationId: escalation.id,
           kind: 'escalation-resolved',
+          missionId: mission.id,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+        });
+      }
+
+      for (const reminder of ensureArray(escalation.reminderHistory)) {
+        timeline.push({
+          at: reminder.at,
+          detail: formatEscalationReminderDetail(reminder),
+          escalationId: escalation.id,
+          kind: 'escalation-reminded',
           missionId: mission.id,
           sessionId: escalation.sessionId,
           status: escalation.status,
@@ -2091,6 +2239,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           detail: escalation.resolutionNote || 'Escalation resolved.',
           escalationId: escalation.id,
           kind: 'escalation-resolved',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+
+      for (const reminder of ensureArray(escalation.reminderHistory)) {
+        events.push({
+          at: reminder.at,
+          detail: formatEscalationReminderDetail(reminder),
+          escalationId: escalation.id,
+          kind: 'escalation-reminded',
           missionId: mission.id,
           missionTitle: mission.title,
           sessionId: escalation.sessionId,
@@ -2347,6 +2510,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listSessions,
     logOverdueActions,
     logDocument,
+    remindEscalations,
     syncEscalations,
     resolveEscalation,
     resolveApproval,

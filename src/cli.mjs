@@ -51,6 +51,7 @@ Commands:
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>]
+  action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
@@ -267,6 +268,20 @@ function main() {
         missionId: readOption(rest, '--mission', ''),
         owner: readOption(rest, '--owner', ''),
         status: readOption(rest, '--status', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'remind-escalations') {
+    printJson(
+      service.remindEscalations({
+        missionId: readOption(rest, '--mission', ''),
+        note: readOption(rest, '--note', ''),
+        owner: readOption(rest, '--owner', ''),
+        overdueOnly: hasOption(rest, '--overdue'),
+        tier: readOption(rest, '--tier', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

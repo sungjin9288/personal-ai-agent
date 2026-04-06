@@ -36,6 +36,7 @@
 - accepted-risk monitoring escalation now re-enters `action inbox` as `monitoring-required`, including overdue slicing for workspace-owner review
 - escalations now carry tiered operator severity so `action escalated` and overview surfaces can distinguish normal, warning, critical, and resolved pressure
 - escalation sync now persists tier transition history and breach count so severity changes are recorded, not just derived at read time
+- escalation reminders are now first-class runtime events with persisted count/history so overdue pressure can be re-issued and audited locally
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

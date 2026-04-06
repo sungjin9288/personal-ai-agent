@@ -52,7 +52,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total도 함께 보여줍니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total도 함께 보여줍니다.
 
 Create missions:
 
@@ -84,7 +84,7 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, 이 escalation은 `action inbox --class monitoring-required`에서 다시 운영 큐로 노출됩니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, 이 escalation은 `action inbox --class monitoring-required`에서 다시 운영 큐로 노출됩니다.
 
 Operator flow:
 
@@ -104,6 +104,7 @@ node src/cli.mjs action log-overdue
 node src/cli.mjs action escalated
 node src/cli.mjs action escalated --tier critical
 node src/cli.mjs action sync-escalations
+node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
@@ -166,6 +167,7 @@ npm run smoke
 npm run smoke:action-inbox
 npm run smoke:escalated-inbox
 npm run smoke:escalation-sync
+npm run smoke:escalation-reminders
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
 npm run smoke:reviewer-follow-up-lifecycle
