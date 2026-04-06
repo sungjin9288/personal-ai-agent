@@ -32,6 +32,7 @@
 - reviewer follow-up items now have explicit open/resolved lifecycle records and can be resolved independently from escalation state
 - mission, workspace, and global timelines now show reviewer follow-up closure instead of only opened events
 - reviewer follow-up resolution now carries explicit taxonomy for `rerun-fixed`, `superseded`, `scope-reduced`, and `accepted-risk`
+- `accepted-risk` reviewer resolution now opens a monitoring escalation automatically so accepted risk remains visible in workspace/global control-plane surfaces
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

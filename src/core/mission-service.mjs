@@ -158,6 +158,10 @@ function formatReviewerFollowUpResolutionDetail({ resolutionKind, resolutionNote
   return `${prefix}${resolutionNote || 'Reviewer follow-up resolved.'}`;
 }
 
+function formatAcceptedRiskEscalationTitle(missionTitle) {
+  return `Accepted risk monitoring for ${missionTitle}`;
+}
+
 function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliverableArtifact }) {
   return `# Execution Ready Brief
 
@@ -1401,6 +1405,68 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function openAcceptedRiskEscalation(followUp, resolutionNote) {
+    const actionId = `accepted-risk:${followUp.actionId}`;
+    const currentTimestamp = now();
+    const existingOpenEscalation =
+      store
+        .listEscalations({
+          actionId,
+          status: 'open',
+        })
+        .at(-1) || null;
+
+    if (existingOpenEscalation) {
+      return store.updateEscalation(existingOpenEscalation.id, (current) => ({
+        ...current,
+        dueAt: new Date(new Date(currentTimestamp).getTime() + 72 * 60 * 60 * 1000).toISOString(),
+        escalationRule: 'Track the accepted risk until a deliberate close or replacement plan is recorded.',
+        incidentPath: current.incidentPath || null,
+        incidentTitle: current.incidentTitle || null,
+        isOverdue: false,
+        lastSeenAt: currentTimestamp,
+        priority: 'medium',
+        reason: resolutionNote,
+        recommendedCommand: current.recommendedCommand,
+        recommendedOwner: 'workspace-owner',
+        sourceResolutionKind: 'accepted-risk',
+        sourceReviewerFollowUpActionId: followUp.actionId,
+        title: formatAcceptedRiskEscalationTitle(followUp.missionTitle),
+        updatedAt: currentTimestamp,
+      }));
+    }
+
+    const escalationId = createId('escalation');
+    return store.saveEscalation({
+      id: escalationId,
+      actionId,
+      actionClass: 'accepted-risk-monitoring',
+      actionType: 'reviewer-accepted-risk',
+      dueAt: new Date(new Date(currentTimestamp).getTime() + 72 * 60 * 60 * 1000).toISOString(),
+      escalationRule: 'Track the accepted risk until a deliberate close or replacement plan is recorded.',
+      incidentPath: null,
+      incidentTitle: null,
+      isOverdue: false,
+      lastSeenAt: currentTimestamp,
+      missionId: followUp.missionId,
+      priority: 'medium',
+      reason: resolutionNote,
+      recommendedCommand: `node src/cli.mjs action resolve-escalation ${escalationId} --note "<note>"`,
+      recommendedOwner: 'workspace-owner',
+      resolutionNote: '',
+      resolvedAt: null,
+      sessionId: followUp.sessionId,
+      sourceResolutionKind: 'accepted-risk',
+      sourceReviewerFollowUpActionId: followUp.actionId,
+      status: 'open',
+      title: formatAcceptedRiskEscalationTitle(followUp.missionTitle),
+      workspaceId: followUp.workspaceId,
+      workspaceName: followUp.workspaceName,
+      createdAt: currentTimestamp,
+      updatedAt: currentTimestamp,
+    });
+  }
+
   function resolveReviewerFollowUp(actionId, { kind = '', note = '' }) {
     const followUp = ensureReviewerFollowUpRecord(actionId);
     if (followUp.status !== 'open') {
@@ -1433,7 +1499,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }),
     });
 
-    return resolvedFollowUp;
+    let escalation = null;
+    if (resolutionKind === 'accepted-risk') {
+      escalation = openAcceptedRiskEscalation(resolvedFollowUp, resolutionNote);
+    }
+
+    return {
+      escalation,
+      followUp: resolvedFollowUp,
+    };
   }
 
   function resolveEscalation(escalationId, { note = '' }) {

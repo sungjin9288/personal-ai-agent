@@ -66,9 +66,10 @@ const resolvedFollowUp = runCli({
   ],
 });
 
-assert.equal(resolvedFollowUp.status, 'resolved');
-assert.equal(resolvedFollowUp.resolutionKind, 'scope-reduced');
-assert.match(resolvedFollowUp.resolutionNote, /narrower follow-up plan/i);
+assert.equal(resolvedFollowUp.followUp.status, 'resolved');
+assert.equal(resolvedFollowUp.followUp.resolutionKind, 'scope-reduced');
+assert.match(resolvedFollowUp.followUp.resolutionNote, /narrower follow-up plan/i);
+assert.equal(resolvedFollowUp.escalation, null);
 
 const retryReadyInbox = runCli({
   rootDir: tempRoot,

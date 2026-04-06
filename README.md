@@ -84,7 +84,7 @@ node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열어 top-level control-plane에 남깁니다.
 
 Operator flow:
 
@@ -98,6 +98,7 @@ node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
+node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind accepted-risk --note "Accept risk until the next release window"
 node src/cli.mjs action log-overdue
 node src/cli.mjs action escalated
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
@@ -164,6 +165,7 @@ npm run smoke:escalated-inbox
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline
 npm run smoke:reviewer-follow-up-lifecycle
+npm run smoke:reviewer-follow-up-accepted-risk
 npm run smoke:approval-approve
 npm run smoke:approval-inbox
 npm run smoke:reviewer-fail
