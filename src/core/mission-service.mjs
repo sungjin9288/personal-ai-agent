@@ -193,6 +193,33 @@ function formatEscalationOwnerChangeDetail(ownerChange) {
   return `${ownerChange.from} -> ${ownerChange.to}${reasonSuffix}`;
 }
 
+function formatEscalationOwnerHandoffDetail(handoff) {
+  return `${handoff.owner} acknowledged owner handoff: ${handoff.note || 'No explicit note recorded.'}`;
+}
+
+function getMeaningfulOwnerTransitions(ownerHistory) {
+  return ensureArray(ownerHistory).filter((entry) => entry.from && entry.to && entry.from !== entry.to);
+}
+
+function getLatestOwnerTransition(ownerHistory) {
+  return getMeaningfulOwnerTransitions(ownerHistory).at(-1) || null;
+}
+
+function getLatestOwnerHandoff(ownerHandoffHistory) {
+  return ensureArray(ownerHandoffHistory).at(-1) || null;
+}
+
+function hasPendingOwnerHandoff({ ownerHistory, ownerHandoffHistory }) {
+  const latestOwnerTransition = getLatestOwnerTransition(ownerHistory);
+  if (!latestOwnerTransition) {
+    return false;
+  }
+
+  return !ensureArray(ownerHandoffHistory).some(
+    (entry) => entry.transitionAt === latestOwnerTransition.at && entry.owner === latestOwnerTransition.to,
+  );
+}
+
 function deriveEscalationReminderCadenceHours(tier) {
   return ESCALATION_REMINDER_CADENCE_HOURS[tier] || null;
 }
@@ -361,6 +388,11 @@ function enrichEscalation(item) {
     needsReminder,
     status: item.status,
   });
+  const ownerHistory = Array.isArray(item.ownerHistory) ? item.ownerHistory : [];
+  const ownerHandoffHistory = Array.isArray(item.ownerHandoffHistory) ? item.ownerHandoffHistory : [];
+  const latestOwnerTransition = getLatestOwnerTransition(ownerHistory);
+  const latestOwnerHandoff = getLatestOwnerHandoff(ownerHandoffHistory);
+  const pendingOwnerHandoff = item.status === 'open' && hasPendingOwnerHandoff({ ownerHistory, ownerHandoffHistory });
 
   return {
     ...item,
@@ -379,8 +411,15 @@ function enrichEscalation(item) {
     effectiveRecommendedOwner: ownerSignals.effectiveRecommendedOwner,
     ownerEscalationLevel: ownerSignals.ownerEscalationLevel,
     ownerEscalationStep: ownerSignals.ownerEscalationStep,
-    ownerHistory: Array.isArray(item.ownerHistory) ? item.ownerHistory : [],
-    ownerHistoryCount: Array.isArray(item.ownerHistory) ? item.ownerHistory.length : 0,
+    ownerHandoffHistory,
+    ownerHandoffHistoryCount: ownerHandoffHistory.length,
+    ownerHandoffCount: ownerHandoffHistory.length,
+    ownerHistory,
+    ownerHistoryCount: ownerHistory.length,
+    latestOwnerHandoff,
+    latestOwnerHandoffAt: item.lastOwnerHandoffAt || latestOwnerHandoff?.at || null,
+    latestOwnerTransition,
+    pendingOwnerHandoff,
     reminderCadenceHours,
     reminderCount: Number(item.reminderCount || 0),
     reminderHistory: Array.isArray(item.reminderHistory) ? item.reminderHistory : [],
@@ -405,7 +444,10 @@ function summarizeEscalations(items) {
   let breachCountTotal = 0;
   let latestReminderAt = null;
   let latestOwnerEscalatedAt = null;
+  let latestOwnerHandoffAt = null;
   let needsReminderCount = 0;
+  let pendingOwnerHandoffCount = 0;
+  let ownerHandoffCountTotal = 0;
   let ownerTransitionCountTotal = 0;
   let reminderCountTotal = 0;
 
@@ -418,9 +460,16 @@ function summarizeEscalations(items) {
     tierCounts[item.escalationTier] = (tierCounts[item.escalationTier] || 0) + 1;
     breachCountTotal += Number(item.breachCount || 0);
     reminderCountTotal += Number(item.reminderCount || 0);
+    ownerHandoffCountTotal += Number(item.ownerHandoffCount || 0);
     ownerTransitionCountTotal += Math.max(0, Number(item.ownerHistoryCount || 0) - 1);
     if (item.needsReminder) {
       needsReminderCount += 1;
+    }
+    if (item.pendingOwnerHandoff) {
+      pendingOwnerHandoffCount += 1;
+    }
+    if (item.latestOwnerHandoffAt && (!latestOwnerHandoffAt || String(latestOwnerHandoffAt) < String(item.latestOwnerHandoffAt))) {
+      latestOwnerHandoffAt = item.latestOwnerHandoffAt;
     }
     if (
       item.lastOwnerEscalatedAt &&
@@ -448,10 +497,13 @@ function summarizeEscalations(items) {
     statusCounts,
     tierCounts,
     breachCountTotal,
+    latestOwnerHandoffAt,
     latestReminderAt,
     latestOwnerEscalatedAt,
     needsReminderCount,
+    ownerHandoffCountTotal,
     ownerTransitionCountTotal,
+    pendingOwnerHandoffCount,
     reminderCountTotal,
     total: enrichedItems.length,
     workspaceCounts,
@@ -914,10 +966,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       escalationCounts: escalationSummary.statusCounts,
       escalationBreachCountTotal: escalationSummary.breachCountTotal,
+      escalationLatestOwnerHandoffAt: escalationSummary.latestOwnerHandoffAt,
       escalationLatestReminderAt: escalationSummary.latestReminderAt,
       escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
       escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+      escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
       escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
+      escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
       escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
@@ -983,10 +1038,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         approvalCounts,
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
+        escalationLatestOwnerHandoffAt: escalationSummary.latestOwnerHandoffAt,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
         escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
         escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
+        escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         latestEscalation: escalationSummary.latestEscalation,
@@ -1978,6 +2036,138 @@ function summarizeActionInbox(items) {
     };
   }
 
+  function getOwnerHandoffInbox(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+    if (filter.status && !['pending', 'acknowledged'].includes(filter.status)) {
+      throw new Error(`Unsupported owner handoff status: ${filter.status}`);
+    }
+
+    syncEscalations({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    });
+
+    const effectiveStatus = filter.status || 'pending';
+    const items = store
+      .listEscalations({
+        missionId: filter.missionId,
+        workspaceId: filter.workspaceId,
+      })
+      .map((item) => enrichEscalation(item))
+      .filter((item) => {
+        if (filter.owner) {
+          const targetOwner =
+            (effectiveStatus === 'pending' ? item.latestOwnerTransition?.to : item.latestOwnerHandoff?.owner) ||
+            item.effectiveRecommendedOwner;
+          if (targetOwner !== filter.owner) {
+            return false;
+          }
+        }
+
+        if (effectiveStatus === 'pending') {
+          return item.pendingOwnerHandoff;
+        }
+
+        return !item.pendingOwnerHandoff && item.ownerHandoffCount > 0;
+      })
+      .map((item) => {
+        const latestOwnerTransition = item.latestOwnerTransition;
+        const latestOwnerHandoff = item.latestOwnerHandoff;
+        const targetOwner =
+          (effectiveStatus === 'pending' ? latestOwnerTransition?.to : latestOwnerHandoff?.owner) ||
+          item.effectiveRecommendedOwner;
+
+        return {
+          escalationId: item.id,
+          handoffStatus: effectiveStatus,
+          latestOwnerHandoffAt: item.latestOwnerHandoffAt,
+          ownerHandoffCount: item.ownerHandoffCount,
+          ownerTransitionAt: latestOwnerTransition?.at || null,
+          ownerTransitionDetail: latestOwnerTransition ? formatEscalationOwnerChangeDetail(latestOwnerTransition) : null,
+          ownerTransitionTo: latestOwnerTransition?.to || null,
+          ownerTransitionFrom: latestOwnerTransition?.from || null,
+          pendingOwnerHandoff: item.pendingOwnerHandoff,
+          recommendedCommand:
+            effectiveStatus === 'pending'
+              ? `node src/cli.mjs action acknowledge-owner-handoff ${item.id} --note "<note>"`
+              : null,
+          sessionId: item.sessionId,
+          title: item.title,
+          workspaceId: item.workspaceId,
+          workspaceName: item.workspaceName,
+          missionId: item.missionId,
+          targetOwner,
+          lastHandoffNote: latestOwnerHandoff?.note || null,
+        };
+      })
+      .sort((left, right) =>
+        String(left.ownerTransitionAt || left.latestOwnerHandoffAt || '').localeCompare(
+          String(right.ownerTransitionAt || right.latestOwnerHandoffAt || ''),
+        ),
+      );
+
+    const ownerCounts = {};
+    for (const item of items) {
+      ownerCounts[item.targetOwner] = (ownerCounts[item.targetOwner] || 0) + 1;
+    }
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        owner: filter.owner || null,
+        status: effectiveStatus,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: {
+        ownerCounts,
+        pendingCount: items.filter((item) => item.handoffStatus === 'pending').length,
+        total: items.length,
+      },
+    };
+  }
+
+  function acknowledgeOwnerHandoff(escalationId, { note = '' }) {
+    const escalation = store.getEscalation(escalationId);
+    if (!escalation) {
+      throw new Error(`Escalation not found: ${escalationId}`);
+    }
+
+    const normalizedEscalation = enrichEscalation(escalation);
+    if (!normalizedEscalation.pendingOwnerHandoff || !normalizedEscalation.latestOwnerTransition) {
+      throw new Error(`Escalation ${escalationId} does not have a pending owner handoff.`);
+    }
+
+    const acknowledgedAt = now();
+    const handoffEntry = {
+      at: acknowledgedAt,
+      note: normalizeText(note, 'Owner handoff acknowledged.'),
+      owner: normalizedEscalation.latestOwnerTransition.to,
+      transitionAt: normalizedEscalation.latestOwnerTransition.at,
+      transitionTo: normalizedEscalation.latestOwnerTransition.to,
+    };
+
+    const updated = store.updateEscalation(escalationId, (current) => {
+      const currentEscalation = enrichEscalation(current);
+      return {
+        ...current,
+        lastOwnerHandoffAt: acknowledgedAt,
+        ownerHandoffHistory: [...currentEscalation.ownerHandoffHistory, handoffEntry],
+        updatedAt: acknowledgedAt,
+      };
+    });
+
+    return enrichEscalation(updated);
+  }
+
   function openAcceptedRiskEscalation(followUp, resolutionNote) {
     const actionId = `accepted-risk:${followUp.actionId}`;
     const currentTimestamp = now();
@@ -2143,10 +2333,13 @@ function summarizeActionInbox(items) {
         escalatedWorkspaceIds: [...new Set(openEscalations.map((item) => item.workspaceId))],
         escalationCounts: escalationSummary.statusCounts,
         escalationBreachCountTotal: escalationSummary.breachCountTotal,
+        escalationLatestOwnerHandoffAt: escalationSummary.latestOwnerHandoffAt,
         escalationLatestReminderAt: escalationSummary.latestReminderAt,
         escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
         escalationNeedsReminderCount: escalationSummary.needsReminderCount,
+        escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
         escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
+        escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
         escalationReminderCountTotal: escalationSummary.reminderCountTotal,
         escalationTierCounts: escalationSummary.tierCounts,
         inboxCount: inbox.length,
@@ -2298,6 +2491,18 @@ function summarizeActionInbox(items) {
           detail: formatEscalationOwnerChangeDetail(ownerChange),
           escalationId: escalation.id,
           kind: 'escalation-owner-changed',
+          missionId: mission.id,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+        });
+      }
+
+      for (const handoff of ensureArray(escalation.ownerHandoffHistory)) {
+        timeline.push({
+          at: handoff.at,
+          detail: formatEscalationOwnerHandoffDetail(handoff),
+          escalationId: escalation.id,
+          kind: 'escalation-owner-handoff-acknowledged',
           missionId: mission.id,
           sessionId: escalation.sessionId,
           status: escalation.status,
@@ -2472,6 +2677,21 @@ function summarizeActionInbox(items) {
           detail: formatEscalationOwnerChangeDetail(ownerChange),
           escalationId: escalation.id,
           kind: 'escalation-owner-changed',
+          missionId: mission.id,
+          missionTitle: mission.title,
+          sessionId: escalation.sessionId,
+          status: escalation.status,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
+
+      for (const handoff of ensureArray(escalation.ownerHandoffHistory)) {
+        events.push({
+          at: handoff.at,
+          detail: formatEscalationOwnerHandoffDetail(handoff),
+          escalationId: escalation.id,
+          kind: 'escalation-owner-handoff-acknowledged',
           missionId: mission.id,
           missionTitle: mission.title,
           sessionId: escalation.sessionId,
@@ -2717,6 +2937,7 @@ function summarizeActionInbox(items) {
     getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
+    getOwnerHandoffInbox,
     getReviewerFollowUpInbox,
     getWorkspace,
     getWorkspaceOverview,
@@ -2728,6 +2949,7 @@ function summarizeActionInbox(items) {
     listSessions,
     logOverdueActions,
     logDocument,
+    acknowledgeOwnerHandoff,
     remindEscalations,
     syncEscalations,
     resolveEscalation,

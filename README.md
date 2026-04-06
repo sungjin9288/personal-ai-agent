@@ -99,6 +99,8 @@ node src/cli.mjs action inbox --overdue
 node src/cli.mjs action reviewer-followups
 node src/cli.mjs action reviewer-followups --status resolved
 node src/cli.mjs action reviewer-followups --status resolved --kind scope-reduced
+node src/cli.mjs action owner-handoffs
+node src/cli.mjs action owner-handoffs --status acknowledged
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind accepted-risk --note "Accept risk until the next release window"
 node src/cli.mjs action log-overdue
@@ -109,6 +111,7 @@ node src/cli.mjs action escalated --needs-reminder --effective-owner human-appro
 node src/cli.mjs action sync-escalations
 node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
+node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
 node src/cli.mjs action resolve-escalation escalation_xxx --note "Handled manually"
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
@@ -174,6 +177,7 @@ npm run smoke:escalation-sync
 npm run smoke:escalation-reminder-due
 npm run smoke:escalation-reminders
 npm run smoke:escalation-owner-chain
+npm run smoke:escalation-owner-handoff
 npm run smoke:escalation-owner-history
 npm run smoke:action-overdue-log
 npm run smoke:operator-timeline

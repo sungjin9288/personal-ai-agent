@@ -49,11 +49,13 @@ Commands:
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--overdue]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
+  action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>] [--needs-reminder]
   action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
+  action acknowledge-owner-handoff <escalationId> [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
@@ -237,6 +239,18 @@ function main() {
     return;
   }
 
+  if (group === 'action' && command === 'owner-handoffs') {
+    printJson(
+      service.getOwnerHandoffInbox({
+        missionId: readOption(rest, '--mission', ''),
+        owner: readOption(rest, '--owner', ''),
+        status: readOption(rest, '--status', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
   if (group === 'action' && command === 'log-overdue') {
     printJson(
       service.logOverdueActions({
@@ -296,6 +310,15 @@ function main() {
     printJson(
       service.resolveReviewerFollowUp(rest[0], {
         kind: readOption(rest, '--kind', ''),
+        note: readOption(rest, '--note', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'acknowledge-owner-handoff') {
+    printJson(
+      service.acknowledgeOwnerHandoff(rest[0], {
         note: readOption(rest, '--note', ''),
       }),
     );
