@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  ACTION_CLASSES,
   APPROVAL_DECISIONS,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
@@ -614,6 +615,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
         return {
           actionId: approval.id,
+          actionClass: 'awaiting-human-decision',
           actionType: 'approval',
           approvalId: approval.id,
           commandHint: `node src/cli.mjs approval resolve ${approval.id} --decision <approve|reject> --reason "<reason>"`,
@@ -631,6 +633,70 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           sessionId: session.id,
           sessionStatus: session.status,
           title: approval.title,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        };
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function buildBlockedFollowUpItems(filter = {}) {
+    return store
+      .listMissions()
+      .map((mission) => {
+        if (mission.status !== 'failed') {
+          return null;
+        }
+
+        const workspace = store.getWorkspace(mission.workspaceId);
+        if (!workspace) {
+          return null;
+        }
+
+        if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+          return null;
+        }
+
+        if (filter.missionId && mission.id !== filter.missionId) {
+          return null;
+        }
+
+        const latestSession = getLatestSession(store.listSessionsByMission(mission.id));
+        if (!latestSession || latestSession.status !== 'failed') {
+          return null;
+        }
+
+        const rejectedApproval =
+          getLatestItem(
+            store
+              .listApprovals({ missionId: mission.id, sessionId: latestSession.id })
+              .filter((approval) => approval.status === 'rejected'),
+            'resolvedAt',
+          ) || null;
+
+        if (!rejectedApproval) {
+          return null;
+        }
+
+        return {
+          actionClass: 'blocked',
+          actionId: `blocked-follow-up:${mission.id}:${latestSession.id}`,
+          actionType: 'blocked-follow-up',
+          commandHint: `node src/cli.mjs mission show ${mission.id}`,
+          createdAt: rejectedApproval.resolvedAt || rejectedApproval.createdAt,
+          deliverableType: mission.deliverableType,
+          missionId: mission.id,
+          missionStatus: mission.status,
+          missionTitle: mission.title,
+          mode: mission.mode,
+          nextStepHint: 'Create a narrower follow-up mission or revise the objective before rerunning.',
+          reason: rejectedApproval.decisionReason || rejectedApproval.reason,
+          requestedByRole: rejectedApproval.requestedByRole,
+          sessionId: latestSession.id,
+          sessionStatus: latestSession.status,
+          sourceApprovalId: rejectedApproval.id,
+          title: `Blocked after rejected approval for ${mission.title}`,
           workspaceId: workspace.id,
           workspaceName: workspace.name,
         };
@@ -682,6 +748,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             : [];
 
         return {
+          actionClass: 'retry-ready',
           actionId: `reviewer-follow-up:${mission.id}:${latestSession.id}`,
           actionType: 'reviewer-follow-up',
           commandHint: `node src/cli.mjs mission run ${mission.id} --provider stub`,
@@ -708,8 +775,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function summarizeActionInbox(items) {
     const workspaceCounts = {};
+    const actionClassCounts = {
+      awaitingHumanDecision: 0,
+      blocked: 0,
+      retryReady: 0,
+      total: items.length,
+    };
     const actionCounts = {
       approval: 0,
+      blockedFollowUp: 0,
       reviewerFollowUp: 0,
       total: items.length,
     };
@@ -721,13 +795,30 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionCounts.approval += 1;
       }
 
+      if (item.actionType === 'blocked-follow-up') {
+        actionCounts.blockedFollowUp += 1;
+      }
+
       if (item.actionType === 'reviewer-follow-up') {
         actionCounts.reviewerFollowUp += 1;
+      }
+
+      if (item.actionClass === 'awaiting-human-decision') {
+        actionClassCounts.awaitingHumanDecision += 1;
+      }
+
+      if (item.actionClass === 'blocked') {
+        actionClassCounts.blocked += 1;
+      }
+
+      if (item.actionClass === 'retry-ready') {
+        actionClassCounts.retryReady += 1;
       }
     }
 
     return {
       actionCounts,
+      actionClassCounts,
       pendingActionCount: items.length,
       workspaceCounts,
     };
@@ -764,10 +855,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.missionId) {
       getMission(filter.missionId);
     }
+    if (filter.actionClass && !ACTION_CLASSES.includes(filter.actionClass)) {
+      throw new Error(`Unsupported action class: ${filter.actionClass}`);
+    }
 
-    const items = [...buildApprovalInboxItems(filter), ...buildReviewerFollowUpItems(filter)].sort((left, right) =>
-      String(left.createdAt || '').localeCompare(String(right.createdAt || '')),
-    );
+    const items = [
+      ...buildApprovalInboxItems(filter),
+      ...buildBlockedFollowUpItems(filter),
+      ...buildReviewerFollowUpItems(filter),
+    ]
+      .filter((item) => {
+        if (filter.actionClass && item.actionClass !== filter.actionClass) {
+          return false;
+        }
+        return true;
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
 
     return {
       items,

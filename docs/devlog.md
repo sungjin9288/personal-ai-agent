@@ -59,3 +59,9 @@
 - added `action inbox` as a broader operator queue that combines pending approvals with current reviewer follow-up items
 - kept `approval inbox` intact and reused the same approval aggregation logic so approval-only and mixed-action surfaces stay consistent
 - added deterministic coverage to prove resolved approvals stay out and reviewer-failed latest sessions show actionable rerun guidance
+
+## 2026-04-06 Action Classification
+
+- added explicit action classes so operator queues distinguish `awaiting-human-decision`, `retry-ready`, and `blocked`
+- treated rejected approval outcomes as blocked follow-up items instead of silently dropping them from all operator surfaces
+- added class-based filtering to `action inbox` so the queue can be used as a practical operational slice rather than a flat list

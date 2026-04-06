@@ -21,6 +21,7 @@
 - global overview aggregates all workspaces and exposes a pending approval inbox
 - approval inbox is available as a first-class command with contextual resolution guidance
 - action inbox aggregates pending approvals and reviewer follow-up items into one operator surface
+- action inbox now classifies work as `awaiting-human-decision`, `retry-ready`, or `blocked`
 - memory and document logging commands
 - deterministic local-first smoke coverage
 

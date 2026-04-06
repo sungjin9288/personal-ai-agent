@@ -84,6 +84,7 @@ Approval flow:
 
 ```bash
 node src/cli.mjs action inbox
+node src/cli.mjs action inbox --class retry-ready
 node src/cli.mjs approval inbox
 node src/cli.mjs approval list
 node src/cli.mjs approval resolve approval_xxx --decision approve --reason "Proceed with the proposed workspace change"

@@ -18,6 +18,8 @@ export const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
 
 export const APPROVAL_DECISIONS = ['approve', 'reject'];
 
+export const ACTION_CLASSES = ['retry-ready', 'blocked', 'awaiting-human-decision'];
+
 export const MEMORY_SCOPES = ['user', 'workspace', 'mission'];
 
 export const MEMORY_KINDS = ['preference', 'decision', 'fact'];

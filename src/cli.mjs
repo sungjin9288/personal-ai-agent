@@ -45,7 +45,7 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
   approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
@@ -194,6 +194,7 @@ function main() {
   if (group === 'action' && command === 'inbox') {
     printJson(
       service.getActionInbox({
+        actionClass: readOption(rest, '--class', ''),
         missionId: readOption(rest, '--mission', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
