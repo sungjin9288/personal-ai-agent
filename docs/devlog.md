@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Operator Timeline Provider Failure Trigger
+
+- extended workspace and global operator timeline with `provider-execution-failed` so the actual failure trigger is visible before provider attention acknowledgement or resolution events
+- kept successful provider execution out of the operator timeline to preserve the operator-focused signal and avoid high-volume success noise
+- strengthened operator timeline smoke coverage so workspace-bound failed reviewer execution and the later provider attention lifecycle are both locked on the same time axis
+
 ## 2026-04-06 Mission Provider Audit Surface
 
 - extended `mission show` with mission-scoped provider execution and provider attention aggregates so one mission can report its own failed provider runs and attention lifecycle state

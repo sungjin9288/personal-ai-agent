@@ -25,6 +25,7 @@
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces
 - workspace and global operator timeline now include provider attention opened, acknowledged, and resolved events for workspace-bound provider failures
+- workspace and global operator timeline now also include the underlying `provider-execution-failed` trigger so provider failure chronology is visible before operator acknowledgement starts
 - workspace overview now includes workspace-bound provider execution and provider attention summary fields so provider failure pressure is visible without opening provider-only surfaces
 - mission summary and mission timeline now include mission-scoped provider execution and provider attention evidence so provider failure audit can be completed without leaving mission-level surfaces
 - first-class runtime entities in `var/state.json`

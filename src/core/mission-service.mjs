@@ -5167,6 +5167,29 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
     }
 
+    for (const event of buildProviderExecutionTimeline(
+      buildProviderExecutionEntries({
+        missionId: filter.missionId,
+        status: 'failed',
+        workspaceId: filter.workspaceId,
+      }),
+    )) {
+      events.push({
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: event.missionId || null,
+        missionTitle: event.missionTitle || null,
+        providerId: event.providerId,
+        role: event.role,
+        runId: event.runId,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || null,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
     for (const attentionItem of buildProviderAttentionPendingItems({
       missionId: filter.missionId,
       workspaceId: filter.workspaceId,
