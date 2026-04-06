@@ -105,3 +105,10 @@
 - added workspace-level and global operator timeline surfaces that unify approval, reviewer follow-up, and escalation events into one operator-facing chronological stream
 - kept mission timeline focused on mission scope while exposing broader operational history through `workspace timeline` and `overview operator-timeline`
 - added deterministic smoke coverage for mixed workspace/global operator events and chronological ordering
+
+## 2026-04-06 Reviewer Follow-Up Resolution Lifecycle
+
+- added first-class reviewer follow-up records with open/resolved status so reviewer remediation no longer appears only as a derived failed-session artifact
+- added `action reviewer-followups` and `action resolve-reviewer-follow-up` so operator workflows can inspect and explicitly close reviewer follow-up items
+- persisted reviewer follow-up resolution notes back into mission memory so future reruns can see why a follow-up was closed
+- extended mission, workspace, and global timeline coverage so reviewer follow-up closure is tracked alongside approval and escalation lifecycle events

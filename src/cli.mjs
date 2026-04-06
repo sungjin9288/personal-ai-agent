@@ -48,8 +48,10 @@ Commands:
   session show <missionId> --session <sessionId>
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--overdue]
+  action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>]
   action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
+  action resolve-reviewer-follow-up <actionId> [--note <text>]
   action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
@@ -220,6 +222,17 @@ function main() {
     return;
   }
 
+  if (group === 'action' && command === 'reviewer-followups') {
+    printJson(
+      service.getReviewerFollowUpInbox({
+        missionId: readOption(rest, '--mission', ''),
+        status: readOption(rest, '--status', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
   if (group === 'action' && command === 'log-overdue') {
     printJson(
       service.logOverdueActions({
@@ -240,6 +253,15 @@ function main() {
         owner: readOption(rest, '--owner', ''),
         status: readOption(rest, '--status', ''),
         workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'resolve-reviewer-follow-up') {
+    printJson(
+      service.resolveReviewerFollowUp(rest[0], {
+        note: readOption(rest, '--note', ''),
       }),
     );
     return;

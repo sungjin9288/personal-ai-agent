@@ -92,6 +92,25 @@ const reviewerRun = runCli({
 
 assert.equal(reviewerRun.status, 'failed');
 
+const reviewerFollowUps = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'reviewer-followups', '--workspace', workspaceTwo.id],
+});
+
+assert.equal(reviewerFollowUps.summary.statusCounts.open, 1);
+assert.equal(reviewerFollowUps.items.length, 1);
+
+runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-reviewer-follow-up',
+    reviewerFollowUps.items[0].actionId,
+    '--note',
+    'Reviewer follow-up resolved after remediation planning.',
+  ],
+});
+
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
@@ -139,7 +158,17 @@ assert.equal(workspaceTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
+assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.timeline.every((event) => event.workspaceId === workspaceOne.id), true);
+
+const reviewerWorkspaceTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'timeline', workspaceTwo.id],
+});
+
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
+assert.equal(reviewerWorkspaceTimeline.timeline.every((event) => event.workspaceId === workspaceTwo.id), true);
 
 const globalTimeline = runCli({
   rootDir: tempRoot,
@@ -151,13 +180,23 @@ assert.equal(globalTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
+assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 4, true);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 1);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 2);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
 assert.equal(
   globalTimeline.timeline.some(
     (event) => event.kind === 'reviewer-follow-up-opened' && event.workspaceId === workspaceTwo.id,
+  ),
+  true,
+);
+assert.equal(
+  globalTimeline.timeline.some(
+    (event) =>
+      event.kind === 'reviewer-follow-up-resolved' &&
+      event.workspaceId === workspaceTwo.id &&
+      /resolved after remediation planning/i.test(event.detail),
   ),
   true,
 );

@@ -10,6 +10,7 @@
     "smoke:escalated-inbox": "node scripts/smoke-escalated-inbox.mjs",
     "smoke:action-overdue-log": "node scripts/smoke-action-overdue-log.mjs",
     "smoke:operator-timeline": "node scripts/smoke-operator-timeline.mjs",
+    "smoke:reviewer-follow-up-lifecycle": "node scripts/smoke-reviewer-follow-up-lifecycle.mjs",
     "smoke:approval-approve": "node scripts/smoke-approval-approve.mjs",
     "smoke:approval-inbox": "node scripts/smoke-approval-inbox.mjs",
     "smoke:reviewer-fail": "node scripts/smoke-reviewer-fail.mjs",

@@ -9,6 +9,7 @@ const DEFAULT_STATE = {
   artifacts: [],
   approvals: [],
   escalations: [],
+  reviewerFollowUps: [],
   memoryEntries: [],
 };
 
@@ -21,6 +22,7 @@ function cloneDefaultState() {
     artifacts: [],
     approvals: [],
     escalations: [],
+    reviewerFollowUps: [],
     memoryEntries: [],
   };
 }
@@ -72,6 +74,7 @@ export function createStore({ rootDir }) {
       artifacts: Array.isArray(state.artifacts) ? state.artifacts : [],
       approvals: Array.isArray(state.approvals) ? state.approvals : [],
       escalations: Array.isArray(state.escalations) ? state.escalations : [],
+      reviewerFollowUps: Array.isArray(state.reviewerFollowUps) ? state.reviewerFollowUps : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
     };
   }
@@ -142,6 +145,9 @@ export function createStore({ rootDir }) {
     getMission(missionId) {
       return getCollectionItem('missions', missionId);
     },
+    getReviewerFollowUp(followUpId) {
+      return getCollectionItem('reviewerFollowUps', followUpId);
+    },
     getMissionDir,
     getSession(sessionId) {
       return getCollectionItem('sessions', sessionId);
@@ -194,6 +200,28 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listReviewerFollowUps(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('reviewerFollowUps').filter((followUp) => {
+          if (filter.status && followUp.status !== filter.status) {
+            return false;
+          }
+          if (filter.actionId && followUp.actionId !== filter.actionId) {
+            return false;
+          }
+          if (filter.missionId && followUp.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.sessionId && followUp.sessionId !== filter.sessionId) {
+            return false;
+          }
+          if (filter.workspaceId && followUp.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listArtifactsBySession(sessionId) {
       return sortByCreatedAt(listCollection('artifacts').filter((artifact) => artifact.sessionId === sessionId));
     },
@@ -233,6 +261,9 @@ export function createStore({ rootDir }) {
     saveEscalation(escalation) {
       return saveCollectionItem('escalations', escalation);
     },
+    saveReviewerFollowUp(reviewerFollowUp) {
+      return saveCollectionItem('reviewerFollowUps', reviewerFollowUp);
+    },
     saveMemoryEntry(memoryEntry) {
       return saveCollectionItem('memoryEntries', memoryEntry);
     },
@@ -256,6 +287,9 @@ export function createStore({ rootDir }) {
     },
     updateEscalation(escalationId, updater) {
       return updateCollectionItem('escalations', escalationId, updater);
+    },
+    updateReviewerFollowUp(followUpId, updater) {
+      return updateCollectionItem('reviewerFollowUps', followUpId, updater);
     },
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);

@@ -13,6 +13,7 @@ import {
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
+  REVIEWER_FOLLOW_UP_STATUSES,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
 import { createId } from './id.mjs';
@@ -147,6 +148,10 @@ function formatApprovalDecisionMemory({ mission, decision, reason }) {
   return `Approval ${decision} for mission ${mission.id} (${mission.deliverableType}): ${reason || 'No explicit reason recorded.'}`;
 }
 
+function formatReviewerFollowUpResolutionMemory({ mission, note }) {
+  return `Reviewer follow-up resolved for mission ${mission.id} (${mission.deliverableType}): ${note || 'Resolved without additional note.'}`;
+}
+
 function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliverableArtifact }) {
   return `# Execution Ready Brief
 
@@ -233,6 +238,31 @@ function summarizeEscalations(items) {
     ownerCounts,
     pendingEscalationCount: items.filter((item) => item.status === 'open').length,
     priorityCounts,
+    statusCounts,
+    total: items.length,
+    workspaceCounts,
+  };
+}
+
+function summarizeReviewerFollowUps(items) {
+  const statusCounts = {
+    ...Object.fromEntries(REVIEWER_FOLLOW_UP_STATUSES.map((status) => [status, 0])),
+    total: items.length,
+  };
+  const workspaceCounts = {};
+
+  for (const item of items) {
+    statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
+    workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+  }
+
+  return {
+    latestFollowUp:
+      [...items]
+        .sort((left, right) =>
+          String(left.updatedAt || left.createdAt || '').localeCompare(String(right.updatedAt || right.createdAt || '')),
+        )
+        .at(-1) || null,
     statusCounts,
     total: items.length,
     workspaceCounts,
@@ -510,6 +540,31 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     previousOutputs.reviewer = reviewerStage.output;
 
     if (reviewerStage.output.verdict === 'fail') {
+      createReviewerFollowUpRecord({
+        actionClass: 'retry-ready',
+        actionId: `reviewer-follow-up:${mission.id}:${session.id}`,
+        actionType: 'reviewer-follow-up',
+        createdAt: reviewerStage.artifact.createdAt || now(),
+        deliverableType: mission.deliverableType,
+        findings: reviewerStage.output.findings,
+        missionId: mission.id,
+        missionStatus: 'failed',
+        missionTitle: mission.title,
+        mode: mission.mode,
+        reason: reviewerStage.run.outputSummary,
+        reportPath: reviewerStage.artifact.path,
+        requestedByRole: 'reviewer',
+        resolutionNote: '',
+        resolvedAt: null,
+        sessionId: session.id,
+        sessionStatus: 'failed',
+        status: 'open',
+        title: `Reviewer follow-up required for ${mission.title}`,
+        updatedAt: reviewerStage.artifact.createdAt || now(),
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
+
       harness.addMemoryEntry({
         scope: 'mission',
         scopeId: mission.id,
@@ -853,84 +908,188 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
-  function buildReviewerFollowUpItems(filter = {}) {
-    return store
+  function deriveReviewerFollowUpSeed(mission, filter = {}) {
+    const workspace = store.getWorkspace(mission.workspaceId);
+    if (!workspace) {
+      return null;
+    }
+
+    if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+      return null;
+    }
+
+    if (filter.missionId && mission.id !== filter.missionId) {
+      return null;
+    }
+
+    const latestSession = getLatestSession(store.listSessionsByMission(mission.id));
+    if (!latestSession || latestSession.status !== 'failed') {
+      return null;
+    }
+
+    const reviewerRun = store.listAgentRunsBySession(latestSession.id).find((run) => run.role === 'reviewer') || null;
+    if (!reviewerRun || reviewerRun.status !== 'failed') {
+      return null;
+    }
+
+    const reviewerReport =
+      store
+        .listArtifactsBySession(latestSession.id)
+        .filter((artifact) => artifact.fileName === 'reviewer-report.md')
+        .at(-1) || null;
+
+    const findings =
+      reviewerReport && fs.existsSync(reviewerReport.path)
+        ? parseMarkdownBulletSection(fs.readFileSync(reviewerReport.path, 'utf8'), 'Findings')
+        : [];
+
+    return {
+      actionClass: 'retry-ready',
+      actionId: `reviewer-follow-up:${mission.id}:${latestSession.id}`,
+      actionType: 'reviewer-follow-up',
+      createdAt: reviewerReport?.createdAt || reviewerRun.endedAt || latestSession.endedAt || latestSession.startedAt,
+      deliverableType: mission.deliverableType,
+      findings,
+      missionId: mission.id,
+      missionStatus: mission.status,
+      missionTitle: mission.title,
+      mode: mission.mode,
+      reason: reviewerRun.outputSummary,
+      reportPath: reviewerReport ? reviewerReport.path : null,
+      requestedByRole: 'reviewer',
+      resolutionNote: '',
+      resolvedAt: null,
+      sessionId: latestSession.id,
+      sessionStatus: latestSession.status,
+      status: 'open',
+      title: `Reviewer follow-up required for ${mission.title}`,
+      updatedAt: reviewerReport?.createdAt || reviewerRun.endedAt || latestSession.updatedAt || latestSession.endedAt || latestSession.startedAt,
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+    };
+  }
+
+  function buildReviewerFollowUpItemFromRecord(record) {
+    const item = {
+      ...record,
+      resolveCommand: `node src/cli.mjs action resolve-reviewer-follow-up ${record.actionId} --note "<note>"`,
+    };
+
+    return addOperationalMetadata(
+      addDispatchMetadata(item, {
+        priority: 'medium',
+        recommendedOwner: 'mission-owner',
+        recommendedCommand: `node src/cli.mjs mission run ${record.missionId} --provider stub`,
+      }),
+      {
+        slaHours: 48,
+        escalationRule: 'If overdue, escalate to the workspace owner and request a narrower remediation plan.',
+      },
+    );
+  }
+
+  function listReviewerFollowUpRecords(filter = {}) {
+    if (filter.status && !REVIEWER_FOLLOW_UP_STATUSES.includes(filter.status)) {
+      throw new Error(`Unsupported reviewer follow-up status: ${filter.status}`);
+    }
+
+    const allRecords = store.listReviewerFollowUps({
+      actionId: filter.actionId,
+      missionId: filter.missionId,
+      sessionId: filter.sessionId,
+      workspaceId: filter.workspaceId,
+    });
+    const records = allRecords.filter((record) => {
+      if (filter.status && record.status !== filter.status) {
+        return false;
+      }
+      return true;
+    });
+    const recordActionIds = new Set(allRecords.map((record) => record.actionId));
+
+    if (filter.status === 'resolved') {
+      return records.sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    }
+
+    const seeds = store
       .listMissions()
-      .map((mission) => {
-        if (mission.status !== 'failed') {
-          return null;
-        }
+      .map((mission) => deriveReviewerFollowUpSeed(mission, filter))
+      .filter(Boolean)
+      .filter((seed) => !recordActionIds.has(seed.actionId));
 
-        const workspace = store.getWorkspace(mission.workspaceId);
-        if (!workspace) {
-          return null;
-        }
+    return [...records, ...seeds].sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
 
-        if (filter.workspaceId && workspace.id !== filter.workspaceId) {
-          return null;
-        }
+  function getReviewerFollowUpInbox(filter = {}) {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
 
-        if (filter.missionId && mission.id !== filter.missionId) {
-          return null;
-        }
+    const effectiveStatus = filter.status || 'open';
+    const items = listReviewerFollowUpRecords({
+      actionId: filter.actionId,
+      missionId: filter.missionId,
+      status: effectiveStatus,
+      workspaceId: filter.workspaceId,
+    })
+      .map((record) => buildReviewerFollowUpItemFromRecord(record))
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
 
-        const latestSession = getLatestSession(store.listSessionsByMission(mission.id));
-        if (!latestSession || latestSession.status !== 'failed') {
-          return null;
-        }
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        status: effectiveStatus,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeReviewerFollowUps(items),
+    };
+  }
 
-        const reviewerRun = store.listAgentRunsBySession(latestSession.id).find((run) => run.role === 'reviewer') || null;
-        if (!reviewerRun || reviewerRun.status !== 'failed') {
-          return null;
-        }
+  function ensureReviewerFollowUpRecord(actionId) {
+    const existingRecord = store.listReviewerFollowUps({ actionId }).at(-1) || null;
+    if (existingRecord) {
+      return existingRecord;
+    }
 
-        const reviewerReport =
-          store
-            .listArtifactsBySession(latestSession.id)
-            .filter((artifact) => artifact.fileName === 'reviewer-report.md')
-            .at(-1) || null;
+    const seed =
+      store
+        .listMissions()
+        .map((mission) => deriveReviewerFollowUpSeed(mission))
+        .find((item) => item && item.actionId === actionId) || null;
 
-        const findings =
-          reviewerReport && fs.existsSync(reviewerReport.path)
-            ? parseMarkdownBulletSection(fs.readFileSync(reviewerReport.path, 'utf8'), 'Findings')
-            : [];
+    if (!seed) {
+      throw new Error(`Reviewer follow-up not found: ${actionId}`);
+    }
 
-        return {
-          actionClass: 'retry-ready',
-          actionId: `reviewer-follow-up:${mission.id}:${latestSession.id}`,
-          actionType: 'reviewer-follow-up',
-          createdAt: reviewerReport?.createdAt || latestSession.endedAt || latestSession.startedAt,
-          deliverableType: mission.deliverableType,
-          findings,
-          missionId: mission.id,
-          missionStatus: mission.status,
-          missionTitle: mission.title,
-          mode: mission.mode,
-          reason: reviewerRun.outputSummary,
-          reportPath: reviewerReport ? reviewerReport.path : null,
-          requestedByRole: 'reviewer',
-          sessionId: latestSession.id,
-          sessionStatus: latestSession.status,
-          title: `Reviewer follow-up required for ${mission.title}`,
-          workspaceId: workspace.id,
-          workspaceName: workspace.name,
-        };
-      })
-      .map((item) =>
-        item
-          ? addOperationalMetadata(
-              addDispatchMetadata(item, {
-                priority: 'medium',
-                recommendedOwner: 'mission-owner',
-                recommendedCommand: item.commandHint || `node src/cli.mjs mission run ${item.missionId} --provider stub`,
-              }),
-              {
-                slaHours: 48,
-                escalationRule: 'If overdue, escalate to the workspace owner and request a narrower remediation plan.',
-              },
-            )
-          : null,
-      )
+    return store.saveReviewerFollowUp({
+      id: createId('reviewerfollowup'),
+      ...seed,
+      createdAt: seed.createdAt || now(),
+      updatedAt: seed.updatedAt || seed.createdAt || now(),
+    });
+  }
+
+  function createReviewerFollowUpRecord(seed) {
+    const existingRecord = store.listReviewerFollowUps({ actionId: seed.actionId }).at(-1) || null;
+    if (existingRecord) {
+      return existingRecord;
+    }
+
+    return store.saveReviewerFollowUp({
+      id: createId('reviewerfollowup'),
+      ...seed,
+      createdAt: seed.createdAt || now(),
+      updatedAt: seed.updatedAt || seed.createdAt || now(),
+    });
+  }
+
+  function buildReviewerFollowUpItems(filter = {}) {
+    return listReviewerFollowUpRecords({ ...filter, status: 'open' })
+      .map((record) => buildReviewerFollowUpItemFromRecord(record))
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
@@ -1216,6 +1375,35 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function resolveReviewerFollowUp(actionId, { note = '' }) {
+    const followUp = ensureReviewerFollowUpRecord(actionId);
+    if (followUp.status !== 'open') {
+      throw new Error(`Reviewer follow-up ${actionId} is already resolved.`);
+    }
+
+    const resolutionNote = normalizeText(note, 'Resolved without additional note.');
+    const resolvedFollowUp = store.updateReviewerFollowUp(followUp.id, (current) => ({
+      ...current,
+      resolutionNote,
+      resolvedAt: now(),
+      status: 'resolved',
+      updatedAt: now(),
+    }));
+
+    const mission = getMission(resolvedFollowUp.missionId);
+    harness.addMemoryEntry({
+      scope: 'mission',
+      scopeId: mission.id,
+      kind: 'decision',
+      content: formatReviewerFollowUpResolutionMemory({
+        mission,
+        note: resolutionNote,
+      }),
+    });
+
+    return resolvedFollowUp;
+  }
+
   function resolveEscalation(escalationId, { note = '' }) {
     const escalation = store.getEscalation(escalationId);
     if (!escalation) {
@@ -1291,6 +1479,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
+    const reviewerFollowUps = listReviewerFollowUpRecords({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const timeline = [
       {
@@ -1347,6 +1536,30 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
     }
 
+    for (const followUp of reviewerFollowUps) {
+      timeline.push({
+        actionId: followUp.actionId,
+        at: followUp.createdAt,
+        detail: followUp.reason || followUp.title,
+        kind: 'reviewer-follow-up-opened',
+        missionId: mission.id,
+        sessionId: followUp.sessionId,
+        status: followUp.status,
+      });
+
+      if (followUp.resolvedAt) {
+        timeline.push({
+          actionId: followUp.actionId,
+          at: followUp.resolvedAt,
+          detail: followUp.resolutionNote || 'Reviewer follow-up resolved.',
+          kind: 'reviewer-follow-up-resolved',
+          missionId: mission.id,
+          sessionId: followUp.sessionId,
+          status: followUp.status,
+        });
+      }
+    }
+
     for (const escalation of escalations) {
       timeline.push({
         at: escalation.createdAt,
@@ -1388,6 +1601,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildOperatorTimelineEvents(filter = {}) {
     const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
     const missionById = new Map(store.listMissions().map((mission) => [mission.id, mission]));
+    const reviewerFollowUps = listReviewerFollowUpRecords(filter);
     const events = [];
 
     for (const approval of store.listApprovals()) {
@@ -1432,37 +1646,36 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
     }
 
-    for (const mission of store.listMissions()) {
-      const workspace = workspaceById.get(mission.workspaceId);
-      if (!workspace) {
-        continue;
-      }
-      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
-        continue;
-      }
-      if (filter.missionId && mission.id !== filter.missionId) {
+    for (const followUp of reviewerFollowUps) {
+      const mission = missionById.get(followUp.missionId);
+      const workspace = mission ? workspaceById.get(mission.workspaceId) : workspaceById.get(followUp.workspaceId);
+      if (!mission || !workspace) {
         continue;
       }
 
-      for (const session of store.listSessionsByMission(mission.id)) {
-        const reviewerRun = store.listAgentRunsBySession(session.id).find((run) => run.role === 'reviewer' && run.status === 'failed');
-        if (!reviewerRun) {
-          continue;
-        }
+      events.push({
+        actionId: followUp.actionId,
+        at: followUp.createdAt,
+        detail: followUp.reason || followUp.title,
+        kind: 'reviewer-follow-up-opened',
+        missionId: mission.id,
+        missionTitle: mission.title,
+        sessionId: followUp.sessionId,
+        status: followUp.status,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
 
-        const reviewerReport =
-          store
-            .listArtifactsBySession(session.id)
-            .filter((artifact) => artifact.fileName === 'reviewer-report.md')
-            .at(-1) || null;
-
+      if (followUp.resolvedAt) {
         events.push({
-          at: reviewerReport?.createdAt || reviewerRun.endedAt || reviewerRun.startedAt,
-          detail: reviewerRun.outputSummary,
-          kind: 'reviewer-follow-up-opened',
+          actionId: followUp.actionId,
+          at: followUp.resolvedAt,
+          detail: followUp.resolutionNote || 'Reviewer follow-up resolved.',
+          kind: 'reviewer-follow-up-resolved',
           missionId: mission.id,
           missionTitle: mission.title,
-          sessionId: session.id,
+          sessionId: followUp.sessionId,
+          status: followUp.status,
           workspaceId: workspace.id,
           workspaceName: workspace.name,
         });
@@ -1744,6 +1957,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
+    getReviewerFollowUpInbox,
     getWorkspace,
     getWorkspaceOverview,
     getWorkspaceTimeline,
@@ -1756,6 +1970,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     logDocument,
     resolveEscalation,
     resolveApproval,
+    resolveReviewerFollowUp,
     runMission,
     showMission,
     showSession,

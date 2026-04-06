@@ -200,6 +200,7 @@ assert.equal(reviewerItem.reportPath.endsWith('reviewer-report.md'), true);
 assert.equal(reviewerItem.findings.some((finding) => finding.includes('Checklist section does not contain checkbox items')), true);
 assert.match(reviewerItem.commandHint, /mission run/);
 assert.equal(reviewerItem.recommendedCommand, reviewerItem.commandHint);
+assert.match(reviewerItem.resolveCommand, /resolve-reviewer-follow-up/);
 assert.equal(reviewerItem.slaHours, 48);
 assert.equal(reviewerItem.isOverdue, false);
 assert.ok(reviewerItem.dueAt);

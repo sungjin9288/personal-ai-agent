@@ -29,6 +29,8 @@
 - workspace and global overview now aggregate open escalation pressure for top-level control-plane visibility
 - mission timeline now includes escalation open/resolved lifecycle events
 - workspace and global operator timeline surfaces now aggregate approval, reviewer follow-up, and escalation events
+- reviewer follow-up items now have explicit open/resolved lifecycle records and can be resolved independently from escalation state
+- mission, workspace, and global timelines now show reviewer follow-up closure instead of only opened events
 - memory and document logging commands
 - deterministic local-first smoke coverage
 
