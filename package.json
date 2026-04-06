@@ -33,6 +33,7 @@
     "smoke:global-overview": "node scripts/smoke-global-overview.mjs",
     "smoke:provider-surface": "node scripts/smoke-provider-surface.mjs",
     "smoke:provider-probe": "node scripts/smoke-provider-probe.mjs",
+    "smoke:provider-history": "node scripts/smoke-provider-history.mjs",
     "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs",
     "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs",
     "smoke:local-provider": "node scripts/smoke-local-provider.mjs"

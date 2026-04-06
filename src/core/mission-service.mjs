@@ -1041,8 +1041,43 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return store.listMissions();
   }
 
+  function getLatestProviderProbe(providerId) {
+    return store.listProviderProbes({ providerId }).at(-1) || null;
+  }
+
+  function summarizeProviderProbes(probes) {
+    const providerCounts = {};
+    let attemptedCount = 0;
+    let failureCount = 0;
+    let successCount = 0;
+
+    for (const probe of probes) {
+      providerCounts[probe.providerId] = (providerCounts[probe.providerId] || 0) + 1;
+      if (probe.attempted) {
+        attemptedCount += 1;
+      }
+      if (probe.ok) {
+        successCount += 1;
+      } else {
+        failureCount += 1;
+      }
+    }
+
+    return {
+      attemptedCount,
+      failureCount,
+      latestProbe: probes.at(-1) || null,
+      providerCounts,
+      successCount,
+      total: probes.length,
+    };
+  }
+
   function listProviders() {
-    const providers = providerRegistry.listProviders();
+    const providers = providerRegistry.listProviders().map((provider) => ({
+      ...provider,
+      latestProbe: getLatestProviderProbe(provider.id),
+    }));
     return {
       providers,
       summary: {
@@ -1055,11 +1090,43 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function checkProvider(providerId) {
-    return providerRegistry.getProviderStatus(providerId);
+    return {
+      ...providerRegistry.getProviderStatus(providerId),
+      latestProbe: getLatestProviderProbe(providerId),
+    };
   }
 
   async function probeProvider(providerId) {
-    return providerRegistry.probeProvider(providerId);
+    const result = await providerRegistry.probeProvider(providerId);
+    const checkedAt = result.checkedAt || now();
+    const probeRecord = store.saveProviderProbe({
+      id: createId('provider-probe'),
+      providerId: result.id,
+      attempted: Boolean(result.attempted),
+      ok: Boolean(result.ok),
+      reason: normalizeText(result.reason),
+      endpoint: normalizeText(result.endpoint),
+      transport: normalizeText(result.transport),
+      model: normalizeText(result.model),
+      modelAvailable: Boolean(result.modelAvailable),
+      modelCount: Number.isFinite(Number(result.modelCount)) ? Number(result.modelCount) : 0,
+      sampleModels: ensureArray(result.sampleModels).map((item) => normalizeText(item)).filter(Boolean),
+      checkedAt,
+      createdAt: checkedAt,
+    });
+
+    return {
+      ...result,
+      probeId: probeRecord.id,
+    };
+  }
+
+  function listProviderProbeHistory(filter = {}) {
+    const probes = store.listProviderProbes(filter);
+    return {
+      probes,
+      summary: summarizeProviderProbes(probes),
+    };
   }
 
   function getMission(missionId) {
@@ -4390,6 +4457,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     listApprovals,
     listMemory,
     listMissions,
+    listProviderProbeHistory,
     listProviders,
     listSessions,
     logOverdueActions,

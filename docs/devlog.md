@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Probe History
+
+- persisted provider probe results into runtime state so readiness and reachability checks leave an audit trail instead of remaining transient CLI output
+- added `provider history` plus latest-probe linkage on `provider list` and `provider check`, keeping current readiness and last connectivity result visible together
+- added deterministic smoke coverage for missing-env persisted failure, mocked successful local probe persistence, and history filters
+
 ## 2026-04-06 Provider Probe Surface
 
 - added `provider probe <id>` so operator workflows can distinguish missing env from actual endpoint reachability and model-list responses

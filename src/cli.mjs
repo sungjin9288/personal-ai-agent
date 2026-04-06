@@ -17,6 +17,23 @@ function hasOption(args, name) {
   return args.includes(name);
 }
 
+function parseBooleanOption(args, name) {
+  const value = readOption(args, name, '');
+  if (!value) {
+    return undefined;
+  }
+
+  if (value === 'true') {
+    return true;
+  }
+
+  if (value === 'false') {
+    return false;
+  }
+
+  throw new Error(`${name} must be true or false.`);
+}
+
 function parseConstraints(rawValue) {
   return String(rawValue || '')
     .split('|')
@@ -35,6 +52,7 @@ Commands:
   provider list
   provider check <stub|openai|anthropic|local>
   provider probe <stub|openai|anthropic|local>
+  provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
 
   workspace add <path> [--name <name>]
   workspace list
@@ -152,6 +170,17 @@ async function main() {
 
   if (group === 'provider' && command === 'probe') {
     printJson(await service.probeProvider(rest[0]));
+    return;
+  }
+
+  if (group === 'provider' && command === 'history') {
+    printJson(
+      service.listProviderProbeHistory({
+        attempted: parseBooleanOption(rest, '--attempted'),
+        ok: parseBooleanOption(rest, '--ok'),
+        providerId: readOption(rest, '--provider', ''),
+      }),
+    );
     return;
   }
 

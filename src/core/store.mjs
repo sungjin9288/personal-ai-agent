@@ -10,6 +10,7 @@ const DEFAULT_STATE = {
   approvals: [],
   escalations: [],
   reviewerFollowUps: [],
+  providerProbes: [],
   maintenanceRuns: [],
   memoryEntries: [],
 };
@@ -24,6 +25,7 @@ function cloneDefaultState() {
     approvals: [],
     escalations: [],
     reviewerFollowUps: [],
+    providerProbes: [],
     maintenanceRuns: [],
     memoryEntries: [],
   };
@@ -77,6 +79,7 @@ export function createStore({ rootDir }) {
       approvals: Array.isArray(state.approvals) ? state.approvals : [],
       escalations: Array.isArray(state.escalations) ? state.escalations : [],
       reviewerFollowUps: Array.isArray(state.reviewerFollowUps) ? state.reviewerFollowUps : [],
+      providerProbes: Array.isArray(state.providerProbes) ? state.providerProbes : [],
       maintenanceRuns: Array.isArray(state.maintenanceRuns) ? state.maintenanceRuns : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
     };
@@ -225,6 +228,22 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listProviderProbes(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('providerProbes').filter((probe) => {
+          if (filter.providerId && probe.providerId !== filter.providerId) {
+            return false;
+          }
+          if (typeof filter.ok === 'boolean' && Boolean(probe.ok) !== filter.ok) {
+            return false;
+          }
+          if (typeof filter.attempted === 'boolean' && Boolean(probe.attempted) !== filter.attempted) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listMaintenanceRuns(filter = {}) {
       return sortByCreatedAt(
         listCollection('maintenanceRuns').filter((run) => {
@@ -282,6 +301,9 @@ export function createStore({ rootDir }) {
     },
     saveReviewerFollowUp(reviewerFollowUp) {
       return saveCollectionItem('reviewerFollowUps', reviewerFollowUp);
+    },
+    saveProviderProbe(providerProbe) {
+      return saveCollectionItem('providerProbes', providerProbe);
     },
     saveMaintenanceRun(maintenanceRun) {
       return saveCollectionItem('maintenanceRuns', maintenanceRun);
