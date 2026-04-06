@@ -83,6 +83,45 @@ assert.equal(escalatedInbox.items[0].actionType, 'reviewer-accepted-risk');
 assert.equal(escalatedInbox.items[0].recommendedOwner, 'workspace-owner');
 assert.match(escalatedInbox.items[0].reason, /next release window/i);
 
+const monitoringInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'monitoring-required', '--workspace', workspace.id],
+});
+
+assert.equal(monitoringInbox.summary.pendingActionCount, 1);
+assert.equal(monitoringInbox.summary.actionCounts.acceptedRiskMonitoring, 1);
+assert.equal(monitoringInbox.summary.actionClassCounts.monitoringRequired, 1);
+assert.equal(monitoringInbox.items[0].actionType, 'accepted-risk-monitoring');
+assert.equal(monitoringInbox.items[0].recommendedOwner, 'workspace-owner');
+assert.equal(monitoringInbox.items[0].escalationId, resolution.escalation.id);
+assert.equal(monitoringInbox.items[0].sourceResolutionKind, 'accepted-risk');
+assert.equal(monitoringInbox.items[0].isOverdue, false);
+
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+state.escalations = state.escalations.map((escalation) => {
+  if (escalation.id === resolution.escalation.id) {
+    return {
+      ...escalation,
+      createdAt: '2026-03-01T00:00:00.000Z',
+      dueAt: '2026-03-02T00:00:00.000Z',
+      updatedAt: '2026-03-01T00:00:00.000Z',
+    };
+  }
+
+  return escalation;
+});
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+const overdueMonitoringInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'monitoring-required', '--workspace', workspace.id, '--overdue'],
+});
+
+assert.equal(overdueMonitoringInbox.summary.pendingActionCount, 1);
+assert.equal(overdueMonitoringInbox.summary.overdueCounts.overdue, 1);
+assert.equal(overdueMonitoringInbox.items[0].isOverdue, true);
+
 const workspaceOverview = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'overview', workspace.id],

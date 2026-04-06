@@ -128,6 +128,31 @@ function addOperationalMetadata(item, { slaHours, escalationRule }) {
   };
 }
 
+function addFixedOperationalMetadata(item, { dueAt, escalationRule, slaHours }) {
+  const isOverdue = dueAt ? Date.now() > new Date(dueAt).getTime() : false;
+
+  return {
+    ...item,
+    dueAt,
+    escalationRule,
+    isOverdue,
+    slaHours,
+  };
+}
+
+function deriveSlaHoursFromTimestamps(createdAt, dueAt) {
+  if (!createdAt || !dueAt) {
+    return null;
+  }
+
+  const durationMs = new Date(dueAt).getTime() - new Date(createdAt).getTime();
+  if (!Number.isFinite(durationMs) || durationMs <= 0) {
+    return null;
+  }
+
+  return Math.round(durationMs / (60 * 60 * 1000));
+}
+
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
 }
@@ -1124,15 +1149,65 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
+  function buildAcceptedRiskMonitoringItems(filter = {}) {
+    return store
+      .listEscalations({
+        missionId: filter.missionId,
+        owner: filter.owner,
+        status: 'open',
+        workspaceId: filter.workspaceId,
+      })
+      .filter(
+        (escalation) =>
+          escalation.actionType === 'reviewer-accepted-risk' || escalation.sourceResolutionKind === 'accepted-risk',
+      )
+      .map((escalation) =>
+        addFixedOperationalMetadata(
+          addDispatchMetadata(
+            {
+              actionClass: 'monitoring-required',
+              actionId: escalation.actionId,
+              actionType: 'accepted-risk-monitoring',
+              createdAt: escalation.createdAt,
+              deliverableType: escalation.deliverableType || null,
+              escalationId: escalation.id,
+              missionId: escalation.missionId,
+              reason: escalation.reason,
+              recommendedCommand: escalation.recommendedCommand,
+              recommendedOwner: escalation.recommendedOwner,
+              sessionId: escalation.sessionId,
+              sourceResolutionKind: escalation.sourceResolutionKind || 'accepted-risk',
+              title: escalation.title,
+              workspaceId: escalation.workspaceId,
+              workspaceName: escalation.workspaceName,
+            },
+            {
+              priority: escalation.priority || 'medium',
+              recommendedCommand: escalation.recommendedCommand,
+              recommendedOwner: escalation.recommendedOwner || 'workspace-owner',
+            },
+          ),
+          {
+            dueAt: escalation.dueAt,
+            escalationRule: escalation.escalationRule,
+            slaHours: deriveSlaHoursFromTimestamps(escalation.createdAt, escalation.dueAt),
+          },
+        ),
+      )
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
   function summarizeActionInbox(items) {
     const workspaceCounts = {};
     const actionClassCounts = {
       awaitingHumanDecision: 0,
       blocked: 0,
+      monitoringRequired: 0,
       retryReady: 0,
       total: items.length,
     };
     const actionCounts = {
+      acceptedRiskMonitoring: 0,
       approval: 0,
       blockedFollowUp: 0,
       reviewerFollowUp: 0,
@@ -1153,6 +1228,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionCounts.approval += 1;
       }
 
+      if (item.actionType === 'accepted-risk-monitoring') {
+        actionCounts.acceptedRiskMonitoring += 1;
+      }
+
       if (item.actionType === 'blocked-follow-up') {
         actionCounts.blockedFollowUp += 1;
       }
@@ -1167,6 +1246,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (item.actionClass === 'blocked') {
         actionClassCounts.blocked += 1;
+      }
+
+      if (item.actionClass === 'monitoring-required') {
+        actionClassCounts.monitoringRequired += 1;
       }
 
       if (item.actionClass === 'retry-ready') {
@@ -1242,6 +1325,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const items = [
       ...buildApprovalInboxItems(filter),
+      ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
     ]
