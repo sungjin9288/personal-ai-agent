@@ -628,13 +628,21 @@ function summarizeEscalations(items) {
 function summarizeMaintenanceRuns(items) {
   const maintenanceImpactSummary = summarizeMaintenanceImpact(items);
   let acknowledgedMaintenanceRequiredCountTotal = 0;
+  let effectiveRunCount = 0;
   const workspaceCounts = {};
   let escalationRemindedCountTotal = 0;
   let dueCandidateCountTotal = 0;
+  let impactRunCount = 0;
+  let latestEffectiveRun = null;
+  let latestEffectiveRunAt = null;
+  let latestNoOpRun = null;
+  let latestNoOpRunAt = null;
   let latestRun = null;
   let latestRunAt = null;
   let ownerHandoffRemindedCountTotal = 0;
+  let noOpRunCount = 0;
   let remainingMaintenanceRequiredCountTotal = 0;
+  const recentRuns = [];
   let resolvedMaintenanceRequiredCountTotal = 0;
   let syncedCountTotal = 0;
   let totalRemindedCount = 0;
@@ -650,6 +658,40 @@ function summarizeMaintenanceRuns(items) {
     resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
     totalRemindedCount += Number(item.totalRemindedCount || 0);
+    const affectedMissionIds = [...new Set([item.missionId, ...ensureArray(item.affectedMissionIds)].filter(Boolean))];
+    const isEffective =
+      Number(item.totalRemindedCount || 0) > 0 ||
+      Number(item.acknowledgedMaintenanceRequiredCount || 0) > 0 ||
+      Number(item.resolvedMaintenanceRequiredCount || 0) > 0;
+    const isImpactful = affectedMissionIds.length > 0;
+
+    if (isEffective) {
+      effectiveRunCount += 1;
+      if (!latestEffectiveRunAt || String(latestEffectiveRunAt) < String(item.createdAt || '')) {
+        latestEffectiveRunAt = item.createdAt || null;
+        latestEffectiveRun = item;
+      }
+    } else {
+      noOpRunCount += 1;
+      if (!latestNoOpRunAt || String(latestNoOpRunAt) < String(item.createdAt || '')) {
+        latestNoOpRunAt = item.createdAt || null;
+        latestNoOpRun = item;
+      }
+    }
+
+    if (isImpactful) {
+      impactRunCount += 1;
+    }
+
+    recentRuns.push({
+      affectedMissionCount: affectedMissionIds.length,
+      affectedMissionIds: affectedMissionIds.sort((left, right) => String(left).localeCompare(String(right))),
+      createdAt: item.createdAt || null,
+      id: item.id,
+      isEffective,
+      isImpactful,
+      totalRemindedCount: Number(item.totalRemindedCount || 0),
+    });
 
     if (!latestRunAt || String(latestRunAt) < String(item.createdAt || '')) {
       latestRunAt = item.createdAt || null;
@@ -662,16 +704,32 @@ function summarizeMaintenanceRuns(items) {
     affectedMissionCount: maintenanceImpactSummary.affectedMissionCount,
     affectedMissionIds: maintenanceImpactSummary.affectedMissionIds,
     dueCandidateCountTotal,
+    effectiveRunCount,
     escalationRemindedCountTotal,
+    impactRunCount,
     latestImpactAffectedMissionIds: maintenanceImpactSummary.latestImpactAffectedMissionIds,
     latestImpactRun: maintenanceImpactSummary.latestImpactRun,
     latestImpactRunAt: maintenanceImpactSummary.latestImpactRunAt,
+    latestEffectiveRun,
+    latestEffectiveRunAt,
+    latestNoOpRun,
+    latestNoOpRunAt,
     latestRun,
     latestRunAt,
+    noOpRunCount,
     ownerHandoffRemindedCountTotal,
+    recentRuns: recentRuns
+      .sort((left, right) => String(right.createdAt || '').localeCompare(String(left.createdAt || '')))
+      .slice(0, 5),
     remainingMaintenanceRequiredCountTotal,
     resolvedMaintenanceRequiredCountTotal,
     runCount: items.length,
+    runOutcomeCounts: {
+      effective: effectiveRunCount,
+      impactful: impactRunCount,
+      noOp: noOpRunCount,
+      total: items.length,
+    },
     syncedCountTotal,
     totalRemindedCount,
     workspaceCounts,

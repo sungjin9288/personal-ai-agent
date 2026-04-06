@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Maintenance Run Trend Summary
+
+- extended maintenance-specific summaries with `effectiveRunCount`, `noOpRunCount`, `impactRunCount`, `latestEffectiveRun`, `latestNoOpRun`, and a short `recentRuns` trend window
+- kept the existing affected mission breadth and missionImpact semantics intact so maintenance history can answer both scope and effectiveness questions from the same summary payload
+- strengthened maintenance history smoke coverage to lock the first effective sweep, second no-op sweep, and recent run ordering into a deterministic contract
+
 ## 2026-04-06 Mission Maintenance History Linkback
 
 - extended `action maintenance-history --mission` and `overview maintenance --mission` to include related workspace-scope maintenance runs instead of only direct mission runs

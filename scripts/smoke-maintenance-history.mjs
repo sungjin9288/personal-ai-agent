@@ -235,6 +235,9 @@ const history = runCli({
 
 assert.equal(history.summary.runCount, 2);
 assert.equal(history.summary.totalRemindedCount, 2);
+assert.equal(history.summary.effectiveRunCount, 1);
+assert.equal(history.summary.noOpRunCount, 1);
+assert.equal(history.summary.impactRunCount, 1);
 assert.equal(history.summary.escalationRemindedCountTotal, 1);
 assert.equal(history.summary.ownerHandoffRemindedCountTotal, 1);
 assert.equal(history.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
@@ -246,8 +249,24 @@ assert.deepEqual(
 assert.equal(history.summary.resolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(history.summary.remainingMaintenanceRequiredCountTotal, 0);
 assert.equal(history.summary.latestImpactRun.id, firstMaintenance.maintenanceRun.id);
+assert.equal(history.summary.latestEffectiveRun.id, firstMaintenance.maintenanceRun.id);
+assert.equal(history.summary.latestNoOpRun.id, secondMaintenance.maintenanceRun.id);
 assert.deepEqual(
   [...history.summary.latestImpactAffectedMissionIds].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+);
+assert.equal(history.summary.runOutcomeCounts.effective, 1);
+assert.equal(history.summary.runOutcomeCounts.noOp, 1);
+assert.equal(history.summary.runOutcomeCounts.impactful, 1);
+assert.equal(history.summary.recentRuns.length, 2);
+assert.equal(history.summary.recentRuns[0].id, secondMaintenance.maintenanceRun.id);
+assert.equal(history.summary.recentRuns[0].isEffective, false);
+assert.equal(history.summary.recentRuns[0].isImpactful, false);
+assert.equal(history.summary.recentRuns[1].id, firstMaintenance.maintenanceRun.id);
+assert.equal(history.summary.recentRuns[1].isEffective, true);
+assert.equal(history.summary.recentRuns[1].isImpactful, true);
+assert.deepEqual(
+  [...history.summary.recentRuns[1].affectedMissionIds].sort(),
   [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
 );
 assert.equal(history.summary.workspaceCounts[workspace.id], 2);
@@ -288,6 +307,11 @@ const maintenanceOverview = runCli({
 assert.equal(maintenanceOverview.summary.runCount, 2);
 assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
 assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(maintenanceOverview.summary.latestEffectiveRun.id, firstMaintenance.maintenanceRun.id);
+assert.equal(maintenanceOverview.summary.latestNoOpRun.id, secondMaintenance.maintenanceRun.id);
+assert.equal(maintenanceOverview.summary.effectiveRunCount, 1);
+assert.equal(maintenanceOverview.summary.noOpRunCount, 1);
+assert.equal(maintenanceOverview.summary.impactRunCount, 1);
 assert.equal(maintenanceOverview.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
 assert.equal(maintenanceOverview.summary.affectedMissionCount, 2);
 assert.deepEqual(
@@ -311,6 +335,9 @@ const missionMaintenanceOverview = runCli({
 
 assert.equal(missionMaintenanceOverview.summary.runCount, 1);
 assert.equal(missionMaintenanceOverview.summary.totalRemindedCount, 2);
+assert.equal(missionMaintenanceOverview.summary.effectiveRunCount, 1);
+assert.equal(missionMaintenanceOverview.summary.noOpRunCount, 0);
+assert.equal(missionMaintenanceOverview.summary.impactRunCount, 1);
 assert.equal(missionMaintenanceOverview.summary.affectedMissionCount, 2);
 assert.deepEqual(
   [...missionMaintenanceOverview.summary.affectedMissionIds].sort(),
