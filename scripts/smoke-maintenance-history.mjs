@@ -81,6 +81,9 @@ const statePath = path.join(tempRoot, 'var', 'state.json');
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
 const dueTimestamp = '2026-03-02T00:00:00.000Z';
 const agedReminderTimestamp = '2026-04-05T00:00:00.000Z';
+const firstMaintenanceRunTimestamp = '2026-04-01T00:00:00.000Z';
+const secondMaintenanceRunTimestamp = '2026-04-06T00:00:00.000Z';
+const recentMaintenanceCutoff = '2026-04-03T00:00:00.000Z';
 
 function writeState(mutator) {
   const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
@@ -228,6 +231,29 @@ assert.equal(secondMaintenance.summary.resolvedMaintenanceRequiredCount, 0);
 assert.equal(secondMaintenance.summary.remainingMaintenanceRequiredCount, 0);
 assert.ok(secondMaintenance.maintenanceRun.id);
 
+writeState((state) => {
+  state.maintenanceRuns = state.maintenanceRuns.map((run) => {
+    if (run.id === firstMaintenance.maintenanceRun.id) {
+      return {
+        ...run,
+        createdAt: firstMaintenanceRunTimestamp,
+      };
+    }
+
+    if (run.id === secondMaintenance.maintenanceRun.id) {
+      return {
+        ...run,
+        createdAt: secondMaintenanceRunTimestamp,
+      };
+    }
+
+    return run;
+  });
+});
+
+firstMaintenance.maintenanceRun.createdAt = firstMaintenanceRunTimestamp;
+secondMaintenance.maintenanceRun.createdAt = secondMaintenanceRunTimestamp;
+
 const history = runCli({
   rootDir: tempRoot,
   args: ['action', 'maintenance-history', '--workspace', workspace.id],
@@ -299,6 +325,25 @@ assert.equal(noOpHistory.summary.noOpRunCount, 1);
 assert.equal(noOpHistory.summary.impactRunCount, 0);
 assert.equal(noOpHistory.items[0].id, secondMaintenance.maintenanceRun.id);
 
+const recentHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--workspace', workspace.id, '--since', recentMaintenanceCutoff],
+});
+
+assert.equal(recentHistory.filters.since, recentMaintenanceCutoff);
+assert.equal(recentHistory.summary.runCount, 1);
+assert.equal(recentHistory.summary.noOpRunCount, 1);
+assert.equal(recentHistory.summary.effectiveRunCount, 0);
+assert.equal(recentHistory.items[0].id, secondMaintenance.maintenanceRun.id);
+
+const recentEffectiveHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--workspace', workspace.id, '--outcome', 'effective', '--since', recentMaintenanceCutoff],
+});
+
+assert.equal(recentEffectiveHistory.summary.runCount, 0);
+assert.equal(recentEffectiveHistory.items.length, 0);
+
 const missionHistory = runCli({
   rootDir: tempRoot,
   args: ['action', 'maintenance-history', '--mission', monitoringFlow.mission.id],
@@ -328,6 +373,15 @@ const missionNoOpHistory = runCli({
 assert.equal(missionNoOpHistory.summary.runCount, 0);
 assert.equal(missionNoOpHistory.summary.noOpRunCount, 0);
 assert.equal(missionNoOpHistory.items.length, 0);
+
+const recentMissionHistory = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'maintenance-history', '--mission', monitoringFlow.mission.id, '--since', recentMaintenanceCutoff],
+});
+
+assert.equal(recentMissionHistory.summary.runCount, 0);
+assert.equal(recentMissionHistory.items.length, 0);
+assert.equal(recentMissionHistory.filters.since, recentMaintenanceCutoff);
 
 const maintenanceOverview = runCli({
   rootDir: tempRoot,
@@ -391,6 +445,16 @@ assert.equal(filteredMaintenanceOverview.summary.runCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.effectiveRunCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.noOpRunCount, 0);
 assert.equal(filteredMaintenanceOverview.items[0].id, firstMaintenance.maintenanceRun.id);
+
+const recentMaintenanceOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'maintenance', '--workspace', workspace.id, '--since', recentMaintenanceCutoff],
+});
+
+assert.equal(recentMaintenanceOverview.summary.runCount, 1);
+assert.equal(recentMaintenanceOverview.summary.noOpRunCount, 1);
+assert.equal(recentMaintenanceOverview.summary.effectiveRunCount, 0);
+assert.equal(recentMaintenanceOverview.items[0].id, secondMaintenance.maintenanceRun.id);
 
 const workspaceOverview = runCli({
   rootDir: tempRoot,

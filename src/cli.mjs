@@ -29,7 +29,7 @@ function printHelp() {
 
 Commands:
   overview global
-  overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>]
+  overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline
 
   workspace add <path> [--name <name>]
@@ -49,7 +49,7 @@ Commands:
   session show <missionId> --session <sessionId>
 
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|monitoring-required|handoff-required|maintenance-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
-  action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>]
+  action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
   action maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--note <text>]
@@ -124,6 +124,7 @@ function main() {
         missionId: readOption(rest, '--mission', ''),
         outcome: readOption(rest, '--outcome', ''),
         owner: readOption(rest, '--owner', ''),
+        since: readOption(rest, '--since', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );
@@ -250,6 +251,7 @@ function main() {
         missionId: readOption(rest, '--mission', ''),
         outcome: readOption(rest, '--outcome', ''),
         owner: readOption(rest, '--owner', ''),
+        since: readOption(rest, '--since', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

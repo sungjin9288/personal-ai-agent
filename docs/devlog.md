@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Maintenance Since Filter
+
+- added `--since <iso-timestamp>` to `action maintenance-history` and `overview maintenance` so maintenance audit can be sliced by time window without inventing a separate trend endpoint
+- kept the new filter run-history-only, leaving current maintenance pressure summary semantics unchanged while echoing the normalized timestamp through `filters.since`
+- extended maintenance history smoke coverage with fixed maintenance run timestamps so workspace and mission time-window filtering stays deterministic
+
 ## 2026-04-06 Maintenance Outcome Filters
 
 - added `--outcome <effective|no-op|impactful>` to `action maintenance-history` and `overview maintenance` so operators can directly slice sweep audit by run quality

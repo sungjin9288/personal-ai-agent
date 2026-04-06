@@ -35,6 +35,20 @@ function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
 
+function normalizeTimestampFilter(value, label) {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return '';
+  }
+
+  const timestamp = Date.parse(normalized);
+  if (!Number.isFinite(timestamp)) {
+    throw new Error(`Invalid ${label}: ${normalized}`);
+  }
+
+  return new Date(timestamp).toISOString();
+}
+
 function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -1400,6 +1414,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return items.filter((item) => {
       if (filter.owner && item.owner !== filter.owner) {
+        return false;
+      }
+      if (filter.since && String(item.createdAt || '') < filter.since) {
         return false;
       }
       if (!filter.outcome) {
@@ -3043,8 +3060,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.outcome && !MAINTENANCE_RUN_OUTCOMES.includes(filter.outcome)) {
       throw new Error(`Unsupported maintenance run outcome: ${filter.outcome}`);
     }
+    const since = normalizeTimestampFilter(filter.since, 'maintenance since timestamp');
 
-    const items = listMaintenanceOverviewRuns(filter);
+    const items = listMaintenanceOverviewRuns({
+      ...filter,
+      since,
+    });
     const current = listMaintenancePressureEntries(filter);
     const missionImpactSummary = filter.missionId ? summarizeMissionMaintenanceImpact(filter.missionId, items) : null;
 
@@ -3054,6 +3075,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         missionId: filter.missionId || null,
         outcome: filter.outcome || null,
         owner: filter.owner || null,
+        since: since || null,
         workspaceId: filter.workspaceId || null,
       },
       items,
