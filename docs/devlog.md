@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Provider Probe Timeline
+
+- added `provider timeline` so persisted provider probe records can be read as chronological success, failure, and skipped events instead of only raw history rows
+- reused probe history filters for `--provider`, `--ok`, and `--attempted` so timeline and history slices stay aligned
+- added deterministic smoke coverage for mixed successful and failed attempted probes plus timeline ordering and filtered failure slices
+
 ## 2026-04-06 Provider Probe History
 
 - persisted provider probe results into runtime state so readiness and reachability checks leave an audit trail instead of remaining transient CLI output

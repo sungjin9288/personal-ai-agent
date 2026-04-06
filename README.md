@@ -50,6 +50,7 @@ node src/cli.mjs provider list
 node src/cli.mjs provider check openai
 node src/cli.mjs provider probe openai
 node src/cli.mjs provider history
+node src/cli.mjs provider timeline
 node src/cli.mjs workspace list
 node src/cli.mjs workspace show workspace_xxx
 node src/cli.mjs workspace overview workspace_xxx
@@ -166,6 +167,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans, plus the latest persisted probe when available.
 - `provider probe <id>` attempts a lightweight endpoint reachability check and model listing when the provider is configured; if required env is missing it returns a structured non-attempted result instead of throwing.
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
+- `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.
 - `stub` remains the deterministic default for local development and smoke coverage.
 - `openai` now uses the OpenAI Responses API and reads:
   - `OPENAI_API_KEY` required
@@ -245,6 +247,7 @@ npm run smoke:global-overview
 npm run smoke:provider-surface
 npm run smoke:provider-probe
 npm run smoke:provider-history
+npm run smoke:provider-timeline
 npm run smoke:openai-provider
 npm run smoke:anthropic-provider
 npm run smoke:local-provider

@@ -1073,6 +1073,63 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function buildProviderProbeTimeline(probes) {
+    return probes.map((probe) => {
+      const kind = probe.attempted
+        ? probe.ok
+          ? 'provider-probe-succeeded'
+          : 'provider-probe-failed'
+        : 'provider-probe-skipped';
+
+      return {
+        at: probe.checkedAt || probe.createdAt,
+        attempted: probe.attempted,
+        detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
+        endpoint: probe.endpoint || null,
+        id: probe.id,
+        kind,
+        model: probe.model || null,
+        modelAvailable: probe.modelAvailable,
+        modelCount: probe.modelCount,
+        ok: probe.ok,
+        providerId: probe.providerId,
+        sampleModels: ensureArray(probe.sampleModels),
+        transport: probe.transport || null,
+      };
+    });
+  }
+
+  function summarizeProviderProbeTimeline(events) {
+    const eventCounts = {};
+    const providerCounts = {};
+    let attemptedCount = 0;
+    let failureCount = 0;
+    let successCount = 0;
+
+    for (const event of events) {
+      eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
+      providerCounts[event.providerId] = (providerCounts[event.providerId] || 0) + 1;
+      if (event.attempted) {
+        attemptedCount += 1;
+      }
+      if (event.ok) {
+        successCount += 1;
+      } else {
+        failureCount += 1;
+      }
+    }
+
+    return {
+      attemptedCount,
+      eventCounts,
+      failureCount,
+      latestEvent: events.at(-1) || null,
+      providerCounts,
+      successCount,
+      total: events.length,
+    };
+  }
+
   function listProviders() {
     const providers = providerRegistry.listProviders().map((provider) => ({
       ...provider,
@@ -1126,6 +1183,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       probes,
       summary: summarizeProviderProbes(probes),
+    };
+  }
+
+  function getProviderProbeTimeline(filter = {}) {
+    const probes = store.listProviderProbes(filter);
+    const timeline = buildProviderProbeTimeline(probes);
+    return {
+      summary: summarizeProviderProbeTimeline(timeline),
+      timeline,
     };
   }
 
@@ -4449,6 +4515,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getGlobalOverview,
     getMaintenanceOverview,
     getOwnerHandoffInbox,
+    getProviderProbeTimeline,
     getReviewerFollowUpInbox,
     getWorkspace,
     getWorkspaceOverview,

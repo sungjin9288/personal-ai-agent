@@ -53,6 +53,7 @@ Commands:
   provider check <stub|openai|anthropic|local>
   provider probe <stub|openai|anthropic|local>
   provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
+  provider timeline [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
 
   workspace add <path> [--name <name>]
   workspace list
@@ -176,6 +177,17 @@ async function main() {
   if (group === 'provider' && command === 'history') {
     printJson(
       service.listProviderProbeHistory({
+        attempted: parseBooleanOption(rest, '--attempted'),
+        ok: parseBooleanOption(rest, '--ok'),
+        providerId: readOption(rest, '--provider', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'provider' && command === 'timeline') {
+    printJson(
+      service.getProviderProbeTimeline({
         attempted: parseBooleanOption(rest, '--attempted'),
         ok: parseBooleanOption(rest, '--ok'),
         providerId: readOption(rest, '--provider', ''),

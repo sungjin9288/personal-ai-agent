@@ -17,6 +17,7 @@
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
 - provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - provider probe results now persist into runtime state and can be queried through provider history plus latest-probe summaries
+- provider probe timeline now exposes chronological success, failure, and skipped probe events on top of persisted probe history
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence
