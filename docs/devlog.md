@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-06 Maintenance Daily Buckets
+
+- added `dailyBuckets` to maintenance-only summary payloads so filtered maintenance history and overview can be read as small day-level aggregates without a separate reporting command
+- kept the new bucket contract scoped to maintenance-specific surfaces only, avoiding unnecessary payload expansion in mission, workspace, and global summary contracts
+- extended maintenance history smoke coverage to lock bucket ordering, per-day effective/no-op counts, and affected mission breadth into a deterministic contract
+
 ## 2026-04-06 Maintenance Since Filter
 
 - added `--since <iso-timestamp>` to `action maintenance-history` and `overview maintenance` so maintenance audit can be sliced by time window without inventing a separate trend endpoint

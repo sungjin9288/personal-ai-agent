@@ -805,6 +805,64 @@ function isMaintenanceRunImpactful(item) {
   return getMaintenanceRunAffectedMissionIds(item).length > 0;
 }
 
+function buildMaintenanceDailyBuckets(items) {
+  const bucketMap = new Map();
+
+  for (const item of items) {
+    const createdAt = String(item.createdAt || '');
+    if (!createdAt) {
+      continue;
+    }
+
+    const date = createdAt.slice(0, 10);
+    const affectedMissionIds = getMaintenanceRunAffectedMissionIds(item);
+    const isEffective = isMaintenanceRunEffective(item);
+    const isImpactful = affectedMissionIds.length > 0;
+    const current = bucketMap.get(date) || {
+      affectedMissionIds: new Set(),
+      date,
+      effectiveRunCount: 0,
+      impactRunCount: 0,
+      noOpRunCount: 0,
+      runCount: 0,
+      totalRemindedCount: 0,
+    };
+
+    current.runCount += 1;
+    current.totalRemindedCount += Number(item.totalRemindedCount || 0);
+    if (isEffective) {
+      current.effectiveRunCount += 1;
+    } else {
+      current.noOpRunCount += 1;
+    }
+    if (isImpactful) {
+      current.impactRunCount += 1;
+    }
+    for (const missionId of affectedMissionIds) {
+      current.affectedMissionIds.add(missionId);
+    }
+    bucketMap.set(date, current);
+  }
+
+  return [...bucketMap.values()]
+    .map((bucket) => {
+      const affectedMissionIds = [...bucket.affectedMissionIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      );
+      return {
+        affectedMissionCount: affectedMissionIds.length,
+        affectedMissionIds,
+        date: bucket.date,
+        effectiveRunCount: bucket.effectiveRunCount,
+        impactRunCount: bucket.impactRunCount,
+        noOpRunCount: bucket.noOpRunCount,
+        runCount: bucket.runCount,
+        totalRemindedCount: bucket.totalRemindedCount,
+      };
+    })
+    .sort((left, right) => String(right.date).localeCompare(String(left.date)));
+}
+
 function summarizeMaintenanceImpact(items, scopeMissionIds = null) {
   const affectedMissionIds = new Set();
   let latestImpactRun = null;
@@ -3067,6 +3125,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       since,
     });
     const current = listMaintenancePressureEntries(filter);
+    const dailyBuckets = buildMaintenanceDailyBuckets(items);
     const missionImpactSummary = filter.missionId ? summarizeMissionMaintenanceImpact(filter.missionId, items) : null;
 
     return {
@@ -3082,6 +3141,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       summary: {
         ...summarizeMaintenanceRuns(items),
         ...summarizeMaintenancePressure(current),
+        bucketCount: dailyBuckets.length,
+        dailyBuckets,
+        latestBucketDate: dailyBuckets[0]?.date || null,
+        oldestBucketDate: dailyBuckets.at(-1)?.date || null,
         ...(missionImpactSummary
           ? {
               latestMissionImpactRun: missionImpactSummary.latestRun,
