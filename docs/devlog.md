@@ -226,3 +226,9 @@
 - extended maintenance run records with before/after pressure snapshots plus acknowledged/resolved/remaining counts so derived `maintenance-required` work leaves explicit audit evidence
 - added `maintenance-required-acknowledged` and `maintenance-required-resolved` events to workspace/global operator timeline instead of letting maintenance pressure disappear silently after a sweep
 - strengthened maintenance history smoke coverage to verify the first sweep acknowledges and clears one maintenance-required obligation while a second no-op sweep leaves no false resolution record
+
+## 2026-04-06 Mission Maintenance Audit Surface
+
+- propagated maintenance run totals and latest maintenance metadata into mission summary so a single mission can expose its own maintenance audit state without requiring workspace/global drill-down
+- extended mission timeline with mission-scoped `maintenance-run`, `maintenance-required-acknowledged`, and `maintenance-required-resolved` events
+- strengthened mission timeline smoke coverage to prove an overdue escalation can be reminded through mission-scoped maintenance before escalation resolution, while leaving explicit maintenance evidence in the mission audit stream

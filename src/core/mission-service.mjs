@@ -1154,6 +1154,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
+    const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
+    const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
@@ -1184,7 +1186,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
       latestEscalation: escalationSummary.latestEscalation,
+      latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
+      latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
+      latestMaintenanceRun: maintenanceSummary.latestRun,
+      latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
       latestSession,
+      maintenanceAcknowledgedMaintenanceRequiredCountTotal:
+        maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
+      maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
+      maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
+      maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
+      maintenanceResolvedMaintenanceRequiredCountTotal:
+        maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
+      maintenanceRemainingMaintenanceRequiredCountTotal:
+        maintenanceSummary.remainingMaintenanceRequiredCountTotal,
+      maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
+      maintenanceRunCount: maintenanceSummary.runCount,
+      maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
+      maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
+      maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
       memoryCounts: {
         decision: memoryEntries.filter((entry) => entry.kind === 'decision').length,
         fact: memoryEntries.filter((entry) => entry.kind === 'fact').length,
@@ -3391,6 +3411,41 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           status: escalation.status,
         });
       }
+    }
+
+    for (const maintenanceRun of store.listMaintenanceRuns({ missionId: mission.id })) {
+      if (Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
+        timeline.push({
+          acknowledgedCount: maintenanceRun.acknowledgedMaintenanceRequiredCount,
+          at: maintenanceRun.createdAt,
+          detail: `Maintenance sweep acknowledged ${maintenanceRun.acknowledgedMaintenanceRequiredCount} maintenance-required action(s) covering ${maintenanceRun.beforePressureSummary?.currentDueCandidateCountTotal || 0} due candidate(s).`,
+          kind: 'maintenance-required-acknowledged',
+          maintenanceRunId: maintenanceRun.id,
+          missionId: mission.id,
+        });
+      }
+
+      if (Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
+        timeline.push({
+          at: maintenanceRun.createdAt,
+          detail: `Maintenance sweep resolved ${maintenanceRun.resolvedMaintenanceRequiredCount} maintenance-required action(s); remaining=${maintenanceRun.remainingMaintenanceRequiredCount || 0}.`,
+          kind: 'maintenance-required-resolved',
+          maintenanceRunId: maintenanceRun.id,
+          missionId: mission.id,
+          resolvedCount: maintenanceRun.resolvedMaintenanceRequiredCount,
+        });
+      }
+
+      timeline.push({
+        at: maintenanceRun.createdAt,
+        detail: formatMaintenanceRunDetail(maintenanceRun),
+        kind: 'maintenance-run',
+        maintenanceRunId: maintenanceRun.id,
+        missionId: mission.id,
+        note: maintenanceRun.note || null,
+        remindedCount: maintenanceRun.totalRemindedCount || 0,
+        status: Number(maintenanceRun.totalRemindedCount || 0) > 0 ? 'completed' : 'no-op',
+      });
     }
 
     for (const entry of memoryEntries) {
