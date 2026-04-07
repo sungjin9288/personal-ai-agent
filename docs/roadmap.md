@@ -44,7 +44,7 @@
 - workspace timeline now also accepts `provider-since` linkage so workspace-bound chronology and recent provider execution or attention trend can be queried with the same recent window contract
 - mission, workspace, and operator surfaces now also expose `providerHealthDrift` so provider drift is readable with the same contract already used by provider and global overview
 - action inbox now also exposes `provider-health-drift-required` so residual watch-state provider drift can be triaged as a mission-owner follow-up after explicit provider attention has already been acknowledged or resolved
-- added dedicated `action provider-health-drift` query surface so the same residual drift follow-up work can be sliced directly by provider, workspace, or mission
+- added dedicated `action provider-health-drift` query surface so the same residual drift follow-up work can be sliced directly by provider, workspace, mission, or overdue-only state
 - overdue incident logging now also covers `provider-health-drift-required`, so residual provider degradation can be escalated through the same tracked incident path as other overdue action classes
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage

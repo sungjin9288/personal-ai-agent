@@ -73,13 +73,31 @@ try {
     (item) => item.providerId === 'stub' && item.eventFamily === 'execution',
   );
 
-  assert.ok(stubAttention);
-  service.acknowledgeProviderAttention(stubAttention.actionId, {
-    note: 'Acknowledge stub provider attention to expose residual drift.',
-  });
-  service.resolveProviderAttention(stubAttention.actionId, {
-    note: 'Resolve stub provider attention before drift-only follow-up.',
-  });
+assert.ok(stubAttention);
+service.acknowledgeProviderAttention(stubAttention.actionId, {
+  note: 'Acknowledge stub provider attention to expose residual drift.',
+});
+service.resolveProviderAttention(stubAttention.actionId, {
+  note: 'Resolve stub provider attention before drift-only follow-up.',
+});
+
+const statePath = path.join(tempRoot, 'var', 'state.json');
+const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+const overdueCurrentMonthTimestamp = '2026-04-01T00:00:00.000Z';
+
+state.agentRuns = state.agentRuns.map((agentRun) => {
+  if (agentRun.missionId === failedMission.id && agentRun.status === 'failed') {
+    return {
+      ...agentRun,
+      endedAt: overdueCurrentMonthTimestamp,
+      startedAt: overdueCurrentMonthTimestamp,
+    };
+  }
+
+  return agentRun;
+});
+
+fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 } finally {
   globalThis.fetch = originalFetch;
 
@@ -149,9 +167,22 @@ const dedicatedProviderHealthDriftInbox = runCli({
 
 assert.equal(dedicatedProviderHealthDriftInbox.items.length, 1);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.total, 1);
+assert.equal(dedicatedProviderHealthDriftInbox.summary.overdueCount, 1);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.providerCounts.stub, 1);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.reasonCodeCounts['monthly-failed-up'], 1);
 assert.equal(dedicatedProviderHealthDriftInbox.items[0].actionId, providerHealthDriftInbox.items[0].actionId);
+assert.equal(dedicatedProviderHealthDriftInbox.items[0].isOverdue, true);
+
+const overdueProviderHealthDriftInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-health-drift', '--overdue'],
+});
+
+assert.equal(overdueProviderHealthDriftInbox.filters.overdueOnly, true);
+assert.equal(overdueProviderHealthDriftInbox.items.length, 1);
+assert.equal(overdueProviderHealthDriftInbox.summary.total, 1);
+assert.equal(overdueProviderHealthDriftInbox.summary.overdueCount, 1);
+assert.equal(overdueProviderHealthDriftInbox.items[0].providerId, 'stub');
 
 const workspace = runCli({
   rootDir: tempRoot,

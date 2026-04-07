@@ -5977,6 +5977,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const providerCounts = {};
     const workspaceCounts = {};
     const reasonCodeCounts = {};
+    let overdueCount = 0;
 
     for (const item of items) {
       if (item.providerId) {
@@ -5988,10 +5989,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       for (const reasonCode of ensureArray(item.driftReasonCodes)) {
         reasonCodeCounts[reasonCode] = (reasonCodeCounts[reasonCode] || 0) + 1;
       }
+      if (item.isOverdue) {
+        overdueCount += 1;
+      }
     }
 
     return {
       latestItem: items.at(-1) || null,
+      overdueCount,
       providerCounts,
       reasonCodeCounts,
       total: items.length,
@@ -7264,11 +7269,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       getMission(filter.missionId);
     }
 
-    const items = buildProviderHealthDriftActionItems(filter);
+    const items = buildProviderHealthDriftActionItems(filter).filter((item) => !filter.overdueOnly || item.isOverdue);
 
     return {
       filters: {
         missionId: filter.missionId || null,
+        overdueOnly: Boolean(filter.overdueOnly),
         providerId: filter.providerId || null,
         workspaceId: filter.workspaceId || null,
       },

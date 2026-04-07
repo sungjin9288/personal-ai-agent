@@ -7,7 +7,7 @@
 - added `workspace timeline --provider-since` so workspace-bound chronology can carry the same recent provider window contract and recent provider summary linkage as the other provider-aware timeline or overview surfaces
 - added root-level `providerHealthDrift` to mission, workspace, and operator surfaces so provider drift can be inspected symmetrically without reading only summary linkage fields
 - added `provider-health-drift-required` to action inbox so resolved provider failures that still leave monthly failed-execution drift can surface as explicit mission-owner follow-up work
-- added `action provider-health-drift` so residual drift follow-up items can be queried directly instead of only through generic inbox class filtering
+- added `action provider-health-drift --overdue` so residual drift follow-up items can be queried directly by overdue state instead of only through generic inbox class filtering
 - extended `action log-overdue` and its smoke coverage so overdue `provider-health-drift-required` items also enter the incident trail and escalation state
 - added optional pricing env parsing for OpenAI, Anthropic, and local adapters, then normalized `estimatedCostUsd` from execution token usage without changing the existing provider contract
 - propagated estimated execution cost into persisted agent runs, provider execution history or timeline, unified provider events, pending provider attention failure context, provider overview, and mission or workspace or global summaries
