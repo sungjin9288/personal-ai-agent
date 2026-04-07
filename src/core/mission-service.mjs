@@ -6925,8 +6925,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }));
   }
 
-  function getGlobalOverview() {
+  function getGlobalOverview(filter = {}) {
     syncEscalations();
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'global provider since timestamp');
     const workspaceOverviews = store.listWorkspaces().map((workspace) => getWorkspaceOverview(workspace.id));
     const maintenanceRuns = store.listMaintenanceRuns();
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
@@ -6939,7 +6940,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const allEscalations = store.listEscalations().map((item) => enrichEscalation(item));
     const openEscalations = allEscalations.filter((item) => item.status === 'open');
     const escalationSummary = summarizeEscalations(allEscalations);
-    const providerOverview = getProviderOverview();
+    const providerOverview = getProviderOverview({
+      since: providerSince,
+    });
     const parallelActivity = summarizeScopedParallelActivity();
 
     for (const overview of workspaceOverviews) {
@@ -6963,6 +6966,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       escalations: openEscalations,
       inbox,
       providerOverview,
+      providerRecentWindow: providerOverview.recentWindow,
       summary: {
         activeWorkspaceIds: workspaceOverviews
           .filter((overview) => overview.summary.activeMissionIds.length > 0)
@@ -7031,10 +7035,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestFailedProviderProbe: providerOverview.summary.latestFailedProbe,
         latestProviderProbe: providerOverview.summary.latestProbe,
         latestProviderProbeEvent: providerOverview.summary.latestProbeEvent,
+        latestRecentProviderEvent: providerOverview.recentWindow?.latestEvent || null,
+        latestRecentProviderExecution: providerOverview.recentWindow?.latestExecution || null,
+        latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
         latestSuccessfulProviderExecution: providerOverview.summary.latestSuccessfulExecution,
         latestSuccessfulProviderProbe: providerOverview.summary.latestSuccessfulProbe,
         providerConfiguredCount: providerOverview.summary.configuredCount,
         providerCount: providerOverview.summary.total,
+        providerRecentEventCount: providerOverview.recentWindow?.eventTotal || 0,
+        providerRecentEventFamilyCounts:
+          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
+        providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
+        providerRecentSince: providerSince || null,
+        providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
+        providerRecentTouchedProviderIds: providerOverview.recentWindow?.touchedProviderIds || [],
         providerAttentionAcknowledgedCount: providerOverview.summary.acknowledgedAttentionCount,
         providerAttentionNeedsReminderCount: providerOverview.summary.attentionNeedsReminderCount,
         providerAttentionNextDueAt: providerOverview.summary.attentionNextDueAt,

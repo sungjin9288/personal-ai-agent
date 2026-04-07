@@ -45,7 +45,7 @@ function printHelp() {
   console.log(`Personal AI Agent
 
 Commands:
-  overview global
+  overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline
   overview providers [--since <iso-timestamp>]
@@ -145,7 +145,11 @@ async function main() {
   }
 
   if (group === 'overview' && command === 'global') {
-    printJson(service.getGlobalOverview());
+    printJson(
+      service.getGlobalOverview({
+        providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
     return;
   }
 

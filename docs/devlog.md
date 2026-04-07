@@ -21,6 +21,7 @@
 - linked telemetry into provider check, provider history, provider activity, provider events, provider overview, mission summary, workspace overview, and global overview so latency and token usage can be inspected without reopening raw state
 - added `since` filtering to `provider events` so recent probe, execution, and attention chronology can be sliced without rebuilding a custom event window client-side
 - added `overview providers --since` with a separate `recentWindow` summary so recent provider health can be queried without mutating the existing full-history overview aggregate
+- added `overview global --provider-since` so the global control-plane can expose recent provider probe and execution activity through `providerRecentWindow` while preserving the default full-history provider aggregate
 - added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
 
 ## 2026-04-07 Provider Hardening Baseline

@@ -12,6 +12,7 @@ process.env.OPENAI_API_KEY = '';
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-global-overview-'));
 const workspaceOnePath = path.join(tempRoot, 'workspace-one');
 const workspaceTwoPath = path.join(tempRoot, 'workspace-two');
+const recentProviderSince = '2026-04-02T00:00:00.000Z';
 
 fs.mkdirSync(workspaceOnePath, { recursive: true });
 fs.mkdirSync(workspaceTwoPath, { recursive: true });
@@ -153,6 +154,38 @@ const maintenanceRun = runCli({
 assert.equal(maintenanceRun.summary.totalRemindedCount, 2);
 assert.equal(maintenanceRun.maintenanceRun.id !== undefined, true);
 
+runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'probe', 'stub'],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'probe', 'openai'],
+});
+
+const providerState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+providerState.providerProbes = providerState.providerProbes.map((probe) => {
+  if (probe.providerId === 'stub') {
+    return {
+      ...probe,
+      checkedAt: '2026-04-02T10:00:00.000Z',
+      createdAt: '2026-04-02T10:00:00.000Z',
+    };
+  }
+
+  if (probe.providerId === 'openai') {
+    return {
+      ...probe,
+      checkedAt: '2026-04-03T10:00:00.000Z',
+      createdAt: '2026-04-03T10:00:00.000Z',
+    };
+  }
+
+  return probe;
+});
+fs.writeFileSync(statePath, `${JSON.stringify(providerState, null, 2)}\n`, 'utf8');
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'global'],
@@ -164,9 +197,9 @@ assert.equal(overview.summary.sessionCount, 3);
 assert.equal(overview.summary.providerCount, 4);
 assert.equal(overview.summary.providerConfiguredCount, 1);
 assert.equal(overview.summary.providerReadyCount, 1);
-assert.equal(overview.summary.providerUnprobedCount, 4);
+assert.equal(overview.summary.providerUnprobedCount, 2);
 assert.equal(overview.summary.providerLatestProbeFailureCount, 0);
-assert.equal(overview.summary.providerLatestProbeSkippedCount, 0);
+assert.equal(overview.summary.providerLatestProbeSkippedCount, 1);
 assert.equal(overview.summary.missionCounts.completed, 1);
 assert.equal(overview.summary.missionCounts.awaiting_approval, 1);
 assert.equal(overview.summary.missionCounts.failed, 1);
@@ -195,14 +228,38 @@ assert.equal(overview.summary.activeWorkspaceIds.includes(workspaceTwo.id), fals
 assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceOne.id), true);
 assert.equal(overview.summary.escalatedWorkspaceIds.includes(workspaceTwo.id), true);
 assert.equal(overview.summary.latestEscalation !== null, true);
-assert.equal(overview.summary.latestProviderProbe, null);
+assert.equal(overview.summary.latestProviderProbe.providerId, 'openai');
 assert.equal(overview.summary.latestFailedProviderProbe, null);
-assert.equal(overview.summary.latestSuccessfulProviderProbe, null);
+assert.equal(overview.summary.latestSuccessfulProviderProbe.providerId, 'stub');
 assert.equal(overview.escalations.length, 2);
 assert.equal(overview.inbox.length, 1);
 assert.equal(overview.providerOverview.summary.total, 4);
-assert.equal(overview.providerOverview.summary.unprobedCount, 4);
+assert.equal(overview.providerOverview.summary.unprobedCount, 2);
 assert.equal(overview.providerOverview.providers.length, 4);
+
+const recentOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'global', '--provider-since', recentProviderSince],
+});
+
+assert.equal(recentOverview.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentOverview.summary.providerRecentEventCount, 14);
+assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.probe, 2);
+assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.execution, 12);
+assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.attention, 0);
+assert.equal(recentOverview.summary.providerRecentProbeTotal, 2);
+assert.equal(recentOverview.summary.providerRecentExecutionCount, 12);
+assert.equal(recentOverview.summary.providerRecentTouchedProviderCount, 2);
+assert.deepEqual(recentOverview.summary.providerRecentTouchedProviderIds, ['openai', 'stub']);
+assert.equal(recentOverview.summary.latestRecentProviderProbe.providerId, 'openai');
+assert.equal(recentOverview.summary.latestRecentProviderEvent.providerId, 'stub');
+assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 'stub');
+assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);
+assert.equal(recentOverview.providerRecentWindow.probeTotal, 2);
+assert.equal(recentOverview.providerRecentWindow.executionTotal, 12);
+assert.equal(recentOverview.providerRecentWindow.probeSkippedCount, 1);
+assert.equal(recentOverview.providerRecentWindow.probeSuccessCount, 1);
+assert.equal(recentOverview.providerRecentWindow.probeFailureCount, 1);
 assert.equal(overview.inbox[0].approvalId, pendingRun.approvalId);
 assert.equal(overview.inbox[0].workspaceId, workspaceOne.id);
 assert.equal(overview.workspaces.length, 2);
