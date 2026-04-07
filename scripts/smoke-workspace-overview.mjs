@@ -127,6 +127,7 @@ assert.equal(providerAttentionRun.status, 'failed');
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const recentProviderSince = '2026-04-02T00:00:00.000Z';
 
 state.approvals = state.approvals.map((approval) => {
   if (approval.id === awaitingRun.approvalId) {
@@ -147,6 +148,22 @@ state.approvals = state.approvals.map((approval) => {
   return approval;
 });
 
+state.agentRuns = state.agentRuns.map((run) => {
+  if (run.missionId === providerAttentionMission.id) {
+    return {
+      ...run,
+      startedAt: '2026-04-03T10:00:00.000Z',
+      endedAt: '2026-04-03T10:01:00.000Z',
+    };
+  }
+
+  return {
+    ...run,
+    startedAt: '2026-04-01T10:00:00.000Z',
+    endedAt: '2026-04-01T10:01:00.000Z',
+  };
+});
+
 fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 
 const escalationLog = runCli({
@@ -155,7 +172,7 @@ const escalationLog = runCli({
 });
 
 assert.equal(escalationLog.logged, true);
-assert.equal(escalationLog.count, 2);
+assert.equal(escalationLog.count, 4);
 
 const reminderReadyState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 reminderReadyState.escalations = reminderReadyState.escalations.map((escalation) => ({
@@ -170,12 +187,17 @@ const maintenanceRun = runCli({
   args: ['action', 'maintenance', '--workspace', workspace.id, '--note', 'Workspace overview maintenance sweep.'],
 });
 
-assert.equal(maintenanceRun.summary.totalRemindedCount, 2);
+assert.equal(maintenanceRun.summary.totalRemindedCount, 5);
 assert.equal(maintenanceRun.maintenanceRun.id !== undefined, true);
 
 const overview = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'overview', workspace.id],
+});
+
+const recentOverview = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'overview', workspace.id, '--provider-since', recentProviderSince],
 });
 
 assert.equal(overview.summary.missionCount, 4);
@@ -185,24 +207,24 @@ assert.equal(overview.summary.missionCounts.failed, 2);
 assert.equal(overview.summary.approvalCounts.pending, 1);
 assert.equal(overview.summary.approvalCounts.rejected, 1);
 assert.equal(overview.summary.approvalCounts.total, 2);
-assert.equal(overview.summary.escalationCounts.open, 2);
+assert.equal(overview.summary.escalationCounts.open, 4);
 assert.equal(overview.summary.escalationCounts.resolved, 0);
-assert.equal(overview.summary.escalationCounts.total, 2);
+assert.equal(overview.summary.escalationCounts.total, 4);
 assert.equal(overview.summary.memoryCounts.workspaceScoped, 1);
 assert.equal(overview.summary.memoryCounts.missionScoped >= 1, true);
-assert.equal(overview.summary.openEscalationIds.length, 2);
+assert.equal(overview.summary.openEscalationIds.length, 4);
 assert.equal(overview.summary.latestEscalation.workspaceId, workspace.id);
 assert.equal(overview.summary.maintenanceRunCount, 1);
-assert.equal(overview.summary.maintenanceTotalRemindedCount, 2);
-assert.equal(overview.summary.maintenanceAffectedMissionCount, 2);
+assert.equal(overview.summary.maintenanceTotalRemindedCount, 5);
+assert.equal(overview.summary.maintenanceAffectedMissionCount, 3);
 assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
 assert.deepEqual(
   [...overview.summary.maintenanceAffectedMissionIds].sort(),
-  [awaitingMission.id, failedMission.id].sort(),
+  [awaitingMission.id, failedMission.id, providerAttentionMission.id].sort(),
 );
 assert.deepEqual(
   [...overview.summary.latestMaintenanceImpactAffectedMissionIds].sort(),
-  [awaitingMission.id, failedMission.id].sort(),
+  [awaitingMission.id, failedMission.id, providerAttentionMission.id].sort(),
 );
 assert.equal(overview.summary.providerAttentionRequiredCount, 1);
 assert.equal(overview.summary.providerAttentionAcknowledgedCount, 0);
@@ -217,12 +239,24 @@ assert.equal(overview.summary.latestProviderExecution.providerId, 'stub');
 assert.equal(overview.summary.sessionCount, 4);
 assert.equal(overview.summary.activeMissionIds.includes(awaitingMission.id), true);
 assert.equal(overview.summary.latestMission.mission.id, providerAttentionMission.id);
-assert.equal(overview.escalations.length, 2);
+assert.equal(overview.escalations.length, 4);
 assert.equal(overview.missions.length, 4);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === failedMission.id && entry.summary.latestSession.status === 'failed'),
   true,
 );
+
+assert.equal(recentOverview.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentOverview.summary.providerRecentTouchedProviderCount, 1);
+assert.deepEqual(recentOverview.summary.providerRecentTouchedProviderIds, ['stub']);
+assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.execution > 0, true);
+assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.attention > 0, true);
+assert.equal(recentOverview.summary.providerRecentExecutionCount > 0, true);
+assert.equal(recentOverview.summary.providerRecentExecutionEstimatedCostUsdTotal, 0);
+assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 'stub');
+assert.equal(recentOverview.summary.latestRecentProviderEvent.providerId, 'stub');
+assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);
+assert.deepEqual(recentOverview.providerRecentWindow.touchedProviderIds, ['stub']);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === awaitingMission.id && entry.summary.latestSession.status === 'awaiting_approval'),
   true,

@@ -3017,6 +3017,139 @@ function summarizeProviderExecutions(executions) {
     return summarizeScopedParallelActivity({ workspaceId });
   }
 
+  function buildScopedProviderRecentWindow(filter = {}) {
+    const since = normalizeTimestampFilter(filter.since, 'scoped provider since timestamp');
+    if (!since) {
+      return null;
+    }
+
+    const pendingAttentionItems = buildProviderAttentionPendingItems(filter).filter(
+      (item) => String(item.createdAt || '') >= since,
+    );
+    const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems(filter).filter(
+      (item) => String(item.acknowledgedAt || item.createdAt || '') >= since,
+    );
+    const recoveredAttentionItems = buildProviderAttentionRecoveredItems(filter).filter(
+      (item) => String(item.recoveredAt || item.createdAt || '') >= since,
+    );
+    const resolvedAttentionItems = buildProviderAttentionResolvedItems(filter).filter(
+      (item) => String(item.resolvedAt || item.createdAt || '') >= since,
+    );
+    const reminderRecords = store.listProviderAttentionReminders(filter).filter(
+      (item) => String(item.remindedAt || item.createdAt || '') >= since,
+    );
+    const attentionAcknowledgements = store.listProviderAttentionAcknowledgements(filter).filter(
+      (item) => String(item.acknowledgedAt || item.resolvedAt || item.createdAt || '') >= since,
+    );
+    const executionEntries = buildProviderExecutionEntries({
+      ...filter,
+      since,
+    });
+    const executionSummary = summarizeProviderExecutions(executionEntries);
+    const scopedProviderEvents = sortTimelineEvents([
+      ...buildProviderAttentionOpenedTimeline(
+        [...pendingAttentionItems, ...recoveredAttentionItems],
+        attentionAcknowledgements,
+      ).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'pending',
+      })),
+      ...buildProviderAttentionTimeline(attentionAcknowledgements).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'acknowledged',
+      })),
+      ...buildProviderAttentionRecoveredTimeline(recoveredAttentionItems).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: true,
+        probeId: event.recoveryProbeId || null,
+        role: null,
+        runId: event.recoveryRunId || null,
+        status: event.status || 'recovered',
+      })),
+      ...buildProviderAttentionReminderTimeline(reminderRecords).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'pending',
+      })),
+      ...buildProviderExecutionTimeline(executionEntries).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'execution',
+        eventKind: event.kind,
+        executionStatus: event.status,
+        ok: event.status === 'completed',
+        probeId: null,
+      })),
+    ]);
+    const eventSummary = summarizeProviderEvents(scopedProviderEvents);
+    const touchedProviderIds = [
+      ...new Set(
+        [
+          ...pendingAttentionItems.map((item) => item.providerId),
+          ...acknowledgedAttentionItems.map((item) => item.providerId),
+          ...recoveredAttentionItems.map((item) => item.providerId),
+          ...resolvedAttentionItems.map((item) => item.providerId),
+          ...executionEntries.map((item) => item.providerId),
+        ].filter(Boolean),
+      ),
+    ].sort((left, right) => String(left).localeCompare(String(right)));
+
+    return {
+      eventCount: eventSummary.total,
+      eventFamilyCounts: eventSummary.familyCounts,
+      executionCount: executionSummary.total,
+      executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
+      executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
+      executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
+      executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
+      executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
+      executionFailedCount: executionSummary.statusCounts.failed,
+      executionFailureKindCounts: executionSummary.failureKindCounts,
+      filters: {
+        since,
+      },
+      latestAttentionEvent: eventSummary.latestAttentionEvent,
+      latestEvent: eventSummary.latestEvent,
+      latestExecution: executionSummary.latestExecution,
+      latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFailedExecution: executionSummary.latestFailedExecution,
+      latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
+      touchedProviderCount: touchedProviderIds.length,
+      touchedProviderIds,
+      usageInputTokensTotal: executionSummary.usageInputTokensTotal,
+      usageOutputTokensTotal: executionSummary.usageOutputTokensTotal,
+      usageTotalTokensTotal: executionSummary.usageTotalTokensTotal,
+    };
+  }
+
   function checkProvider(providerId) {
     const provider = enrichProviderStatusEntries(buildProviderStatusEntries()).find((entry) => entry.id === providerId);
     if (!provider) {
@@ -4160,11 +4293,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
-  function getWorkspaceOverview(workspaceId) {
+  function getWorkspaceOverview(workspaceId, filter = {}) {
     const workspace = getWorkspace(workspaceId);
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'workspace provider since timestamp');
     syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
     const providerActivity = summarizeWorkspaceProviderActivity(workspace.id);
+    const providerRecentWindow = buildScopedProviderRecentWindow({
+      since: providerSince,
+      workspaceId: workspace.id,
+    });
     const parallelActivity = summarizeWorkspaceParallelActivity(workspace.id);
     const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
@@ -4199,6 +4337,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return {
       escalations,
       missions: missionEntries,
+      providerRecentWindow,
       summary: {
         activeMissionIds: missionEntries
           .filter((entry) => !['completed', 'failed'].includes(entry.mission.status))
@@ -4263,6 +4402,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestProviderExecution: providerActivity.latestExecution,
         latestProviderExecutionEvent: providerActivity.latestExecutionEvent,
         latestFailedProviderExecution: providerActivity.latestFailedExecution,
+        latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
+        latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
         latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
         missionCount: missionEntries.length,
         missionCounts,
@@ -4283,6 +4424,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionTotalRetryCount: providerActivity.summary.attentionTotalRetryCount,
         providerEventCount: providerActivity.summary.eventCount,
         providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+        providerRecentEventCount: providerRecentWindow?.eventCount || 0,
+        providerRecentEventFamilyCounts:
+          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
+        providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentSince: providerSince || null,
+        providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
+        providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
         providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
         providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
         providerExecutionCount: providerActivity.summary.executionCount,

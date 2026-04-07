@@ -62,7 +62,7 @@ Commands:
   workspace add <path> [--name <name>]
   workspace list
   workspace show <workspaceId>
-  workspace overview <workspaceId>
+  workspace overview <workspaceId> [--provider-since <iso-timestamp>]
   workspace timeline <workspaceId>
 
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>]
@@ -277,7 +277,11 @@ async function main() {
   }
 
   if (group === 'workspace' && command === 'overview') {
-    printJson(service.getWorkspaceOverview(rest[0]));
+    printJson(
+      service.getWorkspaceOverview(rest[0], {
+        providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
     return;
   }
 
