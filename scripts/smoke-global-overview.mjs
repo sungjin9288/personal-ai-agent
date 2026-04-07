@@ -235,6 +235,8 @@ assert.equal(overview.escalations.length, 2);
 assert.equal(overview.inbox.length, 1);
 assert.equal(overview.providerOverview.summary.total, 4);
 assert.equal(overview.providerOverview.summary.unprobedCount, 2);
+assert.equal(overview.providerHealthDrift.status, 'stable');
+assert.deepEqual(overview.providerHealthDrift.reasonCodes, []);
 assert.equal(overview.providerOverview.providers.length, 4);
 
 const recentOverview = runCli({
@@ -253,6 +255,13 @@ assert.equal(recentOverview.summary.providerRecentExecutionMonthlyBucketCount, 1
 assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(recentOverview.providerHealthDrift.status, 'stable');
+assert.deepEqual(recentOverview.providerHealthDrift.reasonCodes, []);
+assert.equal(recentOverview.providerHealthDrift.recentExecutionMonthlyBucketCount, 1);
+assert.equal(recentOverview.providerHealthDrift.recentExecutionCurrentMonthStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerHealthDriftStatus, 'stable');
+assert.deepEqual(recentOverview.summary.providerHealthDriftReasonCodes, []);
+assert.equal(recentOverview.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 1);
 assert.equal(recentOverview.summary.providerRecentTouchedProviderCount, 2);
 assert.deepEqual(recentOverview.summary.providerRecentTouchedProviderIds, ['openai', 'stub']);
 assert.equal(recentOverview.summary.latestRecentProviderProbe.providerId, 'openai');

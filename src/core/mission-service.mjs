@@ -2429,6 +2429,49 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
+  function summarizeProviderHealthDrift({ attentionNeedsReminderCount = 0, attentionOverdueCount = 0, attentionRequiredCount = 0, recentWindow = null }) {
+    const monthlyDelta = recentWindow?.executionLatestMonthlyBucketDelta || null;
+    const recentExecutionMonthlyBucketCount = Number(recentWindow?.executionMonthlyBucketCount || 0);
+    const recentExecutionCountDelta = Number(monthlyDelta?.executionCountDelta || 0);
+    const recentExecutionFailedCountDelta = Number(monthlyDelta?.failedCountDelta || 0);
+    const recentExecutionEstimatedCostUsdTotalDelta = roundUsdAmount(
+      Number(monthlyDelta?.estimatedCostUsdTotalDelta || 0),
+    );
+    const reasonCodes = [];
+
+    if (attentionOverdueCount > 0) {
+      reasonCodes.push('attention-overdue');
+    }
+    if (attentionNeedsReminderCount > 0) {
+      reasonCodes.push('attention-needs-reminder');
+    }
+    if (recentExecutionFailedCountDelta > 0) {
+      reasonCodes.push('monthly-failed-up');
+    }
+
+    let status = 'stable';
+    if (attentionOverdueCount > 0) {
+      status = 'attention-required';
+    } else if (attentionNeedsReminderCount > 0 || recentExecutionFailedCountDelta > 0) {
+      status = 'watch';
+    }
+
+    return {
+      attentionNeedsReminderCount,
+      attentionOverdueCount,
+      attentionRequiredCount,
+      reasonCodes,
+      recentExecutionCountDelta,
+      recentExecutionCurrentMonthStartDate: recentWindow?.executionLatestMonthlyBucketStartDate || null,
+      recentExecutionEstimatedCostUsdTotalDelta,
+      recentExecutionFailedCountDelta,
+      recentExecutionMonthlyBucketCount,
+      recentExecutionOldestMonthStartDate: recentWindow?.executionOldestMonthlyBucketStartDate || null,
+      recentExecutionPreviousMonthStartDate: monthlyDelta?.previousMonthStartDate || null,
+      status,
+    };
+  }
+
   function buildProviderProbeTimeline(probes) {
     return probes.map((probe) => {
       const kind = probe.attempted
@@ -2991,18 +3034,42 @@ function summarizeProviderExecutions(executions) {
     const providers = enrichProviderStatusEntries(buildProviderStatusEntries());
     const probes = store.listProviderProbes();
     const recentWindow = buildProviderOverviewRecentWindow(since);
+    const overviewSummary = summarizeProviderOverview(providers, probes);
+    const healthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: overviewSummary.attentionNeedsReminderCount,
+      attentionOverdueCount: overviewSummary.attentionOverdueCount,
+      attentionRequiredCount: overviewSummary.attentionRequiredCount,
+      recentWindow,
+    });
 
     return {
       filters: {
         since: since || null,
       },
+      healthDrift,
       providers,
       recentWindow,
       summary: {
-        ...summarizeProviderOverview(providers, probes),
+        ...overviewSummary,
         latestRecentProviderEvent: recentWindow?.latestEvent || null,
         latestRecentProviderExecution: recentWindow?.latestExecution || null,
         latestRecentProviderProbe: recentWindow?.latestProbe || null,
+        providerHealthDriftAttentionNeedsReminderCount: healthDrift.attentionNeedsReminderCount,
+        providerHealthDriftAttentionOverdueCount: healthDrift.attentionOverdueCount,
+        providerHealthDriftAttentionRequiredCount: healthDrift.attentionRequiredCount,
+        providerHealthDriftReasonCodes: healthDrift.reasonCodes,
+        providerHealthDriftRecentExecutionCountDelta: healthDrift.recentExecutionCountDelta,
+        providerHealthDriftRecentExecutionCurrentMonthStartDate:
+          healthDrift.recentExecutionCurrentMonthStartDate,
+        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+          healthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+        providerHealthDriftRecentExecutionFailedCountDelta: healthDrift.recentExecutionFailedCountDelta,
+        providerHealthDriftRecentExecutionMonthlyBucketCount: healthDrift.recentExecutionMonthlyBucketCount,
+        providerHealthDriftRecentExecutionOldestMonthStartDate:
+          healthDrift.recentExecutionOldestMonthStartDate,
+        providerHealthDriftRecentExecutionPreviousMonthStartDate:
+          healthDrift.recentExecutionPreviousMonthStartDate,
+        providerHealthDriftStatus: healthDrift.status,
         providerRecentEventCount: recentWindow?.eventTotal || 0,
         providerRecentEventFamilyCounts: recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
         providerRecentExecutionCount: recentWindow?.executionTotal || 0,
@@ -7396,6 +7463,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const providerOverview = getProviderOverview({
       since: providerSince,
     });
+    const providerHealthDrift = providerOverview.healthDrift;
     const parallelActivity = summarizeScopedParallelActivity();
 
     for (const overview of workspaceOverviews) {
@@ -7418,6 +7486,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return {
       escalations: openEscalations,
       inbox,
+      providerHealthDrift,
       providerOverview,
       providerRecentWindow: providerOverview.recentWindow,
       summary: {
@@ -7507,6 +7576,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerOverview.recentWindow?.executionMonthlyBucketCount || 0,
         providerRecentExecutionOldestMonthlyBucketStartDate:
           providerOverview.recentWindow?.executionOldestMonthlyBucketStartDate || null,
+        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
+        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
+        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
+        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
+        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
+        providerHealthDriftRecentExecutionCurrentMonthStartDate:
+          providerHealthDrift.recentExecutionCurrentMonthStartDate,
+        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+        providerHealthDriftRecentExecutionFailedCountDelta:
+          providerHealthDrift.recentExecutionFailedCountDelta,
+        providerHealthDriftRecentExecutionMonthlyBucketCount:
+          providerHealthDrift.recentExecutionMonthlyBucketCount,
+        providerHealthDriftRecentExecutionOldestMonthStartDate:
+          providerHealthDrift.recentExecutionOldestMonthStartDate,
+        providerHealthDriftRecentExecutionPreviousMonthStartDate:
+          providerHealthDrift.recentExecutionPreviousMonthStartDate,
+        providerHealthDriftStatus: providerHealthDrift.status,
         providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
@@ -8428,6 +8515,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerOverview.recentWindow?.executionMonthlyBucketCount || 0,
         providerRecentExecutionOldestMonthlyBucketStartDate:
           providerOverview.recentWindow?.executionOldestMonthlyBucketStartDate || null,
+        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
+        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
+        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
+        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
+        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
+        providerHealthDriftRecentExecutionCurrentMonthStartDate:
+          providerHealthDrift.recentExecutionCurrentMonthStartDate,
+        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+        providerHealthDriftRecentExecutionFailedCountDelta:
+          providerHealthDrift.recentExecutionFailedCountDelta,
+        providerHealthDriftRecentExecutionMonthlyBucketCount:
+          providerHealthDrift.recentExecutionMonthlyBucketCount,
+        providerHealthDriftRecentExecutionOldestMonthStartDate:
+          providerHealthDrift.recentExecutionOldestMonthStartDate,
+        providerHealthDriftRecentExecutionPreviousMonthStartDate:
+          providerHealthDrift.recentExecutionPreviousMonthStartDate,
+        providerHealthDriftStatus: providerHealthDrift.status,
         providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,

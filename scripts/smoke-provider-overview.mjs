@@ -268,6 +268,20 @@ assert.equal(recentProviderOverview.summary.providerRecentExecutionMonthlyBucket
 assert.equal(recentProviderOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, null);
 assert.equal(recentProviderOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, null);
 assert.equal(recentProviderOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta, null);
+assert.equal(recentProviderOverview.healthDrift.status, 'attention-required');
+assert.deepEqual(recentProviderOverview.healthDrift.reasonCodes, ['attention-overdue', 'attention-needs-reminder']);
+assert.equal(recentProviderOverview.healthDrift.attentionRequiredCount, 1);
+assert.equal(recentProviderOverview.healthDrift.attentionOverdueCount, 1);
+assert.equal(recentProviderOverview.healthDrift.attentionNeedsReminderCount, 1);
+assert.equal(recentProviderOverview.healthDrift.recentExecutionMonthlyBucketCount, 0);
+assert.equal(recentProviderOverview.healthDrift.recentExecutionCurrentMonthStartDate, null);
+assert.equal(recentProviderOverview.summary.providerHealthDriftStatus, 'attention-required');
+assert.deepEqual(
+  recentProviderOverview.summary.providerHealthDriftReasonCodes,
+  ['attention-overdue', 'attention-needs-reminder'],
+);
+assert.equal(recentProviderOverview.summary.providerHealthDriftAttentionRequiredCount, 1);
+assert.equal(recentProviderOverview.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 0);
 assert.deepEqual(recentProviderOverview.summary.providerRecentTouchedProviderIds, ['local', 'openai', 'stub']);
 assert.equal(recentProviderOverview.summary.latestRecentProviderProbe.providerId, 'local');
 assert.equal(recentProviderOverview.summary.latestRecentProviderEvent.providerId, 'local');

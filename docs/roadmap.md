@@ -32,6 +32,7 @@
 - provider events now support `since` filtering so recent unified provider chronology can be queried without re-reading full probe or execution history
 - provider overview now supports `since`-scoped `recentWindow` health summary so recent provider probe and execution activity can be inspected without changing the full-history control-plane aggregate
 - provider overview summary now also exposes recent monthly rollup linkage directly, so provider-only control-plane reads do not need to reopen nested recentWindow buckets to inspect month-level trend
+- provider overview and global overview now also expose a provider health drift summary that combines current provider attention pressure with recent monthly execution delta
 - global overview now supports `provider-since` linkage so recent provider probe and execution activity can be surfaced alongside workspace and mission aggregates without replacing the existing full-history provider summary
 - workspace overview now supports `provider-since` linkage so workspace-bound provider execution and attention activity can be inspected as a recent window without replacing the existing full-history workspace summary
 - mission show and mission timeline now support `provider-since` linkage so mission-bound provider execution and attention activity can be inspected as a recent window without replacing the existing mission audit summary
