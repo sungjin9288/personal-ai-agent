@@ -285,6 +285,7 @@ assert.equal(inbox.summary.priorityCounts.urgent, 0);
 assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 4);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 1);
+assert.equal(inbox.summary.providerCounts.stub, 2);
 assert.equal(inbox.summary.reminderCounts.total, 7);
 assert.equal(inbox.summary.reminderCounts.eligible, 1);
 assert.equal(inbox.summary.reminderCounts.needsReminder, 1);
@@ -477,6 +478,19 @@ const providerHealthDriftInbox = runCli({
 assert.equal(providerHealthDriftInbox.summary.pendingActionCount, 2);
 assert.equal(providerHealthDriftInbox.filters.actionClass, 'provider-health-drift-required');
 assert.equal(providerHealthDriftInbox.items.every((item) => item.actionType === 'provider-health-drift'), true);
+assert.equal(providerHealthDriftInbox.summary.providerCounts.stub, 2);
+
+const providerFilteredInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--provider', 'stub'],
+});
+
+assert.equal(providerFilteredInbox.filters.providerId, 'stub');
+assert.equal(providerFilteredInbox.summary.pendingActionCount, 2);
+assert.equal(providerFilteredInbox.summary.providerCounts.stub, 2);
+assert.equal(Object.keys(providerFilteredInbox.summary.providerCounts).length, 1);
+assert.equal(providerFilteredInbox.items.every((item) => item.providerId === 'stub'), true);
+assert.equal(providerFilteredInbox.items.every((item) => item.actionType === 'provider-health-drift'), true);
 
 const needsReminderInbox = runCli({
   rootDir: tempRoot,

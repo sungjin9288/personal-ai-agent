@@ -47,6 +47,7 @@
 - added dedicated `action provider-health-drift` query surface so the same residual drift follow-up work can be sliced directly by provider, workspace, mission, or overdue-only state
 - overdue incident logging now also covers `provider-health-drift-required`, so residual provider degradation can be escalated through the same tracked incident path as other overdue action classes
 - generic `action inbox` and `action log-overdue` now accept provider filtering, so provider-scoped attention and drift work can be sliced without dropping into provider-only command surfaces
+- generic `action inbox` summary now exposes provider counts, so provider-scoped backlog can be measured from the same queue response used for cross-class triage
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces

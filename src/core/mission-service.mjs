@@ -6031,6 +6031,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function summarizeActionInbox(items) {
+    const providerCounts = {};
     const workspaceCounts = {};
     const actionClassCounts = {
       awaitingHumanDecision: 0,
@@ -6074,6 +6075,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     let nextReminderAt = null;
 
     for (const item of items) {
+      if (item.providerId) {
+        providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+      }
+
       if (item.workspaceId) {
         workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
       }
@@ -6202,6 +6207,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ownerCounts,
       pendingActionCount: items.length,
       priorityCounts,
+      providerCounts,
       reminderCounts,
       latestReminderAt,
       nextReminderAt,
