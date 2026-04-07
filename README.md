@@ -148,6 +148,7 @@ node src/cli.mjs action owner-handoffs --status acknowledged
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind scope-reduced --note "Handled in a narrower follow-up plan"
 node src/cli.mjs action resolve-reviewer-follow-up reviewer-follow-up:mission_xxx:session_xxx --kind accepted-risk --note "Accept risk until the next release window"
 node src/cli.mjs action log-overdue
+node src/cli.mjs action log-overdue --class specialist-follow-up-required
 node src/cli.mjs action escalated
 node src/cli.mjs action escalated --tier critical
 node src/cli.mjs action escalated --needs-reminder

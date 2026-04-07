@@ -128,6 +128,38 @@ const blockedRun = runCli({
   args: ['mission', 'run', blockedMission.id],
 });
 
+const specialistMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspaceTwo.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'decision-memo',
+    '--title',
+    'Specialist overdue follow-up',
+    '--objective',
+    'Create a failed specialist branch that will be logged as overdue.',
+    '--constraints',
+    'parallel-specialists:research,implementation|parallel-fail:implementation',
+  ],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', specialistMission.id],
+});
+
+const specialistMissionShow = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'show', specialistMission.id],
+});
+
+assert.equal(specialistMissionShow.mission.status, 'failed');
+
 runCli({
   rootDir: tempRoot,
   args: [
@@ -185,6 +217,14 @@ state.agentRuns = state.agentRuns.map((agentRun) => {
     };
   }
 
+  if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+    return {
+      ...agentRun,
+      endedAt: overdueTimestamp,
+      startedAt: overdueTimestamp,
+    };
+  }
+
   return agentRun;
 });
 
@@ -196,20 +236,22 @@ const incidentLog = runCli({
 });
 
 assert.equal(incidentLog.logged, true);
-assert.equal(incidentLog.count, 3);
-assert.equal(incidentLog.escalationIds.length, 3);
+assert.equal(incidentLog.count, 4);
+assert.equal(incidentLog.escalationIds.length, 4);
 assert.ok(incidentLog.path);
-assert.equal(incidentLog.itemIds.length, 3);
+assert.equal(incidentLog.itemIds.length, 4);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
-assert.match(incidentsContent, /Overdue Action Escalation \(3 items\)/);
-assert.match(incidentsContent, /overdue action count: 3/);
+assert.match(incidentsContent, /Overdue Action Escalation \(4 items\)/);
+assert.match(incidentsContent, /overdue action count: 4/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
 assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
+assert.match(incidentsContent, /Specialist follow-up required for Specialist overdue follow-up \(implementation\)/);
 assert.match(incidentsContent, /approval resolve/);
 assert.match(incidentsContent, /mission show/);
 assert.match(incidentsContent, /mission timeline/);
+assert.match(incidentsContent, /mission run .* --provider stub/);
 assert.match(incidentsContent, /escalate to the workspace owner/i);
 
 const approvalOnlyLog = runCli({
@@ -245,6 +287,23 @@ const driftProviderLog = runCli({
 assert.equal(driftProviderLog.logged, true);
 assert.equal(driftProviderLog.count, 1);
 assert.equal(driftProviderLog.filters.providerId, 'stub');
+
+const specialistOnlyLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue', '--class', 'specialist-follow-up-required'],
+});
+
+assert.equal(specialistOnlyLog.logged, true);
+assert.equal(specialistOnlyLog.count, 1);
+
+const specialistProviderLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue', '--class', 'specialist-follow-up-required', '--provider', 'stub'],
+});
+
+assert.equal(specialistProviderLog.logged, true);
+assert.equal(specialistProviderLog.count, 1);
+assert.equal(specialistProviderLog.filters.providerId, 'stub');
 
 console.log(
   JSON.stringify(
