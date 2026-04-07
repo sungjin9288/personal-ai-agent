@@ -143,6 +143,42 @@ assert.equal(afterFirstReminder.items[0].needsReminder, false);
 assert.equal(afterFirstReminder.summary.reminderCountTotal, 1);
 assert.equal(afterFirstReminder.summary.needsReminderCount, 0);
 
+const missionAfterFirstReminder = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'show', mission.id],
+});
+
+assert.equal(missionAfterFirstReminder.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(missionAfterFirstReminder.summary.specialistFollowUpNeedsReminderCount, 0);
+assert.equal(missionAfterFirstReminder.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(missionAfterFirstReminder.summary.specialistFollowUpReminderCountTotal, 1);
+assert.ok(missionAfterFirstReminder.summary.specialistLatestReminderAt);
+assert.ok(missionAfterFirstReminder.summary.specialistNextReminderAt);
+
+const workspaceOverviewAfterFirstReminder = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'overview', workspace.id],
+});
+
+assert.equal(workspaceOverviewAfterFirstReminder.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(workspaceOverviewAfterFirstReminder.summary.specialistFollowUpNeedsReminderCount, 0);
+assert.equal(workspaceOverviewAfterFirstReminder.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(workspaceOverviewAfterFirstReminder.summary.specialistFollowUpReminderCountTotal, 1);
+assert.ok(workspaceOverviewAfterFirstReminder.summary.specialistLatestReminderAt);
+assert.ok(workspaceOverviewAfterFirstReminder.summary.specialistNextReminderAt);
+
+const globalOverviewAfterFirstReminder = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'global'],
+});
+
+assert.equal(globalOverviewAfterFirstReminder.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(globalOverviewAfterFirstReminder.summary.specialistFollowUpNeedsReminderCount, 0);
+assert.equal(globalOverviewAfterFirstReminder.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(globalOverviewAfterFirstReminder.summary.specialistFollowUpReminderCountTotal, 1);
+assert.ok(globalOverviewAfterFirstReminder.summary.specialistLatestReminderAt);
+assert.ok(globalOverviewAfterFirstReminder.summary.specialistNextReminderAt);
+
 const missionTimeline = runCli({
   rootDir: tempRoot,
   args: ['mission', 'timeline', mission.id],
@@ -180,6 +216,43 @@ assert.equal(reDueFollowUps.items.length, 1);
 assert.equal(reDueFollowUps.items[0].reminderCount, 1);
 assert.equal(reDueFollowUps.items[0].needsReminder, true);
 assert.equal(reDueFollowUps.summary.needsReminderCount, 1);
+assert.equal(reDueFollowUps.summary.overdueCount, 1);
+
+const missionAfterReminderAged = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'show', mission.id],
+});
+
+assert.equal(missionAfterReminderAged.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(missionAfterReminderAged.summary.specialistFollowUpNeedsReminderCount, 1);
+assert.equal(missionAfterReminderAged.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(missionAfterReminderAged.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(missionAfterReminderAged.summary.specialistLatestReminderAt, agedReminderTimestamp);
+assert.equal(missionAfterReminderAged.summary.specialistNextReminderAt, '2026-04-06T00:00:00.000Z');
+
+const workspaceOverviewAfterReminderAged = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'overview', workspace.id],
+});
+
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistFollowUpNeedsReminderCount, 1);
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistLatestReminderAt, agedReminderTimestamp);
+assert.equal(workspaceOverviewAfterReminderAged.summary.specialistNextReminderAt, '2026-04-06T00:00:00.000Z');
+
+const globalOverviewAfterReminderAged = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'global'],
+});
+
+assert.equal(globalOverviewAfterReminderAged.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(globalOverviewAfterReminderAged.summary.specialistFollowUpNeedsReminderCount, 1);
+assert.equal(globalOverviewAfterReminderAged.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(globalOverviewAfterReminderAged.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(globalOverviewAfterReminderAged.summary.specialistLatestReminderAt, agedReminderTimestamp);
+assert.equal(globalOverviewAfterReminderAged.summary.specialistNextReminderAt, '2026-04-06T00:00:00.000Z');
 
 console.log(
   JSON.stringify(

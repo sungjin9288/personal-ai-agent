@@ -53,6 +53,7 @@
 - added dedicated `action specialist-follow-ups` query surface so blocked or failed specialist branches can be sliced directly by provider, workspace, mission, status, or overdue state without relying on generic inbox filtering alone
 - specialist follow-up lifecycle now also supports persisted reminders plus `--needs-reminder` and `action remind-specialist-follow-ups`, and reminder events now appear on mission/workspace/operator timelines
 - `action maintenance` now also sweeps due specialist follow-up reminders, so blocked or failed specialist branch follow-up uses the same local-first maintenance entrypoint already shared by escalation, owner handoff, and provider attention pressure
+- mission, workspace, and global summaries now also expose specialist reminder aggregate fields, so follow-up reminder pressure is readable without reopening the dedicated follow-up queue
 - overdue incident logging now also covers `specialist-follow-up-required`, so unresolved specialist branches can be promoted into the tracked incident trail instead of remaining only in queue state
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
