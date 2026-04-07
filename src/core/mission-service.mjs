@@ -2990,14 +2990,35 @@ function summarizeProviderExecutions(executions) {
     const since = normalizeTimestampFilter(filter.since, 'provider overview since timestamp');
     const providers = enrichProviderStatusEntries(buildProviderStatusEntries());
     const probes = store.listProviderProbes();
+    const recentWindow = buildProviderOverviewRecentWindow(since);
 
     return {
       filters: {
         since: since || null,
       },
       providers,
-      recentWindow: buildProviderOverviewRecentWindow(since),
-      summary: summarizeProviderOverview(providers, probes),
+      recentWindow,
+      summary: {
+        ...summarizeProviderOverview(providers, probes),
+        latestRecentProviderEvent: recentWindow?.latestEvent || null,
+        latestRecentProviderExecution: recentWindow?.latestExecution || null,
+        latestRecentProviderProbe: recentWindow?.latestProbe || null,
+        providerRecentEventCount: recentWindow?.eventTotal || 0,
+        providerRecentEventFamilyCounts: recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentExecutionCount: recentWindow?.executionTotal || 0,
+        providerRecentExecutionEstimatedCostUsdTotal: recentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentExecutionLatestMonthlyBucketDelta:
+          recentWindow?.executionLatestMonthlyBucketDelta || null,
+        providerRecentExecutionLatestMonthlyBucketStartDate:
+          recentWindow?.executionLatestMonthlyBucketStartDate || null,
+        providerRecentExecutionMonthlyBucketCount: recentWindow?.executionMonthlyBucketCount || 0,
+        providerRecentExecutionOldestMonthlyBucketStartDate:
+          recentWindow?.executionOldestMonthlyBucketStartDate || null,
+        providerRecentProbeTotal: recentWindow?.probeTotal || 0,
+        providerRecentSince: since || null,
+        providerRecentTouchedProviderCount: recentWindow?.touchedProviderCount || 0,
+        providerRecentTouchedProviderIds: recentWindow?.touchedProviderIds || [],
+      },
     };
   }
 

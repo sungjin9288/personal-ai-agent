@@ -31,6 +31,7 @@
 - extended every `providerRecentWindow` payload with weekly execution buckets and latest weekly delta so recent provider trend can also be read at a coarser weekly rollup
 - extended every `providerRecentWindow` payload with monthly execution buckets and latest monthly delta so recent provider trend can also be read as a coarse month rollup from the same recent slice
 - promoted the same recent monthly provider trend into mission or workspace or global or operator summary linkage so control-plane surfaces can read month-level direction without expanding nested bucket payloads
+- promoted the same recent monthly provider trend into `overview providers` summary linkage as well, so provider-only control-plane reads stay symmetric with mission or workspace or global or operator summaries
 - added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
 
 ## 2026-04-07 Provider Hardening Baseline
