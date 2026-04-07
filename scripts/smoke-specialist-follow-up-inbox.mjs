@@ -140,6 +140,16 @@ const genericInbox = runCli({
 
 assert.equal(genericInbox.items.length, 2);
 assert.equal(genericInbox.summary.actionClassCounts.specialistFollowUpRequired, 2);
+assert.equal(genericInbox.summary.specialistFollowUpProviderCounts.stub, 2);
+assert.equal(genericInbox.summary.specialistFollowUpKindCounts.implementation, 1);
+assert.equal(genericInbox.summary.specialistFollowUpKindCounts.verification, 1);
+assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.failed, 1);
+assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.blocked, 1);
+assert.equal(genericInbox.summary.specialistFollowUpOverdueCount, 2);
+assert.equal(genericInbox.summary.specialistFollowUpNeedsReminderCount, 2);
+assert.equal(genericInbox.summary.specialistFollowUpReminderCountTotal, 0);
+assert.equal(genericInbox.summary.specialistFollowUpLatestReminderAt, null);
+assert.ok(genericInbox.summary.specialistFollowUpNextReminderAt);
 
 console.log(
   JSON.stringify(

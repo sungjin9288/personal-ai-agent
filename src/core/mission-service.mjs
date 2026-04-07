@@ -6268,6 +6268,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function summarizeActionInbox(items) {
+    const specialistFollowUpSummary = summarizeSpecialistFollowUpItems(
+      items.filter((item) => item.actionClass === 'specialist-follow-up-required'),
+    );
     const providerCounts = {};
     const workspaceCounts = {};
     const actionClassCounts = {
@@ -6449,6 +6452,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       latestReminderAt,
       nextReminderAt,
       overdueCounts,
+      specialistFollowUpKindCounts: specialistFollowUpSummary.specialistKindCounts,
+      specialistFollowUpLatestReminderAt: specialistFollowUpSummary.latestReminderAt,
+      specialistFollowUpNeedsReminderCount: specialistFollowUpSummary.needsReminderCount,
+      specialistFollowUpNextReminderAt: specialistFollowUpSummary.nextReminderAt,
+      specialistFollowUpOverdueCount: specialistFollowUpSummary.overdueCount,
+      specialistFollowUpProviderCounts: specialistFollowUpSummary.providerCounts,
+      specialistFollowUpReminderCountTotal: specialistFollowUpSummary.reminderCountTotal,
+      specialistFollowUpStatusCounts: specialistFollowUpSummary.statusCounts,
       workspaceCounts,
     };
   }
