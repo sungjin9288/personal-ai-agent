@@ -35,6 +35,7 @@ export const ACTION_CLASSES = [
   'blocked',
   'awaiting-human-decision',
   'provider-attention-required',
+  'provider-health-drift-required',
   'specialist-follow-up-required',
   'monitoring-required',
   'handoff-required',

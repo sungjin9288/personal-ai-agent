@@ -261,37 +261,39 @@ const inbox = runCli({
   args: ['action', 'inbox'],
 });
 
-assert.equal(inbox.summary.pendingActionCount, 5);
-assert.equal(inbox.summary.actionCounts.total, 5);
+assert.equal(inbox.summary.pendingActionCount, 7);
+assert.equal(inbox.summary.actionCounts.total, 7);
 assert.equal(inbox.summary.actionCounts.acceptedRiskMonitoring, 0);
 assert.equal(inbox.summary.actionCounts.approval, 1);
 assert.equal(inbox.summary.actionCounts.blockedFollowUp, 1);
 assert.equal(inbox.summary.actionCounts.maintenanceSweep, 1);
 assert.equal(inbox.summary.actionCounts.ownerHandoff, 1);
+assert.equal(inbox.summary.actionCounts.providerHealthDrift, 2);
 assert.equal(inbox.summary.actionCounts.reviewerFollowUp, 1);
-assert.equal(inbox.summary.actionClassCounts.total, 5);
+assert.equal(inbox.summary.actionClassCounts.total, 7);
 assert.equal(inbox.summary.actionClassCounts.awaitingHumanDecision, 1);
 assert.equal(inbox.summary.actionClassCounts.blocked, 1);
 assert.equal(inbox.summary.actionClassCounts.handoffRequired, 1);
 assert.equal(inbox.summary.actionClassCounts.maintenanceRequired, 1);
 assert.equal(inbox.summary.actionClassCounts.monitoringRequired, 0);
+assert.equal(inbox.summary.actionClassCounts.providerHealthDriftRequired, 2);
 assert.equal(inbox.summary.actionClassCounts.retryReady, 1);
 assert.equal(inbox.summary.priorityCounts.low, 0);
-assert.equal(inbox.summary.priorityCounts.medium, 1);
+assert.equal(inbox.summary.priorityCounts.medium, 3);
 assert.equal(inbox.summary.priorityCounts.high, 4);
 assert.equal(inbox.summary.priorityCounts.urgent, 0);
 assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
-assert.equal(inbox.summary.ownerCounts['mission-owner'], 2);
+assert.equal(inbox.summary.ownerCounts['mission-owner'], 4);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 1);
-assert.equal(inbox.summary.reminderCounts.total, 5);
+assert.equal(inbox.summary.reminderCounts.total, 7);
 assert.equal(inbox.summary.reminderCounts.eligible, 1);
 assert.equal(inbox.summary.reminderCounts.needsReminder, 1);
 assert.equal(inbox.summary.reminderCounts.notNeeded, 0);
-assert.equal(inbox.summary.overdueCounts.total, 5);
+assert.equal(inbox.summary.overdueCounts.total, 7);
 assert.equal(inbox.summary.overdueCounts.overdue, 4);
-assert.equal(inbox.summary.overdueCounts.onTime, 1);
-assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 4);
-assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 1);
+assert.equal(inbox.summary.overdueCounts.onTime, 3);
+assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 5);
+assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 2);
 assert.equal(inbox.filters.actionClass, null);
 assert.equal(inbox.filters.needsReminderOnly, false);
 assert.equal(inbox.filters.priority, null);
@@ -381,14 +383,34 @@ assert.ok(maintenanceItem.dueAt);
 assert.match(maintenanceItem.commandHint, /action maintenance/);
 assert.match(maintenanceItem.escalationRule, /action maintenance/i);
 
+const providerHealthDriftItems = inbox.items.filter((item) => item.actionType === 'provider-health-drift');
+assert.equal(providerHealthDriftItems.length, 2);
+assert.equal(providerHealthDriftItems.every((item) => item.actionClass === 'provider-health-drift-required'), true);
+assert.equal(providerHealthDriftItems.every((item) => item.recommendedOwner === 'mission-owner'), true);
+assert.equal(providerHealthDriftItems.every((item) => item.priority === 'medium'), true);
+assert.equal(providerHealthDriftItems.every((item) => item.driftStatus === 'watch'), true);
+assert.equal(providerHealthDriftItems.every((item) => item.driftReasonCodes.includes('monthly-failed-up')), true);
+assert.equal(
+  providerHealthDriftItems.some((item) => item.missionId === reviewerMission.id && item.workspaceId === workspaceTwo.id),
+  true,
+);
+assert.equal(
+  providerHealthDriftItems.some((item) => item.missionId === handoffMission.id && item.workspaceId === workspaceOne.id),
+  true,
+);
+assert.equal(providerHealthDriftItems.every((item) => /mission timeline/.test(item.commandHint)), true);
+
 const workspaceFilteredInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--workspace', workspaceTwo.id],
 });
 
-assert.equal(workspaceFilteredInbox.summary.pendingActionCount, 1);
-assert.equal(workspaceFilteredInbox.items[0].actionType, 'reviewer-follow-up');
-assert.equal(workspaceFilteredInbox.items[0].workspaceId, workspaceTwo.id);
+assert.equal(workspaceFilteredInbox.summary.pendingActionCount, 2);
+assert.deepEqual(
+  workspaceFilteredInbox.items.map((item) => item.actionType).sort(),
+  ['provider-health-drift', 'reviewer-follow-up'],
+);
+assert.equal(workspaceFilteredInbox.items.every((item) => item.workspaceId === workspaceTwo.id), true);
 
 const retryReadyInbox = runCli({
   rootDir: tempRoot,
@@ -446,6 +468,15 @@ assert.equal(maintenanceRequiredInbox.summary.pendingActionCount, 1);
 assert.equal(maintenanceRequiredInbox.filters.actionClass, 'maintenance-required');
 assert.equal(maintenanceRequiredInbox.items[0].actionType, 'maintenance-sweep');
 assert.equal(maintenanceRequiredInbox.items[0].workspaceId, workspaceOne.id);
+
+const providerHealthDriftInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'provider-health-drift-required'],
+});
+
+assert.equal(providerHealthDriftInbox.summary.pendingActionCount, 2);
+assert.equal(providerHealthDriftInbox.filters.actionClass, 'provider-health-drift-required');
+assert.equal(providerHealthDriftInbox.items.every((item) => item.actionType === 'provider-health-drift'), true);
 
 const needsReminderInbox = runCli({
   rootDir: tempRoot,

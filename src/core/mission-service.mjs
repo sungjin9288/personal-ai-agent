@@ -73,6 +73,16 @@ function formatDateUtc(value) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
+function getUtcMonthStartTimestamp(value = now()) {
+  const parsed = Date.parse(String(value || ''));
+  if (!Number.isFinite(parsed)) {
+    return '';
+  }
+
+  const date = new Date(parsed);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString();
+}
+
 function getUtcWeekRange(isoTimestamp) {
   const parsed = Date.parse(String(isoTimestamp || ''));
   if (!Number.isFinite(parsed)) {
@@ -5865,6 +5875,101 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return buildProviderAttentionPendingItems(filter);
   }
 
+  function buildProviderHealthDriftActionItems(filter = {}) {
+    const since = getUtcMonthStartTimestamp();
+
+    return store
+      .listMissions()
+      .map((mission) => {
+        if (mission.status === 'completed') {
+          return null;
+        }
+        if (filter.workspaceId && mission.workspaceId !== filter.workspaceId) {
+          return null;
+        }
+        if (filter.missionId && mission.id !== filter.missionId) {
+          return null;
+        }
+
+        const workspace = store.getWorkspace(mission.workspaceId);
+        if (!workspace) {
+          return null;
+        }
+
+        const providerRecentWindow = buildScopedProviderRecentWindow({
+          missionId: mission.id,
+          since,
+        });
+        const providerActivity = summarizeMissionProviderActivity(mission.id);
+        const providerHealthDrift = summarizeProviderHealthDrift({
+          attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+          attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+          attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+          recentWindow: providerRecentWindow,
+        });
+
+        if (providerHealthDrift.status !== 'watch' || providerHealthDrift.attentionRequiredCount > 0) {
+          return null;
+        }
+
+        const latestFailedProviderExecution =
+          providerRecentWindow?.latestFailedExecution || providerActivity.summary.latestFailedProviderExecution || null;
+        const createdAt =
+          latestFailedProviderExecution?.at || providerRecentWindow?.latestEvent?.at || providerRecentWindow?.latestExecution?.at || null;
+
+        if (!createdAt) {
+          return null;
+        }
+
+        const commandSince = providerHealthDrift.recentExecutionCurrentMonthStartDate
+          ? `${providerHealthDrift.recentExecutionCurrentMonthStartDate}T00:00:00.000Z`
+          : since;
+        const recommendedCommand = `node src/cli.mjs mission timeline ${mission.id} --provider-since ${commandSince}`;
+        const providerId = latestFailedProviderExecution?.providerId || providerRecentWindow?.latestExecution?.providerId || null;
+        const reason = providerHealthDrift.reasonCodes.length > 0
+          ? providerHealthDrift.reasonCodes.join(', ')
+          : 'provider-health-drift';
+
+        return addOperationalMetadata(
+          addDispatchMetadata(
+            {
+              actionClass: 'provider-health-drift-required',
+              actionId: `provider-health-drift:${mission.id}:${providerHealthDrift.recentExecutionCurrentMonthStartDate || formatDateUtc(Date.parse(createdAt))}`,
+              actionType: 'provider-health-drift',
+              createdAt,
+              deliverableType: mission.deliverableType,
+              driftReasonCodes: providerHealthDrift.reasonCodes,
+              driftStatus: providerHealthDrift.status,
+              latestFailedProviderExecution,
+              missionId: mission.id,
+              missionStatus: mission.status,
+              missionTitle: mission.title,
+              mode: mission.mode,
+              providerHealthDrift,
+              providerId,
+              providerRecentSince: commandSince,
+              reason,
+              title: `Provider health drift review for ${mission.title}`,
+              workspaceId: workspace.id,
+              workspaceName: workspace.name,
+            },
+            {
+              priority: 'medium',
+              recommendedCommand,
+              recommendedOwner: 'mission-owner',
+            },
+          ),
+          {
+            escalationRule:
+              'Review recent provider execution drift and decide whether to rerun, switch provider, or narrow scope.',
+            slaHours: 24,
+          },
+        );
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
   function getActionInboxReminderState(item) {
     const nextReminderAt = item.nextReminderAt || item.handoffNextReminderAt || null;
     const lastReminderAt = item.lastReminderAt || item.handoffLatestReminderAt || null;
@@ -5896,6 +6001,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const actionClassCounts = {
       awaitingHumanDecision: 0,
       blocked: 0,
+      providerHealthDriftRequired: 0,
       handoffRequired: 0,
       maintenanceRequired: 0,
       monitoringRequired: 0,
@@ -5911,6 +6017,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       maintenanceSweep: 0,
       ownerHandoff: 0,
       providerAttention: 0,
+      providerHealthDrift: 0,
       reviewerFollowUp: 0,
       specialistFollowUp: 0,
       total: items.length,
@@ -5961,6 +6068,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         actionCounts.providerAttention += 1;
       }
 
+      if (item.actionType === 'provider-health-drift') {
+        actionCounts.providerHealthDrift += 1;
+      }
+
       if (item.actionType === 'reviewer-follow-up') {
         actionCounts.reviewerFollowUp += 1;
       }
@@ -5991,6 +6102,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
       if (item.actionClass === 'provider-attention-required') {
         actionClassCounts.providerAttentionRequired += 1;
+      }
+
+      if (item.actionClass === 'provider-health-drift-required') {
+        actionClassCounts.providerHealthDriftRequired += 1;
       }
 
       if (item.actionClass === 'retry-ready') {
@@ -6248,6 +6363,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ...buildMaintenanceActionItems(filter),
       ...buildOwnerHandoffActionItems(filter),
       ...buildProviderAttentionItems(filter),
+      ...buildProviderHealthDriftActionItems(filter),
       ...buildSpecialistFollowUpItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),

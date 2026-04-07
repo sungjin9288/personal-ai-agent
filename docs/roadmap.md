@@ -43,6 +43,7 @@
 - global operator timeline now also accepts `provider-since` linkage so the operator-facing chronology can expose recent provider execution and attention trend without leaving the operator surface
 - workspace timeline now also accepts `provider-since` linkage so workspace-bound chronology and recent provider execution or attention trend can be queried with the same recent window contract
 - mission, workspace, and operator surfaces now also expose `providerHealthDrift` so provider drift is readable with the same contract already used by provider and global overview
+- action inbox now also exposes `provider-health-drift-required` so residual watch-state provider drift can be triaged as a mission-owner follow-up after explicit provider attention has already been acknowledged or resolved
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces

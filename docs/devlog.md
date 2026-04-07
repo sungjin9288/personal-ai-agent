@@ -6,6 +6,7 @@
 - linked recent provider counts, touched provider ids, latest recent provider event, and recent execution bucket trend into the global operator timeline summary without changing the default event stream contract
 - added `workspace timeline --provider-since` so workspace-bound chronology can carry the same recent provider window contract and recent provider summary linkage as the other provider-aware timeline or overview surfaces
 - added root-level `providerHealthDrift` to mission, workspace, and operator surfaces so provider drift can be inspected symmetrically without reading only summary linkage fields
+- added `provider-health-drift-required` to action inbox so resolved provider failures that still leave monthly failed-execution drift can surface as explicit mission-owner follow-up work
 - added optional pricing env parsing for OpenAI, Anthropic, and local adapters, then normalized `estimatedCostUsd` from execution token usage without changing the existing provider contract
 - propagated estimated execution cost into persisted agent runs, provider execution history or timeline, unified provider events, pending provider attention failure context, provider overview, and mission or workspace or global summaries
 - added deterministic cost telemetry smoke coverage for successful execution totals plus failed non-JSON execution persistence so cost evidence stays available on both completed and failed mission paths

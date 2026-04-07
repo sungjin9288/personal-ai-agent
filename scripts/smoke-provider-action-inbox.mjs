@@ -65,6 +65,21 @@ try {
   });
 
   assert.equal(failedRun.mission.status, 'failed');
+
+  const pendingProviderAttention = service.getProviderAttentionInbox({
+    workspaceId: workspace.id,
+  });
+  const stubAttention = pendingProviderAttention.items.find(
+    (item) => item.providerId === 'stub' && item.eventFamily === 'execution',
+  );
+
+  assert.ok(stubAttention);
+  service.acknowledgeProviderAttention(stubAttention.actionId, {
+    note: 'Acknowledge stub provider attention to expose residual drift.',
+  });
+  service.resolveProviderAttention(stubAttention.actionId, {
+    note: 'Resolve stub provider attention before drift-only follow-up.',
+  });
 } finally {
   globalThis.fetch = originalFetch;
 
@@ -87,17 +102,19 @@ const inbox = runCli({
   args: ['action', 'inbox'],
 });
 
-assert.equal(inbox.summary.actionClassCounts.providerAttentionRequired, 2);
-assert.equal(inbox.summary.actionCounts.providerAttention, 2);
+assert.equal(inbox.summary.actionClassCounts.providerAttentionRequired, 1);
+assert.equal(inbox.summary.actionClassCounts.providerHealthDriftRequired, 1);
+assert.equal(inbox.summary.actionCounts.providerAttention, 1);
+assert.equal(inbox.summary.actionCounts.providerHealthDrift, 1);
 
 const providerAttentionInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--class', 'provider-attention-required'],
 });
 
-assert.equal(providerAttentionInbox.items.length, 2);
-assert.equal(providerAttentionInbox.summary.actionClassCounts.providerAttentionRequired, 2);
-assert.equal(providerAttentionInbox.summary.actionCounts.providerAttention, 2);
+assert.equal(providerAttentionInbox.items.length, 1);
+assert.equal(providerAttentionInbox.summary.actionClassCounts.providerAttentionRequired, 1);
+assert.equal(providerAttentionInbox.summary.actionCounts.providerAttention, 1);
 assert.equal(
   providerAttentionInbox.items.some(
     (item) =>
@@ -109,17 +126,21 @@ assert.equal(
   ),
   true,
 );
-assert.equal(
-  providerAttentionInbox.items.some(
-    (item) =>
-      item.providerId === 'stub' &&
-      item.eventFamily === 'execution' &&
-      item.recommendedOwner === 'workspace-owner' &&
-      item.priority === 'high' &&
-      item.workspaceId !== null,
-  ),
-  true,
-);
+assert.equal(providerAttentionInbox.items.every((item) => item.providerId !== 'stub'), true);
+
+const providerHealthDriftInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'provider-health-drift-required'],
+});
+
+assert.equal(providerHealthDriftInbox.items.length, 1);
+assert.equal(providerHealthDriftInbox.summary.actionClassCounts.providerHealthDriftRequired, 1);
+assert.equal(providerHealthDriftInbox.summary.actionCounts.providerHealthDrift, 1);
+assert.equal(providerHealthDriftInbox.items[0].providerId, 'stub');
+assert.equal(providerHealthDriftInbox.items[0].recommendedOwner, 'mission-owner');
+assert.equal(providerHealthDriftInbox.items[0].priority, 'medium');
+assert.equal(providerHealthDriftInbox.items[0].driftStatus, 'watch');
+assert.deepEqual(providerHealthDriftInbox.items[0].driftReasonCodes, ['monthly-failed-up']);
 
 const workspace = runCli({
   rootDir: tempRoot,
@@ -131,26 +152,41 @@ const workspaceScopedProviderAttention = runCli({
   args: ['action', 'inbox', '--class', 'provider-attention-required', '--workspace', workspace.id],
 });
 
-assert.equal(workspaceScopedProviderAttention.items.length, 1);
-assert.equal(workspaceScopedProviderAttention.items[0].providerId, 'stub');
-assert.equal(workspaceScopedProviderAttention.items[0].eventFamily, 'execution');
+assert.equal(workspaceScopedProviderAttention.items.length, 0);
+
+const workspaceScopedProviderHealthDrift = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'provider-health-drift-required', '--workspace', workspace.id],
+});
+
+assert.equal(workspaceScopedProviderHealthDrift.items.length, 1);
+assert.equal(workspaceScopedProviderHealthDrift.items[0].providerId, 'stub');
+assert.equal(workspaceScopedProviderHealthDrift.items[0].missionStatus, 'failed');
+
+const missionScopedProviderHealthDrift = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'provider-health-drift-required', '--mission', providerHealthDriftInbox.items[0].missionId],
+});
+
+assert.equal(missionScopedProviderHealthDrift.items.length, 1);
+assert.equal(missionScopedProviderHealthDrift.items[0].missionId, providerHealthDriftInbox.items[0].missionId);
 
 const overviewProviders = runCli({
   rootDir: tempRoot,
   args: ['overview', 'providers'],
 });
 
-assert.equal(overviewProviders.summary.attentionRequiredCount, 2);
-assert.equal(overviewProviders.summary.latestAttentionRequiredEvent.providerId, 'stub');
-assert.deepEqual([...overviewProviders.summary.attentionRequiredProviderIds].sort(), ['anthropic', 'stub']);
+assert.equal(overviewProviders.summary.attentionRequiredCount, 1);
+assert.equal(overviewProviders.summary.latestAttentionRequiredEvent.providerId, 'anthropic');
+assert.deepEqual([...overviewProviders.summary.attentionRequiredProviderIds].sort(), ['anthropic']);
 
 const globalOverview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'global'],
 });
 
-assert.equal(globalOverview.summary.providerAttentionRequiredCount, 2);
-assert.equal(globalOverview.summary.latestProviderAttentionRequiredEvent.providerId, 'stub');
+assert.equal(globalOverview.summary.providerAttentionRequiredCount, 1);
+assert.equal(globalOverview.summary.latestProviderAttentionRequiredEvent.providerId, 'anthropic');
 
 console.log(
   JSON.stringify(
