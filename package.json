@@ -41,6 +41,7 @@
     "smoke:provider-retry-telemetry": "node scripts/smoke-provider-retry-telemetry.mjs",
     "smoke:provider-action-inbox": "node scripts/smoke-provider-action-inbox.mjs",
     "smoke:provider-attention-lifecycle": "node scripts/smoke-provider-attention-lifecycle.mjs",
+    "smoke:provider-attention-remediation": "node scripts/smoke-provider-attention-remediation.mjs",
     "smoke:provider-attention-recovery": "node scripts/smoke-provider-attention-recovery.mjs",
     "smoke:provider-attention-reminders": "node scripts/smoke-provider-attention-reminders.mjs",
     "smoke:provider-probe": "node scripts/smoke-provider-probe.mjs",

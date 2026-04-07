@@ -154,6 +154,7 @@ node src/cli.mjs action remind-escalations --due
 node src/cli.mjs action remind-escalations --tier critical --overdue --note "Notify the workspace owner to re-check this pressure"
 node src/cli.mjs action remind-owner-handoffs --due --note "Follow up with the human approver about the pending handoff"
 node src/cli.mjs action remind-provider-attention --due --note "Re-check the pending provider failure and confirm remediation"
+node src/cli.mjs action remediate-provider-attention provider-attention:stub:execution:agentrun_xxx
 node src/cli.mjs action acknowledge-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe failure acknowledged"
 node src/cli.mjs action resolve-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe recovered"
 node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
@@ -210,6 +211,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `action log-overdue` now also accepts `provider-health-drift-required`, so overdue residual drift follow-up can be promoted into the incident trail instead of staying only in queue state.
 - `action inbox` and `action log-overdue` now also accept `--provider <stub|openai|anthropic|local>`, so provider-specific attention or drift work can be sliced directly from the generic control-plane surface.
 - `action inbox` summary now also exposes `providerCounts`, so provider-scoped backlog can be read directly from the generic queue summary without dropping into provider-only surfaces.
+- `action remediate-provider-attention <actionId>` now provides a local-first remediation path for current provider failures: probe attention reruns provider probe, and execution attention reruns the same mission with the same provider so recovery evidence can be produced from one operator command.
 - `overview global` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so the top-level control-plane can show overall system state and recent provider health together.
 - `overview operator-timeline` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so operator chronology and recent provider execution or attention trend can be inspected from one surface.
 - `workspace overview` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so a workspace owner can inspect current workspace state and recent provider execution or attention activity together.

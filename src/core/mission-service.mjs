@@ -7520,6 +7520,139 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }));
   }
 
+  function summarizeProviderAttentionScopedState(filter = {}) {
+    const pendingItems = buildProviderAttentionPendingItems(filter);
+    const acknowledgedItems = buildProviderAttentionAcknowledgedItems(filter);
+    const recoveredItems = buildProviderAttentionRecoveredItems(filter);
+    const resolvedItems = buildProviderAttentionResolvedItems(filter);
+    let status = 'clear';
+
+    if (pendingItems.length) {
+      status = 'pending';
+    } else if (acknowledgedItems.length) {
+      status = 'acknowledged';
+    } else if (recoveredItems.length) {
+      status = 'recovered';
+    } else if (resolvedItems.length) {
+      status = 'resolved';
+    }
+
+    return {
+      acknowledgedCount: acknowledgedItems.length,
+      latestAcknowledgedActionId: acknowledgedItems.at(-1)?.actionId || null,
+      latestPendingActionId: pendingItems.at(-1)?.actionId || null,
+      latestRecoveredActionId: recoveredItems.at(-1)?.actionId || null,
+      latestResolvedActionId: resolvedItems.at(-1)?.actionId || null,
+      pendingCount: pendingItems.length,
+      recoveredCount: recoveredItems.length,
+      resolvedCount: resolvedItems.length,
+      status,
+    };
+  }
+
+  function getProviderAttentionActionState(actionId) {
+    const pendingItem = buildProviderAttentionPendingItems({}).find((item) => item.actionId === actionId);
+    if (pendingItem) {
+      return {
+        item: pendingItem,
+        status: 'pending',
+      };
+    }
+
+    const acknowledgedItem = buildProviderAttentionAcknowledgedItems({}).find((item) => item.actionId === actionId);
+    if (acknowledgedItem) {
+      return {
+        item: acknowledgedItem,
+        status: 'acknowledged',
+      };
+    }
+
+    const recoveredItem = buildProviderAttentionRecoveredItems({}).find((item) => item.actionId === actionId);
+    if (recoveredItem) {
+      return {
+        item: recoveredItem,
+        status: 'recovered',
+      };
+    }
+
+    const resolvedItem = buildProviderAttentionResolvedItems({}).find((item) => item.actionId === actionId);
+    if (resolvedItem) {
+      return {
+        item: resolvedItem,
+        status: 'resolved',
+      };
+    }
+
+    return null;
+  }
+
+  async function remediateProviderAttention(actionId) {
+    const actionState = getProviderAttentionActionState(actionId);
+    if (!actionState) {
+      throw new Error(`Provider attention item not found: ${actionId}`);
+    }
+    if (['resolved', 'recovered'].includes(actionState.status)) {
+      throw new Error(`Provider attention is already closed: ${actionId}`);
+    }
+
+    const attentionItem = actionState.item;
+    let remediationKind = '';
+    let result = null;
+
+    if (attentionItem.eventFamily === 'probe') {
+      remediationKind = 'probe';
+      const probe = await probeProvider(attentionItem.providerId);
+      result = {
+        attempted: Boolean(probe.attempted),
+        attemptCount: Number(probe.attemptCount || 0),
+        checkedAt: probe.checkedAt || null,
+        failureKind: normalizeText(probe.failureKind) ? normalizeProviderFailureKind(probe.failureKind) : null,
+        ok: Boolean(probe.ok),
+        probeId: probe.probeId || null,
+        providerId: probe.id,
+        reason: probe.reason || '',
+        retryCount: Number(probe.retryCount || 0),
+      };
+    } else if (attentionItem.eventFamily === 'execution') {
+      if (!attentionItem.missionId) {
+        throw new Error(`Provider execution attention is missing mission context: ${actionId}`);
+      }
+
+      remediationKind = 'mission-rerun';
+      const rerun = await runMission(attentionItem.missionId, {
+        provider: attentionItem.providerId,
+        providerSpecified: true,
+      });
+      result = {
+        approvalId: rerun.approval?.id || null,
+        artifactPath: rerun.artifactPath || null,
+        missionId: rerun.mission.id,
+        missionStatus: rerun.mission.status,
+        provider: rerun.provider,
+        reviewerVerdict: rerun.reviewerVerdict || null,
+        sessionId: rerun.session?.id || null,
+      };
+    } else {
+      throw new Error(`Unsupported provider attention event family: ${attentionItem.eventFamily}`);
+    }
+
+    return {
+      actionId,
+      eventFamily: attentionItem.eventFamily,
+      missionId: attentionItem.missionId || null,
+      postAttention: summarizeProviderAttentionScopedState({
+        missionId: attentionItem.missionId || null,
+        providerId: attentionItem.providerId,
+        workspaceId: attentionItem.workspaceId || null,
+      }),
+      previousStatus: actionState.status,
+      providerId: attentionItem.providerId,
+      remediationKind,
+      result,
+      workspaceId: attentionItem.workspaceId || null,
+    };
+  }
+
   function acknowledgeOwnerHandoff(escalationId, { note = '' }) {
     const escalation = store.getEscalation(escalationId);
     if (!escalation) {
@@ -9082,6 +9215,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     resolveApproval,
     resolveReviewerFollowUp,
     probeProvider,
+    remediateProviderAttention,
     runMission,
     showMission,
     showSession,
