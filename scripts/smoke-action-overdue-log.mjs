@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { createMissionService } from '../src/core/mission-service.mjs';
+import { createStore } from '../src/core/store.mjs';
 import { runCli } from './cli-test-helpers.mjs';
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-action-overdue-log-'));
@@ -21,6 +23,9 @@ const workspaceTwo = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspaceTwoPath, '--name', 'workspace-two'],
 });
+
+const store = createStore({ rootDir: tempRoot });
+const service = createMissionService({ store, rootDir: tempRoot });
 
 const approvalMission = runCli({
   rootDir: tempRoot,
@@ -63,9 +68,43 @@ const reviewerMission = runCli({
   ],
 });
 
+await service.runMission(reviewerMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+const reviewerSession = runCli({
+  rootDir: tempRoot,
+  args: ['session', 'show', reviewerMission.id],
+});
+
+const reviewerProviderAttention = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-attention', '--workspace', workspaceTwo.id, '--mission', reviewerMission.id],
+});
+
+assert.equal(reviewerProviderAttention.items.length, 1);
+
 runCli({
   rootDir: tempRoot,
-  args: ['mission', 'run', reviewerMission.id],
+  args: [
+    'action',
+    'acknowledge-provider-attention',
+    reviewerProviderAttention.items[0].actionId,
+    '--note',
+    'Acknowledge reviewer provider failure before overdue drift logging.',
+  ],
+});
+
+runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-provider-attention',
+    reviewerProviderAttention.items[0].actionId,
+    '--note',
+    'Resolve reviewer provider failure so only residual drift remains.',
+  ],
 });
 
 const blockedMission = runCli({
@@ -102,14 +141,10 @@ runCli({
   ],
 });
 
-const reviewerSession = runCli({
-  rootDir: tempRoot,
-  args: ['session', 'show', reviewerMission.id],
-});
-
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const overdueCurrentMonthTimestamp = '2026-04-01T00:00:00.000Z';
 
 state.approvals = state.approvals.map((approval) => {
   if (approval.id === approvalRun.approvalId) {
@@ -134,11 +169,23 @@ state.artifacts = state.artifacts.map((artifact) => {
   if (artifact.id === reviewerSession.artifacts.find((entry) => entry.fileName === 'reviewer-report.md')?.id) {
     return {
       ...artifact,
-      createdAt: '2026-04-06T00:00:00.000Z',
+      createdAt: overdueCurrentMonthTimestamp,
     };
   }
 
   return artifact;
+});
+
+state.agentRuns = state.agentRuns.map((agentRun) => {
+  if (agentRun.missionId === reviewerMission.id && agentRun.status === 'failed') {
+    return {
+      ...agentRun,
+      endedAt: overdueCurrentMonthTimestamp,
+      startedAt: overdueCurrentMonthTimestamp,
+    };
+  }
+
+  return agentRun;
 });
 
 fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
@@ -149,18 +196,20 @@ const incidentLog = runCli({
 });
 
 assert.equal(incidentLog.logged, true);
-assert.equal(incidentLog.count, 2);
-assert.equal(incidentLog.escalationIds.length, 2);
+assert.equal(incidentLog.count, 3);
+assert.equal(incidentLog.escalationIds.length, 3);
 assert.ok(incidentLog.path);
-assert.equal(incidentLog.itemIds.length, 2);
+assert.equal(incidentLog.itemIds.length, 3);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
-assert.match(incidentsContent, /Overdue Action Escalation \(2 items\)/);
-assert.match(incidentsContent, /overdue action count: 2/);
+assert.match(incidentsContent, /Overdue Action Escalation \(3 items\)/);
+assert.match(incidentsContent, /overdue action count: 3/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
+assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
 assert.match(incidentsContent, /approval resolve/);
 assert.match(incidentsContent, /mission show/);
+assert.match(incidentsContent, /mission timeline/);
 assert.match(incidentsContent, /escalate to the workspace owner/i);
 
 const approvalOnlyLog = runCli({
@@ -179,6 +228,14 @@ const noOpLog = runCli({
 assert.equal(noOpLog.logged, false);
 assert.equal(noOpLog.count, 0);
 assert.equal(noOpLog.path, null);
+
+const driftOnlyLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue', '--class', 'provider-health-drift-required'],
+});
+
+assert.equal(driftOnlyLog.logged, true);
+assert.equal(driftOnlyLog.count, 1);
 
 console.log(
   JSON.stringify(
