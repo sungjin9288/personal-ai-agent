@@ -5570,6 +5570,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       if (!parallelGroupId) {
         continue;
       }
+      if (filter.parallelGroupId && parallelGroupId !== filter.parallelGroupId) {
+        continue;
+      }
       const mission = missionById.get(run.missionId) || null;
       const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
       if (filter.missionId && mission?.id !== filter.missionId) {
@@ -5658,7 +5661,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           .map((run) => {
             const specialistKind = normalizeText(run.specialistKind);
             const session = store.getSession(run.sessionId);
-            const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${session?.provider || run.providerId || 'stub'}`;
+            const providerId = normalizeText(session?.provider || run.providerId, 'stub');
+            const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
             return addOperationalMetadata(
               addDispatchMetadata(
                 {
@@ -5671,6 +5675,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                   missionId: mission.id,
                   parallelGroupId: group.parallelGroupId,
                   parentRunId: normalizeText(run.parentRunId) || null,
+                  providerId,
                   reason: formatProviderFailureDetail({
                     attemptCount: run.attemptCount,
                     detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
@@ -5704,7 +5709,43 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             );
           });
       })
+      .filter((item) => !filter.providerId || item.providerId === filter.providerId)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function summarizeSpecialistFollowUpScopedState(filter = {}) {
+    const items = buildSpecialistFollowUpItems(filter);
+    const blockedItems = items.filter((item) => normalizeAgentRunStatus(item.status) === 'blocked');
+    const failedItems = items.filter((item) => normalizeAgentRunStatus(item.status) === 'failed');
+    let status = 'clear';
+
+    if (failedItems.length) {
+      status = 'failed';
+    } else if (blockedItems.length) {
+      status = 'blocked';
+    }
+
+    return {
+      blockedCount: blockedItems.length,
+      failedCount: failedItems.length,
+      latestActionId: items.at(-1)?.actionId || null,
+      latestBlockedActionId: blockedItems.at(-1)?.actionId || null,
+      latestFailedActionId: failedItems.at(-1)?.actionId || null,
+      pendingCount: items.length,
+      status,
+    };
+  }
+
+  function getSpecialistFollowUpActionState(actionId) {
+    const followUpItem = buildSpecialistFollowUpItems({}).find((item) => item.actionId === actionId);
+    if (!followUpItem) {
+      return null;
+    }
+
+    return {
+      item: followUpItem,
+      status: normalizeAgentRunStatus(followUpItem.status),
+    };
   }
 
   function buildProviderAttentionPendingItems(filter = {}) {
@@ -7653,6 +7694,51 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
+  async function remediateSpecialistFollowUp(actionId) {
+    const actionState = getSpecialistFollowUpActionState(actionId);
+    if (!actionState) {
+      throw new Error(`Specialist follow-up item not found: ${actionId}`);
+    }
+
+    const followUpItem = actionState.item;
+    if (!followUpItem.missionId) {
+      throw new Error(`Specialist follow-up is missing mission context: ${actionId}`);
+    }
+
+    const providerId = normalizeText(followUpItem.providerId, 'stub');
+    const rerun = await runMission(followUpItem.missionId, {
+      provider: providerId,
+      providerSpecified: true,
+    });
+    const latestParallelGroup = getLatestParallelGroupState(followUpItem.missionId);
+
+    return {
+      actionId,
+      missionId: followUpItem.missionId,
+      parallelGroupId: followUpItem.parallelGroupId || null,
+      postFollowUp: summarizeSpecialistFollowUpScopedState({
+        missionId: followUpItem.missionId,
+        parallelGroupId: followUpItem.parallelGroupId || null,
+        providerId,
+      }),
+      previousStatus: actionState.status,
+      providerId,
+      remediationKind: 'mission-rerun',
+      result: {
+        approvalId: rerun.approval?.id || null,
+        artifactPath: rerun.artifactPath || null,
+        missionId: rerun.mission.id,
+        missionStatus: rerun.mission.status,
+        parallelGroupId: latestParallelGroup?.parallelGroupId || null,
+        provider: rerun.provider,
+        reviewerVerdict: rerun.reviewerVerdict || null,
+        sessionId: rerun.session?.id || null,
+      },
+      specialistKind: followUpItem.specialistKind,
+      workspaceId: followUpItem.workspaceId || null,
+    };
+  }
+
   function acknowledgeOwnerHandoff(escalationId, { note = '' }) {
     const escalation = store.getEscalation(escalationId);
     if (!escalation) {
@@ -9216,6 +9302,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     resolveReviewerFollowUp,
     probeProvider,
     remediateProviderAttention,
+    remediateSpecialistFollowUp,
     runMission,
     showMission,
     showSession,

@@ -49,6 +49,7 @@
 - generic `action inbox` and `action log-overdue` now accept provider filtering, so provider-scoped attention and drift work can be sliced without dropping into provider-only command surfaces
 - generic `action inbox` summary now exposes provider counts, so provider-scoped backlog can be measured from the same queue response used for cross-class triage
 - `action remediate-provider-attention` now gives provider attention its first local-first remediation automation path by re-probing failed providers or rerunning the same mission and provider for execution failures
+- `action remediate-specialist-follow-up` now gives failed or blocked specialist branches the same local-first remediation path by rerunning the mission with the same provider and resuming the existing `parallelGroupId` lineage
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces
@@ -125,7 +126,7 @@
 - live provider interoperability validation against real OpenAI, Anthropic, and local endpoints
 - richer provider telemetry for provider-side usage variants and estimated cost
 - richer risk policy for path-level file and shell execution
-- deeper remediation automation for provider attention policy and specialist follow-up
+- deeper remediation automation for provider failover and policy-aware retries
 - stronger reviewer rubrics per deliverable type
 
 ## Deferred

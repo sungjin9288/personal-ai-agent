@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-04-07 Specialist Follow-Up Remediation
+
+- added `action remediate-specialist-follow-up` so blocked or failed specialist branches can be resumed from the operator surface instead of requiring a manual `mission run` reconstruction
+- reused the existing `runMission` resume path and `parallelGroupId` lineage contract, so remediation reruns only unresolved specialist branches while keeping prior completed specialist outputs and later merge behavior intact
+- added deterministic smoke coverage for one failed `implementation` specialist branch that is remediated through the dedicated CLI command, proving same-group resume, `resumeFromRunId` preservation, merge completion, and follow-up queue clearance
+- added provider context to specialist follow-up action items so generic provider filtering and remediation routing stay aligned with the same provider-aware command contract used elsewhere
+
 ## 2026-04-07 Provider Cost Telemetry
 
 - added `overview operator-timeline --provider-since` so the operator-facing chronology can carry the same recent provider window contract already used by provider, mission, workspace, and global overview surfaces

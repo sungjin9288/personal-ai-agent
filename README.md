@@ -120,6 +120,7 @@ node src/cli.mjs action inbox --class handoff-required
 node src/cli.mjs action inbox --class maintenance-required
 node src/cli.mjs action inbox --class monitoring-required
 node src/cli.mjs action inbox --class specialist-follow-up-required
+node src/cli.mjs action remediate-specialist-follow-up specialist-follow-up:parallel-group_xxx:implementation:agentrun_xxx
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --needs-reminder
 node src/cli.mjs action provider-attention
@@ -182,9 +183,10 @@ node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started mana
 2. `planner` produces a bounded plan and adapts it with prior mission memory when available
 3. if the mission constraints include `parallel-specialists:<kinds>`, the manager opens up to three specialist child branches across `research`, `implementation`, and `verification`
 4. unresolved specialist branches surface as `specialist-follow-up-required`, while completed and abandoned branches feed one manager-controlled merge step
-5. `executor` writes the merged draft artifact or the standard sequential artifact and carries forward prior mission signals
-6. `reviewer` validates required sections and next action
-7. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
+5. `action remediate-specialist-follow-up <actionId>` reruns the same mission and provider, so only unresolved specialist branches resume inside the same `parallelGroupId` lineage
+6. `executor` writes the merged draft artifact or the standard sequential artifact and carries forward prior mission signals
+7. `reviewer` validates required sections and next action
+8. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
 
 Engineering mode intentionally stops at proposal quality. It does not mutate registered workspaces in v1.
 

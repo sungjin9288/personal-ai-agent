@@ -89,6 +89,7 @@ Commands:
   action remind-provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action remediate-provider-attention <actionId>
+  action remediate-specialist-follow-up <actionId>
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action acknowledge-provider-attention <actionId> [--note <text>]
   action resolve-provider-attention <actionId> [--note <text>]
@@ -566,6 +567,11 @@ async function main() {
 
   if (group === 'action' && command === 'remediate-provider-attention') {
     printJson(await service.remediateProviderAttention(rest[0]));
+    return;
+  }
+
+  if (group === 'action' && command === 'remediate-specialist-follow-up') {
+    printJson(await service.remediateSpecialistFollowUp(rest[0]));
     return;
   }
 
