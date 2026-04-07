@@ -253,6 +253,10 @@ assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.execution > 
 assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.attention > 0, true);
 assert.equal(recentOverview.summary.providerRecentExecutionCount > 0, true);
 assert.equal(recentOverview.summary.providerRecentExecutionEstimatedCostUsdTotal, 0);
+assert.equal(recentOverview.summary.providerRecentExecutionMonthlyBucketCount, 1);
+assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 'stub');
 assert.equal(recentOverview.summary.latestRecentProviderEvent.providerId, 'stub');
 assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);

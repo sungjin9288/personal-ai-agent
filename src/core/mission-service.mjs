@@ -4389,6 +4389,13 @@ function summarizeProviderExecutions(executions) {
         providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
       providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
       providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+      providerRecentExecutionLatestMonthlyBucketDelta:
+        providerRecentWindow?.executionLatestMonthlyBucketDelta || null,
+      providerRecentExecutionLatestMonthlyBucketStartDate:
+        providerRecentWindow?.executionLatestMonthlyBucketStartDate || null,
+      providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
+      providerRecentExecutionOldestMonthlyBucketStartDate:
+        providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
       providerRecentSince: filter.providerSince || null,
       providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
       providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -4698,6 +4705,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
         providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentExecutionLatestMonthlyBucketDelta:
+          providerRecentWindow?.executionLatestMonthlyBucketDelta || null,
+        providerRecentExecutionLatestMonthlyBucketStartDate:
+          providerRecentWindow?.executionLatestMonthlyBucketStartDate || null,
+        providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
+        providerRecentExecutionOldestMonthlyBucketStartDate:
+          providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
         providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -7464,6 +7478,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerRecentEventFamilyCounts:
           providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
         providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
+        providerRecentExecutionLatestMonthlyBucketDelta:
+          providerOverview.recentWindow?.executionLatestMonthlyBucketDelta || null,
+        providerRecentExecutionLatestMonthlyBucketStartDate:
+          providerOverview.recentWindow?.executionLatestMonthlyBucketStartDate || null,
+        providerRecentExecutionMonthlyBucketCount:
+          providerOverview.recentWindow?.executionMonthlyBucketCount || 0,
+        providerRecentExecutionOldestMonthlyBucketStartDate:
+          providerOverview.recentWindow?.executionOldestMonthlyBucketStartDate || null,
         providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
@@ -8342,6 +8364,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
         providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentExecutionLatestMonthlyBucketDelta:
+          providerRecentWindow?.executionLatestMonthlyBucketDelta || null,
+        providerRecentExecutionLatestMonthlyBucketStartDate:
+          providerRecentWindow?.executionLatestMonthlyBucketStartDate || null,
+        providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
+        providerRecentExecutionOldestMonthlyBucketStartDate:
+          providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
         providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -8370,6 +8399,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
         providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerOverview.recentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentExecutionLatestMonthlyBucketDelta:
+          providerOverview.recentWindow?.executionLatestMonthlyBucketDelta || null,
+        providerRecentExecutionLatestMonthlyBucketStartDate:
+          providerOverview.recentWindow?.executionLatestMonthlyBucketStartDate || null,
+        providerRecentExecutionMonthlyBucketCount:
+          providerOverview.recentWindow?.executionMonthlyBucketCount || 0,
+        providerRecentExecutionOldestMonthlyBucketStartDate:
+          providerOverview.recentWindow?.executionOldestMonthlyBucketStartDate || null,
         providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,

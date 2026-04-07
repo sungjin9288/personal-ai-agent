@@ -249,6 +249,10 @@ assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.execution, 1
 assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.attention, 0);
 assert.equal(recentOverview.summary.providerRecentProbeTotal, 2);
 assert.equal(recentOverview.summary.providerRecentExecutionCount, 12);
+assert.equal(recentOverview.summary.providerRecentExecutionMonthlyBucketCount, 1);
+assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentOverview.summary.providerRecentTouchedProviderCount, 2);
 assert.deepEqual(recentOverview.summary.providerRecentTouchedProviderIds, ['openai', 'stub']);
 assert.equal(recentOverview.summary.latestRecentProviderProbe.providerId, 'openai');

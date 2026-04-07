@@ -369,6 +369,10 @@ assert.equal(
 assert.equal(recentProviderTimeline.summary.providerRecentSince, recentProviderSince);
 assert.equal(recentProviderTimeline.providerRecentWindow.filters.since, recentProviderSince);
 assert.equal(recentProviderTimeline.summary.providerRecentExecutionCount, 4);
+assert.equal(recentProviderTimeline.summary.providerRecentExecutionMonthlyBucketCount, 1);
+assert.equal(recentProviderTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentProviderTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentProviderTimeline.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentProviderTimeline.providerRecentWindow.executionBucketCount, 1);
 assert.equal(recentProviderTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
 assert.equal(recentProviderTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
