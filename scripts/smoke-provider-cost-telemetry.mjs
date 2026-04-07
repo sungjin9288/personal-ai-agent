@@ -249,6 +249,53 @@ try {
   assert.deepEqual(providerActivity.summary.estimatedCostUsdByProviderId, combinedCostByProviderId);
   assert.deepEqual(providerActivity.summary.estimatedCostUsdByRole, combinedCostByRole);
 
+  const statePath = path.join(tempRoot, 'var', 'state.json');
+  const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  const successfulRunIds = providerActivity.executions
+    .filter((execution) => execution.status === 'completed')
+    .map((execution) => execution.id);
+  const failedRunId = providerActivity.executions.find((execution) => execution.status === 'failed')?.id;
+
+  state.agentRuns = state.agentRuns.map((run) => {
+    if (successfulRunIds.includes(run.id)) {
+      return {
+        ...run,
+        endedAt: '2026-04-01T10:00:00.000Z',
+        startedAt: '2026-04-01T09:59:00.000Z',
+      };
+    }
+    if (run.id === failedRunId) {
+      return {
+        ...run,
+        endedAt: '2026-04-03T10:00:00.000Z',
+        startedAt: '2026-04-03T09:59:00.000Z',
+      };
+    }
+    return run;
+  });
+  fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+  const providerActivityBuckets = service.getProviderExecutionHistory({ providerId: 'local' });
+  assert.equal(providerActivityBuckets.summary.bucketCount, 2);
+  assert.equal(providerActivityBuckets.summary.latestBucketDate, '2026-04-03');
+  assert.equal(providerActivityBuckets.summary.oldestBucketDate, '2026-04-01');
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[0].executionCount, 1);
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[0].failedCount, 1);
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[0].estimatedCostUsdTotal, failedManagerCost);
+  assert.deepEqual(providerActivityBuckets.summary.dailyBuckets[0].estimatedCostUsdByRole, {
+    manager: failedManagerCost,
+  });
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[1].executionCount, 4);
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[1].completedCount, 4);
+  assert.equal(providerActivityBuckets.summary.dailyBuckets[1].estimatedCostUsdTotal, successfulCostTotal);
+  assert.equal(
+    providerActivityBuckets.summary.latestBucketDelta.estimatedCostUsdTotalDelta,
+    roundUsd(failedManagerCost - successfulCostTotal),
+  );
+  assert.equal(providerActivityBuckets.summary.latestBucketDelta.executionCountDelta, -3);
+  assert.equal(providerActivityBuckets.summary.latestBucketDelta.failedCountDelta, 1);
+  assert.equal(providerActivityBuckets.summary.latestBucketDelta.completedCountDelta, -4);
+
   const providerExecutionTimeline = service.getProviderExecutionTimeline({ providerId: 'local' });
   assert.equal(providerExecutionTimeline.summary.estimatedCostUsdTotal, combinedCostTotal);
   assert.deepEqual(providerExecutionTimeline.summary.estimatedCostUsdByProviderId, combinedCostByProviderId);

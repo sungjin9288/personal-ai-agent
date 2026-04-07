@@ -1566,7 +1566,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return buildProviderExecutionEntries({ providerId }).at(-1) || null;
   }
 
-  function summarizeProviderExecutions(executions) {
+function summarizeProviderExecutions(executions) {
     const providerCounts = {};
     const roleCounts = Object.fromEntries(AGENT_ROLES.map((role) => [role, 0]));
     const statusCounts = {
@@ -1614,6 +1614,82 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       estimatedCostUsdByRole: estimatedCostByRole,
       ...estimatedCostSummary,
       ...usageSummary,
+    };
+  }
+
+  function buildProviderExecutionDailyBuckets(executions) {
+    const bucketMap = new Map();
+
+    for (const execution of executions) {
+      const at = String(execution.at || execution.endedAt || execution.startedAt || '');
+      if (!at) {
+        continue;
+      }
+
+      const date = at.slice(0, 10);
+      const current = bucketMap.get(date) || {
+        completedCount: 0,
+        date,
+        estimatedCostUsdByProviderId: {},
+        estimatedCostUsdByRole: {},
+        estimatedCostUsdPricedCount: 0,
+        estimatedCostUsdTotal: 0,
+        executionCount: 0,
+        failedCount: 0,
+      };
+
+      current.executionCount += 1;
+      if (execution.status === 'completed') {
+        current.completedCount += 1;
+      }
+      if (execution.status === 'failed') {
+        current.failedCount += 1;
+      }
+
+      const estimatedCostUsd = roundUsdAmount(execution.estimatedCostUsd);
+      if (Number.isFinite(estimatedCostUsd) && estimatedCostUsd >= 0) {
+        current.estimatedCostUsdPricedCount += 1;
+        current.estimatedCostUsdTotal = roundUsdAmount(current.estimatedCostUsdTotal + estimatedCostUsd);
+
+        const providerId = normalizeText(execution.providerId);
+        if (providerId) {
+          current.estimatedCostUsdByProviderId[providerId] = roundUsdAmount(
+            Number(current.estimatedCostUsdByProviderId[providerId] || 0) + estimatedCostUsd,
+          );
+        }
+
+        const role = normalizeText(execution.role);
+        if (role) {
+          current.estimatedCostUsdByRole[role] = roundUsdAmount(
+            Number(current.estimatedCostUsdByRole[role] || 0) + estimatedCostUsd,
+          );
+        }
+      }
+
+      bucketMap.set(date, current);
+    }
+
+    return [...bucketMap.values()].sort((left, right) => String(right.date).localeCompare(String(left.date)));
+  }
+
+  function buildProviderExecutionLatestBucketDelta(dailyBuckets) {
+    const current = dailyBuckets[0] || null;
+    if (!current) {
+      return null;
+    }
+
+    const previous = dailyBuckets[1] || null;
+    return {
+      completedCountDelta: Number(current.completedCount || 0) - Number(previous?.completedCount || 0),
+      currentDate: current.date,
+      estimatedCostUsdPricedCountDelta:
+        Number(current.estimatedCostUsdPricedCount || 0) - Number(previous?.estimatedCostUsdPricedCount || 0),
+      estimatedCostUsdTotalDelta: roundUsdAmount(
+        Number(current.estimatedCostUsdTotal || 0) - Number(previous?.estimatedCostUsdTotal || 0),
+      ),
+      executionCountDelta: Number(current.executionCount || 0) - Number(previous?.executionCount || 0),
+      failedCountDelta: Number(current.failedCount || 0) - Number(previous?.failedCount || 0),
+      previousDate: previous?.date || null,
     };
   }
 
@@ -2926,9 +3002,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function getProviderExecutionHistory(filter = {}) {
     const executions = buildProviderExecutionEntries(filter);
+    const dailyBuckets = buildProviderExecutionDailyBuckets(executions);
     return {
       executions,
-      summary: summarizeProviderExecutions(executions),
+      summary: {
+        ...summarizeProviderExecutions(executions),
+        bucketCount: dailyBuckets.length,
+        dailyBuckets,
+        latestBucketDate: dailyBuckets[0]?.date || null,
+        latestBucketDelta: buildProviderExecutionLatestBucketDelta(dailyBuckets),
+        oldestBucketDate: dailyBuckets.at(-1)?.date || null,
+      },
     };
   }
 
