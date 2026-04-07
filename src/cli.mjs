@@ -68,8 +68,8 @@ Commands:
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>]
   mission list
   mission run <missionId> [--provider <stub|openai|anthropic|local>]
-  mission show <missionId>
-  mission timeline <missionId>
+  mission show <missionId> [--provider-since <iso-timestamp>]
+  mission timeline <missionId> [--provider-since <iso-timestamp>]
 
   session list <missionId>
   session show <missionId>
@@ -330,12 +330,20 @@ async function main() {
   }
 
   if (group === 'mission' && command === 'show') {
-    printJson(service.showMission(rest[0]));
+    printJson(
+      service.showMission(rest[0], {
+        providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
     return;
   }
 
   if (group === 'mission' && command === 'timeline') {
-    printJson(service.getMissionTimeline(rest[0]));
+    printJson(
+      service.getMissionTimeline(rest[0], {
+        providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
     return;
   }
 

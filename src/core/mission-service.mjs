@@ -4020,11 +4020,15 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
-  function summarizeMission(mission) {
+  function summarizeMission(mission, filter = {}) {
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
     const providerActivity = summarizeMissionProviderActivity(mission.id);
+    const providerRecentWindow = buildScopedProviderRecentWindow({
+      missionId: mission.id,
+      since: filter.providerSince,
+    });
     const parallelActivity = summarizeMissionParallelActivity(mission.id);
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
@@ -4106,6 +4110,8 @@ function summarizeProviderExecutions(executions) {
       latestProviderExecution: providerActivity.latestExecution,
       latestProviderExecutionEvent: providerActivity.latestExecutionEvent,
       latestFailedProviderExecution: providerActivity.latestFailedExecution,
+      latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
+      latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
       latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
       providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
       providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
@@ -4123,6 +4129,14 @@ function summarizeProviderExecutions(executions) {
       providerAttentionTotalRetryCount: providerActivity.summary.attentionTotalRetryCount,
       providerEventCount: providerActivity.summary.eventCount,
       providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+      providerRecentEventCount: providerRecentWindow?.eventCount || 0,
+      providerRecentEventFamilyCounts:
+        providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+      providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
+      providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+      providerRecentSince: filter.providerSince || null,
+      providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
+      providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
       providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
       providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
       providerExecutionCount: providerActivity.summary.executionCount,
@@ -8256,22 +8270,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
-  function showMission(missionId) {
+  function showMission(missionId, filter = {}) {
     const mission = getMission(missionId);
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'mission provider since timestamp');
     syncEscalations({ missionId: mission.id });
     return {
       mission,
-      summary: summarizeMission(mission),
+      providerRecentWindow: buildScopedProviderRecentWindow({
+        missionId: mission.id,
+        since: providerSince,
+      }),
+      summary: summarizeMission(mission, { providerSince }),
       sessions: listSessions(mission.id),
     };
   }
 
-  function getMissionTimeline(missionId) {
+  function getMissionTimeline(missionId, filter = {}) {
     const mission = getMission(missionId);
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'mission provider since timestamp');
     syncEscalations({ missionId: mission.id });
     return {
       mission,
-      summary: summarizeMission(mission),
+      providerRecentWindow: buildScopedProviderRecentWindow({
+        missionId: mission.id,
+        since: providerSince,
+      }),
+      summary: summarizeMission(mission, { providerSince }),
       timeline: buildMissionTimeline(mission),
     };
   }

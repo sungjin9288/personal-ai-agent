@@ -60,6 +60,7 @@ assert.equal(secondRun.status, 'awaiting_approval');
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const recentProviderSince = '2026-04-02T00:00:00.000Z';
 
 state.approvals = state.approvals.map((approval) => {
   if (approval.id === secondRun.approvalId) {
@@ -71,6 +72,12 @@ state.approvals = state.approvals.map((approval) => {
 
   return approval;
 });
+
+state.agentRuns = state.agentRuns.map((run) => ({
+  ...run,
+  startedAt: '2026-04-01T10:00:00.000Z',
+  endedAt: '2026-04-01T10:01:00.000Z',
+}));
 
 fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 
@@ -192,6 +199,20 @@ const resolvedProviderAttention = runCli({
 
 assert.equal(resolvedProviderAttention.status, 'resolved');
 
+const recentProviderState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+recentProviderState.agentRuns = recentProviderState.agentRuns.map((run) => {
+  if (run.missionId === providerAttentionMission.id) {
+    return {
+      ...run,
+      startedAt: '2026-04-03T10:00:00.000Z',
+      endedAt: '2026-04-03T10:01:00.000Z',
+    };
+  }
+
+  return run;
+});
+fs.writeFileSync(statePath, `${JSON.stringify(recentProviderState, null, 2)}\n`, 'utf8');
+
 const missionShow = runCli({
   rootDir: tempRoot,
   args: ['mission', 'show', mission.id],
@@ -207,9 +228,19 @@ const providerMissionShow = runCli({
   args: ['mission', 'show', providerAttentionMission.id],
 });
 
+const recentProviderMissionShow = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'show', providerAttentionMission.id, '--provider-since', recentProviderSince],
+});
+
 const providerTimeline = runCli({
   rootDir: tempRoot,
   args: ['mission', 'timeline', providerAttentionMission.id],
+});
+
+const recentProviderTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', providerAttentionMission.id, '--provider-since', recentProviderSince],
 });
 
 assert.equal(missionShow.summary.sessionCount, 2);
@@ -290,6 +321,16 @@ assert.equal(providerMissionShow.summary.latestProviderAttentionResolution.provi
 assert.equal(providerMissionShow.summary.latestFailedProviderExecution.providerId, 'stub');
 assert.equal(providerMissionShow.summary.latestProviderExecution.providerId, 'stub');
 assert.equal(providerMissionShow.summary.latestProviderExecution.role, 'reviewer');
+assert.equal(recentProviderMissionShow.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentProviderMissionShow.summary.providerRecentTouchedProviderCount, 1);
+assert.deepEqual(recentProviderMissionShow.summary.providerRecentTouchedProviderIds, ['stub']);
+assert.equal(recentProviderMissionShow.summary.providerRecentEventFamilyCounts.execution, 4);
+assert.equal(recentProviderMissionShow.summary.providerRecentEventFamilyCounts.attention, 3);
+assert.equal(recentProviderMissionShow.summary.providerRecentExecutionCount, 4);
+assert.equal(recentProviderMissionShow.summary.latestRecentProviderExecution.providerId, 'stub');
+assert.equal(recentProviderMissionShow.summary.latestRecentProviderEvent.providerId, 'stub');
+assert.equal(recentProviderMissionShow.providerRecentWindow.filters.since, recentProviderSince);
+assert.equal(recentProviderMissionShow.providerRecentWindow.executionCount, 4);
 
 assert.equal(providerTimeline.summary.sessionCount, 1);
 assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-succeeded').length, 3);
@@ -313,6 +354,9 @@ assert.equal(
   ),
   true,
 );
+assert.equal(recentProviderTimeline.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentProviderTimeline.providerRecentWindow.filters.since, recentProviderSince);
+assert.equal(recentProviderTimeline.summary.providerRecentExecutionCount, 4);
 
 for (let index = 1; index < timeline.timeline.length; index += 1) {
   assert.ok(String(timeline.timeline[index - 1].at) <= String(timeline.timeline[index].at));

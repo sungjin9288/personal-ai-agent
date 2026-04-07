@@ -33,6 +33,7 @@
 - provider overview now supports `since`-scoped `recentWindow` health summary so recent provider probe and execution activity can be inspected without changing the full-history control-plane aggregate
 - global overview now supports `provider-since` linkage so recent provider probe and execution activity can be surfaced alongside workspace and mission aggregates without replacing the existing full-history provider summary
 - workspace overview now supports `provider-since` linkage so workspace-bound provider execution and attention activity can be inspected as a recent window without replacing the existing full-history workspace summary
+- mission show and mission timeline now support `provider-since` linkage so mission-bound provider execution and attention activity can be inspected as a recent window without replacing the existing mission audit summary
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces

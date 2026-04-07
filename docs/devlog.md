@@ -23,6 +23,7 @@
 - added `overview providers --since` with a separate `recentWindow` summary so recent provider health can be queried without mutating the existing full-history overview aggregate
 - added `overview global --provider-since` so the global control-plane can expose recent provider probe and execution activity through `providerRecentWindow` while preserving the default full-history provider aggregate
 - added `workspace overview --provider-since` so workspace-bound provider execution and attention activity can be queried as `providerRecentWindow` without mutating the default workspace summary contract
+- added `mission show --provider-since` and `mission timeline --provider-since` so mission-bound provider execution and attention activity can be queried as `providerRecentWindow` from the mission surface itself
 - added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
 
 ## 2026-04-07 Provider Hardening Baseline
