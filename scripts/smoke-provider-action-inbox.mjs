@@ -125,6 +125,26 @@ assert.equal(inbox.summary.actionClassCounts.providerHealthDriftRequired, 1);
 assert.equal(inbox.summary.actionCounts.providerAttention, 1);
 assert.equal(inbox.summary.actionCounts.providerHealthDrift, 1);
 
+const stubInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--provider', 'stub'],
+});
+
+assert.equal(stubInbox.filters.providerId, 'stub');
+assert.equal(stubInbox.items.length, 1);
+assert.equal(stubInbox.items[0].providerId, 'stub');
+assert.equal(stubInbox.items[0].actionType, 'provider-health-drift');
+
+const anthropicInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--provider', 'anthropic'],
+});
+
+assert.equal(anthropicInbox.filters.providerId, 'anthropic');
+assert.equal(anthropicInbox.items.length, 1);
+assert.equal(anthropicInbox.items[0].providerId, 'anthropic');
+assert.equal(anthropicInbox.items[0].actionType, 'provider-attention');
+
 const providerAttentionInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--class', 'provider-attention-required'],

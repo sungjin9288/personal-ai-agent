@@ -6368,6 +6368,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function getActionInbox(filter = {}) {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
     if (filter.workspaceId) {
       getWorkspace(filter.workspaceId);
     }
@@ -6407,6 +6410,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         if (filter.actionClass && item.actionClass !== filter.actionClass) {
           return false;
         }
+        if (filter.providerId && item.providerId !== filter.providerId) {
+          return false;
+        }
         if (filter.priority && item.priority !== filter.priority) {
           return false;
         }
@@ -6434,6 +6440,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         needsReminderOnly: Boolean(filter.needsReminderOnly),
         owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
+        providerId: filter.providerId || null,
         priority: filter.priority || null,
         workspaceId: filter.workspaceId || null,
       },

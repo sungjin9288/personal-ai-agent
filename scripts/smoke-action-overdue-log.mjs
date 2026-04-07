@@ -237,6 +237,15 @@ const driftOnlyLog = runCli({
 assert.equal(driftOnlyLog.logged, true);
 assert.equal(driftOnlyLog.count, 1);
 
+const driftProviderLog = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'log-overdue', '--class', 'provider-health-drift-required', '--provider', 'stub'],
+});
+
+assert.equal(driftProviderLog.logged, true);
+assert.equal(driftProviderLog.count, 1);
+assert.equal(driftProviderLog.filters.providerId, 'stub');
+
 console.log(
   JSON.stringify(
     {
