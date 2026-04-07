@@ -1790,6 +1790,27 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }));
   }
 
+  function buildProviderAttentionOpenedTimeline(items, acknowledgementRecords = []) {
+    const acknowledgedActionIds = new Set(acknowledgementRecords.map((record) => record.actionId));
+
+    return items
+      .filter((item) => !acknowledgedActionIds.has(item.actionId))
+      .map((item) => ({
+        actionId: item.actionId,
+        at: item.createdAt,
+        detail: item.reason || item.title || 'Provider attention opened.',
+        eventRefId: item.eventRefId || null,
+        kind: 'provider-attention-opened',
+        missionId: item.missionId || null,
+        providerDisplayName: item.providerDisplayName || null,
+        providerId: item.providerId,
+        sessionId: item.sessionId || null,
+        status: 'pending',
+        workspaceId: item.workspaceId || null,
+        workspaceName: item.workspaceName || null,
+      }));
+  }
+
   function buildProviderBaseEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
     const events = [];
@@ -1895,7 +1916,40 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const events = [...buildProviderBaseEvents(filter)];
 
     if (!family || family === 'attention') {
+      const attentionAcknowledgements = store.listProviderAttentionAcknowledgements({
+        missionId: filter.missionId,
+        providerId: filter.providerId,
+        workspaceId: filter.workspaceId,
+      });
+      const syntheticOpenedTimeline = buildProviderAttentionOpenedTimeline(
+        [
+          ...buildProviderAttentionPendingItems({
+            missionId: filter.missionId,
+            providerId: filter.providerId,
+            workspaceId: filter.workspaceId,
+          }),
+          ...buildProviderAttentionRecoveredItems({
+            missionId: filter.missionId,
+            providerId: filter.providerId,
+            workspaceId: filter.workspaceId,
+          }),
+        ],
+        attentionAcknowledgements,
+      );
+
       events.push(
+        ...syntheticOpenedTimeline.map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'attention',
+          eventKind: event.kind,
+          executionStatus: null,
+          ok: null,
+          probeId: null,
+          role: null,
+          runId: null,
+          status: event.status,
+        })),
         ...buildProviderAttentionRecoveredTimeline(
           buildProviderAttentionRecoveredItems({
             missionId: filter.missionId,
@@ -2008,15 +2062,27 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const recoveredAttentionItems = buildProviderAttentionRecoveredItems(filter);
     const resolvedAttentionItems = buildProviderAttentionResolvedItems(filter);
     const reminderRecords = store.listProviderAttentionReminders(filter);
+    const attentionAcknowledgements = store.listProviderAttentionAcknowledgements(filter);
     const executionEntries = buildProviderExecutionEntries(filter);
     const executionSummary = summarizeProviderExecutions(executionEntries);
     const scopedProviderEvents = sortTimelineEvents([
+      ...buildProviderAttentionOpenedTimeline(
+        [...pendingAttentionItems, ...recoveredAttentionItems],
+        attentionAcknowledgements,
+      ).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: null,
+        probeId: null,
+        role: null,
+        runId: null,
+        status: event.status || 'pending',
+      })),
       ...buildProviderAttentionTimeline(
-        store.listProviderAttentionAcknowledgements({
-          missionId: filter.missionId,
-          providerId: filter.providerId,
-          workspaceId: filter.workspaceId,
-        }),
+        attentionAcknowledgements,
       ).map((event) => ({
         ...event,
         attempted: null,
@@ -5441,6 +5507,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const reviewerFollowUps = listReviewerFollowUpRecords({ missionId: mission.id });
     const providerExecutions = buildProviderExecutionEntries({ missionId: mission.id });
     const providerAttentionAcknowledgements = store.listProviderAttentionAcknowledgements({ missionId: mission.id });
+    const providerAttentionRecoveredItems = buildProviderAttentionRecoveredItems({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const timeline = [
       {
@@ -5540,19 +5607,25 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
     }
 
-    for (const attentionItem of buildProviderAttentionPendingItems({ missionId: mission.id })) {
+    for (const event of buildProviderAttentionOpenedTimeline(
+      [
+        ...buildProviderAttentionPendingItems({ missionId: mission.id }),
+        ...providerAttentionRecoveredItems,
+      ],
+      providerAttentionAcknowledgements,
+    )) {
       timeline.push({
-        actionId: attentionItem.actionId,
-        at: attentionItem.createdAt,
-        detail: attentionItem.reason || attentionItem.title,
-        kind: 'provider-attention-opened',
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
         missionId: mission.id,
-        providerDisplayName: attentionItem.providerDisplayName,
-        providerId: attentionItem.providerId,
-        sessionId: attentionItem.sessionId || null,
-        status: 'pending',
-        workspaceId: attentionItem.workspaceId || mission.workspaceId,
-        workspaceName: attentionItem.workspaceName || null,
+        providerDisplayName: event.providerDisplayName,
+        providerId: event.providerId,
+        sessionId: event.sessionId || null,
+        status: event.status || 'pending',
+        workspaceId: event.workspaceId || mission.workspaceId,
+        workspaceName: event.workspaceName || null,
       });
     }
 
@@ -5573,7 +5646,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     for (const event of buildProviderAttentionRecoveredTimeline(
-      buildProviderAttentionRecoveredItems({ missionId: mission.id }),
+      providerAttentionRecoveredItems,
     )) {
       timeline.push({
         actionId: event.actionId,
@@ -5848,30 +5921,42 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
     }
 
-    for (const attentionItem of buildProviderAttentionPendingItems({
+    const operatorAttentionAcknowledgements = store.listProviderAttentionAcknowledgements({
       missionId: filter.missionId,
       workspaceId: filter.workspaceId,
-    })) {
+    });
+    const operatorRecoveredAttentionItems = buildProviderAttentionRecoveredItems({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    });
+
+    for (const event of buildProviderAttentionOpenedTimeline(
+      [
+        ...buildProviderAttentionPendingItems({
+          missionId: filter.missionId,
+          workspaceId: filter.workspaceId,
+        }),
+        ...operatorRecoveredAttentionItems,
+      ],
+      operatorAttentionAcknowledgements,
+    )) {
       events.push({
-        actionId: attentionItem.actionId,
-        at: attentionItem.createdAt,
-        detail: attentionItem.reason || attentionItem.title,
-        kind: 'provider-attention-opened',
-        missionId: attentionItem.missionId || null,
-        providerId: attentionItem.providerId,
-        providerDisplayName: attentionItem.providerDisplayName,
-        sessionId: attentionItem.sessionId || null,
-        status: 'pending',
-        workspaceId: attentionItem.workspaceId || null,
-        workspaceName: attentionItem.workspaceName || null,
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: event.missionId || null,
+        providerId: event.providerId,
+        providerDisplayName: event.providerDisplayName,
+        sessionId: event.sessionId || null,
+        status: event.status || 'pending',
+        workspaceId: event.workspaceId || null,
+        workspaceName: event.workspaceName || null,
       });
     }
 
     for (const event of buildProviderAttentionTimeline(
-      store.listProviderAttentionAcknowledgements({
-        missionId: filter.missionId,
-        workspaceId: filter.workspaceId,
-      }),
+      operatorAttentionAcknowledgements,
     )) {
       events.push({
         actionId: event.actionId,
@@ -5889,10 +5974,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     for (const event of buildProviderAttentionRecoveredTimeline(
-      buildProviderAttentionRecoveredItems({
-        missionId: filter.missionId,
-        workspaceId: filter.workspaceId,
-      }),
+      operatorRecoveredAttentionItems,
     )) {
       if (!event.workspaceId) {
         continue;

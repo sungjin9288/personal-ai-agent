@@ -101,9 +101,10 @@ const providerEvents = runCli({
   args: ['provider', 'events', '--family', 'attention', '--provider', 'stub'],
 });
 
-assert.equal(providerEvents.timeline.length, 1);
-assert.equal(providerEvents.timeline[0].eventKind, 'provider-attention-recovered');
-assert.equal(providerEvents.summary.familyCounts.attention, 1);
+assert.equal(providerEvents.timeline.length, 2);
+assert.equal(providerEvents.timeline[0].eventKind, 'provider-attention-opened');
+assert.equal(providerEvents.timeline[1].eventKind, 'provider-attention-recovered');
+assert.equal(providerEvents.summary.familyCounts.attention, 2);
 assert.equal(providerEvents.summary.latestAttentionEvent.eventKind, 'provider-attention-recovered');
 
 const providerOverview = runCli({
@@ -136,6 +137,10 @@ assert.equal(
   true,
 );
 assert.equal(
+  missionTimeline.timeline.some((event) => event.kind === 'provider-attention-opened' && event.providerId === 'stub'),
+  true,
+);
+assert.equal(
   missionTimeline.timeline.some((event) => event.kind === 'provider-attention-recovered' && event.providerId === 'stub'),
   true,
 );
@@ -146,6 +151,7 @@ const workspaceTimeline = runCli({
 });
 
 assert.equal(workspaceTimeline.summary.eventCounts['provider-execution-failed'], 1);
+assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-opened'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-recovered'], 1);
 
 const workspaceOverview = runCli({

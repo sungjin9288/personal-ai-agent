@@ -202,10 +202,10 @@ const providerEventsResult = runCli({
 
 assert.equal(providerEventsResult.status, 0);
 const providerEvents = JSON.parse(providerEventsResult.stdout);
-assert.equal(providerEvents.summary.total, 10);
+assert.equal(providerEvents.summary.total, 11);
 assert.equal(providerEvents.summary.familyCounts.probe, 2);
 assert.equal(providerEvents.summary.familyCounts.execution, 8);
-assert.equal(providerEvents.summary.familyCounts.attention, 0);
+assert.equal(providerEvents.summary.familyCounts.attention, 1);
 assert.equal(providerEvents.summary.probeAttemptedCount, 1);
 assert.equal(providerEvents.summary.probeSkippedCount, 1);
 assert.equal(providerEvents.summary.probeSuccessCount, 1);
@@ -214,6 +214,7 @@ assert.equal(providerEvents.summary.executionCompletedCount, 7);
 assert.equal(providerEvents.summary.executionFailedCount, 1);
 assert.equal(providerEvents.summary.latestEvent.eventFamily, 'execution');
 assert.equal(providerEvents.summary.latestEvent.providerId, 'local');
+assert.equal(providerEvents.summary.latestAttentionEvent.providerId, 'stub');
 assert.equal(providerEvents.summary.latestProbeEvent.providerId, 'local');
 assert.equal(providerEvents.summary.latestExecutionEvent.providerId, 'local');
 
@@ -226,6 +227,17 @@ assert.equal(probeOnlyResult.status, 0);
 const probeOnly = JSON.parse(probeOnlyResult.stdout);
 assert.equal(probeOnly.timeline.length, 2);
 assert.ok(probeOnly.timeline.every((event) => event.eventFamily === 'probe'));
+
+const attentionOnlyResult = runCli({
+  args: ['provider', 'events', '--family', 'attention', '--provider', 'stub'],
+  env: configuredEnv,
+});
+
+assert.equal(attentionOnlyResult.status, 0);
+const attentionOnly = JSON.parse(attentionOnlyResult.stdout);
+assert.equal(attentionOnly.timeline.length, 1);
+assert.equal(attentionOnly.timeline[0].eventKind, 'provider-attention-opened');
+assert.equal(attentionOnly.timeline[0].providerId, 'stub');
 
 const executionFailedResult = runCli({
   args: ['provider', 'events', '--family', 'execution', '--provider', 'stub', '--status', 'failed'],
@@ -257,11 +269,12 @@ const providerOverviewResult = runCli({
 
 assert.equal(providerOverviewResult.status, 0);
 const providerOverview = JSON.parse(providerOverviewResult.stdout);
-assert.equal(providerOverview.summary.eventTotal, 10);
+assert.equal(providerOverview.summary.eventTotal, 11);
 assert.equal(providerOverview.summary.eventFamilyCounts.probe, 2);
-assert.equal(providerOverview.summary.eventFamilyCounts.attention, 0);
+assert.equal(providerOverview.summary.eventFamilyCounts.attention, 1);
 assert.equal(providerOverview.summary.eventFamilyCounts.execution, 8);
 assert.equal(providerOverview.summary.latestEvent.providerId, 'local');
+assert.equal(providerOverview.summary.latestAttentionEvent.providerId, 'stub');
 assert.equal(providerOverview.summary.latestProbeEvent.providerId, 'local');
 assert.equal(providerOverview.summary.latestExecutionEvent.providerId, 'local');
 assert.equal(
@@ -276,10 +289,12 @@ const globalOverviewResult = runCli({
 
 assert.equal(globalOverviewResult.status, 0);
 const globalOverview = JSON.parse(globalOverviewResult.stdout);
-assert.equal(globalOverview.summary.providerEventCount, 10);
+assert.equal(globalOverview.summary.providerEventCount, 11);
 assert.equal(globalOverview.summary.providerEventFamilyCounts.probe, 2);
+assert.equal(globalOverview.summary.providerEventFamilyCounts.attention, 1);
 assert.equal(globalOverview.summary.providerEventFamilyCounts.execution, 8);
 assert.equal(globalOverview.summary.latestProviderEvent.providerId, 'local');
+assert.equal(globalOverview.summary.latestProviderAttentionEvent.providerId, 'stub');
 assert.equal(globalOverview.summary.latestProviderProbeEvent.providerId, 'local');
 assert.equal(globalOverview.summary.latestProviderExecutionEvent.providerId, 'local');
 
