@@ -1294,6 +1294,46 @@ function summarizeReviewerFollowUps(items) {
   };
 }
 
+function summarizeSpecialistFollowUpItems(items) {
+  const providerCounts = {};
+  const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
+  const statusCounts = {
+    blocked: 0,
+    failed: 0,
+    total: items.length,
+  };
+  const workspaceCounts = {};
+  let overdueCount = 0;
+
+  for (const item of items) {
+    if (item.providerId) {
+      providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+    }
+    if (item.workspaceId) {
+      workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+    }
+    if (SPECIALIST_KINDS.includes(item.specialistKind)) {
+      specialistKindCounts[item.specialistKind] = (specialistKindCounts[item.specialistKind] || 0) + 1;
+    }
+    if (item.status === 'blocked' || item.status === 'failed') {
+      statusCounts[item.status] += 1;
+    }
+    if (item.isOverdue) {
+      overdueCount += 1;
+    }
+  }
+
+  return {
+    latestItem: items.at(-1) || null,
+    overdueCount,
+    providerCounts,
+    specialistKindCounts,
+    statusCounts,
+    total: items.length,
+    workspaceCounts,
+  };
+}
+
 function summarizeOperatorTimeline(events) {
   const eventCounts = {};
   const workspaceCounts = {};
@@ -7337,6 +7377,37 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
+  function getSpecialistFollowUpInbox(filter = {}) {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.status && !['blocked', 'failed'].includes(filter.status)) {
+      throw new Error(`Unsupported specialist follow-up status: ${filter.status}`);
+    }
+
+    const items = buildSpecialistFollowUpItems(filter)
+      .filter((item) => !filter.status || item.status === filter.status)
+      .filter((item) => !filter.overdueOnly || item.isOverdue);
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        providerId: filter.providerId || null,
+        status: filter.status || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeSpecialistFollowUpItems(items),
+    };
+  }
+
   function remindProviderAttention(filter = {}, note = '') {
     if (filter.providerId) {
       providerRegistry.getProviderStatus(filter.providerId);
@@ -9272,6 +9343,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getOwnerHandoffInbox,
     getProviderAttentionInbox,
     getProviderHealthDriftInbox,
+    getSpecialistFollowUpInbox,
     getProviderExecutionHistory,
     getProviderExecutionTimeline,
     getProviderEventTimeline,

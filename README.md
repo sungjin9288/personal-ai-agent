@@ -120,6 +120,8 @@ node src/cli.mjs action inbox --class handoff-required
 node src/cli.mjs action inbox --class maintenance-required
 node src/cli.mjs action inbox --class monitoring-required
 node src/cli.mjs action inbox --class specialist-follow-up-required
+node src/cli.mjs action specialist-follow-ups
+node src/cli.mjs action specialist-follow-ups --status failed
 node src/cli.mjs action remediate-specialist-follow-up specialist-follow-up:parallel-group_xxx:implementation:agentrun_xxx
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --needs-reminder
