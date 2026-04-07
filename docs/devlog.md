@@ -11,6 +11,7 @@
 - added `action remind-specialist-follow-ups` plus persisted reminder records and `specialist-follow-up-reminded` timeline evidence, so follow-up re-notify pressure is auditable on mission/workspace/operator surfaces
 - extended `action maintenance` and maintenance summaries so due specialist follow-up reminders are swept and counted alongside escalation, owner handoff, and provider attention reminder pressure
 - linked specialist reminder aggregate fields into mission, workspace, and global summaries, so reminder needs, overdue count, latest reminder timestamp, and next reminder deadline can be read from the same summary surfaces already used for specialist run and merge state
+- linked the same specialist reminder aggregate fields into workspace timeline and global operator timeline summaries, so operator chronology payloads can show current follow-up reminder pressure without reopening dedicated action surfaces
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry

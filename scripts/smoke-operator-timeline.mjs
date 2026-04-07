@@ -93,6 +93,33 @@ const reviewerRun = runCli({
 
 assert.equal(reviewerRun.status, 'failed');
 
+const specialistReminderMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspaceTwo.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Specialist reminder timeline mission',
+    '--objective',
+    'Create specialist reminder pressure in workspace two.',
+    '--constraints',
+    'parallel-specialists:research,implementation|parallel-fail:implementation',
+  ],
+});
+
+const specialistReminderRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', specialistReminderMission.id],
+});
+
+assert.equal(specialistReminderRun.status, 'failed');
+
 const providerAttention = runCli({
   rootDir: tempRoot,
   args: ['action', 'provider-attention', '--workspace', workspaceTwo.id],
@@ -148,6 +175,8 @@ runCli({
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const specialistBaselineTimestamp = '2026-03-01T02:00:00.000Z';
+const specialistFailureTimestamp = '2026-03-01T03:00:00.000Z';
 
 state.approvals = state.approvals.map((approval) => {
   if (approval.id === secondRun.approvalId) {
@@ -160,7 +189,51 @@ state.approvals = state.approvals.map((approval) => {
   return approval;
 });
 
+state.agentRuns = state.agentRuns.map((agentRun) => {
+  if (
+    agentRun.missionId === specialistReminderMission.id &&
+    agentRun.specialistKind === 'implementation' &&
+    agentRun.status === 'failed'
+  ) {
+    return {
+      ...agentRun,
+      endedAt: specialistFailureTimestamp,
+      startedAt: specialistFailureTimestamp,
+    };
+  }
+
+  if (agentRun.missionId === specialistReminderMission.id) {
+    return {
+      ...agentRun,
+      endedAt: specialistBaselineTimestamp,
+      startedAt: specialistBaselineTimestamp,
+    };
+  }
+
+  return agentRun;
+});
+
 fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+
+const specialistReminders = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'remind-specialist-follow-ups',
+    '--workspace',
+    workspaceTwo.id,
+    '--status',
+    'failed',
+    '--due',
+    '--note',
+    'Workspace two specialist reminder.',
+  ],
+});
+
+assert.equal(specialistReminders.summary.remindedCount, 1);
+assert.equal(specialistReminders.items.length, 1);
+assert.equal(specialistReminders.items[0].missionId, specialistReminderMission.id);
+assert.equal(specialistReminders.items[0].specialistKind, 'implementation');
 
 const escalationLog = runCli({
   rootDir: tempRoot,
@@ -213,6 +286,10 @@ assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-acknowled
 assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
+assert.equal(workspaceTimeline.summary.specialistFollowUpRequiredCount || 0, 0);
+assert.equal(workspaceTimeline.summary.specialistFollowUpNeedsReminderCount || 0, 0);
+assert.equal(workspaceTimeline.summary.specialistFollowUpOverdueCount || 0, 0);
+assert.equal(workspaceTimeline.summary.specialistFollowUpReminderCountTotal || 0, 0);
 assert.equal(workspaceTimeline.timeline.every((event) => event.workspaceId === workspaceOne.id), true);
 
 const reviewerWorkspaceTimeline = runCli({
@@ -225,12 +302,21 @@ const recentReviewerWorkspaceTimeline = runCli({
   args: ['workspace', 'timeline', workspaceTwo.id, '--provider-since', recentProviderSince],
 });
 
-assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-execution-failed'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-execution-failed'], 2);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-opened'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-acknowledged'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-resolved'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.missionId, specialistReminderMission.id);
+assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.specialistKind, 'implementation');
+assert.ok(reviewerWorkspaceTimeline.summary.specialistLatestReminderAt);
+assert.ok(reviewerWorkspaceTimeline.summary.specialistNextReminderAt);
 assert.equal(reviewerWorkspaceTimeline.timeline.every((event) => event.workspaceId === workspaceTwo.id), true);
 assert.equal(
   reviewerWorkspaceTimeline.timeline.some(
@@ -288,14 +374,23 @@ assert.equal(globalTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['maintenance-run'], 1);
-assert.equal(globalTimeline.summary.eventCounts['provider-execution-failed'], 1);
+assert.equal(globalTimeline.summary.eventCounts['provider-execution-failed'], 2);
 assert.equal(globalTimeline.summary.eventCounts['provider-attention-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['provider-attention-acknowledged'], 1);
 assert.equal(globalTimeline.summary.eventCounts['provider-attention-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
+assert.equal(globalTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
+assert.equal(globalTimeline.summary.specialistFollowUpRequiredCount, 1);
+assert.equal(globalTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
+assert.equal(globalTimeline.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(globalTimeline.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(globalTimeline.summary.specialistLatestFollowUp.missionId, specialistReminderMission.id);
+assert.equal(globalTimeline.summary.specialistLatestFollowUp.specialistKind, 'implementation');
+assert.ok(globalTimeline.summary.specialistLatestReminderAt);
+assert.ok(globalTimeline.summary.specialistNextReminderAt);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 6);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 10);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
 assert.equal(
@@ -339,6 +434,16 @@ assert.equal(
       event.kind === 'provider-attention-resolved' &&
       event.workspaceId === workspaceTwo.id &&
       /resolved/i.test(event.detail),
+  ),
+  true,
+);
+assert.equal(
+  globalTimeline.timeline.some(
+    (event) =>
+      event.kind === 'specialist-follow-up-reminded' &&
+      event.workspaceId === workspaceTwo.id &&
+      event.missionId === specialistReminderMission.id &&
+      /Workspace two specialist reminder/i.test(event.detail),
   ),
   true,
 );

@@ -9330,6 +9330,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const workspace = getWorkspace(workspaceId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'workspace timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents({ workspaceId: workspace.id });
+    const parallelActivity = summarizeWorkspaceParallelActivity(workspace.id);
     const providerRecentWindow = buildScopedProviderRecentWindow({
       since: providerSince,
       workspaceId: workspace.id,
@@ -9347,6 +9348,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       providerRecentWindow,
       summary: {
         ...summarizeOperatorTimeline(timeline),
+        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
+        specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
+        specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
+        specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestFollowUp: parallelActivity.latestFollowUp,
+        specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
+        specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
         latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
         latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
         providerRecentEventCount: providerRecentWindow?.eventCount || 0,
@@ -9391,6 +9399,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function getGlobalOperatorTimeline(filter = {}) {
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'operator timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents();
+    const parallelActivity = summarizeScopedParallelActivity();
     const providerOverview = getProviderOverview({
       since: providerSince,
     });
@@ -9401,6 +9410,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       providerRecentWindow: providerOverview.recentWindow,
       summary: {
         ...summarizeOperatorTimeline(timeline),
+        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
+        specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
+        specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
+        specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestFollowUp: parallelActivity.latestFollowUp,
+        specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
+        specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
         latestRecentProviderEvent: providerOverview.recentWindow?.latestEvent || null,
         latestRecentProviderExecution: providerOverview.recentWindow?.latestExecution || null,
         latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
