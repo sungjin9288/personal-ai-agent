@@ -48,7 +48,7 @@ Commands:
   overview global
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline
-  overview providers
+  overview providers [--since <iso-timestamp>]
 
   provider list
   provider check <stub|openai|anthropic|local>
@@ -168,7 +168,11 @@ async function main() {
   }
 
   if (group === 'overview' && command === 'providers') {
-    printJson(service.getProviderOverview());
+    printJson(
+      service.getProviderOverview({
+        since: readOption(rest, '--since', ''),
+      }),
+    );
     return;
   }
 

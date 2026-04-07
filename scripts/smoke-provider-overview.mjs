@@ -111,13 +111,38 @@ try {
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
+const recentWindowSince = '2026-04-02T00:00:00.000Z';
 
 state.providerProbes = state.providerProbes.map((probe) => {
+  if (probe.providerId === 'stub') {
+    return {
+      ...probe,
+      checkedAt: '2026-04-02T10:00:00.000Z',
+      createdAt: '2026-04-02T10:00:00.000Z',
+    };
+  }
+
   if (probe.providerId === 'anthropic') {
     return {
       ...probe,
       checkedAt: overdueTimestamp,
       createdAt: overdueTimestamp,
+    };
+  }
+
+  if (probe.providerId === 'local') {
+    return {
+      ...probe,
+      checkedAt: '2026-04-04T10:00:00.000Z',
+      createdAt: '2026-04-04T10:00:00.000Z',
+    };
+  }
+
+  if (probe.providerId === 'openai') {
+    return {
+      ...probe,
+      checkedAt: '2026-04-03T10:00:00.000Z',
+      createdAt: '2026-04-03T10:00:00.000Z',
     };
   }
 
@@ -225,6 +250,32 @@ assert.equal(
   ),
   true,
 );
+
+const recentProviderOverviewResult = runCli({
+  args: ['overview', 'providers', '--since', recentWindowSince],
+  env: configuredEnv,
+});
+
+assert.equal(recentProviderOverviewResult.status, 0);
+const recentProviderOverview = JSON.parse(recentProviderOverviewResult.stdout);
+assert.equal(recentProviderOverview.filters.since, recentWindowSince);
+assert.equal(recentProviderOverview.summary.total, 4);
+assert.equal(recentProviderOverview.recentWindow.filters.since, recentWindowSince);
+assert.equal(recentProviderOverview.recentWindow.probeTotal, 3);
+assert.equal(recentProviderOverview.recentWindow.probeAttemptedCount, 2);
+assert.equal(recentProviderOverview.recentWindow.probeSuccessCount, 2);
+assert.equal(recentProviderOverview.recentWindow.probeFailureCount, 1);
+assert.equal(recentProviderOverview.recentWindow.probeSkippedCount, 1);
+assert.equal(recentProviderOverview.recentWindow.executionTotal, 0);
+assert.equal(recentProviderOverview.recentWindow.eventTotal, 3);
+assert.equal(recentProviderOverview.recentWindow.eventFamilyCounts.probe, 3);
+assert.equal(recentProviderOverview.recentWindow.eventFamilyCounts.execution, 0);
+assert.equal(recentProviderOverview.recentWindow.eventFamilyCounts.attention, 0);
+assert.deepEqual(recentProviderOverview.recentWindow.touchedProviderIds, ['local', 'openai', 'stub']);
+assert.equal(recentProviderOverview.recentWindow.latestProbe.providerId, 'local');
+assert.equal(recentProviderOverview.recentWindow.latestEvent.providerId, 'local');
+assert.equal(recentProviderOverview.recentWindow.latestFailedProbe, null);
+assert.equal(recentProviderOverview.recentWindow.latestAttentionEvent, null);
 
 const globalOverviewResult = runCli({
   args: ['overview', 'global'],

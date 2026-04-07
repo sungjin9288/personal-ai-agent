@@ -2129,6 +2129,69 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
+  function buildProviderOverviewRecentWindow(since) {
+    if (!since) {
+      return null;
+    }
+
+    const probes = store
+      .listProviderProbes()
+      .filter((probe) => String(probe.checkedAt || probe.createdAt || '') >= since);
+    const probeSummary = summarizeProviderProbes(probes);
+    const executions = buildProviderExecutionEntries({ since });
+    const executionSummary = summarizeProviderExecutions(executions);
+    const events = buildProviderEvents({ since });
+    const eventSummary = summarizeProviderEvents(events);
+    const touchedProviderIds = [
+      ...new Set(
+        [
+          ...probes.map((probe) => probe.providerId),
+          ...executions.map((execution) => execution.providerId),
+          ...events.map((event) => event.providerId),
+        ].filter(Boolean),
+      ),
+    ].sort((left, right) => String(left).localeCompare(String(right)));
+
+    return {
+      eventFamilyCounts: eventSummary.familyCounts,
+      eventTotal: eventSummary.total,
+      executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
+      executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
+      executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
+      executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
+      executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
+      executionFailedCount: executionSummary.statusCounts.failed,
+      executionFailureKindCounts: executionSummary.failureKindCounts,
+      executionTotal: executionSummary.total,
+      filters: {
+        since,
+      },
+      latestAttentionEvent: eventSummary.latestAttentionEvent,
+      latestEvent: eventSummary.latestEvent,
+      latestExecution: executionSummary.latestExecution,
+      latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFailedExecution: executionSummary.latestFailedExecution,
+      latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
+      latestProbe: probes.at(-1) || null,
+      latestProbeEvent: eventSummary.latestProbeEvent,
+      latestSkippedProbe: getLatestMatchingRecord(probes, (probe) => !probe.attempted),
+      latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
+      latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
+      probeAttemptedCount: probeSummary.attemptedCount,
+      probeFailureCount: probeSummary.failureCount,
+      probeFailureKindCounts: probeSummary.failureKindCounts,
+      probeSkippedCount: probes.filter((probe) => !probe.attempted).length,
+      probeSuccessCount: probeSummary.successCount,
+      probeTotal: probeSummary.total,
+      touchedProviderCount: touchedProviderIds.length,
+      touchedProviderIds,
+      usageInputTokensTotal: executionSummary.usageInputTokensTotal,
+      usageOutputTokensTotal: executionSummary.usageOutputTokensTotal,
+      usageTotalTokensTotal: executionSummary.usageTotalTokensTotal,
+    };
+  }
+
   function buildProviderProbeTimeline(probes) {
     return probes.map((probe) => {
       const kind = probe.attempted
@@ -2686,12 +2749,17 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
-  function getProviderOverview() {
+  function getProviderOverview(filter = {}) {
+    const since = normalizeTimestampFilter(filter.since, 'provider overview since timestamp');
     const providers = enrichProviderStatusEntries(buildProviderStatusEntries());
     const probes = store.listProviderProbes();
 
     return {
+      filters: {
+        since: since || null,
+      },
       providers,
+      recentWindow: buildProviderOverviewRecentWindow(since),
       summary: summarizeProviderOverview(providers, probes),
     };
   }
