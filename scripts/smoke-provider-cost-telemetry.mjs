@@ -220,6 +220,15 @@ try {
   const combinedCostTotal = roundUsd(successfulCostTotal + failedManagerCost);
   const combinedCostAverage = roundUsd(combinedCostTotal / 5);
   const combinedCostMax = Math.max(...successfulCosts, failedManagerCost);
+  const combinedCostByProviderId = {
+    local: combinedCostTotal,
+  };
+  const combinedCostByRole = {
+    executor: successfulCosts[2],
+    manager: roundUsd(successfulCosts[0] + failedManagerCost),
+    planner: successfulCosts[1],
+    reviewer: successfulCosts[3],
+  };
 
   const providerCheck = service.checkProvider('local');
   assert.equal(providerCheck.configuration.inputCostPer1MUsd, '1.25');
@@ -237,9 +246,13 @@ try {
   assert.equal(providerActivity.summary.estimatedCostUsdAverage, combinedCostAverage);
   assert.equal(providerActivity.summary.estimatedCostUsdMax, combinedCostMax);
   assert.equal(providerActivity.summary.estimatedCostUsdPricedCount, 5);
+  assert.deepEqual(providerActivity.summary.estimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(providerActivity.summary.estimatedCostUsdByRole, combinedCostByRole);
 
   const providerExecutionTimeline = service.getProviderExecutionTimeline({ providerId: 'local' });
   assert.equal(providerExecutionTimeline.summary.estimatedCostUsdTotal, combinedCostTotal);
+  assert.deepEqual(providerExecutionTimeline.summary.estimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(providerExecutionTimeline.summary.estimatedCostUsdByRole, combinedCostByRole);
   assert.equal(providerExecutionTimeline.timeline.at(-1).estimatedCostUsd, failedManagerCost);
 
   const providerEvents = service.getProviderEventTimeline({ providerId: 'local' });
@@ -247,16 +260,29 @@ try {
   assert.equal(providerEvents.summary.executionEstimatedCostUsdAverage, combinedCostAverage);
   assert.equal(providerEvents.summary.executionEstimatedCostUsdMax, combinedCostMax);
   assert.equal(providerEvents.summary.executionEstimatedCostUsdPricedCount, 5);
+  assert.deepEqual(providerEvents.summary.executionEstimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(providerEvents.summary.executionEstimatedCostUsdByRole, combinedCostByRole);
 
   const providerOverview = service.getProviderOverview();
   assert.equal(providerOverview.summary.executionEstimatedCostUsdTotal, combinedCostTotal);
   assert.equal(providerOverview.summary.executionEstimatedCostUsdAverage, combinedCostAverage);
   assert.equal(providerOverview.summary.executionEstimatedCostUsdMax, combinedCostMax);
   assert.equal(providerOverview.summary.executionEstimatedCostUsdPricedCount, 5);
+  assert.deepEqual(providerOverview.summary.executionEstimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(providerOverview.summary.executionEstimatedCostUsdByRole, combinedCostByRole);
 
   const successMissionSummary = service.showMission(successMission.id).summary;
   assert.equal(successMissionSummary.providerExecutionEstimatedCostUsdTotal, successfulCostTotal);
   assert.equal(successMissionSummary.providerExecutionEstimatedCostUsdPricedCount, 4);
+  assert.deepEqual(successMissionSummary.providerExecutionEstimatedCostUsdByProviderId, {
+    local: successfulCostTotal,
+  });
+  assert.deepEqual(successMissionSummary.providerExecutionEstimatedCostUsdByRole, {
+    executor: successfulCosts[2],
+    manager: successfulCosts[0],
+    planner: successfulCosts[1],
+    reviewer: successfulCosts[3],
+  });
 
   const failedMissionTimeline = service.getMissionTimeline(failedMission.id);
   assert.equal(failedMissionTimeline.summary.providerExecutionEstimatedCostUsdTotal, failedManagerCost);
@@ -272,12 +298,16 @@ try {
   assert.equal(workspaceOverview.summary.providerExecutionEstimatedCostUsdAverage, combinedCostAverage);
   assert.equal(workspaceOverview.summary.providerExecutionEstimatedCostUsdMax, combinedCostMax);
   assert.equal(workspaceOverview.summary.providerExecutionEstimatedCostUsdPricedCount, 5);
+  assert.deepEqual(workspaceOverview.summary.providerExecutionEstimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(workspaceOverview.summary.providerExecutionEstimatedCostUsdByRole, combinedCostByRole);
 
   const globalOverview = service.getGlobalOverview();
   assert.equal(globalOverview.summary.providerExecutionEstimatedCostUsdTotal, combinedCostTotal);
   assert.equal(globalOverview.summary.providerExecutionEstimatedCostUsdAverage, combinedCostAverage);
   assert.equal(globalOverview.summary.providerExecutionEstimatedCostUsdMax, combinedCostMax);
   assert.equal(globalOverview.summary.providerExecutionEstimatedCostUsdPricedCount, 5);
+  assert.deepEqual(globalOverview.summary.providerExecutionEstimatedCostUsdByProviderId, combinedCostByProviderId);
+  assert.deepEqual(globalOverview.summary.providerExecutionEstimatedCostUsdByRole, combinedCostByRole);
 } finally {
   globalThis.fetch = originalFetch;
 

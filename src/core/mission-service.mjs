@@ -263,6 +263,22 @@ function summarizeEstimatedCostMetrics(items, fieldName = 'estimatedCostUsd') {
   };
 }
 
+function summarizeEstimatedCostBreakdown(items, keyFieldName, costFieldName = 'estimatedCostUsd') {
+  return items.reduce((totals, item) => {
+    const key = normalizeText(item?.[keyFieldName]);
+    const estimatedCostUsd = roundUsdAmount(item?.[costFieldName]);
+
+    if (!key || !Number.isFinite(estimatedCostUsd) || estimatedCostUsd < 0) {
+      return totals;
+    }
+
+    return {
+      ...totals,
+      [key]: roundUsdAmount(Number(totals[key] || 0) + estimatedCostUsd),
+    };
+  }, {});
+}
+
 function extractProviderFailureMetadata(item) {
   const attemptMetadata = extractProviderAttemptMetadata(item);
   return {
@@ -1560,6 +1576,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const durationSummary = summarizeDurationMetrics(executions);
     const usageSummary = summarizeUsageMetrics(executions);
     const estimatedCostSummary = summarizeEstimatedCostMetrics(executions);
+    const estimatedCostByProviderId = summarizeEstimatedCostBreakdown(executions, 'providerId');
+    const estimatedCostByRole = summarizeEstimatedCostBreakdown(executions, 'role');
     const attemptSummary = summarizeAttemptMetrics(executions, (execution) => execution.status === 'completed');
 
     for (const execution of executions) {
@@ -1592,6 +1610,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       roleCounts,
       statusCounts,
       total: executions.length,
+      estimatedCostUsdByProviderId: estimatedCostByProviderId,
+      estimatedCostUsdByRole: estimatedCostByRole,
       ...estimatedCostSummary,
       ...usageSummary,
     };
@@ -1660,6 +1680,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const durationSummary = summarizeDurationMetrics(events);
     const usageSummary = summarizeUsageMetrics(events);
     const estimatedCostSummary = summarizeEstimatedCostMetrics(events);
+    const estimatedCostByProviderId = summarizeEstimatedCostBreakdown(events, 'providerId');
+    const estimatedCostByRole = summarizeEstimatedCostBreakdown(events, 'role');
     const attemptSummary = summarizeAttemptMetrics(events, (event) => event.status === 'completed');
 
     for (const event of events) {
@@ -1692,6 +1714,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       total: events.length,
       totalDurationMs: durationSummary.totalDurationMs,
+      estimatedCostUsdByProviderId: estimatedCostByProviderId,
+      estimatedCostUsdByRole: estimatedCostByRole,
       ...estimatedCostSummary,
       ...usageSummary,
     };
@@ -2000,6 +2024,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       executionRetryableFailureCount: executionSummary.retryableFailureCount,
       executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
       executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
+      executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
       executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
       executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
       executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
@@ -2438,6 +2464,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     );
     const executionUsageSummary = summarizeUsageMetrics(executionEvents);
     const executionEstimatedCostSummary = summarizeEstimatedCostMetrics(executionEvents);
+    const executionEstimatedCostByProviderId = summarizeEstimatedCostBreakdown(executionEvents, 'providerId');
+    const executionEstimatedCostByRole = summarizeEstimatedCostBreakdown(executionEvents, 'role');
     const probeDurationSummary = summarizeDurationMetrics(probeEvents);
     const probeAttemptSummary = summarizeAttemptMetrics(probeEvents, (event) => event.ok);
     const executionStatusCounts = {
@@ -2523,6 +2551,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       executionTotalRetryCount: executionAttemptSummary.totalRetryCount,
       executionAttemptHistoryEntryCountTotal: executionAttemptSummary.attemptHistoryEntryCountTotal,
       executionEstimatedCostUsdAverage: executionEstimatedCostSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdByProviderId: executionEstimatedCostByProviderId,
+      executionEstimatedCostUsdByRole: executionEstimatedCostByRole,
       executionEstimatedCostUsdMax: executionEstimatedCostSummary.estimatedCostUsdMax,
       executionEstimatedCostUsdPricedCount: executionEstimatedCostSummary.estimatedCostUsdPricedCount,
       executionEstimatedCostUsdTotal: executionEstimatedCostSummary.estimatedCostUsdTotal,
@@ -2732,6 +2762,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         executionTotalRetryCount: executionSummary.totalRetryCount,
         executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
         executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+        executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
+        executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
         executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
         executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
         executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
@@ -3773,6 +3805,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
       providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
       providerExecutionEstimatedCostUsdAverage: providerActivity.summary.executionEstimatedCostUsdAverage,
+      providerExecutionEstimatedCostUsdByProviderId: providerActivity.summary.executionEstimatedCostUsdByProviderId,
+      providerExecutionEstimatedCostUsdByRole: providerActivity.summary.executionEstimatedCostUsdByRole,
       providerExecutionEstimatedCostUsdMax: providerActivity.summary.executionEstimatedCostUsdMax,
       providerExecutionEstimatedCostUsdPricedCount: providerActivity.summary.executionEstimatedCostUsdPricedCount,
       providerExecutionEstimatedCostUsdTotal: providerActivity.summary.executionEstimatedCostUsdTotal,
@@ -4064,6 +4098,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
         providerExecutionEstimatedCostUsdAverage: providerActivity.summary.executionEstimatedCostUsdAverage,
+        providerExecutionEstimatedCostUsdByProviderId: providerActivity.summary.executionEstimatedCostUsdByProviderId,
+        providerExecutionEstimatedCostUsdByRole: providerActivity.summary.executionEstimatedCostUsdByRole,
         providerExecutionEstimatedCostUsdMax: providerActivity.summary.executionEstimatedCostUsdMax,
         providerExecutionEstimatedCostUsdPricedCount: providerActivity.summary.executionEstimatedCostUsdPricedCount,
         providerExecutionEstimatedCostUsdTotal: providerActivity.summary.executionEstimatedCostUsdTotal,
@@ -6831,6 +6867,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionTotalRetryCount: providerOverview.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerOverview.summary.executionTimedOutFailureCount,
         providerExecutionEstimatedCostUsdAverage: providerOverview.summary.executionEstimatedCostUsdAverage,
+        providerExecutionEstimatedCostUsdByProviderId: providerOverview.summary.executionEstimatedCostUsdByProviderId,
+        providerExecutionEstimatedCostUsdByRole: providerOverview.summary.executionEstimatedCostUsdByRole,
         providerExecutionEstimatedCostUsdMax: providerOverview.summary.executionEstimatedCostUsdMax,
         providerExecutionEstimatedCostUsdPricedCount: providerOverview.summary.executionEstimatedCostUsdPricedCount,
         providerExecutionEstimatedCostUsdTotal: providerOverview.summary.executionEstimatedCostUsdTotal,

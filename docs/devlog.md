@@ -5,6 +5,7 @@
 - added optional pricing env parsing for OpenAI, Anthropic, and local adapters, then normalized `estimatedCostUsd` from execution token usage without changing the existing provider contract
 - propagated estimated execution cost into persisted agent runs, provider execution history or timeline, unified provider events, pending provider attention failure context, provider overview, and mission or workspace or global summaries
 - added deterministic cost telemetry smoke coverage for successful execution totals plus failed non-JSON execution persistence so cost evidence stays available on both completed and failed mission paths
+- extended the same cost telemetry with `estimatedCostUsdByProviderId` and `estimatedCostUsdByRole` so one provider or one stage role can be identified as the primary spend source directly from existing read-models
 
 ## 2026-04-07 Provider Retry Telemetry
 
