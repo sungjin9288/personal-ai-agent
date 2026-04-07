@@ -2140,6 +2140,7 @@ function summarizeProviderExecutions(executions) {
     const probeSummary = summarizeProviderProbes(probes);
     const executions = buildProviderExecutionEntries({ since });
     const executionSummary = summarizeProviderExecutions(executions);
+    const executionDailyBuckets = buildProviderExecutionDailyBuckets(executions);
     const events = buildProviderEvents({ since });
     const eventSummary = summarizeProviderEvents(events);
     const touchedProviderIds = [
@@ -2158,11 +2159,16 @@ function summarizeProviderExecutions(executions) {
       executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
       executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
       executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
+      executionBucketCount: executionDailyBuckets.length,
+      executionDailyBuckets,
       executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
       executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
       executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
       executionFailedCount: executionSummary.statusCounts.failed,
       executionFailureKindCounts: executionSummary.failureKindCounts,
+      executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
+      executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
       executionTotal: executionSummary.total,
       filters: {
         since,
@@ -3046,6 +3052,7 @@ function summarizeProviderExecutions(executions) {
       since,
     });
     const executionSummary = summarizeProviderExecutions(executionEntries);
+    const executionDailyBuckets = buildProviderExecutionDailyBuckets(executionEntries);
     const scopedProviderEvents = sortTimelineEvents([
       ...buildProviderAttentionOpenedTimeline(
         [...pendingAttentionItems, ...recoveredAttentionItems],
@@ -3128,11 +3135,16 @@ function summarizeProviderExecutions(executions) {
       executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
       executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
       executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
+      executionBucketCount: executionDailyBuckets.length,
+      executionDailyBuckets,
       executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
       executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
       executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
       executionFailedCount: executionSummary.statusCounts.failed,
       executionFailureKindCounts: executionSummary.failureKindCounts,
+      executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
+      executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
       filters: {
         since,
       },

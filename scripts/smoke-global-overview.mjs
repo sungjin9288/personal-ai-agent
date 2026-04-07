@@ -257,6 +257,11 @@ assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 's
 assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);
 assert.equal(recentOverview.providerRecentWindow.probeTotal, 2);
 assert.equal(recentOverview.providerRecentWindow.executionTotal, 12);
+assert.equal(recentOverview.providerRecentWindow.executionBucketCount, 1);
+assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDate, '2026-04-07');
+assert.equal(recentOverview.providerRecentWindow.executionOldestBucketDate, '2026-04-07');
+assert.equal(recentOverview.providerRecentWindow.executionDailyBuckets[0].executionCount, 12);
+assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
 assert.equal(recentOverview.providerRecentWindow.probeSkippedCount, 1);
 assert.equal(recentOverview.providerRecentWindow.probeSuccessCount, 1);
 assert.equal(recentOverview.providerRecentWindow.probeFailureCount, 1);

@@ -257,6 +257,10 @@ assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 's
 assert.equal(recentOverview.summary.latestRecentProviderEvent.providerId, 'stub');
 assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);
 assert.deepEqual(recentOverview.providerRecentWindow.touchedProviderIds, ['stub']);
+assert.equal(recentOverview.providerRecentWindow.executionBucketCount, 1);
+assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDate, '2026-04-03');
+assert.equal(recentOverview.providerRecentWindow.executionDailyBuckets[0].executionCount, 4);
+assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === awaitingMission.id && entry.summary.latestSession.status === 'awaiting_approval'),
   true,
