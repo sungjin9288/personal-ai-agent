@@ -129,6 +129,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         return {
           ...status,
           attemptCount: 0,
+          attemptHistory: [],
           attempted: false,
           checkedAt: new Date().toISOString(),
           durationMs: 0,
@@ -139,6 +140,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
           rawMessage: `Provider not implemented yet: ${normalizedProviderId}`,
           recoverable: false,
           reason: `Provider not implemented yet: ${normalizedProviderId}`,
+          retryCount: 0,
           timedOut: false,
         };
       }
@@ -147,6 +149,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         return {
           ...status,
           attemptCount: 0,
+          attemptHistory: [],
           attempted: false,
           checkedAt: new Date().toISOString(),
           durationMs: 0,
@@ -157,6 +160,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
           rawMessage: `Missing required env: ${status.missingEnv.join(', ')}`,
           recoverable: false,
           reason: `Missing required env: ${status.missingEnv.join(', ')}`,
+          retryCount: 0,
           timedOut: false,
         };
       }

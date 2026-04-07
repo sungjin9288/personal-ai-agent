@@ -341,12 +341,27 @@ ${context}
     },
     async probe() {
       return {
+        attemptCount: 1,
+        attemptHistory: [
+          {
+            attempt: 1,
+            durationMs: 0,
+            failureKind: null,
+            httpStatus: 200,
+            ok: true,
+            rawMessage: null,
+            recoverable: false,
+            timedOut: false,
+          },
+        ],
         checkedAt: new Date().toISOString(),
+        durationMs: 0,
         endpoint: 'in-process',
         modelAvailable: true,
         modelCount: 1,
         note: 'Stub provider is deterministic and does not require network connectivity.',
         ok: true,
+        retryCount: 0,
         sampleModels: ['stub'],
         transport: 'deterministic-local',
       };

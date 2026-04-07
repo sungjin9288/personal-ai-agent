@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-07 Provider Retry Telemetry
+
+- extended the shared provider request wrapper to persist per-attempt `attemptHistory` and normalized `retryCount` across OpenAI, Anthropic, local, and stub probe or execution paths
+- propagated retry metadata into provider probe history, provider execution activity, provider event timelines, provider attention items, and mission or workspace or global summaries so retry totals are visible without reopening raw state
+- added deterministic retry telemetry smoke coverage for success-after-retry probe, success-after-retry execution stages, and retry-exhausted failed execution that opens provider attention with the same normalized attempt metadata
+
 ## 2026-04-07 Provider Telemetry Baseline
 
 - extended provider probe and execution records with `durationMs`, then propagated execution token usage as normalized `usageInputTokens`, `usageOutputTokens`, and `usageTotalTokens`

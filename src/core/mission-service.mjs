@@ -32,7 +32,11 @@ import { createId } from './id.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
-import { extractProviderFailure, isProviderFailureError } from '../providers/provider-runtime-utils.mjs';
+import {
+  deriveRetryCount,
+  extractProviderFailure,
+  isProviderFailureError,
+} from '../providers/provider-runtime-utils.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -135,6 +139,77 @@ function normalizeTelemetryNumber(value, fallback = null) {
   return Number.isFinite(numericValue) ? numericValue : fallback;
 }
 
+function normalizeProviderAttemptHistory(items = []) {
+  return Array.isArray(items)
+    ? items
+        .map((item) => {
+          const attempt = Number(item?.attempt || item?.attemptCount || 0);
+          if (!Number.isFinite(attempt) || attempt <= 0) {
+            return null;
+          }
+
+          return {
+            attempt,
+            durationMs: normalizeTelemetryNumber(item?.durationMs),
+            failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
+            httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
+            ok: Boolean(item?.ok),
+            rawMessage: normalizeText(item?.rawMessage) || null,
+            recoverable: typeof item?.recoverable === 'boolean' ? item.recoverable : null,
+            timedOut: Boolean(item?.timedOut),
+          };
+        })
+        .filter(Boolean)
+    : [];
+}
+
+function extractProviderAttemptMetadata(item) {
+  const attemptHistory = normalizeProviderAttemptHistory(item?.attemptHistory);
+  const fallbackAttemptCount = attemptHistory.at(-1)?.attempt || 0;
+  const attemptCount = Number.isFinite(Number(item?.attemptCount))
+    ? Number(item.attemptCount)
+    : fallbackAttemptCount;
+  const retryCount = Number.isFinite(Number(item?.retryCount))
+    ? Number(item.retryCount)
+    : deriveRetryCount(attemptCount);
+
+  return {
+    attemptCount,
+    attemptHistory,
+    attemptHistoryCount: attemptHistory.length,
+    retryCount,
+  };
+}
+
+function summarizeAttemptMetrics(items, isSuccessful = () => false) {
+  return items.reduce(
+    (summary, item) => {
+      const attemptCount = Number(item?.attemptCount || 0);
+      const retryCount = Number.isFinite(Number(item?.retryCount))
+        ? Number(item.retryCount)
+        : deriveRetryCount(attemptCount);
+
+      return {
+        attemptHistoryEntryCountTotal:
+          summary.attemptHistoryEntryCountTotal + normalizeProviderAttemptHistory(item?.attemptHistory).length,
+        maxAttemptCount: Math.max(summary.maxAttemptCount, attemptCount),
+        multiAttemptCount: summary.multiAttemptCount + (attemptCount > 1 ? 1 : 0),
+        retrySucceededCount: summary.retrySucceededCount + (attemptCount > 1 && isSuccessful(item) ? 1 : 0),
+        totalAttemptCount: summary.totalAttemptCount + attemptCount,
+        totalRetryCount: summary.totalRetryCount + retryCount,
+      };
+    },
+    {
+      attemptHistoryEntryCountTotal: 0,
+      maxAttemptCount: 0,
+      multiAttemptCount: 0,
+      retrySucceededCount: 0,
+      totalAttemptCount: 0,
+      totalRetryCount: 0,
+    },
+  );
+}
+
 function extractProviderUsageMetadata(item) {
   return {
     usageInputTokens: normalizeTelemetryNumber(item?.usageInputTokens),
@@ -173,8 +248,9 @@ function summarizeUsageMetrics(items) {
 }
 
 function extractProviderFailureMetadata(item) {
+  const attemptMetadata = extractProviderAttemptMetadata(item);
   return {
-    attemptCount: Number(item?.attemptCount || 0),
+    ...attemptMetadata,
     durationMs: normalizeTelemetryNumber(item?.durationMs),
     failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
     httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
@@ -1392,10 +1468,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         const mission = missionById.get(run.missionId || session?.missionId) || null;
         const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
         const providerId = normalizeText(run.providerId || session?.provider);
+        const attemptMetadata = extractProviderAttemptMetadata(run);
 
         return {
           at: run.endedAt || run.startedAt || '',
-          attemptCount: Number(run.attemptCount || 0),
+          ...attemptMetadata,
           durationMs: normalizeTelemetryNumber(run.durationMs),
           endedAt: run.endedAt || null,
           failureKind: normalizeText(run.failureKind) ? normalizeProviderFailureKind(run.failureKind) : null,
@@ -1465,6 +1542,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
     const durationSummary = summarizeDurationMetrics(executions);
     const usageSummary = summarizeUsageMetrics(executions);
+    const attemptSummary = summarizeAttemptMetrics(executions, (execution) => execution.status === 'completed');
 
     for (const execution of executions) {
       providerCounts[execution.providerId] = (providerCounts[execution.providerId] || 0) + 1;
@@ -1485,7 +1563,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.recoverable).length,
+      totalAttemptCount: attemptSummary.totalAttemptCount,
+      totalRetryCount: attemptSummary.totalRetryCount,
       timedOutFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.timedOut).length,
+      retrySucceededCount: attemptSummary.retrySucceededCount,
+      multiAttemptCount: attemptSummary.multiAttemptCount,
+      maxAttemptCount: attemptSummary.maxAttemptCount || null,
+      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       totalDurationMs: durationSummary.totalDurationMs,
       roleCounts,
       statusCounts,
@@ -1498,6 +1582,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return executions.map((execution) => ({
       at: execution.at,
       attemptCount: Number(execution.attemptCount || 0),
+      attemptHistory: normalizeProviderAttemptHistory(execution.attemptHistory),
+      attemptHistoryCount: Number(execution.attemptHistoryCount || 0),
       durationMs: normalizeTelemetryNumber(execution.durationMs),
       detail:
         formatProviderFailureDetail({
@@ -1527,6 +1613,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerResponseId: execution.providerResponseId,
       rawMessage: execution.rawMessage,
       recoverable: execution.recoverable,
+      retryCount: Number(execution.retryCount || 0),
       role: execution.role,
       runId: execution.id,
       executionStatus: execution.status,
@@ -1552,6 +1639,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
     const durationSummary = summarizeDurationMetrics(events);
     const usageSummary = summarizeUsageMetrics(events);
+    const attemptSummary = summarizeAttemptMetrics(events, (event) => event.status === 'completed');
 
     for (const event of events) {
       eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
@@ -1572,9 +1660,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.recoverable).length,
+      totalAttemptCount: attemptSummary.totalAttemptCount,
+      totalRetryCount: attemptSummary.totalRetryCount,
       roleCounts,
+      retrySucceededCount: attemptSummary.retrySucceededCount,
       statusCounts,
+      multiAttemptCount: attemptSummary.multiAttemptCount,
       timedOutFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.timedOut).length,
+      maxAttemptCount: attemptSummary.maxAttemptCount || null,
+      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       total: events.length,
       totalDurationMs: durationSummary.totalDurationMs,
       ...usageSummary,
@@ -1587,6 +1681,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let failureCount = 0;
     let successCount = 0;
     const durationSummary = summarizeDurationMetrics(probes);
+    const attemptSummary = summarizeAttemptMetrics(probes, (probe) => probe.ok);
 
     for (const probe of probes) {
       providerCounts[probe.providerId] = (providerCounts[probe.providerId] || 0) + 1;
@@ -1609,8 +1704,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: probes.filter((probe) => !probe.ok && probe.recoverable).length,
+      totalAttemptCount: attemptSummary.totalAttemptCount,
+      totalRetryCount: attemptSummary.totalRetryCount,
       successCount,
+      retrySucceededCount: attemptSummary.retrySucceededCount,
+      multiAttemptCount: attemptSummary.multiAttemptCount,
       timedOutFailureCount: probes.filter((probe) => !probe.ok && probe.timedOut).length,
+      maxAttemptCount: attemptSummary.maxAttemptCount || null,
+      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       total: probes.length,
       totalDurationMs: durationSummary.totalDurationMs,
     };
@@ -1811,7 +1912,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       attentionNeedsReminderCount: pendingAttentionSummary.needsReminderCount,
       attentionNextDueAt: pendingAttentionSummary.nextDueAt,
       attentionNextReminderAt: pendingAttentionSummary.nextReminderAt,
+      attentionAttemptHistoryEntryCountTotal: pendingAttentionSummary.attemptHistoryEntryCountTotal,
+      attentionMaxAttemptCount: pendingAttentionSummary.maxAttemptCount,
+      attentionMultiAttemptCount: pendingAttentionSummary.multiAttemptCount,
       attentionReminderCountTotal: pendingAttentionSummary.reminderCountTotal,
+      attentionTotalAttemptCount: pendingAttentionSummary.totalAttemptCount,
+      attentionTotalRetryCount: pendingAttentionSummary.retryCountTotal,
       attentionRequiredCount: attentionEvents.length,
       attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
       configuredProviderIds,
@@ -1822,9 +1928,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       executionFailedCount: executionSummary.statusCounts.failed,
       executionFailureKindCounts: executionSummary.failureKindCounts,
       executionMaxDurationMs: executionSummary.maxDurationMs,
+      executionMaxAttemptCount: executionSummary.maxAttemptCount,
+      executionMultiAttemptCount: executionSummary.multiAttemptCount,
+      executionRetrySucceededCount: executionSummary.retrySucceededCount,
       executionStatusCounts: executionSummary.statusCounts,
       executionTotal: executionSummary.total,
+      executionTotalAttemptCount: executionSummary.totalAttemptCount,
       executionTotalDurationMs: executionSummary.totalDurationMs,
+      executionTotalRetryCount: executionSummary.totalRetryCount,
+      executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
       eventTotal: eventSummary.total,
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestFailedExecution: executionSummary.latestFailedExecution,
@@ -1855,13 +1967,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       probeAverageDurationMs: probeSummary.averageDurationMs,
       probeFailureCount: probeSummary.failureCount,
       probeFailureKindCounts: probeSummary.failureKindCounts,
+      probeMaxAttemptCount: probeSummary.maxAttemptCount,
       probeMaxDurationMs: probeSummary.maxDurationMs,
+      probeMultiAttemptCount: probeSummary.multiAttemptCount,
       probeSuccessCount: probeSummary.successCount,
       probeRetryableFailureCount: probeSummary.retryableFailureCount,
+      probeRetrySucceededCount: probeSummary.retrySucceededCount,
       probeTimedOutFailureCount: probeSummary.timedOutFailureCount,
+      probeTotalAttemptCount: probeSummary.totalAttemptCount,
       executionRetryableFailureCount: executionSummary.retryableFailureCount,
       executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
       probeTotalDurationMs: probeSummary.totalDurationMs,
+      probeTotalRetryCount: probeSummary.totalRetryCount,
+      probeAttemptHistoryEntryCountTotal: probeSummary.attemptHistoryEntryCountTotal,
       probeTotal: probeSummary.total,
       readyCount: readyProviderIds.length,
       readyProviderIds,
@@ -1890,6 +2008,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return {
         at: probe.checkedAt || probe.createdAt,
         attempted: probe.attempted,
+        attemptHistory: normalizeProviderAttemptHistory(probe.attemptHistory),
+        attemptHistoryCount: normalizeProviderAttemptHistory(probe.attemptHistory).length,
         durationMs: normalizeTelemetryNumber(probe.durationMs),
         detail: formatProviderFailureDetail({
           attemptCount: probe.attemptCount,
@@ -1912,6 +2032,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerResponseId: probe.providerResponseId || null,
         rawMessage: probe.rawMessage || null,
         recoverable: typeof probe.recoverable === 'boolean' ? probe.recoverable : null,
+        retryCount: Number(probe.retryCount || 0),
         sampleModels: ensureArray(probe.sampleModels),
         timedOut: Boolean(probe.timedOut),
         transport: probe.transport || null,
@@ -1927,6 +2048,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let failureCount = 0;
     let successCount = 0;
     const durationSummary = summarizeDurationMetrics(events);
+    const attemptSummary = summarizeAttemptMetrics(events, (event) => event.ok);
 
     for (const event of events) {
       eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
@@ -1951,8 +2073,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: events.filter((event) => event.attempted && !event.ok && event.recoverable).length,
+      totalAttemptCount: attemptSummary.totalAttemptCount,
+      totalRetryCount: attemptSummary.totalRetryCount,
       successCount,
+      retrySucceededCount: attemptSummary.retrySucceededCount,
+      multiAttemptCount: attemptSummary.multiAttemptCount,
       timedOutFailureCount: events.filter((event) => event.attempted && !event.ok && event.timedOut).length,
+      maxAttemptCount: attemptSummary.maxAttemptCount || null,
+      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       total: events.length,
       totalDurationMs: durationSummary.totalDurationMs,
     };
@@ -1964,6 +2092,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionId: record.actionId,
         acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
         attemptCount: Number(record.attemptCount || 0),
+        attemptHistory: normalizeProviderAttemptHistory(record.attemptHistory),
+        attemptHistoryCount: normalizeProviderAttemptHistory(record.attemptHistory).length,
         durationMs: normalizeTelemetryNumber(record.durationMs),
         eventRefId: record.eventRefId || null,
         failureKind: normalizeText(record.failureKind) ? normalizeProviderFailureKind(record.failureKind) : null,
@@ -1975,6 +2105,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerResponseId: record.providerResponseId || null,
         rawMessage: record.rawMessage || null,
         recoverable: typeof record.recoverable === 'boolean' ? record.recoverable : null,
+        retryCount: Number(record.retryCount || 0),
         resolvedAt: record.resolvedAt || null,
         resolutionNote: record.resolutionNote || null,
         sessionId: record.sessionId || null,
@@ -2038,6 +2169,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       actionId: item.actionId,
       at: item.recoveredAt,
       attemptCount: Number(item.attemptCount || 0),
+      attemptHistory: normalizeProviderAttemptHistory(item.attemptHistory),
+      attemptHistoryCount: normalizeProviderAttemptHistory(item.attemptHistory).length,
       durationMs: normalizeTelemetryNumber(item.durationMs),
       detail: formatProviderAttentionRecoveryDetail(item),
       eventRefId: item.eventRefId || null,
@@ -2054,6 +2187,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       recoveryProbeId: item.recoveryProbeId || null,
       recoveryRunId: item.recoveryRunId || null,
       recoverable: typeof item.recoverable === 'boolean' ? item.recoverable : null,
+      retryCount: Number(item.retryCount || 0),
       sessionId: item.sessionId || null,
       status: 'recovered',
       timedOut: Boolean(item.timedOut),
@@ -2074,6 +2208,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionId: item.actionId,
         at: item.createdAt,
         attemptCount: Number(item.attemptCount || 0),
+        attemptHistory: normalizeProviderAttemptHistory(item.attemptHistory),
+        attemptHistoryCount: normalizeProviderAttemptHistory(item.attemptHistory).length,
         durationMs: normalizeTelemetryNumber(item.durationMs),
         detail: item.reason || item.title || 'Provider attention opened.',
         eventRefId: item.eventRefId || null,
@@ -2086,6 +2222,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         providerResponseId: item.providerResponseId || null,
         rawMessage: item.rawMessage || null,
         recoverable: typeof item.recoverable === 'boolean' ? item.recoverable : null,
+        retryCount: Number(item.retryCount || 0),
         sessionId: item.sessionId || null,
         status: 'pending',
         timedOut: Boolean(item.timedOut),
@@ -2264,13 +2401,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const eventCounts = {};
     const familyCounts = { attention: 0, execution: 0, probe: 0 };
     const providerCounts = {};
+    const executionEvents = events.filter((event) => event.eventFamily === 'execution');
+    const probeEvents = events.filter((event) => event.eventFamily === 'probe');
     const executionDurationSummary = summarizeDurationMetrics(
-      events.filter((event) => event.eventFamily === 'execution'),
+      executionEvents,
     );
-    const executionUsageSummary = summarizeUsageMetrics(
-      events.filter((event) => event.eventFamily === 'execution'),
+    const executionAttemptSummary = summarizeAttemptMetrics(
+      executionEvents,
+      (event) => event.executionStatus === 'completed',
     );
-    const probeDurationSummary = summarizeDurationMetrics(events.filter((event) => event.eventFamily === 'probe'));
+    const executionUsageSummary = summarizeUsageMetrics(executionEvents);
+    const probeDurationSummary = summarizeDurationMetrics(probeEvents);
+    const probeAttemptSummary = summarizeAttemptMetrics(probeEvents, (event) => event.ok);
     const executionStatusCounts = {
       ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
       total: 0,
@@ -2342,11 +2484,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ),
       executionFailedCount: executionStatusCounts.failed,
       executionMaxDurationMs: executionDurationSummary.maxDurationMs,
+      executionMaxAttemptCount: executionAttemptSummary.maxAttemptCount || null,
+      executionMultiAttemptCount: executionAttemptSummary.multiAttemptCount,
       executionRetryableFailureCount: events.filter(
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.recoverable,
       ).length,
+      executionRetrySucceededCount: executionAttemptSummary.retrySucceededCount,
       executionStatusCounts,
+      executionTotalAttemptCount: executionAttemptSummary.totalAttemptCount,
       executionTotalDurationMs: executionDurationSummary.totalDurationMs,
+      executionTotalRetryCount: executionAttemptSummary.totalRetryCount,
+      executionAttemptHistoryEntryCountTotal: executionAttemptSummary.attemptHistoryEntryCountTotal,
       executionTimedOutFailureCount: events.filter(
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
       ).length,
@@ -2361,13 +2509,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       probeFailureKindCounts: summarizeFailureKinds(
         events.filter((event) => event.eventFamily === 'probe' && event.attempted && !event.ok),
       ),
+      probeMaxAttemptCount: probeAttemptSummary.maxAttemptCount || null,
       probeMaxDurationMs: probeDurationSummary.maxDurationMs,
+      probeMultiAttemptCount: probeAttemptSummary.multiAttemptCount,
       probeRetryableFailureCount: events.filter(
         (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.recoverable,
       ).length,
+      probeRetrySucceededCount: probeAttemptSummary.retrySucceededCount,
       probeSkippedCount,
       probeSuccessCount,
+      probeTotalAttemptCount: probeAttemptSummary.totalAttemptCount,
       probeTotalDurationMs: probeDurationSummary.totalDurationMs,
+      probeTotalRetryCount: probeAttemptSummary.totalRetryCount,
+      probeAttemptHistoryEntryCountTotal: probeAttemptSummary.attemptHistoryEntryCountTotal,
       probeTimedOutFailureCount: events.filter(
         (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.timedOut,
       ).length,
@@ -2469,6 +2623,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       })),
     ]);
     const eventSummary = summarizeProviderEvents(scopedProviderEvents);
+    const combinedAttentionSummary = summarizeProviderAttentionItems([
+      ...pendingAttentionItems,
+      ...acknowledgedAttentionItems,
+      ...recoveredAttentionItems,
+      ...resolvedAttentionItems,
+    ]);
     const touchedProviderIds = [
       ...new Set(
         [
@@ -2503,10 +2663,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             .sort((left, right) => String(left).localeCompare(String(right)))
             .at(0) || null,
         attentionOverdueCount: pendingAttentionItems.filter((item) => item.isOverdue).length,
+        attentionAttemptHistoryEntryCountTotal: combinedAttentionSummary.attemptHistoryEntryCountTotal,
+        attentionMaxAttemptCount: combinedAttentionSummary.maxAttemptCount,
+        attentionMultiAttemptCount: combinedAttentionSummary.multiAttemptCount,
         attentionReminderCount: reminderRecords.length,
         attentionRequiredCount: pendingAttentionItems.length,
         attentionRecoveredCount: recoveredAttentionItems.length,
         attentionResolvedCount: resolvedAttentionItems.length,
+        attentionTotalAttemptCount: combinedAttentionSummary.totalAttemptCount,
+        attentionTotalRetryCount: combinedAttentionSummary.retryCountTotal,
         attentionStatusCounts: {
           acknowledged: acknowledgedAttentionItems.length,
           pending: pendingAttentionItems.length,
@@ -2526,9 +2691,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         executionCount: executionSummary.total,
         executionFailedCount: executionSummary.statusCounts.failed,
         executionMaxDurationMs: executionSummary.maxDurationMs,
+        executionMaxAttemptCount: executionSummary.maxAttemptCount,
+        executionMultiAttemptCount: executionSummary.multiAttemptCount,
         executionRetryableFailureCount: executionSummary.retryableFailureCount,
+        executionRetrySucceededCount: executionSummary.retrySucceededCount,
         executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
+        executionTotalAttemptCount: executionSummary.totalAttemptCount,
         executionTotalDurationMs: executionSummary.totalDurationMs,
+        executionTotalRetryCount: executionSummary.totalRetryCount,
+        executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
         probeAverageDurationMs: eventSummary.probeAverageDurationMs,
         probeMaxDurationMs: eventSummary.probeMaxDurationMs,
         probeTotalDurationMs: eventSummary.probeTotalDurationMs,
@@ -2640,6 +2811,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const probeRecord = store.saveProviderProbe({
       id: createId('provider-probe'),
       attemptCount: Number(result.attemptCount || 0),
+      attemptHistory: normalizeProviderAttemptHistory(result.attemptHistory),
       durationMs: normalizeTelemetryNumber(result.durationMs),
       failureKind: normalizeText(result.failureKind) ? normalizeProviderFailureKind(result.failureKind) : null,
       httpStatus: Number.isFinite(Number(result.httpStatus)) ? Number(result.httpStatus) : null,
@@ -2647,6 +2819,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerResponseId: normalizeText(result.providerResponseId) || null,
       rawMessage: normalizeText(result.rawMessage) || null,
       recoverable: typeof result.recoverable === 'boolean' ? result.recoverable : null,
+      retryCount: Number(result.retryCount || 0),
       attempted: Boolean(result.attempted),
       ok: Boolean(result.ok),
       reason: normalizeText(result.reason),
@@ -2982,9 +3155,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         artifactIds: [promptArtifact.id, outputArtifact.id],
         metadata: {
           attemptCount: Number(providerOutput?.attemptCount || 1),
+          attemptHistory: normalizeProviderAttemptHistory(providerOutput?.attemptHistory),
           durationMs: normalizeTelemetryNumber(providerOutput?.durationMs),
           providerId,
           providerResponseId: normalizeText(providerOutput?.providerResponseId) || null,
+          retryCount: Number(providerOutput?.retryCount || 0),
           usageInputTokens: normalizeTelemetryNumber(providerOutput?.usageInputTokens),
           usageOutputTokens: normalizeTelemetryNumber(providerOutput?.usageOutputTokens),
           usageTotalTokens: normalizeTelemetryNumber(providerOutput?.usageTotalTokens),
@@ -3012,6 +3187,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         artifactIds: [promptArtifact.id],
         metadata: {
           attemptCount: Number(failure.attemptCount || 1),
+          attemptHistory: normalizeProviderAttemptHistory(failure.attemptHistory),
           durationMs: normalizeTelemetryNumber(failure.durationMs),
           failureKind: normalizeProviderFailureKind(failure.failureKind),
           httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
@@ -3019,6 +3195,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           providerResponseId: normalizeText(failure.providerResponseId) || null,
           rawMessage: normalizeText(failure.rawMessage) || null,
           recoverable: typeof failure.recoverable === 'boolean' ? failure.recoverable : null,
+          retryCount: Number(failure.retryCount || 0),
           timedOut: Boolean(failure.timedOut),
           usageInputTokens: normalizeTelemetryNumber(failure.usageInputTokens),
           usageOutputTokens: normalizeTelemetryNumber(failure.usageOutputTokens),
@@ -3531,11 +3708,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
       providerAttentionNextReminderAt: providerActivity.summary.attentionNextReminderAt,
       providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      providerAttentionAttemptHistoryEntryCountTotal: providerActivity.summary.attentionAttemptHistoryEntryCountTotal,
+      providerAttentionMaxAttemptCount: providerActivity.summary.attentionMaxAttemptCount,
+      providerAttentionMultiAttemptCount: providerActivity.summary.attentionMultiAttemptCount,
       providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
       providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
       providerAttentionRecoveredCount: providerActivity.summary.attentionRecoveredCount,
       providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
       providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
+      providerAttentionTotalAttemptCount: providerActivity.summary.attentionTotalAttemptCount,
+      providerAttentionTotalRetryCount: providerActivity.summary.attentionTotalRetryCount,
       providerEventCount: providerActivity.summary.eventCount,
       providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
       providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
@@ -3543,9 +3725,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerExecutionCount: providerActivity.summary.executionCount,
       providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
       providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+      providerExecutionAttemptHistoryEntryCountTotal: providerActivity.summary.executionAttemptHistoryEntryCountTotal,
       providerExecutionMaxDurationMs: providerActivity.summary.executionMaxDurationMs,
+      providerExecutionMaxAttemptCount: providerActivity.summary.executionMaxAttemptCount,
+      providerExecutionMultiAttemptCount: providerActivity.summary.executionMultiAttemptCount,
       providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+      providerExecutionRetrySucceededCount: providerActivity.summary.executionRetrySucceededCount,
+      providerExecutionTotalAttemptCount: providerActivity.summary.executionTotalAttemptCount,
       providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
+      providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
       providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
       providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
       providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
@@ -3807,11 +3995,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
         providerAttentionNextReminderAt: providerActivity.summary.attentionNextReminderAt,
         providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+        providerAttentionAttemptHistoryEntryCountTotal: providerActivity.summary.attentionAttemptHistoryEntryCountTotal,
+        providerAttentionMaxAttemptCount: providerActivity.summary.attentionMaxAttemptCount,
+        providerAttentionMultiAttemptCount: providerActivity.summary.attentionMultiAttemptCount,
         providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
         providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
         providerAttentionRecoveredCount: providerActivity.summary.attentionRecoveredCount,
         providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
         providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
+        providerAttentionTotalAttemptCount: providerActivity.summary.attentionTotalAttemptCount,
+        providerAttentionTotalRetryCount: providerActivity.summary.attentionTotalRetryCount,
         providerEventCount: providerActivity.summary.eventCount,
         providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
         providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
@@ -3819,9 +4012,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionCount: providerActivity.summary.executionCount,
         providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
         providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+        providerExecutionAttemptHistoryEntryCountTotal: providerActivity.summary.executionAttemptHistoryEntryCountTotal,
         providerExecutionMaxDurationMs: providerActivity.summary.executionMaxDurationMs,
+        providerExecutionMaxAttemptCount: providerActivity.summary.executionMaxAttemptCount,
+        providerExecutionMultiAttemptCount: providerActivity.summary.executionMultiAttemptCount,
         providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+        providerExecutionRetrySucceededCount: providerActivity.summary.executionRetrySucceededCount,
+        providerExecutionTotalAttemptCount: providerActivity.summary.executionTotalAttemptCount,
         providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
+        providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
         providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
         providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
@@ -5922,6 +6121,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     let needsReminderCount = 0;
     let overdueCount = 0;
     let reminderCountTotal = 0;
+    const attemptSummary = summarizeAttemptMetrics(items);
 
     for (const item of items) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
@@ -6004,6 +6204,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       overdueProviderIds: [...overdueProviderIds].sort((left, right) => String(left).localeCompare(String(right))),
       providerCounts,
       reminderCountTotal,
+      retryCountTotal: attemptSummary.totalRetryCount,
+      totalRetryCount: attemptSummary.totalRetryCount,
+      totalAttemptCount: attemptSummary.totalAttemptCount,
+      maxAttemptCount: attemptSummary.maxAttemptCount || null,
+      multiAttemptCount: attemptSummary.multiAttemptCount,
+      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       statusCounts,
       total: items.length,
       workspaceCounts,
@@ -6224,6 +6430,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       acknowledgedAt,
       actionId: pendingItem.actionId,
       attemptCount: Number(pendingItem.attemptCount || 0),
+      attemptHistory: normalizeProviderAttemptHistory(pendingItem.attemptHistory),
       createdAt: acknowledgedAt,
       durationMs: normalizeTelemetryNumber(pendingItem.durationMs),
       eventFamily: pendingItem.eventFamily,
@@ -6243,6 +6450,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       reason: pendingItem.reason,
       recommendedOwner: pendingItem.recommendedOwner,
       recoverable: typeof pendingItem.recoverable === 'boolean' ? pendingItem.recoverable : null,
+      retryCount: Number(pendingItem.retryCount || 0),
       sessionId: pendingItem.sessionId,
       status: 'acknowledged',
       timedOut: Boolean(pendingItem.timedOut),
@@ -6550,11 +6758,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionNextDueAt: providerOverview.summary.attentionNextDueAt,
         providerAttentionNextReminderAt: providerOverview.summary.attentionNextReminderAt,
         providerAttentionOverdueCount: providerOverview.summary.attentionOverdueCount,
+        providerAttentionAttemptHistoryEntryCountTotal: providerOverview.summary.attentionAttemptHistoryEntryCountTotal,
+        providerAttentionMaxAttemptCount: providerOverview.summary.attentionMaxAttemptCount,
+        providerAttentionMultiAttemptCount: providerOverview.summary.attentionMultiAttemptCount,
         providerAttentionReminderCount: providerOverview.summary.attentionReminderCountTotal,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
         providerAttentionRecoveredCount: providerOverview.summary.recoveredAttentionCount,
         providerAttentionResolvedCount: providerOverview.summary.resolvedAttentionCount,
         providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,
+        providerAttentionTotalAttemptCount: providerOverview.summary.attentionTotalAttemptCount,
+        providerAttentionTotalRetryCount: providerOverview.summary.attentionTotalRetryCount,
         providerEventCount: providerOverview.summary.eventTotal,
         providerEventFamilyCounts: providerOverview.summary.eventFamilyCounts,
         providerExecutionAverageDurationMs: providerOverview.summary.executionAverageDurationMs,
@@ -6562,9 +6775,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionCount: providerOverview.summary.executionTotal,
         providerExecutionFailedCount: providerOverview.summary.executionFailedCount,
         providerExecutionFailureKindCounts: providerOverview.summary.executionFailureKindCounts,
+        providerExecutionAttemptHistoryEntryCountTotal: providerOverview.summary.executionAttemptHistoryEntryCountTotal,
         providerExecutionMaxDurationMs: providerOverview.summary.executionMaxDurationMs,
+        providerExecutionMaxAttemptCount: providerOverview.summary.executionMaxAttemptCount,
+        providerExecutionMultiAttemptCount: providerOverview.summary.executionMultiAttemptCount,
         providerExecutionRetryableFailureCount: providerOverview.summary.executionRetryableFailureCount,
+        providerExecutionRetrySucceededCount: providerOverview.summary.executionRetrySucceededCount,
+        providerExecutionTotalAttemptCount: providerOverview.summary.executionTotalAttemptCount,
         providerExecutionTotalDurationMs: providerOverview.summary.executionTotalDurationMs,
+        providerExecutionTotalRetryCount: providerOverview.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerOverview.summary.executionTimedOutFailureCount,
         providerExecutionUsageInputTokensTotal: providerOverview.summary.usageInputTokensTotal,
         providerExecutionUsageOutputTokensTotal: providerOverview.summary.usageOutputTokensTotal,
@@ -6572,10 +6791,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerLatestProbeFailureCount: providerOverview.summary.latestProbeFailureCount,
         providerLatestProbeSkippedCount: providerOverview.summary.latestProbeSkippedCount,
         providerProbeAverageDurationMs: providerOverview.summary.probeAverageDurationMs,
+        providerProbeAttemptHistoryEntryCountTotal: providerOverview.summary.probeAttemptHistoryEntryCountTotal,
         providerProbeFailureKindCounts: providerOverview.summary.probeFailureKindCounts,
+        providerProbeMaxAttemptCount: providerOverview.summary.probeMaxAttemptCount,
         providerProbeMaxDurationMs: providerOverview.summary.probeMaxDurationMs,
+        providerProbeMultiAttemptCount: providerOverview.summary.probeMultiAttemptCount,
         providerProbeRetryableFailureCount: providerOverview.summary.probeRetryableFailureCount,
+        providerProbeRetrySucceededCount: providerOverview.summary.probeRetrySucceededCount,
+        providerProbeTotalAttemptCount: providerOverview.summary.probeTotalAttemptCount,
         providerProbeTotalDurationMs: providerOverview.summary.probeTotalDurationMs,
+        providerProbeTotalRetryCount: providerOverview.summary.probeTotalRetryCount,
         providerProbeTimedOutFailureCount: providerOverview.summary.probeTimedOutFailureCount,
         providerReadyCount: providerOverview.summary.readyCount,
         specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,

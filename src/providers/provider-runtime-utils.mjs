@@ -7,6 +7,39 @@ function normalizeMetricNumber(value, fallback = null) {
   return Number.isFinite(numericValue) ? numericValue : fallback;
 }
 
+export function deriveRetryCount(attemptCount) {
+  const normalizedAttemptCount = Number(attemptCount);
+  if (!Number.isFinite(normalizedAttemptCount) || normalizedAttemptCount <= 1) {
+    return 0;
+  }
+
+  return normalizedAttemptCount - 1;
+}
+
+function normalizeAttemptHistoryEntry(entry = {}) {
+  const attempt = Number(entry.attempt || entry.attemptCount || 0);
+  if (!Number.isFinite(attempt) || attempt <= 0) {
+    return null;
+  }
+
+  return {
+    attempt,
+    durationMs: normalizeMetricNumber(entry.durationMs),
+    failureKind: normalizeText(entry.failureKind) || null,
+    httpStatus: Number.isFinite(Number(entry.httpStatus)) ? Number(entry.httpStatus) : null,
+    ok: Boolean(entry.ok),
+    rawMessage: normalizeText(entry.rawMessage) || null,
+    recoverable: typeof entry.recoverable === 'boolean' ? entry.recoverable : null,
+    timedOut: Boolean(entry.timedOut),
+  };
+}
+
+function normalizeAttemptHistory(attemptHistory = []) {
+  return Array.isArray(attemptHistory)
+    ? attemptHistory.map((entry) => normalizeAttemptHistoryEntry(entry)).filter(Boolean)
+    : [];
+}
+
 function isRetryableStatus(status) {
   const numericStatus = Number(status);
   return numericStatus === 429 || numericStatus >= 500;
@@ -16,14 +49,20 @@ export class ProviderFailureError extends Error {
   constructor(message, failure = {}) {
     super(message);
     this.name = 'ProviderFailureError';
+    const normalizedAttemptCount = Number(failure.attemptCount || 1);
+    const normalizedAttemptHistory = normalizeAttemptHistory(failure.attemptHistory);
     this.failure = {
-      attemptCount: Number(failure.attemptCount || 1),
+      attemptCount: normalizedAttemptCount,
+      attemptHistory: normalizedAttemptHistory,
       durationMs: normalizeMetricNumber(failure.durationMs),
       failureKind: normalizeText(failure.failureKind, 'unknown'),
       httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
       providerResponseId: normalizeText(failure.providerResponseId) || null,
       rawMessage: normalizeText(failure.rawMessage, message),
       recoverable: Boolean(failure.recoverable),
+      retryCount: Number.isFinite(Number(failure.retryCount))
+        ? Number(failure.retryCount)
+        : deriveRetryCount(normalizedAttemptCount),
       timedOut: Boolean(failure.timedOut),
     };
   }
@@ -47,6 +86,7 @@ export function extractProviderFailure(error, fallback = {}) {
 
   return {
     attemptCount: Number(fallback.attemptCount || 1),
+    attemptHistory: normalizeAttemptHistory(fallback.attemptHistory),
     durationMs: normalizeMetricNumber(fallback.durationMs),
     failureKind: normalizeText(fallback.failureKind, 'unknown'),
     httpStatus: Number.isFinite(Number(fallback.httpStatus)) ? Number(fallback.httpStatus) : null,
@@ -54,6 +94,9 @@ export function extractProviderFailure(error, fallback = {}) {
     providerResponseId: normalizeText(fallback.providerResponseId) || null,
     rawMessage: normalizeText(fallback.rawMessage, error instanceof Error ? error.message : String(error)),
     recoverable: Boolean(fallback.recoverable),
+    retryCount: Number.isFinite(Number(fallback.retryCount))
+      ? Number(fallback.retryCount)
+      : deriveRetryCount(fallback.attemptCount || 1),
     timedOut: Boolean(fallback.timedOut),
   };
 }
@@ -136,8 +179,10 @@ export async function requestJsonWithPolicy({
 
   const totalAttempts = Math.max(1, Number(maxAttempts || 1));
   const startedAtMs = Date.now();
+  const attemptHistory = [];
 
   for (let attempt = 1; attempt <= totalAttempts; attempt += 1) {
+    const attemptStartedAtMs = Date.now();
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
     const timeoutHandle =
       controller && timeoutMs > 0
@@ -160,6 +205,7 @@ export async function requestJsonWithPolicy({
 
       if (!response.ok) {
         const errorText = await readResponseText(response);
+        const attemptDurationMs = Date.now() - attemptStartedAtMs;
         const failure = createProviderFailure(
           `${providerLabel} provider request failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
           {
@@ -172,29 +218,105 @@ export async function requestJsonWithPolicy({
             timedOut: false,
           },
         );
+        attemptHistory.push(
+          normalizeAttemptHistoryEntry({
+            attempt,
+            durationMs: attemptDurationMs,
+            failureKind: failure.failure.failureKind,
+            httpStatus: failure.failure.httpStatus,
+            ok: false,
+            rawMessage: failure.failure.rawMessage,
+            recoverable: failure.failure.recoverable,
+            timedOut: failure.failure.timedOut,
+          }),
+        );
 
         if (failure.failure.recoverable && attempt < totalAttempts) {
           continue;
         }
 
-        throw failure;
+        throw createProviderFailure(failure.message, {
+          ...failure.failure,
+          attemptHistory,
+          retryCount: deriveRetryCount(attempt),
+        });
       }
 
-      const payload = await parseResponseJson(response, providerLabel, attempt);
+      let payload;
+      try {
+        payload = await parseResponseJson(response, providerLabel, attempt);
+      } catch (error) {
+        const normalizedFailure = isProviderFailureError(error) ? error : classifyTransportFailure(error, attempt);
+        const attemptDurationMs = Date.now() - attemptStartedAtMs;
+        attemptHistory.push(
+          normalizeAttemptHistoryEntry({
+            attempt,
+            durationMs: attemptDurationMs,
+            failureKind: normalizedFailure.failure.failureKind,
+            httpStatus: normalizedFailure.failure.httpStatus,
+            ok: false,
+            rawMessage: normalizedFailure.failure.rawMessage,
+            recoverable: normalizedFailure.failure.recoverable,
+            timedOut: normalizedFailure.failure.timedOut,
+          }),
+        );
+        throw createProviderFailure(normalizedFailure.message, {
+          ...normalizedFailure.failure,
+          attemptHistory,
+          durationMs: Date.now() - startedAtMs,
+          retryCount: deriveRetryCount(attempt),
+        });
+      }
+
+      attemptHistory.push(
+        normalizeAttemptHistoryEntry({
+          attempt,
+          durationMs: Date.now() - attemptStartedAtMs,
+          httpStatus: Number.isFinite(Number(response.status)) ? Number(response.status) : null,
+          ok: true,
+          rawMessage: null,
+          recoverable: false,
+          timedOut: false,
+        }),
+      );
       return {
         attemptCount: attempt,
+        attemptHistory,
         durationMs: Date.now() - startedAtMs,
         payload,
+        retryCount: deriveRetryCount(attempt),
       };
     } catch (error) {
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
 
+      if (isProviderFailureError(error) && Array.isArray(error.failure?.attemptHistory)) {
+        if (error.failure.recoverable && attempt < totalAttempts) {
+          continue;
+        }
+        throw error;
+      }
+
       const normalizedFailure = isProviderFailureError(error) ? error : classifyTransportFailure(error, attempt);
+      const attemptDurationMs = Date.now() - attemptStartedAtMs;
+      attemptHistory.push(
+        normalizeAttemptHistoryEntry({
+          attempt,
+          durationMs: attemptDurationMs,
+          failureKind: normalizedFailure.failure.failureKind,
+          httpStatus: normalizedFailure.failure.httpStatus,
+          ok: false,
+          rawMessage: normalizedFailure.failure.rawMessage,
+          recoverable: normalizedFailure.failure.recoverable,
+          timedOut: normalizedFailure.failure.timedOut,
+        }),
+      );
       const failureWithDuration = createProviderFailure(normalizedFailure.message, {
         ...normalizedFailure.failure,
+        attemptHistory,
         durationMs: Date.now() - startedAtMs,
+        retryCount: deriveRetryCount(attempt),
       });
       if (failureWithDuration.failure.recoverable && attempt < totalAttempts) {
         continue;
@@ -205,10 +327,12 @@ export async function requestJsonWithPolicy({
 
   throw createProviderFailure(`${providerLabel} provider request failed.`, {
     attemptCount: totalAttempts,
+    attemptHistory,
     durationMs: Date.now() - startedAtMs,
     failureKind: 'unknown',
     rawMessage: 'Provider request failed without a captured error.',
     recoverable: false,
+    retryCount: deriveRetryCount(totalAttempts),
     timedOut: false,
   });
 }

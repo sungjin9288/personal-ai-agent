@@ -79,7 +79,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
     },
     async probe() {
       const config = resolveAnthropicConfig(env);
-      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
+      const { payload, attemptCount, attemptHistory, durationMs, retryCount } = await requestJsonWithPolicy({
         fetchImpl,
         headers: {
           'anthropic-version': config.version,
@@ -97,6 +97,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
 
       return {
         attemptCount,
+        attemptHistory,
         checkedAt: new Date().toISOString(),
         durationMs,
         endpoint: `${config.baseUrl}/models`,
@@ -104,6 +105,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         modelAvailable: models.includes(config.model),
         modelCount: models.length,
         ok: true,
+        retryCount,
         sampleModels: models.slice(0, 5),
         transport: 'messages-api',
       };
@@ -111,7 +113,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
     async run(input) {
       const config = resolveAnthropicConfig(env);
       const delegatedPrompt = delegatedProvider.preparePrompt(input);
-      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
+      const { payload, attemptCount, attemptHistory, durationMs, retryCount } = await requestJsonWithPolicy({
         fetchImpl,
         headers: {
           'anthropic-version': config.version,
@@ -150,17 +152,24 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
       } catch (error) {
         withProviderMetadata(error, {
           attemptCount,
+          attemptHistory,
           durationMs,
           providerResponseId,
+          retryCount,
+          usageInputTokens: usage.inputTokens,
+          usageOutputTokens: usage.outputTokens,
+          usageTotalTokens: usage.totalTokens,
         });
       }
 
       return {
         attemptCount,
+        attemptHistory,
         durationMs,
         output,
         providerResponseId,
         role: input.providerRole || input.role,
+        retryCount,
         usageInputTokens: usage.inputTokens,
         usageOutputTokens: usage.outputTokens,
         usageTotalTokens: usage.totalTokens,

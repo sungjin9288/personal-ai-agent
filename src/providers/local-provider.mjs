@@ -74,7 +74,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
+      const { payload, attemptCount, attemptHistory, durationMs, retryCount } = await requestJsonWithPolicy({
         fetchImpl,
         headers,
         maxAttempts: LOCAL_MAX_ATTEMPTS,
@@ -89,6 +89,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
 
       return {
         attemptCount,
+        attemptHistory,
         checkedAt: new Date().toISOString(),
         durationMs,
         endpoint: `${config.baseUrl}/models`,
@@ -96,6 +97,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         modelAvailable: models.includes(config.model),
         modelCount: models.length,
         ok: true,
+        retryCount,
         sampleModels: models.slice(0, 5),
         transport: 'openai-compatible-chat-completions',
       };
@@ -111,7 +113,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
+      const { payload, attemptCount, attemptHistory, durationMs, retryCount } = await requestJsonWithPolicy({
         fetchImpl,
         headers,
         init: {
@@ -151,17 +153,24 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       } catch (error) {
         withProviderMetadata(error, {
           attemptCount,
+          attemptHistory,
           durationMs,
           providerResponseId,
+          retryCount,
+          usageInputTokens: usage.inputTokens,
+          usageOutputTokens: usage.outputTokens,
+          usageTotalTokens: usage.totalTokens,
         });
       }
 
       return {
         attemptCount,
+        attemptHistory,
         durationMs,
         output,
         providerResponseId,
         role: input.providerRole || input.role,
+        retryCount,
         usageInputTokens: usage.inputTokens,
         usageOutputTokens: usage.outputTokens,
         usageTotalTokens: usage.totalTokens,
