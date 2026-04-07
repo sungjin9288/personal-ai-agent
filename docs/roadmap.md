@@ -36,6 +36,7 @@
 - mission show and mission timeline now support `provider-since` linkage so mission-bound provider execution and attention activity can be inspected as a recent window without replacing the existing mission audit summary
 - recent provider window payloads now also expose execution daily buckets and latest bucket delta so recent provider execution trend can be compared consistently across provider, mission, workspace, and global surfaces
 - recent provider window payloads now also expose weekly execution buckets and latest weekly delta so short recent slices can still be read as coarse weekly trend without reopening full provider history
+- recent provider window payloads now also expose monthly execution buckets and latest monthly delta so the same recent slice can be read as a coarse month rollup without reopening full provider history
 - global operator timeline now also accepts `provider-since` linkage so the operator-facing chronology can expose recent provider execution and attention trend without leaving the operator surface
 - workspace timeline now also accepts `provider-since` linkage so workspace-bound chronology and recent provider execution or attention trend can be queried with the same recent window contract
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox

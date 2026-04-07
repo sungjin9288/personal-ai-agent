@@ -92,6 +92,25 @@ function getUtcWeekRange(isoTimestamp) {
   };
 }
 
+function getUtcMonthRange(isoTimestamp) {
+  const parsed = Date.parse(String(isoTimestamp || ''));
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+
+  const date = new Date(parsed);
+  const monthStart = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1);
+  const monthEnd = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0);
+  const monthKey = formatDateUtc(monthStart).slice(0, 7);
+
+  return {
+    key: monthKey,
+    monthEndDate: formatDateUtc(monthEnd),
+    monthKey,
+    monthStartDate: formatDateUtc(monthStart),
+  };
+}
+
 function dedupeEntries(entries) {
   const seenIds = new Set();
   return entries.filter((entry) => {
@@ -1765,6 +1784,69 @@ function summarizeProviderExecutions(executions) {
     );
   }
 
+  function buildProviderExecutionMonthlyBuckets(executions) {
+    const bucketMap = new Map();
+
+    for (const execution of executions) {
+      const at = String(execution.at || execution.endedAt || execution.startedAt || '');
+      if (!at) {
+        continue;
+      }
+
+      const monthRange = getUtcMonthRange(at);
+      if (!monthRange) {
+        continue;
+      }
+
+      const current = bucketMap.get(monthRange.key) || {
+        completedCount: 0,
+        estimatedCostUsdByProviderId: {},
+        estimatedCostUsdByRole: {},
+        estimatedCostUsdPricedCount: 0,
+        estimatedCostUsdTotal: 0,
+        executionCount: 0,
+        failedCount: 0,
+        monthEndDate: monthRange.monthEndDate,
+        monthKey: monthRange.monthKey,
+        monthStartDate: monthRange.monthStartDate,
+      };
+
+      current.executionCount += 1;
+      if (execution.status === 'completed') {
+        current.completedCount += 1;
+      }
+      if (execution.status === 'failed') {
+        current.failedCount += 1;
+      }
+
+      const estimatedCostUsd = roundUsdAmount(execution.estimatedCostUsd);
+      if (Number.isFinite(estimatedCostUsd) && estimatedCostUsd >= 0) {
+        current.estimatedCostUsdPricedCount += 1;
+        current.estimatedCostUsdTotal = roundUsdAmount(current.estimatedCostUsdTotal + estimatedCostUsd);
+
+        const providerId = normalizeText(execution.providerId);
+        if (providerId) {
+          current.estimatedCostUsdByProviderId[providerId] = roundUsdAmount(
+            Number(current.estimatedCostUsdByProviderId[providerId] || 0) + estimatedCostUsd,
+          );
+        }
+
+        const role = normalizeText(execution.role);
+        if (role) {
+          current.estimatedCostUsdByRole[role] = roundUsdAmount(
+            Number(current.estimatedCostUsdByRole[role] || 0) + estimatedCostUsd,
+          );
+        }
+      }
+
+      bucketMap.set(monthRange.key, current);
+    }
+
+    return [...bucketMap.values()].sort((left, right) =>
+      String(right.monthStartDate).localeCompare(String(left.monthStartDate)),
+    );
+  }
+
   function buildProviderExecutionLatestBucketDelta(dailyBuckets) {
     const current = dailyBuckets[0] || null;
     if (!current) {
@@ -1806,6 +1888,31 @@ function summarizeProviderExecutions(executions) {
       failedCountDelta: Number(current.failedCount || 0) - Number(previous?.failedCount || 0),
       previousWeekEndDate: previous?.weekEndDate || null,
       previousWeekStartDate: previous?.weekStartDate || null,
+    };
+  }
+
+  function buildProviderExecutionLatestMonthlyBucketDelta(monthlyBuckets) {
+    const current = monthlyBuckets[0] || null;
+    if (!current) {
+      return null;
+    }
+
+    const previous = monthlyBuckets[1] || null;
+    return {
+      completedCountDelta: Number(current.completedCount || 0) - Number(previous?.completedCount || 0),
+      currentMonthEndDate: current.monthEndDate,
+      currentMonthKey: current.monthKey,
+      currentMonthStartDate: current.monthStartDate,
+      estimatedCostUsdPricedCountDelta:
+        Number(current.estimatedCostUsdPricedCount || 0) - Number(previous?.estimatedCostUsdPricedCount || 0),
+      estimatedCostUsdTotalDelta: roundUsdAmount(
+        Number(current.estimatedCostUsdTotal || 0) - Number(previous?.estimatedCostUsdTotal || 0),
+      ),
+      executionCountDelta: Number(current.executionCount || 0) - Number(previous?.executionCount || 0),
+      failedCountDelta: Number(current.failedCount || 0) - Number(previous?.failedCount || 0),
+      previousMonthEndDate: previous?.monthEndDate || null,
+      previousMonthKey: previous?.monthKey || null,
+      previousMonthStartDate: previous?.monthStartDate || null,
     };
   }
 
@@ -2254,6 +2361,7 @@ function summarizeProviderExecutions(executions) {
     const executionSummary = summarizeProviderExecutions(executions);
     const executionDailyBuckets = buildProviderExecutionDailyBuckets(executions);
     const executionWeeklyBuckets = buildProviderExecutionWeeklyBuckets(executions);
+    const executionMonthlyBuckets = buildProviderExecutionMonthlyBuckets(executions);
     const events = buildProviderEvents({ since });
     const eventSummary = summarizeProviderEvents(events);
     const touchedProviderIds = [
@@ -2281,9 +2389,14 @@ function summarizeProviderExecutions(executions) {
       executionFailureKindCounts: executionSummary.failureKindCounts,
       executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
       executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionLatestMonthlyBucketDelta: buildProviderExecutionLatestMonthlyBucketDelta(executionMonthlyBuckets),
       executionLatestWeeklyBucketDelta: buildProviderExecutionLatestWeeklyBucketDelta(executionWeeklyBuckets),
       executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
+      executionOldestMonthlyBucketStartDate: executionMonthlyBuckets.at(-1)?.monthStartDate || null,
       executionOldestWeeklyBucketStartDate: executionWeeklyBuckets.at(-1)?.weekStartDate || null,
+      executionMonthlyBucketCount: executionMonthlyBuckets.length,
+      executionMonthlyBuckets,
+      executionLatestMonthlyBucketStartDate: executionMonthlyBuckets[0]?.monthStartDate || null,
       executionTotal: executionSummary.total,
       executionWeeklyBucketCount: executionWeeklyBuckets.length,
       executionWeeklyBuckets,
@@ -3172,6 +3285,7 @@ function summarizeProviderExecutions(executions) {
     const executionSummary = summarizeProviderExecutions(executionEntries);
     const executionDailyBuckets = buildProviderExecutionDailyBuckets(executionEntries);
     const executionWeeklyBuckets = buildProviderExecutionWeeklyBuckets(executionEntries);
+    const executionMonthlyBuckets = buildProviderExecutionMonthlyBuckets(executionEntries);
     const scopedProviderEvents = sortTimelineEvents([
       ...buildProviderAttentionOpenedTimeline(
         [...pendingAttentionItems, ...recoveredAttentionItems],
@@ -3263,9 +3377,14 @@ function summarizeProviderExecutions(executions) {
       executionFailureKindCounts: executionSummary.failureKindCounts,
       executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
       executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionLatestMonthlyBucketDelta: buildProviderExecutionLatestMonthlyBucketDelta(executionMonthlyBuckets),
       executionLatestWeeklyBucketDelta: buildProviderExecutionLatestWeeklyBucketDelta(executionWeeklyBuckets),
       executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
+      executionOldestMonthlyBucketStartDate: executionMonthlyBuckets.at(-1)?.monthStartDate || null,
       executionOldestWeeklyBucketStartDate: executionWeeklyBuckets.at(-1)?.weekStartDate || null,
+      executionMonthlyBucketCount: executionMonthlyBuckets.length,
+      executionMonthlyBuckets,
+      executionLatestMonthlyBucketStartDate: executionMonthlyBuckets[0]?.monthStartDate || null,
       executionWeeklyBucketCount: executionWeeklyBuckets.length,
       executionWeeklyBuckets,
       executionLatestWeeklyBucketStartDate: executionWeeklyBuckets[0]?.weekStartDate || null,

@@ -29,6 +29,7 @@
 - added `mission show --provider-since` and `mission timeline --provider-since` so mission-bound provider execution and attention activity can be queried as `providerRecentWindow` from the mission surface itself
 - extended every `providerRecentWindow` payload with execution daily buckets and latest bucket delta so recent provider execution trend can be inspected without reopening full provider activity history
 - extended every `providerRecentWindow` payload with weekly execution buckets and latest weekly delta so recent provider trend can also be read at a coarser weekly rollup
+- extended every `providerRecentWindow` payload with monthly execution buckets and latest monthly delta so recent provider trend can also be read as a coarse month rollup from the same recent slice
 - added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
 
 ## 2026-04-07 Provider Hardening Baseline
