@@ -7,6 +7,15 @@ function normalizeMetricNumber(value, fallback = null) {
   return Number.isFinite(numericValue) ? numericValue : fallback;
 }
 
+export function roundUsdAmount(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return null;
+  }
+
+  return Number(numericValue.toFixed(8));
+}
+
 export function deriveRetryCount(attemptCount) {
   const normalizedAttemptCount = Number(attemptCount);
   if (!Number.isFinite(normalizedAttemptCount) || normalizedAttemptCount <= 1) {
@@ -51,10 +60,16 @@ export class ProviderFailureError extends Error {
     this.name = 'ProviderFailureError';
     const normalizedAttemptCount = Number(failure.attemptCount || 1);
     const normalizedAttemptHistory = normalizeAttemptHistory(failure.attemptHistory);
+    const usage = normalizeUsageMetrics({
+      inputTokens: failure.usageInputTokens,
+      outputTokens: failure.usageOutputTokens,
+      totalTokens: failure.usageTotalTokens,
+    });
     this.failure = {
       attemptCount: normalizedAttemptCount,
       attemptHistory: normalizedAttemptHistory,
       durationMs: normalizeMetricNumber(failure.durationMs),
+      estimatedCostUsd: roundUsdAmount(failure.estimatedCostUsd),
       failureKind: normalizeText(failure.failureKind, 'unknown'),
       httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
       providerResponseId: normalizeText(failure.providerResponseId) || null,
@@ -64,6 +79,9 @@ export class ProviderFailureError extends Error {
         ? Number(failure.retryCount)
         : deriveRetryCount(normalizedAttemptCount),
       timedOut: Boolean(failure.timedOut),
+      usageInputTokens: usage.inputTokens,
+      usageOutputTokens: usage.outputTokens,
+      usageTotalTokens: usage.totalTokens,
     };
   }
 }
@@ -88,6 +106,7 @@ export function extractProviderFailure(error, fallback = {}) {
     attemptCount: Number(fallback.attemptCount || 1),
     attemptHistory: normalizeAttemptHistory(fallback.attemptHistory),
     durationMs: normalizeMetricNumber(fallback.durationMs),
+    estimatedCostUsd: roundUsdAmount(fallback.estimatedCostUsd),
     failureKind: normalizeText(fallback.failureKind, 'unknown'),
     httpStatus: Number.isFinite(Number(fallback.httpStatus)) ? Number(fallback.httpStatus) : null,
     message: error instanceof Error ? error.message : String(error),
@@ -98,6 +117,9 @@ export function extractProviderFailure(error, fallback = {}) {
       ? Number(fallback.retryCount)
       : deriveRetryCount(fallback.attemptCount || 1),
     timedOut: Boolean(fallback.timedOut),
+    usageInputTokens: normalizeMetricNumber(fallback.usageInputTokens),
+    usageOutputTokens: normalizeMetricNumber(fallback.usageOutputTokens),
+    usageTotalTokens: normalizeMetricNumber(fallback.usageTotalTokens),
   };
 }
 
@@ -129,6 +151,43 @@ export function normalizeUsageMetrics(metrics = {}) {
     outputTokens,
     totalTokens,
   };
+}
+
+export function parseOptionalUsdRate(value, label) {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return null;
+  }
+
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`${label} must be a non-negative number. Received: ${normalized}`);
+  }
+
+  return parsed;
+}
+
+export function estimateUsageCostUsd({ pricing = {}, usage = {} } = {}) {
+  const inputTokens = normalizeMetricNumber(usage.inputTokens, null);
+  const outputTokens = normalizeMetricNumber(usage.outputTokens, null);
+  const inputCostPer1MUsd = normalizeMetricNumber(pricing.inputCostPer1MUsd, null);
+  const outputCostPer1MUsd = normalizeMetricNumber(pricing.outputCostPer1MUsd, null);
+
+  const hasInputUsage = Number.isFinite(inputTokens) && inputTokens > 0;
+  const hasOutputUsage = Number.isFinite(outputTokens) && outputTokens > 0;
+  if (!hasInputUsage && !hasOutputUsage) {
+    return null;
+  }
+
+  if ((hasInputUsage && inputCostPer1MUsd === null) || (hasOutputUsage && outputCostPer1MUsd === null)) {
+    return null;
+  }
+
+  const estimatedCostUsd =
+    Number((hasInputUsage ? inputTokens : 0)) * Number(inputCostPer1MUsd || 0) / 1_000_000 +
+    Number((hasOutputUsage ? outputTokens : 0)) * Number(outputCostPer1MUsd || 0) / 1_000_000;
+
+  return roundUsdAmount(estimatedCostUsd);
 }
 
 async function readResponseText(response) {

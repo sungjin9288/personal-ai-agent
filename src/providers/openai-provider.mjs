@@ -1,8 +1,10 @@
 import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
+  estimateUsageCostUsd,
   extractProviderFailure,
   normalizeUsageMetrics,
+  parseOptionalUsdRate,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
 import {
@@ -28,10 +30,28 @@ function resolveOpenAIConfig(env) {
     });
   }
 
+  let inputCostPer1MUsd;
+  let outputCostPer1MUsd;
+  try {
+    inputCostPer1MUsd = parseOptionalUsdRate(env.OPENAI_INPUT_COST_PER_1M_USD, 'OPENAI_INPUT_COST_PER_1M_USD');
+    outputCostPer1MUsd = parseOptionalUsdRate(env.OPENAI_OUTPUT_COST_PER_1M_USD, 'OPENAI_OUTPUT_COST_PER_1M_USD');
+  } catch (error) {
+    throw createProviderFailure(error instanceof Error ? error.message : String(error), {
+      failureKind: 'config',
+      rawMessage: error instanceof Error ? error.message : String(error),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
   return {
     apiKey,
     baseUrl: normalizeText(env.OPENAI_BASE_URL, 'https://api.openai.com/v1').replace(/\/$/, ''),
     model: normalizeText(env.OPENAI_MODEL, 'gpt-5.2'),
+    pricing: {
+      inputCostPer1MUsd,
+      outputCostPer1MUsd,
+    },
   };
 }
 
@@ -111,6 +131,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         outputTokens: payload?.usage?.output_tokens,
         totalTokens: payload?.usage?.total_tokens,
       });
+      const estimatedCostUsd = estimateUsageCostUsd({
+        pricing: config.pricing,
+        usage,
+      });
       let output;
       try {
         const outputText = extractOpenAIOutputText(payload);
@@ -122,6 +146,7 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
           durationMs,
           providerResponseId,
           retryCount,
+          estimatedCostUsd,
           usageInputTokens: usage.inputTokens,
           usageOutputTokens: usage.outputTokens,
           usageTotalTokens: usage.totalTokens,
@@ -136,6 +161,7 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         providerResponseId,
         role: input.providerRole || input.role,
         retryCount,
+        estimatedCostUsd,
         usageInputTokens: usage.inputTokens,
         usageOutputTokens: usage.outputTokens,
         usageTotalTokens: usage.totalTokens,

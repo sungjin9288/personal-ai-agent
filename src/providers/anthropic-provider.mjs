@@ -1,8 +1,10 @@
 import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
+  estimateUsageCostUsd,
   extractProviderFailure,
   normalizeUsageMetrics,
+  parseOptionalUsdRate,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
 import {
@@ -40,8 +42,18 @@ function resolveAnthropicConfig(env) {
   }
 
   let maxTokens;
+  let inputCostPer1MUsd;
+  let outputCostPer1MUsd;
   try {
     maxTokens = parsePositiveInteger(env.ANTHROPIC_MAX_TOKENS, 2048, 'ANTHROPIC_MAX_TOKENS');
+    inputCostPer1MUsd = parseOptionalUsdRate(
+      env.ANTHROPIC_INPUT_COST_PER_1M_USD,
+      'ANTHROPIC_INPUT_COST_PER_1M_USD',
+    );
+    outputCostPer1MUsd = parseOptionalUsdRate(
+      env.ANTHROPIC_OUTPUT_COST_PER_1M_USD,
+      'ANTHROPIC_OUTPUT_COST_PER_1M_USD',
+    );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
       failureKind: 'config',
@@ -56,6 +68,10 @@ function resolveAnthropicConfig(env) {
     baseUrl: normalizeText(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1').replace(/\/$/, ''),
     maxTokens,
     model: normalizeText(env.ANTHROPIC_MODEL, 'claude-sonnet-4-6'),
+    pricing: {
+      inputCostPer1MUsd,
+      outputCostPer1MUsd,
+    },
     version,
   };
 }
@@ -145,6 +161,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         inputTokens: payload?.usage?.input_tokens,
         outputTokens: payload?.usage?.output_tokens,
       });
+      const estimatedCostUsd = estimateUsageCostUsd({
+        pricing: config.pricing,
+        usage,
+      });
       let output;
       try {
         const outputText = extractAnthropicContentText(payload);
@@ -154,6 +174,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
           attemptCount,
           attemptHistory,
           durationMs,
+          estimatedCostUsd,
           providerResponseId,
           retryCount,
           usageInputTokens: usage.inputTokens,
@@ -166,6 +187,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         attemptCount,
         attemptHistory,
         durationMs,
+        estimatedCostUsd,
         output,
         providerResponseId,
         role: input.providerRole || input.role,

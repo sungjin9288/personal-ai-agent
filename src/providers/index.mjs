@@ -23,7 +23,7 @@ function buildProviderSpecMap() {
       id: 'openai',
       defaultProvider: false,
       displayName: 'OpenAI',
-      optionalEnv: ['OPENAI_MODEL', 'OPENAI_BASE_URL'],
+      optionalEnv: ['OPENAI_MODEL', 'OPENAI_BASE_URL', 'OPENAI_INPUT_COST_PER_1M_USD', 'OPENAI_OUTPUT_COST_PER_1M_USD'],
       requiredEnv: ['OPENAI_API_KEY'],
       transport: 'responses-api',
     },
@@ -31,7 +31,14 @@ function buildProviderSpecMap() {
       id: 'anthropic',
       defaultProvider: false,
       displayName: 'Anthropic',
-      optionalEnv: ['ANTHROPIC_MODEL', 'ANTHROPIC_BASE_URL', 'ANTHROPIC_VERSION', 'ANTHROPIC_MAX_TOKENS'],
+      optionalEnv: [
+        'ANTHROPIC_MODEL',
+        'ANTHROPIC_BASE_URL',
+        'ANTHROPIC_VERSION',
+        'ANTHROPIC_MAX_TOKENS',
+        'ANTHROPIC_INPUT_COST_PER_1M_USD',
+        'ANTHROPIC_OUTPUT_COST_PER_1M_USD',
+      ],
       requiredEnv: ['ANTHROPIC_API_KEY'],
       transport: 'messages-api',
     },
@@ -39,7 +46,13 @@ function buildProviderSpecMap() {
       id: 'local',
       defaultProvider: false,
       displayName: 'Local',
-      optionalEnv: ['LOCAL_PROVIDER_BASE_URL', 'LOCAL_PROVIDER_API_KEY', 'LOCAL_PROVIDER_MAX_TOKENS'],
+      optionalEnv: [
+        'LOCAL_PROVIDER_BASE_URL',
+        'LOCAL_PROVIDER_API_KEY',
+        'LOCAL_PROVIDER_MAX_TOKENS',
+        'LOCAL_INPUT_COST_PER_1M_USD',
+        'LOCAL_OUTPUT_COST_PER_1M_USD',
+      ],
       requiredEnv: ['LOCAL_PROVIDER_MODEL'],
       transport: 'openai-compatible-chat-completions',
     },
@@ -65,22 +78,28 @@ function buildProviderStatus(spec, env, provider) {
     status.configuration = {
       apiKeyPresent: Boolean(normalizeText(env.OPENAI_API_KEY)),
       baseUrl: normalizeText(env.OPENAI_BASE_URL, 'https://api.openai.com/v1'),
+      inputCostPer1MUsd: normalizeText(env.OPENAI_INPUT_COST_PER_1M_USD) || null,
       model: normalizeText(env.OPENAI_MODEL, 'gpt-5.2'),
+      outputCostPer1MUsd: normalizeText(env.OPENAI_OUTPUT_COST_PER_1M_USD) || null,
     };
   } else if (spec.id === 'anthropic') {
     status.configuration = {
       apiKeyPresent: Boolean(normalizeText(env.ANTHROPIC_API_KEY)),
       baseUrl: normalizeText(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1'),
+      inputCostPer1MUsd: normalizeText(env.ANTHROPIC_INPUT_COST_PER_1M_USD) || null,
       maxTokens: normalizeText(env.ANTHROPIC_MAX_TOKENS, '2048'),
       model: normalizeText(env.ANTHROPIC_MODEL, 'claude-sonnet-4-6'),
+      outputCostPer1MUsd: normalizeText(env.ANTHROPIC_OUTPUT_COST_PER_1M_USD) || null,
       version: normalizeText(env.ANTHROPIC_VERSION, '2023-06-01'),
     };
   } else if (spec.id === 'local') {
     status.configuration = {
       apiKeyPresent: Boolean(normalizeText(env.LOCAL_PROVIDER_API_KEY)),
       baseUrl: normalizeText(env.LOCAL_PROVIDER_BASE_URL, 'http://127.0.0.1:11434/v1'),
+      inputCostPer1MUsd: normalizeText(env.LOCAL_INPUT_COST_PER_1M_USD) || null,
       maxTokens: normalizeText(env.LOCAL_PROVIDER_MAX_TOKENS, '2048'),
       model: normalizeText(env.LOCAL_PROVIDER_MODEL),
+      outputCostPer1MUsd: normalizeText(env.LOCAL_OUTPUT_COST_PER_1M_USD) || null,
     };
   } else {
     status.configuration = {};

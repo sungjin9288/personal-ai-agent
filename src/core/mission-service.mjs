@@ -36,6 +36,7 @@ import {
   deriveRetryCount,
   extractProviderFailure,
   isProviderFailureError,
+  roundUsdAmount,
 } from '../providers/provider-runtime-utils.mjs';
 
 function now() {
@@ -212,6 +213,7 @@ function summarizeAttemptMetrics(items, isSuccessful = () => false) {
 
 function extractProviderUsageMetadata(item) {
   return {
+    estimatedCostUsd: roundUsdAmount(item?.estimatedCostUsd),
     usageInputTokens: normalizeTelemetryNumber(item?.usageInputTokens),
     usageOutputTokens: normalizeTelemetryNumber(item?.usageOutputTokens),
     usageTotalTokens: normalizeTelemetryNumber(item?.usageTotalTokens),
@@ -245,6 +247,20 @@ function summarizeUsageMetrics(items) {
       usageTotalTokensTotal: 0,
     },
   );
+}
+
+function summarizeEstimatedCostMetrics(items, fieldName = 'estimatedCostUsd') {
+  const pricedValues = items
+    .map((item) => roundUsdAmount(item?.[fieldName]))
+    .filter((value) => Number.isFinite(value) && value >= 0);
+  const totalEstimatedCostUsd = roundUsdAmount(pricedValues.reduce((sum, value) => sum + value, 0));
+
+  return {
+    estimatedCostUsdAverage: pricedValues.length ? roundUsdAmount(totalEstimatedCostUsd / pricedValues.length) : null,
+    estimatedCostUsdMax: pricedValues.length ? roundUsdAmount(Math.max(...pricedValues)) : null,
+    estimatedCostUsdPricedCount: pricedValues.length,
+    estimatedCostUsdTotal: pricedValues.length ? totalEstimatedCostUsd : null,
+  };
 }
 
 function extractProviderFailureMetadata(item) {
@@ -1475,6 +1491,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           ...attemptMetadata,
           durationMs: normalizeTelemetryNumber(run.durationMs),
           endedAt: run.endedAt || null,
+          estimatedCostUsd: roundUsdAmount(run.estimatedCostUsd),
           failureKind: normalizeText(run.failureKind) ? normalizeProviderFailureKind(run.failureKind) : null,
           httpStatus: Number.isFinite(Number(run.httpStatus)) ? Number(run.httpStatus) : null,
           id: run.id,
@@ -1542,6 +1559,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
     const durationSummary = summarizeDurationMetrics(executions);
     const usageSummary = summarizeUsageMetrics(executions);
+    const estimatedCostSummary = summarizeEstimatedCostMetrics(executions);
     const attemptSummary = summarizeAttemptMetrics(executions, (execution) => execution.status === 'completed');
 
     for (const execution of executions) {
@@ -1574,6 +1592,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       roleCounts,
       statusCounts,
       total: executions.length,
+      ...estimatedCostSummary,
       ...usageSummary,
     };
   }
@@ -1585,6 +1604,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       attemptHistory: normalizeProviderAttemptHistory(execution.attemptHistory),
       attemptHistoryCount: Number(execution.attemptHistoryCount || 0),
       durationMs: normalizeTelemetryNumber(execution.durationMs),
+      estimatedCostUsd: roundUsdAmount(execution.estimatedCostUsd),
       detail:
         formatProviderFailureDetail({
           attemptCount: execution.attemptCount,
@@ -1639,6 +1659,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
     const durationSummary = summarizeDurationMetrics(events);
     const usageSummary = summarizeUsageMetrics(events);
+    const estimatedCostSummary = summarizeEstimatedCostMetrics(events);
     const attemptSummary = summarizeAttemptMetrics(events, (event) => event.status === 'completed');
 
     for (const event of events) {
@@ -1671,6 +1692,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
       total: events.length,
       totalDurationMs: durationSummary.totalDurationMs,
+      ...estimatedCostSummary,
       ...usageSummary,
     };
   }
@@ -1977,6 +1999,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       probeTotalAttemptCount: probeSummary.totalAttemptCount,
       executionRetryableFailureCount: executionSummary.retryableFailureCount,
       executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
+      executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
+      executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
+      executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
       probeTotalDurationMs: probeSummary.totalDurationMs,
       probeTotalRetryCount: probeSummary.totalRetryCount,
       probeAttemptHistoryEntryCountTotal: probeSummary.attemptHistoryEntryCountTotal,
@@ -2411,6 +2437,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       (event) => event.executionStatus === 'completed',
     );
     const executionUsageSummary = summarizeUsageMetrics(executionEvents);
+    const executionEstimatedCostSummary = summarizeEstimatedCostMetrics(executionEvents);
     const probeDurationSummary = summarizeDurationMetrics(probeEvents);
     const probeAttemptSummary = summarizeAttemptMetrics(probeEvents, (event) => event.ok);
     const executionStatusCounts = {
@@ -2495,6 +2522,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       executionTotalDurationMs: executionDurationSummary.totalDurationMs,
       executionTotalRetryCount: executionAttemptSummary.totalRetryCount,
       executionAttemptHistoryEntryCountTotal: executionAttemptSummary.attemptHistoryEntryCountTotal,
+      executionEstimatedCostUsdAverage: executionEstimatedCostSummary.estimatedCostUsdAverage,
+      executionEstimatedCostUsdMax: executionEstimatedCostSummary.estimatedCostUsdMax,
+      executionEstimatedCostUsdPricedCount: executionEstimatedCostSummary.estimatedCostUsdPricedCount,
+      executionEstimatedCostUsdTotal: executionEstimatedCostSummary.estimatedCostUsdTotal,
       executionTimedOutFailureCount: events.filter(
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
       ).length,
@@ -2700,6 +2731,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         executionTotalDurationMs: executionSummary.totalDurationMs,
         executionTotalRetryCount: executionSummary.totalRetryCount,
         executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
+        executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
+        executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
+        executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
+        executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
         probeAverageDurationMs: eventSummary.probeAverageDurationMs,
         probeMaxDurationMs: eventSummary.probeMaxDurationMs,
         probeTotalDurationMs: eventSummary.probeTotalDurationMs,
@@ -3157,6 +3192,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           attemptCount: Number(providerOutput?.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(providerOutput?.attemptHistory),
           durationMs: normalizeTelemetryNumber(providerOutput?.durationMs),
+          estimatedCostUsd: roundUsdAmount(providerOutput?.estimatedCostUsd),
           providerId,
           providerResponseId: normalizeText(providerOutput?.providerResponseId) || null,
           retryCount: Number(providerOutput?.retryCount || 0),
@@ -3189,6 +3225,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           attemptCount: Number(failure.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(failure.attemptHistory),
           durationMs: normalizeTelemetryNumber(failure.durationMs),
+          estimatedCostUsd: roundUsdAmount(failure.estimatedCostUsd),
           failureKind: normalizeProviderFailureKind(failure.failureKind),
           httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
           providerId,
@@ -3735,6 +3772,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
       providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
       providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+      providerExecutionEstimatedCostUsdAverage: providerActivity.summary.executionEstimatedCostUsdAverage,
+      providerExecutionEstimatedCostUsdMax: providerActivity.summary.executionEstimatedCostUsdMax,
+      providerExecutionEstimatedCostUsdPricedCount: providerActivity.summary.executionEstimatedCostUsdPricedCount,
+      providerExecutionEstimatedCostUsdTotal: providerActivity.summary.executionEstimatedCostUsdTotal,
       providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
       providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
       providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
@@ -4022,6 +4063,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
         providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+        providerExecutionEstimatedCostUsdAverage: providerActivity.summary.executionEstimatedCostUsdAverage,
+        providerExecutionEstimatedCostUsdMax: providerActivity.summary.executionEstimatedCostUsdMax,
+        providerExecutionEstimatedCostUsdPricedCount: providerActivity.summary.executionEstimatedCostUsdPricedCount,
+        providerExecutionEstimatedCostUsdTotal: providerActivity.summary.executionEstimatedCostUsdTotal,
         providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
         providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
         providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
@@ -6785,6 +6830,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionTotalDurationMs: providerOverview.summary.executionTotalDurationMs,
         providerExecutionTotalRetryCount: providerOverview.summary.executionTotalRetryCount,
         providerExecutionTimedOutFailureCount: providerOverview.summary.executionTimedOutFailureCount,
+        providerExecutionEstimatedCostUsdAverage: providerOverview.summary.executionEstimatedCostUsdAverage,
+        providerExecutionEstimatedCostUsdMax: providerOverview.summary.executionEstimatedCostUsdMax,
+        providerExecutionEstimatedCostUsdPricedCount: providerOverview.summary.executionEstimatedCostUsdPricedCount,
+        providerExecutionEstimatedCostUsdTotal: providerOverview.summary.executionEstimatedCostUsdTotal,
         providerExecutionUsageInputTokensTotal: providerOverview.summary.usageInputTokensTotal,
         providerExecutionUsageOutputTokensTotal: providerOverview.summary.usageOutputTokensTotal,
         providerExecutionUsageTotalTokensTotal: providerOverview.summary.usageTotalTokensTotal,
@@ -6971,6 +7020,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       timeline.push({
         at: execution.at,
         detail: execution.detail,
+        estimatedCostUsd: execution.estimatedCostUsd,
         kind: execution.kind,
         missionId: mission.id,
         providerId: execution.providerId,
@@ -7288,6 +7338,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       events.push({
         at: event.at,
         detail: event.detail,
+        estimatedCostUsd: event.estimatedCostUsd,
         kind: event.kind,
         missionId: event.missionId || null,
         missionTitle: event.missionTitle || null,

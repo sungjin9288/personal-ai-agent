@@ -17,6 +17,7 @@
 - provider hardening baseline now normalizes probe and execution failures through one shared envelope, with bounded retry, explicit timeout handling, first-valid-JSON extraction, and deterministic empty-output or non-JSON or schema-invalid classification
 - provider telemetry baseline now persists probe and execution duration plus normalized execution token usage so provider readiness, execution activity, and mission/workspace/global summaries share the same runtime cost evidence
 - provider retry telemetry now persists `retryCount` plus per-attempt `attemptHistory`, and propagates retry totals into provider, attention, mission, workspace, and global read-models so success-after-retry and retry-exhausted failure paths stay auditable
+- provider cost telemetry now supports adapter-level pricing envs plus normalized `estimatedCostUsd`, and propagates estimated execution spend through provider check, provider activity/events, provider overview, provider attention failure context, and mission/workspace/global summaries
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
 - provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - provider probe results now persist into runtime state and can be queried through provider history plus latest-probe summaries

@@ -1,8 +1,10 @@
 import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
+  estimateUsageCostUsd,
   extractProviderFailure,
   normalizeUsageMetrics,
+  parseOptionalUsdRate,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
 import {
@@ -30,8 +32,18 @@ function resolveLocalConfig(env) {
   }
 
   let maxTokens;
+  let inputCostPer1MUsd;
+  let outputCostPer1MUsd;
   try {
     maxTokens = parsePositiveInteger(env.LOCAL_PROVIDER_MAX_TOKENS, 2048, 'LOCAL_PROVIDER_MAX_TOKENS');
+    inputCostPer1MUsd = parseOptionalUsdRate(
+      env.LOCAL_INPUT_COST_PER_1M_USD,
+      'LOCAL_INPUT_COST_PER_1M_USD',
+    );
+    outputCostPer1MUsd = parseOptionalUsdRate(
+      env.LOCAL_OUTPUT_COST_PER_1M_USD,
+      'LOCAL_OUTPUT_COST_PER_1M_USD',
+    );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
       failureKind: 'config',
@@ -46,6 +58,10 @@ function resolveLocalConfig(env) {
     baseUrl: normalizeText(env.LOCAL_PROVIDER_BASE_URL, 'http://127.0.0.1:11434/v1').replace(/\/$/, ''),
     maxTokens,
     model,
+    pricing: {
+      inputCostPer1MUsd,
+      outputCostPer1MUsd,
+    },
   };
 }
 
@@ -146,6 +162,10 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         outputTokens: payload?.usage?.completion_tokens,
         totalTokens: payload?.usage?.total_tokens,
       });
+      const estimatedCostUsd = estimateUsageCostUsd({
+        pricing: config.pricing,
+        usage,
+      });
       let output;
       try {
         const outputText = extractChatCompletionText(payload);
@@ -155,6 +175,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
           attemptCount,
           attemptHistory,
           durationMs,
+          estimatedCostUsd,
           providerResponseId,
           retryCount,
           usageInputTokens: usage.inputTokens,
@@ -167,6 +188,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         attemptCount,
         attemptHistory,
         durationMs,
+        estimatedCostUsd,
         output,
         providerResponseId,
         role: input.providerRole || input.role,
