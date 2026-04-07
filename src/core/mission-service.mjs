@@ -5926,6 +5926,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           : since;
         const recommendedCommand = `node src/cli.mjs mission timeline ${mission.id} --provider-since ${commandSince}`;
         const providerId = latestFailedProviderExecution?.providerId || providerRecentWindow?.latestExecution?.providerId || null;
+        if (filter.providerId && providerId !== filter.providerId) {
+          return null;
+        }
         const reason = providerHealthDrift.reasonCodes.length > 0
           ? providerHealthDrift.reasonCodes.join(', ')
           : 'provider-health-drift';
@@ -5968,6 +5971,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       })
       .filter(Boolean)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function summarizeProviderHealthDriftItems(items) {
+    const providerCounts = {};
+    const workspaceCounts = {};
+    const reasonCodeCounts = {};
+
+    for (const item of items) {
+      if (item.providerId) {
+        providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+      }
+      if (item.workspaceId) {
+        workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
+      }
+      for (const reasonCode of ensureArray(item.driftReasonCodes)) {
+        reasonCodeCounts[reasonCode] = (reasonCodeCounts[reasonCode] || 0) + 1;
+      }
+    }
+
+    return {
+      latestItem: items.at(-1) || null,
+      providerCounts,
+      reasonCodeCounts,
+      total: items.length,
+      workspaceCounts,
+    };
   }
 
   function getActionInboxReminderState(item) {
@@ -7221,6 +7250,30 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       },
       items: filteredItems,
       summary: summarizeProviderAttentionItems(filteredItems),
+    };
+  }
+
+  function getProviderHealthDriftInbox(filter = {}) {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+
+    const items = buildProviderHealthDriftActionItems(filter);
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        providerId: filter.providerId || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeProviderHealthDriftItems(items),
     };
   }
 
@@ -8980,6 +9033,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getMaintenanceOverview,
     getOwnerHandoffInbox,
     getProviderAttentionInbox,
+    getProviderHealthDriftInbox,
     getProviderExecutionHistory,
     getProviderExecutionTimeline,
     getProviderEventTimeline,

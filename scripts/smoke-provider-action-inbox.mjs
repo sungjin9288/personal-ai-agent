@@ -142,6 +142,17 @@ assert.equal(providerHealthDriftInbox.items[0].priority, 'medium');
 assert.equal(providerHealthDriftInbox.items[0].driftStatus, 'watch');
 assert.deepEqual(providerHealthDriftInbox.items[0].driftReasonCodes, ['monthly-failed-up']);
 
+const dedicatedProviderHealthDriftInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-health-drift'],
+});
+
+assert.equal(dedicatedProviderHealthDriftInbox.items.length, 1);
+assert.equal(dedicatedProviderHealthDriftInbox.summary.total, 1);
+assert.equal(dedicatedProviderHealthDriftInbox.summary.providerCounts.stub, 1);
+assert.equal(dedicatedProviderHealthDriftInbox.summary.reasonCodeCounts['monthly-failed-up'], 1);
+assert.equal(dedicatedProviderHealthDriftInbox.items[0].actionId, providerHealthDriftInbox.items[0].actionId);
+
 const workspace = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'list'],
@@ -162,6 +173,14 @@ const workspaceScopedProviderHealthDrift = runCli({
 assert.equal(workspaceScopedProviderHealthDrift.items.length, 1);
 assert.equal(workspaceScopedProviderHealthDrift.items[0].providerId, 'stub');
 assert.equal(workspaceScopedProviderHealthDrift.items[0].missionStatus, 'failed');
+
+const providerScopedProviderHealthDrift = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'provider-health-drift', '--provider', 'stub'],
+});
+
+assert.equal(providerScopedProviderHealthDrift.items.length, 1);
+assert.equal(providerScopedProviderHealthDrift.items[0].providerId, 'stub');
 
 const missionScopedProviderHealthDrift = runCli({
   rootDir: tempRoot,
