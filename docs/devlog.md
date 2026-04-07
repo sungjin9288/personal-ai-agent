@@ -19,6 +19,7 @@
 
 - extended provider probe and execution records with `durationMs`, then propagated execution token usage as normalized `usageInputTokens`, `usageOutputTokens`, and `usageTotalTokens`
 - linked telemetry into provider check, provider history, provider activity, provider events, provider overview, mission summary, workspace overview, and global overview so latency and token usage can be inspected without reopening raw state
+- added `since` filtering to `provider events` so recent probe, execution, and attention chronology can be sliced without rebuilding a custom event window client-side
 - added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
 
 ## 2026-04-07 Provider Hardening Baseline

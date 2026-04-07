@@ -176,6 +176,51 @@ try {
   assert.equal(stubRun.mission.status, 'failed');
   assert.equal(localRun.mission.status, 'completed');
   assert.equal(localChatRequestCount, 4);
+
+  const statePath = path.join(tempRoot, 'var', 'state.json');
+  const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+
+  state.providerProbes = state.providerProbes.map((probe) => {
+    if (probe.providerId === 'openai') {
+      return {
+        ...probe,
+        checkedAt: '2026-04-01T09:00:00.000Z',
+        createdAt: '2026-04-01T09:00:00.000Z',
+      };
+    }
+
+    if (probe.providerId === 'local') {
+      return {
+        ...probe,
+        checkedAt: '2026-04-03T09:00:00.000Z',
+        createdAt: '2026-04-03T09:00:00.000Z',
+      };
+    }
+
+    return probe;
+  });
+
+  state.agentRuns = state.agentRuns.map((run) => {
+    if (run.missionId === stubFailedMission.id) {
+      return {
+        ...run,
+        startedAt: '2026-04-01T10:00:00.000Z',
+        endedAt: '2026-04-01T10:01:00.000Z',
+      };
+    }
+
+    if (run.missionId === localMission.id) {
+      return {
+        ...run,
+        startedAt: '2026-04-03T10:00:00.000Z',
+        endedAt: '2026-04-03T10:01:00.000Z',
+      };
+    }
+
+    return run;
+  });
+
+  fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 } finally {
   globalThis.fetch = originalFetch;
 
@@ -218,6 +263,23 @@ assert.equal(providerEvents.summary.latestAttentionEvent.providerId, 'stub');
 assert.equal(providerEvents.summary.latestProbeEvent.providerId, 'local');
 assert.equal(providerEvents.summary.latestExecutionEvent.providerId, 'local');
 
+const recentProviderEventsResult = runCli({
+  args: ['provider', 'events', '--since', '2026-04-02T00:00:00.000Z'],
+  env: configuredEnv,
+});
+
+assert.equal(recentProviderEventsResult.status, 0);
+const recentProviderEvents = JSON.parse(recentProviderEventsResult.stdout);
+assert.equal(recentProviderEvents.filters.since, '2026-04-02T00:00:00.000Z');
+assert.equal(recentProviderEvents.timeline.length, 5);
+assert.equal(recentProviderEvents.summary.total, 5);
+assert.equal(recentProviderEvents.summary.familyCounts.probe, 1);
+assert.equal(recentProviderEvents.summary.familyCounts.execution, 4);
+assert.equal(recentProviderEvents.summary.familyCounts.attention, 0);
+assert.equal(recentProviderEvents.summary.latestEvent.providerId, 'local');
+assert.ok(recentProviderEvents.timeline.every((event) => event.providerId === 'local'));
+assert.ok(recentProviderEvents.timeline.every((event) => event.at >= '2026-04-02T00:00:00.000Z'));
+
 const probeOnlyResult = runCli({
   args: ['provider', 'events', '--family', 'probe'],
   env: configuredEnv,
@@ -249,6 +311,19 @@ const executionFailed = JSON.parse(executionFailedResult.stdout);
 assert.equal(executionFailed.timeline.length, 1);
 assert.equal(executionFailed.timeline[0].providerId, 'stub');
 assert.equal(executionFailed.timeline[0].eventKind, 'provider-execution-failed');
+
+const recentExecutionResult = runCli({
+  args: ['provider', 'events', '--family', 'execution', '--provider', 'local', '--since', '2026-04-02T00:00:00.000Z'],
+  env: configuredEnv,
+});
+
+assert.equal(recentExecutionResult.status, 0);
+const recentExecution = JSON.parse(recentExecutionResult.stdout);
+assert.equal(recentExecution.filters.since, '2026-04-02T00:00:00.000Z');
+assert.equal(recentExecution.timeline.length, 4);
+assert.equal(recentExecution.summary.executionCompletedCount, 4);
+assert.equal(recentExecution.summary.executionFailedCount, 0);
+assert.ok(recentExecution.timeline.every((event) => event.eventFamily === 'execution'));
 
 const skippedProbeResult = runCli({
   args: ['provider', 'events', '--provider', 'openai', '--attempted', 'false'],

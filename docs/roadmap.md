@@ -29,6 +29,7 @@
 - provider execution activity and execution timeline now expose actual mission-stage success or failure by provider on top of persisted agent run records
 - provider events surface now merges probe and execution observability into one chronological provider event stream and links latest provider events into overview surfaces
 - provider events now also include currently opened provider attention failures, so the failure trigger, later recovery, and operator acknowledgement history can be read from one provider event stream
+- provider events now support `since` filtering so recent unified provider chronology can be queried without re-reading full probe or execution history
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces

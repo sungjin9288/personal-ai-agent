@@ -54,7 +54,7 @@ Commands:
   provider check <stub|openai|anthropic|local>
   provider activity [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
   provider activity-timeline [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
-  provider events [--provider <stub|openai|anthropic|local>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>]
+  provider events [--provider <stub|openai|anthropic|local>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
   provider probe <stub|openai|anthropic|local>
   provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
   provider timeline [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
@@ -214,6 +214,7 @@ async function main() {
         ok: parseBooleanOption(rest, '--ok'),
         providerId: readOption(rest, '--provider', ''),
         role: readOption(rest, '--role', ''),
+        since: readOption(rest, '--since', ''),
         status: readOption(rest, '--status', ''),
       }),
     );

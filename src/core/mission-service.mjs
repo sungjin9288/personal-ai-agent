@@ -2468,6 +2468,7 @@ function summarizeProviderExecutions(executions) {
 
   function buildProviderEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
+    const normalizedSinceFilter = normalizeTimestampFilter(filter.since, 'provider event since timestamp');
     const events = [...buildProviderBaseEvents(filter)];
 
     if (!family || family === 'attention') {
@@ -2526,7 +2527,12 @@ function summarizeProviderExecutions(executions) {
       );
     }
 
-    return sortTimelineEvents(events);
+    return sortTimelineEvents(events).filter((event) => {
+      if (!normalizedSinceFilter) {
+        return true;
+      }
+      return String(event.at || '') >= normalizedSinceFilter;
+    });
   }
 
   function summarizeProviderEvents(events) {
@@ -3054,8 +3060,23 @@ function summarizeProviderExecutions(executions) {
   }
 
   function getProviderEventTimeline(filter = {}) {
-    const timeline = buildProviderEvents(filter);
+    const since = normalizeTimestampFilter(filter.since, 'provider event since timestamp');
+    const timeline = buildProviderEvents({
+      ...filter,
+      since,
+    });
     return {
+      filters: {
+        attempted: typeof filter.attempted === 'boolean' ? filter.attempted : null,
+        family: filter.family || null,
+        missionId: filter.missionId || null,
+        ok: typeof filter.ok === 'boolean' ? filter.ok : null,
+        providerId: filter.providerId || null,
+        role: filter.role || null,
+        since: since || null,
+        status: filter.status || null,
+        workspaceId: filter.workspaceId || null,
+      },
       summary: summarizeProviderEvents(timeline),
       timeline,
     };
