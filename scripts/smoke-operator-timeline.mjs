@@ -220,6 +220,11 @@ const reviewerWorkspaceTimeline = runCli({
   args: ['workspace', 'timeline', workspaceTwo.id],
 });
 
+const recentReviewerWorkspaceTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'timeline', workspaceTwo.id, '--provider-since', recentProviderSince],
+});
+
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-execution-failed'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
@@ -237,6 +242,19 @@ assert.equal(
   ),
   true,
 );
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.filters.since, recentProviderSince);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionCount, 4);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionEstimatedCostUsdTotal, 0);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentEventFamilyCounts.probe, 0);
+assert.deepEqual(recentReviewerWorkspaceTimeline.summary.providerRecentTouchedProviderIds, ['stub']);
+assert.deepEqual(recentReviewerWorkspaceTimeline.providerRecentWindow.touchedProviderIds, ['stub']);
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionBucketCount, 1);
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestBucketDate, '2026-04-07');
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(recentReviewerWorkspaceTimeline.summary.latestRecentProviderEvent.providerId, 'stub');
+assert.equal(recentReviewerWorkspaceTimeline.summary.latestRecentProviderExecution.providerId, 'stub');
 
 const globalTimeline = runCli({
   rootDir: tempRoot,

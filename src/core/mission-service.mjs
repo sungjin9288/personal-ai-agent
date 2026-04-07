@@ -8203,12 +8203,30 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return sortTimelineEvents(events);
   }
 
-  function getWorkspaceTimeline(workspaceId) {
+  function getWorkspaceTimeline(workspaceId, filter = {}) {
     const workspace = getWorkspace(workspaceId);
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'workspace timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents({ workspaceId: workspace.id });
+    const providerRecentWindow = buildScopedProviderRecentWindow({
+      since: providerSince,
+      workspaceId: workspace.id,
+    });
 
     return {
-      summary: summarizeOperatorTimeline(timeline),
+      providerRecentWindow,
+      summary: {
+        ...summarizeOperatorTimeline(timeline),
+        latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
+        latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
+        providerRecentEventCount: providerRecentWindow?.eventCount || 0,
+        providerRecentEventFamilyCounts:
+          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
+        providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentSince: providerSince || null,
+        providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
+        providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
+      },
       timeline,
       workspace,
     };
