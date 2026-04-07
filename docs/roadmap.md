@@ -24,8 +24,10 @@
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces
+- provider attention lifecycle now also derives a `recovered` state from newer successful probe or execution evidence, so silent provider recovery is visible without manual resolution
 - workspace and global operator timeline now include provider attention opened, acknowledged, and resolved events for workspace-bound provider failures
 - workspace and global operator timeline now also include the underlying `provider-execution-failed` trigger so provider failure chronology is visible before operator acknowledgement starts
+- mission and operator timelines now include provider attention recovery events for workspace-bound execution failures that later succeed
 - provider check and provider overview now surface pending provider attention due or overdue state so provider health summary can show aging failure pressure without opening the action inbox first
 - provider attention lifecycle now supports explicit reminder emission, needs-reminder slicing, latest reminder audit linkage, and provider check/overview reminder pressure summaries
 - provider attention reminder events now appear on mission, workspace, and provider-focused timelines so aging failure follow-up is auditable after the initial failure

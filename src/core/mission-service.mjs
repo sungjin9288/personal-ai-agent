@@ -1139,6 +1139,97 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
   }
 
+  function formatProviderAttentionRecoveryDetail(item) {
+    const recoveryLabel =
+      item.eventFamily === 'execution' ? 'successful provider execution' : 'successful provider probe';
+    const recoveryDetail = normalizeText(item.recoveryDetail);
+    const failureDetail = normalizeText(item.reason);
+    const acknowledgedPrefix = item.acknowledgedAt ? 'Acknowledged attention recovered after ' : 'Recovered after ';
+    const detailSuffix = recoveryDetail || failureDetail;
+
+    return detailSuffix ? `${acknowledgedPrefix}${recoveryLabel}: ${detailSuffix}` : `${acknowledgedPrefix}${recoveryLabel}.`;
+  }
+
+  function deriveProviderAttentionRecovery(provider, latestAttentionStateEvent, baseEvents) {
+    if (
+      !latestAttentionStateEvent ||
+      !['provider-probe-succeeded', 'provider-execution-succeeded'].includes(latestAttentionStateEvent.eventKind)
+    ) {
+      return null;
+    }
+
+    const sourceFailure = getLatestMatchingRecord(
+      baseEvents,
+      (event) =>
+        ['provider-probe-failed', 'provider-execution-failed'].includes(event.eventKind) &&
+        event.eventFamily === latestAttentionStateEvent.eventFamily &&
+        String(event.at || '') < String(latestAttentionStateEvent.at || '') &&
+        (latestAttentionStateEvent.eventFamily !== 'execution' ||
+          (event.missionId === latestAttentionStateEvent.missionId &&
+            event.workspaceId === latestAttentionStateEvent.workspaceId)),
+    );
+
+    if (!sourceFailure) {
+      return null;
+    }
+
+    const existingAcknowledgement = getProviderAttentionAcknowledgementForEvent(sourceFailure);
+    if (existingAcknowledgement && (existingAcknowledgement.status || 'acknowledged') === 'resolved') {
+      return null;
+    }
+
+    const reminderRecords = listProviderAttentionRemindersForEvent(sourceFailure);
+    const latestReminder = reminderRecords.at(-1) || null;
+    const recommendedOwner =
+      sourceFailure.eventFamily === 'execution' && sourceFailure.workspaceId ? 'workspace-owner' : 'human-approver';
+    const recommendedCommand =
+      sourceFailure.eventFamily === 'execution'
+        ? `node src/cli.mjs mission run ${sourceFailure.missionId} --provider ${provider.id}`
+        : `node src/cli.mjs provider probe ${provider.id}`;
+
+    return {
+      acknowledgedAt: existingAcknowledgement?.acknowledgedAt || null,
+      actionId: buildProviderAttentionActionId(sourceFailure),
+      actionType: 'provider-attention',
+      createdAt: sourceFailure.at,
+      deliverableType: null,
+      eventFamily: sourceFailure.eventFamily,
+      eventKind: sourceFailure.eventKind,
+      eventRefId: getProviderAttentionEventRefId(sourceFailure),
+      isOverdue: false,
+      lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+      latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+      missionId: sourceFailure.missionId || latestAttentionStateEvent.missionId || null,
+      needsReminder: false,
+      nextReminderAt: null,
+      note: existingAcknowledgement?.note || null,
+      priority: sourceFailure.eventFamily === 'execution' ? 'high' : 'medium',
+      providerDisplayName: provider.displayName,
+      providerId: provider.id,
+      reason: sourceFailure.detail,
+      recommendedCommand,
+      recommendedOwner,
+      recoveredAt: latestAttentionStateEvent.at,
+      recoveryDetail: latestAttentionStateEvent.detail,
+      recoveryEventFamily: latestAttentionStateEvent.eventFamily,
+      recoveryEventKind: latestAttentionStateEvent.eventKind,
+      recoveryEventRefId: getProviderAttentionEventRefId(latestAttentionStateEvent),
+      recoveryRunId: latestAttentionStateEvent.runId || null,
+      recoveryProbeId: latestAttentionStateEvent.probeId || null,
+      reminderCadenceHours: null,
+      reminderCount: reminderRecords.length,
+      sessionId: sourceFailure.sessionId || latestAttentionStateEvent.sessionId || null,
+      slaHours: sourceFailure.eventFamily === 'execution' ? 12 : 24,
+      status: 'recovered',
+      title:
+        sourceFailure.eventFamily === 'execution'
+          ? `Provider execution recovered for ${provider.displayName}`
+          : `Provider probe recovered for ${provider.displayName}`,
+      workspaceId: sourceFailure.workspaceId || latestAttentionStateEvent.workspaceId || null,
+      workspaceName: sourceFailure.workspaceName || latestAttentionStateEvent.workspaceName || null,
+    };
+  }
+
   function buildProviderExecutionEntries(filter = {}) {
     const state = store.loadState();
     const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
@@ -1321,7 +1412,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function buildProviderStatusEntries() {
     return providerRegistry.listProviders().map((provider) => {
-      const providerEvents = buildProviderEvents({ providerId: provider.id });
+      const providerEvents = buildProviderBaseEvents({ providerId: provider.id });
       const latestEvent = getLatestMatchingRecord(providerEvents, () => true);
       const latestAttentionStateEvent = getLatestMatchingRecord(
         providerEvents,
@@ -1335,6 +1426,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             'provider-attention-resolved',
           ].includes(event.eventKind),
       );
+      const latestAttentionRecovery = deriveProviderAttentionRecovery(
+        provider,
+        latestAttentionStateEvent,
+        providerEvents,
+      );
       const latestAttentionRecord = getLatestProviderAttentionRecord(provider.id);
       const latestAttentionAcknowledgement = getLatestProviderAttentionAcknowledgement(provider.id);
       const latestAttentionResolution = getLatestProviderAttentionResolution(provider.id);
@@ -1342,6 +1438,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const attentionStatus =
         latestAttentionStateEvent?.eventKind === 'provider-attention-resolved'
           ? 'resolved'
+          : latestAttentionRecovery
+            ? 'recovered'
           : latestAttentionStateEvent?.eventKind === 'provider-attention-acknowledged'
             ? 'acknowledged'
             : latestAttentionStateEvent &&
@@ -1353,6 +1451,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         ...provider,
         attentionStatus,
         latestAttentionAcknowledgement,
+        latestAttentionRecovery,
         latestAttentionRecord,
         latestAttentionReminder,
         latestAttentionResolution,
@@ -1375,17 +1474,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function enrichProviderStatusEntries(providers) {
     const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
+    const recoveredAttentionItems = buildProviderAttentionRecoveredItemsFromProviders(providers, {});
     const pendingAttentionByProviderId = new Map(
       pendingAttentionItems.map((item) => [item.providerId, item]),
+    );
+    const recoveredAttentionByProviderId = new Map(
+      recoveredAttentionItems.map((item) => [item.providerId, item]),
     );
 
     return providers.map((provider) => {
       const pendingAttention = pendingAttentionByProviderId.get(provider.id) || null;
-      const attentionStatus = pendingAttention ? 'pending' : provider.attentionStatus;
+      const recoveredAttention = recoveredAttentionByProviderId.get(provider.id) || null;
+      const attentionStatus = pendingAttention ? 'pending' : recoveredAttention ? 'recovered' : provider.attentionStatus;
 
       return {
         ...provider,
         attentionStatus,
+        latestAttentionRecovery: recoveredAttention || provider.latestAttentionRecovery || null,
+        latestRecoveredAttention: recoveredAttention || provider.latestAttentionRecovery || null,
         latestPendingAttention: pendingAttention,
         pendingAttentionDueAt: pendingAttention?.dueAt || null,
         pendingAttentionIsOverdue: Boolean(pendingAttention?.isOverdue),
@@ -1401,6 +1507,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function summarizeProviderOverview(providers, probes) {
     const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
+    const recoveredAttentionItems = buildProviderAttentionRecoveredItemsFromProviders(providers, {});
     const pendingAttentionSummary = summarizeProviderAttentionItems(pendingAttentionItems);
     const attentionEvents = pendingAttentionItems.map((item) => ({
       at: item.createdAt,
@@ -1420,6 +1527,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const latestProbeSuccessProviderIds = [];
     const readyProviderIds = [];
     const acknowledgedAttentionProviderIds = [];
+    const recoveredAttentionProviderIds = [];
     const resolvedAttentionProviderIds = [];
     const unconfiguredProviderIds = [];
     const unprobedProviderIds = [];
@@ -1437,6 +1545,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (provider.attentionStatus === 'acknowledged') {
         acknowledgedAttentionProviderIds.push(provider.id);
+      }
+
+      if (provider.attentionStatus === 'recovered') {
+        recoveredAttentionProviderIds.push(provider.id);
       }
 
       if (provider.attentionStatus === 'resolved') {
@@ -1474,6 +1586,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         acknowledged: acknowledgedAttentionProviderIds.length,
         clear: providers.filter((provider) => provider.attentionStatus === 'clear').length,
         pending: pendingAttentionItems.length,
+        recovered: recoveredAttentionProviderIds.length,
         resolved: resolvedAttentionProviderIds.length,
         total: providers.length,
       },
@@ -1497,6 +1610,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
       latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionRecords, 'acknowledgedAt'),
+      latestAttentionRecovery: getLatestItem(recoveredAttentionItems, 'recoveredAt'),
       latestAttentionReminder: getLatestItem(store.listProviderAttentionReminders(), 'remindedAt'),
       latestAttentionResolution: getLatestItem(
         acknowledgedAttentionRecords.filter((record) => (record.status || 'acknowledged') === 'resolved'),
@@ -1523,6 +1637,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       probeTotal: probeSummary.total,
       readyCount: readyProviderIds.length,
       readyProviderIds,
+      recoveredAttentionCount: recoveredAttentionProviderIds.length,
+      recoveredAttentionProviderIds,
       resolvedAttentionCount: resolvedAttentionProviderIds.length,
       resolvedAttentionProviderIds,
       unconfiguredCount: unconfiguredProviderIds.length,
@@ -1652,7 +1768,29 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }));
   }
 
-  function buildProviderEvents(filter = {}) {
+  function buildProviderAttentionRecoveredTimeline(items) {
+    return items.map((item) => ({
+      acknowledgedAt: item.acknowledgedAt || null,
+      actionId: item.actionId,
+      at: item.recoveredAt,
+      detail: formatProviderAttentionRecoveryDetail(item),
+      eventRefId: item.eventRefId || null,
+      kind: 'provider-attention-recovered',
+      missionId: item.missionId || null,
+      providerDisplayName: item.providerDisplayName || null,
+      providerId: item.providerId,
+      recoveredAt: item.recoveredAt,
+      recoveryEventKind: item.recoveryEventKind || null,
+      recoveryProbeId: item.recoveryProbeId || null,
+      recoveryRunId: item.recoveryRunId || null,
+      sessionId: item.sessionId || null,
+      status: 'recovered',
+      workspaceId: item.workspaceId || null,
+      workspaceName: item.workspaceName || null,
+    }));
+  }
+
+  function buildProviderBaseEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
     const events = [];
 
@@ -1752,6 +1890,36 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return sortTimelineEvents(events);
   }
 
+  function buildProviderEvents(filter = {}) {
+    const family = normalizeText(filter.family).toLowerCase();
+    const events = [...buildProviderBaseEvents(filter)];
+
+    if (!family || family === 'attention') {
+      events.push(
+        ...buildProviderAttentionRecoveredTimeline(
+          buildProviderAttentionRecoveredItems({
+            missionId: filter.missionId,
+            providerId: filter.providerId,
+            workspaceId: filter.workspaceId,
+          }),
+        ).map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'attention',
+          eventKind: event.kind,
+          executionStatus: null,
+          ok: true,
+          probeId: event.recoveryProbeId,
+          role: null,
+          runId: event.recoveryRunId,
+          status: event.status,
+        })),
+      );
+    }
+
+    return sortTimelineEvents(events);
+  }
+
   function summarizeProviderEvents(events) {
     const eventCounts = {};
     const familyCounts = { attention: 0, execution: 0, probe: 0 };
@@ -1837,6 +2005,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function summarizeScopedProviderActivity(filter = {}) {
     const pendingAttentionItems = buildProviderAttentionPendingItems(filter);
     const acknowledgedAttentionItems = buildProviderAttentionAcknowledgedItems(filter);
+    const recoveredAttentionItems = buildProviderAttentionRecoveredItems(filter);
     const resolvedAttentionItems = buildProviderAttentionResolvedItems(filter);
     const reminderRecords = store.listProviderAttentionReminders(filter);
     const executionEntries = buildProviderExecutionEntries(filter);
@@ -1859,6 +2028,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         role: null,
         runId: null,
         status: event.status || 'acknowledged',
+      })),
+      ...buildProviderAttentionRecoveredTimeline(recoveredAttentionItems).map((event) => ({
+        ...event,
+        attempted: null,
+        eventFamily: 'attention',
+        eventKind: event.kind,
+        executionStatus: null,
+        ok: true,
+        probeId: event.recoveryProbeId || null,
+        role: null,
+        runId: event.recoveryRunId || null,
+        status: event.status || 'recovered',
       })),
       ...buildProviderAttentionReminderTimeline(reminderRecords).map((event) => ({
         ...event,
@@ -1888,6 +2069,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         [
           ...pendingAttentionItems.map((item) => item.providerId),
           ...acknowledgedAttentionItems.map((item) => item.providerId),
+          ...recoveredAttentionItems.map((item) => item.providerId),
           ...resolvedAttentionItems.map((item) => item.providerId),
           ...executionEntries.map((item) => item.providerId),
         ].filter(Boolean),
@@ -1896,6 +2078,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionItems, 'acknowledgedAt'),
+      latestAttentionRecovery: getLatestItem(recoveredAttentionItems, 'recoveredAt'),
       latestAttentionReminder: getLatestItem(reminderRecords, 'remindedAt'),
       latestAttentionRequiredEvent: getLatestItem(pendingAttentionItems, 'createdAt'),
       latestAttentionResolution: getLatestItem(resolvedAttentionItems, 'resolvedAt'),
@@ -1917,13 +2100,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         attentionOverdueCount: pendingAttentionItems.filter((item) => item.isOverdue).length,
         attentionReminderCount: reminderRecords.length,
         attentionRequiredCount: pendingAttentionItems.length,
+        attentionRecoveredCount: recoveredAttentionItems.length,
         attentionResolvedCount: resolvedAttentionItems.length,
         attentionStatusCounts: {
           acknowledged: acknowledgedAttentionItems.length,
           pending: pendingAttentionItems.length,
+          recovered: recoveredAttentionItems.length,
           resolved: resolvedAttentionItems.length,
           total:
-            pendingAttentionItems.length + acknowledgedAttentionItems.length + resolvedAttentionItems.length,
+            pendingAttentionItems.length +
+            acknowledgedAttentionItems.length +
+            recoveredAttentionItems.length +
+            resolvedAttentionItems.length,
         },
         eventCount: eventSummary.total,
         eventFamilyCounts: eventSummary.familyCounts,
@@ -2407,6 +2595,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         total: memoryEntries.length,
       },
       latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+      latestProviderAttentionRecovery: providerActivity.latestAttentionRecovery,
       latestProviderAttentionReminder: providerActivity.latestAttentionReminder,
       latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
       latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
@@ -2420,6 +2609,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
       providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
       providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      providerAttentionRecoveredCount: providerActivity.summary.attentionRecoveredCount,
       providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
       providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
       providerEventCount: providerActivity.summary.eventCount,
@@ -2657,6 +2847,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
         memoryCounts,
         latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
+        latestProviderAttentionRecovery: providerActivity.latestAttentionRecovery,
         latestProviderAttentionReminder: providerActivity.latestAttentionReminder,
         latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
         latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
@@ -2673,6 +2864,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
         providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
         providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+        providerAttentionRecoveredCount: providerActivity.summary.attentionRecoveredCount,
         providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
         providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
         providerEventCount: providerActivity.summary.eventCount,
@@ -3345,6 +3537,20 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return buildProviderAttentionPendingItemsFromProviders(buildProviderStatusEntries(), filter);
   }
 
+  function buildProviderAttentionRecoveredItems(filter = {}) {
+    return buildProviderAttentionRecoveredItemsFromProviders(buildProviderStatusEntries(), filter);
+  }
+
+  function buildProviderAttentionRecoveredItemsFromProviders(providers, filter = {}) {
+    return providers
+      .map((provider) => provider.latestAttentionRecovery || null)
+      .filter(Boolean)
+      .filter((item) => !filter.providerId || item.providerId === filter.providerId)
+      .filter((item) => !filter.workspaceId || item.workspaceId === filter.workspaceId)
+      .filter((item) => !filter.missionId || item.missionId === filter.missionId)
+      .sort((left, right) => String(left.recoveredAt || left.createdAt || '').localeCompare(String(right.recoveredAt || right.createdAt || '')));
+  }
+
   function buildProviderAttentionPendingItemsFromProviders(providers, filter = {}) {
     return providers
       .map((provider) => {
@@ -3450,6 +3656,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function buildProviderAttentionAcknowledgedItems(filter = {}) {
+    const recoveredActionIds = new Set(buildProviderAttentionRecoveredItems(filter).map((item) => item.actionId));
+
     return store
       .listProviderAttentionAcknowledgements({
         missionId: filter.missionId,
@@ -3457,6 +3665,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: filter.workspaceId,
       })
       .filter((record) => (record.status || 'acknowledged') === 'acknowledged')
+      .filter((record) => !recoveredActionIds.has(record.actionId))
       .map((record) => ({
         ...record,
         actionType: 'provider-attention',
@@ -4571,13 +4780,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function summarizeProviderAttentionItems(items) {
     const eventFamilyCounts = { execution: 0, probe: 0 };
     const providerCounts = {};
-    const statusCounts = { acknowledged: 0, pending: 0, resolved: 0, total: items.length };
+    const statusCounts = { acknowledged: 0, pending: 0, recovered: 0, resolved: 0, total: items.length };
     const overdueProviderIds = new Set();
     const workspaceCounts = {};
     let latestAcknowledgedAt = null;
     let latestDueAt = null;
     let latestReminderAt = null;
     let latestPendingAt = null;
+    let latestRecoveredAt = null;
     let nextDueAt = null;
     let nextReminderAt = null;
     let latestResolvedAt = null;
@@ -4598,6 +4808,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
       if (item.status === 'pending' && (!latestPendingAt || String(latestPendingAt) < String(item.createdAt || ''))) {
         latestPendingAt = item.createdAt || null;
+      }
+      if (
+        item.status === 'recovered' &&
+        item.recoveredAt &&
+        (!latestRecoveredAt || String(latestRecoveredAt) < String(item.recoveredAt))
+      ) {
+        latestRecoveredAt = item.recoveredAt;
       }
       if (item.dueAt && (!latestDueAt || String(latestDueAt) < String(item.dueAt))) {
         latestDueAt = item.dueAt;
@@ -4649,6 +4866,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       latestDueAt,
       latestItem: items.at(-1) || null,
       latestPendingAt,
+      latestRecoveredAt,
       latestReminderAt,
       latestResolvedAt,
       needsReminderCount,
@@ -4682,6 +4900,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const items =
       effectiveStatus === 'acknowledged'
         ? buildProviderAttentionAcknowledgedItems(filter)
+        : effectiveStatus === 'recovered'
+          ? buildProviderAttentionRecoveredItems(filter)
         : effectiveStatus === 'resolved'
           ? buildProviderAttentionResolvedItems(filter)
           : buildProviderAttentionPendingItems(filter);
@@ -5171,6 +5391,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestProviderEvent: providerOverview.summary.latestEvent,
         latestProviderAttentionAcknowledgement: providerOverview.summary.latestAttentionAcknowledgement,
         latestProviderAttentionEvent: providerOverview.summary.latestAttentionEvent,
+        latestProviderAttentionRecovery: providerOverview.summary.latestAttentionRecovery,
         latestProviderAttentionReminder: providerOverview.summary.latestAttentionReminder,
         latestProviderAttentionResolution: providerOverview.summary.latestAttentionResolution,
         latestProviderAttentionRequiredEvent: providerOverview.summary.latestAttentionRequiredEvent,
@@ -5191,6 +5412,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionOverdueCount: providerOverview.summary.attentionOverdueCount,
         providerAttentionReminderCount: providerOverview.summary.attentionReminderCountTotal,
         providerAttentionRequiredCount: providerOverview.summary.attentionRequiredCount,
+        providerAttentionRecoveredCount: providerOverview.summary.recoveredAttentionCount,
         providerAttentionResolvedCount: providerOverview.summary.resolvedAttentionCount,
         providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,
         providerEventCount: providerOverview.summary.eventTotal,
@@ -5335,6 +5557,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     for (const event of buildProviderAttentionTimeline(providerAttentionAcknowledgements)) {
+      timeline.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission.id,
+        providerDisplayName: event.providerDisplayName,
+        providerId: event.providerId,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || mission.workspaceId,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
+    for (const event of buildProviderAttentionRecoveredTimeline(
+      buildProviderAttentionRecoveredItems({ missionId: mission.id }),
+    )) {
       timeline.push({
         actionId: event.actionId,
         at: event.at,
@@ -5633,6 +5873,31 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: filter.workspaceId,
       }),
     )) {
+      events.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: event.missionId || null,
+        providerId: event.providerId,
+        providerDisplayName: event.providerDisplayName,
+        sessionId: event.sessionId || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || null,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
+    for (const event of buildProviderAttentionRecoveredTimeline(
+      buildProviderAttentionRecoveredItems({
+        missionId: filter.missionId,
+        workspaceId: filter.workspaceId,
+      }),
+    )) {
+      if (!event.workspaceId) {
+        continue;
+      }
+
       events.push({
         actionId: event.actionId,
         at: event.at,

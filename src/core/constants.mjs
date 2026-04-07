@@ -58,7 +58,7 @@ export const MEMORY_KINDS = ['preference', 'decision', 'fact'];
 export const DOCUMENT_LOG_TYPES = ['devlog', 'incident', 'reference'];
 
 export const PROVIDER_IDS = ['stub', 'openai', 'anthropic', 'local'];
-export const PROVIDER_ATTENTION_STATUSES = ['pending', 'acknowledged', 'resolved'];
+export const PROVIDER_ATTENTION_STATUSES = ['pending', 'acknowledged', 'resolved', 'recovered'];
 export const PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS = {
   execution: 6,
   probe: 12,

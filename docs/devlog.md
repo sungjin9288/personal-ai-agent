@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-07 Provider Attention Recovery
+
+- added derived `recovered` provider attention state so a newer successful probe or successful provider-backed mission run can close the latest failure pressure without requiring a manual resolution step first
+- linked provider attention recovery into `provider check`, `overview providers`, `overview global`, `action provider-attention --status recovered`, mission summary, workspace summary, unified provider events, mission timeline, and workspace or global operator timeline
+- added deterministic smoke coverage for one failed stub mission followed by a successful rerun on the same mission so recovery evidence stays locked across provider, mission, workspace, and global surfaces
+
 ## 2026-04-06 Provider Attention Reminders
 
 - added persisted provider attention reminder records plus `action remind-provider-attention`, so pending provider failures can be re-notified explicitly instead of only showing due or overdue state in read models
