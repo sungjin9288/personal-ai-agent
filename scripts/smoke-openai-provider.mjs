@@ -66,8 +66,29 @@ const missingKeyRun = runCli({
   },
 });
 
-assert.notEqual(missingKeyRun.status, 0);
-assert.match(missingKeyRun.stderr, /OPENAI_API_KEY is required/i);
+assert.equal(missingKeyRun.status, 0);
+assert.equal(missingKeyRun.stderr, '');
+const missingKeyResult = JSON.parse(missingKeyRun.stdout);
+assert.equal(missingKeyResult.missionId, mission.id);
+assert.equal(missingKeyResult.provider, 'openai');
+assert.equal(missingKeyResult.status, 'failed');
+assert.equal(missingKeyResult.artifactPath, null);
+assert.equal(missingKeyResult.reviewerVerdict, null);
+
+const failedActivityRun = runCli({
+  args: ['provider', 'activity', '--provider', 'openai', '--status', 'failed'],
+});
+
+assert.equal(failedActivityRun.status, 0);
+const failedActivity = JSON.parse(failedActivityRun.stdout);
+assert.equal(failedActivity.executions.length, 1);
+assert.equal(failedActivity.executions[0].providerId, 'openai');
+assert.equal(failedActivity.executions[0].role, 'manager');
+assert.equal(failedActivity.executions[0].status, 'failed');
+assert.equal(failedActivity.executions[0].failureKind, 'config');
+assert.equal(failedActivity.executions[0].attemptCount, 1);
+assert.equal(failedActivity.executions[0].recoverable, false);
+assert.equal(failedActivity.executions[0].timedOut, false);
 
 let capturedRequest = null;
 const provider = createOpenAIProvider({

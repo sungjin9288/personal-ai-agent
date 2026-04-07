@@ -52,9 +52,9 @@ Commands:
 
   provider list
   provider check <stub|openai|anthropic|local>
-  provider activity [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer>] [--status <executing|completed|failed>]
-  provider activity-timeline [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer>] [--status <executing|completed|failed>]
-  provider events [--provider <stub|openai|anthropic|local>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer>] [--status <executing|completed|failed>]
+  provider activity [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>]
+  provider activity-timeline [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>]
+  provider events [--provider <stub|openai|anthropic|local>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>]
   provider probe <stub|openai|anthropic|local>
   provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
   provider timeline [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
@@ -75,7 +75,7 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|monitoring-required|handoff-required|maintenance-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
   action provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]

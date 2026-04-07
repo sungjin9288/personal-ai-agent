@@ -14,6 +14,7 @@
 - Anthropic provider adapter now exists behind the current provider contract, with env validation and Messages API request wiring
 - local provider adapter now exists behind the current provider contract, targeting OpenAI-compatible `/chat/completions` runtimes with env validation and request wiring
 - shared structured-output utility now backs OpenAI, Anthropic, and local adapters so provider parsing and normalization stay aligned
+- provider hardening baseline now normalizes probe and execution failures through one shared envelope, with bounded retry, explicit timeout handling, first-valid-JSON extraction, and deterministic empty-output or non-JSON or schema-invalid classification
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
 - provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - provider probe results now persist into runtime state and can be queried through provider history plus latest-probe summaries
@@ -34,6 +35,8 @@
 - provider attention reminder events now appear on mission, workspace, and provider-focused timelines so aging failure follow-up is auditable after the initial failure
 - workspace overview now includes workspace-bound provider execution and provider attention summary fields so provider failure pressure is visible without opening provider-only surfaces
 - mission summary and mission timeline now include mission-scoped provider execution and provider attention evidence so provider failure audit can be completed without leaving mission-level surfaces
+- manager-controlled parallel specialist roles now support bounded fan-out across `research`, `implementation`, and `verification`, resumable failed or blocked branches, specialist follow-up action items, and manager merge back into the standard reviewer path
+- mission/workspace/global summaries and timelines now carry specialist branch, merge, and follow-up pressure so parallel work remains inspectable without breaking the sequential mission contract
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - approval approve/reject both leave deterministic handoff evidence
@@ -93,9 +96,10 @@
 
 ## Next Milestone Scope
 
-- live provider response hardening behind the current provider contract
+- live provider interoperability validation against real OpenAI, Anthropic, and local endpoints
+- richer provider telemetry for latency, token usage, retry totals, and cost
 - richer risk policy for path-level file and shell execution
-- resumable parallel specialist roles under manager control
+- remediation automation for provider attention and specialist follow-up
 - stronger reviewer rubrics per deliverable type
 
 ## Deferred

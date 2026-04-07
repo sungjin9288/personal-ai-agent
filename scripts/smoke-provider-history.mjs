@@ -43,6 +43,8 @@ const missingOpenAIProbe = JSON.parse(missingOpenAIProbeResult.stdout);
 assert.equal(missingOpenAIProbe.id, 'openai');
 assert.equal(missingOpenAIProbe.ok, false);
 assert.equal(missingOpenAIProbe.attempted, false);
+assert.equal(missingOpenAIProbe.failureKind, 'config');
+assert.equal(missingOpenAIProbe.attemptCount, 0);
 assert.ok(missingOpenAIProbe.probeId);
 
 const originalFetch = globalThis.fetch;
@@ -82,6 +84,7 @@ try {
   assert.equal(localProbe.id, 'local');
   assert.equal(localProbe.ok, true);
   assert.equal(localProbe.attempted, true);
+  assert.equal(localProbe.attemptCount, 1);
   assert.ok(localProbe.probeId);
 
   const localCheck = service.checkProvider('local');
@@ -127,6 +130,9 @@ assert.equal(historyAll.summary.attemptedCount, 1);
 assert.equal(historyAll.summary.successCount, 1);
 assert.equal(historyAll.summary.failureCount, 1);
 assert.equal(historyAll.probes.length, 2);
+assert.equal(historyAll.summary.failureKindCounts.config, 1);
+assert.equal(historyAll.summary.retryableFailureCount, 0);
+assert.equal(historyAll.summary.timedOutFailureCount, 0);
 
 const historyAttemptedFalseResult = runCli({
   args: ['provider', 'history', '--attempted', 'false'],
@@ -135,6 +141,7 @@ assert.equal(historyAttemptedFalseResult.status, 0);
 const historyAttemptedFalse = JSON.parse(historyAttemptedFalseResult.stdout);
 assert.equal(historyAttemptedFalse.probes.length, 1);
 assert.equal(historyAttemptedFalse.probes[0].providerId, 'openai');
+assert.equal(historyAttemptedFalse.probes[0].failureKind, 'config');
 
 const historyLocalSuccessResult = runCli({
   args: ['provider', 'history', '--provider', 'local', '--ok', 'true'],

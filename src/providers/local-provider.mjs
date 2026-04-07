@@ -1,5 +1,10 @@
 import { createStubProvider } from './stub-provider.mjs';
 import {
+  createProviderFailure,
+  extractProviderFailure,
+  requestJsonWithPolicy,
+} from './provider-runtime-utils.mjs';
+import {
   buildRequestPrompt,
   extractChatCompletionText,
   normalizeStructuredOutput,
@@ -8,22 +13,51 @@ import {
   parsePositiveInteger,
 } from './structured-provider-utils.mjs';
 
+const LOCAL_PROBE_TIMEOUT_MS = 5000;
+const LOCAL_RUN_TIMEOUT_MS = 15000;
+const LOCAL_MAX_ATTEMPTS = 2;
+
 function resolveLocalConfig(env) {
   const model = normalizeText(env.LOCAL_PROVIDER_MODEL);
   if (!model) {
-    throw new Error('LOCAL_PROVIDER_MODEL is required to use --provider local.');
+    throw createProviderFailure('LOCAL_PROVIDER_MODEL is required to use --provider local.', {
+      failureKind: 'config',
+      rawMessage: 'LOCAL_PROVIDER_MODEL is required.',
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
+  let maxTokens;
+  try {
+    maxTokens = parsePositiveInteger(env.LOCAL_PROVIDER_MAX_TOKENS, 2048, 'LOCAL_PROVIDER_MAX_TOKENS');
+  } catch (error) {
+    throw createProviderFailure(error instanceof Error ? error.message : String(error), {
+      failureKind: 'config',
+      rawMessage: error instanceof Error ? error.message : String(error),
+      recoverable: false,
+      timedOut: false,
+    });
   }
 
   return {
     apiKey: normalizeText(env.LOCAL_PROVIDER_API_KEY),
     baseUrl: normalizeText(env.LOCAL_PROVIDER_BASE_URL, 'http://127.0.0.1:11434/v1').replace(/\/$/, ''),
-    maxTokens: parsePositiveInteger(env.LOCAL_PROVIDER_MAX_TOKENS, 2048, 'LOCAL_PROVIDER_MAX_TOKENS'),
+    maxTokens,
     model,
   };
 }
 
 export function createLocalProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
   const delegatedProvider = createStubProvider({ rootDir });
+
+  function withProviderMetadata(error, metadata = {}) {
+    const failure = extractProviderFailure(error);
+    throw createProviderFailure(error instanceof Error ? error.message : String(error), {
+      ...failure,
+      ...metadata,
+    });
+  }
 
   return {
     id: 'local',
@@ -32,10 +66,6 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       return delegatedProvider.preparePrompt(input);
     },
     async probe() {
-      if (typeof fetchImpl !== 'function') {
-        throw new Error('Global fetch is not available for the local provider.');
-      }
-
       const config = resolveLocalConfig(env);
       const headers = {};
 
@@ -43,24 +73,21 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const response = await fetchImpl(`${config.baseUrl}/models`, {
-        method: 'GET',
+      const { payload, attemptCount } = await requestJsonWithPolicy({
+        fetchImpl,
         headers,
+        maxAttempts: LOCAL_MAX_ATTEMPTS,
+        method: 'GET',
+        providerLabel: 'Local',
+        timeoutMs: LOCAL_PROBE_TIMEOUT_MS,
+        url: `${config.baseUrl}/models`,
       });
-
-      if (!response.ok) {
-        const errorText = typeof response.text === 'function' ? await response.text() : '';
-        throw new Error(
-          `Local provider probe failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
-        );
-      }
-
-      const payload = await response.json();
       const models = Array.isArray(payload?.data)
         ? payload.data.map((item) => normalizeText(item?.id)).filter(Boolean)
         : [];
 
       return {
+        attemptCount,
         checkedAt: new Date().toISOString(),
         endpoint: `${config.baseUrl}/models`,
         model: config.model,
@@ -72,10 +99,6 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       };
     },
     async run(input) {
-      if (typeof fetchImpl !== 'function') {
-        throw new Error('Global fetch is not available for the local provider.');
-      }
-
       const config = resolveLocalConfig(env);
       const delegatedPrompt = delegatedProvider.preparePrompt(input);
       const headers = {
@@ -86,41 +109,50 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const response = await fetchImpl(`${config.baseUrl}/chat/completions`, {
-        method: 'POST',
+      const { payload, attemptCount } = await requestJsonWithPolicy({
+        fetchImpl,
         headers,
-        body: JSON.stringify({
-          max_tokens: config.maxTokens,
-          messages: [
-            {
-              content:
-                'Return only valid JSON that matches the requested contract. Do not add code fences or explanatory prose.',
-              role: 'system',
-            },
-            {
-              content: buildRequestPrompt(input, delegatedPrompt),
-              role: 'user',
-            },
-          ],
-          model: config.model,
-          temperature: 0,
-        }),
+        init: {
+          body: JSON.stringify({
+            max_tokens: config.maxTokens,
+            messages: [
+              {
+                content:
+                  'Return only valid JSON that matches the requested contract. Do not add code fences or explanatory prose.',
+                role: 'system',
+              },
+              {
+                content: buildRequestPrompt(input, delegatedPrompt),
+                role: 'user',
+              },
+            ],
+            model: config.model,
+            temperature: 0,
+          }),
+        },
+        maxAttempts: LOCAL_MAX_ATTEMPTS,
+        method: 'POST',
+        providerLabel: 'Local',
+        timeoutMs: LOCAL_RUN_TIMEOUT_MS,
+        url: `${config.baseUrl}/chat/completions`,
       });
-
-      if (!response.ok) {
-        const errorText = typeof response.text === 'function' ? await response.text() : '';
-        throw new Error(
-          `Local provider request failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
-        );
+      const providerResponseId = normalizeText(payload.id);
+      let output;
+      try {
+        const outputText = extractChatCompletionText(payload);
+        output = parseJsonText(outputText, 'Local');
+      } catch (error) {
+        withProviderMetadata(error, {
+          attemptCount,
+          providerResponseId,
+        });
       }
 
-      const payload = await response.json();
-      const outputText = extractChatCompletionText(payload);
-
       return {
-        output: parseJsonText(outputText, 'Local'),
-        providerResponseId: normalizeText(payload.id),
-        role: input.role,
+        attemptCount,
+        output,
+        providerResponseId,
+        role: input.providerRole || input.role,
       };
     },
     normalizeOutput(result, input) {

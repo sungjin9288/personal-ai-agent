@@ -1,3 +1,5 @@
+import { createProviderFailure } from './provider-runtime-utils.mjs';
+
 export function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
@@ -18,17 +20,84 @@ export function stripCodeFence(text) {
     .trim();
 }
 
+function extractFirstJsonObjectText(text) {
+  const normalized = stripCodeFence(text);
+  const startIndex = normalized.indexOf('{');
+  if (startIndex === -1) {
+    return '';
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = startIndex; index < normalized.length; index += 1) {
+    const character = normalized[index];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (character === '{') {
+      depth += 1;
+      continue;
+    }
+
+    if (character === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        return normalized.slice(startIndex, index + 1);
+      }
+    }
+  }
+
+  return normalized.slice(startIndex);
+}
+
 export function parseJsonText(text, providerLabel) {
   const normalized = stripCodeFence(text);
   if (!normalized) {
-    throw new Error(`${providerLabel} provider returned an empty response.`);
+    throw createProviderFailure(`${providerLabel} provider returned an empty response.`, {
+      failureKind: 'empty-output',
+      rawMessage: '',
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
+  const candidate = extractFirstJsonObjectText(normalized);
+  if (!candidate) {
+    throw createProviderFailure(`${providerLabel} provider returned non-JSON content.`, {
+      failureKind: 'non-json-output',
+      rawMessage: normalized,
+      recoverable: false,
+      timedOut: false,
+    });
   }
 
   try {
-    return JSON.parse(normalized);
+    return JSON.parse(candidate);
   } catch (error) {
-    throw new Error(
+    throw createProviderFailure(
       `${providerLabel} provider returned non-JSON content: ${error instanceof Error ? error.message : String(error)}`,
+      {
+        failureKind: 'non-json-output',
+        rawMessage: candidate,
+        recoverable: false,
+        timedOut: false,
+      },
     );
   }
 }
@@ -148,10 +217,15 @@ Artifact rules:
 }
 
 export function buildRequestPrompt(input, delegatedPrompt) {
+  const roleInput = {
+    ...input,
+    role: input.providerRole || input.role,
+  };
+
   return `${delegatedPrompt.trim()}
 
 ## Structured Output Contract
-${buildRoleContract(input)}
+${buildRoleContract(roleInput)}
 `;
 }
 
@@ -170,46 +244,75 @@ export function parsePositiveInteger(value, fallback, label) {
 }
 
 function normalizeManagerOutput(output) {
+  const artifactContent = normalizeText(output.artifactContent);
+  const summaryText = normalizeText(output.summaryText);
+  if (!artifactContent || !summaryText) {
+    throw createProviderFailure('Manager output is missing required fields.', {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
   return {
-    artifactContent: normalizeText(output.artifactContent),
+    artifactContent,
     artifactFileName: 'manager-context.md',
     artifactTitle: 'Manager Context',
-    summaryText: normalizeText(output.summaryText, 'Manager context generated.'),
+    summaryText,
     type: 'manager',
   };
 }
 
 function normalizePlannerOutput(output) {
+  const artifactContent = normalizeText(output.artifactContent);
+  const summaryText = normalizeText(output.summaryText);
+  if (!artifactContent || !summaryText) {
+    throw createProviderFailure('Planner output is missing required fields.', {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
   return {
     adaptationNotes: normalizeStringArray(output.adaptationNotes),
-    artifactContent: normalizeText(output.artifactContent),
+    artifactContent,
     artifactFileName: 'planner-plan.md',
     artifactTitle: 'Planner Plan',
     planSteps: normalizeStringArray(output.planSteps),
-    summaryText: normalizeText(output.summaryText, 'Planner plan generated.'),
+    summaryText,
     type: 'planner',
   };
 }
 
 function normalizeExecutorOutput(output, input) {
+  const artifactContent = normalizeText(output.artifactContent);
+  const nextAction = normalizeText(output.nextAction);
+  const summaryText = normalizeText(output.summaryText);
+  if (!artifactContent || !nextAction || !summaryText) {
+    throw createProviderFailure('Executor output is missing required fields.', {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
   return {
     adaptationNotes: normalizeStringArray(output.adaptationNotes),
-    artifactContent: normalizeText(output.artifactContent),
+    artifactContent,
     artifactFileName: input.pack.artifactFileName,
     artifactTitle: input.pack.artifactTitle,
-    nextAction: normalizeText(
-      output.nextAction,
-      input.pack.riskProfile.requiresApproval
-        ? 'Pause for approval before any workspace mutation.'
-        : 'Share the draft with the owner and collect follow-up decisions.',
-    ),
+    nextAction,
     proposedAction: {
       kind: input.pack.riskProfile.actionKind,
       reason: input.pack.riskProfile.reason,
       requiresApproval: input.pack.riskProfile.requiresApproval,
       title: input.pack.riskProfile.title,
     },
-    summaryText: normalizeText(output.summaryText, `${input.pack.artifactTitle} generated.`),
+    summaryText,
     type: 'executor',
   };
 }
@@ -228,17 +331,32 @@ function normalizeReviewerChecks(checks) {
 
 function normalizeReviewerOutput(output, providerLabel) {
   const verdict = normalizeText(output.verdict).toLowerCase();
+  const artifactContent = normalizeText(output.artifactContent);
+  const summaryText = normalizeText(output.summaryText);
   if (!['pass', 'fail'].includes(verdict)) {
-    throw new Error(`${providerLabel} reviewer output must include verdict pass|fail. Received: ${output.verdict}`);
+    throw createProviderFailure(`${providerLabel} reviewer output must include verdict pass|fail. Received: ${output.verdict}`, {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+  if (!artifactContent || !summaryText) {
+    throw createProviderFailure(`${providerLabel} reviewer output is missing required fields.`, {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
   }
 
   return {
-    artifactContent: normalizeText(output.artifactContent),
+    artifactContent,
     artifactFileName: 'reviewer-report.md',
     artifactTitle: 'Reviewer Report',
     checks: normalizeReviewerChecks(output.checks),
     findings: normalizeStringArray(output.findings),
-    summaryText: normalizeText(output.summaryText, `Reviewer ${verdict} verdict generated.`),
+    summaryText,
     type: 'reviewer',
     verdict,
   };
@@ -246,7 +364,7 @@ function normalizeReviewerOutput(output, providerLabel) {
 
 export function normalizeStructuredOutput(result, input, providerLabel) {
   const output = result?.output || result;
-  const role = normalizeText(result?.role || input?.role);
+  const role = normalizeText(result?.role || input?.providerRole || input?.role);
 
   if (role === 'manager') {
     return normalizeManagerOutput(output);

@@ -16,6 +16,7 @@ The runtime stays intentionally narrow in v1:
 - Node.js ESM
 - CLI-first
 - stub provider by default, with OpenAI, Anthropic, and local adapters available behind provider-specific configuration
+- optional manager-controlled parallel specialist fan-out across `research`, `implementation`, and `verification`
 - explicit approval gates before risky actions
 - runtime state under `var/`
 - repo-tracked strategy and incident docs under `docs/`
@@ -79,6 +80,13 @@ node src/cli.mjs mission create \
   --title "Stabilize release smoke" \
   --objective "Produce a bounded implementation proposal" \
   --constraints "Keep blast radius small|Preserve release evidence flow"
+
+node src/cli.mjs mission create \
+  --workspace workspace_xxx \
+  --mode engineering \
+  --title "Parallel specialist dry run" \
+  --objective "Validate manager-controlled specialist fan-out and merge" \
+  --constraints "parallel-specialists:research,implementation,verification|Keep blast radius small"
 ```
 
 Run and inspect missions:
@@ -99,7 +107,7 @@ node src/cli.mjs overview maintenance --outcome effective
 node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 ```
 
-`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다. mission-scoped maintenance sweep를 실행하면 mission summary와 mission timeline도 직접 maintenance evidence를 보여주고, workspace-wide maintenance sweep가 특정 mission pressure를 처리한 경우에도 mission timeline에는 related `maintenance-run` evidence가 연결됩니다. mission summary는 direct maintenance aggregate와 별도로 combined `maintenance impact` summary를 제공해, indirect workspace sweep가 이 mission에 준 reminder 효과도 한 번에 확인할 수 있습니다. mission summary는 여기에 mission-scoped provider execution and provider attention aggregate도 함께 노출해서, 해당 mission에서 어떤 provider run이 실패했고 provider attention이 pending, recovered, acknowledged, resolved, reminded 중 어디까지 진행됐는지도 바로 확인할 수 있습니다. unified `action inbox`는 이제 monitoring escalation, owner handoff, provider attention reminder pressure를 공통 `--needs-reminder` slice로도 보여줍니다. workspace/global operator timeline은 maintenance sweep 실행뿐 아니라 pressure를 실제로 처리한 `maintenance-required-acknowledged`, `maintenance-required-resolved` evidence, workspace-bound `provider-execution-failed` trigger, 그리고 이어지는 provider attention `opened/reminded/recovered/acknowledged/resolved` lifecycle도 함께 보여줍니다.
+`mission timeline`은 session, approval, reviewer follow-up, memory뿐 아니라 mission-scoped escalation open/resolved/reminded event도 함께 보여주며, resolved follow-up은 `rerun-fixed`, `superseded`, `scope-reduced`, `accepted-risk` taxonomy를 detail에 포함합니다. `accepted-risk`는 close와 동시에 monitoring escalation을 열고, owner transition이 발생하면 해당 escalation은 `action inbox --class handoff-required`와 `action owner-handoffs`에서 acknowledgement queue로 다시 노출됩니다. owner handoff에는 별도 reminder trail도 붙으며, overdue acknowledgement나 re-notify 모두 timeline detail에 남습니다. mission-scoped maintenance sweep를 실행하면 mission summary와 mission timeline도 직접 maintenance evidence를 보여주고, workspace-wide maintenance sweep가 특정 mission pressure를 처리한 경우에도 mission timeline에는 related `maintenance-run` evidence가 연결됩니다. mission summary는 direct maintenance aggregate와 별도로 combined `maintenance impact` summary를 제공해, indirect workspace sweep가 이 mission에 준 reminder 효과도 한 번에 확인할 수 있습니다. mission summary는 여기에 mission-scoped provider execution and provider attention aggregate, specialist run and merge aggregate도 함께 노출해서, 해당 mission에서 어떤 provider run이 실패했고 provider attention이 pending, recovered, acknowledged, resolved, reminded 중 어디까지 진행됐는지, specialist branch가 completed, blocked, failed, abandoned 중 어디에 있는지도 바로 확인할 수 있습니다. unified `action inbox`는 이제 monitoring escalation, owner handoff, provider attention reminder pressure를 공통 `--needs-reminder` slice로도 보여주고, blocked or failed specialist branch는 `specialist-follow-up-required` action으로 다시 노출합니다. workspace/global operator timeline은 maintenance sweep 실행뿐 아니라 pressure를 실제로 처리한 `maintenance-required-acknowledged`, `maintenance-required-resolved` evidence, workspace-bound `provider-execution-failed` trigger, 이어지는 provider attention `opened/reminded/recovered/acknowledged/resolved` lifecycle, 그리고 specialist branch/merge chronology도 함께 보여줍니다.
 
 Operator flow:
 
@@ -109,6 +117,7 @@ node src/cli.mjs action inbox --class retry-ready
 node src/cli.mjs action inbox --class handoff-required
 node src/cli.mjs action inbox --class maintenance-required
 node src/cli.mjs action inbox --class monitoring-required
+node src/cli.mjs action inbox --class specialist-follow-up-required
 node src/cli.mjs action inbox --class monitoring-required --effective-owner human-approver
 node src/cli.mjs action inbox --needs-reminder
 node src/cli.mjs action provider-attention
@@ -168,9 +177,11 @@ node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started mana
 
 1. `manager` builds session context and loads memory
 2. `planner` produces a bounded plan and adapts it with prior mission memory when available
-3. `executor` writes a draft artifact or engineering proposal and carries forward prior mission signals
-4. `reviewer` validates required sections and next action
-5. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
+3. if the mission constraints include `parallel-specialists:<kinds>`, the manager opens up to three specialist child branches across `research`, `implementation`, and `verification`
+4. unresolved specialist branches surface as `specialist-follow-up-required`, while completed and abandoned branches feed one manager-controlled merge step
+5. `executor` writes the merged draft artifact or the standard sequential artifact and carries forward prior mission signals
+6. `reviewer` validates required sections and next action
+7. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
 
 Engineering mode intentionally stops at proposal quality. It does not mutate registered workspaces in v1.
 
@@ -178,6 +189,8 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 
 - `provider list` shows implementation state, env readiness, required env, and default-provider status without executing a mission.
 - `provider check <id>` shows one provider's effective local configuration with secret values reduced to presence booleans, plus the latest persisted probe and latest execution when available.
+- provider probes and provider-backed mission stages now share one normalized failure envelope: `failureKind`, `recoverable`, `httpStatus`, `timedOut`, `attemptCount`, `providerResponseId`, `rawMessage`.
+- provider adapters now use explicit timeout plus bounded retry. retry is limited to transport failures, timeout, `429`, and `5xx`; `4xx`, empty output, non-JSON output, and schema-invalid output are treated as deterministic no-retry failures.
 - `provider activity` exposes provider-backed stage execution history derived from persisted `agentRuns`, with `--provider`, `--role`, and `--status` filters.
 - `provider activity-timeline` turns provider execution history into chronological success or failure events so model-backed mission execution can be inspected as a time axis.
 - `provider events` merges persisted probe events, provider execution events, and provider attention opened, acknowledgement, recovery, resolution, reminder events into one chronological stream, with `--family <probe|execution|attention>` plus probe- and execution-specific filters.
@@ -198,20 +211,20 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
   - `OPENAI_API_KEY` required
   - `OPENAI_MODEL` optional, default `gpt-5.2`
   - `OPENAI_BASE_URL` optional, default `https://api.openai.com/v1`
-- if `OPENAI_API_KEY` is missing, `mission run --provider openai` fails fast before any network call.
+- if `OPENAI_API_KEY` is missing, `mission run --provider openai` returns a normalized failed mission result before any network call.
 - `anthropic` now uses the Anthropic Messages API and reads:
   - `ANTHROPIC_API_KEY` required
   - `ANTHROPIC_MODEL` optional, default `claude-sonnet-4-6`
   - `ANTHROPIC_BASE_URL` optional, default `https://api.anthropic.com/v1`
   - `ANTHROPIC_VERSION` optional, default `2023-06-01`
   - `ANTHROPIC_MAX_TOKENS` optional, default `2048`
-- if `ANTHROPIC_API_KEY` is missing, `mission run --provider anthropic` fails fast before any network call.
+- if `ANTHROPIC_API_KEY` is missing, `mission run --provider anthropic` returns a normalized failed mission result before any network call.
 - `local` targets an OpenAI-compatible local `/chat/completions` endpoint and reads:
   - `LOCAL_PROVIDER_MODEL` required
   - `LOCAL_PROVIDER_BASE_URL` optional, default `http://127.0.0.1:11434/v1`
   - `LOCAL_PROVIDER_API_KEY` optional
   - `LOCAL_PROVIDER_MAX_TOKENS` optional, default `2048`
-- if `LOCAL_PROVIDER_MODEL` is missing, `mission run --provider local` fails fast before any network call.
+- if `LOCAL_PROVIDER_MODEL` is missing, `mission run --provider local` returns a normalized failed mission result before any network call.
 
 ## State Layout
 
@@ -273,6 +286,7 @@ npm run smoke:provider-surface
 npm run smoke:provider-overview
 npm run smoke:provider-activity
 npm run smoke:provider-events
+npm run smoke:provider-hardening
 npm run smoke:provider-action-inbox
 npm run smoke:provider-attention-lifecycle
 npm run smoke:provider-attention-recovery
@@ -280,6 +294,7 @@ npm run smoke:provider-attention-reminders
 npm run smoke:provider-probe
 npm run smoke:provider-history
 npm run smoke:provider-timeline
+npm run smoke:parallel-specialists
 npm run smoke:openai-provider
 npm run smoke:anthropic-provider
 npm run smoke:local-provider

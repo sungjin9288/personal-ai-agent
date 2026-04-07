@@ -35,6 +35,7 @@
     "smoke:provider-overview": "node scripts/smoke-provider-overview.mjs",
     "smoke:provider-activity": "node scripts/smoke-provider-activity.mjs",
     "smoke:provider-events": "node scripts/smoke-provider-events.mjs",
+    "smoke:provider-hardening": "node scripts/smoke-provider-hardening.mjs",
     "smoke:provider-action-inbox": "node scripts/smoke-provider-action-inbox.mjs",
     "smoke:provider-attention-lifecycle": "node scripts/smoke-provider-attention-lifecycle.mjs",
     "smoke:provider-attention-recovery": "node scripts/smoke-provider-attention-recovery.mjs",
@@ -42,6 +43,7 @@
     "smoke:provider-probe": "node scripts/smoke-provider-probe.mjs",
     "smoke:provider-history": "node scripts/smoke-provider-history.mjs",
     "smoke:provider-timeline": "node scripts/smoke-provider-timeline.mjs",
+    "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs",
     "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs",
     "smoke:local-provider": "node scripts/smoke-local-provider.mjs"

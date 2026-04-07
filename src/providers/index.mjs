@@ -2,6 +2,7 @@ import { PROVIDER_IDS } from '../core/constants.mjs';
 import { createAnthropicProvider } from './anthropic-provider.mjs';
 import { createLocalProvider } from './local-provider.mjs';
 import { createOpenAIProvider } from './openai-provider.mjs';
+import { extractProviderFailure } from './provider-runtime-utils.mjs';
 import { createStubProvider } from './stub-provider.mjs';
 
 function normalizeText(value, fallback = '') {
@@ -127,20 +128,34 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
       if (!status.implemented) {
         return {
           ...status,
+          attemptCount: 0,
           attempted: false,
           checkedAt: new Date().toISOString(),
+          failureKind: 'unknown',
+          httpStatus: null,
           ok: false,
+          providerResponseId: null,
+          rawMessage: `Provider not implemented yet: ${normalizedProviderId}`,
+          recoverable: false,
           reason: `Provider not implemented yet: ${normalizedProviderId}`,
+          timedOut: false,
         };
       }
 
       if (!status.configured) {
         return {
           ...status,
+          attemptCount: 0,
           attempted: false,
           checkedAt: new Date().toISOString(),
+          failureKind: 'config',
+          httpStatus: null,
           ok: false,
+          providerResponseId: null,
+          rawMessage: `Missing required env: ${status.missingEnv.join(', ')}`,
+          recoverable: false,
           reason: `Missing required env: ${status.missingEnv.join(', ')}`,
+          timedOut: false,
         };
       }
 
@@ -152,12 +167,14 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
           ...probeResult,
         };
       } catch (error) {
+        const failure = extractProviderFailure(error);
         return {
           ...status,
           attempted: true,
           checkedAt: new Date().toISOString(),
+          ...failure,
           ok: false,
-          reason: error instanceof Error ? error.message : String(error),
+          reason: failure.message,
         };
       }
     },

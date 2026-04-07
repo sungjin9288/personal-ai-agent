@@ -12,8 +12,19 @@ export const MISSION_STATUSES = [
 
 export const SESSION_STATUSES = ['executing', 'awaiting_approval', 'reviewed', 'completed', 'failed'];
 
-export const AGENT_ROLES = ['manager', 'planner', 'executor', 'reviewer'];
-export const AGENT_RUN_STATUSES = ['executing', 'completed', 'failed'];
+export const AGENT_ROLES = ['manager', 'planner', 'executor', 'reviewer', 'specialist'];
+export const AGENT_RUN_STATUSES = ['queued', 'running', 'blocked', 'failed', 'completed', 'merged', 'abandoned'];
+export const SPECIALIST_KINDS = ['research', 'implementation', 'verification'];
+export const PROVIDER_FAILURE_KINDS = [
+  'config',
+  'transport',
+  'timeout',
+  'http-status',
+  'empty-output',
+  'non-json-output',
+  'schema-invalid',
+  'unknown',
+];
 
 export const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
 
@@ -24,6 +35,7 @@ export const ACTION_CLASSES = [
   'blocked',
   'awaiting-human-decision',
   'provider-attention-required',
+  'specialist-follow-up-required',
   'monitoring-required',
   'handoff-required',
   'maintenance-required',

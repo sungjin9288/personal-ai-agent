@@ -36,14 +36,50 @@ function deriveMemoryAdaptation(memoryEntries) {
   };
 }
 
-function buildPromptContext({ mission, workspace, pack, memoryEntries, previousOutputs }) {
+function buildPromptContext({
+  mission,
+  workspace,
+  pack,
+  memoryEntries,
+  previousOutputs,
+  parallelGroupId,
+  parallelRequiredKinds,
+  resumeFromRunId,
+  specialistKind,
+  specialistMergeMode,
+}) {
   const memorySummary = memoryEntries.length
     ? memoryEntries.map((entry) => `- [${entry.scope}/${entry.kind}] ${entry.content}`).join('\n')
     : '- no memory entries loaded';
 
   const previousOutputSummary = Object.entries(previousOutputs || {})
+    .filter(([key]) => key !== 'specialists')
     .map(([key, value]) => `## ${key}\n${value}`)
     .join('\n\n');
+  const specialistSummary = Array.isArray(previousOutputs?.specialists) && previousOutputs.specialists.length
+    ? previousOutputs.specialists
+        .map(
+          (item) =>
+            `- ${item.specialistKind}: status=${item.status} summary=${item.summaryText || 'no summary'} path=${item.path || 'n/a'}`,
+        )
+        .join('\n')
+    : '- no specialist branch outputs';
+  const specialistArtifacts = Array.isArray(previousOutputs?.specialists) && previousOutputs.specialists.length
+    ? previousOutputs.specialists
+        .map(
+          (item) =>
+            `### ${item.specialistKind}\n- status: ${item.status}\n- path: ${item.path || 'n/a'}\n\n${item.content || '_no specialist artifact content_'}`,
+        )
+        .join('\n\n')
+    : 'No specialist artifact content available.';
+  const specialistContext = inputSpecialistContext({
+    parallelGroupId,
+    parallelRequiredKinds,
+    resumeFromRunId,
+    specialistKind,
+    specialistMergeMode,
+    workspace,
+  });
 
   return `## Mission
 - id: ${mission.id}
@@ -66,7 +102,29 @@ ${joinBullets(pack.requiredSections, 'No required sections recorded.')}
 ## Memory
 ${memorySummary}
 
+## Parallel Specialists
+${specialistSummary}
+
+## Specialist Artifacts
+${specialistArtifacts}
+
+${specialistContext}
+
 ${previousOutputSummary}`.trim();
+}
+
+function inputSpecialistContext({ parallelGroupId, parallelRequiredKinds, resumeFromRunId, specialistKind, specialistMergeMode, workspace }) {
+  return [
+    parallelGroupId ? `## Parallel Group\n- id: ${parallelGroupId}` : '',
+    specialistKind ? `## Specialist\n- kind: ${specialistKind}\n- workspace: ${workspace.name}` : '',
+    resumeFromRunId ? `## Resume\n- resumeFromRunId: ${resumeFromRunId}` : '',
+    parallelRequiredKinds?.length
+      ? `## Specialist Coverage\n- required: ${parallelRequiredKinds.join(', ')}`
+      : '',
+    specialistMergeMode ? `## Merge Mode\n- enabled: true` : '',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 function buildManagerOutput({ mission, workspace, pack, memoryEntries }) {
@@ -140,12 +198,18 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) 
   const adaptationNotes = previousOutputs.planner
     ? previousOutputs.planner.adaptationNotes
     : deriveMemoryAdaptation(memoryEntries).adaptationNotes;
-  const artifactContent = pack.renderDraft({
+  let artifactContent = pack.renderDraft({
     planSteps,
     forceReviewerFail,
     forceRubricFail,
     adaptationNotes,
   });
+
+  if (Array.isArray(previousOutputs.specialists) && previousOutputs.specialists.length) {
+    artifactContent = `${artifactContent.trim()}\n\n## Specialist Inputs\n${previousOutputs.specialists
+      .map((item) => `- ${item.specialistKind}: ${item.summaryText || 'no summary available'}`)
+      .join('\n')}\n`;
+  }
 
   return {
     type: 'executor',
@@ -165,6 +229,20 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) 
     nextAction: pack.riskProfile.requiresApproval
       ? 'Pause for approval before any workspace mutation.'
       : 'Share the draft with the owner and collect follow-up decisions.',
+  };
+}
+
+function buildSpecialistOutput(input) {
+  const baseOutput = buildExecutorOutput(input);
+  const specialistKind = input.specialistKind || 'implementation';
+  const title = `${specialistKind[0].toUpperCase()}${specialistKind.slice(1)} Specialist Draft`;
+
+  return {
+    ...baseOutput,
+    artifactTitle: title,
+    artifactContent: `${baseOutput.artifactContent.trim()}\n\n## Specialist Role\n- kind: ${specialistKind}\n`,
+    summaryText: `${title} generated for ${input.mission.title}.`,
+    type: 'executor',
   };
 }
 
@@ -245,6 +323,10 @@ ${context}
 
       if (input.role === 'planner') {
         return buildPlannerOutput(input);
+      }
+
+      if (input.role === 'specialist') {
+        return buildSpecialistOutput(input);
       }
 
       if (input.role === 'executor') {

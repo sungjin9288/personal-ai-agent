@@ -151,6 +151,10 @@ assert.equal(anthropicCheck.pendingAttentionNeedsReminder, true);
 assert.equal(anthropicCheck.pendingAttentionNextReminderAt, '2026-03-02T00:00:00.000Z');
 assert.equal(anthropicCheck.pendingAttentionReminderCount, 0);
 assert.equal(anthropicCheck.latestPendingAttention.providerId, 'anthropic');
+assert.equal(anthropicCheck.latestPendingAttention.failureKind, 'http-status');
+assert.equal(anthropicCheck.latestPendingAttention.httpStatus, 503);
+assert.equal(anthropicCheck.latestPendingAttention.recoverable, true);
+assert.equal(anthropicCheck.latestPendingAttention.attemptCount, 2);
 
 const providerOverviewResult = runCli({
   args: ['overview', 'providers'],
@@ -168,6 +172,10 @@ assert.equal(providerOverview.summary.probeTotal, 4);
 assert.equal(providerOverview.summary.probeAttemptedCount, 3);
 assert.equal(providerOverview.summary.probeSuccessCount, 2);
 assert.equal(providerOverview.summary.probeFailureCount, 2);
+assert.equal(providerOverview.summary.probeFailureKindCounts.config, 1);
+assert.equal(providerOverview.summary.probeFailureKindCounts['http-status'], 1);
+assert.equal(providerOverview.summary.probeRetryableFailureCount, 1);
+assert.equal(providerOverview.summary.probeTimedOutFailureCount, 0);
 assert.equal(providerOverview.summary.attentionRequiredCount, 1);
 assert.equal(providerOverview.summary.attentionOverdueCount, 1);
 assert.equal(providerOverview.summary.attentionNeedsReminderCount, 1);
@@ -191,6 +199,12 @@ assert.equal(
 );
 assert.equal(
   providerOverview.providers.some((provider) => provider.id === 'anthropic' && provider.latestProbe.ok === false),
+  true,
+);
+assert.equal(
+  providerOverview.providers.some(
+    (provider) => provider.id === 'openai' && provider.latestProbe.failureKind === 'config' && provider.latestProbe.attemptCount === 0,
+  ),
   true,
 );
 assert.equal(
@@ -223,6 +237,10 @@ assert.equal(globalOverview.summary.providerAttentionReminderCount, 0);
 assert.equal(globalOverview.summary.providerUnprobedCount, 0);
 assert.equal(globalOverview.summary.providerLatestProbeFailureCount, 1);
 assert.equal(globalOverview.summary.providerLatestProbeSkippedCount, 1);
+assert.equal(globalOverview.summary.providerProbeFailureKindCounts.config, 1);
+assert.equal(globalOverview.summary.providerProbeFailureKindCounts['http-status'], 1);
+assert.equal(globalOverview.summary.providerProbeRetryableFailureCount, 1);
+assert.equal(globalOverview.summary.providerProbeTimedOutFailureCount, 0);
 assert.equal(globalOverview.summary.latestProviderProbe.providerId, 'local');
 assert.equal(globalOverview.summary.latestFailedProviderProbe.providerId, 'anthropic');
 assert.equal(globalOverview.summary.latestSuccessfulProviderProbe.providerId, 'local');

@@ -1,5 +1,19 @@
 # Devlog
 
+## 2026-04-07 Provider Hardening Baseline
+
+- added a shared provider failure envelope across probe and execution paths with fixed fields for `failureKind`, `recoverable`, `httpStatus`, `timedOut`, `attemptCount`, `providerResponseId`, and `rawMessage`
+- moved OpenAI, Anthropic, and local adapters onto one shared timeout and bounded retry wrapper so transport or timeout or `429/5xx` retries stay aligned while `4xx` and parsing or schema failures remain deterministic no-retry paths
+- hardened structured output parsing to accept only the first valid JSON object after text extraction, while empty output, prose-only output, and missing required fields now normalize into `empty-output`, `non-json-output`, and `schema-invalid`
+- propagated normalized provider failure metadata into provider history, activity, events, attention, mission summary, workspace overview, global overview, and operator surfaces, then locked the contract with deterministic provider hardening smoke coverage
+
+## 2026-04-07 Parallel Specialist Roles v1
+
+- added manager-controlled parallel specialist fan-out after planning, bounded to `research`, `implementation`, and `verification`, with child `agentRuns` carrying `parallelGroupId`, `parentRunId`, `resumeFromRunId`, `specialistKind`, and merge metadata
+- added resumable failed or blocked specialist branches plus manager-controlled merge back into the standard executor or reviewer path so parallel work stays local-first and deterministic instead of introducing a separate queueing system
+- surfaced `specialist-follow-up-required` into the unified action inbox and linked specialist branch or merge chronology into mission timeline, workspace timeline, global operator timeline, and mission or workspace or global summaries
+- added deterministic smoke coverage for two-branch success merge, three-branch mixed completion, failed branch resume, blocked branch follow-up visibility, and summary or timeline propagation
+
 ## 2026-04-07 Provider Attention Recovery
 
 - added derived `recovered` provider attention state so a newer successful probe or successful provider-backed mission run can close the latest failure pressure without requiring a manual resolution step first

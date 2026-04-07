@@ -39,18 +39,19 @@ export function createRuntimeHarness({ store }) {
     }));
   }
 
-  function startAgentRun({ missionId, sessionId, role, inputSummary }) {
+  function startAgentRun({ missionId, sessionId, role, inputSummary, metadata = {} }) {
     const agentRun = store.saveAgentRun({
       id: createId('agentrun'),
       missionId,
       sessionId,
       role,
-      status: 'executing',
+      status: 'running',
       inputSummary,
       outputSummary: '',
       artifactIds: [],
       startedAt: now(),
       endedAt: null,
+      ...metadata,
     });
 
     updateSession(sessionId, {
@@ -61,13 +62,14 @@ export function createRuntimeHarness({ store }) {
     return agentRun;
   }
 
-  function completeAgentRun(runId, { status, outputSummary, artifactIds }) {
+  function completeAgentRun(runId, { status, outputSummary, artifactIds, metadata = {} }) {
     const nextRun = store.updateAgentRun(runId, (agentRun) => ({
       ...agentRun,
       status,
       outputSummary,
       artifactIds,
       endedAt: now(),
+      ...metadata,
     }));
 
     updateSession(nextRun.sessionId, {

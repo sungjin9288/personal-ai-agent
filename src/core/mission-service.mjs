@@ -22,14 +22,17 @@ import {
   OWNER_HANDOFF_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_STATUSES,
+  PROVIDER_FAILURE_KINDS,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
+  SPECIALIST_KINDS,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
 import { createId } from './id.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
+import { extractProviderFailure, isProviderFailureError } from '../providers/provider-runtime-utils.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -99,6 +102,106 @@ function getLatestItem(items, fieldName = 'createdAt') {
   }
 
   return [...items].sort((left, right) => String(left[fieldName] || '').localeCompare(String(right[fieldName] || ''))).at(-1);
+}
+
+function normalizeAgentRunStatus(value) {
+  const normalized = normalizeText(value);
+  if (normalized === 'executing') {
+    return 'running';
+  }
+  return normalized;
+}
+
+function normalizeProviderFailureKind(value) {
+  const normalized = normalizeText(value);
+  return PROVIDER_FAILURE_KINDS.includes(normalized) ? normalized : 'unknown';
+}
+
+function summarizeFailureKinds(items) {
+  const counts = Object.fromEntries(PROVIDER_FAILURE_KINDS.map((kind) => [kind, 0]));
+
+  for (const item of items) {
+    const failureKind = normalizeProviderFailureKind(item.failureKind);
+    if (item.failureKind) {
+      counts[failureKind] += 1;
+    }
+  }
+
+  return counts;
+}
+
+function extractProviderFailureMetadata(item) {
+  return {
+    attemptCount: Number(item?.attemptCount || 0),
+    failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
+    httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
+    providerResponseId: normalizeText(item?.providerResponseId) || null,
+    rawMessage: normalizeText(item?.rawMessage) || null,
+    recoverable: typeof item?.recoverable === 'boolean' ? item.recoverable : null,
+    timedOut: Boolean(item?.timedOut),
+  };
+}
+
+function formatProviderFailureDetail({ detail, failureKind, httpStatus, timedOut, attemptCount, recoverable }) {
+  const summary = normalizeText(detail);
+  const meta = [];
+
+  if (failureKind) {
+    meta.push(`kind=${failureKind}`);
+  }
+  if (Number.isFinite(Number(httpStatus)) && Number(httpStatus) > 0) {
+    meta.push(`http=${Number(httpStatus)}`);
+  }
+  if (timedOut) {
+    meta.push('timedOut=true');
+  }
+  if (Number.isFinite(Number(attemptCount)) && Number(attemptCount) > 1) {
+    meta.push(`attempts=${Number(attemptCount)}`);
+  }
+  if (typeof recoverable === 'boolean') {
+    meta.push(`recoverable=${recoverable ? 'true' : 'false'}`);
+  }
+
+  if (!meta.length) {
+    return summary;
+  }
+
+  return `${summary} [${meta.join(', ')}]`;
+}
+
+function parseMissionConstraintDirectives(mission) {
+  const directives = {
+    parallelSpecialists: [],
+    specialistAbandonKinds: [],
+    specialistBlockKinds: [],
+    specialistFailKinds: [],
+  };
+
+  for (const constraint of ensureArray(mission?.constraints)) {
+    const normalized = normalizeText(constraint);
+    if (!normalized) {
+      continue;
+    }
+
+    const [rawKey, rawValue = ''] = normalized.split(':');
+    const key = normalizeText(rawKey).toLowerCase();
+    const values = rawValue
+      .split(',')
+      .map((item) => normalizeText(item).toLowerCase())
+      .filter((item) => SPECIALIST_KINDS.includes(item));
+
+    if (key === 'parallel-specialists') {
+      directives.parallelSpecialists = values;
+    } else if (key === 'parallel-fail') {
+      directives.specialistFailKinds = values;
+    } else if (key === 'parallel-block') {
+      directives.specialistBlockKinds = values;
+    } else if (key === 'parallel-abandon') {
+      directives.specialistAbandonKinds = values;
+    }
+  }
+
+  return directives;
 }
 
 function sortTimelineEvents(items) {
@@ -1191,6 +1294,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       acknowledgedAt: existingAcknowledgement?.acknowledgedAt || null,
       actionId: buildProviderAttentionActionId(sourceFailure),
       actionType: 'provider-attention',
+      ...extractProviderFailureMetadata(sourceFailure),
       createdAt: sourceFailure.at,
       deliverableType: null,
       eventFamily: sourceFailure.eventFamily,
@@ -1236,28 +1340,44 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const sessionById = new Map(state.sessions.map((session) => [session.id, session]));
     const workspaceById = new Map(state.workspaces.map((workspace) => [workspace.id, workspace]));
 
+    const normalizedStatusFilter = normalizeAgentRunStatus(filter.status);
+
     return [...ensureArray(state.agentRuns)]
       .map((run) => {
         const session = sessionById.get(run.sessionId) || null;
         const mission = missionById.get(run.missionId || session?.missionId) || null;
         const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
-        const providerId = normalizeText(session?.provider);
+        const providerId = normalizeText(run.providerId || session?.provider);
 
         return {
           at: run.endedAt || run.startedAt || '',
+          attemptCount: Number(run.attemptCount || 0),
           endedAt: run.endedAt || null,
+          failureKind: normalizeText(run.failureKind) ? normalizeProviderFailureKind(run.failureKind) : null,
+          httpStatus: Number.isFinite(Number(run.httpStatus)) ? Number(run.httpStatus) : null,
           id: run.id,
           inputSummary: normalizeText(run.inputSummary),
+          mergeStatus: normalizeText(run.mergeStatus),
           missionId: mission?.id || run.missionId || null,
           missionTitle: mission?.title || null,
           outputSummary: normalizeText(run.outputSummary),
+          parentRunId: normalizeText(run.parentRunId) || null,
           providerId,
+          providerResponseId: normalizeText(run.providerResponseId) || null,
+          rawMessage: normalizeText(run.rawMessage) || null,
+          recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
           role: normalizeText(run.role),
+          resumeFromRunId: normalizeText(run.resumeFromRunId) || null,
           sessionId: session?.id || run.sessionId || null,
+          specialistKind: normalizeText(run.specialistKind) || null,
+          specialistRootRunId: normalizeText(run.specialistRootRunId) || null,
           startedAt: run.startedAt || null,
-          status: normalizeText(run.status),
+          status: normalizeAgentRunStatus(run.status),
+          timedOut: Boolean(run.timedOut),
+          workflowRole: normalizeText(run.workflowRole || run.role),
           workspaceId: workspace?.id || null,
           workspaceName: workspace?.name || null,
+          parallelGroupId: normalizeText(run.parallelGroupId) || null,
         };
       })
       .filter((entry) => {
@@ -1276,7 +1396,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         if (filter.role && entry.role !== filter.role) {
           return false;
         }
-        if (filter.status && entry.status !== filter.status) {
+        if (normalizedStatusFilter && entry.status !== normalizedStatusFilter) {
           return false;
         }
         return true;
@@ -1307,10 +1427,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return {
+      failureKindCounts: summarizeFailureKinds(executions.filter((execution) => execution.status === 'failed')),
       latestExecution: executions.at(-1) || null,
       latestFailedExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'failed'),
       latestSuccessfulExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'completed'),
       providerCounts,
+      retryableFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.recoverable).length,
+      timedOutFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.timedOut).length,
       roleCounts,
       statusCounts,
       total: executions.length,
@@ -1320,10 +1443,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildProviderExecutionTimeline(executions) {
     return executions.map((execution) => ({
       at: execution.at,
+      attemptCount: Number(execution.attemptCount || 0),
       detail:
-        execution.outputSummary ||
+        formatProviderFailureDetail({
+          attemptCount: execution.attemptCount,
+          detail:
+            execution.outputSummary ||
+            execution.inputSummary ||
+            `Provider ${execution.providerId} ${execution.role} run ${execution.status}.`,
+          failureKind: execution.status === 'failed' ? execution.failureKind : null,
+          httpStatus: execution.httpStatus,
+          recoverable: execution.recoverable,
+          timedOut: execution.timedOut,
+        }) ||
         execution.inputSummary ||
         `Provider ${execution.providerId} ${execution.role} run ${execution.status}.`,
+      failureKind: execution.failureKind || null,
+      httpStatus: execution.httpStatus,
       kind:
         execution.status === 'failed'
           ? 'provider-execution-failed'
@@ -1333,10 +1469,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       missionId: execution.missionId,
       missionTitle: execution.missionTitle,
       providerId: execution.providerId,
+      providerResponseId: execution.providerResponseId,
+      rawMessage: execution.rawMessage,
+      recoverable: execution.recoverable,
       role: execution.role,
       runId: execution.id,
+      specialistKind: execution.specialistKind,
       sessionId: execution.sessionId,
       status: execution.status,
+      timedOut: execution.timedOut,
       workspaceId: execution.workspaceId,
       workspaceName: execution.workspaceName,
     }));
@@ -1364,10 +1505,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       eventCounts,
+      failureKindCounts: summarizeFailureKinds(events.filter((event) => event.executionStatus === 'failed')),
       latestEvent: events.at(-1) || null,
       providerCounts,
+      retryableFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.recoverable).length,
       roleCounts,
       statusCounts,
+      timedOutFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.timedOut).length,
       total: events.length,
     };
   }
@@ -1392,10 +1536,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       attemptedCount,
+      failureKindCounts: summarizeFailureKinds(probes.filter((probe) => !probe.ok)),
       failureCount,
       latestProbe: probes.at(-1) || null,
       providerCounts,
+      retryableFailureCount: probes.filter((probe) => !probe.ok && probe.recoverable).length,
       successCount,
+      timedOutFailureCount: probes.filter((probe) => !probe.ok && probe.timedOut).length,
       total: probes.length,
     };
   }
@@ -1603,6 +1750,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       eventFamilyCounts: eventSummary.familyCounts,
       executionCompletedCount: executionSummary.statusCounts.completed,
       executionFailedCount: executionSummary.statusCounts.failed,
+      executionFailureKindCounts: executionSummary.failureKindCounts,
       executionStatusCounts: executionSummary.statusCounts,
       executionTotal: executionSummary.total,
       eventTotal: eventSummary.total,
@@ -1633,7 +1781,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
       probeAttemptedCount: probeSummary.attemptedCount,
       probeFailureCount: probeSummary.failureCount,
+      probeFailureKindCounts: probeSummary.failureKindCounts,
       probeSuccessCount: probeSummary.successCount,
+      probeRetryableFailureCount: probeSummary.retryableFailureCount,
+      probeTimedOutFailureCount: probeSummary.timedOutFailureCount,
+      executionRetryableFailureCount: executionSummary.retryableFailureCount,
+      executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
       probeTotal: probeSummary.total,
       readyCount: readyProviderIds.length,
       readyProviderIds,
@@ -1659,8 +1812,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return {
         at: probe.checkedAt || probe.createdAt,
         attempted: probe.attempted,
-        detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
+        detail: formatProviderFailureDetail({
+          attemptCount: probe.attemptCount,
+          detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
+          failureKind: probe.ok ? null : probe.failureKind,
+          httpStatus: probe.httpStatus,
+          recoverable: probe.recoverable,
+          timedOut: probe.timedOut,
+        }),
         endpoint: probe.endpoint || null,
+        failureKind: probe.failureKind || null,
+        httpStatus: Number.isFinite(Number(probe.httpStatus)) ? Number(probe.httpStatus) : null,
         id: probe.id,
         kind,
         model: probe.model || null,
@@ -1668,8 +1830,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         modelCount: probe.modelCount,
         ok: probe.ok,
         providerId: probe.providerId,
+        providerResponseId: probe.providerResponseId || null,
+        rawMessage: probe.rawMessage || null,
+        recoverable: typeof probe.recoverable === 'boolean' ? probe.recoverable : null,
         sampleModels: ensureArray(probe.sampleModels),
+        timedOut: Boolean(probe.timedOut),
         transport: probe.transport || null,
+        attemptCount: Number(probe.attemptCount || 0),
       };
     });
   }
@@ -1697,10 +1864,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       attemptedCount,
       eventCounts,
+      failureKindCounts: summarizeFailureKinds(events.filter((event) => event.attempted && !event.ok)),
       failureCount,
       latestEvent: events.at(-1) || null,
       providerCounts,
+      retryableFailureCount: events.filter((event) => event.attempted && !event.ok && event.recoverable).length,
       successCount,
+      timedOutFailureCount: events.filter((event) => event.attempted && !event.ok && event.timedOut).length,
       total: events.length,
     };
   }
@@ -1710,15 +1880,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const baseEvent = {
         actionId: record.actionId,
         acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
+        attemptCount: Number(record.attemptCount || 0),
         eventRefId: record.eventRefId || null,
+        failureKind: normalizeText(record.failureKind) ? normalizeProviderFailureKind(record.failureKind) : null,
+        httpStatus: Number.isFinite(Number(record.httpStatus)) ? Number(record.httpStatus) : null,
         missionId: record.missionId || null,
         openedAt: record.openedAt || null,
         providerDisplayName: record.providerDisplayName || null,
         providerId: record.providerId,
+        providerResponseId: record.providerResponseId || null,
+        rawMessage: record.rawMessage || null,
+        recoverable: typeof record.recoverable === 'boolean' ? record.recoverable : null,
         resolvedAt: record.resolvedAt || null,
         resolutionNote: record.resolutionNote || null,
         sessionId: record.sessionId || null,
         status: record.status || 'acknowledged',
+        timedOut: Boolean(record.timedOut),
         workspaceId: record.workspaceId || null,
         workspaceName: record.workspaceName || null,
       };
@@ -1773,18 +1950,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       acknowledgedAt: item.acknowledgedAt || null,
       actionId: item.actionId,
       at: item.recoveredAt,
+      attemptCount: Number(item.attemptCount || 0),
       detail: formatProviderAttentionRecoveryDetail(item),
       eventRefId: item.eventRefId || null,
+      failureKind: normalizeText(item.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
+      httpStatus: Number.isFinite(Number(item.httpStatus)) ? Number(item.httpStatus) : null,
       kind: 'provider-attention-recovered',
       missionId: item.missionId || null,
       providerDisplayName: item.providerDisplayName || null,
       providerId: item.providerId,
+      providerResponseId: item.providerResponseId || null,
+      rawMessage: item.rawMessage || null,
       recoveredAt: item.recoveredAt,
       recoveryEventKind: item.recoveryEventKind || null,
       recoveryProbeId: item.recoveryProbeId || null,
       recoveryRunId: item.recoveryRunId || null,
+      recoverable: typeof item.recoverable === 'boolean' ? item.recoverable : null,
       sessionId: item.sessionId || null,
       status: 'recovered',
+      timedOut: Boolean(item.timedOut),
       workspaceId: item.workspaceId || null,
       workspaceName: item.workspaceName || null,
     }));
@@ -1798,14 +1982,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .map((item) => ({
         actionId: item.actionId,
         at: item.createdAt,
+        attemptCount: Number(item.attemptCount || 0),
         detail: item.reason || item.title || 'Provider attention opened.',
         eventRefId: item.eventRefId || null,
+        failureKind: normalizeText(item.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
+        httpStatus: Number.isFinite(Number(item.httpStatus)) ? Number(item.httpStatus) : null,
         kind: 'provider-attention-opened',
         missionId: item.missionId || null,
         providerDisplayName: item.providerDisplayName || null,
         providerId: item.providerId,
+        providerResponseId: item.providerResponseId || null,
+        rawMessage: item.rawMessage || null,
+        recoverable: typeof item.recoverable === 'boolean' ? item.recoverable : null,
         sessionId: item.sessionId || null,
         status: 'pending',
+        timedOut: Boolean(item.timedOut),
         workspaceId: item.workspaceId || null,
         workspaceName: item.workspaceName || null,
       }));
@@ -1986,6 +2177,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let probeFailureCount = 0;
     let probeSkippedCount = 0;
     let probeSuccessCount = 0;
+    const attentionStatusCounts = {
+      acknowledged: 0,
+      opened: 0,
+      recovered: 0,
+      reminded: 0,
+      resolved: 0,
+      total: 0,
+    };
 
     for (const event of events) {
       eventCounts[event.eventKind] = (eventCounts[event.eventKind] || 0) + 1;
@@ -2009,6 +2208,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       if (event.eventFamily === 'attention') {
         familyCounts.attention += 1;
+        attentionStatusCounts.total += 1;
+        if (event.eventKind === 'provider-attention-opened') {
+          attentionStatusCounts.opened += 1;
+        } else if (event.eventKind === 'provider-attention-acknowledged') {
+          attentionStatusCounts.acknowledged += 1;
+        } else if (event.eventKind === 'provider-attention-reminded') {
+          attentionStatusCounts.reminded += 1;
+        } else if (event.eventKind === 'provider-attention-recovered') {
+          attentionStatusCounts.recovered += 1;
+        } else if (event.eventKind === 'provider-attention-resolved') {
+          attentionStatusCounts.resolved += 1;
+        }
         continue;
       }
 
@@ -2020,10 +2231,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return {
+      attentionStatusCounts,
       eventCounts,
       executionCompletedCount: executionStatusCounts.completed,
+      executionFailureKindCounts: summarizeFailureKinds(
+        events.filter((event) => event.eventFamily === 'execution' && event.executionStatus === 'failed'),
+      ),
       executionFailedCount: executionStatusCounts.failed,
+      executionRetryableFailureCount: events.filter(
+        (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.recoverable,
+      ).length,
       executionStatusCounts,
+      executionTimedOutFailureCount: events.filter(
+        (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
+      ).length,
       familyCounts,
       latestAttentionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'attention'),
       latestEvent: events.at(-1) || null,
@@ -2031,8 +2252,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestProbeEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'probe'),
       probeAttemptedCount,
       probeFailureCount,
+      probeFailureKindCounts: summarizeFailureKinds(
+        events.filter((event) => event.eventFamily === 'probe' && event.attempted && !event.ok),
+      ),
+      probeRetryableFailureCount: events.filter(
+        (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.recoverable,
+      ).length,
       probeSkippedCount,
       probeSuccessCount,
+      probeTimedOutFailureCount: events.filter(
+        (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.timedOut,
+      ).length,
       providerCounts,
       total: events.length,
     };
@@ -2154,9 +2384,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
       touchedProviderCount: touchedProviderIds.length,
       touchedProviderIds,
-      summary: {
-        attentionAcknowledgedCount: acknowledgedAttentionItems.length,
-        attentionNeedsReminderCount: pendingAttentionItems.filter((item) => item.needsReminder).length,
+        summary: {
+          attentionAcknowledgedCount: acknowledgedAttentionItems.length,
+          attentionNeedsReminderCount: pendingAttentionItems.filter((item) => item.needsReminder).length,
         attentionNextReminderAt:
           pendingAttentionItems
             .map((item) => item.nextReminderAt)
@@ -2167,26 +2397,29 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         attentionReminderCount: reminderRecords.length,
         attentionRequiredCount: pendingAttentionItems.length,
         attentionRecoveredCount: recoveredAttentionItems.length,
-        attentionResolvedCount: resolvedAttentionItems.length,
-        attentionStatusCounts: {
-          acknowledged: acknowledgedAttentionItems.length,
-          pending: pendingAttentionItems.length,
-          recovered: recoveredAttentionItems.length,
-          resolved: resolvedAttentionItems.length,
-          total:
-            pendingAttentionItems.length +
-            acknowledgedAttentionItems.length +
-            recoveredAttentionItems.length +
-            resolvedAttentionItems.length,
+          attentionResolvedCount: resolvedAttentionItems.length,
+          attentionStatusCounts: {
+            acknowledged: acknowledgedAttentionItems.length,
+            pending: pendingAttentionItems.length,
+            recovered: recoveredAttentionItems.length,
+            resolved: resolvedAttentionItems.length,
+            total:
+              pendingAttentionItems.length +
+              acknowledgedAttentionItems.length +
+              recoveredAttentionItems.length +
+              resolvedAttentionItems.length,
+          },
+          eventCount: eventSummary.total,
+          eventFamilyCounts: eventSummary.familyCounts,
+          executionFailureKindCounts: executionSummary.failureKindCounts,
+          executionCompletedCount: executionSummary.statusCounts.completed,
+          executionCount: executionSummary.total,
+          executionFailedCount: executionSummary.statusCounts.failed,
+          executionRetryableFailureCount: executionSummary.retryableFailureCount,
+          executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
+          touchedProviderCount: touchedProviderIds.length,
+          touchedProviderIds,
         },
-        eventCount: eventSummary.total,
-        eventFamilyCounts: eventSummary.familyCounts,
-        executionCompletedCount: executionSummary.statusCounts.completed,
-        executionCount: executionSummary.total,
-        executionFailedCount: executionSummary.statusCounts.failed,
-        touchedProviderCount: touchedProviderIds.length,
-        touchedProviderIds,
-      },
     };
   }
 
@@ -2196,6 +2429,82 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function summarizeWorkspaceProviderActivity(workspaceId) {
     return summarizeScopedProviderActivity({ workspaceId });
+  }
+
+  function summarizeScopedParallelActivity(filter = {}) {
+    const groups = buildParallelGroupStates(filter);
+    const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
+    const statusCounts = Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0]));
+    const touchedSpecialistKinds = new Set();
+    let mergeRunCount = 0;
+    let specialistRunCount = 0;
+
+    for (const group of groups) {
+      for (const run of group.runs) {
+        if (normalizeText(run.stageKind) === 'parallel-merge') {
+          mergeRunCount += 1;
+          continue;
+        }
+        if (!normalizeText(run.specialistKind)) {
+          continue;
+        }
+        specialistRunCount += 1;
+      }
+
+      for (const run of group.latestByKind.values()) {
+        const specialistKind = normalizeText(run.specialistKind);
+        const status = normalizeAgentRunStatus(run.status);
+        if (SPECIALIST_KINDS.includes(specialistKind)) {
+          specialistKindCounts[specialistKind] += 1;
+          touchedSpecialistKinds.add(specialistKind);
+        }
+        if (statusCounts[status] !== undefined) {
+          statusCounts[status] += 1;
+        }
+      }
+    }
+
+    const followUpItems = buildSpecialistFollowUpItems(filter);
+
+    return {
+      latestFollowUp: getLatestItem(followUpItems, 'createdAt'),
+      latestMergeRun:
+        getLatestItem(
+          groups
+            .map((group) => group.latestMergeRun)
+            .filter(Boolean),
+          'endedAt',
+        ) || null,
+      latestParallelGroup:
+        getLatestItem(
+          groups.map((group) => ({
+            createdAt:
+              getLatestItem(
+                group.runs.map((run) => ({ createdAt: run.endedAt || run.startedAt || '' })),
+                'createdAt',
+              )?.createdAt || '',
+            id: group.parallelGroupId,
+            requiredKinds: group.requiredKinds,
+          })),
+          'createdAt',
+        ) || null,
+      mergeCompletedCount: groups.filter((group) => group.wasMerged).length,
+      mergeRunCount,
+      specialistFollowUpRequiredCount: followUpItems.length,
+      specialistKindCounts,
+      specialistRunCount,
+      statusCounts,
+      touchedSpecialistKinds: [...touchedSpecialistKinds].sort((left, right) => String(left).localeCompare(String(right))),
+      totalGroupCount: groups.length,
+    };
+  }
+
+  function summarizeMissionParallelActivity(missionId) {
+    return summarizeScopedParallelActivity({ missionId });
+  }
+
+  function summarizeWorkspaceParallelActivity(workspaceId) {
+    return summarizeScopedParallelActivity({ workspaceId });
   }
 
   function checkProvider(providerId) {
@@ -2212,7 +2521,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const checkedAt = result.checkedAt || now();
     const probeRecord = store.saveProviderProbe({
       id: createId('provider-probe'),
+      attemptCount: Number(result.attemptCount || 0),
+      failureKind: normalizeText(result.failureKind) ? normalizeProviderFailureKind(result.failureKind) : null,
+      httpStatus: Number.isFinite(Number(result.httpStatus)) ? Number(result.httpStatus) : null,
       providerId: result.id,
+      providerResponseId: normalizeText(result.providerResponseId) || null,
+      rawMessage: normalizeText(result.rawMessage) || null,
+      recoverable: typeof result.recoverable === 'boolean' ? result.recoverable : null,
       attempted: Boolean(result.attempted),
       ok: Boolean(result.ok),
       reason: normalizeText(result.reason),
@@ -2224,6 +2539,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       sampleModels: ensureArray(result.sampleModels).map((item) => normalizeText(item)).filter(Boolean),
       checkedAt,
       createdAt: checkedAt,
+      timedOut: Boolean(result.timedOut),
     });
 
     return {
@@ -2291,14 +2607,217 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     ]);
   }
 
-  async function runAgentStage({ role, mission, workspace, session, provider, providerId, pack, memoryEntries, previousOutputs }) {
+  function getParallelSpecialistKinds(mission) {
+    const directives = parseMissionConstraintDirectives(mission);
+    return [...new Set(directives.parallelSpecialists)].slice(0, 3);
+  }
+
+  function getLatestParallelGroupState(missionId) {
+    const runs = store
+      .loadState()
+      .agentRuns.filter((run) => run.missionId === missionId && normalizeText(run.parallelGroupId));
+
+    if (!runs.length) {
+      return null;
+    }
+
+    const latestGroupById = new Map();
+    for (const run of runs) {
+      const groupId = normalizeText(run.parallelGroupId);
+      const at = String(run.endedAt || run.startedAt || '');
+      const current = latestGroupById.get(groupId);
+      if (!current || String(current.at) <= at) {
+        latestGroupById.set(groupId, {
+          at,
+          groupId,
+        });
+      }
+    }
+    const latestGroupId =
+      [...latestGroupById.values()]
+        .sort((left, right) => String(left.at).localeCompare(String(right.at)))
+        .at(-1)?.groupId || null;
+    if (!latestGroupId) {
+      return null;
+    }
+
+    const groupRuns = runs.filter((run) => run.parallelGroupId === latestGroupId);
+    const latestByKind = new Map();
+    const mergeRuns = [];
+
+    for (const run of groupRuns) {
+      if (normalizeText(run.stageKind) === 'parallel-merge') {
+        mergeRuns.push(run);
+        continue;
+      }
+
+      const specialistKind = normalizeText(run.specialistKind);
+      if (!specialistKind) {
+        continue;
+      }
+
+      const current = latestByKind.get(specialistKind);
+      const currentAt = String(current?.endedAt || current?.startedAt || '');
+      const nextAt = String(run.endedAt || run.startedAt || '');
+      if (!current || currentAt <= nextAt) {
+        latestByKind.set(specialistKind, run);
+      }
+    }
+
+    const latestMergeRun =
+      [...mergeRuns].sort((left, right) =>
+        String(left.endedAt || left.startedAt || '').localeCompare(String(right.endedAt || right.startedAt || '')),
+      ).at(-1) || null;
+    const requiredKinds = latestMergeRun?.parallelRequiredKinds?.length
+      ? ensureArray(latestMergeRun.parallelRequiredKinds)
+      : [...new Set(groupRuns.flatMap((run) => ensureArray(run.parallelRequiredKinds).concat(normalizeText(run.specialistKind))))]
+          .filter(Boolean)
+          .filter((kind) => SPECIALIST_KINDS.includes(kind));
+    const latestRuns = [...latestByKind.values()];
+    const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
+
+    return {
+      latestMergeRun,
+      latestRuns,
+      parallelGroupId: latestGroupId,
+      requiredKinds,
+      unresolvedRuns,
+      wasMerged: Boolean(latestMergeRun && ['completed', 'merged'].includes(normalizeAgentRunStatus(latestMergeRun.status))),
+    };
+  }
+
+  function getRunArtifact(run, kind = 'deliverable') {
+    const artifactId = ensureArray(run?.artifactIds)
+      .map((artifactId) => store.getArtifact(artifactId))
+      .filter(Boolean)
+      .find((artifact) => artifact.kind === kind)?.id;
+
+    return artifactId ? store.getArtifact(artifactId) : null;
+  }
+
+  function buildSpecialistOutputEntry(run) {
+    const artifact = getRunArtifact(run);
+    const artifactContent = artifact?.path && fs.existsSync(artifact.path) ? fs.readFileSync(artifact.path, 'utf8') : '';
+
+    return {
+      artifactId: artifact?.id || null,
+      content: artifactContent,
+      path: artifact?.path || null,
+      runId: run.id,
+      specialistKind: normalizeText(run.specialistKind),
+      status: normalizeAgentRunStatus(run.status),
+      summaryText: normalizeText(run.outputSummary),
+    };
+  }
+
+  function finalizeMissionFailure({ mission, session, currentStage, artifactPath = null, providerId, reviewerVerdict = null }) {
+    harness.updateSession(session.id, {
+      currentStage,
+      status: 'failed',
+      endedAt: now(),
+    });
+    const failedMission = harness.touchMission(mission.id, 'failed');
+
+    return {
+      approval: null,
+      artifactPath,
+      mission: failedMission,
+      provider: providerId,
+      reviewerVerdict,
+      session: store.getSession(session.id),
+    };
+  }
+
+  function applySpecialistOutcomeDirective({ mission, parallelGroupId, requiredKinds, runStage }) {
+    const directives = parseMissionConstraintDirectives(mission);
+    const specialistKind = normalizeText(runStage.run.specialistKind);
+    const baseStatus = normalizeAgentRunStatus(runStage.run.status);
+
+    if (!specialistKind || !['completed', 'failed'].includes(baseStatus)) {
+      return runStage;
+    }
+
+    let nextStatus = baseStatus;
+    let nextSummary = runStage.run.outputSummary;
+
+    if (directives.specialistAbandonKinds.includes(specialistKind)) {
+      nextStatus = 'abandoned';
+      nextSummary = `${nextSummary} Specialist branch was intentionally abandoned for ${specialistKind}.`.trim();
+    } else if (directives.specialistBlockKinds.includes(specialistKind)) {
+      nextStatus = 'blocked';
+      nextSummary = `${nextSummary} Specialist branch is blocked and requires follow-up for ${specialistKind}.`.trim();
+    } else if (directives.specialistFailKinds.includes(specialistKind) && baseStatus !== 'failed') {
+      nextStatus = 'failed';
+      nextSummary = `${nextSummary} Specialist branch failed deterministic validation for ${specialistKind}.`.trim();
+    }
+
+    if (nextStatus === baseStatus && nextSummary === runStage.run.outputSummary) {
+      return runStage;
+    }
+
+    const updatedRun = store.updateAgentRun(runStage.run.id, (current) => ({
+      ...current,
+      mergeStatus: nextStatus === 'completed' ? 'pending' : normalizeText(current.mergeStatus, 'pending'),
+      outputSummary: nextSummary,
+      parallelGroupId,
+      parallelRequiredKinds: requiredKinds,
+      status: nextStatus,
+      updatedAt: now(),
+    }));
+
+    return {
+      ...runStage,
+      output: runStage.output
+        ? {
+            ...runStage.output,
+            summaryText: nextSummary,
+          }
+        : runStage.output,
+      run: updatedRun,
+    };
+  }
+
+  function markParallelGroupBranchesMerged(parallelGroupId) {
+    for (const run of store.loadState().agentRuns.filter((item) => item.parallelGroupId === parallelGroupId && item.specialistKind)) {
+      if (!['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status))) {
+        continue;
+      }
+      store.updateAgentRun(run.id, (current) => ({
+        ...current,
+        mergeStatus: 'merged',
+      }));
+    }
+  }
+
+  async function runAgentStage({
+    role,
+    providerRole = role,
+    mission,
+    workspace,
+    session,
+    provider,
+    providerId,
+    pack,
+    memoryEntries,
+    previousOutputs,
+    runMetadata = {},
+    outputFileName = null,
+    outputTitle = null,
+    promptFileName = null,
+  }) {
     const providerInput = {
       role,
+      providerRole,
       mission,
       workspace,
       pack,
       memoryEntries,
       previousOutputs,
+      parallelGroupId: normalizeText(runMetadata.parallelGroupId) || null,
+      parallelRequiredKinds: ensureArray(runMetadata.parallelRequiredKinds),
+      resumeFromRunId: normalizeText(runMetadata.resumeFromRunId) || null,
+      specialistKind: normalizeText(runMetadata.specialistKind) || null,
+      specialistMergeMode: normalizeText(runMetadata.stageKind) === 'parallel-merge',
     };
     const promptContent = await provider.preparePrompt(providerInput);
 
@@ -2307,6 +2826,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       sessionId: session.id,
       role,
       inputSummary: formatAgentInputSummary({ role, mission, providerId }),
+      metadata: {
+        providerId,
+        workflowRole: providerRole,
+        ...runMetadata,
+      },
     });
 
     const promptArtifact = harness.writeArtifact({
@@ -2314,36 +2838,81 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       sessionId: session.id,
       role,
       kind: 'prompt',
-      fileName: `${role}-prompt.md`,
+      fileName: promptFileName || `${role}-prompt.md`,
       title: `${role} prompt`,
       content: promptContent,
     });
 
-    const providerOutput = await provider.run(providerInput);
-    const normalizedOutput = provider.normalizeOutput(providerOutput, providerInput);
+    try {
+      const providerOutput = await provider.run(providerInput);
+      const normalizedOutput = provider.normalizeOutput(providerOutput, providerInput);
 
-    const outputArtifact = harness.writeArtifact({
-      missionId: mission.id,
-      sessionId: session.id,
-      role,
-      kind: role === 'executor' ? 'deliverable' : 'agent-output',
-      fileName: normalizedOutput.artifactFileName,
-      title: normalizedOutput.artifactTitle,
-      content: normalizedOutput.artifactContent,
-    });
+      const outputArtifact = harness.writeArtifact({
+        missionId: mission.id,
+        sessionId: session.id,
+        role,
+        kind: role === 'executor' || role === 'specialist' ? 'deliverable' : 'agent-output',
+        fileName: outputFileName || normalizedOutput.artifactFileName,
+        title: outputTitle || normalizedOutput.artifactTitle,
+        content: normalizedOutput.artifactContent,
+      });
 
-    const completedRun = harness.completeAgentRun(agentRun.id, {
-      status: normalizedOutput.verdict === 'fail' ? 'failed' : 'completed',
-      outputSummary: normalizedOutput.summaryText,
-      artifactIds: [promptArtifact.id, outputArtifact.id],
-    });
+      const completedRun = harness.completeAgentRun(agentRun.id, {
+        status: normalizedOutput.verdict === 'fail' ? 'failed' : 'completed',
+        outputSummary: normalizedOutput.summaryText,
+        artifactIds: [promptArtifact.id, outputArtifact.id],
+        metadata: {
+          attemptCount: Number(providerOutput?.attemptCount || 1),
+          providerId,
+          providerResponseId: normalizeText(providerOutput?.providerResponseId) || null,
+          workflowRole: providerRole,
+          ...runMetadata,
+          specialistRootRunId:
+            normalizeText(runMetadata.specialistKind) && !normalizeText(runMetadata.specialistRootRunId)
+              ? agentRun.id
+              : runMetadata.specialistRootRunId || null,
+        },
+      });
 
-    return {
-      artifact: outputArtifact,
-      promptArtifact,
-      run: completedRun,
-      output: normalizedOutput,
-    };
+      return {
+        artifact: outputArtifact,
+        error: null,
+        promptArtifact,
+        run: completedRun,
+        output: normalizedOutput,
+      };
+    } catch (error) {
+      const failure = extractProviderFailure(error);
+      const failedRun = harness.completeAgentRun(agentRun.id, {
+        status: 'failed',
+        outputSummary: failure.message,
+        artifactIds: [promptArtifact.id],
+        metadata: {
+          attemptCount: Number(failure.attemptCount || 1),
+          failureKind: normalizeProviderFailureKind(failure.failureKind),
+          httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
+          providerId,
+          providerResponseId: normalizeText(failure.providerResponseId) || null,
+          rawMessage: normalizeText(failure.rawMessage) || null,
+          recoverable: typeof failure.recoverable === 'boolean' ? failure.recoverable : null,
+          timedOut: Boolean(failure.timedOut),
+          workflowRole: providerRole,
+          ...runMetadata,
+          specialistRootRunId:
+            normalizeText(runMetadata.specialistKind) && !normalizeText(runMetadata.specialistRootRunId)
+              ? agentRun.id
+              : runMetadata.specialistRootRunId || null,
+        },
+      });
+
+      return {
+        artifact: null,
+        error: isProviderFailureError(error) ? error : error,
+        promptArtifact,
+        run: failedRun,
+        output: null,
+      };
+    }
   }
 
   function ensureNoPendingApproval(missionId) {
@@ -2376,6 +2945,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const pack = getMissionPack({ mission, workspace });
     const memoryEntries = collectRelevantMemoryEntries({ mission, workspace });
+    const parallelSpecialistKinds = getParallelSpecialistKinds(mission);
+    const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
+    const shouldRunParallelSpecialists = parallelSpecialistKinds.length >= 2;
     const session = harness.startSession({
       missionId: mission.id,
       provider: providerId,
@@ -2394,6 +2966,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       memoryEntries,
       previousOutputs,
     });
+    if (managerStage.error) {
+      return finalizeMissionFailure({
+        artifactPath: null,
+        currentStage: 'manager',
+        mission,
+        providerId,
+        session,
+      });
+    }
     previousOutputs.manager = managerStage.output;
 
     harness.updateSession(session.id, {
@@ -2411,25 +2992,165 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       memoryEntries,
       previousOutputs,
     });
+    if (plannerStage.error) {
+      return finalizeMissionFailure({
+        artifactPath: null,
+        currentStage: 'planner',
+        mission,
+        providerId,
+        session,
+      });
+    }
     previousOutputs.planner = plannerStage.output;
     harness.touchMission(mission.id, 'planned');
 
-    harness.updateSession(session.id, {
-      currentStage: 'executor',
-    });
+    let executorArtifactPath = null;
+    let executorOutput = null;
 
-    const executorStage = await runAgentStage({
-      role: 'executor',
-      mission,
-      workspace,
-      session,
-      provider,
-      providerId,
-      pack,
-      memoryEntries,
-      previousOutputs,
-    });
-    previousOutputs.executor = executorStage.output;
+    if (shouldRunParallelSpecialists) {
+      const parallelGroupId =
+        previousParallelGroup && !previousParallelGroup.wasMerged
+          ? previousParallelGroup.parallelGroupId
+          : createId('parallel-group');
+      const unresolvedByKind = new Map(
+        ensureArray(previousParallelGroup?.unresolvedRuns).map((run) => [normalizeText(run.specialistKind), run]),
+      );
+      const completedBranchOutputs = ensureArray(previousParallelGroup?.latestRuns)
+        .filter((run) => ['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status)))
+        .map((run) => buildSpecialistOutputEntry(run));
+      const specialistKindsToRun =
+        previousParallelGroup && !previousParallelGroup.wasMerged
+          ? parallelSpecialistKinds.filter((kind) => unresolvedByKind.has(kind))
+          : parallelSpecialistKinds;
+
+      previousOutputs.specialists = [...completedBranchOutputs];
+
+      harness.updateSession(session.id, {
+        currentStage: 'specialist',
+      });
+
+      for (const specialistKind of specialistKindsToRun) {
+        const previousFailedRun = unresolvedByKind.get(specialistKind) || null;
+        const stage = await runAgentStage({
+          role: 'specialist',
+          providerRole: 'executor',
+          mission,
+          workspace,
+          session,
+          provider,
+          providerId,
+          pack,
+          memoryEntries,
+          previousOutputs,
+          promptFileName: `specialist-${specialistKind}-prompt.md`,
+          outputFileName: `specialist-${specialistKind}-${pack.artifactFileName}`,
+          outputTitle: `${specialistKind} specialist ${pack.artifactTitle}`,
+          runMetadata: {
+            mergeStatus: 'pending',
+            parallelGroupId,
+            parallelRequiredKinds: parallelSpecialistKinds,
+            parentRunId: plannerStage.run.id,
+            resumeFromRunId: previousFailedRun?.id || null,
+            specialistKind,
+            specialistRootRunId: previousFailedRun?.specialistRootRunId || previousFailedRun?.id || null,
+            stageKind: 'specialist-branch',
+          },
+        });
+        const normalizedStage = applySpecialistOutcomeDirective({
+          mission,
+          parallelGroupId,
+          requiredKinds: parallelSpecialistKinds,
+          runStage: stage,
+        });
+        if (['completed', 'abandoned'].includes(normalizeAgentRunStatus(normalizedStage.run.status))) {
+          previousOutputs.specialists.push(buildSpecialistOutputEntry(normalizedStage.run));
+        }
+      }
+
+      const latestParallelGroup = getLatestParallelGroupState(mission.id);
+      const unresolvedRuns = ensureArray(latestParallelGroup?.unresolvedRuns);
+      if (unresolvedRuns.length) {
+        return finalizeMissionFailure({
+          artifactPath: previousOutputs.specialists.at(-1)?.path || null,
+          currentStage: 'specialist',
+          mission,
+          providerId,
+          session,
+        });
+      }
+
+      previousOutputs.specialists = ensureArray(latestParallelGroup?.latestRuns)
+        .filter((run) => ['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status)))
+        .map((run) => buildSpecialistOutputEntry(run));
+      previousOutputs.specialistMergeMode = true;
+
+      harness.updateSession(session.id, {
+        currentStage: 'executor',
+      });
+
+      const executorStage = await runAgentStage({
+        role: 'executor',
+        mission,
+        workspace,
+        session,
+        provider,
+        providerId,
+        pack,
+        memoryEntries,
+        previousOutputs,
+        runMetadata: {
+          mergeStatus: 'merged',
+          parallelGroupId,
+          parallelRequiredKinds: parallelSpecialistKinds,
+          parentRunId: plannerStage.run.id,
+          stageKind: 'parallel-merge',
+        },
+      });
+      if (executorStage.error) {
+        return finalizeMissionFailure({
+          artifactPath: null,
+          currentStage: 'executor',
+          mission,
+          providerId,
+          session,
+        });
+      }
+
+      markParallelGroupBranchesMerged(parallelGroupId);
+      executorArtifactPath = executorStage.artifact.path;
+      executorOutput = executorStage.output;
+      previousOutputs.executor = executorStage.output;
+    } else {
+      harness.updateSession(session.id, {
+        currentStage: 'executor',
+      });
+
+      const executorStage = await runAgentStage({
+        role: 'executor',
+        mission,
+        workspace,
+        session,
+        provider,
+        providerId,
+        pack,
+        memoryEntries,
+        previousOutputs,
+      });
+      if (executorStage.error) {
+        return finalizeMissionFailure({
+          artifactPath: null,
+          currentStage: 'executor',
+          mission,
+          providerId,
+          session,
+        });
+      }
+
+      executorArtifactPath = executorStage.artifact.path;
+      executorOutput = executorStage.output;
+      previousOutputs.executor = executorStage.output;
+    }
+
     harness.touchMission(mission.id, 'executing');
 
     harness.updateSession(session.id, {
@@ -2447,6 +3168,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       memoryEntries,
       previousOutputs,
     });
+    if (reviewerStage.error) {
+      return finalizeMissionFailure({
+        artifactPath: executorArtifactPath,
+        currentStage: 'reviewer',
+        mission,
+        providerId,
+        session,
+      });
+    }
     previousOutputs.reviewer = reviewerStage.output;
 
     if (reviewerStage.output.verdict === 'fail') {
@@ -2496,7 +3226,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       return {
         approval: null,
-        artifactPath: executorStage.artifact.path,
+        artifactPath: executorArtifactPath,
         mission: failedMission,
         provider: providerId,
         reviewerVerdict: reviewerStage.output.verdict,
@@ -2513,7 +3243,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const risk = harness.classifyRisk({
       providerId,
       explicitProviderSelection,
-      executorOutput: executorStage.output,
+      executorOutput,
     });
 
     if (risk.approvalRequired) {
@@ -2534,7 +3264,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
       return {
         approval,
-        artifactPath: executorStage.artifact.path,
+        artifactPath: executorArtifactPath,
         mission: awaitingMission,
         provider: providerId,
         reviewerVerdict: reviewerStage.output.verdict,
@@ -2551,7 +3281,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       approval: null,
-      artifactPath: executorStage.artifact.path,
+      artifactPath: executorArtifactPath,
       mission: completedMission,
       provider: providerId,
       reviewerVerdict: reviewerStage.output.verdict,
@@ -2588,6 +3318,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
     const providerActivity = summarizeMissionProviderActivity(mission.id);
+    const parallelActivity = summarizeMissionParallelActivity(mission.id);
     const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
     const maintenanceImpactSummary = summarizeMissionMaintenanceImpact(mission.id);
@@ -2682,7 +3413,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
       providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
       providerExecutionCount: providerActivity.summary.executionCount,
+      providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
       providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+      providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+      providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+      specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
+      specialistKindCounts: parallelActivity.specialistKindCounts,
+      specialistLatestFollowUp: parallelActivity.latestFollowUp,
+      specialistLatestMergeRun: parallelActivity.latestMergeRun,
+      specialistLatestParallelGroup: parallelActivity.latestParallelGroup,
+      specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
+      specialistMergeRunCount: parallelActivity.mergeRunCount,
+      specialistRunCount: parallelActivity.specialistRunCount,
+      specialistStatusCounts: parallelActivity.statusCounts,
+      specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
+      specialistTotalGroupCount: parallelActivity.totalGroupCount,
       providerTouchedCount: providerActivity.summary.touchedProviderCount,
       providerTouchedIds: providerActivity.summary.touchedProviderIds,
       sessionCount: sessions.length,
@@ -2823,6 +3568,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     syncEscalations({ workspaceId: workspace.id });
     const missionEntries = listMissionSummariesByWorkspace(workspace.id);
     const providerActivity = summarizeWorkspaceProviderActivity(workspace.id);
+    const parallelActivity = summarizeWorkspaceParallelActivity(workspace.id);
     const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
     const maintenanceImpactSummary = summarizeMaintenanceImpact(
@@ -2937,7 +3683,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
         providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
         providerExecutionCount: providerActivity.summary.executionCount,
+        providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
         providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+        providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+        providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
+        specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestFollowUp: parallelActivity.latestFollowUp,
+        specialistLatestMergeRun: parallelActivity.latestMergeRun,
+        specialistLatestParallelGroup: parallelActivity.latestParallelGroup,
+        specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
+        specialistMergeRunCount: parallelActivity.mergeRunCount,
+        specialistRunCount: parallelActivity.specialistRunCount,
+        specialistStatusCounts: parallelActivity.statusCounts,
+        specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
+        specialistTotalGroupCount: parallelActivity.totalGroupCount,
         providerTouchedCount: providerActivity.summary.touchedProviderCount,
         providerTouchedIds: providerActivity.summary.touchedProviderIds,
         sessionCount: missionEntries.reduce((count, entry) => count + entry.summary.sessionCount, 0),
@@ -3599,6 +4359,155 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
+  function buildParallelGroupStates(filter = {}) {
+    const state = store.loadState();
+    const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
+    const sessionById = new Map(state.sessions.map((session) => [session.id, session]));
+    const workspaceById = new Map(state.workspaces.map((workspace) => [workspace.id, workspace]));
+    const groups = new Map();
+
+    for (const run of ensureArray(state.agentRuns)) {
+      const parallelGroupId = normalizeText(run.parallelGroupId);
+      if (!parallelGroupId) {
+        continue;
+      }
+      const mission = missionById.get(run.missionId) || null;
+      const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
+      if (filter.missionId && mission?.id !== filter.missionId) {
+        continue;
+      }
+      if (filter.workspaceId && workspace?.id !== filter.workspaceId) {
+        continue;
+      }
+
+      const current = groups.get(parallelGroupId) || {
+        mission,
+        parallelGroupId,
+        requiredKinds: [],
+        runs: [],
+        sessionById,
+        workspace,
+      };
+      current.runs.push(run);
+      current.requiredKinds = [
+        ...new Set(
+          [...current.requiredKinds, ...ensureArray(run.parallelRequiredKinds), normalizeText(run.specialistKind)]
+            .filter(Boolean)
+            .filter((kind) => SPECIALIST_KINDS.includes(kind)),
+        ),
+      ];
+      groups.set(parallelGroupId, current);
+    }
+
+    return [...groups.values()].map((group) => {
+      const latestByKind = new Map();
+      let latestMergeRun = null;
+
+      for (const run of group.runs) {
+        if (normalizeText(run.stageKind) === 'parallel-merge') {
+          const currentAt = String(latestMergeRun?.endedAt || latestMergeRun?.startedAt || '');
+          const nextAt = String(run.endedAt || run.startedAt || '');
+          if (!latestMergeRun || currentAt <= nextAt) {
+            latestMergeRun = run;
+          }
+          continue;
+        }
+
+        const specialistKind = normalizeText(run.specialistKind);
+        if (!specialistKind) {
+          continue;
+        }
+        const current = latestByKind.get(specialistKind);
+        const currentAt = String(current?.endedAt || current?.startedAt || '');
+        const nextAt = String(run.endedAt || run.startedAt || '');
+        if (!current || currentAt <= nextAt) {
+          latestByKind.set(specialistKind, run);
+        }
+      }
+
+      const latestRuns = [...latestByKind.values()];
+      const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
+
+      return {
+        latestByKind,
+        latestMergeRun,
+        latestRuns,
+        mission: group.mission,
+        parallelGroupId: group.parallelGroupId,
+        requiredKinds: group.requiredKinds,
+        runs: group.runs,
+        unresolvedRuns,
+        wasMerged: Boolean(
+          latestMergeRun && ['completed', 'merged'].includes(normalizeAgentRunStatus(latestMergeRun.status)),
+        ),
+        workspace: group.workspace,
+      };
+    });
+  }
+
+  function buildSpecialistFollowUpItems(filter = {}) {
+    return buildParallelGroupStates(filter)
+      .flatMap((group) => {
+        const mission = group.mission;
+        const workspace = group.workspace;
+        if (!mission || !workspace) {
+          return [];
+        }
+
+        return [...group.latestByKind.values()]
+          .filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)))
+          .map((run) => {
+            const specialistKind = normalizeText(run.specialistKind);
+            const session = store.getSession(run.sessionId);
+            const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${session?.provider || run.providerId || 'stub'}`;
+            return addOperationalMetadata(
+              addDispatchMetadata(
+                {
+                  actionClass: 'specialist-follow-up-required',
+                  actionId: `specialist-follow-up:${group.parallelGroupId}:${specialistKind}:${run.id}`,
+                  actionType: 'specialist-follow-up',
+                  createdAt: run.endedAt || run.startedAt || now(),
+                  deliverableType: mission.deliverableType,
+                  mergeStatus: normalizeText(run.mergeStatus) || 'pending',
+                  missionId: mission.id,
+                  parallelGroupId: group.parallelGroupId,
+                  parentRunId: normalizeText(run.parentRunId) || null,
+                  reason: formatProviderFailureDetail({
+                    attemptCount: run.attemptCount,
+                    detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
+                    failureKind: normalizeProviderFailureKind(run.failureKind),
+                    httpStatus: run.httpStatus,
+                    recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
+                    timedOut: Boolean(run.timedOut),
+                  }),
+                  recommendedOwner: 'workspace-owner',
+                  resumeFromRunId: normalizeText(run.resumeFromRunId) || null,
+                  sessionId: run.sessionId || null,
+                  specialistKind,
+                  specialistRootRunId: normalizeText(run.specialistRootRunId) || run.id,
+                  stageKind: normalizeText(run.stageKind) || 'specialist-branch',
+                  status: normalizeAgentRunStatus(run.status),
+                  title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
+                  workspaceId: workspace.id,
+                  workspaceName: workspace.name,
+                },
+                {
+                  priority: normalizeAgentRunStatus(run.status) === 'failed' ? 'high' : 'medium',
+                  recommendedCommand,
+                  recommendedOwner: 'workspace-owner',
+                },
+              ),
+              {
+                escalationRule:
+                  'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
+                slaHours: 24,
+              },
+            );
+          });
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
   function buildProviderAttentionPendingItems(filter = {}) {
     return buildProviderAttentionPendingItemsFromProviders(buildProviderStatusEntries(), filter);
   }
@@ -3705,6 +4614,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
         return {
           ...baseItem,
+          ...extractProviderFailureMetadata(latestEvent),
           lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
           latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
           needsReminder,
@@ -3735,6 +4645,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .map((record) => ({
         ...record,
         actionType: 'provider-attention',
+        ...extractProviderFailureMetadata(record),
         providerDisplayName:
           record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
         status: 'acknowledged',
@@ -3753,6 +4664,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .map((record) => ({
         ...record,
         actionType: 'provider-attention',
+        ...extractProviderFailureMetadata(record),
         providerDisplayName:
           record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
         status: 'resolved',
@@ -3800,6 +4712,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       monitoringRequired: 0,
       providerAttentionRequired: 0,
       retryReady: 0,
+      specialistFollowUpRequired: 0,
       total: items.length,
     };
     const actionCounts = {
@@ -3810,6 +4723,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ownerHandoff: 0,
       providerAttention: 0,
       reviewerFollowUp: 0,
+      specialistFollowUp: 0,
       total: items.length,
     };
     const ownerCounts = Object.fromEntries(ACTION_OWNERS.map((owner) => [owner, 0]));
@@ -3862,6 +4776,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         actionCounts.reviewerFollowUp += 1;
       }
 
+      if (item.actionType === 'specialist-follow-up') {
+        actionCounts.specialistFollowUp += 1;
+      }
+
       if (item.actionClass === 'awaiting-human-decision') {
         actionClassCounts.awaitingHumanDecision += 1;
       }
@@ -3888,6 +4806,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
       if (item.actionClass === 'retry-ready') {
         actionClassCounts.retryReady += 1;
+      }
+
+      if (item.actionClass === 'specialist-follow-up-required') {
+        actionClassCounts.specialistFollowUpRequired += 1;
       }
 
       if (ownerCounts[item.recommendedOwner] !== undefined) {
@@ -4137,6 +5059,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ...buildMaintenanceActionItems(filter),
       ...buildOwnerHandoffActionItems(filter),
       ...buildProviderAttentionItems(filter),
+      ...buildSpecialistFollowUpItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
@@ -5161,10 +6084,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return store.saveProviderAttentionAcknowledgement({
       acknowledgedAt,
       actionId: pendingItem.actionId,
+      attemptCount: Number(pendingItem.attemptCount || 0),
       createdAt: acknowledgedAt,
       eventFamily: pendingItem.eventFamily,
       eventKind: pendingItem.eventKind,
       eventRefId: pendingItem.eventRefId,
+      failureKind: pendingItem.failureKind || null,
+      httpStatus: Number.isFinite(Number(pendingItem.httpStatus)) ? Number(pendingItem.httpStatus) : null,
       id: createId('provider-attention-ack'),
       missionId: pendingItem.missionId,
       note: normalizeText(note, 'Provider attention acknowledged.'),
@@ -5172,10 +6098,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       priority: pendingItem.priority,
       providerDisplayName: pendingItem.providerDisplayName,
       providerId: pendingItem.providerId,
+      providerResponseId: pendingItem.providerResponseId || null,
+      rawMessage: pendingItem.rawMessage || null,
       reason: pendingItem.reason,
       recommendedOwner: pendingItem.recommendedOwner,
+      recoverable: typeof pendingItem.recoverable === 'boolean' ? pendingItem.recoverable : null,
       sessionId: pendingItem.sessionId,
       status: 'acknowledged',
+      timedOut: Boolean(pendingItem.timedOut),
       title: pendingItem.title,
       workspaceId: pendingItem.workspaceId,
       workspaceName: pendingItem.workspaceName,
@@ -5377,6 +6307,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const openEscalations = allEscalations.filter((item) => item.status === 'open');
     const escalationSummary = summarizeEscalations(allEscalations);
     const providerOverview = getProviderOverview();
+    const parallelActivity = summarizeScopedParallelActivity();
 
     for (const overview of workspaceOverviews) {
       for (const status of MISSION_STATUSES) {
@@ -5486,9 +6417,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerExecutionCompletedCount: providerOverview.summary.executionCompletedCount,
         providerExecutionCount: providerOverview.summary.executionTotal,
         providerExecutionFailedCount: providerOverview.summary.executionFailedCount,
+        providerExecutionFailureKindCounts: providerOverview.summary.executionFailureKindCounts,
+        providerExecutionRetryableFailureCount: providerOverview.summary.executionRetryableFailureCount,
+        providerExecutionTimedOutFailureCount: providerOverview.summary.executionTimedOutFailureCount,
         providerLatestProbeFailureCount: providerOverview.summary.latestProbeFailureCount,
         providerLatestProbeSkippedCount: providerOverview.summary.latestProbeSkippedCount,
+        providerProbeFailureKindCounts: providerOverview.summary.probeFailureKindCounts,
+        providerProbeRetryableFailureCount: providerOverview.summary.probeRetryableFailureCount,
+        providerProbeTimedOutFailureCount: providerOverview.summary.probeTimedOutFailureCount,
         providerReadyCount: providerOverview.summary.readyCount,
+        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
+        specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestFollowUp: parallelActivity.latestFollowUp,
+        specialistLatestMergeRun: parallelActivity.latestMergeRun,
+        specialistLatestParallelGroup: parallelActivity.latestParallelGroup,
+        specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
+        specialistMergeRunCount: parallelActivity.mergeRunCount,
+        specialistRunCount: parallelActivity.specialistRunCount,
+        specialistStatusCounts: parallelActivity.statusCounts,
+        specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
+        specialistTotalGroupCount: parallelActivity.totalGroupCount,
         providerUnprobedCount: providerOverview.summary.unprobedCount,
         sessionCount: workspaceOverviews.reduce((count, overview) => count + overview.summary.sessionCount, 0),
         workspaceCount: workspaceOverviews.length,
@@ -5498,6 +6446,57 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspace: overview.workspace,
       })),
     };
+  }
+
+  function buildSpecialistTimelineEvents(filter = {}) {
+    return buildParallelGroupStates(filter)
+      .flatMap((group) =>
+        group.runs
+          .filter((run) => !filter.missionId || run.missionId === filter.missionId)
+          .map((run) => {
+            const mission = group.mission;
+            const workspace = group.workspace;
+            const status = normalizeAgentRunStatus(run.status);
+            const at = run.endedAt || run.startedAt || now();
+
+            if (normalizeText(run.stageKind) === 'parallel-merge') {
+              return {
+                at,
+                detail: run.outputSummary || `Parallel specialist merge ${status}.`,
+                kind: status === 'failed' ? 'specialist-merge-failed' : 'specialist-merge-completed',
+                missionId: mission?.id || null,
+                parallelGroupId: group.parallelGroupId,
+                role: run.role,
+                runId: run.id,
+                sessionId: run.sessionId || null,
+                status,
+                workspaceId: workspace?.id || null,
+                workspaceName: workspace?.name || null,
+              };
+            }
+
+            if (!normalizeText(run.specialistKind)) {
+              return null;
+            }
+
+            return {
+              at,
+              detail: run.outputSummary || `${run.specialistKind} specialist ${status}.`,
+              kind: `specialist-branch-${status}`,
+              missionId: mission?.id || null,
+              parallelGroupId: group.parallelGroupId,
+              role: run.role,
+              runId: run.id,
+              sessionId: run.sessionId || null,
+              specialistKind: normalizeText(run.specialistKind),
+              status,
+              workspaceId: workspace?.id || null,
+              workspaceName: workspace?.name || null,
+            };
+          })
+          .filter(Boolean),
+      )
+      .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
   }
 
   function buildMissionTimeline(mission) {
@@ -5679,6 +6678,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: event.workspaceId || mission.workspaceId,
         workspaceName: event.workspaceName || null,
       });
+    }
+
+    for (const event of buildSpecialistTimelineEvents({ missionId: mission.id })) {
+      timeline.push(event);
     }
 
     for (const escalation of escalations) {
@@ -6124,6 +7127,36 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceName: workspace.name,
         });
       }
+    }
+
+    for (const event of buildSpecialistTimelineEvents({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    })) {
+      if (!event.workspaceId) {
+        continue;
+      }
+
+      const mission = event.missionId ? missionById.get(event.missionId) : null;
+      const workspace = workspaceById.get(event.workspaceId);
+      if (!workspace) {
+        continue;
+      }
+
+      events.push({
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission?.id || event.missionId || null,
+        missionTitle: mission?.title || null,
+        parallelGroupId: event.parallelGroupId || null,
+        runId: event.runId || null,
+        sessionId: event.sessionId || null,
+        specialistKind: event.specialistKind || null,
+        status: event.status || null,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
     }
 
     for (const maintenanceRun of store.listMaintenanceRuns()) {

@@ -1,5 +1,10 @@
 import { createStubProvider } from './stub-provider.mjs';
 import {
+  createProviderFailure,
+  extractProviderFailure,
+  requestJsonWithPolicy,
+} from './provider-runtime-utils.mjs';
+import {
   buildRequestPrompt,
   extractOpenAIOutputText,
   normalizeStructuredOutput,
@@ -7,10 +12,19 @@ import {
   parseJsonText,
 } from './structured-provider-utils.mjs';
 
+const OPENAI_PROBE_TIMEOUT_MS = 8000;
+const OPENAI_RUN_TIMEOUT_MS = 20000;
+const OPENAI_MAX_ATTEMPTS = 2;
+
 function resolveOpenAIConfig(env) {
   const apiKey = normalizeText(env.OPENAI_API_KEY);
   if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required to use --provider openai.');
+    throw createProviderFailure('OPENAI_API_KEY is required to use --provider openai.', {
+      failureKind: 'config',
+      rawMessage: 'OPENAI_API_KEY is required.',
+      recoverable: false,
+      timedOut: false,
+    });
   }
 
   return {
@@ -23,6 +37,14 @@ function resolveOpenAIConfig(env) {
 export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
   const delegatedProvider = createStubProvider({ rootDir });
 
+  function withProviderMetadata(error, metadata = {}) {
+    const failure = extractProviderFailure(error);
+    throw createProviderFailure(error instanceof Error ? error.message : String(error), {
+      ...failure,
+      ...metadata,
+    });
+  }
+
   return {
     id: 'openai',
     implemented: true,
@@ -30,31 +52,24 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
       return delegatedProvider.preparePrompt(input);
     },
     async probe() {
-      if (typeof fetchImpl !== 'function') {
-        throw new Error('Global fetch is not available for the OpenAI provider.');
-      }
-
       const config = resolveOpenAIConfig(env);
-      const response = await fetchImpl(`${config.baseUrl}/models`, {
-        method: 'GET',
+      const { payload, attemptCount } = await requestJsonWithPolicy({
+        fetchImpl,
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
         },
+        maxAttempts: OPENAI_MAX_ATTEMPTS,
+        method: 'GET',
+        providerLabel: 'OpenAI',
+        timeoutMs: OPENAI_PROBE_TIMEOUT_MS,
+        url: `${config.baseUrl}/models`,
       });
-
-      if (!response.ok) {
-        const errorText = typeof response.text === 'function' ? await response.text() : '';
-        throw new Error(
-          `OpenAI provider probe failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
-        );
-      }
-
-      const payload = await response.json();
       const models = Array.isArray(payload?.data)
         ? payload.data.map((item) => normalizeText(item?.id)).filter(Boolean)
         : [];
 
       return {
+        attemptCount,
         checkedAt: new Date().toISOString(),
         endpoint: `${config.baseUrl}/models`,
         model: config.model,
@@ -66,38 +81,43 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
       };
     },
     async run(input) {
-      if (typeof fetchImpl !== 'function') {
-        throw new Error('Global fetch is not available for the OpenAI provider.');
-      }
-
       const config = resolveOpenAIConfig(env);
       const delegatedPrompt = delegatedProvider.preparePrompt(input);
-      const response = await fetchImpl(`${config.baseUrl}/responses`, {
-        method: 'POST',
+      const { payload, attemptCount } = await requestJsonWithPolicy({
+        fetchImpl,
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          input: buildRequestPrompt(input, delegatedPrompt),
-          model: config.model,
-        }),
+        init: {
+          body: JSON.stringify({
+            input: buildRequestPrompt(input, delegatedPrompt),
+            model: config.model,
+          }),
+        },
+        maxAttempts: OPENAI_MAX_ATTEMPTS,
+        method: 'POST',
+        providerLabel: 'OpenAI',
+        timeoutMs: OPENAI_RUN_TIMEOUT_MS,
+        url: `${config.baseUrl}/responses`,
       });
-
-      if (!response.ok) {
-        const errorText = typeof response.text === 'function' ? await response.text() : '';
-        throw new Error(
-          `OpenAI provider request failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
-        );
+      const providerResponseId = normalizeText(payload.id);
+      let output;
+      try {
+        const outputText = extractOpenAIOutputText(payload);
+        output = parseJsonText(outputText, 'OpenAI');
+      } catch (error) {
+        withProviderMetadata(error, {
+          attemptCount,
+          providerResponseId,
+        });
       }
 
-      const payload = await response.json();
-      const outputText = extractOpenAIOutputText(payload);
-
       return {
-        output: parseJsonText(outputText, 'OpenAI'),
-        providerResponseId: normalizeText(payload.id),
-        role: input.role,
+        attemptCount,
+        output,
+        providerResponseId,
+        role: input.providerRole || input.role,
       };
     },
     normalizeOutput(result, input) {

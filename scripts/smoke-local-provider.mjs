@@ -66,8 +66,29 @@ const missingModelRun = runCli({
   },
 });
 
-assert.notEqual(missingModelRun.status, 0);
-assert.match(missingModelRun.stderr, /LOCAL_PROVIDER_MODEL is required/i);
+assert.equal(missingModelRun.status, 0);
+assert.equal(missingModelRun.stderr, '');
+const missingModelResult = JSON.parse(missingModelRun.stdout);
+assert.equal(missingModelResult.missionId, mission.id);
+assert.equal(missingModelResult.provider, 'local');
+assert.equal(missingModelResult.status, 'failed');
+assert.equal(missingModelResult.artifactPath, null);
+assert.equal(missingModelResult.reviewerVerdict, null);
+
+const failedActivityRun = runCli({
+  args: ['provider', 'activity', '--provider', 'local', '--status', 'failed'],
+});
+
+assert.equal(failedActivityRun.status, 0);
+const failedActivity = JSON.parse(failedActivityRun.stdout);
+assert.equal(failedActivity.executions.length, 1);
+assert.equal(failedActivity.executions[0].providerId, 'local');
+assert.equal(failedActivity.executions[0].role, 'manager');
+assert.equal(failedActivity.executions[0].status, 'failed');
+assert.equal(failedActivity.executions[0].failureKind, 'config');
+assert.equal(failedActivity.executions[0].attemptCount, 1);
+assert.equal(failedActivity.executions[0].recoverable, false);
+assert.equal(failedActivity.executions[0].timedOut, false);
 
 let capturedRequest = null;
 const provider = createLocalProvider({
