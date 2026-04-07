@@ -25,6 +25,7 @@ import {
   PROVIDER_FAILURE_KINDS,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
+  SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS,
   SPECIALIST_KINDS,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
@@ -589,6 +590,10 @@ function deriveProviderAttentionReminderCadenceHours(eventFamily) {
   return PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS[eventFamily] || null;
 }
 
+function deriveSpecialistFollowUpReminderCadenceHours(status) {
+  return SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS[status] || null;
+}
+
 function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
   const ownerChain = ['mission-owner', 'workspace-owner', 'human-approver'];
   const baseOwner = ACTION_OWNERS.includes(recommendedOwner) ? recommendedOwner : 'workspace-owner';
@@ -649,6 +654,20 @@ function buildProviderAttentionReminderNote(item, note) {
 function formatProviderAttentionReminderDetail(reminder) {
   const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
   return `${reminder.providerDisplayName || reminder.providerId}${overdueSuffix} provider attention reminder: ${reminder.note || 'No explicit note recorded.'}`;
+}
+
+function buildSpecialistFollowUpReminderNote(item, note) {
+  const normalizedNote = normalizeText(note);
+  if (normalizedNote) {
+    return normalizedNote;
+  }
+
+  return `Reminder issued for ${item.status} ${item.specialistKind} specialist follow-up.`;
+}
+
+function formatSpecialistFollowUpReminderDetail(reminder) {
+  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
+  return `${reminder.specialistKind}${overdueSuffix} specialist follow-up reminder: ${reminder.note || 'No explicit note recorded.'}`;
 }
 
 function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
@@ -1304,6 +1323,10 @@ function summarizeSpecialistFollowUpItems(items) {
   };
   const workspaceCounts = {};
   let overdueCount = 0;
+  let latestReminderAt = null;
+  let nextReminderAt = null;
+  let needsReminderCount = 0;
+  let reminderCountTotal = 0;
 
   for (const item of items) {
     if (item.providerId) {
@@ -1321,12 +1344,29 @@ function summarizeSpecialistFollowUpItems(items) {
     if (item.isOverdue) {
       overdueCount += 1;
     }
+    if (item.needsReminder) {
+      needsReminderCount += 1;
+    }
+    reminderCountTotal += Number(item.reminderCount || 0);
+    if (
+      item.latestReminderAt &&
+      (!latestReminderAt || String(latestReminderAt) < String(item.latestReminderAt))
+    ) {
+      latestReminderAt = item.latestReminderAt;
+    }
+    if (item.nextReminderAt && (!nextReminderAt || String(nextReminderAt) > String(item.nextReminderAt))) {
+      nextReminderAt = item.nextReminderAt;
+    }
   }
 
   return {
     latestItem: items.at(-1) || null,
+    latestReminderAt,
+    needsReminderCount,
+    nextReminderAt,
     overdueCount,
     providerCounts,
+    reminderCountTotal,
     specialistKindCounts,
     statusCounts,
     total: items.length,
@@ -1488,6 +1528,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       eventRefId,
       providerId,
     });
+  }
+
+  function listSpecialistFollowUpRemindersForItem(item) {
+    const actionId = normalizeText(item?.actionId || '');
+    if (!actionId) {
+      return [];
+    }
+
+    return store.listSpecialistFollowUpReminders({ actionId });
   }
 
   function formatProviderAttentionRecoveryDetail(item) {
@@ -2683,6 +2732,24 @@ function summarizeProviderExecutions(executions) {
       providerId: record.providerId,
       sessionId: record.sessionId || null,
       status: 'pending',
+      workspaceId: record.workspaceId || null,
+      workspaceName: record.workspaceName || null,
+    }));
+  }
+
+  function buildSpecialistFollowUpReminderTimeline(records) {
+    return records.map((record) => ({
+      actionId: record.actionId,
+      at: record.remindedAt || record.createdAt || null,
+      detail: formatSpecialistFollowUpReminderDetail(record),
+      kind: 'specialist-follow-up-reminded',
+      missionId: record.missionId || null,
+      parallelGroupId: record.parallelGroupId || null,
+      providerId: record.providerId || null,
+      runId: record.runId || null,
+      sessionId: record.sessionId || null,
+      specialistKind: record.specialistKind || null,
+      status: record.status || null,
       workspaceId: record.workspaceId || null,
       workspaceName: record.workspaceName || null,
     }));
@@ -5700,14 +5767,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           .filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)))
           .map((run) => {
             const specialistKind = normalizeText(run.specialistKind);
+            const status = normalizeAgentRunStatus(run.status);
             const session = store.getSession(run.sessionId);
             const providerId = normalizeText(session?.provider || run.providerId, 'stub');
             const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
-            return addOperationalMetadata(
+            const actionId = `specialist-follow-up:${group.parallelGroupId}:${specialistKind}:${run.id}`;
+            const baseItem = addOperationalMetadata(
               addDispatchMetadata(
                 {
                   actionClass: 'specialist-follow-up-required',
-                  actionId: `specialist-follow-up:${group.parallelGroupId}:${specialistKind}:${run.id}`,
+                  actionId,
                   actionType: 'specialist-follow-up',
                   createdAt: run.endedAt || run.startedAt || now(),
                   deliverableType: mission.deliverableType,
@@ -5726,17 +5795,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                   }),
                   recommendedOwner: 'workspace-owner',
                   resumeFromRunId: normalizeText(run.resumeFromRunId) || null,
+                  runId: run.id,
                   sessionId: run.sessionId || null,
                   specialistKind,
                   specialistRootRunId: normalizeText(run.specialistRootRunId) || run.id,
                   stageKind: normalizeText(run.stageKind) || 'specialist-branch',
-                  status: normalizeAgentRunStatus(run.status),
+                  status,
                   title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
                   workspaceId: workspace.id,
                   workspaceName: workspace.name,
                 },
                 {
-                  priority: normalizeAgentRunStatus(run.status) === 'failed' ? 'high' : 'medium',
+                  priority: status === 'failed' ? 'high' : 'medium',
                   recommendedCommand,
                   recommendedOwner: 'workspace-owner',
                 },
@@ -5747,6 +5817,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                 slaHours: 24,
               },
             );
+            const reminderRecords = listSpecialistFollowUpRemindersForItem(baseItem);
+            const latestReminder = reminderRecords.at(-1) || null;
+            const reminderCadenceHours = deriveSpecialistFollowUpReminderCadenceHours(status);
+            const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
+            const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
+            const nextReminderAt =
+              baseItem.isOverdue && Number.isFinite(reminderBaseMs)
+                ? latestReminder
+                  ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
+                  : baseItem.dueAt
+                : null;
+            const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
+            const needsReminder =
+              baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+
+            return {
+              ...baseItem,
+              lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+              latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+              needsReminder,
+              nextReminderAt,
+              remindCommand: `node src/cli.mjs action remind-specialist-follow-ups --mission ${mission.id} --status ${status} --note "<note>"`,
+              reminderCadenceHours,
+              reminderCount: reminderRecords.length,
+              reminderHistoryCount: reminderRecords.length,
+            };
           });
       })
       .filter((item) => !filter.providerId || item.providerId === filter.providerId)
@@ -7393,11 +7489,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     const items = buildSpecialistFollowUpItems(filter)
       .filter((item) => !filter.status || item.status === filter.status)
+      .filter((item) => !filter.needsReminderOnly || item.needsReminder)
       .filter((item) => !filter.overdueOnly || item.isOverdue);
 
     return {
       filters: {
         missionId: filter.missionId || null,
+        needsReminderOnly: Boolean(filter.needsReminderOnly),
         overdueOnly: Boolean(filter.overdueOnly),
         providerId: filter.providerId || null,
         status: filter.status || null,
@@ -7405,6 +7503,88 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       },
       items,
       summary: summarizeSpecialistFollowUpItems(items),
+    };
+  }
+
+  function remindSpecialistFollowUps(filter = {}, note = '') {
+    if (filter.providerId) {
+      providerRegistry.getProviderStatus(filter.providerId);
+    }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.status && !['blocked', 'failed'].includes(filter.status)) {
+      throw new Error(`Unsupported specialist follow-up status: ${filter.status}`);
+    }
+
+    const reminderTimestamp = now();
+    const normalizedNote = normalizeText(note);
+    const candidates = buildSpecialistFollowUpItems({
+      missionId: filter.missionId,
+      needsReminderOnly: Boolean(filter.dueOnly),
+      overdueOnly: Boolean(filter.overdueOnly),
+      providerId: filter.providerId,
+      workspaceId: filter.workspaceId,
+    }).filter((item) => !filter.status || item.status === filter.status);
+
+    const items = candidates
+      .map((item) =>
+        store.saveSpecialistFollowUpReminder({
+          actionId: item.actionId,
+          createdAt: reminderTimestamp,
+          dueAt: item.dueAt,
+          id: createId('specialist-follow-up-reminder'),
+          missionId: item.missionId,
+          note: buildSpecialistFollowUpReminderNote(item, normalizedNote),
+          overdue: item.isOverdue,
+          parallelGroupId: item.parallelGroupId,
+          priority: item.priority,
+          providerId: item.providerId || null,
+          remindedAt: reminderTimestamp,
+          reminderCadenceHours: item.reminderCadenceHours,
+          runId: item.runId || item.specialistRootRunId || null,
+          sessionId: item.sessionId || null,
+          slaHours: item.slaHours,
+          specialistKind: item.specialistKind,
+          status: item.status,
+          title: item.title,
+          workspaceId: item.workspaceId || null,
+          workspaceName: item.workspaceName || null,
+        }),
+      )
+      .map((record) => ({
+        ...record,
+        detail: formatSpecialistFollowUpReminderDetail(record),
+      }))
+      .sort((left, right) =>
+        String(left.remindedAt || left.createdAt || '').localeCompare(String(right.remindedAt || right.createdAt || '')),
+      );
+
+    return {
+      filters: {
+        dueOnly: Boolean(filter.dueOnly),
+        missionId: filter.missionId || null,
+        note: normalizedNote || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        providerId: filter.providerId || null,
+        status: filter.status || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: {
+        dueCandidateCount: candidates.filter((item) => item.needsReminder).length,
+        latestReminderAt:
+          [...items]
+            .map((item) => item.remindedAt || item.createdAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(-1) || null,
+        overdueReminderCount: items.filter((item) => item.overdue).length,
+        remindedCount: items.length,
+      },
     };
   }
 
@@ -8440,6 +8620,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       timeline.push(event);
     }
 
+    for (const event of buildSpecialistFollowUpReminderTimeline(
+      store.listSpecialistFollowUpReminders({ missionId: mission.id }),
+    )) {
+      timeline.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission.id,
+        parallelGroupId: event.parallelGroupId || null,
+        providerId: event.providerId || null,
+        runId: event.runId || null,
+        sessionId: event.sessionId || null,
+        specialistKind: event.specialistKind || null,
+        status: event.status || null,
+        workspaceId: event.workspaceId || mission.workspaceId,
+        workspaceName: event.workspaceName || null,
+      });
+    }
+
     for (const escalation of escalations) {
       timeline.push({
         at: escalation.createdAt,
@@ -8916,6 +9116,40 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
     }
 
+    for (const event of buildSpecialistFollowUpReminderTimeline(
+      store.listSpecialistFollowUpReminders({
+        missionId: filter.missionId,
+        workspaceId: filter.workspaceId,
+      }),
+    )) {
+      if (!event.workspaceId) {
+        continue;
+      }
+
+      const mission = event.missionId ? missionById.get(event.missionId) : null;
+      const workspace = workspaceById.get(event.workspaceId);
+      if (!workspace) {
+        continue;
+      }
+
+      events.push({
+        actionId: event.actionId,
+        at: event.at,
+        detail: event.detail,
+        kind: event.kind,
+        missionId: mission?.id || event.missionId || null,
+        missionTitle: mission?.title || null,
+        parallelGroupId: event.parallelGroupId || null,
+        providerId: event.providerId || null,
+        runId: event.runId || null,
+        sessionId: event.sessionId || null,
+        specialistKind: event.specialistKind || null,
+        status: event.status || null,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      });
+    }
+
     for (const maintenanceRun of store.listMaintenanceRuns()) {
       const workspace = workspaceById.get(maintenanceRun.workspaceId);
       const mission = maintenanceRun.missionId ? missionById.get(maintenanceRun.missionId) : null;
@@ -9368,6 +9602,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     remindEscalations,
     remindOwnerHandoffs,
     remindProviderAttention,
+    remindSpecialistFollowUps,
     syncEscalations,
     resolveEscalation,
     resolveApproval,

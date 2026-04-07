@@ -76,6 +76,10 @@ export const PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS = {
   execution: 6,
   probe: 12,
 };
+export const SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS = {
+  blocked: 24,
+  failed: 24,
+};
 
 export const KNOWLEDGE_DELIVERABLE_TYPES = [
   'decision-memo',

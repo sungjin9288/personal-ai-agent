@@ -7,6 +7,8 @@
 - added deterministic smoke coverage for one failed `implementation` specialist branch that is remediated through the dedicated CLI command, proving same-group resume, `resumeFromRunId` preservation, merge completion, and follow-up queue clearance
 - added provider context to specialist follow-up action items so generic provider filtering and remediation routing stay aligned with the same provider-aware command contract used elsewhere
 - added `action specialist-follow-ups` as a dedicated read surface with `--provider`, `--workspace`, `--mission`, `--status`, and `--overdue` filters, so unresolved specialist branches can be triaged without reopening the full generic action inbox
+- extended specialist follow-up items with persisted reminder state, so `action specialist-follow-ups --needs-reminder` can expose aging blocked/failed branches without relying only on overdue state
+- added `action remind-specialist-follow-ups` plus persisted reminder records and `specialist-follow-up-reminded` timeline evidence, so follow-up re-notify pressure is auditable on mission/workspace/operator surfaces
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry

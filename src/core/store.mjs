@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
   providerProbes: [],
   providerAttentionAcknowledgements: [],
   providerAttentionReminders: [],
+  specialistFollowUpReminders: [],
   maintenanceRuns: [],
   memoryEntries: [],
 };
@@ -30,6 +31,7 @@ function cloneDefaultState() {
     providerProbes: [],
     providerAttentionAcknowledgements: [],
     providerAttentionReminders: [],
+    specialistFollowUpReminders: [],
     maintenanceRuns: [],
     memoryEntries: [],
   };
@@ -89,6 +91,9 @@ export function createStore({ rootDir }) {
         : [],
       providerAttentionReminders: Array.isArray(state.providerAttentionReminders)
         ? state.providerAttentionReminders
+        : [],
+      specialistFollowUpReminders: Array.isArray(state.specialistFollowUpReminders)
+        ? state.specialistFollowUpReminders
         : [],
       maintenanceRuns: Array.isArray(state.maintenanceRuns) ? state.maintenanceRuns : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
@@ -304,6 +309,37 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listSpecialistFollowUpReminders(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('specialistFollowUpReminders').filter((record) => {
+          if (filter.providerId && record.providerId !== filter.providerId) {
+            return false;
+          }
+          if (filter.actionId && record.actionId !== filter.actionId) {
+            return false;
+          }
+          if (filter.parallelGroupId && record.parallelGroupId !== filter.parallelGroupId) {
+            return false;
+          }
+          if (filter.runId && record.runId !== filter.runId) {
+            return false;
+          }
+          if (filter.specialistKind && record.specialistKind !== filter.specialistKind) {
+            return false;
+          }
+          if (filter.status && record.status !== filter.status) {
+            return false;
+          }
+          if (filter.missionId && record.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.workspaceId && record.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listMaintenanceRuns(filter = {}) {
       return sortByCreatedAt(
         listCollection('maintenanceRuns').filter((run) => {
@@ -370,6 +406,9 @@ export function createStore({ rootDir }) {
     },
     saveProviderAttentionReminder(providerAttentionReminder) {
       return saveCollectionItem('providerAttentionReminders', providerAttentionReminder);
+    },
+    saveSpecialistFollowUpReminder(specialistFollowUpReminder) {
+      return saveCollectionItem('specialistFollowUpReminders', specialistFollowUpReminder);
     },
     saveMaintenanceRun(maintenanceRun) {
       return saveCollectionItem('maintenanceRuns', maintenanceRun);

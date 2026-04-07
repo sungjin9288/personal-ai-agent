@@ -49,6 +49,7 @@
     "smoke:provider-timeline": "node scripts/smoke-provider-timeline.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
+    "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",
     "smoke:specialist-follow-up-remediation": "node scripts/smoke-specialist-follow-up-remediation.mjs",
     "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs",
     "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs",

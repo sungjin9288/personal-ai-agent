@@ -78,7 +78,7 @@ Commands:
   action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|provider-health-drift-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--provider <stub|openai|anthropic|local>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
   action provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
   action provider-health-drift [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--overdue]
-  action specialist-follow-ups [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--overdue]
+  action specialist-follow-ups [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--needs-reminder] [--overdue]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
@@ -88,6 +88,7 @@ Commands:
   action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action remind-owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
   action remind-provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
+  action remind-specialist-follow-ups [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action remediate-provider-attention <actionId>
   action remediate-specialist-follow-up <actionId>
@@ -420,6 +421,7 @@ async function main() {
     printJson(
       service.getSpecialistFollowUpInbox({
         missionId: readOption(rest, '--mission', ''),
+        needsReminderOnly: hasOption(rest, '--needs-reminder'),
         overdueOnly: hasOption(rest, '--overdue'),
         providerId: readOption(rest, '--provider', ''),
         status: readOption(rest, '--status', ''),
@@ -561,6 +563,23 @@ async function main() {
           owner: readOption(rest, '--owner', ''),
           overdueOnly: hasOption(rest, '--overdue'),
           providerId: readOption(rest, '--provider', ''),
+          workspaceId: readOption(rest, '--workspace', ''),
+        },
+        readOption(rest, '--note', ''),
+      ),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'remind-specialist-follow-ups') {
+    printJson(
+      service.remindSpecialistFollowUps(
+        {
+          dueOnly: hasOption(rest, '--due'),
+          missionId: readOption(rest, '--mission', ''),
+          overdueOnly: hasOption(rest, '--overdue'),
+          providerId: readOption(rest, '--provider', ''),
+          status: readOption(rest, '--status', ''),
           workspaceId: readOption(rest, '--workspace', ''),
         },
         readOption(rest, '--note', ''),
