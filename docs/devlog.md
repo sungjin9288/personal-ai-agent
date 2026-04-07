@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-04-07 Provider Telemetry Baseline
+
+- extended provider probe and execution records with `durationMs`, then propagated execution token usage as normalized `usageInputTokens`, `usageOutputTokens`, and `usageTotalTokens`
+- linked telemetry into provider check, provider history, provider activity, provider events, provider overview, mission summary, workspace overview, and global overview so latency and token usage can be inspected without reopening raw state
+- added deterministic telemetry smoke coverage with one local probe and one local mission run so duration and token usage propagation stay locked across provider, mission, workspace, and global surfaces
+
 ## 2026-04-07 Provider Hardening Baseline
 
 - added a shared provider failure envelope across probe and execution paths with fixed fields for `failureKind`, `recoverable`, `httpStatus`, `timedOut`, `attemptCount`, `providerResponseId`, and `rawMessage`

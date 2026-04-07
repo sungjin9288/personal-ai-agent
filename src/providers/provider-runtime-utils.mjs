@@ -2,6 +2,11 @@ function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
 
+function normalizeMetricNumber(value, fallback = null) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : fallback;
+}
+
 function isRetryableStatus(status) {
   const numericStatus = Number(status);
   return numericStatus === 429 || numericStatus >= 500;
@@ -13,6 +18,7 @@ export class ProviderFailureError extends Error {
     this.name = 'ProviderFailureError';
     this.failure = {
       attemptCount: Number(failure.attemptCount || 1),
+      durationMs: normalizeMetricNumber(failure.durationMs),
       failureKind: normalizeText(failure.failureKind, 'unknown'),
       httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
       providerResponseId: normalizeText(failure.providerResponseId) || null,
@@ -41,6 +47,7 @@ export function extractProviderFailure(error, fallback = {}) {
 
   return {
     attemptCount: Number(fallback.attemptCount || 1),
+    durationMs: normalizeMetricNumber(fallback.durationMs),
     failureKind: normalizeText(fallback.failureKind, 'unknown'),
     httpStatus: Number.isFinite(Number(fallback.httpStatus)) ? Number(fallback.httpStatus) : null,
     message: error instanceof Error ? error.message : String(error),
@@ -59,11 +66,26 @@ function classifyTransportFailure(error, attemptCount) {
 
   return createProviderFailure(message, {
     attemptCount,
+    durationMs: null,
     failureKind: timedOut ? 'timeout' : 'transport',
     rawMessage: message,
     recoverable: true,
     timedOut,
   });
+}
+
+export function normalizeUsageMetrics(metrics = {}) {
+  const inputTokens = normalizeMetricNumber(metrics.inputTokens, null);
+  const outputTokens = normalizeMetricNumber(metrics.outputTokens, null);
+  const totalTokens =
+    normalizeMetricNumber(metrics.totalTokens, null) ??
+    (inputTokens !== null || outputTokens !== null ? Number(inputTokens || 0) + Number(outputTokens || 0) : null);
+
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens,
+  };
 }
 
 async function readResponseText(response) {
@@ -113,6 +135,7 @@ export async function requestJsonWithPolicy({
   }
 
   const totalAttempts = Math.max(1, Number(maxAttempts || 1));
+  const startedAtMs = Date.now();
 
   for (let attempt = 1; attempt <= totalAttempts; attempt += 1) {
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
@@ -141,6 +164,7 @@ export async function requestJsonWithPolicy({
           `${providerLabel} provider request failed (${response.status}): ${normalizeText(errorText, 'No response body returned.')}`,
           {
             attemptCount: attempt,
+            durationMs: Date.now() - startedAtMs,
             failureKind: 'http-status',
             httpStatus: response.status,
             rawMessage: normalizeText(errorText, `HTTP ${response.status}`),
@@ -159,6 +183,7 @@ export async function requestJsonWithPolicy({
       const payload = await parseResponseJson(response, providerLabel, attempt);
       return {
         attemptCount: attempt,
+        durationMs: Date.now() - startedAtMs,
         payload,
       };
     } catch (error) {
@@ -167,15 +192,20 @@ export async function requestJsonWithPolicy({
       }
 
       const normalizedFailure = isProviderFailureError(error) ? error : classifyTransportFailure(error, attempt);
-      if (normalizedFailure.failure.recoverable && attempt < totalAttempts) {
+      const failureWithDuration = createProviderFailure(normalizedFailure.message, {
+        ...normalizedFailure.failure,
+        durationMs: Date.now() - startedAtMs,
+      });
+      if (failureWithDuration.failure.recoverable && attempt < totalAttempts) {
         continue;
       }
-      throw normalizedFailure;
+      throw failureWithDuration;
     }
   }
 
   throw createProviderFailure(`${providerLabel} provider request failed.`, {
     attemptCount: totalAttempts,
+    durationMs: Date.now() - startedAtMs,
     failureKind: 'unknown',
     rawMessage: 'Provider request failed without a captured error.',
     recoverable: false,

@@ -15,6 +15,7 @@
 - local provider adapter now exists behind the current provider contract, targeting OpenAI-compatible `/chat/completions` runtimes with env validation and request wiring
 - shared structured-output utility now backs OpenAI, Anthropic, and local adapters so provider parsing and normalization stay aligned
 - provider hardening baseline now normalizes probe and execution failures through one shared envelope, with bounded retry, explicit timeout handling, first-valid-JSON extraction, and deterministic empty-output or non-JSON or schema-invalid classification
+- provider telemetry baseline now persists probe and execution duration plus normalized execution token usage so provider readiness, execution activity, and mission/workspace/global summaries share the same runtime cost evidence
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
 - provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - provider probe results now persist into runtime state and can be queried through provider history plus latest-probe summaries
@@ -97,7 +98,7 @@
 ## Next Milestone Scope
 
 - live provider interoperability validation against real OpenAI, Anthropic, and local endpoints
-- richer provider telemetry for latency, token usage, retry totals, and cost
+- richer provider telemetry for retry totals by attempt, provider-side usage variants, and estimated cost
 - richer risk policy for path-level file and shell execution
 - remediation automation for provider attention and specialist follow-up
 - stronger reviewer rubrics per deliverable type

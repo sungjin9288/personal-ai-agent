@@ -2,6 +2,7 @@ import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
   extractProviderFailure,
+  normalizeUsageMetrics,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
 import {
@@ -78,7 +79,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
     },
     async probe() {
       const config = resolveAnthropicConfig(env);
-      const { payload, attemptCount } = await requestJsonWithPolicy({
+      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
         fetchImpl,
         headers: {
           'anthropic-version': config.version,
@@ -97,6 +98,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
       return {
         attemptCount,
         checkedAt: new Date().toISOString(),
+        durationMs,
         endpoint: `${config.baseUrl}/models`,
         model: config.model,
         modelAvailable: models.includes(config.model),
@@ -109,7 +111,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
     async run(input) {
       const config = resolveAnthropicConfig(env);
       const delegatedPrompt = delegatedProvider.preparePrompt(input);
-      const { payload, attemptCount } = await requestJsonWithPolicy({
+      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
         fetchImpl,
         headers: {
           'anthropic-version': config.version,
@@ -137,6 +139,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         url: `${config.baseUrl}/messages`,
       });
       const providerResponseId = normalizeText(payload.id);
+      const usage = normalizeUsageMetrics({
+        inputTokens: payload?.usage?.input_tokens,
+        outputTokens: payload?.usage?.output_tokens,
+      });
       let output;
       try {
         const outputText = extractAnthropicContentText(payload);
@@ -144,15 +150,20 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
       } catch (error) {
         withProviderMetadata(error, {
           attemptCount,
+          durationMs,
           providerResponseId,
         });
       }
 
       return {
         attemptCount,
+        durationMs,
         output,
         providerResponseId,
         role: input.providerRole || input.role,
+        usageInputTokens: usage.inputTokens,
+        usageOutputTokens: usage.outputTokens,
+        usageTotalTokens: usage.totalTokens,
       };
     },
     normalizeOutput(result, input) {

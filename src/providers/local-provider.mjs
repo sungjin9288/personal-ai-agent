@@ -2,6 +2,7 @@ import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
   extractProviderFailure,
+  normalizeUsageMetrics,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
 import {
@@ -73,7 +74,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const { payload, attemptCount } = await requestJsonWithPolicy({
+      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
         fetchImpl,
         headers,
         maxAttempts: LOCAL_MAX_ATTEMPTS,
@@ -89,6 +90,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       return {
         attemptCount,
         checkedAt: new Date().toISOString(),
+        durationMs,
         endpoint: `${config.baseUrl}/models`,
         model: config.model,
         modelAvailable: models.includes(config.model),
@@ -109,7 +111,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         headers.Authorization = `Bearer ${config.apiKey}`;
       }
 
-      const { payload, attemptCount } = await requestJsonWithPolicy({
+      const { payload, attemptCount, durationMs } = await requestJsonWithPolicy({
         fetchImpl,
         headers,
         init: {
@@ -137,6 +139,11 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         url: `${config.baseUrl}/chat/completions`,
       });
       const providerResponseId = normalizeText(payload.id);
+      const usage = normalizeUsageMetrics({
+        inputTokens: payload?.usage?.prompt_tokens,
+        outputTokens: payload?.usage?.completion_tokens,
+        totalTokens: payload?.usage?.total_tokens,
+      });
       let output;
       try {
         const outputText = extractChatCompletionText(payload);
@@ -144,15 +151,20 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       } catch (error) {
         withProviderMetadata(error, {
           attemptCount,
+          durationMs,
           providerResponseId,
         });
       }
 
       return {
         attemptCount,
+        durationMs,
         output,
         providerResponseId,
         role: input.providerRole || input.role,
+        usageInputTokens: usage.inputTokens,
+        usageOutputTokens: usage.outputTokens,
+        usageTotalTokens: usage.totalTokens,
       };
     },
     normalizeOutput(result, input) {

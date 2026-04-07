@@ -130,15 +130,59 @@ function summarizeFailureKinds(items) {
   return counts;
 }
 
+function normalizeTelemetryNumber(value, fallback = null) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : fallback;
+}
+
+function extractProviderUsageMetadata(item) {
+  return {
+    usageInputTokens: normalizeTelemetryNumber(item?.usageInputTokens),
+    usageOutputTokens: normalizeTelemetryNumber(item?.usageOutputTokens),
+    usageTotalTokens: normalizeTelemetryNumber(item?.usageTotalTokens),
+  };
+}
+
+function summarizeDurationMetrics(items, fieldName = 'durationMs') {
+  const durations = items
+    .map((item) => normalizeTelemetryNumber(item?.[fieldName]))
+    .filter((value) => Number.isFinite(value) && value >= 0);
+
+  const totalDurationMs = durations.reduce((sum, value) => sum + value, 0);
+  return {
+    averageDurationMs: durations.length ? Math.round(totalDurationMs / durations.length) : null,
+    maxDurationMs: durations.length ? Math.max(...durations) : null,
+    totalDurationMs,
+  };
+}
+
+function summarizeUsageMetrics(items) {
+  return items.reduce(
+    (totals, item) => ({
+      usageInputTokensTotal: totals.usageInputTokensTotal + Number(normalizeTelemetryNumber(item?.usageInputTokens, 0) || 0),
+      usageOutputTokensTotal:
+        totals.usageOutputTokensTotal + Number(normalizeTelemetryNumber(item?.usageOutputTokens, 0) || 0),
+      usageTotalTokensTotal: totals.usageTotalTokensTotal + Number(normalizeTelemetryNumber(item?.usageTotalTokens, 0) || 0),
+    }),
+    {
+      usageInputTokensTotal: 0,
+      usageOutputTokensTotal: 0,
+      usageTotalTokensTotal: 0,
+    },
+  );
+}
+
 function extractProviderFailureMetadata(item) {
   return {
     attemptCount: Number(item?.attemptCount || 0),
+    durationMs: normalizeTelemetryNumber(item?.durationMs),
     failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
     httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
     providerResponseId: normalizeText(item?.providerResponseId) || null,
     rawMessage: normalizeText(item?.rawMessage) || null,
     recoverable: typeof item?.recoverable === 'boolean' ? item.recoverable : null,
     timedOut: Boolean(item?.timedOut),
+    ...extractProviderUsageMetadata(item),
   };
 }
 
@@ -1352,6 +1396,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         return {
           at: run.endedAt || run.startedAt || '',
           attemptCount: Number(run.attemptCount || 0),
+          durationMs: normalizeTelemetryNumber(run.durationMs),
           endedAt: run.endedAt || null,
           failureKind: normalizeText(run.failureKind) ? normalizeProviderFailureKind(run.failureKind) : null,
           httpStatus: Number.isFinite(Number(run.httpStatus)) ? Number(run.httpStatus) : null,
@@ -1374,6 +1419,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           startedAt: run.startedAt || null,
           status: normalizeAgentRunStatus(run.status),
           timedOut: Boolean(run.timedOut),
+          usageInputTokens: normalizeTelemetryNumber(run.usageInputTokens),
+          usageOutputTokens: normalizeTelemetryNumber(run.usageOutputTokens),
+          usageTotalTokens: normalizeTelemetryNumber(run.usageTotalTokens),
           workflowRole: normalizeText(run.workflowRole || run.role),
           workspaceId: workspace?.id || null,
           workspaceName: workspace?.name || null,
@@ -1415,6 +1463,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
       total: executions.length,
     };
+    const durationSummary = summarizeDurationMetrics(executions);
+    const usageSummary = summarizeUsageMetrics(executions);
 
     for (const execution of executions) {
       providerCounts[execution.providerId] = (providerCounts[execution.providerId] || 0) + 1;
@@ -1427,16 +1477,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return {
+      averageDurationMs: durationSummary.averageDurationMs,
       failureKindCounts: summarizeFailureKinds(executions.filter((execution) => execution.status === 'failed')),
       latestExecution: executions.at(-1) || null,
       latestFailedExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'failed'),
       latestSuccessfulExecution: getLatestMatchingRecord(executions, (execution) => execution.status === 'completed'),
+      maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.recoverable).length,
       timedOutFailureCount: executions.filter((execution) => execution.status === 'failed' && execution.timedOut).length,
+      totalDurationMs: durationSummary.totalDurationMs,
       roleCounts,
       statusCounts,
       total: executions.length,
+      ...usageSummary,
     };
   }
 
@@ -1444,6 +1498,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return executions.map((execution) => ({
       at: execution.at,
       attemptCount: Number(execution.attemptCount || 0),
+      durationMs: normalizeTelemetryNumber(execution.durationMs),
       detail:
         formatProviderFailureDetail({
           attemptCount: execution.attemptCount,
@@ -1474,10 +1529,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       recoverable: execution.recoverable,
       role: execution.role,
       runId: execution.id,
+      executionStatus: execution.status,
       specialistKind: execution.specialistKind,
       sessionId: execution.sessionId,
       status: execution.status,
       timedOut: execution.timedOut,
+      usageInputTokens: normalizeTelemetryNumber(execution.usageInputTokens),
+      usageOutputTokens: normalizeTelemetryNumber(execution.usageOutputTokens),
+      usageTotalTokens: normalizeTelemetryNumber(execution.usageTotalTokens),
       workspaceId: execution.workspaceId,
       workspaceName: execution.workspaceName,
     }));
@@ -1491,6 +1550,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
       total: events.length,
     };
+    const durationSummary = summarizeDurationMetrics(events);
+    const usageSummary = summarizeUsageMetrics(events);
 
     for (const event of events) {
       eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
@@ -1504,15 +1565,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return {
+      averageDurationMs: durationSummary.averageDurationMs,
       eventCounts,
       failureKindCounts: summarizeFailureKinds(events.filter((event) => event.executionStatus === 'failed')),
       latestEvent: events.at(-1) || null,
+      maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.recoverable).length,
       roleCounts,
       statusCounts,
       timedOutFailureCount: events.filter((event) => event.executionStatus === 'failed' && event.timedOut).length,
       total: events.length,
+      totalDurationMs: durationSummary.totalDurationMs,
+      ...usageSummary,
     };
   }
 
@@ -1521,6 +1586,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let attemptedCount = 0;
     let failureCount = 0;
     let successCount = 0;
+    const durationSummary = summarizeDurationMetrics(probes);
 
     for (const probe of probes) {
       providerCounts[probe.providerId] = (providerCounts[probe.providerId] || 0) + 1;
@@ -1536,14 +1602,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       attemptedCount,
+      averageDurationMs: durationSummary.averageDurationMs,
       failureKindCounts: summarizeFailureKinds(probes.filter((probe) => !probe.ok)),
       failureCount,
       latestProbe: probes.at(-1) || null,
+      maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: probes.filter((probe) => !probe.ok && probe.recoverable).length,
       successCount,
       timedOutFailureCount: probes.filter((probe) => !probe.ok && probe.timedOut).length,
       total: probes.length,
+      totalDurationMs: durationSummary.totalDurationMs,
     };
   }
 
@@ -1748,11 +1817,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       configuredProviderIds,
       eventCounts: eventSummary.eventCounts,
       eventFamilyCounts: eventSummary.familyCounts,
+      executionAverageDurationMs: executionSummary.averageDurationMs,
       executionCompletedCount: executionSummary.statusCounts.completed,
       executionFailedCount: executionSummary.statusCounts.failed,
       executionFailureKindCounts: executionSummary.failureKindCounts,
+      executionMaxDurationMs: executionSummary.maxDurationMs,
       executionStatusCounts: executionSummary.statusCounts,
       executionTotal: executionSummary.total,
+      executionTotalDurationMs: executionSummary.totalDurationMs,
       eventTotal: eventSummary.total,
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestFailedExecution: executionSummary.latestFailedExecution,
@@ -1780,13 +1852,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
       latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
       probeAttemptedCount: probeSummary.attemptedCount,
+      probeAverageDurationMs: probeSummary.averageDurationMs,
       probeFailureCount: probeSummary.failureCount,
       probeFailureKindCounts: probeSummary.failureKindCounts,
+      probeMaxDurationMs: probeSummary.maxDurationMs,
       probeSuccessCount: probeSummary.successCount,
       probeRetryableFailureCount: probeSummary.retryableFailureCount,
       probeTimedOutFailureCount: probeSummary.timedOutFailureCount,
       executionRetryableFailureCount: executionSummary.retryableFailureCount,
       executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
+      probeTotalDurationMs: probeSummary.totalDurationMs,
       probeTotal: probeSummary.total,
       readyCount: readyProviderIds.length,
       readyProviderIds,
@@ -1796,6 +1871,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       resolvedAttentionProviderIds,
       unconfiguredCount: unconfiguredProviderIds.length,
       unconfiguredProviderIds,
+      usageInputTokensTotal: executionSummary.usageInputTokensTotal,
+      usageOutputTokensTotal: executionSummary.usageOutputTokensTotal,
+      usageTotalTokensTotal: executionSummary.usageTotalTokensTotal,
       unprobedCount: unprobedProviderIds.length,
       unprobedProviderIds,
     };
@@ -1812,6 +1890,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return {
         at: probe.checkedAt || probe.createdAt,
         attempted: probe.attempted,
+        durationMs: normalizeTelemetryNumber(probe.durationMs),
         detail: formatProviderFailureDetail({
           attemptCount: probe.attemptCount,
           detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
@@ -1847,6 +1926,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let attemptedCount = 0;
     let failureCount = 0;
     let successCount = 0;
+    const durationSummary = summarizeDurationMetrics(events);
 
     for (const event of events) {
       eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
@@ -1863,15 +1943,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       attemptedCount,
+      averageDurationMs: durationSummary.averageDurationMs,
       eventCounts,
       failureKindCounts: summarizeFailureKinds(events.filter((event) => event.attempted && !event.ok)),
       failureCount,
       latestEvent: events.at(-1) || null,
+      maxDurationMs: durationSummary.maxDurationMs,
       providerCounts,
       retryableFailureCount: events.filter((event) => event.attempted && !event.ok && event.recoverable).length,
       successCount,
       timedOutFailureCount: events.filter((event) => event.attempted && !event.ok && event.timedOut).length,
       total: events.length,
+      totalDurationMs: durationSummary.totalDurationMs,
     };
   }
 
@@ -1881,6 +1964,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionId: record.actionId,
         acknowledgedAt: record.acknowledgedAt || record.createdAt || null,
         attemptCount: Number(record.attemptCount || 0),
+        durationMs: normalizeTelemetryNumber(record.durationMs),
         eventRefId: record.eventRefId || null,
         failureKind: normalizeText(record.failureKind) ? normalizeProviderFailureKind(record.failureKind) : null,
         httpStatus: Number.isFinite(Number(record.httpStatus)) ? Number(record.httpStatus) : null,
@@ -1896,6 +1980,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         sessionId: record.sessionId || null,
         status: record.status || 'acknowledged',
         timedOut: Boolean(record.timedOut),
+        usageInputTokens: normalizeTelemetryNumber(record.usageInputTokens),
+        usageOutputTokens: normalizeTelemetryNumber(record.usageOutputTokens),
+        usageTotalTokens: normalizeTelemetryNumber(record.usageTotalTokens),
         workspaceId: record.workspaceId || null,
         workspaceName: record.workspaceName || null,
       };
@@ -1951,6 +2038,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       actionId: item.actionId,
       at: item.recoveredAt,
       attemptCount: Number(item.attemptCount || 0),
+      durationMs: normalizeTelemetryNumber(item.durationMs),
       detail: formatProviderAttentionRecoveryDetail(item),
       eventRefId: item.eventRefId || null,
       failureKind: normalizeText(item.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
@@ -1969,6 +2057,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       sessionId: item.sessionId || null,
       status: 'recovered',
       timedOut: Boolean(item.timedOut),
+      usageInputTokens: normalizeTelemetryNumber(item.usageInputTokens),
+      usageOutputTokens: normalizeTelemetryNumber(item.usageOutputTokens),
+      usageTotalTokens: normalizeTelemetryNumber(item.usageTotalTokens),
       workspaceId: item.workspaceId || null,
       workspaceName: item.workspaceName || null,
     }));
@@ -1983,6 +2074,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         actionId: item.actionId,
         at: item.createdAt,
         attemptCount: Number(item.attemptCount || 0),
+        durationMs: normalizeTelemetryNumber(item.durationMs),
         detail: item.reason || item.title || 'Provider attention opened.',
         eventRefId: item.eventRefId || null,
         failureKind: normalizeText(item.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
@@ -1997,6 +2089,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         sessionId: item.sessionId || null,
         status: 'pending',
         timedOut: Boolean(item.timedOut),
+        usageInputTokens: normalizeTelemetryNumber(item.usageInputTokens),
+        usageOutputTokens: normalizeTelemetryNumber(item.usageOutputTokens),
+        usageTotalTokens: normalizeTelemetryNumber(item.usageTotalTokens),
         workspaceId: item.workspaceId || null,
         workspaceName: item.workspaceName || null,
       }));
@@ -2169,6 +2264,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const eventCounts = {};
     const familyCounts = { attention: 0, execution: 0, probe: 0 };
     const providerCounts = {};
+    const executionDurationSummary = summarizeDurationMetrics(
+      events.filter((event) => event.eventFamily === 'execution'),
+    );
+    const executionUsageSummary = summarizeUsageMetrics(
+      events.filter((event) => event.eventFamily === 'execution'),
+    );
+    const probeDurationSummary = summarizeDurationMetrics(events.filter((event) => event.eventFamily === 'probe'));
     const executionStatusCounts = {
       ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
       total: 0,
@@ -2233,15 +2335,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       attentionStatusCounts,
       eventCounts,
+      executionAverageDurationMs: executionDurationSummary.averageDurationMs,
       executionCompletedCount: executionStatusCounts.completed,
       executionFailureKindCounts: summarizeFailureKinds(
         events.filter((event) => event.eventFamily === 'execution' && event.executionStatus === 'failed'),
       ),
       executionFailedCount: executionStatusCounts.failed,
+      executionMaxDurationMs: executionDurationSummary.maxDurationMs,
       executionRetryableFailureCount: events.filter(
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.recoverable,
       ).length,
       executionStatusCounts,
+      executionTotalDurationMs: executionDurationSummary.totalDurationMs,
       executionTimedOutFailureCount: events.filter(
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
       ).length,
@@ -2251,20 +2356,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestExecutionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'execution'),
       latestProbeEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'probe'),
       probeAttemptedCount,
+      probeAverageDurationMs: probeDurationSummary.averageDurationMs,
       probeFailureCount,
       probeFailureKindCounts: summarizeFailureKinds(
         events.filter((event) => event.eventFamily === 'probe' && event.attempted && !event.ok),
       ),
+      probeMaxDurationMs: probeDurationSummary.maxDurationMs,
       probeRetryableFailureCount: events.filter(
         (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.recoverable,
       ).length,
       probeSkippedCount,
       probeSuccessCount,
+      probeTotalDurationMs: probeDurationSummary.totalDurationMs,
       probeTimedOutFailureCount: events.filter(
         (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.timedOut,
       ).length,
       providerCounts,
       total: events.length,
+      ...executionUsageSummary,
     };
   }
 
@@ -2384,9 +2493,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
       touchedProviderCount: touchedProviderIds.length,
       touchedProviderIds,
-        summary: {
-          attentionAcknowledgedCount: acknowledgedAttentionItems.length,
-          attentionNeedsReminderCount: pendingAttentionItems.filter((item) => item.needsReminder).length,
+      summary: {
+        attentionAcknowledgedCount: acknowledgedAttentionItems.length,
+        attentionNeedsReminderCount: pendingAttentionItems.filter((item) => item.needsReminder).length,
         attentionNextReminderAt:
           pendingAttentionItems
             .map((item) => item.nextReminderAt)
@@ -2397,29 +2506,38 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         attentionReminderCount: reminderRecords.length,
         attentionRequiredCount: pendingAttentionItems.length,
         attentionRecoveredCount: recoveredAttentionItems.length,
-          attentionResolvedCount: resolvedAttentionItems.length,
-          attentionStatusCounts: {
-            acknowledged: acknowledgedAttentionItems.length,
-            pending: pendingAttentionItems.length,
-            recovered: recoveredAttentionItems.length,
-            resolved: resolvedAttentionItems.length,
-            total:
-              pendingAttentionItems.length +
-              acknowledgedAttentionItems.length +
-              recoveredAttentionItems.length +
-              resolvedAttentionItems.length,
-          },
-          eventCount: eventSummary.total,
-          eventFamilyCounts: eventSummary.familyCounts,
-          executionFailureKindCounts: executionSummary.failureKindCounts,
-          executionCompletedCount: executionSummary.statusCounts.completed,
-          executionCount: executionSummary.total,
-          executionFailedCount: executionSummary.statusCounts.failed,
-          executionRetryableFailureCount: executionSummary.retryableFailureCount,
-          executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
-          touchedProviderCount: touchedProviderIds.length,
-          touchedProviderIds,
+        attentionResolvedCount: resolvedAttentionItems.length,
+        attentionStatusCounts: {
+          acknowledged: acknowledgedAttentionItems.length,
+          pending: pendingAttentionItems.length,
+          recovered: recoveredAttentionItems.length,
+          resolved: resolvedAttentionItems.length,
+          total:
+            pendingAttentionItems.length +
+            acknowledgedAttentionItems.length +
+            recoveredAttentionItems.length +
+            resolvedAttentionItems.length,
         },
+        eventCount: eventSummary.total,
+        eventFamilyCounts: eventSummary.familyCounts,
+        executionAverageDurationMs: executionSummary.averageDurationMs,
+        executionFailureKindCounts: executionSummary.failureKindCounts,
+        executionCompletedCount: executionSummary.statusCounts.completed,
+        executionCount: executionSummary.total,
+        executionFailedCount: executionSummary.statusCounts.failed,
+        executionMaxDurationMs: executionSummary.maxDurationMs,
+        executionRetryableFailureCount: executionSummary.retryableFailureCount,
+        executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
+        executionTotalDurationMs: executionSummary.totalDurationMs,
+        probeAverageDurationMs: eventSummary.probeAverageDurationMs,
+        probeMaxDurationMs: eventSummary.probeMaxDurationMs,
+        probeTotalDurationMs: eventSummary.probeTotalDurationMs,
+        touchedProviderCount: touchedProviderIds.length,
+        touchedProviderIds,
+        usageInputTokensTotal: executionSummary.usageInputTokensTotal,
+        usageOutputTokensTotal: executionSummary.usageOutputTokensTotal,
+        usageTotalTokensTotal: executionSummary.usageTotalTokensTotal,
+      },
     };
   }
 
@@ -2522,6 +2640,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const probeRecord = store.saveProviderProbe({
       id: createId('provider-probe'),
       attemptCount: Number(result.attemptCount || 0),
+      durationMs: normalizeTelemetryNumber(result.durationMs),
       failureKind: normalizeText(result.failureKind) ? normalizeProviderFailureKind(result.failureKind) : null,
       httpStatus: Number.isFinite(Number(result.httpStatus)) ? Number(result.httpStatus) : null,
       providerId: result.id,
@@ -2863,8 +2982,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         artifactIds: [promptArtifact.id, outputArtifact.id],
         metadata: {
           attemptCount: Number(providerOutput?.attemptCount || 1),
+          durationMs: normalizeTelemetryNumber(providerOutput?.durationMs),
           providerId,
           providerResponseId: normalizeText(providerOutput?.providerResponseId) || null,
+          usageInputTokens: normalizeTelemetryNumber(providerOutput?.usageInputTokens),
+          usageOutputTokens: normalizeTelemetryNumber(providerOutput?.usageOutputTokens),
+          usageTotalTokens: normalizeTelemetryNumber(providerOutput?.usageTotalTokens),
           workflowRole: providerRole,
           ...runMetadata,
           specialistRootRunId:
@@ -2889,6 +3012,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         artifactIds: [promptArtifact.id],
         metadata: {
           attemptCount: Number(failure.attemptCount || 1),
+          durationMs: normalizeTelemetryNumber(failure.durationMs),
           failureKind: normalizeProviderFailureKind(failure.failureKind),
           httpStatus: Number.isFinite(Number(failure.httpStatus)) ? Number(failure.httpStatus) : null,
           providerId,
@@ -2896,6 +3020,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           rawMessage: normalizeText(failure.rawMessage) || null,
           recoverable: typeof failure.recoverable === 'boolean' ? failure.recoverable : null,
           timedOut: Boolean(failure.timedOut),
+          usageInputTokens: normalizeTelemetryNumber(failure.usageInputTokens),
+          usageOutputTokens: normalizeTelemetryNumber(failure.usageOutputTokens),
+          usageTotalTokens: normalizeTelemetryNumber(failure.usageTotalTokens),
           workflowRole: providerRole,
           ...runMetadata,
           specialistRootRunId:
@@ -3411,12 +3538,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
       providerEventCount: providerActivity.summary.eventCount,
       providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+      providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
       providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
       providerExecutionCount: providerActivity.summary.executionCount,
       providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
       providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+      providerExecutionMaxDurationMs: providerActivity.summary.executionMaxDurationMs,
       providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+      providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
       providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+      providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
+      providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
+      providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
       specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
       specialistKindCounts: parallelActivity.specialistKindCounts,
       specialistLatestFollowUp: parallelActivity.latestFollowUp,
@@ -3681,12 +3814,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
         providerEventCount: providerActivity.summary.eventCount,
         providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
+        providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
         providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
         providerExecutionCount: providerActivity.summary.executionCount,
         providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
         providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
+        providerExecutionMaxDurationMs: providerActivity.summary.executionMaxDurationMs,
         providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
+        providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
         providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
+        providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
+        providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
+        providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
         specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
         specialistKindCounts: parallelActivity.specialistKindCounts,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
@@ -6086,6 +6225,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       actionId: pendingItem.actionId,
       attemptCount: Number(pendingItem.attemptCount || 0),
       createdAt: acknowledgedAt,
+      durationMs: normalizeTelemetryNumber(pendingItem.durationMs),
       eventFamily: pendingItem.eventFamily,
       eventKind: pendingItem.eventKind,
       eventRefId: pendingItem.eventRefId,
@@ -6106,6 +6246,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       sessionId: pendingItem.sessionId,
       status: 'acknowledged',
       timedOut: Boolean(pendingItem.timedOut),
+      usageInputTokens: normalizeTelemetryNumber(pendingItem.usageInputTokens),
+      usageOutputTokens: normalizeTelemetryNumber(pendingItem.usageOutputTokens),
+      usageTotalTokens: normalizeTelemetryNumber(pendingItem.usageTotalTokens),
       title: pendingItem.title,
       workspaceId: pendingItem.workspaceId,
       workspaceName: pendingItem.workspaceName,
@@ -6414,16 +6557,25 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerAttentionStatusCounts: providerOverview.summary.attentionStatusCounts,
         providerEventCount: providerOverview.summary.eventTotal,
         providerEventFamilyCounts: providerOverview.summary.eventFamilyCounts,
+        providerExecutionAverageDurationMs: providerOverview.summary.executionAverageDurationMs,
         providerExecutionCompletedCount: providerOverview.summary.executionCompletedCount,
         providerExecutionCount: providerOverview.summary.executionTotal,
         providerExecutionFailedCount: providerOverview.summary.executionFailedCount,
         providerExecutionFailureKindCounts: providerOverview.summary.executionFailureKindCounts,
+        providerExecutionMaxDurationMs: providerOverview.summary.executionMaxDurationMs,
         providerExecutionRetryableFailureCount: providerOverview.summary.executionRetryableFailureCount,
+        providerExecutionTotalDurationMs: providerOverview.summary.executionTotalDurationMs,
         providerExecutionTimedOutFailureCount: providerOverview.summary.executionTimedOutFailureCount,
+        providerExecutionUsageInputTokensTotal: providerOverview.summary.usageInputTokensTotal,
+        providerExecutionUsageOutputTokensTotal: providerOverview.summary.usageOutputTokensTotal,
+        providerExecutionUsageTotalTokensTotal: providerOverview.summary.usageTotalTokensTotal,
         providerLatestProbeFailureCount: providerOverview.summary.latestProbeFailureCount,
         providerLatestProbeSkippedCount: providerOverview.summary.latestProbeSkippedCount,
+        providerProbeAverageDurationMs: providerOverview.summary.probeAverageDurationMs,
         providerProbeFailureKindCounts: providerOverview.summary.probeFailureKindCounts,
+        providerProbeMaxDurationMs: providerOverview.summary.probeMaxDurationMs,
         providerProbeRetryableFailureCount: providerOverview.summary.probeRetryableFailureCount,
+        providerProbeTotalDurationMs: providerOverview.summary.probeTotalDurationMs,
         providerProbeTimedOutFailureCount: providerOverview.summary.probeTimedOutFailureCount,
         providerReadyCount: providerOverview.summary.readyCount,
         specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,

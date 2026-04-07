@@ -36,6 +36,7 @@
     "smoke:provider-activity": "node scripts/smoke-provider-activity.mjs",
     "smoke:provider-events": "node scripts/smoke-provider-events.mjs",
     "smoke:provider-hardening": "node scripts/smoke-provider-hardening.mjs",
+    "smoke:provider-telemetry": "node scripts/smoke-provider-telemetry.mjs",
     "smoke:provider-action-inbox": "node scripts/smoke-provider-action-inbox.mjs",
     "smoke:provider-attention-lifecycle": "node scripts/smoke-provider-attention-lifecycle.mjs",
     "smoke:provider-attention-recovery": "node scripts/smoke-provider-attention-recovery.mjs",
