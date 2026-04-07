@@ -2,6 +2,8 @@
 
 ## 2026-04-07 Provider Cost Telemetry
 
+- added `overview operator-timeline --provider-since` so the operator-facing chronology can carry the same recent provider window contract already used by provider, mission, workspace, and global overview surfaces
+- linked recent provider counts, touched provider ids, latest recent provider event, and recent execution bucket trend into the global operator timeline summary without changing the default event stream contract
 - added optional pricing env parsing for OpenAI, Anthropic, and local adapters, then normalized `estimatedCostUsd` from execution token usage without changing the existing provider contract
 - propagated estimated execution cost into persisted agent runs, provider execution history or timeline, unified provider events, pending provider attention failure context, provider overview, and mission or workspace or global summaries
 - added deterministic cost telemetry smoke coverage for successful execution totals plus failed non-JSON execution persistence so cost evidence stays available on both completed and failed mission paths

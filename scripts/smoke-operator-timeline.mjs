@@ -8,6 +8,7 @@ import { runCli } from './cli-test-helpers.mjs';
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-operator-timeline-'));
 const workspaceOnePath = path.join(tempRoot, 'workspace-one');
 const workspaceTwoPath = path.join(tempRoot, 'workspace-two');
+const recentProviderSince = '2026-04-02T00:00:00.000Z';
 
 fs.mkdirSync(workspaceOnePath, { recursive: true });
 fs.mkdirSync(workspaceTwoPath, { recursive: true });
@@ -242,6 +243,11 @@ const globalTimeline = runCli({
   args: ['overview', 'operator-timeline'],
 });
 
+const recentGlobalTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'operator-timeline', '--provider-since', recentProviderSince],
+});
+
 assert.equal(globalTimeline.summary.eventCounts['approval-requested'], 2);
 assert.equal(globalTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['escalation-opened'], 1);
@@ -317,6 +323,30 @@ assert.equal(
   ),
   true,
 );
+
+assert.equal(recentGlobalTimeline.summary.providerRecentSince, recentProviderSince);
+assert.equal(recentGlobalTimeline.providerRecentWindow.filters.since, recentProviderSince);
+assert.equal(
+  recentGlobalTimeline.summary.providerRecentEventCount,
+  recentGlobalTimeline.providerRecentWindow.eventTotal,
+);
+assert.equal(
+  recentGlobalTimeline.summary.providerRecentExecutionCount,
+  recentGlobalTimeline.providerRecentWindow.executionTotal,
+);
+assert.deepEqual(
+  recentGlobalTimeline.summary.providerRecentEventFamilyCounts,
+  recentGlobalTimeline.providerRecentWindow.eventFamilyCounts,
+);
+assert.deepEqual(recentGlobalTimeline.summary.providerRecentTouchedProviderIds, ['stub']);
+assert.deepEqual(recentGlobalTimeline.providerRecentWindow.touchedProviderIds, ['stub']);
+assert.equal(recentGlobalTimeline.providerRecentWindow.eventFamilyCounts.probe, 0);
+assert.equal(recentGlobalTimeline.providerRecentWindow.executionBucketCount, 1);
+assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestBucketDate, '2026-04-07');
+assert.equal(recentGlobalTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
+assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(recentGlobalTimeline.summary.latestRecentProviderEvent.kind, 'provider-attention-resolved');
+assert.equal(recentGlobalTimeline.summary.latestRecentProviderExecution.providerId, 'stub');
 
 for (let index = 1; index < globalTimeline.timeline.length; index += 1) {
   assert.ok(String(globalTimeline.timeline[index - 1].at) <= String(globalTimeline.timeline[index].at));

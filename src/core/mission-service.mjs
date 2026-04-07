@@ -8214,11 +8214,30 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
-  function getGlobalOperatorTimeline() {
+  function getGlobalOperatorTimeline(filter = {}) {
+    const providerSince = normalizeTimestampFilter(filter.providerSince, 'operator timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents();
+    const providerOverview = getProviderOverview({
+      since: providerSince,
+    });
 
     return {
-      summary: summarizeOperatorTimeline(timeline),
+      providerRecentWindow: providerOverview.recentWindow,
+      summary: {
+        ...summarizeOperatorTimeline(timeline),
+        latestRecentProviderEvent: providerOverview.recentWindow?.latestEvent || null,
+        latestRecentProviderExecution: providerOverview.recentWindow?.latestExecution || null,
+        latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
+        providerRecentEventCount: providerOverview.recentWindow?.eventTotal || 0,
+        providerRecentEventFamilyCounts:
+          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
+        providerRecentExecutionEstimatedCostUsdTotal: providerOverview.recentWindow?.executionEstimatedCostUsdTotal || 0,
+        providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
+        providerRecentSince: providerSince || null,
+        providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
+        providerRecentTouchedProviderIds: providerOverview.recentWindow?.touchedProviderIds || [],
+      },
       timeline,
       workspaces: store.listWorkspaces(),
     };

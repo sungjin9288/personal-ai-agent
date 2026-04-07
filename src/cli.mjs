@@ -47,7 +47,7 @@ function printHelp() {
 Commands:
   overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
-  overview operator-timeline
+  overview operator-timeline [--provider-since <iso-timestamp>]
   overview providers [--since <iso-timestamp>]
 
   provider list
@@ -167,7 +167,11 @@ async function main() {
   }
 
   if (group === 'overview' && command === 'operator-timeline') {
-    printJson(service.getGlobalOperatorTimeline());
+    printJson(
+      service.getGlobalOperatorTimeline({
+        providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
     return;
   }
 

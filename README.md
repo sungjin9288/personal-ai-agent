@@ -48,6 +48,7 @@ Show or list workspaces:
 node src/cli.mjs overview global
 node src/cli.mjs overview providers
 node src/cli.mjs overview operator-timeline
+node src/cli.mjs overview operator-timeline --provider-since 2026-04-02T00:00:00.000Z
 node src/cli.mjs provider list
 node src/cli.mjs provider check openai
 node src/cli.mjs provider activity
@@ -62,7 +63,7 @@ node src/cli.mjs workspace overview workspace_xxx
 node src/cli.mjs workspace timeline workspace_xxx
 ```
 
-`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, pending owner handoff reminder count, next pending owner handoff due/reminder timestamp, 그리고 maintenance가 실제로 영향을 준 mission breadth까지 함께 보여줍니다. `overview global`은 여기에 provider health summary와 nested `providerOverview`도 포함해서 configured/ready provider 수, latest probe success or failure, unprobed provider 수, pending provider attention overdue count, pending provider attention needs-reminder count, next provider attention due/reminder timestamp, latest provider attention reminder를 top-level control-plane에서 바로 확인할 수 있습니다. `workspace overview`는 workspace-scope run뿐 아니라 global sweep나 mission-scope sweep가 이 workspace mission에 남긴 maintenance impact도 함께 집계하고, 이 workspace에서 실제로 발생한 provider execution 실패와 provider attention pending/reminder 상태도 별도 summary field로 노출합니다.
+`workspace overview`와 `overview global`은 mission/session/approval 집계뿐 아니라 open escalation pressure, escalation tier 분포, breach count total, reminder count total, needs-reminder count, owner transition total, pending owner handoff overdue count, pending owner handoff reminder count, next pending owner handoff due/reminder timestamp, 그리고 maintenance가 실제로 영향을 준 mission breadth까지 함께 보여줍니다. `overview global`은 여기에 provider health summary와 nested `providerOverview`도 포함해서 configured/ready provider 수, latest probe success or failure, unprobed provider 수, pending provider attention overdue count, pending provider attention needs-reminder count, next provider attention due/reminder timestamp, latest provider attention reminder를 top-level control-plane에서 바로 확인할 수 있습니다. `overview operator-timeline --provider-since ...`는 이 operator chronology 위에 같은 recent provider window contract를 덧붙여, 최근 provider execution or attention trend를 operator event stream과 같은 응답에서 같이 읽을 수 있게 합니다. `workspace overview`는 workspace-scope run뿐 아니라 global sweep나 mission-scope sweep가 이 workspace mission에 남긴 maintenance impact도 함께 집계하고, 이 workspace에서 실제로 발생한 provider execution 실패와 provider attention pending/reminder 상태도 별도 summary field로 노출합니다.
 
 Create missions:
 
@@ -201,6 +202,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider events` merges persisted probe events, provider execution events, and provider attention opened, acknowledgement, recovery, resolution, reminder events into one chronological stream, with `--family <probe|execution|attention>`, probe- and execution-specific filters, and `--since` for recent-window provider chronology slices.
 - `overview providers` now also accepts `--since` and returns a `recentWindow` summary so top-level provider health can show a recent probe or execution or attention slice without changing the existing full-history summary contract.
 - `overview global` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so the top-level control-plane can show overall system state and recent provider health together.
+- `overview operator-timeline` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so operator chronology and recent provider execution or attention trend can be inspected from one surface.
 - `workspace overview` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so a workspace owner can inspect current workspace state and recent provider execution or attention activity together.
 - `mission show` and `mission timeline` now also accept `--provider-since` and return `providerRecentWindow` plus recent provider summary linkage, so mission-level provider execution and attention activity can be inspected without leaving the mission surface.
 - every `providerRecentWindow` now also includes execution `dailyBuckets`, `executionBucketCount`, `executionLatestBucketDate`, `executionOldestBucketDate`, and `executionLatestBucketDelta`, so recent provider execution trend can be read without reopening provider activity history.
