@@ -20,6 +20,7 @@
 - provider cost telemetry now supports adapter-level pricing envs plus normalized `estimatedCostUsd`, and propagates estimated execution spend through provider check, provider activity/events, provider overview, provider attention failure context, and mission/workspace/global summaries
 - provider cost telemetry now also includes provider-level and role-level estimated cost breakdowns so spend attribution is queryable from the existing execution, event, and overview read-models
 - provider execution history now exposes daily cost buckets and latest bucket delta so recent spend trend can be inspected without introducing a separate reporting endpoint
+- provider execution history and execution timeline now support `since` filtering so recent-window cost trend and chronology can be queried directly from the existing provider activity surfaces
 - provider list/check surfaces now expose implementation state and env readiness without requiring a mission run
 - provider probe surface now supports lightweight reachability and model-list checks when env is configured
 - provider probe results now persist into runtime state and can be queried through provider history plus latest-probe summaries

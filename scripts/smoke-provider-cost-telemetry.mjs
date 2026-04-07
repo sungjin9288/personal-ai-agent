@@ -296,6 +296,27 @@ try {
   assert.equal(providerActivityBuckets.summary.latestBucketDelta.failedCountDelta, 1);
   assert.equal(providerActivityBuckets.summary.latestBucketDelta.completedCountDelta, -4);
 
+  const recentProviderActivity = service.getProviderExecutionHistory({
+    providerId: 'local',
+    since: '2026-04-02T00:00:00.000Z',
+  });
+  assert.equal(recentProviderActivity.filters.since, '2026-04-02T00:00:00.000Z');
+  assert.equal(recentProviderActivity.executions.length, 1);
+  assert.equal(recentProviderActivity.summary.bucketCount, 1);
+  assert.equal(recentProviderActivity.summary.latestBucketDate, '2026-04-03');
+  assert.equal(recentProviderActivity.summary.oldestBucketDate, '2026-04-03');
+  assert.equal(recentProviderActivity.summary.dailyBuckets[0].estimatedCostUsdTotal, failedManagerCost);
+  assert.equal(recentProviderActivity.summary.latestBucketDelta.previousDate, null);
+  assert.equal(recentProviderActivity.summary.latestBucketDelta.estimatedCostUsdTotalDelta, failedManagerCost);
+
+  const recentProviderExecutionTimeline = service.getProviderExecutionTimeline({
+    providerId: 'local',
+    since: '2026-04-02T00:00:00.000Z',
+  });
+  assert.equal(recentProviderExecutionTimeline.filters.since, '2026-04-02T00:00:00.000Z');
+  assert.equal(recentProviderExecutionTimeline.timeline.length, 1);
+  assert.equal(recentProviderExecutionTimeline.summary.estimatedCostUsdTotal, failedManagerCost);
+
   const providerExecutionTimeline = service.getProviderExecutionTimeline({ providerId: 'local' });
   assert.equal(providerExecutionTimeline.summary.estimatedCostUsdTotal, combinedCostTotal);
   assert.deepEqual(providerExecutionTimeline.summary.estimatedCostUsdByProviderId, combinedCostByProviderId);

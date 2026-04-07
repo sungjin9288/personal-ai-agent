@@ -7,6 +7,7 @@
 - added deterministic cost telemetry smoke coverage for successful execution totals plus failed non-JSON execution persistence so cost evidence stays available on both completed and failed mission paths
 - extended the same cost telemetry with `estimatedCostUsdByProviderId` and `estimatedCostUsdByRole` so one provider or one stage role can be identified as the primary spend source directly from existing read-models
 - extended provider execution history summary with daily cost buckets and latest bucket delta so recent spend movement can be read from `provider activity` without re-aggregating timeline rows
+- added `since` filtering to provider execution history and timeline so the same daily cost bucket contract can be used for recent-window execution slices without a separate endpoint
 
 ## 2026-04-07 Provider Retry Telemetry
 

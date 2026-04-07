@@ -1493,6 +1493,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const workspaceById = new Map(state.workspaces.map((workspace) => [workspace.id, workspace]));
 
     const normalizedStatusFilter = normalizeAgentRunStatus(filter.status);
+    const normalizedSinceFilter = normalizeTimestampFilter(filter.since, 'provider execution since timestamp');
 
     return [...ensureArray(state.agentRuns)]
       .map((run) => {
@@ -1555,6 +1556,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return false;
         }
         if (normalizedStatusFilter && entry.status !== normalizedStatusFilter) {
+          return false;
+        }
+        if (normalizedSinceFilter && String(entry.at || '') < normalizedSinceFilter) {
           return false;
         }
         return true;
@@ -3001,10 +3005,22 @@ function summarizeProviderExecutions(executions) {
   }
 
   function getProviderExecutionHistory(filter = {}) {
-    const executions = buildProviderExecutionEntries(filter);
+    const since = normalizeTimestampFilter(filter.since, 'provider execution since timestamp');
+    const executions = buildProviderExecutionEntries({
+      ...filter,
+      since,
+    });
     const dailyBuckets = buildProviderExecutionDailyBuckets(executions);
     return {
       executions,
+      filters: {
+        missionId: filter.missionId || null,
+        providerId: filter.providerId || null,
+        role: filter.role || null,
+        since: since || null,
+        status: filter.status || null,
+        workspaceId: filter.workspaceId || null,
+      },
       summary: {
         ...summarizeProviderExecutions(executions),
         bucketCount: dailyBuckets.length,
@@ -3017,9 +3033,21 @@ function summarizeProviderExecutions(executions) {
   }
 
   function getProviderExecutionTimeline(filter = {}) {
-    const executions = buildProviderExecutionEntries(filter);
+    const since = normalizeTimestampFilter(filter.since, 'provider execution since timestamp');
+    const executions = buildProviderExecutionEntries({
+      ...filter,
+      since,
+    });
     const timeline = buildProviderExecutionTimeline(executions);
     return {
+      filters: {
+        missionId: filter.missionId || null,
+        providerId: filter.providerId || null,
+        role: filter.role || null,
+        since: since || null,
+        status: filter.status || null,
+        workspaceId: filter.workspaceId || null,
+      },
       summary: summarizeProviderExecutionTimeline(timeline),
       timeline,
     };
