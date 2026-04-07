@@ -335,6 +335,10 @@ assert.equal(recentProviderMissionShow.providerRecentWindow.executionBucketCount
 assert.equal(recentProviderMissionShow.providerRecentWindow.executionLatestBucketDate, '2026-04-03');
 assert.equal(recentProviderMissionShow.providerRecentWindow.executionDailyBuckets[0].executionCount, 4);
 assert.equal(recentProviderMissionShow.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
+assert.equal(recentProviderMissionShow.providerRecentWindow.executionWeeklyBucketCount, 1);
+assert.equal(recentProviderMissionShow.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-03-30');
+assert.equal(recentProviderMissionShow.providerRecentWindow.executionWeeklyBuckets[0].executionCount, 4);
+assert.equal(recentProviderMissionShow.providerRecentWindow.executionLatestWeeklyBucketDelta.previousWeekStartDate, null);
 
 assert.equal(providerTimeline.summary.sessionCount, 1);
 assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-succeeded').length, 3);
@@ -362,6 +366,7 @@ assert.equal(recentProviderTimeline.summary.providerRecentSince, recentProviderS
 assert.equal(recentProviderTimeline.providerRecentWindow.filters.since, recentProviderSince);
 assert.equal(recentProviderTimeline.summary.providerRecentExecutionCount, 4);
 assert.equal(recentProviderTimeline.providerRecentWindow.executionBucketCount, 1);
+assert.equal(recentProviderTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
 
 for (let index = 1; index < timeline.timeline.length; index += 1) {
   assert.ok(String(timeline.timeline[index - 1].at) <= String(timeline.timeline[index].at));

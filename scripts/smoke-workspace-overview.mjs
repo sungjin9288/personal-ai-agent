@@ -261,6 +261,10 @@ assert.equal(recentOverview.providerRecentWindow.executionBucketCount, 1);
 assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDate, '2026-04-03');
 assert.equal(recentOverview.providerRecentWindow.executionDailyBuckets[0].executionCount, 4);
 assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
+assert.equal(recentOverview.providerRecentWindow.executionWeeklyBucketCount, 1);
+assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-03-30');
+assert.equal(recentOverview.providerRecentWindow.executionWeeklyBuckets[0].executionCount, 4);
+assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketDelta.previousWeekStartDate, null);
 assert.equal(
   overview.missions.some((entry) => entry.mission.id === awaitingMission.id && entry.summary.latestSession.status === 'awaiting_approval'),
   true,

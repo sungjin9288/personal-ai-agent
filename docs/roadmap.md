@@ -35,6 +35,7 @@
 - workspace overview now supports `provider-since` linkage so workspace-bound provider execution and attention activity can be inspected as a recent window without replacing the existing full-history workspace summary
 - mission show and mission timeline now support `provider-since` linkage so mission-bound provider execution and attention activity can be inspected as a recent window without replacing the existing mission audit summary
 - recent provider window payloads now also expose execution daily buckets and latest bucket delta so recent provider execution trend can be compared consistently across provider, mission, workspace, and global surfaces
+- recent provider window payloads now also expose weekly execution buckets and latest weekly delta so short recent slices can still be read as coarse weekly trend without reopening full provider history
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
 - provider attention lifecycle now supports explicit resolution and resolved-state audit linkage across provider check, events, and overview surfaces

@@ -65,6 +65,33 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function formatDateUtc(value) {
+  if (!Number.isFinite(value)) {
+    return '';
+  }
+
+  return new Date(value).toISOString().slice(0, 10);
+}
+
+function getUtcWeekRange(isoTimestamp) {
+  const parsed = Date.parse(String(isoTimestamp || ''));
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+
+  const date = new Date(parsed);
+  const day = date.getUTCDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const start = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + diffToMonday);
+  const end = start + 6 * 24 * 60 * 60 * 1000;
+
+  return {
+    key: formatDateUtc(start),
+    weekEndDate: formatDateUtc(end),
+    weekStartDate: formatDateUtc(start),
+  };
+}
+
 function dedupeEntries(entries) {
   const seenIds = new Set();
   return entries.filter((entry) => {
@@ -1676,6 +1703,68 @@ function summarizeProviderExecutions(executions) {
     return [...bucketMap.values()].sort((left, right) => String(right.date).localeCompare(String(left.date)));
   }
 
+  function buildProviderExecutionWeeklyBuckets(executions) {
+    const bucketMap = new Map();
+
+    for (const execution of executions) {
+      const at = String(execution.at || execution.endedAt || execution.startedAt || '');
+      if (!at) {
+        continue;
+      }
+
+      const weekRange = getUtcWeekRange(at);
+      if (!weekRange) {
+        continue;
+      }
+
+      const current = bucketMap.get(weekRange.key) || {
+        completedCount: 0,
+        estimatedCostUsdByProviderId: {},
+        estimatedCostUsdByRole: {},
+        estimatedCostUsdPricedCount: 0,
+        estimatedCostUsdTotal: 0,
+        executionCount: 0,
+        failedCount: 0,
+        weekEndDate: weekRange.weekEndDate,
+        weekStartDate: weekRange.weekStartDate,
+      };
+
+      current.executionCount += 1;
+      if (execution.status === 'completed') {
+        current.completedCount += 1;
+      }
+      if (execution.status === 'failed') {
+        current.failedCount += 1;
+      }
+
+      const estimatedCostUsd = roundUsdAmount(execution.estimatedCostUsd);
+      if (Number.isFinite(estimatedCostUsd) && estimatedCostUsd >= 0) {
+        current.estimatedCostUsdPricedCount += 1;
+        current.estimatedCostUsdTotal = roundUsdAmount(current.estimatedCostUsdTotal + estimatedCostUsd);
+
+        const providerId = normalizeText(execution.providerId);
+        if (providerId) {
+          current.estimatedCostUsdByProviderId[providerId] = roundUsdAmount(
+            Number(current.estimatedCostUsdByProviderId[providerId] || 0) + estimatedCostUsd,
+          );
+        }
+
+        const role = normalizeText(execution.role);
+        if (role) {
+          current.estimatedCostUsdByRole[role] = roundUsdAmount(
+            Number(current.estimatedCostUsdByRole[role] || 0) + estimatedCostUsd,
+          );
+        }
+      }
+
+      bucketMap.set(weekRange.key, current);
+    }
+
+    return [...bucketMap.values()].sort((left, right) =>
+      String(right.weekStartDate).localeCompare(String(left.weekStartDate)),
+    );
+  }
+
   function buildProviderExecutionLatestBucketDelta(dailyBuckets) {
     const current = dailyBuckets[0] || null;
     if (!current) {
@@ -1694,6 +1783,29 @@ function summarizeProviderExecutions(executions) {
       executionCountDelta: Number(current.executionCount || 0) - Number(previous?.executionCount || 0),
       failedCountDelta: Number(current.failedCount || 0) - Number(previous?.failedCount || 0),
       previousDate: previous?.date || null,
+    };
+  }
+
+  function buildProviderExecutionLatestWeeklyBucketDelta(weeklyBuckets) {
+    const current = weeklyBuckets[0] || null;
+    if (!current) {
+      return null;
+    }
+
+    const previous = weeklyBuckets[1] || null;
+    return {
+      completedCountDelta: Number(current.completedCount || 0) - Number(previous?.completedCount || 0),
+      currentWeekEndDate: current.weekEndDate,
+      currentWeekStartDate: current.weekStartDate,
+      estimatedCostUsdPricedCountDelta:
+        Number(current.estimatedCostUsdPricedCount || 0) - Number(previous?.estimatedCostUsdPricedCount || 0),
+      estimatedCostUsdTotalDelta: roundUsdAmount(
+        Number(current.estimatedCostUsdTotal || 0) - Number(previous?.estimatedCostUsdTotal || 0),
+      ),
+      executionCountDelta: Number(current.executionCount || 0) - Number(previous?.executionCount || 0),
+      failedCountDelta: Number(current.failedCount || 0) - Number(previous?.failedCount || 0),
+      previousWeekEndDate: previous?.weekEndDate || null,
+      previousWeekStartDate: previous?.weekStartDate || null,
     };
   }
 
@@ -2141,6 +2253,7 @@ function summarizeProviderExecutions(executions) {
     const executions = buildProviderExecutionEntries({ since });
     const executionSummary = summarizeProviderExecutions(executions);
     const executionDailyBuckets = buildProviderExecutionDailyBuckets(executions);
+    const executionWeeklyBuckets = buildProviderExecutionWeeklyBuckets(executions);
     const events = buildProviderEvents({ since });
     const eventSummary = summarizeProviderEvents(events);
     const touchedProviderIds = [
@@ -2168,8 +2281,13 @@ function summarizeProviderExecutions(executions) {
       executionFailureKindCounts: executionSummary.failureKindCounts,
       executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
       executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionLatestWeeklyBucketDelta: buildProviderExecutionLatestWeeklyBucketDelta(executionWeeklyBuckets),
       executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
+      executionOldestWeeklyBucketStartDate: executionWeeklyBuckets.at(-1)?.weekStartDate || null,
       executionTotal: executionSummary.total,
+      executionWeeklyBucketCount: executionWeeklyBuckets.length,
+      executionWeeklyBuckets,
+      executionLatestWeeklyBucketStartDate: executionWeeklyBuckets[0]?.weekStartDate || null,
       filters: {
         since,
       },
@@ -3053,6 +3171,7 @@ function summarizeProviderExecutions(executions) {
     });
     const executionSummary = summarizeProviderExecutions(executionEntries);
     const executionDailyBuckets = buildProviderExecutionDailyBuckets(executionEntries);
+    const executionWeeklyBuckets = buildProviderExecutionWeeklyBuckets(executionEntries);
     const scopedProviderEvents = sortTimelineEvents([
       ...buildProviderAttentionOpenedTimeline(
         [...pendingAttentionItems, ...recoveredAttentionItems],
@@ -3144,7 +3263,12 @@ function summarizeProviderExecutions(executions) {
       executionFailureKindCounts: executionSummary.failureKindCounts,
       executionLatestBucketDate: executionDailyBuckets[0]?.date || null,
       executionLatestBucketDelta: buildProviderExecutionLatestBucketDelta(executionDailyBuckets),
+      executionLatestWeeklyBucketDelta: buildProviderExecutionLatestWeeklyBucketDelta(executionWeeklyBuckets),
       executionOldestBucketDate: executionDailyBuckets.at(-1)?.date || null,
+      executionOldestWeeklyBucketStartDate: executionWeeklyBuckets.at(-1)?.weekStartDate || null,
+      executionWeeklyBucketCount: executionWeeklyBuckets.length,
+      executionWeeklyBuckets,
+      executionLatestWeeklyBucketStartDate: executionWeeklyBuckets[0]?.weekStartDate || null,
       filters: {
         since,
       },

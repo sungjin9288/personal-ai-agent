@@ -262,6 +262,11 @@ assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDate, '202
 assert.equal(recentOverview.providerRecentWindow.executionOldestBucketDate, '2026-04-07');
 assert.equal(recentOverview.providerRecentWindow.executionDailyBuckets[0].executionCount, 12);
 assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
+assert.equal(recentOverview.providerRecentWindow.executionWeeklyBucketCount, 1);
+assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(recentOverview.providerRecentWindow.executionOldestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(recentOverview.providerRecentWindow.executionWeeklyBuckets[0].executionCount, 12);
+assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketDelta.previousWeekStartDate, null);
 assert.equal(recentOverview.providerRecentWindow.probeSkippedCount, 1);
 assert.equal(recentOverview.providerRecentWindow.probeSuccessCount, 1);
 assert.equal(recentOverview.providerRecentWindow.probeFailureCount, 1);
