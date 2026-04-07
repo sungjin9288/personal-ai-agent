@@ -4381,6 +4381,12 @@ function summarizeProviderExecutions(executions) {
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
+    const providerHealthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      recentWindow: providerRecentWindow,
+    });
 
     return {
       approvalCounts: {
@@ -4484,6 +4490,24 @@ function summarizeProviderExecutions(executions) {
       providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
       providerRecentExecutionOldestMonthlyBucketStartDate:
         providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
+      providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
+      providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
+      providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
+      providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
+      providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
+      providerHealthDriftRecentExecutionCurrentMonthStartDate:
+        providerHealthDrift.recentExecutionCurrentMonthStartDate,
+      providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+        providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+      providerHealthDriftRecentExecutionFailedCountDelta:
+        providerHealthDrift.recentExecutionFailedCountDelta,
+      providerHealthDriftRecentExecutionMonthlyBucketCount:
+        providerHealthDrift.recentExecutionMonthlyBucketCount,
+      providerHealthDriftRecentExecutionOldestMonthStartDate:
+        providerHealthDrift.recentExecutionOldestMonthStartDate,
+      providerHealthDriftRecentExecutionPreviousMonthStartDate:
+        providerHealthDrift.recentExecutionPreviousMonthStartDate,
+      providerHealthDriftStatus: providerHealthDrift.status,
       providerRecentSince: filter.providerSince || null,
       providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
       providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -4678,6 +4702,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const escalations = store.listEscalations({ workspaceId: workspace.id }).map((item) => enrichEscalation(item));
     const escalationSummary = summarizeEscalations(escalations);
     const workspaceMemoryEntries = store.listMemoryEntries({ scope: 'workspace', scopeId: workspace.id });
+    const providerHealthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      recentWindow: providerRecentWindow,
+    });
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
     const approvalCounts = { approved: 0, pending: 0, rejected: 0, total: 0 };
     const memoryCounts = {
@@ -4701,6 +4731,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return {
       escalations,
       missions: missionEntries,
+      providerHealthDrift,
       providerRecentWindow,
       summary: {
         activeMissionIds: missionEntries
@@ -4800,6 +4831,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
         providerRecentExecutionOldestMonthlyBucketStartDate:
           providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
+        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
+        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
+        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
+        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
+        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
+        providerHealthDriftRecentExecutionCurrentMonthStartDate:
+          providerHealthDrift.recentExecutionCurrentMonthStartDate,
+        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+        providerHealthDriftRecentExecutionFailedCountDelta:
+          providerHealthDrift.recentExecutionFailedCountDelta,
+        providerHealthDriftRecentExecutionMonthlyBucketCount:
+          providerHealthDrift.recentExecutionMonthlyBucketCount,
+        providerHealthDriftRecentExecutionOldestMonthStartDate:
+          providerHealthDrift.recentExecutionOldestMonthStartDate,
+        providerHealthDriftRecentExecutionPreviousMonthStartDate:
+          providerHealthDrift.recentExecutionPreviousMonthStartDate,
+        providerHealthDriftStatus: providerHealthDrift.status,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
         providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -8460,8 +8509,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       since: providerSince,
       workspaceId: workspace.id,
     });
+    const providerActivity = summarizeWorkspaceProviderActivity(workspace.id);
+    const providerHealthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      recentWindow: providerRecentWindow,
+    });
 
     return {
+      providerHealthDrift,
       providerRecentWindow,
       summary: {
         ...summarizeOperatorTimeline(timeline),
@@ -8479,6 +8536,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
         providerRecentExecutionOldestMonthlyBucketStartDate:
           providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
+        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
+        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
+        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
+        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
+        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
+        providerHealthDriftRecentExecutionCurrentMonthStartDate:
+          providerHealthDrift.recentExecutionCurrentMonthStartDate,
+        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
+          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
+        providerHealthDriftRecentExecutionFailedCountDelta:
+          providerHealthDrift.recentExecutionFailedCountDelta,
+        providerHealthDriftRecentExecutionMonthlyBucketCount:
+          providerHealthDrift.recentExecutionMonthlyBucketCount,
+        providerHealthDriftRecentExecutionOldestMonthStartDate:
+          providerHealthDrift.recentExecutionOldestMonthStartDate,
+        providerHealthDriftRecentExecutionPreviousMonthStartDate:
+          providerHealthDrift.recentExecutionPreviousMonthStartDate,
+        providerHealthDriftStatus: providerHealthDrift.status,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
         providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -8494,8 +8569,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const providerOverview = getProviderOverview({
       since: providerSince,
     });
+    const providerHealthDrift = providerOverview.healthDrift;
 
     return {
+      providerHealthDrift,
       providerRecentWindow: providerOverview.recentWindow,
       summary: {
         ...summarizeOperatorTimeline(timeline),
@@ -8728,13 +8805,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function showMission(missionId, filter = {}) {
     const mission = getMission(missionId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'mission provider since timestamp');
+    const providerRecentWindow = buildScopedProviderRecentWindow({
+      missionId: mission.id,
+      since: providerSince,
+    });
+    const providerActivity = summarizeMissionProviderActivity(mission.id);
+    const providerHealthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      recentWindow: providerRecentWindow,
+    });
     syncEscalations({ missionId: mission.id });
     return {
       mission,
-      providerRecentWindow: buildScopedProviderRecentWindow({
-        missionId: mission.id,
-        since: providerSince,
-      }),
+      providerHealthDrift,
+      providerRecentWindow,
       summary: summarizeMission(mission, { providerSince }),
       sessions: listSessions(mission.id),
     };
@@ -8743,13 +8829,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function getMissionTimeline(missionId, filter = {}) {
     const mission = getMission(missionId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'mission provider since timestamp');
+    const providerRecentWindow = buildScopedProviderRecentWindow({
+      missionId: mission.id,
+      since: providerSince,
+    });
+    const providerActivity = summarizeMissionProviderActivity(mission.id);
+    const providerHealthDrift = summarizeProviderHealthDrift({
+      attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
+      attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
+      attentionRequiredCount: providerActivity.summary.attentionRequiredCount,
+      recentWindow: providerRecentWindow,
+    });
     syncEscalations({ missionId: mission.id });
     return {
       mission,
-      providerRecentWindow: buildScopedProviderRecentWindow({
-        missionId: mission.id,
-        since: providerSince,
-      }),
+      providerHealthDrift,
+      providerRecentWindow,
       summary: summarizeMission(mission, { providerSince }),
       timeline: buildMissionTimeline(mission),
     };

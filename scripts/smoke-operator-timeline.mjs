@@ -253,6 +253,14 @@ assert.equal(
   recentReviewerWorkspaceTimeline.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate,
   null,
 );
+assert.equal(recentReviewerWorkspaceTimeline.providerHealthDrift.status, 'watch');
+assert.deepEqual(recentReviewerWorkspaceTimeline.providerHealthDrift.reasonCodes, ['monthly-failed-up']);
+assert.equal(recentReviewerWorkspaceTimeline.providerHealthDrift.attentionRequiredCount, 0);
+assert.equal(recentReviewerWorkspaceTimeline.providerHealthDrift.recentExecutionMonthlyBucketCount, 1);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerHealthDriftStatus, 'watch');
+assert.deepEqual(recentReviewerWorkspaceTimeline.summary.providerHealthDriftReasonCodes, ['monthly-failed-up']);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerHealthDriftAttentionRequiredCount, 0);
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 1);
 assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentEventFamilyCounts.probe, 0);
 assert.deepEqual(recentReviewerWorkspaceTimeline.summary.providerRecentTouchedProviderIds, ['stub']);
 assert.deepEqual(recentReviewerWorkspaceTimeline.providerRecentWindow.touchedProviderIds, ['stub']);
@@ -365,6 +373,14 @@ assert.equal(recentGlobalTimeline.summary.providerRecentExecutionMonthlyBucketCo
 assert.equal(recentGlobalTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentGlobalTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentGlobalTimeline.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(recentGlobalTimeline.providerHealthDrift.status, 'watch');
+assert.deepEqual(recentGlobalTimeline.providerHealthDrift.reasonCodes, ['monthly-failed-up']);
+assert.equal(recentGlobalTimeline.providerHealthDrift.attentionRequiredCount, 0);
+assert.equal(recentGlobalTimeline.providerHealthDrift.recentExecutionMonthlyBucketCount, 1);
+assert.equal(recentGlobalTimeline.summary.providerHealthDriftStatus, 'watch');
+assert.deepEqual(recentGlobalTimeline.summary.providerHealthDriftReasonCodes, ['monthly-failed-up']);
+assert.equal(recentGlobalTimeline.summary.providerHealthDriftAttentionRequiredCount, 0);
+assert.equal(recentGlobalTimeline.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 1);
 assert.deepEqual(
   recentGlobalTimeline.summary.providerRecentEventFamilyCounts,
   recentGlobalTimeline.providerRecentWindow.eventFamilyCounts,

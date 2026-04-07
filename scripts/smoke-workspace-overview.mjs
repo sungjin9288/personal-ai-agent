@@ -257,6 +257,25 @@ assert.equal(recentOverview.summary.providerRecentExecutionMonthlyBucketCount, 1
 assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(recentOverview.providerHealthDrift.status, 'attention-required');
+assert.deepEqual(
+  recentOverview.providerHealthDrift.reasonCodes,
+  ['attention-overdue', 'monthly-failed-up'],
+);
+assert.equal(recentOverview.providerHealthDrift.attentionRequiredCount, 1);
+assert.equal(recentOverview.providerHealthDrift.attentionOverdueCount, 1);
+assert.equal(recentOverview.providerHealthDrift.attentionNeedsReminderCount, 0);
+assert.equal(recentOverview.providerHealthDrift.recentExecutionMonthlyBucketCount, 1);
+assert.equal(recentOverview.providerHealthDrift.recentExecutionCurrentMonthStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerHealthDriftStatus, 'attention-required');
+assert.deepEqual(
+  recentOverview.summary.providerHealthDriftReasonCodes,
+  ['attention-overdue', 'monthly-failed-up'],
+);
+assert.equal(recentOverview.summary.providerHealthDriftAttentionRequiredCount, 1);
+assert.equal(recentOverview.summary.providerHealthDriftAttentionOverdueCount, 1);
+assert.equal(recentOverview.summary.providerHealthDriftAttentionNeedsReminderCount, 0);
+assert.equal(recentOverview.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 1);
 assert.equal(recentOverview.summary.latestRecentProviderExecution.providerId, 'stub');
 assert.equal(recentOverview.summary.latestRecentProviderEvent.providerId, 'stub');
 assert.equal(recentOverview.providerRecentWindow.filters.since, recentProviderSince);
