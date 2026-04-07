@@ -548,7 +548,7 @@ function formatEscalationOwnerHandoffReminderDetail(reminder) {
 function formatMaintenanceRunDetail(run) {
   const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
   const noteSuffix = run.note ? ` note=${run.note}` : '';
-  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
+  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, specialist-follow-up=${run.specialistFollowUpRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
 function getMeaningfulOwnerTransitions(ownerHistory) {
@@ -1010,6 +1010,7 @@ function summarizeMaintenanceRuns(items) {
   let latestRunAt = null;
   let ownerHandoffRemindedCountTotal = 0;
   let providerAttentionRemindedCountTotal = 0;
+  let specialistFollowUpRemindedCountTotal = 0;
   let noOpRunCount = 0;
   let remainingMaintenanceRequiredCountTotal = 0;
   const recentRuns = [];
@@ -1025,6 +1026,7 @@ function summarizeMaintenanceRuns(items) {
     dueCandidateCountTotal += Number(item.dueCandidateCountTotal || 0);
     ownerHandoffRemindedCountTotal += Number(item.ownerHandoffRemindedCount || 0);
     providerAttentionRemindedCountTotal += Number(item.providerAttentionRemindedCount || 0);
+    specialistFollowUpRemindedCountTotal += Number(item.specialistFollowUpRemindedCount || 0);
     remainingMaintenanceRequiredCountTotal += Number(item.remainingMaintenanceRequiredCount || 0);
     resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
@@ -1087,6 +1089,7 @@ function summarizeMaintenanceRuns(items) {
     noOpRunCount,
     ownerHandoffRemindedCountTotal,
     providerAttentionRemindedCountTotal,
+    specialistFollowUpRemindedCountTotal,
     recentRuns: recentRuns
       .sort((left, right) => String(right.createdAt || '').localeCompare(String(left.createdAt || '')))
       .slice(0, 5),
@@ -1111,6 +1114,7 @@ function summarizeMaintenancePressure(entries) {
   let currentDueMonitoringCountTotal = 0;
   let currentDueOwnerHandoffCountTotal = 0;
   let currentDueProviderAttentionCountTotal = 0;
+  let currentDueSpecialistFollowUpCountTotal = 0;
   let latestRequiredAction = null;
   let latestRequiredActionAt = null;
   let nextDueAt = null;
@@ -1122,6 +1126,7 @@ function summarizeMaintenancePressure(entries) {
     currentDueMonitoringCountTotal += Number(entry.dueMonitoringCount || 0);
     currentDueOwnerHandoffCountTotal += Number(entry.dueOwnerHandoffCount || 0);
     currentDueProviderAttentionCountTotal += Number(entry.dueProviderAttentionCount || 0);
+    currentDueSpecialistFollowUpCountTotal += Number(entry.dueSpecialistFollowUpCount || 0);
 
     if (entry.nextDueAt && (!nextDueAt || String(nextDueAt) > String(entry.nextDueAt))) {
       nextDueAt = entry.nextDueAt;
@@ -1138,6 +1143,7 @@ function summarizeMaintenancePressure(entries) {
     currentDueMonitoringCountTotal,
     currentDueOwnerHandoffCountTotal,
     currentDueProviderAttentionCountTotal,
+    currentDueSpecialistFollowUpCountTotal,
     latestRequiredAction,
     latestRequiredActionAt,
     maintenanceDueWorkspaceIds: [...new Set(entries.map((entry) => entry.workspaceId).filter(Boolean))],
@@ -4548,6 +4554,8 @@ function summarizeProviderExecutions(executions) {
       maintenanceImpactOwnerHandoffRemindedCountTotal: maintenanceImpactSummary.ownerHandoffRemindedCountTotal,
       maintenanceImpactProviderAttentionRemindedCountTotal:
         maintenanceImpactSummary.providerAttentionRemindedCountTotal,
+      maintenanceImpactSpecialistFollowUpRemindedCountTotal:
+        maintenanceImpactSummary.specialistFollowUpRemindedCountTotal,
       maintenanceImpactRunCount: maintenanceImpactSummary.runCount,
       maintenanceImpactTotalRemindedCount: maintenanceImpactSummary.totalRemindedCount,
       maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
@@ -4558,9 +4566,12 @@ function summarizeProviderExecutions(executions) {
       maintenanceRelatedRunCount: relatedMaintenanceRuns.length,
       maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
       maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
+      maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
       maintenanceRunCount: maintenanceSummary.runCount,
       maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
       maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
+      maintenanceCurrentDueSpecialistFollowUpCountTotal:
+        maintenancePressureSummary.currentDueSpecialistFollowUpCountTotal,
       maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
       memoryCounts: {
         decision: memoryEntries.filter((entry) => entry.kind === 'decision').length,
@@ -4758,6 +4769,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   let latestRunAt = null;
   let ownerHandoffRemindedCountTotal = 0;
   let providerAttentionRemindedCountTotal = 0;
+  let specialistFollowUpRemindedCountTotal = 0;
   let totalRemindedCount = 0;
 
     for (const run of effectiveRuns) {
@@ -4767,18 +4779,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             escalationRemindedCount: Number(run.escalationRemindedCount || 0),
             ownerHandoffRemindedCount: Number(run.ownerHandoffRemindedCount || 0),
             providerAttentionRemindedCount: Number(run.providerAttentionRemindedCount || 0),
+            specialistFollowUpRemindedCount: Number(run.specialistFollowUpRemindedCount || 0),
             totalRemindedCount: Number(run.totalRemindedCount || 0),
           }
         : getMaintenanceMissionEffect(run, missionId) || {
             escalationRemindedCount: 0,
             ownerHandoffRemindedCount: 0,
             providerAttentionRemindedCount: 0,
+            specialistFollowUpRemindedCount: 0,
             totalRemindedCount: 0,
           };
 
       escalationRemindedCountTotal += Number(effect.escalationRemindedCount || 0);
       ownerHandoffRemindedCountTotal += Number(effect.ownerHandoffRemindedCount || 0);
       providerAttentionRemindedCountTotal += Number(effect.providerAttentionRemindedCount || 0);
+      specialistFollowUpRemindedCountTotal += Number(effect.specialistFollowUpRemindedCount || 0);
       totalRemindedCount += Number(effect.totalRemindedCount || 0);
 
       if (!latestRunAt || String(latestRunAt) < String(run.createdAt || '')) {
@@ -4793,6 +4808,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       latestRunAt,
       ownerHandoffRemindedCountTotal,
       providerAttentionRemindedCountTotal,
+      specialistFollowUpRemindedCountTotal,
       runCount: effectiveRuns.length,
       totalRemindedCount,
     };
@@ -4894,6 +4910,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceCurrentDueProviderAttentionCountTotal: maintenancePressureSummary.currentDueProviderAttentionCountTotal,
+        maintenanceCurrentDueSpecialistFollowUpCountTotal:
+          maintenancePressureSummary.currentDueSpecialistFollowUpCountTotal,
         maintenanceResolvedMaintenanceRequiredCountTotal:
           maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
@@ -4901,6 +4919,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
+        maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
@@ -5087,7 +5106,23 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           return true;
         });
 
-        const dueItems = [...dueMonitoringItems, ...dueOwnerHandoffItems, ...dueProviderAttentionItems];
+        const dueSpecialistFollowUpItems = buildSpecialistFollowUpItems({
+          missionId: target.mission ? target.mission.id : undefined,
+          needsReminderOnly: true,
+          workspaceId: target.workspace.id,
+        }).filter((item) => {
+          if (filter.owner && item.recommendedOwner !== filter.owner) {
+            return false;
+          }
+          return true;
+        });
+
+        const dueItems = [
+          ...dueMonitoringItems,
+          ...dueOwnerHandoffItems,
+          ...dueProviderAttentionItems,
+          ...dueSpecialistFollowUpItems,
+        ];
         if (!dueItems.length) {
           return null;
         }
@@ -5097,6 +5132,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             ...dueMonitoringItems.map((item) => item.nextReminderAt),
             ...dueOwnerHandoffItems.map((item) => item.nextOwnerHandoffReminderAt),
             ...dueProviderAttentionItems.map((item) => item.nextReminderAt),
+            ...dueSpecialistFollowUpItems.map((item) => item.nextReminderAt),
           ]
             .filter(Boolean)
             .sort((left, right) => String(left).localeCompare(String(right)))
@@ -5106,6 +5142,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             ...dueMonitoringItems.map((item) => item.createdAt),
             ...dueOwnerHandoffItems.map((item) => item.ownerTransitionAt || item.createdAt),
             ...dueProviderAttentionItems.map((item) => item.createdAt),
+            ...dueSpecialistFollowUpItems.map((item) => item.createdAt),
           ]
             .filter(Boolean)
             .sort((left, right) => String(left).localeCompare(String(right)))
@@ -5132,6 +5169,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           dueMonitoringCount: dueMonitoringItems.length,
           dueOwnerHandoffCount: dueOwnerHandoffItems.length,
           dueProviderAttentionCount: dueProviderAttentionItems.length,
+          dueSpecialistFollowUpCount: dueSpecialistFollowUpItems.length,
           effectiveRecommendedOwner,
           latestMaintenanceRun,
           latestMaintenanceRunAt: latestMaintenanceRun?.createdAt || null,
@@ -5166,6 +5204,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         if (entry.dueProviderAttentionCount > 0) {
           reasonParts.push(`${entry.dueProviderAttentionCount} provider attention reminder(s) due`);
         }
+        if (entry.dueSpecialistFollowUpCount > 0) {
+          reasonParts.push(`${entry.dueSpecialistFollowUpCount} specialist follow-up reminder(s) due`);
+        }
 
         return addFixedOperationalMetadata(
           addDispatchMetadata(
@@ -5177,6 +5218,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               dueMonitoringCount: entry.dueMonitoringCount,
               dueOwnerHandoffCount: entry.dueOwnerHandoffCount,
               dueProviderAttentionCount: entry.dueProviderAttentionCount,
+              dueSpecialistFollowUpCount: entry.dueSpecialistFollowUpCount,
               effectiveRecommendedOwner: entry.effectiveRecommendedOwner,
               latestMaintenanceRunAt: entry.latestMaintenanceRunAt,
               latestMaintenanceRunId: entry.latestMaintenanceRun?.id || null,
@@ -5846,6 +5888,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           });
       })
       .filter((item) => !filter.providerId || item.providerId === filter.providerId)
+      .filter((item) => !filter.needsReminderOnly || item.needsReminder)
+      .filter((item) => !filter.overdueOnly || item.isOverdue)
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
   }
 
@@ -6947,6 +6991,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       },
       note,
     );
+    const specialistFollowUpReminders = remindSpecialistFollowUps(
+      {
+        dueOnly: true,
+        missionId: filter.missionId,
+        owner: filter.owner,
+        workspaceId: filter.workspaceId,
+      },
+      note,
+    );
     const afterPressure = listMaintenancePressureEntries({
       missionId: filter.missionId,
       owner: filter.owner,
@@ -6962,6 +7015,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       escalationReminders.summary.latestReminderAt,
       ownerHandoffReminders.summary.latestReminderAt,
       providerAttentionReminders.summary.latestReminderAt,
+      specialistFollowUpReminders.summary.latestReminderAt,
     ]
       .filter(Boolean)
       .sort((left, right) => String(left).localeCompare(String(right)))
@@ -6978,6 +7032,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         missionId: item.missionId,
         ownerHandoffRemindedCount: 0,
         providerAttentionRemindedCount: 0,
+        specialistFollowUpRemindedCount: 0,
         totalRemindedCount: 0,
       };
       current.escalationRemindedCount += 1;
@@ -6995,6 +7050,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         missionId: item.missionId,
         ownerHandoffRemindedCount: 0,
         providerAttentionRemindedCount: 0,
+        specialistFollowUpRemindedCount: 0,
         totalRemindedCount: 0,
       };
       current.ownerHandoffRemindedCount += 1;
@@ -7012,9 +7068,28 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         missionId: item.missionId,
         ownerHandoffRemindedCount: 0,
         providerAttentionRemindedCount: 0,
+        specialistFollowUpRemindedCount: 0,
         totalRemindedCount: 0,
       };
       current.providerAttentionRemindedCount += 1;
+      current.totalRemindedCount += 1;
+      affectedMissionSummaryMap.set(item.missionId, current);
+    }
+
+    for (const item of specialistFollowUpReminders.items) {
+      if (!item.missionId) {
+        continue;
+      }
+
+      const current = affectedMissionSummaryMap.get(item.missionId) || {
+        escalationRemindedCount: 0,
+        missionId: item.missionId,
+        ownerHandoffRemindedCount: 0,
+        providerAttentionRemindedCount: 0,
+        specialistFollowUpRemindedCount: 0,
+        totalRemindedCount: 0,
+      };
+      current.specialistFollowUpRemindedCount += 1;
       current.totalRemindedCount += 1;
       affectedMissionSummaryMap.set(item.missionId, current);
     }
@@ -7033,18 +7108,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       dueCandidateCountTotal:
         Number(escalationReminders.summary.dueCandidateCount || 0) +
         Number(ownerHandoffReminders.summary.dueCandidateCount || 0) +
-        Number(providerAttentionReminders.summary.dueCandidateCount || 0),
+        Number(providerAttentionReminders.summary.dueCandidateCount || 0) +
+        Number(specialistFollowUpReminders.summary.dueCandidateCount || 0),
       escalationRemindedCount: Number(escalationReminders.summary.remindedCount || 0),
       latestReminderAt,
       ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
       providerAttentionRemindedCount: Number(providerAttentionReminders.summary.remindedCount || 0),
+      specialistFollowUpRemindedCount: Number(specialistFollowUpReminders.summary.remindedCount || 0),
       remainingMaintenanceRequiredCount: remainingActionIds.length,
       resolvedMaintenanceRequiredCount: resolvedActionIds.length,
       syncedCount: Number(sync.summary.syncedCount || 0),
       totalRemindedCount:
         Number(escalationReminders.summary.remindedCount || 0) +
         Number(ownerHandoffReminders.summary.remindedCount || 0) +
-        Number(providerAttentionReminders.summary.remindedCount || 0),
+        Number(providerAttentionReminders.summary.remindedCount || 0) +
+        Number(specialistFollowUpReminders.summary.remindedCount || 0),
     };
 
     const maintenanceRun = store.saveMaintenanceRun({
@@ -7073,6 +7151,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ownerHandoffRemindersSummary: ownerHandoffReminders.summary,
       providerAttentionRemindedCount: summary.providerAttentionRemindedCount,
       providerAttentionRemindersSummary: providerAttentionReminders.summary,
+      specialistFollowUpRemindedCount: summary.specialistFollowUpRemindedCount,
+      specialistFollowUpRemindersSummary: specialistFollowUpReminders.summary,
       remainingActionIds,
       remainingMaintenanceRequiredCount: summary.remainingMaintenanceRequiredCount,
       resolvedActionIds,
@@ -7094,6 +7174,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       maintenanceRun,
       ownerHandoffReminders,
       providerAttentionReminders,
+      specialistFollowUpReminders,
       summary,
       sync,
     };
@@ -7149,6 +7230,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               missionImpactOwnerHandoffRemindedCountTotal: missionImpactSummary.ownerHandoffRemindedCountTotal,
               missionImpactProviderAttentionRemindedCountTotal:
                 missionImpactSummary.providerAttentionRemindedCountTotal,
+              missionImpactSpecialistFollowUpRemindedCountTotal:
+                missionImpactSummary.specialistFollowUpRemindedCountTotal,
               missionImpactRunCount: missionImpactSummary.runCount,
               missionImpactTotalRemindedCount: missionImpactSummary.totalRemindedCount,
             }
@@ -7519,6 +7602,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     if (filter.status && !['blocked', 'failed'].includes(filter.status)) {
       throw new Error(`Unsupported specialist follow-up status: ${filter.status}`);
     }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
 
     const reminderTimestamp = now();
     const normalizedNote = normalizeText(note);
@@ -7528,7 +7614,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       overdueOnly: Boolean(filter.overdueOnly),
       providerId: filter.providerId,
       workspaceId: filter.workspaceId,
-    }).filter((item) => !filter.status || item.status === filter.status);
+    })
+      .filter((item) => !filter.status || item.status === filter.status)
+      .filter((item) => !filter.owner || item.recommendedOwner === filter.owner);
 
     const items = candidates
       .map((item) =>
@@ -7568,6 +7656,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         dueOnly: Boolean(filter.dueOnly),
         missionId: filter.missionId || null,
         note: normalizedNote || null,
+        owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
         providerId: filter.providerId || null,
         status: filter.status || null,
@@ -8236,12 +8325,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         maintenanceDueWorkspaceIds: maintenancePressureSummary.maintenanceDueWorkspaceIds,
         maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
         maintenanceCurrentDueProviderAttentionCountTotal: maintenancePressureSummary.currentDueProviderAttentionCountTotal,
+        maintenanceCurrentDueSpecialistFollowUpCountTotal:
+          maintenancePressureSummary.currentDueSpecialistFollowUpCountTotal,
         maintenanceResolvedMaintenanceRequiredCountTotal:
           maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
         maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
+        maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
         maintenanceRemainingMaintenanceRequiredCountTotal:
           maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,
@@ -8746,7 +8838,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         at: maintenanceRun.createdAt,
         detail: isDirectMissionRun
           ? formatMaintenanceRunDetail(maintenanceRun)
-          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}, provider-attention=${missionEffect?.providerAttentionRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
+          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}, provider-attention=${missionEffect?.providerAttentionRemindedCount || 0}, specialist-follow-up=${missionEffect?.specialistFollowUpRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
         kind: 'maintenance-run',
         maintenanceRunId: maintenanceRun.id,
         missionId: mission.id,

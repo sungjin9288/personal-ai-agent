@@ -9,6 +9,7 @@
 - added `action specialist-follow-ups` as a dedicated read surface with `--provider`, `--workspace`, `--mission`, `--status`, and `--overdue` filters, so unresolved specialist branches can be triaged without reopening the full generic action inbox
 - extended specialist follow-up items with persisted reminder state, so `action specialist-follow-ups --needs-reminder` can expose aging blocked/failed branches without relying only on overdue state
 - added `action remind-specialist-follow-ups` plus persisted reminder records and `specialist-follow-up-reminded` timeline evidence, so follow-up re-notify pressure is auditable on mission/workspace/operator surfaces
+- extended `action maintenance` and maintenance summaries so due specialist follow-up reminders are swept and counted alongside escalation, owner handoff, and provider attention reminder pressure
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry

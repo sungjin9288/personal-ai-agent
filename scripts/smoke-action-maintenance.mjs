@@ -77,6 +77,33 @@ const handoffFlow = createAcceptedRiskEscalation({
   objective: 'Convert one accepted-risk escalation into a pending owner handoff reminder candidate.',
 });
 
+const specialistMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Maintenance specialist follow-up reminder',
+    '--objective',
+    'Create one failed specialist branch that becomes due for maintenance reminder sweep.',
+    '--constraints',
+    'parallel-specialists:research,implementation|parallel-fail:implementation',
+  ],
+});
+
+const specialistRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', specialistMission.id],
+});
+
+assert.equal(specialistRun.status, 'failed');
+
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
 const dueTimestamp = '2026-03-02T00:00:00.000Z';
@@ -103,6 +130,17 @@ writeState((state) => {
     }
 
     return escalation;
+  });
+  state.agentRuns = state.agentRuns.map((agentRun) => {
+    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+      return {
+        ...agentRun,
+        endedAt: overdueTimestamp,
+        startedAt: overdueTimestamp,
+      };
+    }
+
+    return agentRun;
   });
 });
 
@@ -164,12 +202,12 @@ const preMaintenanceReminderInbox = runCli({
   args: ['action', 'inbox', '--workspace', workspace.id, '--needs-reminder'],
 });
 
-assert.equal(preMaintenanceReminderInbox.summary.pendingActionCount, 2);
-assert.equal(preMaintenanceReminderInbox.summary.reminderCounts.eligible, 2);
-assert.equal(preMaintenanceReminderInbox.summary.reminderCounts.needsReminder, 2);
+assert.equal(preMaintenanceReminderInbox.summary.pendingActionCount, 3);
+assert.equal(preMaintenanceReminderInbox.summary.reminderCounts.eligible, 3);
+assert.equal(preMaintenanceReminderInbox.summary.reminderCounts.needsReminder, 3);
 assert.deepEqual(
   preMaintenanceReminderInbox.items.map((item) => item.actionType).sort(),
-  ['accepted-risk-monitoring', 'owner-handoff'],
+  ['accepted-risk-monitoring', 'owner-handoff', 'specialist-follow-up'],
 );
 
 const maintenance = runCli({
@@ -196,10 +234,16 @@ assert.equal(maintenance.ownerHandoffReminders.filters.dueOnly, true);
 assert.equal(maintenance.ownerHandoffReminders.summary.dueCandidateCount, 1);
 assert.equal(maintenance.ownerHandoffReminders.summary.remindedCount, 1);
 assert.equal(maintenance.ownerHandoffReminders.items[0].id, handoffFlow.resolution.escalation.id);
-assert.equal(maintenance.summary.dueCandidateCountTotal, 2);
+assert.equal(maintenance.specialistFollowUpReminders.filters.dueOnly, true);
+assert.equal(maintenance.specialistFollowUpReminders.summary.dueCandidateCount, 1);
+assert.equal(maintenance.specialistFollowUpReminders.summary.remindedCount, 1);
+assert.equal(maintenance.specialistFollowUpReminders.items[0].missionId, specialistMission.id);
+assert.equal(maintenance.specialistFollowUpReminders.items[0].specialistKind, 'implementation');
+assert.equal(maintenance.summary.dueCandidateCountTotal, 3);
 assert.equal(maintenance.summary.escalationRemindedCount, 1);
 assert.equal(maintenance.summary.ownerHandoffRemindedCount, 1);
-assert.equal(maintenance.summary.totalRemindedCount, 2);
+assert.equal(maintenance.summary.specialistFollowUpRemindedCount, 1);
+assert.equal(maintenance.summary.totalRemindedCount, 3);
 assert.equal(maintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
 assert.equal(maintenance.summary.resolvedMaintenanceRequiredCount, 1);
 assert.equal(maintenance.summary.remainingMaintenanceRequiredCount, 0);
@@ -209,6 +253,9 @@ assert.equal(maintenance.maintenanceRun.resolvedMaintenanceRequiredCount, 1);
 assert.equal(maintenance.maintenanceRun.remainingMaintenanceRequiredCount, 0);
 assert.equal(maintenance.maintenanceRun.beforePressureSummary.maintenanceRequiredCount, 1);
 assert.equal(maintenance.maintenanceRun.afterPressureSummary.maintenanceRequiredCount, 0);
+assert.equal(maintenance.maintenanceRun.beforePressureSummary.currentDueSpecialistFollowUpCountTotal, 1);
+assert.equal(maintenance.maintenanceRun.afterPressureSummary.currentDueSpecialistFollowUpCountTotal, 0);
+assert.equal(maintenance.maintenanceRun.specialistFollowUpRemindedCount, 1);
 
 const postMaintenanceReminderInbox = runCli({
   rootDir: tempRoot,
@@ -240,6 +287,7 @@ console.log(
       escalationRemindedCount: maintenance.summary.escalationRemindedCount,
       ownerHandoffRemindedCount: maintenance.summary.ownerHandoffRemindedCount,
       mode: 'action-maintenance',
+      specialistFollowUpRemindedCount: maintenance.summary.specialistFollowUpRemindedCount,
       totalRemindedCount: maintenance.summary.totalRemindedCount,
     },
     null,

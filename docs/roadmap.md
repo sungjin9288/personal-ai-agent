@@ -52,6 +52,7 @@
 - `action remediate-specialist-follow-up` now gives failed or blocked specialist branches the same local-first remediation path by rerunning the mission with the same provider and resuming the existing `parallelGroupId` lineage
 - added dedicated `action specialist-follow-ups` query surface so blocked or failed specialist branches can be sliced directly by provider, workspace, mission, status, or overdue state without relying on generic inbox filtering alone
 - specialist follow-up lifecycle now also supports persisted reminders plus `--needs-reminder` and `action remind-specialist-follow-ups`, and reminder events now appear on mission/workspace/operator timelines
+- `action maintenance` now also sweeps due specialist follow-up reminders, so blocked or failed specialist branch follow-up uses the same local-first maintenance entrypoint already shared by escalation, owner handoff, and provider attention pressure
 - overdue incident logging now also covers `specialist-follow-up-required`, so unresolved specialist branches can be promoted into the tracked incident trail instead of remaining only in queue state
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage
