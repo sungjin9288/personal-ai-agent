@@ -2722,6 +2722,73 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
   };
 }
 
+function summarizeWorkspaceUsageTrendEntries(entries = []) {
+  const statusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+  );
+  const workspaceIdsByStatus = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, []]),
+  );
+  let latestGrowingWorkspace = null;
+  let latestGrowingWorkspaceAt = null;
+  let latestDecliningWorkspace = null;
+  let latestDecliningWorkspaceAt = null;
+
+  for (const entry of entries) {
+    if (statusCounts[entry.status] !== undefined) {
+      statusCounts[entry.status] += 1;
+    }
+    if (workspaceIdsByStatus[entry.status]) {
+      workspaceIdsByStatus[entry.status].push(entry.id);
+    }
+    const candidateLatestAt = entry.latestAt || null;
+    if (
+      entry.status === 'growing' &&
+      candidateLatestAt &&
+      (!latestGrowingWorkspaceAt || String(latestGrowingWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestGrowingWorkspaceAt = candidateLatestAt;
+      latestGrowingWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        workspaceUsageTrend: entry.workspaceUsageTrend || null,
+      };
+    }
+    if (
+      entry.status === 'declining' &&
+      candidateLatestAt &&
+      (!latestDecliningWorkspaceAt || String(latestDecliningWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestDecliningWorkspaceAt = candidateLatestAt;
+      latestDecliningWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        workspaceUsageTrend: entry.workspaceUsageTrend || null,
+      };
+    }
+  }
+
+  for (const status of Object.keys(workspaceIdsByStatus)) {
+    workspaceIdsByStatus[status] = workspaceIdsByStatus[status].sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    );
+  }
+
+  return {
+    latestDecliningWorkspace,
+    latestGrowingWorkspace,
+    statusCounts,
+    workspaceCount: entries.length,
+    workspaceIdsByStatus,
+  };
+}
+
 export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const providerRegistry = createProviderRegistry({ rootDir });
@@ -10489,6 +10556,33 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           monthlyBuckets: usageSummary.usageMonthlyBuckets,
           used: missions.length > 0,
         });
+        const workspaceUsageEntries = touchedWorkspaceIds.map((workspaceId) => {
+          const workspace = workspaceById.get(workspaceId) || null;
+          const workspaceMissions = missions.filter((entry) => entry.workspace?.id === workspaceId);
+          const workspaceUsageSummary = summarizeOrchestrationProfileUsageEntries(workspaceMissions);
+          const workspaceLatestMissionEntry = getLatestItem(workspaceMissions, 'latestAt');
+          const perWorkspaceUsageTrend = summarizeOrchestrationProfileWorkspaceUsageTrend({
+            currentMonthStartDate: scopeLatestMonthStartDate,
+            monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
+            used: workspaceMissions.length > 0,
+          });
+
+          return {
+            id: workspaceId,
+            latestAt: workspaceLatestMissionEntry?.latestAt || null,
+            name: workspace?.name || workspaceLatestMissionEntry?.workspace?.name || null,
+            profileDisplayName: profile.displayName,
+            profileId: profile.id,
+            status: perWorkspaceUsageTrend.status,
+            workspaceUsageTrend: perWorkspaceUsageTrend,
+          };
+        });
+        const workspaceUsageAggregate = summarizeWorkspaceUsageTrendEntries(workspaceUsageEntries);
+        workspaceUsageTrend.latestDecliningWorkspace = workspaceUsageAggregate.latestDecliningWorkspace;
+        workspaceUsageTrend.latestGrowingWorkspace = workspaceUsageAggregate.latestGrowingWorkspace;
+        workspaceUsageTrend.workspaceCount = workspaceUsageAggregate.workspaceCount;
+        workspaceUsageTrend.workspaceIdsByStatus = workspaceUsageAggregate.workspaceIdsByStatus;
+        workspaceUsageTrend.workspaceStatusCounts = workspaceUsageAggregate.statusCounts;
         const adoptionDrift = summarizeOrchestrationProfileAdoptionDrift({
           usageTrend,
           workspaceUsageTrend,
