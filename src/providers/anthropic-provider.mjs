@@ -10,18 +10,17 @@ import {
 import {
   buildRequestPrompt,
   extractAnthropicContentText,
-  normalizeStructuredOutput,
   normalizeText,
+  normalizeStructuredOutput,
   parseJsonText,
   parsePositiveInteger,
 } from './structured-provider-utils.mjs';
+import { getProviderSpec } from './provider-catalog.mjs';
 
-const ANTHROPIC_PROBE_TIMEOUT_MS = 8000;
-const ANTHROPIC_RUN_TIMEOUT_MS = 20000;
-const ANTHROPIC_MAX_ATTEMPTS = 2;
+const ANTHROPIC_SPEC = getProviderSpec('anthropic');
 
 function resolveAnthropicConfig(env) {
-  const apiKey = normalizeText(env.ANTHROPIC_API_KEY);
+  const apiKey = normalizeText(env[ANTHROPIC_SPEC.envKeys.apiKey]);
   if (!apiKey) {
     throw createProviderFailure('ANTHROPIC_API_KEY is required to use --provider anthropic.', {
       failureKind: 'config',
@@ -31,7 +30,7 @@ function resolveAnthropicConfig(env) {
     });
   }
 
-  const version = normalizeText(env.ANTHROPIC_VERSION, '2023-06-01');
+  const version = normalizeText(env[ANTHROPIC_SPEC.envKeys.version], ANTHROPIC_SPEC.defaults.version);
   if (!version) {
     throw createProviderFailure('ANTHROPIC_VERSION must not be empty when --provider anthropic is used.', {
       failureKind: 'config',
@@ -45,14 +44,18 @@ function resolveAnthropicConfig(env) {
   let inputCostPer1MUsd;
   let outputCostPer1MUsd;
   try {
-    maxTokens = parsePositiveInteger(env.ANTHROPIC_MAX_TOKENS, 2048, 'ANTHROPIC_MAX_TOKENS');
+    maxTokens = parsePositiveInteger(
+      env[ANTHROPIC_SPEC.envKeys.maxTokens],
+      ANTHROPIC_SPEC.defaults.maxTokens,
+      ANTHROPIC_SPEC.envKeys.maxTokens,
+    );
     inputCostPer1MUsd = parseOptionalUsdRate(
-      env.ANTHROPIC_INPUT_COST_PER_1M_USD,
-      'ANTHROPIC_INPUT_COST_PER_1M_USD',
+      env[ANTHROPIC_SPEC.envKeys.inputCostPer1MUsd],
+      ANTHROPIC_SPEC.envKeys.inputCostPer1MUsd,
     );
     outputCostPer1MUsd = parseOptionalUsdRate(
-      env.ANTHROPIC_OUTPUT_COST_PER_1M_USD,
-      'ANTHROPIC_OUTPUT_COST_PER_1M_USD',
+      env[ANTHROPIC_SPEC.envKeys.outputCostPer1MUsd],
+      ANTHROPIC_SPEC.envKeys.outputCostPer1MUsd,
     );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
@@ -65,9 +68,9 @@ function resolveAnthropicConfig(env) {
 
   return {
     apiKey,
-    baseUrl: normalizeText(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1').replace(/\/$/, ''),
+    baseUrl: normalizeText(env[ANTHROPIC_SPEC.envKeys.baseUrl], ANTHROPIC_SPEC.defaults.baseUrl).replace(/\/$/, ''),
     maxTokens,
-    model: normalizeText(env.ANTHROPIC_MODEL, 'claude-sonnet-4-6'),
+    model: normalizeText(env[ANTHROPIC_SPEC.envKeys.model], ANTHROPIC_SPEC.defaults.model),
     pricing: {
       inputCostPer1MUsd,
       outputCostPer1MUsd,
@@ -101,10 +104,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
           'anthropic-version': config.version,
           'x-api-key': config.apiKey,
         },
-        maxAttempts: ANTHROPIC_MAX_ATTEMPTS,
+        maxAttempts: ANTHROPIC_SPEC.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'Anthropic',
-        timeoutMs: ANTHROPIC_PROBE_TIMEOUT_MS,
+        timeoutMs: ANTHROPIC_SPEC.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
       const models = Array.isArray(payload?.data)
@@ -123,7 +126,7 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         ok: true,
         retryCount,
         sampleModels: models.slice(0, 5),
-        transport: 'messages-api',
+        transport: ANTHROPIC_SPEC.transport,
       };
     },
     async run(input) {
@@ -150,10 +153,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
               'Return only valid JSON that matches the requested contract. Do not add code fences or explanatory prose.',
           }),
         },
-        maxAttempts: ANTHROPIC_MAX_ATTEMPTS,
+        maxAttempts: ANTHROPIC_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Anthropic',
-        timeoutMs: ANTHROPIC_RUN_TIMEOUT_MS,
+        timeoutMs: ANTHROPIC_SPEC.runtime.runTimeoutMs,
         url: `${config.baseUrl}/messages`,
       });
       const providerResponseId = normalizeText(payload.id);

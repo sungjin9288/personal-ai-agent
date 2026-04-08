@@ -10,17 +10,16 @@ import {
 import {
   buildRequestPrompt,
   extractOpenAIOutputText,
-  normalizeStructuredOutput,
   normalizeText,
+  normalizeStructuredOutput,
   parseJsonText,
 } from './structured-provider-utils.mjs';
+import { getProviderSpec } from './provider-catalog.mjs';
 
-const OPENAI_PROBE_TIMEOUT_MS = 8000;
-const OPENAI_RUN_TIMEOUT_MS = 20000;
-const OPENAI_MAX_ATTEMPTS = 2;
+const OPENAI_SPEC = getProviderSpec('openai');
 
 function resolveOpenAIConfig(env) {
-  const apiKey = normalizeText(env.OPENAI_API_KEY);
+  const apiKey = normalizeText(env[OPENAI_SPEC.envKeys.apiKey]);
   if (!apiKey) {
     throw createProviderFailure('OPENAI_API_KEY is required to use --provider openai.', {
       failureKind: 'config',
@@ -33,8 +32,14 @@ function resolveOpenAIConfig(env) {
   let inputCostPer1MUsd;
   let outputCostPer1MUsd;
   try {
-    inputCostPer1MUsd = parseOptionalUsdRate(env.OPENAI_INPUT_COST_PER_1M_USD, 'OPENAI_INPUT_COST_PER_1M_USD');
-    outputCostPer1MUsd = parseOptionalUsdRate(env.OPENAI_OUTPUT_COST_PER_1M_USD, 'OPENAI_OUTPUT_COST_PER_1M_USD');
+    inputCostPer1MUsd = parseOptionalUsdRate(
+      env[OPENAI_SPEC.envKeys.inputCostPer1MUsd],
+      OPENAI_SPEC.envKeys.inputCostPer1MUsd,
+    );
+    outputCostPer1MUsd = parseOptionalUsdRate(
+      env[OPENAI_SPEC.envKeys.outputCostPer1MUsd],
+      OPENAI_SPEC.envKeys.outputCostPer1MUsd,
+    );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
       failureKind: 'config',
@@ -46,8 +51,8 @@ function resolveOpenAIConfig(env) {
 
   return {
     apiKey,
-    baseUrl: normalizeText(env.OPENAI_BASE_URL, 'https://api.openai.com/v1').replace(/\/$/, ''),
-    model: normalizeText(env.OPENAI_MODEL, 'gpt-5.2'),
+    baseUrl: normalizeText(env[OPENAI_SPEC.envKeys.baseUrl], OPENAI_SPEC.defaults.baseUrl).replace(/\/$/, ''),
+    model: normalizeText(env[OPENAI_SPEC.envKeys.model], OPENAI_SPEC.defaults.model),
     pricing: {
       inputCostPer1MUsd,
       outputCostPer1MUsd,
@@ -79,10 +84,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
         },
-        maxAttempts: OPENAI_MAX_ATTEMPTS,
+        maxAttempts: OPENAI_SPEC.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'OpenAI',
-        timeoutMs: OPENAI_PROBE_TIMEOUT_MS,
+        timeoutMs: OPENAI_SPEC.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
       const models = Array.isArray(payload?.data)
@@ -101,7 +106,7 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         ok: true,
         retryCount,
         sampleModels: models.slice(0, 5),
-        transport: 'responses-api',
+        transport: OPENAI_SPEC.transport,
       };
     },
     async run(input) {
@@ -119,10 +124,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
             model: config.model,
           }),
         },
-        maxAttempts: OPENAI_MAX_ATTEMPTS,
+        maxAttempts: OPENAI_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'OpenAI',
-        timeoutMs: OPENAI_RUN_TIMEOUT_MS,
+        timeoutMs: OPENAI_SPEC.runtime.runTimeoutMs,
         url: `${config.baseUrl}/responses`,
       });
       const providerResponseId = normalizeText(payload.id);

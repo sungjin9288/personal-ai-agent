@@ -10,18 +10,17 @@ import {
 import {
   buildRequestPrompt,
   extractChatCompletionText,
-  normalizeStructuredOutput,
   normalizeText,
+  normalizeStructuredOutput,
   parseJsonText,
   parsePositiveInteger,
 } from './structured-provider-utils.mjs';
+import { getProviderSpec } from './provider-catalog.mjs';
 
-const LOCAL_PROBE_TIMEOUT_MS = 5000;
-const LOCAL_RUN_TIMEOUT_MS = 15000;
-const LOCAL_MAX_ATTEMPTS = 2;
+const LOCAL_SPEC = getProviderSpec('local');
 
 function resolveLocalConfig(env) {
-  const model = normalizeText(env.LOCAL_PROVIDER_MODEL);
+  const model = normalizeText(env[LOCAL_SPEC.envKeys.model]);
   if (!model) {
     throw createProviderFailure('LOCAL_PROVIDER_MODEL is required to use --provider local.', {
       failureKind: 'config',
@@ -35,14 +34,18 @@ function resolveLocalConfig(env) {
   let inputCostPer1MUsd;
   let outputCostPer1MUsd;
   try {
-    maxTokens = parsePositiveInteger(env.LOCAL_PROVIDER_MAX_TOKENS, 2048, 'LOCAL_PROVIDER_MAX_TOKENS');
+    maxTokens = parsePositiveInteger(
+      env[LOCAL_SPEC.envKeys.maxTokens],
+      LOCAL_SPEC.defaults.maxTokens,
+      LOCAL_SPEC.envKeys.maxTokens,
+    );
     inputCostPer1MUsd = parseOptionalUsdRate(
-      env.LOCAL_INPUT_COST_PER_1M_USD,
-      'LOCAL_INPUT_COST_PER_1M_USD',
+      env[LOCAL_SPEC.envKeys.inputCostPer1MUsd],
+      LOCAL_SPEC.envKeys.inputCostPer1MUsd,
     );
     outputCostPer1MUsd = parseOptionalUsdRate(
-      env.LOCAL_OUTPUT_COST_PER_1M_USD,
-      'LOCAL_OUTPUT_COST_PER_1M_USD',
+      env[LOCAL_SPEC.envKeys.outputCostPer1MUsd],
+      LOCAL_SPEC.envKeys.outputCostPer1MUsd,
     );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
@@ -54,8 +57,8 @@ function resolveLocalConfig(env) {
   }
 
   return {
-    apiKey: normalizeText(env.LOCAL_PROVIDER_API_KEY),
-    baseUrl: normalizeText(env.LOCAL_PROVIDER_BASE_URL, 'http://127.0.0.1:11434/v1').replace(/\/$/, ''),
+    apiKey: normalizeText(env[LOCAL_SPEC.envKeys.apiKey]),
+    baseUrl: normalizeText(env[LOCAL_SPEC.envKeys.baseUrl], LOCAL_SPEC.defaults.baseUrl).replace(/\/$/, ''),
     maxTokens,
     model,
     pricing: {
@@ -93,10 +96,10 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       const { payload, attemptCount, attemptHistory, durationMs, retryCount } = await requestJsonWithPolicy({
         fetchImpl,
         headers,
-        maxAttempts: LOCAL_MAX_ATTEMPTS,
+        maxAttempts: LOCAL_SPEC.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'Local',
-        timeoutMs: LOCAL_PROBE_TIMEOUT_MS,
+        timeoutMs: LOCAL_SPEC.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
       const models = Array.isArray(payload?.data)
@@ -115,7 +118,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         ok: true,
         retryCount,
         sampleModels: models.slice(0, 5),
-        transport: 'openai-compatible-chat-completions',
+        transport: LOCAL_SPEC.transport,
       };
     },
     async run(input) {
@@ -150,10 +153,10 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
             temperature: 0,
           }),
         },
-        maxAttempts: LOCAL_MAX_ATTEMPTS,
+        maxAttempts: LOCAL_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Local',
-        timeoutMs: LOCAL_RUN_TIMEOUT_MS,
+        timeoutMs: LOCAL_SPEC.runtime.runTimeoutMs,
         url: `${config.baseUrl}/chat/completions`,
       });
       const providerResponseId = normalizeText(payload.id);

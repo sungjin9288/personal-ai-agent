@@ -58,6 +58,7 @@
 - generic `action inbox` summary now also exposes specialist follow-up provider, kind, status, and reminder aggregates, so mixed operator queues can show specialist pressure without switching to the dedicated follow-up surface
 - `action log-overdue` now also carries specialist follow-up reminder aggregate in both the response summary and incident markdown, so overdue incident trails preserve the same specialist pressure signal already visible in queue summaries
 - overdue incident response and incident markdown now also expose provider health drift provider or reason-code aggregate, so provider drift pressure keeps the same summary contract between queue triage and incident trail
+- provider metadata, readiness defaults, and adapter runtime defaults now derive from a shared provider catalog inspired by OpenHarness-style registry layering, reducing provider literal drift across registry and adapter modules
 - overdue incident logging now also covers `specialist-follow-up-required`, so unresolved specialist branches can be promoted into the tracked incident trail instead of remaining only in queue state
 - provider failures now surface as `provider-attention-required` operator actions inside the unified action inbox
 - provider attention lifecycle now supports explicit acknowledgement, acknowledged audit view, and provider event/overview linkage

@@ -2,6 +2,7 @@ import { PROVIDER_IDS } from '../core/constants.mjs';
 import { createAnthropicProvider } from './anthropic-provider.mjs';
 import { createLocalProvider } from './local-provider.mjs';
 import { createOpenAIProvider } from './openai-provider.mjs';
+import { getProviderSpec, listProviderSpecs } from './provider-catalog.mjs';
 import { extractProviderFailure } from './provider-runtime-utils.mjs';
 import { createStubProvider } from './stub-provider.mjs';
 
@@ -9,54 +10,21 @@ function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
 
-function buildProviderSpecMap() {
-  return {
-    stub: {
-      id: 'stub',
-      defaultProvider: true,
-      displayName: 'Stub',
-      optionalEnv: [],
-      requiredEnv: [],
-      transport: 'deterministic-local',
-    },
-    openai: {
-      id: 'openai',
-      defaultProvider: false,
-      displayName: 'OpenAI',
-      optionalEnv: ['OPENAI_MODEL', 'OPENAI_BASE_URL', 'OPENAI_INPUT_COST_PER_1M_USD', 'OPENAI_OUTPUT_COST_PER_1M_USD'],
-      requiredEnv: ['OPENAI_API_KEY'],
-      transport: 'responses-api',
-    },
-    anthropic: {
-      id: 'anthropic',
-      defaultProvider: false,
-      displayName: 'Anthropic',
-      optionalEnv: [
-        'ANTHROPIC_MODEL',
-        'ANTHROPIC_BASE_URL',
-        'ANTHROPIC_VERSION',
-        'ANTHROPIC_MAX_TOKENS',
-        'ANTHROPIC_INPUT_COST_PER_1M_USD',
-        'ANTHROPIC_OUTPUT_COST_PER_1M_USD',
-      ],
-      requiredEnv: ['ANTHROPIC_API_KEY'],
-      transport: 'messages-api',
-    },
-    local: {
-      id: 'local',
-      defaultProvider: false,
-      displayName: 'Local',
-      optionalEnv: [
-        'LOCAL_PROVIDER_BASE_URL',
-        'LOCAL_PROVIDER_API_KEY',
-        'LOCAL_PROVIDER_MAX_TOKENS',
-        'LOCAL_INPUT_COST_PER_1M_USD',
-        'LOCAL_OUTPUT_COST_PER_1M_USD',
-      ],
-      requiredEnv: ['LOCAL_PROVIDER_MODEL'],
-      transport: 'openai-compatible-chat-completions',
-    },
-  };
+function buildProviderConfiguration(spec, env) {
+  return Object.fromEntries(
+    (spec.configurationFields || []).map((field) => {
+      const value = field.type === 'presence'
+        ? Boolean(normalizeText(env[field.envKey]))
+        : (() => {
+            const normalized = normalizeText(env[field.envKey], field.defaultValue ?? '');
+            if (!normalized && field.emptyAsNull) {
+              return null;
+            }
+            return normalized;
+          })();
+      return [field.key, value];
+    }),
+  );
 }
 
 function buildProviderStatus(spec, env, provider) {
@@ -74,36 +42,7 @@ function buildProviderStatus(spec, env, provider) {
     transport: spec.transport,
   };
 
-  if (spec.id === 'openai') {
-    status.configuration = {
-      apiKeyPresent: Boolean(normalizeText(env.OPENAI_API_KEY)),
-      baseUrl: normalizeText(env.OPENAI_BASE_URL, 'https://api.openai.com/v1'),
-      inputCostPer1MUsd: normalizeText(env.OPENAI_INPUT_COST_PER_1M_USD) || null,
-      model: normalizeText(env.OPENAI_MODEL, 'gpt-5.2'),
-      outputCostPer1MUsd: normalizeText(env.OPENAI_OUTPUT_COST_PER_1M_USD) || null,
-    };
-  } else if (spec.id === 'anthropic') {
-    status.configuration = {
-      apiKeyPresent: Boolean(normalizeText(env.ANTHROPIC_API_KEY)),
-      baseUrl: normalizeText(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1'),
-      inputCostPer1MUsd: normalizeText(env.ANTHROPIC_INPUT_COST_PER_1M_USD) || null,
-      maxTokens: normalizeText(env.ANTHROPIC_MAX_TOKENS, '2048'),
-      model: normalizeText(env.ANTHROPIC_MODEL, 'claude-sonnet-4-6'),
-      outputCostPer1MUsd: normalizeText(env.ANTHROPIC_OUTPUT_COST_PER_1M_USD) || null,
-      version: normalizeText(env.ANTHROPIC_VERSION, '2023-06-01'),
-    };
-  } else if (spec.id === 'local') {
-    status.configuration = {
-      apiKeyPresent: Boolean(normalizeText(env.LOCAL_PROVIDER_API_KEY)),
-      baseUrl: normalizeText(env.LOCAL_PROVIDER_BASE_URL, 'http://127.0.0.1:11434/v1'),
-      inputCostPer1MUsd: normalizeText(env.LOCAL_INPUT_COST_PER_1M_USD) || null,
-      maxTokens: normalizeText(env.LOCAL_PROVIDER_MAX_TOKENS, '2048'),
-      model: normalizeText(env.LOCAL_PROVIDER_MODEL),
-      outputCostPer1MUsd: normalizeText(env.LOCAL_OUTPUT_COST_PER_1M_USD) || null,
-    };
-  } else {
-    status.configuration = {};
-  }
+  status.configuration = buildProviderConfiguration(spec, env);
 
   return status;
 }
@@ -115,7 +54,6 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
     anthropic: createAnthropicProvider({ rootDir, env, fetchImpl }),
     local: createLocalProvider({ rootDir, env, fetchImpl }),
   };
-  const providerSpecs = buildProviderSpecMap();
 
   return {
     getProvider(providerId) {
@@ -127,7 +65,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
       return providers[normalizedProviderId];
     },
     listProviders() {
-      return PROVIDER_IDS.map((providerId) => buildProviderStatus(providerSpecs[providerId], env, providers[providerId]));
+      return listProviderSpecs().map((spec) => buildProviderStatus(spec, env, providers[spec.id]));
     },
     getProviderStatus(providerId) {
       const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
@@ -135,7 +73,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         throw new Error(`Unsupported provider: ${normalizedProviderId}`);
       }
 
-      return buildProviderStatus(providerSpecs[normalizedProviderId], env, providers[normalizedProviderId]);
+      return buildProviderStatus(getProviderSpec(normalizedProviderId), env, providers[normalizedProviderId]);
     },
     async probeProvider(providerId) {
       const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
@@ -143,7 +81,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         throw new Error(`Unsupported provider: ${normalizedProviderId}`);
       }
 
-      const status = buildProviderStatus(providerSpecs[normalizedProviderId], env, providers[normalizedProviderId]);
+      const status = buildProviderStatus(getProviderSpec(normalizedProviderId), env, providers[normalizedProviderId]);
       if (!status.implemented) {
         return {
           ...status,
