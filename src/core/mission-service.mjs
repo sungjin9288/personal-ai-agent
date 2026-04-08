@@ -2102,14 +2102,19 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   const modeCounts = Object.fromEntries(MISSION_MODES.map((mode) => [mode, 0]));
   const qualityGateCounts = {};
   const retryPolicyCounts = {};
+  const specialistFollowUpRemediationRouteCounts = {};
+  const specialistFollowUpRetryPolicyCounts = {};
   const touchedProfileIds = [];
   let missionCountTotal = 0;
   let parallelGroupCountTotal = 0;
   let mergedParallelGroupCountTotal = 0;
   let qualityGateBlockedGroupCountTotal = 0;
+  let specialistFollowUpLatestReminderAt = null;
   let specialistFollowUpNeedsReminderCountTotal = 0;
+  let specialistFollowUpNextReminderAt = null;
   let specialistFollowUpOverdueCountTotal = 0;
   let specialistFollowUpRequiredCountTotal = 0;
+  let specialistFollowUpReminderCountTotal = 0;
   let usedCount = 0;
 
   for (const item of items) {
@@ -2125,6 +2130,29 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     specialistFollowUpRequiredCountTotal += Number(item.specialistFollowUpRequiredCount || 0);
     specialistFollowUpNeedsReminderCountTotal += Number(item.specialistFollowUpNeedsReminderCount || 0);
     specialistFollowUpOverdueCountTotal += Number(item.specialistFollowUpOverdueCount || 0);
+    specialistFollowUpReminderCountTotal += Number(item.specialistFollowUpReminderCountTotal || 0);
+    accumulateCountMap(
+      specialistFollowUpRetryPolicyCounts,
+      item.specialistFollowUpRetryPolicyCounts || {},
+    );
+    accumulateCountMap(
+      specialistFollowUpRemediationRouteCounts,
+      item.specialistFollowUpRemediationRouteCounts || {},
+    );
+    if (
+      item.specialistFollowUpLatestReminderAt &&
+      (!specialistFollowUpLatestReminderAt ||
+        String(specialistFollowUpLatestReminderAt) < String(item.specialistFollowUpLatestReminderAt))
+    ) {
+      specialistFollowUpLatestReminderAt = item.specialistFollowUpLatestReminderAt;
+    }
+    if (
+      item.specialistFollowUpNextReminderAt &&
+      (!specialistFollowUpNextReminderAt ||
+        String(specialistFollowUpNextReminderAt) > String(item.specialistFollowUpNextReminderAt))
+    ) {
+      specialistFollowUpNextReminderAt = item.specialistFollowUpNextReminderAt;
+    }
     if (item.used) {
       usedCount += 1;
       touchedProfileIds.push(item.id);
@@ -2152,9 +2180,14 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     qualityGateBlockedGroupCountTotal,
     qualityGateCounts,
     retryPolicyCounts,
+    specialistFollowUpLatestReminderAt,
     specialistFollowUpNeedsReminderCountTotal,
+    specialistFollowUpNextReminderAt,
     specialistFollowUpOverdueCountTotal,
+    specialistFollowUpRemediationRouteCounts,
+    specialistFollowUpReminderCountTotal,
     specialistFollowUpRequiredCountTotal,
+    specialistFollowUpRetryPolicyCounts,
     total: items.length,
     touchedProfileIds: touchedProfileIds.sort((left, right) => String(left).localeCompare(String(right))),
     unusedCount: items.length - usedCount,
@@ -9811,12 +9844,17 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           missionStatusCounts,
           parallelGroupCount: groups.length,
           qualityGateBlockedGroupCount: groups.filter((group) => group.qualityGate?.status === 'blocked').length,
+          specialistFollowUpKindCounts: followUpSummary.specialistKindCounts,
           specialistFollowUpLatestItem: followUpSummary.latestItem,
+          specialistFollowUpLatestReminderAt: followUpSummary.latestReminderAt,
           specialistFollowUpNeedsReminderCount: followUpSummary.needsReminderCount,
+          specialistFollowUpNextReminderAt: followUpSummary.nextReminderAt,
           specialistFollowUpOverdueCount: followUpSummary.overdueCount,
           specialistFollowUpProviderCounts: followUpSummary.providerCounts,
+          specialistFollowUpRemediationRouteCounts: followUpSummary.remediationRouteCounts,
           specialistFollowUpRequiredCount: followUps.length,
           specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
+          specialistFollowUpRetryPolicyCounts: followUpSummary.retryPolicyCounts,
           specialistFollowUpStatusCounts: followUpSummary.statusCounts,
           touchedMissionIds: [...missionIds].sort((left, right) => String(left).localeCompare(String(right))),
           touchedWorkspaceIds,

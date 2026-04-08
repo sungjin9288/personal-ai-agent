@@ -82,6 +82,13 @@ assert.equal(overview.summary.parallelGroupCountTotal, 2);
 assert.equal(overview.summary.mergedParallelGroupCountTotal, 1);
 assert.equal(overview.summary.qualityGateBlockedGroupCountTotal, 1);
 assert.equal(overview.summary.specialistFollowUpRequiredCountTotal, 1);
+assert.equal(overview.summary.specialistFollowUpNeedsReminderCountTotal, 0);
+assert.equal(overview.summary.specialistFollowUpOverdueCountTotal, 0);
+assert.equal(overview.summary.specialistFollowUpReminderCountTotal, 0);
+assert.equal(overview.summary.specialistFollowUpRetryPolicyCounts['resume-verification-fast'], 1);
+assert.equal(overview.summary.specialistFollowUpRemediationRouteCounts['priority-verification-remediation'], 1);
+assert.equal(overview.summary.specialistFollowUpLatestReminderAt, null);
+assert.equal(overview.summary.specialistFollowUpNextReminderAt, null);
 assert.deepEqual(overview.summary.touchedProfileIds, [
   'engineering-implementation-verification',
   'knowledge-triad',
@@ -96,6 +103,12 @@ assert.equal(knowledgeTriad.parallelGroupCount, 2);
 assert.equal(knowledgeTriad.mergedParallelGroupCount, 1);
 assert.equal(knowledgeTriad.qualityGateBlockedGroupCount, 1);
 assert.equal(knowledgeTriad.specialistFollowUpRequiredCount, 1);
+assert.equal(knowledgeTriad.specialistFollowUpReminderCountTotal, 0);
+assert.equal(knowledgeTriad.specialistFollowUpRetryPolicyCounts['resume-verification-fast'], 1);
+assert.equal(knowledgeTriad.specialistFollowUpRemediationRouteCounts['priority-verification-remediation'], 1);
+assert.equal(knowledgeTriad.specialistFollowUpKindCounts.verification, 1);
+assert.equal(knowledgeTriad.specialistFollowUpLatestReminderAt, null);
+assert.equal(knowledgeTriad.specialistFollowUpNextReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpStatusCounts.blocked, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.failed, 1);
@@ -111,6 +124,9 @@ assert.ok(engineeringImplementationVerification);
 assert.equal(engineeringImplementationVerification.used, true);
 assert.equal(engineeringImplementationVerification.missionCount, 1);
 assert.equal(engineeringImplementationVerification.parallelGroupCount, 0);
+assert.equal(engineeringImplementationVerification.specialistFollowUpRequiredCount, 0);
+assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRetryPolicyCounts, {});
+assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRemediationRouteCounts, {});
 assert.equal(engineeringImplementationVerification.missionStatusCounts.created, 1);
 assert.equal(engineeringImplementationVerification.latestMission.id, engineeringMission.id);
 
