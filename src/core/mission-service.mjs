@@ -2354,6 +2354,113 @@ const ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES = [
   'specialist-follow-up-overdue',
 ];
 
+function buildOrchestrationProfileUsageMonthlyBuckets(entries = []) {
+  const bucketMap = new Map();
+
+  for (const entry of entries) {
+    const latestAt = String(entry?.latestAt || entry?.mission?.updatedAt || entry?.mission?.createdAt || '');
+    if (!latestAt) {
+      continue;
+    }
+
+    const monthRange = getUtcMonthRange(latestAt);
+    if (!monthRange) {
+      continue;
+    }
+
+    const current = bucketMap.get(monthRange.key) || {
+      missionCount: 0,
+      missionIds: new Set(),
+      modeCounts: Object.fromEntries(MISSION_MODES.map((mode) => [mode, 0])),
+      monthEndDate: monthRange.monthEndDate,
+      monthKey: monthRange.monthKey,
+      monthStartDate: monthRange.monthStartDate,
+      profileCounts: {},
+      touchedProfileIds: new Set(),
+      touchedWorkspaceIds: new Set(),
+      workspaceCounts: {},
+    };
+
+    current.missionCount += 1;
+    if (entry?.mission?.id) {
+      current.missionIds.add(entry.mission.id);
+    }
+    if (current.modeCounts[entry?.mission?.mode] !== undefined) {
+      current.modeCounts[entry.mission.mode] += 1;
+    }
+    if (entry?.profile?.id) {
+      current.profileCounts[entry.profile.id] = (current.profileCounts[entry.profile.id] || 0) + 1;
+      current.touchedProfileIds.add(entry.profile.id);
+    }
+    if (entry?.workspace?.id) {
+      current.workspaceCounts[entry.workspace.id] = (current.workspaceCounts[entry.workspace.id] || 0) + 1;
+      current.touchedWorkspaceIds.add(entry.workspace.id);
+    }
+
+    bucketMap.set(monthRange.key, current);
+  }
+
+  return [...bucketMap.values()]
+    .map((bucket) => {
+      const missionIds = [...bucket.missionIds].sort((left, right) => String(left).localeCompare(String(right)));
+      const touchedProfileIds = [...bucket.touchedProfileIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      );
+      const touchedWorkspaceIds = [...bucket.touchedWorkspaceIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      );
+
+      return {
+        missionCount: bucket.missionCount,
+        missionIds,
+        modeCounts: bucket.modeCounts,
+        monthEndDate: bucket.monthEndDate,
+        monthKey: bucket.monthKey,
+        monthStartDate: bucket.monthStartDate,
+        profileCounts: bucket.profileCounts,
+        touchedProfileIds,
+        touchedWorkspaceIds,
+        usedProfileCount: touchedProfileIds.length,
+        usedWorkspaceCount: touchedWorkspaceIds.length,
+        workspaceCounts: bucket.workspaceCounts,
+      };
+    })
+    .sort((left, right) => String(right.monthStartDate).localeCompare(String(left.monthStartDate)));
+}
+
+function buildOrchestrationProfileUsageLatestMonthlyBucketDelta(monthlyBuckets = []) {
+  const current = monthlyBuckets[0] || null;
+  if (!current) {
+    return null;
+  }
+
+  const previous = monthlyBuckets[1] || null;
+
+  return {
+    currentMonthStartDate: current.monthStartDate,
+    missionCountDelta: Number(current.missionCount || 0) - Number(previous?.missionCount || 0),
+    modeCountsDelta: buildCountMapDelta(current.modeCounts || {}, previous?.modeCounts || {}),
+    previousMonthStartDate: previous?.monthStartDate || null,
+    profileCountsDelta: buildCountMapDelta(current.profileCounts || {}, previous?.profileCounts || {}),
+    usedProfileCountDelta: Number(current.usedProfileCount || 0) - Number(previous?.usedProfileCount || 0),
+    usedWorkspaceCountDelta:
+      Number(current.usedWorkspaceCount || 0) - Number(previous?.usedWorkspaceCount || 0),
+    workspaceCountsDelta: buildCountMapDelta(current.workspaceCounts || {}, previous?.workspaceCounts || {}),
+  };
+}
+
+function summarizeOrchestrationProfileUsageEntries(entries = []) {
+  const monthlyBuckets = buildOrchestrationProfileUsageMonthlyBuckets(entries);
+
+  return {
+    usageLatestMonthlyBucketDelta: buildOrchestrationProfileUsageLatestMonthlyBucketDelta(monthlyBuckets),
+    usageLatestMonthlyBucketStartDate: monthlyBuckets[0]?.monthStartDate || null,
+    usageMonthlyBucketCount: monthlyBuckets.length,
+    usageMonthlyBuckets: monthlyBuckets,
+    usageOldestMonthlyBucketStartDate: monthlyBuckets.at(-1)?.monthStartDate || null,
+  };
+}
+
 function summarizeWorkspaceHealthDriftEntries(entries = []) {
   const reasonCodeCounts = {};
   const statusCounts = {
@@ -10141,6 +10248,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           };
         });
         const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(workspaceHealthEntries);
+        const usageSummary = summarizeOrchestrationProfileUsageEntries(missions);
 
         return {
           ...profile,
@@ -10189,6 +10297,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           touchedMissionIds: [...missionIds].sort((left, right) => String(left).localeCompare(String(right))),
           touchedWorkspaceIds,
           used: missions.length > 0,
+          usageLatestMonthlyBucketDelta: usageSummary.usageLatestMonthlyBucketDelta,
+          usageLatestMonthlyBucketStartDate: usageSummary.usageLatestMonthlyBucketStartDate,
+          usageMonthlyBucketCount: usageSummary.usageMonthlyBucketCount,
+          usageMonthlyBuckets: usageSummary.usageMonthlyBuckets,
+          usageOldestMonthlyBucketStartDate: usageSummary.usageOldestMonthlyBucketStartDate,
           workspaceCount: touchedWorkspaceIds.length,
           workspaceHealthDrift,
           workspaceMissionCounts,
@@ -10218,6 +10331,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
 
     const summary = summarizeOrchestrationProfileOverviewItems(items);
+    const usageSummary = summarizeOrchestrationProfileUsageEntries(missionEntries);
+    summary.usageLatestMonthlyBucketDelta = usageSummary.usageLatestMonthlyBucketDelta;
+    summary.usageLatestMonthlyBucketStartDate = usageSummary.usageLatestMonthlyBucketStartDate;
+    summary.usageMonthlyBucketCount = usageSummary.usageMonthlyBucketCount;
+    summary.usageMonthlyBuckets = usageSummary.usageMonthlyBuckets;
+    summary.usageOldestMonthlyBucketStartDate = usageSummary.usageOldestMonthlyBucketStartDate;
     const healthDrift = {
       latestProfile: summary.latestHealthDriftProfile,
       profileCount: summary.healthDriftProfileCount,

@@ -31,6 +31,7 @@
 - added item-level `workspaceHealthDrift` to `overview profiles` so one preset can show which workspace currently owns the unstable branch or gate pressure
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
+- added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface
 - switched specialist follow-up command hints to the dedicated remediation action and added profile-aware remediation route metadata, so fast verification policies now surface a concrete operator path instead of only a generic mission run fallback
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 - threaded specialist remediation route metadata into persisted reminder records and overdue incident markdown, so retry policy, route urgency, and fallback command survive from queue triage into reminder and incident audit trails

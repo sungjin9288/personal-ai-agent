@@ -7,6 +7,11 @@ import { runCli } from './cli-test-helpers.mjs';
 import { createMissionService } from '../src/core/mission-service.mjs';
 import { createStore } from '../src/core/store.mjs';
 
+function getMonthStartDate(isoTimestamp) {
+  const date = new Date(isoTimestamp);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-orchestration-profiles-'));
 const workspacePath = path.join(tempRoot, 'workspace');
 
@@ -73,6 +78,30 @@ const engineeringTriadMission = service.createMission({
   title: 'Engineering triad second workspace mission',
   workspaceId: secondWorkspace.id,
 });
+
+store.updateMission(knowledgeMission.id, (mission) => ({
+  ...mission,
+  createdAt: '2026-04-01T09:00:00.000Z',
+  updatedAt: '2026-04-01T09:00:00.000Z',
+}));
+store.updateMission(gateMission.id, (mission) => ({
+  ...mission,
+  createdAt: '2026-04-02T09:00:00.000Z',
+  updatedAt: '2026-04-02T09:00:00.000Z',
+}));
+store.updateMission(engineeringMission.id, (mission) => ({
+  ...mission,
+  createdAt: '2026-03-15T09:00:00.000Z',
+  updatedAt: '2026-03-15T09:00:00.000Z',
+}));
+store.updateMission(engineeringTriadMission.id, (mission) => ({
+  ...mission,
+  createdAt: '2026-04-03T09:00:00.000Z',
+  updatedAt: '2026-04-03T09:00:00.000Z',
+}));
+
+const currentMonthStartDate = getMonthStartDate('2026-04-01T09:00:00.000Z');
+const previousMonthStartDate = getMonthStartDate('2026-03-15T09:00:00.000Z');
 
 const overview = runCli({
   rootDir: tempRoot,
@@ -158,6 +187,27 @@ assert.equal(overview.summary.latestUsedWorkspace.profileId, 'engineering-triad'
 assert.equal(overview.summary.latestHealthDriftWorkspace.id, workspace.id);
 assert.equal(overview.summary.latestHealthDriftWorkspace.profileId, 'knowledge-triad');
 assert.equal(overview.summary.latestHealthDriftWorkspace.status, 'follow-up-required');
+assert.equal(overview.summary.usageMonthlyBucketCount, 2);
+assert.equal(overview.summary.usageLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(overview.summary.usageOldestMonthlyBucketStartDate, previousMonthStartDate);
+assert.equal(overview.summary.usageMonthlyBuckets[0].missionCount, 3);
+assert.equal(overview.summary.usageMonthlyBuckets[0].usedProfileCount, 2);
+assert.equal(overview.summary.usageMonthlyBuckets[0].usedWorkspaceCount, 2);
+assert.equal(overview.summary.usageMonthlyBuckets[1].missionCount, 1);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.currentMonthStartDate, currentMonthStartDate);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.previousMonthStartDate, previousMonthStartDate);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.missionCountDelta, 2);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.usedProfileCountDelta, 1);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.usedWorkspaceCountDelta, 1);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.modeCountsDelta.knowledge, 2);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.profileCountsDelta['knowledge-triad'], 2);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.profileCountsDelta['engineering-triad'], 1);
+assert.equal(
+  overview.summary.usageLatestMonthlyBucketDelta.profileCountsDelta['engineering-implementation-verification'],
+  -1,
+);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.workspaceCountsDelta[workspace.id], 1);
+assert.equal(overview.summary.usageLatestMonthlyBucketDelta.workspaceCountsDelta[secondWorkspace.id], 1);
 
 const knowledgeTriad = overview.items.find((item) => item.id === 'knowledge-triad');
 assert.ok(knowledgeTriad);
@@ -186,6 +236,12 @@ assert.deepEqual(knowledgeTriad.healthDrift.reasonCodes, [
   'quality-gate-blocked',
   'specialist-follow-up-open',
 ]);
+assert.equal(knowledgeTriad.usageMonthlyBucketCount, 1);
+assert.equal(knowledgeTriad.usageLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(knowledgeTriad.usageOldestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(knowledgeTriad.usageMonthlyBuckets[0].missionCount, 2);
+assert.equal(knowledgeTriad.usageMonthlyBuckets[0].usedWorkspaceCount, 1);
+assert.equal(knowledgeTriad.usageLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.failed, 1);
 assert.equal(knowledgeTriad.workspaceMissionCounts[workspace.id], 2);
@@ -210,6 +266,16 @@ assert.equal(engineeringImplementationVerification.workspaceHealthDrift.status, 
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.statusCounts.stable, 1);
 assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceIdsByStatus.stable, [workspace.id]);
+assert.equal(engineeringImplementationVerification.usageMonthlyBucketCount, 1);
+assert.equal(
+  engineeringImplementationVerification.usageLatestMonthlyBucketStartDate,
+  previousMonthStartDate,
+);
+assert.equal(
+  engineeringImplementationVerification.usageOldestMonthlyBucketStartDate,
+  previousMonthStartDate,
+);
+assert.equal(engineeringImplementationVerification.usageMonthlyBuckets[0].missionCount, 1);
 assert.deepEqual(engineeringImplementationVerification.healthDrift.reasonCodes, []);
 assert.equal(engineeringImplementationVerification.missionStatusCounts.created, 1);
 assert.equal(engineeringImplementationVerification.latestMission.id, engineeringMission.id);
@@ -226,6 +292,9 @@ assert.equal(engineeringTriad.workspaceHealthDrift.status, 'stable');
 assert.equal(engineeringTriad.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringTriad.workspaceHealthDrift.statusCounts.stable, 1);
 assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceIdsByStatus.stable, [secondWorkspace.id]);
+assert.equal(engineeringTriad.usageMonthlyBucketCount, 1);
+assert.equal(engineeringTriad.usageLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(engineeringTriad.usageMonthlyBuckets[0].missionCount, 1);
 assert.equal(engineeringTriad.latestMission.id, engineeringTriadMission.id);
 
 const usedOnlyOverview = runCli({
