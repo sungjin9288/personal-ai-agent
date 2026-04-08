@@ -11258,6 +11258,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             : 'stable',
       statusCounts: summary.healthDriftStatusCounts,
     };
+    summary.healthDriftStatus = healthDrift.status;
+    summary.healthDriftReasonCodes = healthDrift.reasonCodes;
+    summary.healthDriftLatestProfile = healthDrift.latestProfile;
     usageTrend.latestDecliningProfile = summary.latestDecliningProfile;
     usageTrend.latestGrowingProfile = summary.latestGrowingProfile;
     usageTrend.latestUnusedProfile = summary.latestUnusedProfile;
@@ -11336,6 +11339,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         };
       }),
     );
+    summary.workspaceHealthDriftStatus = workspaceHealthDrift.status;
+    summary.workspaceHealthDriftReasonCodes = workspaceHealthDrift.reasonCodes;
+    summary.workspaceHealthDriftLatestWorkspace = workspaceHealthDrift.latestWorkspace;
+    summary.workspaceHealthDriftWorkspaceCount = workspaceHealthDrift.workspaceCount;
     summary.workspaceAdoptionDriftCounts = workspaceAdoptionDrift.statusCounts;
     summary.workspaceAdoptionDriftMissionTrendStatusCounts =
       workspaceAdoptionDrift.missionTrendStatusCounts;
