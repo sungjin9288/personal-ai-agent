@@ -1756,6 +1756,86 @@ function buildMaintenanceWeeklyBuckets(items) {
     .sort((left, right) => String(right.weekStartDate).localeCompare(String(left.weekStartDate)));
 }
 
+function buildMaintenanceMonthlyBuckets(items) {
+  const bucketMap = new Map();
+
+  for (const item of items) {
+    const createdAt = String(item.createdAt || '');
+    if (!createdAt) {
+      continue;
+    }
+
+    const monthRange = getUtcMonthRange(createdAt);
+    if (!monthRange) {
+      continue;
+    }
+
+    const affectedMissionIds = getMaintenanceRunAffectedMissionIds(item);
+    const isEffective = isMaintenanceRunEffective(item);
+    const isImpactful = affectedMissionIds.length > 0;
+    const current = bucketMap.get(monthRange.key) || {
+      affectedMissionIds: new Set(),
+      effectiveRunCount: 0,
+      impactRunCount: 0,
+      monthEndDate: monthRange.monthEndDate,
+      monthKey: monthRange.monthKey,
+      monthStartDate: monthRange.monthStartDate,
+      noOpRunCount: 0,
+      runCount: 0,
+      specialistFollowUpRemediationRouteCounts: {},
+      specialistFollowUpRetryPolicyCounts: {},
+      totalRemindedCount: 0,
+    };
+
+    current.runCount += 1;
+    current.totalRemindedCount += Number(item.totalRemindedCount || 0);
+    accumulateCountMap(
+      current.specialistFollowUpRetryPolicyCounts,
+      item.specialistFollowUpRetryPolicyCounts || item.specialistFollowUpRemindersSummary?.retryPolicyCounts || {},
+    );
+    accumulateCountMap(
+      current.specialistFollowUpRemediationRouteCounts,
+      item.specialistFollowUpRemediationRouteCounts ||
+        item.specialistFollowUpRemindersSummary?.remediationRouteCounts ||
+        {},
+    );
+    if (isEffective) {
+      current.effectiveRunCount += 1;
+    } else {
+      current.noOpRunCount += 1;
+    }
+    if (isImpactful) {
+      current.impactRunCount += 1;
+    }
+    for (const missionId of affectedMissionIds) {
+      current.affectedMissionIds.add(missionId);
+    }
+    bucketMap.set(monthRange.key, current);
+  }
+
+  return [...bucketMap.values()]
+    .map((bucket) => {
+      const affectedMissionIds = [...bucket.affectedMissionIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      );
+      return {
+        affectedMissionCount: affectedMissionIds.length,
+        affectedMissionIds,
+        effectiveRunCount: bucket.effectiveRunCount,
+        impactRunCount: bucket.impactRunCount,
+        monthEndDate: bucket.monthEndDate,
+        monthKey: bucket.monthKey,
+        monthStartDate: bucket.monthStartDate,
+        noOpRunCount: bucket.noOpRunCount,
+        runCount: bucket.runCount,
+        specialistFollowUpRemediationRouteCounts: bucket.specialistFollowUpRemediationRouteCounts,
+        specialistFollowUpRetryPolicyCounts: bucket.specialistFollowUpRetryPolicyCounts,
+        totalRemindedCount: bucket.totalRemindedCount,
+      };
+    })
+    .sort((left, right) => String(right.monthStartDate).localeCompare(String(left.monthStartDate)));
+}
+
 function buildMaintenanceLatestBucketDelta(dailyBuckets) {
   const current = dailyBuckets[0] || null;
   if (!current) {
@@ -1799,6 +1879,37 @@ function buildMaintenanceLatestWeeklyBucketDelta(weeklyBuckets) {
     noOpRunCountDelta: Number(current.noOpRunCount || 0) - Number(previous?.noOpRunCount || 0),
     previousWeekEndDate: previous?.weekEndDate || null,
     previousWeekStartDate: previous?.weekStartDate || null,
+    runCountDelta: Number(current.runCount || 0) - Number(previous?.runCount || 0),
+    specialistFollowUpRemediationRouteCountsDelta: buildCountMapDelta(
+      current.specialistFollowUpRemediationRouteCounts || {},
+      previous?.specialistFollowUpRemediationRouteCounts || {},
+    ),
+    specialistFollowUpRetryPolicyCountsDelta: buildCountMapDelta(
+      current.specialistFollowUpRetryPolicyCounts || {},
+      previous?.specialistFollowUpRetryPolicyCounts || {},
+    ),
+    totalRemindedCountDelta: Number(current.totalRemindedCount || 0) - Number(previous?.totalRemindedCount || 0),
+  };
+}
+
+function buildMaintenanceLatestMonthlyBucketDelta(monthlyBuckets) {
+  const current = monthlyBuckets[0] || null;
+  if (!current) {
+    return null;
+  }
+
+  const previous = monthlyBuckets[1] || null;
+  return {
+    affectedMissionCountDelta: Number(current.affectedMissionCount || 0) - Number(previous?.affectedMissionCount || 0),
+    currentMonthEndDate: current.monthEndDate,
+    currentMonthKey: current.monthKey,
+    currentMonthStartDate: current.monthStartDate,
+    effectiveRunCountDelta: Number(current.effectiveRunCount || 0) - Number(previous?.effectiveRunCount || 0),
+    impactRunCountDelta: Number(current.impactRunCount || 0) - Number(previous?.impactRunCount || 0),
+    noOpRunCountDelta: Number(current.noOpRunCount || 0) - Number(previous?.noOpRunCount || 0),
+    previousMonthEndDate: previous?.monthEndDate || null,
+    previousMonthKey: previous?.monthKey || null,
+    previousMonthStartDate: previous?.monthStartDate || null,
     runCountDelta: Number(current.runCount || 0) - Number(previous?.runCount || 0),
     specialistFollowUpRemediationRouteCountsDelta: buildCountMapDelta(
       current.specialistFollowUpRemediationRouteCounts || {},
@@ -8159,8 +8270,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const current = listMaintenancePressureEntries(filter);
     const dailyBuckets = buildMaintenanceDailyBuckets(items);
     const weeklyBuckets = buildMaintenanceWeeklyBuckets(items);
+    const monthlyBuckets = buildMaintenanceMonthlyBuckets(items);
     const latestBucketDelta = buildMaintenanceLatestBucketDelta(dailyBuckets);
     const latestWeeklyBucketDelta = buildMaintenanceLatestWeeklyBucketDelta(weeklyBuckets);
+    const latestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(monthlyBuckets);
     const missionImpactSummary = filter.missionId ? summarizeMissionMaintenanceImpact(filter.missionId, items) : null;
 
     return {
@@ -8180,9 +8293,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         dailyBuckets,
         latestBucketDate: dailyBuckets[0]?.date || null,
         latestBucketDelta,
+        latestMonthlyBucketDelta,
         latestWeeklyBucketDelta,
+        latestMonthlyBucketStartDate: monthlyBuckets[0]?.monthStartDate || null,
         oldestBucketDate: dailyBuckets.at(-1)?.date || null,
+        oldestMonthlyBucketStartDate: monthlyBuckets.at(-1)?.monthStartDate || null,
         oldestWeeklyBucketStartDate: weeklyBuckets.at(-1)?.weekStartDate || null,
+        monthlyBucketCount: monthlyBuckets.length,
+        monthlyBuckets,
         weeklyBucketCount: weeklyBuckets.length,
         weeklyBuckets,
         latestWeeklyBucketStartDate: weeklyBuckets[0]?.weekStartDate || null,

@@ -109,7 +109,7 @@ const overdueTimestamp = '2026-03-01T00:00:00.000Z';
 const dueTimestamp = '2026-03-02T00:00:00.000Z';
 const agedReminderTimestamp = '2026-04-05T00:00:00.000Z';
 const firstMaintenanceRunTimestamp = '2026-04-01T00:00:00.000Z';
-const secondMaintenanceRunTimestamp = '2026-04-06T00:00:00.000Z';
+const secondMaintenanceRunTimestamp = '2026-05-06T00:00:00.000Z';
 const recentMaintenanceCutoff = '2026-04-03T00:00:00.000Z';
 
 function writeState(mutator) {
@@ -351,12 +351,15 @@ assert.equal(history.items[1].note.includes('Second maintenance sweep'), true);
 assert.equal(history.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(history.summary.latestRun.totalRemindedCount, 0);
 assert.equal(history.summary.bucketCount, 2);
-assert.equal(history.summary.latestBucketDate, '2026-04-06');
+assert.equal(history.summary.latestBucketDate, '2026-05-06');
 assert.equal(history.summary.oldestBucketDate, '2026-04-01');
+assert.equal(history.summary.monthlyBucketCount, 2);
+assert.equal(history.summary.latestMonthlyBucketStartDate, '2026-05-01');
+assert.equal(history.summary.oldestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(history.summary.weeklyBucketCount, 2);
-assert.equal(history.summary.latestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(history.summary.latestWeeklyBucketStartDate, '2026-05-04');
 assert.equal(history.summary.oldestWeeklyBucketStartDate, '2026-03-30');
-assert.equal(history.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(history.summary.latestBucketDelta.currentDate, '2026-05-06');
 assert.equal(history.summary.latestBucketDelta.previousDate, '2026-04-01');
 assert.equal(history.summary.latestBucketDelta.runCountDelta, 0);
 assert.equal(history.summary.latestBucketDelta.effectiveRunCountDelta, -1);
@@ -366,7 +369,7 @@ assert.equal(history.summary.latestBucketDelta.totalRemindedCountDelta, -3);
 assert.equal(history.summary.latestBucketDelta.affectedMissionCountDelta, -3);
 assert.equal(history.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'], -1);
 assert.equal(history.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'], -1);
-assert.equal(history.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-04-06');
+assert.equal(history.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-05-04');
 assert.equal(history.summary.latestWeeklyBucketDelta.previousWeekStartDate, '2026-03-30');
 assert.equal(history.summary.latestWeeklyBucketDelta.totalRemindedCountDelta, -3);
 assert.equal(history.summary.latestWeeklyBucketDelta.affectedMissionCountDelta, -3);
@@ -378,17 +381,34 @@ assert.equal(
   history.summary.latestWeeklyBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
   -1,
 );
-assert.equal(history.summary.dailyBuckets[0].date, '2026-04-06');
+assert.equal(history.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-05-01');
+assert.equal(history.summary.latestMonthlyBucketDelta.previousMonthStartDate, '2026-04-01');
+assert.equal(history.summary.latestMonthlyBucketDelta.totalRemindedCountDelta, -3);
+assert.equal(history.summary.latestMonthlyBucketDelta.affectedMissionCountDelta, -3);
+assert.equal(
+  history.summary.latestMonthlyBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
+  -1,
+);
+assert.equal(
+  history.summary.latestMonthlyBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
+  -1,
+);
+assert.equal(history.summary.dailyBuckets[0].date, '2026-05-06');
 assert.equal(history.summary.dailyBuckets[0].runCount, 1);
 assert.equal(history.summary.dailyBuckets[0].noOpRunCount, 1);
 assert.equal(history.summary.dailyBuckets[0].effectiveRunCount, 0);
 assert.equal(history.summary.dailyBuckets[0].affectedMissionCount, 0);
 assert.deepEqual(history.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(history.summary.dailyBuckets[0].specialistFollowUpRemediationRouteCounts, {});
-assert.equal(history.summary.weeklyBuckets[0].weekStartDate, '2026-04-06');
-assert.equal(history.summary.weeklyBuckets[0].weekEndDate, '2026-04-12');
+assert.equal(history.summary.weeklyBuckets[0].weekStartDate, '2026-05-04');
+assert.equal(history.summary.weeklyBuckets[0].weekEndDate, '2026-05-10');
 assert.deepEqual(history.summary.weeklyBuckets[0].specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(history.summary.weeklyBuckets[0].specialistFollowUpRemediationRouteCounts, {});
+assert.equal(history.summary.monthlyBuckets[0].monthStartDate, '2026-05-01');
+assert.equal(history.summary.monthlyBuckets[0].monthEndDate, '2026-05-31');
+assert.equal(history.summary.monthlyBuckets[0].monthKey, '2026-05');
+assert.deepEqual(history.summary.monthlyBuckets[0].specialistFollowUpRetryPolicyCounts, {});
+assert.deepEqual(history.summary.monthlyBuckets[0].specialistFollowUpRemediationRouteCounts, {});
 assert.equal(history.summary.dailyBuckets[1].date, '2026-04-01');
 assert.equal(history.summary.dailyBuckets[1].runCount, 1);
 assert.equal(history.summary.dailyBuckets[1].effectiveRunCount, 1);
@@ -405,6 +425,14 @@ assert.equal(history.summary.weeklyBuckets[1].weekEndDate, '2026-04-05');
 assert.equal(history.summary.weeklyBuckets[1].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(
   history.summary.weeklyBuckets[1].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'],
+  1,
+);
+assert.equal(history.summary.monthlyBuckets[1].monthStartDate, '2026-04-01');
+assert.equal(history.summary.monthlyBuckets[1].monthEndDate, '2026-04-30');
+assert.equal(history.summary.monthlyBuckets[1].monthKey, '2026-04');
+assert.equal(history.summary.monthlyBuckets[1].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(
+  history.summary.monthlyBuckets[1].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'],
   1,
 );
 assert.equal(history.summary.maintenanceRequiredCount, 0);
@@ -441,19 +469,25 @@ assert.equal(recentHistory.summary.runCount, 1);
 assert.equal(recentHistory.summary.noOpRunCount, 1);
 assert.equal(recentHistory.summary.effectiveRunCount, 0);
 assert.equal(recentHistory.summary.bucketCount, 1);
+assert.equal(recentHistory.summary.monthlyBucketCount, 1);
 assert.equal(recentHistory.summary.weeklyBucketCount, 1);
-assert.equal(recentHistory.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(recentHistory.summary.latestBucketDelta.currentDate, '2026-05-06');
 assert.equal(recentHistory.summary.latestBucketDelta.previousDate, null);
 assert.equal(recentHistory.summary.latestBucketDelta.noOpRunCountDelta, 1);
 assert.equal(recentHistory.summary.latestBucketDelta.totalRemindedCountDelta, 0);
 assert.deepEqual(recentHistory.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta, {});
 assert.deepEqual(recentHistory.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta, {});
-assert.equal(recentHistory.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-04-06');
+assert.equal(recentHistory.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-05-04');
 assert.equal(recentHistory.summary.latestWeeklyBucketDelta.previousWeekStartDate, null);
 assert.deepEqual(recentHistory.summary.latestWeeklyBucketDelta.specialistFollowUpRetryPolicyCountsDelta, {});
 assert.deepEqual(recentHistory.summary.latestWeeklyBucketDelta.specialistFollowUpRemediationRouteCountsDelta, {});
-assert.equal(recentHistory.summary.dailyBuckets[0].date, '2026-04-06');
-assert.equal(recentHistory.summary.weeklyBuckets[0].weekStartDate, '2026-04-06');
+assert.equal(recentHistory.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-05-01');
+assert.equal(recentHistory.summary.latestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.deepEqual(recentHistory.summary.latestMonthlyBucketDelta.specialistFollowUpRetryPolicyCountsDelta, {});
+assert.deepEqual(recentHistory.summary.latestMonthlyBucketDelta.specialistFollowUpRemediationRouteCountsDelta, {});
+assert.equal(recentHistory.summary.dailyBuckets[0].date, '2026-05-06');
+assert.equal(recentHistory.summary.weeklyBuckets[0].weekStartDate, '2026-05-04');
+assert.equal(recentHistory.summary.monthlyBuckets[0].monthStartDate, '2026-05-01');
 assert.equal(recentHistory.items[0].id, secondMaintenance.maintenanceRun.id);
 
 const recentEffectiveHistory = runCli({
@@ -483,6 +517,7 @@ assert.equal(missionHistory.summary.missionImpactOwnerHandoffRemindedCountTotal,
 assert.equal(missionHistory.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
 assert.equal(missionHistory.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionHistory.summary.bucketCount, 1);
+assert.equal(missionHistory.summary.monthlyBucketCount, 1);
 assert.equal(missionHistory.summary.weeklyBucketCount, 1);
 assert.equal(missionHistory.summary.latestBucketDelta.currentDate, '2026-04-01');
 assert.equal(missionHistory.summary.latestBucketDelta.previousDate, null);
@@ -500,12 +535,23 @@ assert.equal(
   missionHistory.summary.latestWeeklyBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
   1,
 );
+assert.equal(missionHistory.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(missionHistory.summary.latestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(
+  missionHistory.summary.latestMonthlyBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
+  1,
+);
+assert.equal(
+  missionHistory.summary.latestMonthlyBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
+  1,
+);
 assert.equal(missionHistory.summary.dailyBuckets[0].date, '2026-04-01');
 assert.equal(missionHistory.summary.dailyBuckets[0].runCount, 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].impactRunCount, 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(missionHistory.summary.weeklyBuckets[0].weekStartDate, '2026-03-30');
+assert.equal(missionHistory.summary.monthlyBuckets[0].monthStartDate, '2026-04-01');
 assert.equal(missionHistory.items.length, 1);
 assert.equal(missionHistory.items[0].id, firstMaintenance.maintenanceRun.id);
 
@@ -517,8 +563,10 @@ const missionNoOpHistory = runCli({
 assert.equal(missionNoOpHistory.summary.runCount, 0);
 assert.equal(missionNoOpHistory.summary.noOpRunCount, 0);
 assert.equal(missionNoOpHistory.summary.bucketCount, 0);
+assert.equal(missionNoOpHistory.summary.monthlyBucketCount, 0);
 assert.equal(missionNoOpHistory.summary.weeklyBucketCount, 0);
 assert.equal(missionNoOpHistory.summary.latestBucketDelta, null);
+assert.equal(missionNoOpHistory.summary.latestMonthlyBucketDelta, null);
 assert.equal(missionNoOpHistory.summary.latestWeeklyBucketDelta, null);
 assert.equal(missionNoOpHistory.items.length, 0);
 
@@ -529,8 +577,10 @@ const recentMissionHistory = runCli({
 
 assert.equal(recentMissionHistory.summary.runCount, 0);
 assert.equal(recentMissionHistory.summary.bucketCount, 0);
+assert.equal(recentMissionHistory.summary.monthlyBucketCount, 0);
 assert.equal(recentMissionHistory.summary.weeklyBucketCount, 0);
 assert.equal(recentMissionHistory.summary.latestBucketDelta, null);
+assert.equal(recentMissionHistory.summary.latestMonthlyBucketDelta, null);
 assert.equal(recentMissionHistory.summary.latestWeeklyBucketDelta, null);
 assert.equal(recentMissionHistory.items.length, 0);
 assert.equal(recentMissionHistory.filters.since, recentMaintenanceCutoff);
@@ -565,8 +615,9 @@ assert.deepEqual(
   [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(maintenanceOverview.summary.bucketCount, 2);
+assert.equal(maintenanceOverview.summary.monthlyBucketCount, 2);
 assert.equal(maintenanceOverview.summary.weeklyBucketCount, 2);
-assert.equal(maintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(maintenanceOverview.summary.latestBucketDelta.currentDate, '2026-05-06');
 assert.equal(maintenanceOverview.summary.latestBucketDelta.previousDate, '2026-04-01');
 assert.equal(
   maintenanceOverview.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
@@ -576,7 +627,7 @@ assert.equal(
   maintenanceOverview.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
   -1,
 );
-assert.equal(maintenanceOverview.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-04-06');
+assert.equal(maintenanceOverview.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-05-04');
 assert.equal(maintenanceOverview.summary.latestWeeklyBucketDelta.previousWeekStartDate, '2026-03-30');
 assert.equal(
   maintenanceOverview.summary.latestWeeklyBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
@@ -586,10 +637,26 @@ assert.equal(
   maintenanceOverview.summary.latestWeeklyBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
   -1,
 );
-assert.equal(maintenanceOverview.summary.dailyBuckets[0].date, '2026-04-06');
+assert.equal(maintenanceOverview.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-05-01');
+assert.equal(maintenanceOverview.summary.latestMonthlyBucketDelta.previousMonthStartDate, '2026-04-01');
+assert.equal(
+  maintenanceOverview.summary.latestMonthlyBucketDelta.specialistFollowUpRetryPolicyCountsDelta[
+    'resume-blocked-or-failed-branch'
+  ],
+  -1,
+);
+assert.equal(
+  maintenanceOverview.summary.latestMonthlyBucketDelta.specialistFollowUpRemediationRouteCountsDelta[
+    'standard-branch-remediation'
+  ],
+  -1,
+);
+assert.equal(maintenanceOverview.summary.dailyBuckets[0].date, '2026-05-06');
 assert.equal(maintenanceOverview.summary.dailyBuckets[1].date, '2026-04-01');
-assert.equal(maintenanceOverview.summary.weeklyBuckets[0].weekStartDate, '2026-04-06');
+assert.equal(maintenanceOverview.summary.weeklyBuckets[0].weekStartDate, '2026-05-04');
 assert.equal(maintenanceOverview.summary.weeklyBuckets[1].weekStartDate, '2026-03-30');
+assert.equal(maintenanceOverview.summary.monthlyBuckets[0].monthStartDate, '2026-05-01');
+assert.equal(maintenanceOverview.summary.monthlyBuckets[1].monthStartDate, '2026-04-01');
 assert.equal(maintenanceOverview.summary.dailyBuckets[1].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(maintenanceOverview.summary.dailyBuckets[1].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
@@ -617,6 +684,7 @@ assert.equal(missionMaintenanceOverview.summary.missionImpactOwnerHandoffReminde
 assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRun.id, firstMaintenance.maintenanceRun.id);
 assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRunAt, firstMaintenance.maintenanceRun.createdAt);
 assert.equal(missionMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(missionMaintenanceOverview.summary.monthlyBucketCount, 1);
 assert.equal(missionMaintenanceOverview.summary.weeklyBucketCount, 1);
 assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-01');
 assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
@@ -642,6 +710,20 @@ assert.equal(
   ],
   1,
 );
+assert.equal(missionMaintenanceOverview.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(missionMaintenanceOverview.summary.latestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(
+  missionMaintenanceOverview.summary.latestMonthlyBucketDelta.specialistFollowUpRetryPolicyCountsDelta[
+    'resume-blocked-or-failed-branch'
+  ],
+  1,
+);
+assert.equal(
+  missionMaintenanceOverview.summary.latestMonthlyBucketDelta.specialistFollowUpRemediationRouteCountsDelta[
+    'standard-branch-remediation'
+  ],
+  1,
+);
 assert.equal(missionMaintenanceOverview.summary.dailyBuckets[0].date, '2026-04-01');
 assert.equal(
   missionMaintenanceOverview.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'],
@@ -652,6 +734,7 @@ assert.equal(
   1,
 );
 assert.equal(missionMaintenanceOverview.summary.weeklyBuckets[0].weekStartDate, '2026-03-30');
+assert.equal(missionMaintenanceOverview.summary.monthlyBuckets[0].monthStartDate, '2026-04-01');
 assert.equal(missionMaintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(missionMaintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
@@ -664,11 +747,14 @@ assert.equal(filteredMaintenanceOverview.summary.runCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.effectiveRunCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.noOpRunCount, 0);
 assert.equal(filteredMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(filteredMaintenanceOverview.summary.monthlyBucketCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.weeklyBucketCount, 1);
 assert.equal(filteredMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-01');
 assert.equal(filteredMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
 assert.equal(filteredMaintenanceOverview.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-03-30');
 assert.equal(filteredMaintenanceOverview.summary.latestWeeklyBucketDelta.previousWeekStartDate, null);
+assert.equal(filteredMaintenanceOverview.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(filteredMaintenanceOverview.summary.latestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(filteredMaintenanceOverview.items[0].id, firstMaintenance.maintenanceRun.id);
 
 const recentMaintenanceOverview = runCli({
@@ -680,13 +766,17 @@ assert.equal(recentMaintenanceOverview.summary.runCount, 1);
 assert.equal(recentMaintenanceOverview.summary.noOpRunCount, 1);
 assert.equal(recentMaintenanceOverview.summary.effectiveRunCount, 0);
 assert.equal(recentMaintenanceOverview.summary.bucketCount, 1);
+assert.equal(recentMaintenanceOverview.summary.monthlyBucketCount, 1);
 assert.equal(recentMaintenanceOverview.summary.weeklyBucketCount, 1);
-assert.equal(recentMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-06');
+assert.equal(recentMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-05-06');
 assert.equal(recentMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
-assert.equal(recentMaintenanceOverview.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-04-06');
+assert.equal(recentMaintenanceOverview.summary.latestWeeklyBucketDelta.currentWeekStartDate, '2026-05-04');
 assert.equal(recentMaintenanceOverview.summary.latestWeeklyBucketDelta.previousWeekStartDate, null);
-assert.equal(recentMaintenanceOverview.summary.dailyBuckets[0].date, '2026-04-06');
-assert.equal(recentMaintenanceOverview.summary.weeklyBuckets[0].weekStartDate, '2026-04-06');
+assert.equal(recentMaintenanceOverview.summary.latestMonthlyBucketDelta.currentMonthStartDate, '2026-05-01');
+assert.equal(recentMaintenanceOverview.summary.latestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(recentMaintenanceOverview.summary.dailyBuckets[0].date, '2026-05-06');
+assert.equal(recentMaintenanceOverview.summary.weeklyBuckets[0].weekStartDate, '2026-05-04');
+assert.equal(recentMaintenanceOverview.summary.monthlyBuckets[0].monthStartDate, '2026-05-01');
 assert.equal(recentMaintenanceOverview.items[0].id, secondMaintenance.maintenanceRun.id);
 
 const workspaceOverview = runCli({
