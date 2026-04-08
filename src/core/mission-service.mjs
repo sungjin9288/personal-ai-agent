@@ -11342,6 +11342,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.workspaceHealthDriftStatus = workspaceHealthDrift.status;
     summary.workspaceHealthDriftCounts = workspaceHealthDrift.statusCounts;
     summary.workspaceHealthDriftReasonCodes = workspaceHealthDrift.reasonCodes;
+    summary.workspaceHealthDriftReasonCodeCounts =
+      workspaceHealthDrift.reasonCodeCounts;
     summary.workspaceHealthDriftLatestWorkspace = workspaceHealthDrift.latestWorkspace;
     summary.workspaceHealthDriftWorkspaceCount = workspaceHealthDrift.workspaceCount;
     summary.workspaceHealthDriftWorkspaceIdsByStatus =
