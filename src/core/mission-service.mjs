@@ -11340,9 +11340,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }),
     );
     summary.workspaceHealthDriftStatus = workspaceHealthDrift.status;
+    summary.workspaceHealthDriftCounts = workspaceHealthDrift.statusCounts;
     summary.workspaceHealthDriftReasonCodes = workspaceHealthDrift.reasonCodes;
     summary.workspaceHealthDriftLatestWorkspace = workspaceHealthDrift.latestWorkspace;
     summary.workspaceHealthDriftWorkspaceCount = workspaceHealthDrift.workspaceCount;
+    summary.workspaceHealthDriftWorkspaceIdsByStatus =
+      workspaceHealthDrift.workspaceIdsByStatus;
     summary.workspaceAdoptionDriftCounts = workspaceAdoptionDrift.statusCounts;
     summary.workspaceAdoptionDriftMissionTrendStatusCounts =
       workspaceAdoptionDrift.missionTrendStatusCounts;
