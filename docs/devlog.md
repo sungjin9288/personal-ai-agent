@@ -65,6 +65,7 @@
 - added `workspaceHealthDriftWorkspaceProfileCounts` and `workspaceHealthDriftWorkspaceStatusCounts` to `overview profiles` summary so workspace health maps are now readable with explicit workspace-scoped naming instead of reinterpreting legacy field names
 - added `workspaceProfileCounts` and `workspaceStatusCounts` to root `workspaceHealthDrift` so workspace-level instability detail is now readable from the quick field itself without reopening summary-only aliases
 - added `latestFollowUpRequiredWorkspace` and `latestWatchWorkspace` to root `workspaceHealthDrift` and matching summary aliases so the most recent unstable workspace is now readable by health direction without reopening aggregate maps
+- added `latestFollowUpRequiredProfile` and `latestWatchProfile` to root `healthDrift` and matching summary aliases so the most recent unstable preset is now readable by health direction without reinterpreting generic latest-profile linkage
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface

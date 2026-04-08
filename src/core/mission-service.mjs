@@ -2347,6 +2347,41 @@ function summarizeOrchestrationProfileOverviewItems(items) {
           })),
         'latestUsedAt',
       ) || null,
+    latestHealthDriftFollowUpRequiredProfile:
+      getLatestItem(
+        items
+          .filter(
+            (item) =>
+              (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status ===
+              'follow-up-required',
+          )
+          .map((item) => ({
+            displayName: item.displayName,
+            healthDrift: item.healthDrift || summarizeOrchestrationProfileHealthDrift(item),
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt || item.specialistFollowUpLatestReminderAt || '',
+          })),
+        'latestUsedAt',
+      ) || null,
+    latestHealthDriftWatchProfile:
+      getLatestItem(
+        items
+          .filter(
+            (item) =>
+              (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status === 'watch',
+          )
+          .map((item) => ({
+            displayName: item.displayName,
+            healthDrift: item.healthDrift || summarizeOrchestrationProfileHealthDrift(item),
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt || item.specialistFollowUpLatestReminderAt || '',
+          })),
+        'latestUsedAt',
+      ) || null,
     latestAdoptionDriftProfile:
       getLatestItem(
         items
@@ -11281,7 +11316,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         'latestAt',
       ) || null;
     const healthDrift = {
+      latestFollowUpRequiredProfile: summary.latestHealthDriftFollowUpRequiredProfile,
       latestProfile: summary.latestHealthDriftProfile,
+      latestWatchProfile: summary.latestHealthDriftWatchProfile,
       profileCount: summary.healthDriftProfileCount,
       reasonCodeCounts: summary.healthDriftReasonCodeCounts,
       reasonCodes: Object.keys(summary.healthDriftReasonCodeCounts).sort((left, right) =>
@@ -11298,7 +11335,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.healthDriftStatus = healthDrift.status;
     summary.healthDriftCounts = healthDrift.statusCounts;
     summary.healthDriftReasonCodes = healthDrift.reasonCodes;
+    summary.healthDriftLatestFollowUpRequiredProfile = healthDrift.latestFollowUpRequiredProfile;
     summary.healthDriftLatestProfile = healthDrift.latestProfile;
+    summary.healthDriftLatestWatchProfile = healthDrift.latestWatchProfile;
     usageTrend.latestDecliningProfile = summary.latestDecliningProfile;
     usageTrend.latestGrowingProfile = summary.latestGrowingProfile;
     usageTrend.latestUnusedProfile = summary.latestUnusedProfile;
