@@ -22,6 +22,7 @@
 - linked orchestration profile retry policy into specialist follow-up priority, SLA, and reminder cadence so verification-heavy triad presets now create faster operator pressure than the default branch-resume policy
 - switched specialist follow-up command hints to the dedicated remediation action and added profile-aware remediation route metadata, so fast verification policies now surface a concrete operator path instead of only a generic mission run fallback
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
+- threaded specialist remediation route metadata into persisted reminder records and overdue incident markdown, so retry policy, route urgency, and fallback command survive from queue triage into reminder and incident audit trails
 
 ## 2026-04-07 Provider Cost Telemetry
 

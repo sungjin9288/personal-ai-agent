@@ -90,6 +90,8 @@ assert.equal(dueFollowUps.items[0].specialistKind, 'implementation');
 assert.equal(dueFollowUps.items[0].status, 'failed');
 assert.equal(dueFollowUps.items[0].needsReminder, true);
 assert.equal(dueFollowUps.items[0].isOverdue, true);
+assert.match(dueFollowUps.items[0].recommendedCommand, /action remediate-specialist-follow-up/);
+assert.equal(dueFollowUps.items[0].remediationRoute.routeType, 'standard-branch-remediation');
 assert.equal(dueFollowUps.items[0].dueAt, '2026-03-02T01:00:00.000Z');
 assert.equal(dueFollowUps.items[0].nextReminderAt, '2026-03-02T01:00:00.000Z');
 
@@ -130,6 +132,8 @@ assert.equal(firstReminder.summary.overdueReminderCount, 1);
 assert.equal(firstReminder.items.length, 1);
 assert.equal(firstReminder.items[0].providerId, 'stub');
 assert.equal(firstReminder.items[0].specialistKind, 'implementation');
+assert.equal(firstReminder.items[0].remediationRoute.routeType, 'standard-branch-remediation');
+assert.match(firstReminder.items[0].detail, /specialist follow-up reminder/);
 
 const afterFirstReminder = runCli({
   rootDir: tempRoot,

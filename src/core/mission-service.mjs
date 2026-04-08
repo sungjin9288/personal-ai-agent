@@ -979,12 +979,14 @@ function buildSpecialistFollowUpReminderNote(item, note) {
     return normalizedNote;
   }
 
-  return `Reminder issued for ${item.status} ${item.specialistKind} specialist follow-up.`;
+  const urgencyPrefix = item.remediationRoute?.routeUrgency === 'fast' ? 'Fast remediation reminder' : 'Reminder';
+  return `${urgencyPrefix} issued for ${item.status} ${item.specialistKind} specialist follow-up.`;
 }
 
 function formatSpecialistFollowUpReminderDetail(reminder) {
   const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
-  return `${reminder.specialistKind}${overdueSuffix} specialist follow-up reminder: ${reminder.note || 'No explicit note recorded.'}`;
+  const urgencyPrefix = reminder.remediationRoute?.routeUrgency === 'fast' ? '[fast] ' : '';
+  return `${urgencyPrefix}${reminder.specialistKind}${overdueSuffix} specialist follow-up reminder: ${reminder.note || 'No explicit note recorded.'}`;
 }
 
 function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
@@ -1072,6 +1074,16 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
       lines.push(`specialist follow-up kinds: ${kindSummary}`);
     }
 
+    const retryPolicySummary = formatIncidentCountMap(summary.specialistFollowUpRetryPolicyCounts || {});
+    if (retryPolicySummary) {
+      lines.push(`specialist follow-up retry policies: ${retryPolicySummary}`);
+    }
+
+    const remediationRouteSummary = formatIncidentCountMap(summary.specialistFollowUpRemediationRouteCounts || {});
+    if (remediationRouteSummary) {
+      lines.push(`specialist follow-up remediation routes: ${remediationRouteSummary}`);
+    }
+
     if (summary.specialistFollowUpLatestReminderAt) {
       lines.push(`specialist follow-up latest reminder at: ${summary.specialistFollowUpLatestReminderAt}`);
     }
@@ -1100,6 +1112,14 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
       `[${item.actionClass}/${item.priority}] ${item.title} | workspace=${item.workspaceName} | mission=${item.missionId} | owner=${item.recommendedOwner} | dueAt=${item.dueAt}`,
     );
     lines.push(`command: ${item.recommendedCommand}`);
+    if (item.actionClass === 'specialist-follow-up-required' && item.remediationRoute) {
+      lines.push(
+        `route: type=${item.remediationRoute.routeType} urgency=${item.remediationRoute.routeUrgency} reason=${item.remediationRoute.routeReason}`,
+      );
+      if (item.fallbackRecommendedCommand) {
+        lines.push(`fallback: ${item.fallbackRecommendedCommand}`);
+      }
+    }
     lines.push(`escalation: ${item.escalationRule}`);
   }
 
@@ -8377,6 +8397,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           actionId: item.actionId,
           createdAt: reminderTimestamp,
           dueAt: item.dueAt,
+          fallbackRecommendedCommand: item.fallbackRecommendedCommand || null,
           id: createId('specialist-follow-up-reminder'),
           missionId: item.missionId,
           note: buildSpecialistFollowUpReminderNote(item, normalizedNote),
@@ -8384,8 +8405,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           parallelGroupId: item.parallelGroupId,
           priority: item.priority,
           providerId: item.providerId || null,
+          recommendedCommand: item.recommendedCommand || null,
+          remediationRoute: item.remediationRoute || null,
           remindedAt: reminderTimestamp,
           reminderCadenceHours: item.reminderCadenceHours,
+          retryPolicy: item.retryPolicy || null,
           runId: item.runId || item.specialistRootRunId || null,
           sessionId: item.sessionId || null,
           slaHours: item.slaHours,
