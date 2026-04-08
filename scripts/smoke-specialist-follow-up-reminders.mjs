@@ -129,6 +129,11 @@ const firstReminder = runCli({
 assert.equal(firstReminder.summary.dueCandidateCount, 1);
 assert.equal(firstReminder.summary.remindedCount, 1);
 assert.equal(firstReminder.summary.overdueReminderCount, 1);
+assert.equal(firstReminder.summary.providerCounts.stub, 1);
+assert.equal(firstReminder.summary.specialistKindCounts.implementation, 1);
+assert.equal(firstReminder.summary.statusCounts.failed, 1);
+assert.equal(firstReminder.summary.retryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(firstReminder.summary.remediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(firstReminder.items.length, 1);
 assert.equal(firstReminder.items[0].providerId, 'stub');
 assert.equal(firstReminder.items[0].specialistKind, 'implementation');

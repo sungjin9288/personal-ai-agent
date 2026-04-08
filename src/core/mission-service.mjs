@@ -8427,6 +8427,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .sort((left, right) =>
         String(left.remindedAt || left.createdAt || '').localeCompare(String(right.remindedAt || right.createdAt || '')),
       );
+    const remindedSummary = summarizeSpecialistFollowUpItems(
+      items.map((item) => ({
+        isOverdue: Boolean(item.overdue),
+        providerId: item.providerId || null,
+        reminderCount: 1,
+        remediationRoute: item.remediationRoute || null,
+        retryPolicy: item.retryPolicy || null,
+        specialistKind: item.specialistKind,
+        status: item.status,
+        workspaceId: item.workspaceId || null,
+      })),
+    );
 
     return {
       filters: {
@@ -8449,7 +8461,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             .sort((left, right) => String(left).localeCompare(String(right)))
             .at(-1) || null,
         overdueReminderCount: items.filter((item) => item.overdue).length,
+        providerCounts: remindedSummary.providerCounts,
+        remediationRouteCounts: remindedSummary.remediationRouteCounts,
         remindedCount: items.length,
+        retryPolicyCounts: remindedSummary.retryPolicyCounts,
+        specialistKindCounts: remindedSummary.specialistKindCounts,
+        statusCounts: remindedSummary.statusCounts,
+        workspaceCounts: remindedSummary.workspaceCounts,
       },
     };
   }
