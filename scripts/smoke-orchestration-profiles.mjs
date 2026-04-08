@@ -12,6 +12,27 @@ function getMonthStartDate(isoTimestamp) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString().slice(0, 10);
 }
 
+function expectedProfileFilters(overrides = {}) {
+  return {
+    adoptionDriftReasonCode: null,
+    adoptionDriftStatus: null,
+    driftOnly: false,
+    mode: null,
+    reasonCode: null,
+    status: null,
+    usageTrend: null,
+    usedOnly: false,
+    workspaceAdoptionDriftReasonCode: null,
+    workspaceAdoptionDriftStatus: null,
+    workspaceDriftOnly: false,
+    workspaceId: null,
+    workspaceReasonCode: null,
+    workspaceStatus: null,
+    workspaceUsageTrend: null,
+    ...overrides,
+  };
+}
+
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-orchestration-profiles-'));
 const workspacePath = path.join(tempRoot, 'workspace');
 
@@ -108,21 +129,7 @@ const overview = runCli({
   args: ['overview', 'profiles'],
 });
 
-assert.deepEqual(overview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: false,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(overview.filters, expectedProfileFilters());
 assert.equal(overview.healthDrift.status, 'follow-up-required');
 assert.equal(overview.healthDrift.profileCount, 1);
 assert.equal(overview.healthDrift.statusCounts['follow-up-required'], 1);
@@ -602,21 +609,7 @@ const usedOnlyOverview = runCli({
   args: ['overview', 'profiles', '--used-only'],
 });
 
-assert.deepEqual(usedOnlyOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(usedOnlyOverview.filters, expectedProfileFilters({ usedOnly: true }));
 assert.equal(usedOnlyOverview.summary.total, 3);
 assert.equal(usedOnlyOverview.summary.usedCount, 3);
 assert.equal(usedOnlyOverview.summary.unusedCount, 0);
@@ -627,21 +620,13 @@ const workspaceUsedOverview = runCli({
   args: ['overview', 'profiles', '--workspace', workspace.id, '--used-only'],
 });
 
-assert.deepEqual(workspaceUsedOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: workspace.id,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  workspaceUsedOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceId: workspace.id,
+  }),
+);
 assert.equal(workspaceUsedOverview.summary.total, 2);
 assert.equal(workspaceUsedOverview.summary.usedCount, 2);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.status, 'follow-up-required');
@@ -714,21 +699,13 @@ const secondWorkspaceUsedOverview = runCli({
   args: ['overview', 'profiles', '--workspace', secondWorkspace.id, '--used-only'],
 });
 
-assert.deepEqual(secondWorkspaceUsedOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: secondWorkspace.id,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  secondWorkspaceUsedOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceId: secondWorkspace.id,
+  }),
+);
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
@@ -810,21 +787,7 @@ const driftOnlyOverview = runCli({
   args: ['overview', 'profiles', '--drift-only'],
 });
 
-assert.deepEqual(driftOnlyOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: true,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: false,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(driftOnlyOverview.filters, expectedProfileFilters({ driftOnly: true }));
 assert.equal(driftOnlyOverview.summary.total, 1);
 assert.equal(driftOnlyOverview.healthDrift.status, 'follow-up-required');
 assert.equal(driftOnlyOverview.items.length, 1);
@@ -835,21 +798,13 @@ const stableUsedOverview = runCli({
   args: ['overview', 'profiles', '--used-only', '--status', 'stable'],
 });
 
-assert.deepEqual(stableUsedOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: 'stable',
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  stableUsedOverview.filters,
+  expectedProfileFilters({
+    status: 'stable',
+    usedOnly: true,
+  }),
+);
 assert.equal(stableUsedOverview.summary.total, 2);
 assert.equal(stableUsedOverview.healthDrift.status, 'stable');
 assert.equal(stableUsedOverview.items.length, 2);
@@ -863,21 +818,14 @@ const knowledgeOnlyOverview = runCli({
   args: ['overview', 'profiles', '--mode', 'knowledge', '--used-only', '--status', 'follow-up-required'],
 });
 
-assert.deepEqual(knowledgeOnlyOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: 'knowledge',
-  reasonCode: null,
-  status: 'follow-up-required',
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  knowledgeOnlyOverview.filters,
+  expectedProfileFilters({
+    mode: 'knowledge',
+    status: 'follow-up-required',
+    usedOnly: true,
+  }),
+);
 assert.equal(knowledgeOnlyOverview.summary.total, 1);
 assert.equal(knowledgeOnlyOverview.summary.missionCountTotal, 2);
 assert.equal(knowledgeOnlyOverview.items.length, 1);
@@ -888,21 +836,12 @@ const workspaceDriftOnlyOverview = runCli({
   args: ['overview', 'profiles', '--workspace-drift-only'],
 });
 
-assert.deepEqual(workspaceDriftOnlyOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: false,
-  workspaceDriftOnly: true,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  workspaceDriftOnlyOverview.filters,
+  expectedProfileFilters({
+    workspaceDriftOnly: true,
+  }),
+);
 assert.equal(workspaceDriftOnlyOverview.summary.total, 1);
 assert.equal(workspaceDriftOnlyOverview.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(workspaceDriftOnlyOverview.items.length, 1);
@@ -913,21 +852,13 @@ const workspaceStatusOverview = runCli({
   args: ['overview', 'profiles', '--workspace-status', 'stable', '--used-only'],
 });
 
-assert.deepEqual(workspaceStatusOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: 'stable',
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  workspaceStatusOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceStatus: 'stable',
+  }),
+);
 assert.equal(workspaceStatusOverview.summary.total, 2);
 assert.equal(workspaceStatusOverview.items.length, 2);
 assert.deepEqual(
@@ -940,21 +871,14 @@ const workspaceScopedStatusOverview = runCli({
   args: ['overview', 'profiles', '--workspace', workspace.id, '--workspace-status', 'follow-up-required', '--used-only'],
 });
 
-assert.deepEqual(workspaceScopedStatusOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: workspace.id,
-  workspaceReasonCode: null,
-  workspaceStatus: 'follow-up-required',
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  workspaceScopedStatusOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceId: workspace.id,
+    workspaceStatus: 'follow-up-required',
+  }),
+);
 assert.equal(workspaceScopedStatusOverview.summary.total, 1);
 assert.equal(workspaceScopedStatusOverview.items.length, 1);
 assert.equal(workspaceScopedStatusOverview.items[0].id, 'knowledge-triad');
@@ -964,21 +888,12 @@ const reasonCodeOverview = runCli({
   args: ['overview', 'profiles', '--reason-code', 'quality-gate-blocked'],
 });
 
-assert.deepEqual(reasonCodeOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: 'quality-gate-blocked',
-  status: null,
-  usageTrend: null,
-  usedOnly: false,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  reasonCodeOverview.filters,
+  expectedProfileFilters({
+    reasonCode: 'quality-gate-blocked',
+  }),
+);
 assert.equal(reasonCodeOverview.summary.total, 1);
 assert.equal(reasonCodeOverview.items.length, 1);
 assert.equal(reasonCodeOverview.items[0].id, 'knowledge-triad');
@@ -992,21 +907,12 @@ const workspaceReasonCodeOverview = runCli({
   args: ['overview', 'profiles', '--workspace-reason-code', 'specialist-follow-up-open'],
 });
 
-assert.deepEqual(workspaceReasonCodeOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: false,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: 'specialist-follow-up-open',
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  workspaceReasonCodeOverview.filters,
+  expectedProfileFilters({
+    workspaceReasonCode: 'specialist-follow-up-open',
+  }),
+);
 assert.equal(workspaceReasonCodeOverview.summary.total, 1);
 assert.equal(workspaceReasonCodeOverview.items.length, 1);
 assert.equal(workspaceReasonCodeOverview.items[0].id, 'knowledge-triad');
@@ -1020,21 +926,13 @@ const growingUsageOverview = runCli({
   args: ['overview', 'profiles', '--usage-trend', 'growing', '--used-only'],
 });
 
-assert.deepEqual(growingUsageOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: 'growing',
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  growingUsageOverview.filters,
+  expectedProfileFilters({
+    usageTrend: 'growing',
+    usedOnly: true,
+  }),
+);
 assert.equal(growingUsageOverview.summary.total, 2);
 assert.deepEqual(
   growingUsageOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
@@ -1046,21 +944,13 @@ const decliningUsageOverview = runCli({
   args: ['overview', 'profiles', '--usage-trend', 'declining', '--used-only'],
 });
 
-assert.deepEqual(decliningUsageOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: 'declining',
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  decliningUsageOverview.filters,
+  expectedProfileFilters({
+    usageTrend: 'declining',
+    usedOnly: true,
+  }),
+);
 assert.equal(decliningUsageOverview.summary.total, 1);
 assert.equal(decliningUsageOverview.items[0].id, 'engineering-implementation-verification');
 
@@ -1069,21 +959,13 @@ const growingWorkspaceUsageOverview = runCli({
   args: ['overview', 'profiles', '--workspace-usage-trend', 'growing', '--used-only'],
 });
 
-assert.deepEqual(growingWorkspaceUsageOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: 'growing',
-});
+assert.deepEqual(
+  growingWorkspaceUsageOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceUsageTrend: 'growing',
+  }),
+);
 assert.equal(growingWorkspaceUsageOverview.summary.total, 2);
 assert.deepEqual(
   growingWorkspaceUsageOverview.items
@@ -1097,21 +979,13 @@ const decliningWorkspaceUsageOverview = runCli({
   args: ['overview', 'profiles', '--workspace-usage-trend', 'declining', '--used-only'],
 });
 
-assert.deepEqual(decliningWorkspaceUsageOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: 'declining',
-});
+assert.deepEqual(
+  decliningWorkspaceUsageOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceUsageTrend: 'declining',
+  }),
+);
 assert.equal(decliningWorkspaceUsageOverview.summary.total, 1);
 assert.equal(decliningWorkspaceUsageOverview.items[0].id, 'engineering-implementation-verification');
 
@@ -1120,21 +994,13 @@ const growingAdoptionOverview = runCli({
   args: ['overview', 'profiles', '--adoption-drift-status', 'growing', '--used-only'],
 });
 
-assert.deepEqual(growingAdoptionOverview.filters, {
-  adoptionDriftReasonCode: null,
-  adoptionDriftStatus: 'growing',
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  growingAdoptionOverview.filters,
+  expectedProfileFilters({
+    adoptionDriftStatus: 'growing',
+    usedOnly: true,
+  }),
+);
 assert.equal(growingAdoptionOverview.summary.total, 2);
 assert.deepEqual(
   growingAdoptionOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
@@ -1146,23 +1012,59 @@ const decliningAdoptionReasonOverview = runCli({
   args: ['overview', 'profiles', '--adoption-drift-reason-code', 'workspace-footprint-declining', '--used-only'],
 });
 
-assert.deepEqual(decliningAdoptionReasonOverview.filters, {
-  adoptionDriftReasonCode: 'workspace-footprint-declining',
-  adoptionDriftStatus: null,
-  driftOnly: false,
-  mode: null,
-  reasonCode: null,
-  status: null,
-  usageTrend: null,
-  usedOnly: true,
-  workspaceDriftOnly: false,
-  workspaceId: null,
-  workspaceReasonCode: null,
-  workspaceStatus: null,
-  workspaceUsageTrend: null,
-});
+assert.deepEqual(
+  decliningAdoptionReasonOverview.filters,
+  expectedProfileFilters({
+    adoptionDriftReasonCode: 'workspace-footprint-declining',
+    usedOnly: true,
+  }),
+);
 assert.equal(decliningAdoptionReasonOverview.summary.total, 1);
 assert.equal(decliningAdoptionReasonOverview.items[0].id, 'engineering-implementation-verification');
+
+const growingWorkspaceAdoptionOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace-adoption-drift-status', 'growing', '--used-only'],
+});
+
+assert.deepEqual(
+  growingWorkspaceAdoptionOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceAdoptionDriftStatus: 'growing',
+  }),
+);
+assert.equal(growingWorkspaceAdoptionOverview.summary.total, 2);
+assert.deepEqual(
+  growingWorkspaceAdoptionOverview.items
+    .map((item) => item.id)
+    .sort((left, right) => String(left).localeCompare(String(right))),
+  ['engineering-triad', 'knowledge-triad'],
+);
+
+const decliningWorkspaceAdoptionReasonOverview = runCli({
+  rootDir: tempRoot,
+  args: [
+    'overview',
+    'profiles',
+    '--workspace-adoption-drift-reason-code',
+    'workspace-profile-footprint-declining',
+    '--used-only',
+  ],
+});
+
+assert.deepEqual(
+  decliningWorkspaceAdoptionReasonOverview.filters,
+  expectedProfileFilters({
+    usedOnly: true,
+    workspaceAdoptionDriftReasonCode: 'workspace-profile-footprint-declining',
+  }),
+);
+assert.equal(decliningWorkspaceAdoptionReasonOverview.summary.total, 1);
+assert.equal(
+  decliningWorkspaceAdoptionReasonOverview.items[0].id,
+  'engineering-implementation-verification',
+);
 
 console.log(
   JSON.stringify(

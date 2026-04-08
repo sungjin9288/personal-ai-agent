@@ -48,7 +48,7 @@ Commands:
   overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
-  overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--adoption-drift-status <growing|steady|declining|unused>] [--adoption-drift-reason-code <mission-volume-growing|mission-volume-declining|workspace-footprint-growing|workspace-footprint-declining|unused-profile>] [--usage-trend <growing|steady|declining|unused>] [--workspace-usage-trend <growing|steady|declining|unused>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
+  overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--adoption-drift-status <growing|steady|declining|unused>] [--adoption-drift-reason-code <mission-volume-growing|mission-volume-declining|workspace-footprint-growing|workspace-footprint-declining|unused-profile>] [--usage-trend <growing|steady|declining|unused>] [--workspace-usage-trend <growing|steady|declining|unused>] [--workspace-adoption-drift-status <growing|steady|declining|unused>] [--workspace-adoption-drift-reason-code <workspace-mission-volume-growing|workspace-mission-volume-declining|workspace-profile-footprint-growing|workspace-profile-footprint-declining|unused-workspace>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
   overview providers [--since <iso-timestamp>]
 
   provider list
@@ -192,6 +192,8 @@ async function main() {
         status: readOption(rest, '--status', ''),
         usageTrend: readOption(rest, '--usage-trend', ''),
         usedOnly: hasOption(rest, '--used-only'),
+        workspaceAdoptionDriftReasonCode: readOption(rest, '--workspace-adoption-drift-reason-code', ''),
+        workspaceAdoptionDriftStatus: readOption(rest, '--workspace-adoption-drift-status', ''),
         workspaceDriftOnly: hasOption(rest, '--workspace-drift-only'),
         workspaceId: readOption(rest, '--workspace', ''),
         workspaceReasonCode: readOption(rest, '--workspace-reason-code', ''),

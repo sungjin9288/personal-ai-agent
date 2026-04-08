@@ -2406,6 +2406,13 @@ const ORCHESTRATION_PROFILE_ADOPTION_DRIFT_REASON_CODES = [
   'workspace-footprint-declining',
   'workspace-footprint-growing',
 ];
+const ORCHESTRATION_PROFILE_WORKSPACE_ADOPTION_DRIFT_REASON_CODES = [
+  'unused-workspace',
+  'workspace-mission-volume-declining',
+  'workspace-mission-volume-growing',
+  'workspace-profile-footprint-declining',
+  'workspace-profile-footprint-growing',
+];
 
 function buildOrchestrationProfileUsageMonthlyBuckets(entries = []) {
   const bucketMap = new Map();
@@ -10566,6 +10573,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       );
     }
     if (
+      filter.workspaceAdoptionDriftReasonCode &&
+      !ORCHESTRATION_PROFILE_WORKSPACE_ADOPTION_DRIFT_REASON_CODES.includes(
+        filter.workspaceAdoptionDriftReasonCode,
+      )
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile workspace adoption drift reason code: ${filter.workspaceAdoptionDriftReasonCode}`,
+      );
+    }
+    if (
+      filter.workspaceAdoptionDriftStatus &&
+      !ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.includes(filter.workspaceAdoptionDriftStatus)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile workspace adoption drift status: ${filter.workspaceAdoptionDriftStatus}`,
+      );
+    }
+    if (
       filter.workspaceReasonCode &&
       !ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES.includes(filter.workspaceReasonCode)
     ) {
@@ -10850,6 +10875,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .filter(
         (item) =>
           !filter.workspaceUsageTrend || item.workspaceUsageTrend.status === filter.workspaceUsageTrend,
+      )
+      .filter(
+        (item) =>
+          !filter.workspaceAdoptionDriftReasonCode ||
+          item.workspaceAdoptionDrift.reasonCodes.includes(filter.workspaceAdoptionDriftReasonCode),
+      )
+      .filter(
+        (item) =>
+          !filter.workspaceAdoptionDriftStatus ||
+          item.workspaceAdoptionDrift.status === filter.workspaceAdoptionDriftStatus,
       )
       .filter((item) => !filter.workspaceDriftOnly || item.workspaceHealthDrift.status !== 'stable')
       .filter(
@@ -11200,6 +11235,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         usageTrend: filter.usageTrend || null,
         usedOnly: Boolean(filter.usedOnly),
         workspaceDriftOnly: Boolean(filter.workspaceDriftOnly),
+        workspaceAdoptionDriftReasonCode: filter.workspaceAdoptionDriftReasonCode || null,
+        workspaceAdoptionDriftStatus: filter.workspaceAdoptionDriftStatus || null,
         workspaceId: filter.workspaceId || null,
         workspaceReasonCode: filter.workspaceReasonCode || null,
         workspaceStatus: filter.workspaceStatus || null,

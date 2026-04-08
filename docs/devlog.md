@@ -41,6 +41,7 @@
 - extended item-level `workspaceUsageTrend` with per-workspace status aggregate and latest workspace linkage, so one orchestration preset can show which workspace is currently growing or shrinking its footprint without reopening mission history
 - added root-level `workspaceAdoptionDrift` to `overview profiles`, so workspace mission volume drift and preset footprint drift can now be triaged as one combined adoption signal directly from the catalog response
 - extended each profile item with `workspaceAdoptionDrift`, so combined workspace adoption pressure is now readable inside one preset payload without reopening root workspace aggregates
+- added `overview profiles --workspace-adoption-drift-status` and `--workspace-adoption-drift-reason-code`, so per-workspace combined adoption pressure can now be sliced directly from the profile catalog query surface
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface
