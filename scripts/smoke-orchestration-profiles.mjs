@@ -339,6 +339,12 @@ assert.equal(overview.summary.usageTrendCounts.steady, 0);
 assert.equal(overview.summary.usageTrendCounts.unused, 1);
 assert.equal(overview.summary.usageTrendStatus, 'growing');
 assert.equal(overview.summary.usageTrendProfileCount, 4);
+assert.equal(overview.summary.usageTrendLatestGrowingProfile.id, 'engineering-triad');
+assert.equal(
+  overview.summary.usageTrendLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(overview.summary.usageTrendLatestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.summary.latestGrowingProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningProfile.id, 'engineering-implementation-verification');
 assert.equal(overview.summary.latestUnusedProfile.id, 'knowledge-research-implementation');
@@ -771,6 +777,12 @@ assert.deepEqual(
 );
 assert.equal(workspaceUsedOverview.summary.total, 2);
 assert.equal(workspaceUsedOverview.summary.usedCount, 2);
+assert.equal(workspaceUsedOverview.summary.usageTrendLatestGrowingProfile.id, 'knowledge-triad');
+assert.equal(
+  workspaceUsedOverview.summary.usageTrendLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(workspaceUsedOverview.summary.usageTrendLatestUnusedProfile, null);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
@@ -939,6 +951,9 @@ assert.deepEqual(
 );
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestGrowingProfile.id, 'engineering-triad');
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestDecliningProfile, null);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestUnusedProfile, null);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 0);
