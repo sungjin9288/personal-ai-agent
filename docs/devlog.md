@@ -30,6 +30,7 @@
 - added root-level `workspaceHealthDrift` to `overview profiles` so workspace-layer preset instability can be read as stable, watch, or follow-up-required directly from the catalog response
 - added item-level `workspaceHealthDrift` to `overview profiles` so one preset can show which workspace currently owns the unstable branch or gate pressure
 - added `overview profiles --workspace-usage-trend` plus per-item `workspaceUsageTrend`, so orchestration preset queries can slice monthly workspace footprint growth or decline separately from raw mission volume trend
+- added root-level `workspaceUsageTrend` to `overview profiles`, so catalog responses expose the aggregate month-over-month workspace footprint status as a quick field
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface

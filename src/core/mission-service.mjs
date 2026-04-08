@@ -10472,6 +10472,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.usageMonthlyBucketCount = usageSummary.usageMonthlyBucketCount;
     summary.usageMonthlyBuckets = usageSummary.usageMonthlyBuckets;
     summary.usageOldestMonthlyBucketStartDate = usageSummary.usageOldestMonthlyBucketStartDate;
+    const workspaceUsageTrend = summarizeOrchestrationProfileWorkspaceUsageTrend({
+      currentMonthStartDate: scopeLatestMonthStartDate,
+      monthlyBuckets: usageSummary.usageMonthlyBuckets,
+      used: missionEntries.length > 0,
+    });
     summary.usageTrendCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10606,6 +10611,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       },
       healthDrift,
       workspaceHealthDrift,
+      workspaceUsageTrend,
       items,
       summary,
     };

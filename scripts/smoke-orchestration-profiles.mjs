@@ -139,6 +139,11 @@ assert.equal(
 );
 assert.equal(overview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.equal(overview.workspaceHealthDrift.latestWorkspace.profileId, 'knowledge-triad');
+assert.equal(overview.workspaceUsageTrend.status, 'growing');
+assert.equal(overview.workspaceUsageTrend.currentMonthStartDate, currentMonthStartDate);
+assert.equal(overview.workspaceUsageTrend.currentMonthWorkspaceCount, 2);
+assert.equal(overview.workspaceUsageTrend.previousMonthWorkspaceCount, 1);
+assert.equal(overview.workspaceUsageTrend.workspaceCountDelta, 1);
 assert.equal(overview.summary.total, 4);
 assert.equal(overview.summary.usedCount, 3);
 assert.equal(overview.summary.unusedCount, 1);
@@ -385,6 +390,10 @@ assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 0);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.status, 'steady');
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.currentMonthWorkspaceCount, 1);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.previousMonthWorkspaceCount, 1);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceCountDelta, 0);
 assert.equal(workspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(workspaceUsedOverview.summary.touchedWorkspaceIds, [workspace.id]);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftProfileCounts[workspace.id], 1);
@@ -425,6 +434,10 @@ assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts['foll
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestWorkspace, null);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.status, 'growing');
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.currentMonthWorkspaceCount, 1);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.previousMonthWorkspaceCount, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceCountDelta, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.touchedWorkspaceIds, [secondWorkspace.id]);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftProfileCounts, {});
