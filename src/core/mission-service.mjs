@@ -2099,12 +2099,19 @@ function summarizeOperatorTimeline(events) {
 }
 
 function summarizeOrchestrationProfileOverviewItems(items) {
+  const healthDriftReasonCodeCounts = {};
+  const healthDriftStatusCounts = {
+    'follow-up-required': 0,
+    stable: 0,
+    watch: 0,
+  };
   const modeCounts = Object.fromEntries(MISSION_MODES.map((mode) => [mode, 0]));
   const qualityGateCounts = {};
   const retryPolicyCounts = {};
   const specialistFollowUpRemediationRouteCounts = {};
   const specialistFollowUpRetryPolicyCounts = {};
   const touchedProfileIds = [];
+  let healthDriftProfileCount = 0;
   let missionCountTotal = 0;
   let parallelGroupCountTotal = 0;
   let mergedParallelGroupCountTotal = 0;
@@ -2118,6 +2125,17 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   let usedCount = 0;
 
   for (const item of items) {
+    const drift = item.healthDrift || summarizeOrchestrationProfileHealthDrift(item);
+
+    if (healthDriftStatusCounts[drift.status] !== undefined) {
+      healthDriftStatusCounts[drift.status] += 1;
+    }
+    if (drift.status !== 'stable') {
+      healthDriftProfileCount += 1;
+    }
+    for (const reasonCode of drift.reasonCodes) {
+      healthDriftReasonCodeCounts[reasonCode] = (healthDriftReasonCodeCounts[reasonCode] || 0) + 1;
+    }
     if (modeCounts[item.mode] !== undefined) {
       modeCounts[item.mode] += 1;
     }
@@ -2160,6 +2178,9 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   }
 
   return {
+    healthDriftProfileCount,
+    healthDriftReasonCodeCounts,
+    healthDriftStatusCounts,
     latestUsedProfile:
       getLatestItem(
         items
@@ -2192,6 +2213,64 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     touchedProfileIds: touchedProfileIds.sort((left, right) => String(left).localeCompare(String(right))),
     unusedCount: items.length - usedCount,
     usedCount,
+    latestHealthDriftProfile:
+      getLatestItem(
+        items
+          .filter((item) => (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status !== 'stable')
+          .map((item) => ({
+            displayName: item.displayName,
+            healthDrift: item.healthDrift || summarizeOrchestrationProfileHealthDrift(item),
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt || item.specialistFollowUpLatestReminderAt || '',
+          })),
+        'latestUsedAt',
+      ) || null,
+  };
+}
+
+function summarizeOrchestrationProfileHealthDrift({
+  qualityGateBlockedGroupCount = 0,
+  specialistFollowUpNeedsReminderCount = 0,
+  specialistFollowUpNextReminderAt = null,
+  specialistFollowUpOverdueCount = 0,
+  specialistFollowUpRequiredCount = 0,
+  specialistFollowUpLatestReminderAt = null,
+  specialistFollowUpReminderCountTotal = 0,
+} = {}) {
+  const reasonCodes = [];
+
+  if (qualityGateBlockedGroupCount > 0) {
+    reasonCodes.push('quality-gate-blocked');
+  }
+  if (specialistFollowUpOverdueCount > 0) {
+    reasonCodes.push('specialist-follow-up-overdue');
+  }
+  if (specialistFollowUpNeedsReminderCount > 0) {
+    reasonCodes.push('specialist-follow-up-needs-reminder');
+  }
+  if (specialistFollowUpRequiredCount > 0) {
+    reasonCodes.push('specialist-follow-up-open');
+  }
+
+  let status = 'stable';
+  if (qualityGateBlockedGroupCount > 0 || specialistFollowUpOverdueCount > 0) {
+    status = 'follow-up-required';
+  } else if (specialistFollowUpRequiredCount > 0 || specialistFollowUpNeedsReminderCount > 0) {
+    status = 'watch';
+  }
+
+  return {
+    latestReminderAt: specialistFollowUpLatestReminderAt,
+    nextReminderAt: specialistFollowUpNextReminderAt,
+    qualityGateBlockedGroupCount,
+    reasonCodes,
+    specialistFollowUpNeedsReminderCount,
+    specialistFollowUpOverdueCount,
+    specialistFollowUpReminderCountTotal,
+    specialistFollowUpRequiredCount,
+    status,
   };
 }
 
@@ -9813,8 +9892,19 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           }
         }
 
+        const healthDrift = summarizeOrchestrationProfileHealthDrift({
+          qualityGateBlockedGroupCount: groups.filter((group) => group.qualityGate?.status === 'blocked').length,
+          specialistFollowUpLatestReminderAt: followUpSummary.latestReminderAt,
+          specialistFollowUpNeedsReminderCount: followUpSummary.needsReminderCount,
+          specialistFollowUpNextReminderAt: followUpSummary.nextReminderAt,
+          specialistFollowUpOverdueCount: followUpSummary.overdueCount,
+          specialistFollowUpRequiredCount: followUps.length,
+          specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
+        });
+
         return {
           ...profile,
+          healthDrift,
           latestMission: latestMissionEntry
             ? {
                 id: latestMissionEntry.mission.id,
@@ -9875,13 +9965,31 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         return String(left.id).localeCompare(String(right.id));
       });
 
+    const summary = summarizeOrchestrationProfileOverviewItems(items);
+    const healthDrift = {
+      latestProfile: summary.latestHealthDriftProfile,
+      profileCount: summary.healthDriftProfileCount,
+      reasonCodeCounts: summary.healthDriftReasonCodeCounts,
+      reasonCodes: Object.keys(summary.healthDriftReasonCodeCounts).sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      ),
+      status:
+        summary.healthDriftStatusCounts['follow-up-required'] > 0
+          ? 'follow-up-required'
+          : summary.healthDriftStatusCounts.watch > 0
+            ? 'watch'
+            : 'stable',
+      statusCounts: summary.healthDriftStatusCounts,
+    };
+
     return {
       filters: {
         mode: filter.mode || null,
         usedOnly: Boolean(filter.usedOnly),
       },
+      healthDrift,
       items,
-      summary: summarizeOrchestrationProfileOverviewItems(items),
+      summary,
     };
   }
 

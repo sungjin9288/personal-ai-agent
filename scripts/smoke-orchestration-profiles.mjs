@@ -66,6 +66,13 @@ assert.deepEqual(overview.filters, {
   mode: null,
   usedOnly: false,
 });
+assert.equal(overview.healthDrift.status, 'follow-up-required');
+assert.equal(overview.healthDrift.profileCount, 1);
+assert.equal(overview.healthDrift.statusCounts['follow-up-required'], 1);
+assert.equal(overview.healthDrift.statusCounts.watch, 0);
+assert.equal(overview.healthDrift.reasonCodeCounts['quality-gate-blocked'], 1);
+assert.equal(overview.healthDrift.reasonCodeCounts['specialist-follow-up-open'], 1);
+assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
 assert.equal(overview.summary.total, 4);
 assert.equal(overview.summary.usedCount, 2);
 assert.equal(overview.summary.unusedCount, 2);
@@ -89,6 +96,13 @@ assert.equal(overview.summary.specialistFollowUpRetryPolicyCounts['resume-verifi
 assert.equal(overview.summary.specialistFollowUpRemediationRouteCounts['priority-verification-remediation'], 1);
 assert.equal(overview.summary.specialistFollowUpLatestReminderAt, null);
 assert.equal(overview.summary.specialistFollowUpNextReminderAt, null);
+assert.equal(overview.summary.healthDriftProfileCount, 1);
+assert.equal(overview.summary.healthDriftStatusCounts['follow-up-required'], 1);
+assert.equal(overview.summary.healthDriftStatusCounts.watch, 0);
+assert.equal(overview.summary.healthDriftStatusCounts.stable, 3);
+assert.equal(overview.summary.healthDriftReasonCodeCounts['quality-gate-blocked'], 1);
+assert.equal(overview.summary.healthDriftReasonCodeCounts['specialist-follow-up-open'], 1);
+assert.equal(overview.summary.latestHealthDriftProfile.id, 'knowledge-triad');
 assert.deepEqual(overview.summary.touchedProfileIds, [
   'engineering-implementation-verification',
   'knowledge-triad',
@@ -110,6 +124,11 @@ assert.equal(knowledgeTriad.specialistFollowUpKindCounts.verification, 1);
 assert.equal(knowledgeTriad.specialistFollowUpLatestReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpNextReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpStatusCounts.blocked, 1);
+assert.equal(knowledgeTriad.healthDrift.status, 'follow-up-required');
+assert.deepEqual(knowledgeTriad.healthDrift.reasonCodes, [
+  'quality-gate-blocked',
+  'specialist-follow-up-open',
+]);
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.failed, 1);
 assert.equal(knowledgeTriad.latestMission.id, gateMission.id);
@@ -127,6 +146,8 @@ assert.equal(engineeringImplementationVerification.parallelGroupCount, 0);
 assert.equal(engineeringImplementationVerification.specialistFollowUpRequiredCount, 0);
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRemediationRouteCounts, {});
+assert.equal(engineeringImplementationVerification.healthDrift.status, 'stable');
+assert.deepEqual(engineeringImplementationVerification.healthDrift.reasonCodes, []);
 assert.equal(engineeringImplementationVerification.missionStatusCounts.created, 1);
 assert.equal(engineeringImplementationVerification.latestMission.id, engineeringMission.id);
 
