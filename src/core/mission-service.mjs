@@ -715,9 +715,18 @@ function buildOverdueIncidentTitle(count) {
   return `Overdue Action Escalation (${count} items)`;
 }
 
-function buildOverdueIncidentContent({ items, filters }) {
+function formatIncidentCountMap(counts = {}) {
+  return Object.entries(counts)
+    .filter(([, count]) => Number(count || 0) > 0)
+    .sort(([left], [right]) => String(left).localeCompare(String(right)))
+    .map(([key, count]) => `${key}=${count}`)
+    .join(', ');
+}
+
+function buildOverdueIncidentContent({ items, filters, summary }) {
   const filterSummary = [
     filters.actionClass ? `class=${filters.actionClass}` : null,
+    filters.providerId ? `provider=${filters.providerId}` : null,
     filters.priority ? `priority=${filters.priority}` : null,
     filters.owner ? `owner=${filters.owner}` : null,
     filters.workspaceId ? `workspace=${filters.workspaceId}` : null,
@@ -730,6 +739,30 @@ function buildOverdueIncidentContent({ items, filters }) {
     `overdue action count: ${items.length}`,
     `filters: ${filterSummary || 'none'}`,
   ];
+
+  if (summary?.specialistFollowUpStatusCounts?.total > 0) {
+    lines.push(`specialist follow-up overdue count: ${summary.specialistFollowUpOverdueCount || 0}`);
+    lines.push(`specialist follow-up needs-reminder count: ${summary.specialistFollowUpNeedsReminderCount || 0}`);
+    lines.push(`specialist follow-up reminder total: ${summary.specialistFollowUpReminderCountTotal || 0}`);
+
+    const providerSummary = formatIncidentCountMap(summary.specialistFollowUpProviderCounts || {});
+    if (providerSummary) {
+      lines.push(`specialist follow-up providers: ${providerSummary}`);
+    }
+
+    const kindSummary = formatIncidentCountMap(summary.specialistFollowUpKindCounts || {});
+    if (kindSummary) {
+      lines.push(`specialist follow-up kinds: ${kindSummary}`);
+    }
+
+    if (summary.specialistFollowUpLatestReminderAt) {
+      lines.push(`specialist follow-up latest reminder at: ${summary.specialistFollowUpLatestReminderAt}`);
+    }
+
+    if (summary.specialistFollowUpNextReminderAt) {
+      lines.push(`specialist follow-up next reminder at: ${summary.specialistFollowUpNextReminderAt}`);
+    }
+  }
 
   for (const item of items) {
     lines.push(
@@ -6720,9 +6753,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     const title = buildOverdueIncidentTitle(overdueInbox.items.length);
+    const summary = summarizeActionInbox(overdueInbox.items);
     const content = buildOverdueIncidentContent({
       filters: overdueInbox.filters,
       items: overdueInbox.items,
+      summary,
     });
     const path = docService.logDocument({
       type: 'incident',
@@ -6795,6 +6830,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       itemIds: overdueInbox.items.map((item) => item.actionId),
       logged: true,
       path,
+      summary,
       title,
     };
   }

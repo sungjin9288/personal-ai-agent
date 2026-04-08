@@ -236,19 +236,35 @@ const incidentLog = runCli({
 });
 
 assert.equal(incidentLog.logged, true);
-assert.equal(incidentLog.count, 4);
-assert.equal(incidentLog.escalationIds.length, 4);
+assert.equal(incidentLog.count, 5);
+assert.equal(incidentLog.escalationIds.length, 5);
 assert.ok(incidentLog.path);
-assert.equal(incidentLog.itemIds.length, 4);
+assert.equal(incidentLog.itemIds.length, 5);
+assert.equal(incidentLog.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(incidentLog.summary.specialistFollowUpNeedsReminderCount, 1);
+assert.equal(incidentLog.summary.specialistFollowUpReminderCountTotal, 0);
+assert.equal(incidentLog.summary.specialistFollowUpProviderCounts.stub, 1);
+assert.equal(incidentLog.summary.specialistFollowUpKindCounts.implementation, 1);
+assert.equal(incidentLog.summary.specialistFollowUpStatusCounts.failed, 1);
+assert.equal(incidentLog.summary.specialistFollowUpLatestReminderAt, null);
+assert.ok(incidentLog.summary.specialistFollowUpNextReminderAt);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
-assert.match(incidentsContent, /Overdue Action Escalation \(4 items\)/);
-assert.match(incidentsContent, /overdue action count: 4/);
+assert.match(incidentsContent, /Overdue Action Escalation \(5 items\)/);
+assert.match(incidentsContent, /overdue action count: 5/);
+assert.match(incidentsContent, /specialist follow-up overdue count: 1/);
+assert.match(incidentsContent, /specialist follow-up needs-reminder count: 1/);
+assert.match(incidentsContent, /specialist follow-up reminder total: 0/);
+assert.match(incidentsContent, /specialist follow-up providers: stub=1/);
+assert.match(incidentsContent, /specialist follow-up kinds: implementation=1/);
+assert.match(incidentsContent, /specialist follow-up next reminder at: 2026-03-02T00:00:00.000Z/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
+assert.match(incidentsContent, /Maintenance sweep required for workspace-two/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
 assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
 assert.match(incidentsContent, /Specialist follow-up required for Specialist overdue follow-up \(implementation\)/);
 assert.match(incidentsContent, /approval resolve/);
+assert.match(incidentsContent, /action maintenance/);
 assert.match(incidentsContent, /mission show/);
 assert.match(incidentsContent, /mission timeline/);
 assert.match(incidentsContent, /mission run .* --provider stub/);
@@ -278,6 +294,7 @@ const driftOnlyLog = runCli({
 
 assert.equal(driftOnlyLog.logged, true);
 assert.equal(driftOnlyLog.count, 1);
+assert.equal(driftOnlyLog.summary.specialistFollowUpOverdueCount, 0);
 
 const driftProviderLog = runCli({
   rootDir: tempRoot,
@@ -295,6 +312,11 @@ const specialistOnlyLog = runCli({
 
 assert.equal(specialistOnlyLog.logged, true);
 assert.equal(specialistOnlyLog.count, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpNeedsReminderCount, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpProviderCounts.stub, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpKindCounts.implementation, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpStatusCounts.failed, 1);
 
 const specialistProviderLog = runCli({
   rootDir: tempRoot,
@@ -304,6 +326,14 @@ const specialistProviderLog = runCli({
 assert.equal(specialistProviderLog.logged, true);
 assert.equal(specialistProviderLog.count, 1);
 assert.equal(specialistProviderLog.filters.providerId, 'stub');
+assert.equal(specialistProviderLog.summary.specialistFollowUpOverdueCount, 1);
+assert.equal(specialistProviderLog.summary.specialistFollowUpNeedsReminderCount, 1);
+
+const specialistProviderIncidentContent = fs.readFileSync(specialistProviderLog.path, 'utf8');
+assert.match(
+  specialistProviderIncidentContent,
+  /filters: class=specialist-follow-up-required, provider=stub/,
+);
 
 console.log(
   JSON.stringify(

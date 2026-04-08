@@ -13,6 +13,7 @@
 - linked specialist reminder aggregate fields into mission, workspace, and global summaries, so reminder needs, overdue count, latest reminder timestamp, and next reminder deadline can be read from the same summary surfaces already used for specialist run and merge state
 - linked the same specialist reminder aggregate fields into workspace timeline and global operator timeline summaries, so operator chronology payloads can show current follow-up reminder pressure without reopening dedicated action surfaces
 - extended generic action inbox summary with specialist follow-up provider, kind, status, and reminder aggregates, so mixed queue triage can distinguish specialist pressure without dropping into the dedicated specialist follow-up command
+- extended `action log-overdue` response summary and incident markdown with specialist follow-up reminder aggregate, so overdue incident trails preserve the same specialist pressure context already available in queue summaries
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry
