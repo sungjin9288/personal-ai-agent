@@ -11150,6 +11150,58 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           latestUsedAt: item.latestUsedAt || null,
         }))
         .sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
+    summary.latestGrowingWorkspaceAdoptionProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.workspaceAdoptionDrift.status === 'growing')
+          .map((item) => ({
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
+            workspaceAdoptionDrift: item.workspaceAdoptionDrift,
+          })),
+        'latestUsedAt',
+      ) || null;
+    summary.latestDecliningWorkspaceAdoptionProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.workspaceAdoptionDrift.status === 'declining')
+          .map((item) => ({
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
+            workspaceAdoptionDrift: item.workspaceAdoptionDrift,
+          })),
+        'latestUsedAt',
+      ) || null;
+    summary.latestGrowingWorkspaceAdoptionWorkspace =
+      getLatestItem(
+        workspaceAdoptionEntries
+          .filter((entry) => entry.status === 'growing')
+          .map((entry) => ({
+            adoptionDrift: entry.adoptionDrift,
+            id: entry.id,
+            latestAt: entry.latestAt || '',
+            missionTrend: entry.missionTrend || null,
+            name: entry.name || null,
+            profileFootprintTrend: entry.profileFootprintTrend || null,
+          })),
+        'latestAt',
+      ) || null;
+    summary.latestDecliningWorkspaceAdoptionWorkspace =
+      getLatestItem(
+        workspaceAdoptionEntries
+          .filter((entry) => entry.status === 'declining')
+          .map((entry) => ({
+            adoptionDrift: entry.adoptionDrift,
+            id: entry.id,
+            latestAt: entry.latestAt || '',
+            missionTrend: entry.missionTrend || null,
+            name: entry.name || null,
+            profileFootprintTrend: entry.profileFootprintTrend || null,
+          })),
+        'latestAt',
+      ) || null;
     const healthDrift = {
       latestProfile: summary.latestHealthDriftProfile,
       profileCount: summary.healthDriftProfileCount,
@@ -11201,6 +11253,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         Object.keys(summary.workspaceUsageTrendStatusCounts?.[status] || {}).length,
       ]),
     );
+    workspaceAdoptionDrift.latestDecliningProfile = summary.latestDecliningWorkspaceAdoptionProfile;
+    workspaceAdoptionDrift.latestDecliningWorkspace = summary.latestDecliningWorkspaceAdoptionWorkspace;
+    workspaceAdoptionDrift.latestGrowingProfile = summary.latestGrowingWorkspaceAdoptionProfile;
+    workspaceAdoptionDrift.latestGrowingWorkspace = summary.latestGrowingWorkspaceAdoptionWorkspace;
     const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
       summary.touchedWorkspaceIds.map((workspaceId) => {
         const workspace = workspaceById.get(workspaceId) || null;

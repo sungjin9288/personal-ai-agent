@@ -333,6 +333,20 @@ assert.equal(overview.summary.workspaceAdoptionDriftStatusCounts.growing[secondW
 assert.equal(overview.summary.workspaceAdoptionDriftStatusCounts.declining[workspace.id], 1);
 assert.deepEqual(overview.summary.workspaceAdoptionDriftStatusCounts.steady, {});
 assert.deepEqual(overview.summary.workspaceAdoptionDriftStatusCounts.unused, {});
+assert.equal(overview.summary.latestGrowingWorkspaceAdoptionProfile.id, 'engineering-triad');
+assert.equal(
+  overview.summary.latestDecliningWorkspaceAdoptionProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(overview.summary.latestGrowingWorkspaceAdoptionWorkspace.id, secondWorkspace.id);
+assert.equal(overview.summary.latestDecliningWorkspaceAdoptionWorkspace, null);
+assert.equal(overview.workspaceAdoptionDrift.latestGrowingProfile.id, 'engineering-triad');
+assert.equal(
+  overview.workspaceAdoptionDrift.latestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(overview.workspaceAdoptionDrift.latestGrowingWorkspace.id, secondWorkspace.id);
+assert.equal(overview.workspaceAdoptionDrift.latestDecliningWorkspace, null);
 assert.equal(overview.summary.latestGrowingWorkspaceUsageProfile.id, 'engineering-triad');
 assert.equal(
   overview.summary.latestDecliningWorkspaceUsageProfile.id,
