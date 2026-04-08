@@ -829,6 +829,41 @@ function deriveSpecialistFollowUpReminderCadenceHours(status) {
   return SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS[status] || null;
 }
 
+function resolveSpecialistFollowUpPolicy({ followUpSource = 'run-status', orchestrationProfile, specialistKind, status }) {
+  const retryPolicy = normalizeText(orchestrationProfile?.retryPolicy) || 'resume-blocked-or-failed-branch';
+  const normalizedSpecialistKind = normalizeText(specialistKind);
+  const normalizedStatus = normalizeAgentRunStatus(status);
+  const defaultPolicy = {
+    priority: normalizedStatus === 'failed' ? 'high' : 'medium',
+    reminderCadenceHours: deriveSpecialistFollowUpReminderCadenceHours(normalizedStatus),
+    retryPolicy,
+    slaHours: 24,
+  };
+
+  if (retryPolicy === 'resume-verification-fast' && normalizedSpecialistKind === 'verification') {
+    return {
+      priority: followUpSource === 'quality-gate' ? 'high' : defaultPolicy.priority,
+      reminderCadenceHours: 12,
+      retryPolicy,
+      slaHours: 12,
+    };
+  }
+
+  if (
+    retryPolicy === 'resume-research-and-verification-fast' &&
+    ['research', 'verification'].includes(normalizedSpecialistKind)
+  ) {
+    return {
+      priority: followUpSource === 'quality-gate' || normalizedStatus === 'blocked' ? 'high' : defaultPolicy.priority,
+      reminderCadenceHours: 12,
+      retryPolicy,
+      slaHours: 12,
+    };
+  }
+
+  return defaultPolicy;
+}
+
 function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
   const ownerChain = ['mission-owner', 'workspace-owner', 'human-approver'];
   const baseOwner = ACTION_OWNERS.includes(recommendedOwner) ? recommendedOwner : 'workspace-owner';
@@ -1603,6 +1638,7 @@ function summarizeReviewerFollowUps(items) {
 
 function summarizeSpecialistFollowUpItems(items) {
   const providerCounts = {};
+  const retryPolicyCounts = {};
   const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
   const statusCounts = {
     blocked: 0,
@@ -1619,6 +1655,9 @@ function summarizeSpecialistFollowUpItems(items) {
   for (const item of items) {
     if (item.providerId) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+    }
+    if (item.retryPolicy) {
+      retryPolicyCounts[item.retryPolicy] = (retryPolicyCounts[item.retryPolicy] || 0) + 1;
     }
     if (item.workspaceId) {
       workspaceCounts[item.workspaceId] = (workspaceCounts[item.workspaceId] || 0) + 1;
@@ -1649,17 +1688,18 @@ function summarizeSpecialistFollowUpItems(items) {
 
   return {
     latestItem: items.at(-1) || null,
-    latestReminderAt,
-    needsReminderCount,
-    nextReminderAt,
-    overdueCount,
-    providerCounts,
-    reminderCountTotal,
-    specialistKindCounts,
-    statusCounts,
-    total: items.length,
-    workspaceCounts,
-  };
+      latestReminderAt,
+      needsReminderCount,
+      nextReminderAt,
+      overdueCount,
+      providerCounts,
+      reminderCountTotal,
+      retryPolicyCounts,
+      specialistKindCounts,
+      statusCounts,
+      total: items.length,
+      workspaceCounts,
+    };
 }
 
 function summarizeOperatorTimeline(events) {
@@ -6309,7 +6349,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function attachSpecialistFollowUpReminderState(baseItem, status) {
     const reminderRecords = listSpecialistFollowUpRemindersForItem(baseItem);
     const latestReminder = reminderRecords.at(-1) || null;
-    const reminderCadenceHours = deriveSpecialistFollowUpReminderCadenceHours(status);
+    const reminderCadenceHours =
+      Number(baseItem.reminderCadenceHours || 0) || deriveSpecialistFollowUpReminderCadenceHours(status);
     const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
     const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
     const nextReminderAt =
@@ -6349,6 +6390,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     status,
     workspace,
   }) {
+    const followUpPolicy = resolveSpecialistFollowUpPolicy({
+      followUpSource,
+      orchestrationProfile: group.orchestrationProfile,
+      specialistKind,
+      status,
+    });
     const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
     const baseItem = addOperationalMetadata(
       addDispatchMetadata(
@@ -6367,6 +6414,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           providerId,
           reason: detail,
           recommendedOwner,
+          retryPolicy: followUpPolicy.retryPolicy,
+          reminderCadenceHours: followUpPolicy.reminderCadenceHours,
           resumeFromRunId: normalizeText(run?.resumeFromRunId) || null,
           runId: normalizeText(run?.id) || null,
           sessionId: normalizeText(run?.sessionId) || null,
@@ -6380,7 +6429,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceName: workspace.name,
         },
         {
-          priority: status === 'failed' ? 'high' : 'medium',
+          priority: followUpPolicy.priority,
           recommendedCommand,
           recommendedOwner: 'workspace-owner',
         },
@@ -6388,7 +6437,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       {
         escalationRule:
           'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
-        slaHours: 24,
+        slaHours: followUpPolicy.slaHours,
       },
     );
 
@@ -7068,6 +7117,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       specialistFollowUpOverdueCount: specialistFollowUpSummary.overdueCount,
       specialistFollowUpProviderCounts: specialistFollowUpSummary.providerCounts,
       specialistFollowUpReminderCountTotal: specialistFollowUpSummary.reminderCountTotal,
+      specialistFollowUpRetryPolicyCounts: specialistFollowUpSummary.retryPolicyCounts,
       specialistFollowUpStatusCounts: specialistFollowUpSummary.statusCounts,
       workspaceCounts,
     };

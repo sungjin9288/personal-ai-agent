@@ -34,6 +34,10 @@ function getDeliverableArtifact(store, run) {
   return artifactId ? store.getArtifact(artifactId) : null;
 }
 
+function getHourDelta(from, to) {
+  return Math.round((new Date(to).getTime() - new Date(from).getTime()) / (60 * 60 * 1000));
+}
+
 const store = createStore({ rootDir: tempRoot });
 const service = createMissionService({ store, rootDir: tempRoot });
 
@@ -120,7 +124,7 @@ assert.equal(profileSummary.specialistRunCount, 3);
 assert.equal(profileSummary.specialistOrchestrationProfileId, 'knowledge-triad');
 assert.equal(profileSummary.specialistOrchestrationProfileDisplayName, 'Knowledge Triad');
 assert.equal(profileSummary.specialistOrchestrationProfileQualityGate, 'verification-signal-required');
-assert.equal(profileSummary.specialistOrchestrationProfileRetryPolicy, 'resume-blocked-or-failed-branch');
+assert.equal(profileSummary.specialistOrchestrationProfileRetryPolicy, 'resume-verification-fast');
 assert.equal(profileSummary.specialistOrchestrationProfileSource, 'orchestration-profile');
 assert.deepEqual(profileSummary.specialistConfiguredKinds, ['research', 'implementation', 'verification']);
 assert.equal(profileSummary.specialistLatestParallelGroup?.orchestrationProfile?.id, 'knowledge-triad');
@@ -168,9 +172,16 @@ const qualityGateInbox = service.getActionInbox({
   missionId: qualityGateMission.id,
 });
 assert.equal(qualityGateInbox.items.length, 1);
+assert.equal(qualityGateInbox.summary.specialistFollowUpRetryPolicyCounts['resume-verification-fast'], 1);
 assert.equal(qualityGateInbox.items[0].followUpSource, 'quality-gate');
 assert.equal(qualityGateInbox.items[0].specialistKind, 'verification');
 assert.equal(qualityGateInbox.items[0].status, 'blocked');
+assert.equal(qualityGateInbox.items[0].priority, 'high');
+assert.equal(qualityGateInbox.items[0].retryPolicy, 'resume-verification-fast');
+assert.equal(qualityGateInbox.items[0].reminderCadenceHours, 12);
+assert.equal(qualityGateInbox.items[0].slaHours, 12);
+assert.equal(getHourDelta(qualityGateInbox.items[0].createdAt, qualityGateInbox.items[0].dueAt), 12);
+assert.equal(qualityGateInbox.items[0].nextReminderAt, null);
 assert.ok(qualityGateInbox.items[0].specialistHandoff);
 assert.match(qualityGateInbox.items[0].specialistHandoff.nextHandoff.request, /satisfy the verification-signal-required gate/i);
 

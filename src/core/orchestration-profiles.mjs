@@ -24,7 +24,7 @@ const ORCHESTRATION_PROFILES = Object.freeze([
     mode: 'knowledge',
     parallelSpecialistKinds: ['research', 'implementation', 'verification'],
     qualityGate: 'verification-signal-required',
-    retryPolicy: 'resume-blocked-or-failed-branch',
+    retryPolicy: 'resume-verification-fast',
   },
   {
     deliverableTypes: ENGINEERING_DELIVERABLE_TYPES,
@@ -35,7 +35,7 @@ const ORCHESTRATION_PROFILES = Object.freeze([
     mode: 'engineering',
     parallelSpecialistKinds: ['implementation', 'verification'],
     qualityGate: 'verification-signal-required',
-    retryPolicy: 'resume-blocked-or-failed-branch',
+    retryPolicy: 'resume-verification-fast',
   },
   {
     deliverableTypes: ENGINEERING_DELIVERABLE_TYPES,
@@ -46,7 +46,7 @@ const ORCHESTRATION_PROFILES = Object.freeze([
     mode: 'engineering',
     parallelSpecialistKinds: ['research', 'implementation', 'verification'],
     qualityGate: 'research-and-verification-signal-required',
-    retryPolicy: 'resume-blocked-or-failed-branch',
+    retryPolicy: 'resume-research-and-verification-fast',
   },
 ]);
 

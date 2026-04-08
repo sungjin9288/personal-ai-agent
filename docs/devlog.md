@@ -19,6 +19,7 @@
 - added a typed `specialistHandoff` contract for specialist branches and threaded it through manager merge prompts, persisted agent runs, and specialist follow-up queue items, inspired by agency-agents handoff template discipline
 - added `orchestration-profile:<id>` specialist presets and threaded profile metadata through mission/workspace/global/operator summaries plus latest parallel group state, so profile-driven fan-out stays explicit and auditable without reconstructing branch policy from raw constraints
 - enforced orchestration profile quality gates at runtime, so manager merge now stops when required specialist signals are abandoned or missing and emits `specialist-quality-gate-blocked` plus gate-backed specialist follow-up items instead of silently merging incomplete branch sets
+- linked orchestration profile retry policy into specialist follow-up priority, SLA, and reminder cadence so verification-heavy triad presets now create faster operator pressure than the default branch-resume policy
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry

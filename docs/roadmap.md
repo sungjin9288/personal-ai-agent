@@ -54,6 +54,7 @@
 - specialist follow-up lifecycle now also supports persisted reminders plus `--needs-reminder` and `action remind-specialist-follow-ups`, and reminder events now appear on mission/workspace/operator timelines
 - specialist runtime now also supports `orchestration-profile:<id>` presets, so manager-controlled fan-out can be selected through reusable profile metadata instead of only raw `parallel-specialists:<kinds>` constraints
 - orchestration profile quality gates are now enforced at runtime, so merge is blocked until required specialist signals complete and the same `specialist-follow-up-required` surface can reopen gate-only violations such as abandoned verification branches
+- orchestration profile retry policy now also changes specialist follow-up urgency, SLA, and reminder cadence, so triad-style verification gates can be re-driven faster than the default branch-resume policy
 - mission/workspace/global/operator specialist summaries now expose orchestration profile linkage, latest profile metadata, and touched profile counts so profile-driven branch selection stays inspectable through the same control-plane surfaces
 - `action maintenance` now also sweeps due specialist follow-up reminders, so blocked or failed specialist branch follow-up uses the same local-first maintenance entrypoint already shared by escalation, owner handoff, and provider attention pressure
 - mission, workspace, and global summaries now also expose specialist reminder aggregate fields, so follow-up reminder pressure is readable without reopening the dedicated follow-up queue
