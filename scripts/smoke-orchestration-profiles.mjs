@@ -478,6 +478,12 @@ assert.equal(overview.summary.adoptionDriftReasonCodeCounts['mission-volume-decl
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['workspace-footprint-declining'], 1);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['unused-profile'], 1);
 assert.equal(overview.summary.adoptionDriftLatestProfile.id, 'engineering-triad');
+assert.equal(overview.summary.adoptionDriftLatestGrowingProfile.id, 'engineering-triad');
+assert.equal(
+  overview.summary.adoptionDriftLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(overview.summary.adoptionDriftLatestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.summary.latestAdoptionDriftProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestGrowingAdoptionProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningAdoptionProfile.id, 'engineering-implementation-verification');
@@ -783,6 +789,12 @@ assert.equal(
   'engineering-implementation-verification',
 );
 assert.equal(workspaceUsedOverview.summary.usageTrendLatestUnusedProfile, null);
+assert.equal(workspaceUsedOverview.summary.adoptionDriftLatestGrowingProfile.id, 'knowledge-triad');
+assert.equal(
+  workspaceUsedOverview.summary.adoptionDriftLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(workspaceUsedOverview.summary.adoptionDriftLatestUnusedProfile, null);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
@@ -954,6 +966,9 @@ assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestGrowingProfile.id, 'engineering-triad');
 assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestDecliningProfile, null);
 assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestUnusedProfile, null);
+assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestGrowingProfile.id, 'engineering-triad');
+assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestDecliningProfile, null);
+assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestUnusedProfile, null);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 0);

@@ -11266,6 +11266,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     usageTrend.latestUnusedProfile = summary.latestUnusedProfile;
     usageTrend.profileCount = summary.total;
     usageTrend.statusCounts = summary.usageTrendCounts;
+    adoptionDrift.latestDecliningProfile = summary.latestDecliningAdoptionProfile;
+    adoptionDrift.latestGrowingProfile = summary.latestGrowingAdoptionProfile;
     adoptionDrift.latestProfile = summary.latestAdoptionDriftProfile;
     adoptionDrift.latestUnusedProfile = summary.latestUnusedAdoptionProfile;
     adoptionDrift.profileCount = summary.adoptionDriftProfileCount;
@@ -11392,6 +11394,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.adoptionDriftStatus = adoptionDrift.status;
     summary.adoptionDriftReasonCodes = adoptionDrift.reasonCodes;
     summary.adoptionDriftLatestProfile = adoptionDrift.latestProfile;
+    summary.adoptionDriftLatestGrowingProfile = adoptionDrift.latestGrowingProfile;
+    summary.adoptionDriftLatestDecliningProfile = adoptionDrift.latestDecliningProfile;
+    summary.adoptionDriftLatestUnusedProfile = adoptionDrift.latestUnusedProfile;
 
     return {
       filters: {
