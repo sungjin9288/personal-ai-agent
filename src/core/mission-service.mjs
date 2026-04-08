@@ -2110,7 +2110,10 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   const retryPolicyCounts = {};
   const specialistFollowUpRemediationRouteCounts = {};
   const specialistFollowUpRetryPolicyCounts = {};
+  const workspaceMissionCounts = {};
+  const workspaceProfileCounts = {};
   const touchedProfileIds = [];
+  const touchedWorkspaceIds = new Set();
   let healthDriftProfileCount = 0;
   let missionCountTotal = 0;
   let parallelGroupCountTotal = 0;
@@ -2174,6 +2177,11 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     if (item.used) {
       usedCount += 1;
       touchedProfileIds.push(item.id);
+      for (const workspaceId of item.touchedWorkspaceIds || []) {
+        touchedWorkspaceIds.add(workspaceId);
+        workspaceProfileCounts[workspaceId] = (workspaceProfileCounts[workspaceId] || 0) + 1;
+      }
+      accumulateCountMap(workspaceMissionCounts, item.workspaceMissionCounts || {});
     }
   }
 
@@ -2194,6 +2202,27 @@ function summarizeOrchestrationProfileOverviewItems(items) {
           })),
         'latestUsedAt',
       ) || null,
+    latestUsedWorkspace:
+      getLatestItem(
+        items
+          .filter((item) => item.used && item.latestUsedAt)
+          .map((item) => ({
+            id:
+              item.latestMission?.workspaceId ||
+              item.latestParallelGroup?.workspaceId ||
+              item.touchedWorkspaceIds?.[0] ||
+              null,
+            latestUsedAt: item.latestUsedAt,
+            name:
+              item.latestMission?.workspaceName ||
+              item.latestParallelGroup?.workspaceName ||
+              null,
+            profileDisplayName: item.displayName,
+            profileId: item.id,
+          }))
+          .filter((item) => item.id),
+        'latestUsedAt',
+      ) || null,
     mergedParallelGroupCountTotal,
     missionCountTotal,
     modeCounts,
@@ -2211,8 +2240,12 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     specialistFollowUpRetryPolicyCounts,
     total: items.length,
     touchedProfileIds: touchedProfileIds.sort((left, right) => String(left).localeCompare(String(right))),
+    touchedWorkspaceIds: [...touchedWorkspaceIds].sort((left, right) => String(left).localeCompare(String(right))),
     unusedCount: items.length - usedCount,
     usedCount,
+    usedWorkspaceCount: touchedWorkspaceIds.size,
+    workspaceMissionCounts,
+    workspaceProfileCounts,
     latestHealthDriftProfile:
       getLatestItem(
         items
@@ -9882,6 +9915,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .map((profile) => {
         const missions = missionEntries.filter((entry) => entry.profile.id === profile.id);
         const missionIds = new Set(missions.map((entry) => entry.mission.id));
+        const workspaceMissionCounts = {};
         const groups = profileGroups.filter((group) => group.orchestrationProfile?.id === profile.id);
         const followUps = profileFollowUps.filter((item) => item.orchestrationProfile?.id === profile.id);
         const followUpSummary = summarizeSpecialistFollowUpItems(followUps);
@@ -9905,6 +9939,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         for (const entry of missions) {
           if (missionStatusCounts[entry.mission.status] !== undefined) {
             missionStatusCounts[entry.mission.status] += 1;
+          }
+          if (entry.workspace?.id) {
+            workspaceMissionCounts[entry.workspace.id] = (workspaceMissionCounts[entry.workspace.id] || 0) + 1;
           }
         }
 
@@ -9966,6 +10003,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           touchedWorkspaceIds,
           used: missions.length > 0,
           workspaceCount: touchedWorkspaceIds.length,
+          workspaceMissionCounts,
         };
       })
       .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')

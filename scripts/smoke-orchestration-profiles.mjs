@@ -96,6 +96,7 @@ assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
 assert.equal(overview.summary.total, 4);
 assert.equal(overview.summary.usedCount, 3);
 assert.equal(overview.summary.unusedCount, 1);
+assert.equal(overview.summary.usedWorkspaceCount, 2);
 assert.equal(overview.summary.modeCounts.knowledge, 2);
 assert.equal(overview.summary.modeCounts.engineering, 2);
 assert.equal(overview.summary.qualityGateCounts['manager-merge-ready'], 1);
@@ -128,7 +129,14 @@ assert.deepEqual(overview.summary.touchedProfileIds, [
   'engineering-triad',
   'knowledge-triad',
 ]);
+assert.deepEqual(overview.summary.touchedWorkspaceIds, [secondWorkspace.id, workspace.id].sort((left, right) => String(left).localeCompare(String(right))));
+assert.equal(overview.summary.workspaceProfileCounts[workspace.id], 2);
+assert.equal(overview.summary.workspaceProfileCounts[secondWorkspace.id], 1);
+assert.equal(overview.summary.workspaceMissionCounts[workspace.id], 3);
+assert.equal(overview.summary.workspaceMissionCounts[secondWorkspace.id], 1);
 assert.equal(overview.summary.latestUsedProfile.id, 'engineering-triad');
+assert.equal(overview.summary.latestUsedWorkspace.id, secondWorkspace.id);
+assert.equal(overview.summary.latestUsedWorkspace.profileId, 'engineering-triad');
 
 const knowledgeTriad = overview.items.find((item) => item.id === 'knowledge-triad');
 assert.ok(knowledgeTriad);
@@ -152,6 +160,7 @@ assert.deepEqual(knowledgeTriad.healthDrift.reasonCodes, [
 ]);
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.failed, 1);
+assert.equal(knowledgeTriad.workspaceMissionCounts[workspace.id], 2);
 assert.equal(knowledgeTriad.latestMission.id, gateMission.id);
 assert.equal(knowledgeTriad.latestParallelGroup.missionId, gateMission.id);
 assert.equal(knowledgeTriad.latestParallelGroup.qualityGate.status, 'blocked');
@@ -165,6 +174,7 @@ assert.equal(engineeringImplementationVerification.used, true);
 assert.equal(engineeringImplementationVerification.missionCount, 1);
 assert.equal(engineeringImplementationVerification.parallelGroupCount, 0);
 assert.equal(engineeringImplementationVerification.specialistFollowUpRequiredCount, 0);
+assert.equal(engineeringImplementationVerification.workspaceMissionCounts[workspace.id], 1);
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRemediationRouteCounts, {});
 assert.equal(engineeringImplementationVerification.healthDrift.status, 'stable');
@@ -178,6 +188,7 @@ assert.equal(engineeringTriad.used, true);
 assert.equal(engineeringTriad.missionCount, 1);
 assert.equal(engineeringTriad.workspaceCount, 1);
 assert.deepEqual(engineeringTriad.touchedWorkspaceIds, [secondWorkspace.id]);
+assert.equal(engineeringTriad.workspaceMissionCounts[secondWorkspace.id], 1);
 assert.equal(engineeringTriad.healthDrift.status, 'stable');
 assert.equal(engineeringTriad.latestMission.id, engineeringTriadMission.id);
 
@@ -212,6 +223,11 @@ assert.deepEqual(workspaceUsedOverview.filters, {
 });
 assert.equal(workspaceUsedOverview.summary.total, 2);
 assert.equal(workspaceUsedOverview.summary.usedCount, 2);
+assert.equal(workspaceUsedOverview.summary.usedWorkspaceCount, 1);
+assert.deepEqual(workspaceUsedOverview.summary.touchedWorkspaceIds, [workspace.id]);
+assert.equal(workspaceUsedOverview.summary.workspaceProfileCounts[workspace.id], 2);
+assert.equal(workspaceUsedOverview.summary.workspaceMissionCounts[workspace.id], 3);
+assert.equal(workspaceUsedOverview.summary.latestUsedWorkspace.id, workspace.id);
 assert.deepEqual(
   workspaceUsedOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
   ['engineering-implementation-verification', 'knowledge-triad'],
@@ -231,6 +247,11 @@ assert.deepEqual(secondWorkspaceUsedOverview.filters, {
 });
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
+assert.equal(secondWorkspaceUsedOverview.summary.usedWorkspaceCount, 1);
+assert.deepEqual(secondWorkspaceUsedOverview.summary.touchedWorkspaceIds, [secondWorkspace.id]);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceProfileCounts[secondWorkspace.id], 1);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceMissionCounts[secondWorkspace.id], 1);
+assert.equal(secondWorkspaceUsedOverview.summary.latestUsedWorkspace.id, secondWorkspace.id);
 assert.equal(secondWorkspaceUsedOverview.items[0].id, 'engineering-triad');
 
 const driftOnlyOverview = runCli({
