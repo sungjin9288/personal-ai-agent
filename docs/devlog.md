@@ -30,6 +30,7 @@
 - extended maintenance history and maintenance overview with monthlyBuckets plus latestMonthlyBucketDelta, so maintenance trend can now be read at monthly resolution without losing specialist retry-policy and remediation-route evidence
 - promoted maintenance monthly trend quick fields into mission, workspace, and global summaries so top-level control-plane surfaces can read current month maintenance drift without reopening dedicated maintenance history or overview payloads
 - linked the same maintenance monthly quick fields into workspace timeline and global operator timeline summaries, so chronology-first operator payloads can expose current month maintenance drift without reopening the maintenance read-model
+- linked the same maintenance monthly quick fields into immediate `action maintenance` summary output, so sweep execution receipts can expose current month maintenance drift without reopening the maintenance history surface
 
 ## 2026-04-07 Provider Cost Telemetry
 

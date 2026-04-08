@@ -8243,6 +8243,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       totalRemindedCount: summary.totalRemindedCount,
       workspaceId: filter.workspaceId || null,
     });
+    const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
+      missionId: filter.missionId,
+      owner: filter.owner,
+      workspaceId: filter.workspaceId,
+    });
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
+
+    summary.maintenanceMonthlyBucketCount = maintenanceMonthlyBuckets.length;
+    summary.maintenanceLatestMonthlyBucketStartDate = maintenanceMonthlyBuckets[0]?.monthStartDate || null;
+    summary.maintenanceOldestMonthlyBucketStartDate = maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null;
+    summary.maintenanceLatestMonthlyBucketDelta = maintenanceLatestMonthlyBucketDelta;
 
     return {
       escalationReminders,
