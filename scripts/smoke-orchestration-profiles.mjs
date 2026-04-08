@@ -84,7 +84,9 @@ assert.deepEqual(overview.filters, {
   mode: null,
   status: null,
   usedOnly: false,
+  workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceStatus: null,
 });
 assert.equal(overview.healthDrift.status, 'follow-up-required');
 assert.equal(overview.healthDrift.profileCount, 1);
@@ -234,7 +236,9 @@ assert.deepEqual(usedOnlyOverview.filters, {
   mode: null,
   status: null,
   usedOnly: true,
+  workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceStatus: null,
 });
 assert.equal(usedOnlyOverview.summary.total, 3);
 assert.equal(usedOnlyOverview.summary.usedCount, 3);
@@ -251,7 +255,9 @@ assert.deepEqual(workspaceUsedOverview.filters, {
   mode: null,
   status: null,
   usedOnly: true,
+  workspaceDriftOnly: false,
   workspaceId: workspace.id,
+  workspaceStatus: null,
 });
 assert.equal(workspaceUsedOverview.summary.total, 2);
 assert.equal(workspaceUsedOverview.summary.usedCount, 2);
@@ -285,7 +291,9 @@ assert.deepEqual(secondWorkspaceUsedOverview.filters, {
   mode: null,
   status: null,
   usedOnly: true,
+  workspaceDriftOnly: false,
   workspaceId: secondWorkspace.id,
+  workspaceStatus: null,
 });
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
@@ -316,7 +324,9 @@ assert.deepEqual(driftOnlyOverview.filters, {
   mode: null,
   status: null,
   usedOnly: false,
+  workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceStatus: null,
 });
 assert.equal(driftOnlyOverview.summary.total, 1);
 assert.equal(driftOnlyOverview.healthDrift.status, 'follow-up-required');
@@ -333,7 +343,9 @@ assert.deepEqual(stableUsedOverview.filters, {
   mode: null,
   status: 'stable',
   usedOnly: true,
+  workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceStatus: null,
 });
 assert.equal(stableUsedOverview.summary.total, 2);
 assert.equal(stableUsedOverview.healthDrift.status, 'stable');
@@ -353,12 +365,72 @@ assert.deepEqual(knowledgeOnlyOverview.filters, {
   mode: 'knowledge',
   status: 'follow-up-required',
   usedOnly: true,
+  workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceStatus: null,
 });
 assert.equal(knowledgeOnlyOverview.summary.total, 1);
 assert.equal(knowledgeOnlyOverview.summary.missionCountTotal, 2);
 assert.equal(knowledgeOnlyOverview.items.length, 1);
 assert.equal(knowledgeOnlyOverview.items[0].id, 'knowledge-triad');
+
+const workspaceDriftOnlyOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace-drift-only'],
+});
+
+assert.deepEqual(workspaceDriftOnlyOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: false,
+  workspaceDriftOnly: true,
+  workspaceId: null,
+  workspaceStatus: null,
+});
+assert.equal(workspaceDriftOnlyOverview.summary.total, 1);
+assert.equal(workspaceDriftOnlyOverview.workspaceHealthDrift.status, 'follow-up-required');
+assert.equal(workspaceDriftOnlyOverview.items.length, 1);
+assert.equal(workspaceDriftOnlyOverview.items[0].id, 'knowledge-triad');
+
+const workspaceStatusOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace-status', 'stable', '--used-only'],
+});
+
+assert.deepEqual(workspaceStatusOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: true,
+  workspaceDriftOnly: false,
+  workspaceId: null,
+  workspaceStatus: 'stable',
+});
+assert.equal(workspaceStatusOverview.summary.total, 2);
+assert.equal(workspaceStatusOverview.items.length, 2);
+assert.deepEqual(
+  workspaceStatusOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
+  ['engineering-implementation-verification', 'engineering-triad'],
+);
+
+const workspaceScopedStatusOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace', workspace.id, '--workspace-status', 'follow-up-required', '--used-only'],
+});
+
+assert.deepEqual(workspaceScopedStatusOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: true,
+  workspaceDriftOnly: false,
+  workspaceId: workspace.id,
+  workspaceStatus: 'follow-up-required',
+});
+assert.equal(workspaceScopedStatusOverview.summary.total, 1);
+assert.equal(workspaceScopedStatusOverview.items.length, 1);
+assert.equal(workspaceScopedStatusOverview.items[0].id, 'knowledge-triad');
 
 console.log(
   JSON.stringify(

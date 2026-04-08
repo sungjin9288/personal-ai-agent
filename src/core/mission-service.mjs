@@ -9984,6 +9984,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     ) {
       throw new Error(`Unsupported orchestration profile health drift status: ${filter.status}`);
     }
+    if (
+      filter.workspaceStatus &&
+      !['stable', 'watch', 'follow-up-required'].includes(filter.workspaceStatus)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile workspace health drift status: ${filter.workspaceStatus}`,
+      );
+    }
     if (filter.workspaceId) {
       getWorkspace(filter.workspaceId);
     }
@@ -10165,6 +10173,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       })
       .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')
       .filter((item) => !filter.status || item.healthDrift.status === filter.status)
+      .filter((item) => !filter.workspaceDriftOnly || item.workspaceHealthDrift.status !== 'stable')
+      .filter((item) => !filter.workspaceStatus || item.workspaceHealthDrift.status === filter.workspaceStatus)
       .filter((item) => !filter.usedOnly || item.used)
       .sort((left, right) => {
         const leftUsed = left.used ? 1 : 0;
@@ -10239,7 +10249,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         mode: filter.mode || null,
         status: filter.status || null,
         usedOnly: Boolean(filter.usedOnly),
+        workspaceDriftOnly: Boolean(filter.workspaceDriftOnly),
         workspaceId: filter.workspaceId || null,
+        workspaceStatus: filter.workspaceStatus || null,
       },
       healthDrift,
       workspaceHealthDrift,
