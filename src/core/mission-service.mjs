@@ -2353,6 +2353,7 @@ const ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES = [
   'specialist-follow-up-open',
   'specialist-follow-up-overdue',
 ];
+const ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES = ['declining', 'growing', 'steady', 'unused'];
 
 function buildOrchestrationProfileUsageMonthlyBuckets(entries = []) {
   const bucketMap = new Map();
@@ -2458,6 +2459,60 @@ function summarizeOrchestrationProfileUsageEntries(entries = []) {
     usageMonthlyBucketCount: monthlyBuckets.length,
     usageMonthlyBuckets: monthlyBuckets,
     usageOldestMonthlyBucketStartDate: monthlyBuckets.at(-1)?.monthStartDate || null,
+  };
+}
+
+function getPreviousUtcMonthStartDate(monthStartDate) {
+  const parsed = Date.parse(String(monthStartDate || ''));
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+
+  const date = new Date(parsed);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() - 1, 1)).toISOString().slice(0, 10);
+}
+
+function summarizeOrchestrationProfileUsageTrend({
+  currentMonthStartDate = null,
+  monthlyBuckets = [],
+  used = false,
+} = {}) {
+  if (!used) {
+    return {
+      currentMonthMissionCount: 0,
+      currentMonthStartDate,
+      missionCountDelta: 0,
+      previousMonthMissionCount: 0,
+      previousMonthStartDate: currentMonthStartDate ? getPreviousUtcMonthStartDate(currentMonthStartDate) : null,
+      status: 'unused',
+    };
+  }
+
+  const previousMonthStartDate = currentMonthStartDate
+    ? getPreviousUtcMonthStartDate(currentMonthStartDate)
+    : null;
+  const currentBucket =
+    monthlyBuckets.find((bucket) => bucket.monthStartDate === currentMonthStartDate) || null;
+  const previousBucket =
+    monthlyBuckets.find((bucket) => bucket.monthStartDate === previousMonthStartDate) || null;
+  const currentMonthMissionCount = Number(currentBucket?.missionCount || 0);
+  const previousMonthMissionCount = Number(previousBucket?.missionCount || 0);
+  const missionCountDelta = currentMonthMissionCount - previousMonthMissionCount;
+
+  let status = 'steady';
+  if (missionCountDelta > 0) {
+    status = 'growing';
+  } else if (missionCountDelta < 0) {
+    status = 'declining';
+  }
+
+  return {
+    currentMonthMissionCount,
+    currentMonthStartDate,
+    missionCountDelta,
+    previousMonthMissionCount,
+    previousMonthStartDate,
+    status,
   };
 }
 
@@ -10107,6 +10162,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       throw new Error(`Unsupported orchestration profile health drift status: ${filter.status}`);
     }
     if (
+      filter.usageTrend &&
+      !ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.includes(filter.usageTrend)
+    ) {
+      throw new Error(`Unsupported orchestration profile usage trend status: ${filter.usageTrend}`);
+    }
+    if (
       filter.workspaceReasonCode &&
       !ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES.includes(filter.workspaceReasonCode)
     ) {
@@ -10153,6 +10214,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         };
       })
       .filter(Boolean);
+    const latestMissionEntryForUsage =
+      getLatestItem(missionEntries, 'latestAt') || null;
+    const scopeLatestMonthStartDate = latestMissionEntryForUsage?.latestAt
+      ? getUtcMonthStartTimestamp(latestMissionEntryForUsage.latestAt).slice(0, 10)
+      : null;
 
     const items = listOrchestrationProfiles()
       .filter((profile) => !filter.mode || profile.mode === filter.mode)
@@ -10249,6 +10315,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         });
         const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(workspaceHealthEntries);
         const usageSummary = summarizeOrchestrationProfileUsageEntries(missions);
+        const usageTrend = summarizeOrchestrationProfileUsageTrend({
+          currentMonthStartDate: scopeLatestMonthStartDate,
+          monthlyBuckets: usageSummary.usageMonthlyBuckets,
+          used: missions.length > 0,
+        });
 
         return {
           ...profile,
@@ -10302,6 +10373,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           usageMonthlyBucketCount: usageSummary.usageMonthlyBucketCount,
           usageMonthlyBuckets: usageSummary.usageMonthlyBuckets,
           usageOldestMonthlyBucketStartDate: usageSummary.usageOldestMonthlyBucketStartDate,
+          usageTrend,
           workspaceCount: touchedWorkspaceIds.length,
           workspaceHealthDrift,
           workspaceMissionCounts,
@@ -10310,6 +10382,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')
       .filter((item) => !filter.reasonCode || item.healthDrift.reasonCodes.includes(filter.reasonCode))
       .filter((item) => !filter.status || item.healthDrift.status === filter.status)
+      .filter((item) => !filter.usageTrend || item.usageTrend.status === filter.usageTrend)
       .filter((item) => !filter.workspaceDriftOnly || item.workspaceHealthDrift.status !== 'stable')
       .filter(
         (item) =>
@@ -10337,6 +10410,38 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.usageMonthlyBucketCount = usageSummary.usageMonthlyBucketCount;
     summary.usageMonthlyBuckets = usageSummary.usageMonthlyBuckets;
     summary.usageOldestMonthlyBucketStartDate = usageSummary.usageOldestMonthlyBucketStartDate;
+    summary.usageTrendCounts = Object.fromEntries(
+      ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+    );
+    for (const item of items) {
+      if (summary.usageTrendCounts[item.usageTrend.status] !== undefined) {
+        summary.usageTrendCounts[item.usageTrend.status] += 1;
+      }
+    }
+    summary.latestGrowingProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.usageTrend.status === 'growing')
+          .map((item) => ({
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
+            usageTrend: item.usageTrend,
+          })),
+        'latestUsedAt',
+      ) || null;
+    summary.latestDecliningProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.usageTrend.status === 'declining')
+          .map((item) => ({
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
+            usageTrend: item.usageTrend,
+          })),
+        'latestUsedAt',
+      ) || null;
     const healthDrift = {
       latestProfile: summary.latestHealthDriftProfile,
       profileCount: summary.healthDriftProfileCount,
@@ -10397,6 +10502,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         mode: filter.mode || null,
         reasonCode: filter.reasonCode || null,
         status: filter.status || null,
+        usageTrend: filter.usageTrend || null,
         usedOnly: Boolean(filter.usedOnly),
         workspaceDriftOnly: Boolean(filter.workspaceDriftOnly),
         workspaceId: filter.workspaceId || null,
