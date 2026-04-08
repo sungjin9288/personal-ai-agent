@@ -11337,8 +11337,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }),
     );
     summary.workspaceAdoptionDriftCounts = workspaceAdoptionDrift.statusCounts;
+    summary.workspaceAdoptionDriftMissionTrendStatusCounts =
+      workspaceAdoptionDrift.missionTrendStatusCounts;
+    summary.workspaceAdoptionDriftProfileFootprintTrendStatusCounts =
+      workspaceAdoptionDrift.profileFootprintTrendStatusCounts;
     summary.workspaceAdoptionDriftReasonCodeCounts = workspaceAdoptionDrift.reasonCodeCounts;
     summary.workspaceAdoptionDriftWorkspaceCount = workspaceAdoptionDrift.workspaceCount;
+    summary.workspaceAdoptionDriftWorkspaceIdsByStatus =
+      workspaceAdoptionDrift.workspaceIdsByStatus;
 
     return {
       filters: {
