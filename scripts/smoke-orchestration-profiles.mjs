@@ -164,15 +164,31 @@ assert.equal(overview.adoptionDrift.latestUnusedProfile.id, 'knowledge-research-
 assert.equal(overview.adoptionDrift.usageTrendStatus, 'growing');
 assert.equal(overview.adoptionDrift.workspaceUsageTrendStatus, 'growing');
 assert.equal(overview.usageTrend.status, 'growing');
+assert.equal(overview.usageTrend.profileCount, 4);
 assert.equal(overview.usageTrend.currentMonthStartDate, currentMonthStartDate);
 assert.equal(overview.usageTrend.currentMonthMissionCount, 3);
 assert.equal(overview.usageTrend.previousMonthMissionCount, 1);
 assert.equal(overview.usageTrend.missionCountDelta, 2);
+assert.equal(overview.usageTrend.statusCounts.growing, 2);
+assert.equal(overview.usageTrend.statusCounts.declining, 1);
+assert.equal(overview.usageTrend.statusCounts.steady, 0);
+assert.equal(overview.usageTrend.statusCounts.unused, 1);
+assert.equal(overview.usageTrend.latestGrowingProfile.id, 'engineering-triad');
+assert.equal(overview.usageTrend.latestDecliningProfile.id, 'engineering-implementation-verification');
+assert.equal(overview.usageTrend.latestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.workspaceUsageTrend.status, 'growing');
+assert.equal(overview.workspaceUsageTrend.profileCount, 4);
 assert.equal(overview.workspaceUsageTrend.currentMonthStartDate, currentMonthStartDate);
 assert.equal(overview.workspaceUsageTrend.currentMonthWorkspaceCount, 2);
 assert.equal(overview.workspaceUsageTrend.previousMonthWorkspaceCount, 1);
 assert.equal(overview.workspaceUsageTrend.workspaceCountDelta, 1);
+assert.equal(overview.workspaceUsageTrend.statusCounts.growing, 2);
+assert.equal(overview.workspaceUsageTrend.statusCounts.declining, 1);
+assert.equal(overview.workspaceUsageTrend.statusCounts.steady, 0);
+assert.equal(overview.workspaceUsageTrend.statusCounts.unused, 1);
+assert.equal(overview.workspaceUsageTrend.latestGrowingProfile.id, 'engineering-triad');
+assert.equal(overview.workspaceUsageTrend.latestDecliningProfile.id, 'engineering-implementation-verification');
+assert.equal(overview.workspaceUsageTrend.latestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.summary.total, 4);
 assert.equal(overview.summary.usedCount, 3);
 assert.equal(overview.summary.unusedCount, 1);
@@ -250,6 +266,7 @@ assert.equal(overview.summary.usageTrendCounts.steady, 0);
 assert.equal(overview.summary.usageTrendCounts.unused, 1);
 assert.equal(overview.summary.latestGrowingProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningProfile.id, 'engineering-implementation-verification');
+assert.equal(overview.summary.latestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.summary.workspaceUsageTrendCounts.growing, 2);
 assert.equal(overview.summary.workspaceUsageTrendCounts.declining, 1);
 assert.equal(overview.summary.workspaceUsageTrendCounts.steady, 0);
@@ -258,6 +275,10 @@ assert.equal(overview.summary.latestGrowingWorkspaceUsageProfile.id, 'engineerin
 assert.equal(
   overview.summary.latestDecliningWorkspaceUsageProfile.id,
   'engineering-implementation-verification',
+);
+assert.equal(
+  overview.summary.latestUnusedWorkspaceUsageProfile.id,
+  'knowledge-research-implementation',
 );
 assert.equal(overview.summary.adoptionDriftCounts.growing, 2);
 assert.equal(overview.summary.adoptionDriftCounts.declining, 1);

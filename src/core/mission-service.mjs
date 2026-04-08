@@ -10630,6 +10630,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           })),
         'latestUsedAt',
       ) || null;
+    summary.latestUnusedProfile =
+      items
+        .filter((item) => item.usageTrend.status === 'unused')
+        .map((item) => ({
+          displayName: item.displayName,
+          id: item.id,
+          latestUsedAt: item.latestUsedAt || null,
+          usageTrend: item.usageTrend,
+        }))
+        .sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
     summary.workspaceUsageTrendCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10662,6 +10672,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           })),
         'latestUsedAt',
       ) || null;
+    summary.latestUnusedWorkspaceUsageProfile =
+      items
+        .filter((item) => item.workspaceUsageTrend.status === 'unused')
+        .map((item) => ({
+          displayName: item.displayName,
+          id: item.id,
+          latestUsedAt: item.latestUsedAt || null,
+          workspaceUsageTrend: item.workspaceUsageTrend,
+        }))
+        .sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
     summary.adoptionDriftCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10719,6 +10739,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             : 'stable',
       statusCounts: summary.healthDriftStatusCounts,
     };
+    usageTrend.latestDecliningProfile = summary.latestDecliningProfile;
+    usageTrend.latestGrowingProfile = summary.latestGrowingProfile;
+    usageTrend.latestUnusedProfile = summary.latestUnusedProfile;
+    usageTrend.profileCount = summary.total;
+    usageTrend.statusCounts = summary.usageTrendCounts;
     adoptionDrift.latestProfile = summary.latestAdoptionDriftProfile;
     adoptionDrift.latestUnusedProfile = summary.latestUnusedAdoptionProfile;
     adoptionDrift.profileCount = summary.adoptionDriftProfileCount;
@@ -10727,6 +10752,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       String(left).localeCompare(String(right)),
     );
     adoptionDrift.statusCounts = summary.adoptionDriftStatusCounts;
+    workspaceUsageTrend.latestDecliningProfile = summary.latestDecliningWorkspaceUsageProfile;
+    workspaceUsageTrend.latestGrowingProfile = summary.latestGrowingWorkspaceUsageProfile;
+    workspaceUsageTrend.latestUnusedProfile = summary.latestUnusedWorkspaceUsageProfile;
+    workspaceUsageTrend.profileCount = summary.total;
+    workspaceUsageTrend.statusCounts = summary.workspaceUsageTrendCounts;
     const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
       summary.touchedWorkspaceIds.map((workspaceId) => {
         const workspace = workspaceById.get(workspaceId) || null;
