@@ -414,6 +414,11 @@ assert.deepEqual(overview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.ste
 assert.deepEqual(overview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.unused, []);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestWorkspace.id, secondWorkspace.id);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestWorkspace.adoptionDrift.status, 'growing');
+assert.equal(overview.summary.workspaceAdoptionDriftLatestGrowingProfile.id, 'engineering-triad');
+assert.equal(
+  overview.summary.workspaceAdoptionDriftLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestGrowingWorkspace.id, secondWorkspace.id);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestDecliningWorkspace, null);
 assert.equal(overview.summary.latestGrowingWorkspaceAdoptionProfile.id, 'engineering-triad');
@@ -891,6 +896,11 @@ assert.equal(
   workspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.profileFootprintTrend.status,
   'steady',
 );
+assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestGrowingProfile.id, 'knowledge-triad');
+assert.equal(
+  workspaceUsedOverview.summary.workspaceAdoptionDriftLatestDecliningProfile.id,
+  'engineering-implementation-verification',
+);
 assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestGrowingWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestDecliningWorkspace, null);
 assert.equal(workspaceUsedOverview.summary.latestUsedWorkspace.id, workspace.id);
@@ -1077,6 +1087,11 @@ assert.equal(
   secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.profileFootprintTrend.status,
   'growing',
 );
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestGrowingProfile.id,
+  'engineering-triad',
+);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestDecliningProfile, null);
 assert.equal(
   secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestGrowingWorkspace.id,
   secondWorkspace.id,

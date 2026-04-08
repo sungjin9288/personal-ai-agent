@@ -55,6 +55,7 @@
 - added `workspaceHealthDriftReasonCodeCounts` to `overview profiles` summary so workspace health reason distribution is now readable from summary without reopening the root field
 - added `workspaceUsageTrendWorkspaceIdsByStatus` and `workspaceUsageTrendWorkspaceStatusCounts` to `overview profiles` summary so workspace footprint distribution is now readable from summary without reopening the root field
 - added `workspaceAdoptionDriftLatestGrowingWorkspace` and `workspaceAdoptionDriftLatestDecliningWorkspace` to `overview profiles` summary so workspace adoption direction is now readable from summary without reopening the root field
+- added `workspaceAdoptionDriftLatestGrowingProfile` and `workspaceAdoptionDriftLatestDecliningProfile` to `overview profiles` summary so workspace adoption direction is now readable from summary with the same profile linkage as the root field
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface
