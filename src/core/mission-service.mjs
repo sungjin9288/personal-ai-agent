@@ -2123,6 +2123,10 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   const workspaceUsageTrendStatusCounts = Object.fromEntries(
     ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, {}]),
   );
+  const workspaceAdoptionDriftProfileCounts = {};
+  const workspaceAdoptionDriftStatusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, {}]),
+  );
   const workspaceMissionCounts = {};
   const workspaceProfileCounts = {};
   const touchedProfileIds = [];
@@ -2211,12 +2215,22 @@ function summarizeOrchestrationProfileOverviewItems(items) {
           workspaceUsageTrendStatusCounts[workspaceUsageTrend.status][workspaceId] =
             (workspaceUsageTrendStatusCounts[workspaceUsageTrend.status][workspaceId] || 0) + 1;
         }
+        workspaceAdoptionDriftProfileCounts[workspaceId] =
+          (workspaceAdoptionDriftProfileCounts[workspaceId] || 0) + 1;
         if (drift.status !== 'stable') {
           workspaceHealthDriftProfileCounts[workspaceId] =
             (workspaceHealthDriftProfileCounts[workspaceId] || 0) + 1;
           if (workspaceHealthDriftStatusCounts[drift.status]) {
             workspaceHealthDriftStatusCounts[drift.status][workspaceId] =
               (workspaceHealthDriftStatusCounts[drift.status][workspaceId] || 0) + 1;
+          }
+        }
+      }
+      for (const status of ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES) {
+        for (const workspaceId of item.workspaceAdoptionDrift?.workspaceIdsByStatus?.[status] || []) {
+          if (workspaceAdoptionDriftStatusCounts[status]) {
+            workspaceAdoptionDriftStatusCounts[status][workspaceId] =
+              (workspaceAdoptionDriftStatusCounts[status][workspaceId] || 0) + 1;
           }
         }
       }
@@ -2286,6 +2300,8 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     unusedCount: items.length - usedCount,
     usedCount,
     usedWorkspaceCount: touchedWorkspaceIds.size,
+    workspaceAdoptionDriftProfileCounts,
+    workspaceAdoptionDriftStatusCounts,
     workspaceHealthDriftProfileCounts,
     workspaceHealthDriftStatusCounts,
     workspaceMissionCounts,
