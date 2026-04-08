@@ -2779,6 +2779,10 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
     stable: [],
     watch: [],
   };
+  let latestFollowUpRequiredWorkspace = null;
+  let latestFollowUpRequiredWorkspaceAt = null;
+  let latestWatchWorkspace = null;
+  let latestWatchWorkspaceAt = null;
   let latestWorkspace = null;
   let latestWorkspaceAt = null;
 
@@ -2807,6 +2811,37 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
         status: entry.status,
       };
     }
+    if (
+      entry.status === 'follow-up-required' &&
+      candidateLatestAt &&
+      (!latestFollowUpRequiredWorkspaceAt ||
+        String(latestFollowUpRequiredWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestFollowUpRequiredWorkspaceAt = candidateLatestAt;
+      latestFollowUpRequiredWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        status: entry.status,
+      };
+    }
+    if (
+      entry.status === 'watch' &&
+      candidateLatestAt &&
+      (!latestWatchWorkspaceAt || String(latestWatchWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestWatchWorkspaceAt = candidateLatestAt;
+      latestWatchWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        status: entry.status,
+      };
+    }
   }
 
   for (const status of Object.keys(workspaceIdsByStatus)) {
@@ -2816,6 +2851,8 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
   }
 
   return {
+    latestFollowUpRequiredWorkspace,
+    latestWatchWorkspace,
     latestWorkspace,
     reasonCodeCounts,
     reasonCodes: Object.keys(reasonCodeCounts).sort((left, right) =>
@@ -11351,6 +11388,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.workspaceHealthDriftReasonCodes = workspaceHealthDrift.reasonCodes;
     summary.workspaceHealthDriftReasonCodeCounts =
       workspaceHealthDrift.reasonCodeCounts;
+    summary.workspaceHealthDriftLatestFollowUpRequiredWorkspace =
+      workspaceHealthDrift.latestFollowUpRequiredWorkspace;
+    summary.workspaceHealthDriftLatestWatchWorkspace =
+      workspaceHealthDrift.latestWatchWorkspace;
     summary.workspaceHealthDriftLatestWorkspace = workspaceHealthDrift.latestWorkspace;
     summary.workspaceHealthDriftWorkspaceCount = workspaceHealthDrift.workspaceCount;
     summary.workspaceHealthDriftWorkspaceProfileCounts =
