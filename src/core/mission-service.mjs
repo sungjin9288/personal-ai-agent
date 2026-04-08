@@ -566,6 +566,88 @@ function resolveMissionParallelPlan(mission) {
   };
 }
 
+function getOrchestrationQualityGateRequiredKinds(profile, requiredKinds = []) {
+  const qualityGate = normalizeText(profile?.qualityGate);
+  const availableKinds = normalizeStringList(
+    requiredKinds.length ? requiredKinds : profile?.parallelSpecialistKinds || [],
+  ).filter((kind) => SPECIALIST_KINDS.includes(kind));
+
+  if (qualityGate === 'verification-signal-required') {
+    return availableKinds.filter((kind) => kind === 'verification');
+  }
+
+  if (qualityGate === 'research-and-verification-signal-required') {
+    return availableKinds.filter((kind) => ['research', 'verification'].includes(kind));
+  }
+
+  return [];
+}
+
+function evaluateParallelQualityGate({ latestByKind, orchestrationProfile, requiredKinds = [] }) {
+  const profile = orchestrationProfile || null;
+  const qualityGate = normalizeText(profile?.qualityGate);
+
+  if (!profile || !qualityGate) {
+    return {
+      latestViolation: null,
+      qualityGate: null,
+      requiredKinds: [],
+      rerunKinds: [],
+      status: 'none',
+      violationCount: 0,
+      violations: [],
+    };
+  }
+
+  const gateKinds = getOrchestrationQualityGateRequiredKinds(profile, requiredKinds);
+  if (qualityGate === 'manager-merge-ready' || !gateKinds.length) {
+    return {
+      latestViolation: null,
+      qualityGate,
+      requiredKinds: gateKinds,
+      rerunKinds: [],
+      status: 'passed',
+      violationCount: 0,
+      violations: [],
+    };
+  }
+
+  const violations = gateKinds
+    .map((specialistKind) => {
+      const run = latestByKind.get(specialistKind) || null;
+      const actualStatus = run ? normalizeAgentRunStatus(run.status) : 'missing';
+      if (actualStatus === 'completed') {
+        return null;
+      }
+
+      const profileLabel = normalizeText(profile.displayName, profile.id || 'selected profile');
+      return {
+        actualStatus,
+        at: normalizeText(run?.endedAt || run?.startedAt || ''),
+        detail: `${profileLabel} requires a completed ${specialistKind} specialist signal before merge. Latest status=${actualStatus}.`,
+        parallelGroupId: normalizeText(run?.parallelGroupId) || null,
+        requiredStatus: 'completed',
+        runId: normalizeText(run?.id) || null,
+        sessionId: normalizeText(run?.sessionId) || null,
+        sourceRun: run,
+        specialistKind,
+        status: actualStatus === 'failed' ? 'failed' : 'blocked',
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+
+  return {
+    latestViolation: violations.at(-1) || null,
+    qualityGate,
+    requiredKinds: gateKinds,
+    rerunKinds: [...new Set(violations.map((item) => item.specialistKind))],
+    status: violations.length ? 'blocked' : 'passed',
+    violationCount: violations.length,
+    violations,
+  };
+}
+
 function sortTimelineEvents(items) {
   return [...items].sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
 }
@@ -3594,11 +3676,19 @@ function summarizeProviderExecutions(executions) {
   function summarizeScopedParallelActivity(filter = {}) {
     const groups = buildParallelGroupStates(filter);
     const orchestrationProfileCounts = {};
+    const qualityGateStatusCounts = {
+      blocked: 0,
+      none: 0,
+      passed: 0,
+      total: groups.length,
+    };
     const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
     const statusCounts = Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0]));
     const touchedOrchestrationProfileIds = new Set();
     const touchedSpecialistKinds = new Set();
+    let latestQualityGateViolation = null;
     let mergeRunCount = 0;
+    let qualityGateBlockedCount = 0;
     let specialistRunCount = 0;
 
     for (const group of groups) {
@@ -3606,6 +3696,18 @@ function summarizeProviderExecutions(executions) {
         orchestrationProfileCounts[group.orchestrationProfile.id] =
           (orchestrationProfileCounts[group.orchestrationProfile.id] || 0) + 1;
         touchedOrchestrationProfileIds.add(group.orchestrationProfile.id);
+      }
+      if (qualityGateStatusCounts[group.qualityGate?.status] !== undefined) {
+        qualityGateStatusCounts[group.qualityGate.status] += 1;
+      }
+      if (group.qualityGate?.status === 'blocked') {
+        qualityGateBlockedCount += 1;
+      }
+      if (
+        group.qualityGate?.latestViolation &&
+        (!latestQualityGateViolation || String(latestQualityGateViolation.at || '') <= String(group.qualityGate.latestViolation.at || ''))
+      ) {
+        latestQualityGateViolation = group.qualityGate.latestViolation;
       }
 
       for (const run of group.runs) {
@@ -3644,6 +3746,7 @@ function summarizeProviderExecutions(executions) {
             )?.createdAt || '',
           id: group.parallelGroupId,
           orchestrationProfile: group.orchestrationProfile,
+          qualityGate: group.qualityGate,
           requiredKinds: group.requiredKinds,
         })),
         'createdAt',
@@ -3663,12 +3766,15 @@ function summarizeProviderExecutions(executions) {
       mergeCompletedCount: groups.filter((group) => group.wasMerged).length,
       mergeRunCount,
       orchestrationProfileCounts,
+      qualityGateBlockedCount,
+      qualityGateStatusCounts,
       specialistOrchestrationProfileCount: touchedOrchestrationProfileIds.size,
       specialistFollowUpRequiredCount: followUpItems.length,
       specialistFollowUpNeedsReminderCount: followUpSummary.needsReminderCount,
       specialistFollowUpOverdueCount: followUpSummary.overdueCount,
       specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
       specialistKindCounts,
+      latestQualityGateViolation,
       specialistLatestReminderAt: followUpSummary.latestReminderAt,
       specialistNextReminderAt: followUpSummary.nextReminderAt,
       specialistRunCount,
@@ -4057,6 +4163,11 @@ function summarizeProviderExecutions(executions) {
           .filter(Boolean)
           .filter((kind) => SPECIALIST_KINDS.includes(kind));
     const latestRuns = [...latestByKind.values()];
+    const qualityGate = evaluateParallelQualityGate({
+      latestByKind,
+      orchestrationProfile,
+      requiredKinds,
+    });
     const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
 
     return {
@@ -4064,6 +4175,7 @@ function summarizeProviderExecutions(executions) {
       latestRuns,
       orchestrationProfile,
       parallelGroupId: latestGroupId,
+      qualityGate,
       requiredKinds,
       unresolvedRuns,
       wasMerged: Boolean(latestMergeRun && ['completed', 'merged'].includes(normalizeAgentRunStatus(latestMergeRun.status))),
@@ -4493,13 +4605,18 @@ function summarizeProviderExecutions(executions) {
       const unresolvedByKind = new Map(
         ensureArray(previousParallelGroup?.unresolvedRuns).map((run) => [normalizeText(run.specialistKind), run]),
       );
-      const completedBranchOutputs = ensureArray(previousParallelGroup?.latestRuns)
-        .filter((run) => ['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status)))
-        .map((run) => buildSpecialistOutputEntry(run));
+      const latestRunByKind = new Map(
+        ensureArray(previousParallelGroup?.latestRuns).map((run) => [normalizeText(run.specialistKind), run]),
+      );
+      const qualityGateRerunKinds = new Set(ensureArray(previousParallelGroup?.qualityGate?.rerunKinds));
       const specialistKindsToRun =
         previousParallelGroup && !previousParallelGroup.wasMerged
-          ? parallelSpecialistKinds.filter((kind) => unresolvedByKind.has(kind))
+          ? parallelSpecialistKinds.filter((kind) => unresolvedByKind.has(kind) || qualityGateRerunKinds.has(kind))
           : parallelSpecialistKinds;
+      const completedBranchOutputs = ensureArray(previousParallelGroup?.latestRuns)
+        .filter((run) => ['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status)))
+        .filter((run) => !specialistKindsToRun.includes(normalizeText(run.specialistKind)))
+        .map((run) => buildSpecialistOutputEntry(run));
 
       previousOutputs.specialists = [...completedBranchOutputs];
 
@@ -4508,7 +4625,7 @@ function summarizeProviderExecutions(executions) {
       });
 
       for (const specialistKind of specialistKindsToRun) {
-        const previousFailedRun = unresolvedByKind.get(specialistKind) || null;
+        const previousBranchRun = unresolvedByKind.get(specialistKind) || latestRunByKind.get(specialistKind) || null;
         const stage = await runAgentStage({
           role: 'specialist',
           providerRole: 'executor',
@@ -4539,9 +4656,9 @@ function summarizeProviderExecutions(executions) {
             parallelGroupId,
             parallelRequiredKinds: parallelSpecialistKinds,
             parentRunId: plannerStage.run.id,
-            resumeFromRunId: previousFailedRun?.id || null,
+            resumeFromRunId: previousBranchRun?.id || null,
             specialistKind,
-            specialistRootRunId: previousFailedRun?.specialistRootRunId || previousFailedRun?.id || null,
+            specialistRootRunId: previousBranchRun?.specialistRootRunId || previousBranchRun?.id || null,
             stageKind: 'specialist-branch',
           },
         });
@@ -4558,7 +4675,8 @@ function summarizeProviderExecutions(executions) {
 
       const latestParallelGroup = getLatestParallelGroupState(mission.id);
       const unresolvedRuns = ensureArray(latestParallelGroup?.unresolvedRuns);
-      if (unresolvedRuns.length) {
+      const qualityGateRerunCount = Number(latestParallelGroup?.qualityGate?.rerunKinds?.length || 0);
+      if (unresolvedRuns.length || qualityGateRerunCount > 0) {
         return finalizeMissionFailure({
           artifactPath: previousOutputs.specialists.at(-1)?.path || null,
           currentStage: 'specialist',
@@ -4831,6 +4949,17 @@ function summarizeProviderExecutions(executions) {
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
+    const missionQualityGate = parallelActivity.latestParallelGroup?.qualityGate || {
+      latestViolation: null,
+      qualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+      requiredKinds: getOrchestrationQualityGateRequiredKinds(
+        parallelPlan.orchestrationProfile,
+        parallelPlan.effectiveKinds,
+      ),
+      status: parallelPlan.orchestrationProfile ? 'pending' : 'none',
+      violationCount: 0,
+      violations: [],
+    };
     const providerHealthDrift = summarizeProviderHealthDrift({
       attentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
       attentionOverdueCount: providerActivity.summary.attentionOverdueCount,
@@ -4996,6 +5125,7 @@ function summarizeProviderExecutions(executions) {
       specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
       specialistConfiguredKinds: parallelPlan.effectiveKinds,
       specialistKindCounts: parallelActivity.specialistKindCounts,
+      specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
       specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
       specialistLatestFollowUp: parallelActivity.latestFollowUp,
       specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
@@ -5004,6 +5134,12 @@ function summarizeProviderExecutions(executions) {
       specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
       specialistMergeRunCount: parallelActivity.mergeRunCount,
       specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+      specialistQualityGate: missionQualityGate.qualityGate,
+      specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
+      specialistQualityGateRequiredKinds: missionQualityGate.requiredKinds,
+      specialistQualityGateStatus: missionQualityGate.status,
+      specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
+      specialistQualityGateViolationCount: missionQualityGate.violationCount,
       specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
       specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
       specialistOrchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
@@ -5364,6 +5500,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
         specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
         specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
@@ -5372,6 +5509,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
         specialistMergeRunCount: parallelActivity.mergeRunCount,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
+        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
         specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
         specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistRunCount: parallelActivity.specialistRunCount,
@@ -6141,6 +6280,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
 
       const latestRuns = [...latestByKind.values()];
+      const qualityGate = evaluateParallelQualityGate({
+        latestByKind,
+        orchestrationProfile: group.orchestrationProfile,
+        requiredKinds: group.requiredKinds,
+      });
       const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
 
       return {
@@ -6150,6 +6294,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         mission: group.mission,
         orchestrationProfile: group.orchestrationProfile,
         parallelGroupId: group.parallelGroupId,
+        qualityGate,
         requiredKinds: group.requiredKinds,
         runs: group.runs,
         unresolvedRuns,
@@ -6161,6 +6306,95 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     });
   }
 
+  function attachSpecialistFollowUpReminderState(baseItem, status) {
+    const reminderRecords = listSpecialistFollowUpRemindersForItem(baseItem);
+    const latestReminder = reminderRecords.at(-1) || null;
+    const reminderCadenceHours = deriveSpecialistFollowUpReminderCadenceHours(status);
+    const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
+    const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
+    const nextReminderAt =
+      baseItem.isOverdue && Number.isFinite(reminderBaseMs)
+        ? latestReminder
+          ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
+          : baseItem.dueAt
+        : null;
+    const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
+    const needsReminder = baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+
+    return {
+      ...baseItem,
+      lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+      latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
+      needsReminder,
+      nextReminderAt,
+      remindCommand: `node src/cli.mjs action remind-specialist-follow-ups --mission ${baseItem.missionId} --status ${status} --note "<note>"`,
+      reminderCadenceHours,
+      reminderCount: reminderRecords.length,
+      reminderHistoryCount: reminderRecords.length,
+    };
+  }
+
+  function buildSpecialistFollowUpItem({
+    actionId,
+    createdAt,
+    detail,
+    followUpSource = 'run-status',
+    group,
+    mission,
+    providerId,
+    recommendedOwner = 'workspace-owner',
+    run = null,
+    specialistHandoff,
+    specialistKind,
+    status,
+    workspace,
+  }) {
+    const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
+    const baseItem = addOperationalMetadata(
+      addDispatchMetadata(
+        {
+          actionClass: 'specialist-follow-up-required',
+          actionId,
+          actionType: 'specialist-follow-up',
+          createdAt,
+          deliverableType: mission.deliverableType,
+          followUpSource,
+          mergeStatus: normalizeText(run?.mergeStatus) || 'pending',
+          missionId: mission.id,
+          orchestrationProfile: group.orchestrationProfile,
+          parallelGroupId: group.parallelGroupId,
+          parentRunId: normalizeText(run?.parentRunId) || null,
+          providerId,
+          reason: detail,
+          recommendedOwner,
+          resumeFromRunId: normalizeText(run?.resumeFromRunId) || null,
+          runId: normalizeText(run?.id) || null,
+          sessionId: normalizeText(run?.sessionId) || null,
+          specialistHandoff,
+          specialistKind,
+          specialistRootRunId: normalizeText(run?.specialistRootRunId) || normalizeText(run?.id) || null,
+          stageKind: normalizeText(run?.stageKind) || 'specialist-branch',
+          status,
+          title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        },
+        {
+          priority: status === 'failed' ? 'high' : 'medium',
+          recommendedCommand,
+          recommendedOwner: 'workspace-owner',
+        },
+      ),
+      {
+        escalationRule:
+          'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
+        slaHours: 24,
+      },
+    );
+
+    return attachSpecialistFollowUpReminderState(baseItem, status);
+  }
+
   function buildSpecialistFollowUpItems(filter = {}) {
     return buildParallelGroupStates(filter)
       .flatMap((group) => {
@@ -6170,104 +6404,107 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           return [];
         }
 
-        return [...group.latestByKind.values()]
+        const directItems = [...group.latestByKind.values()]
           .filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)))
           .map((run) => {
             const specialistKind = normalizeText(run.specialistKind);
             const status = normalizeAgentRunStatus(run.status);
             const session = store.getSession(run.sessionId);
             const providerId = normalizeText(session?.provider || run.providerId, 'stub');
-            const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
-            const actionId = `specialist-follow-up:${group.parallelGroupId}:${specialistKind}:${run.id}`;
-            const baseItem = addOperationalMetadata(
-              addDispatchMetadata(
-                {
-                  actionClass: 'specialist-follow-up-required',
-                  actionId,
-                  actionType: 'specialist-follow-up',
-                  createdAt: run.endedAt || run.startedAt || now(),
-                  deliverableType: mission.deliverableType,
-                  mergeStatus: normalizeText(run.mergeStatus) || 'pending',
-                  missionId: mission.id,
-                  orchestrationProfile: group.orchestrationProfile,
-                  parallelGroupId: group.parallelGroupId,
-                  parentRunId: normalizeText(run.parentRunId) || null,
-                  providerId,
-                  reason: formatProviderFailureDetail({
-                    attemptCount: run.attemptCount,
-                  detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
-                    failureKind: normalizeProviderFailureKind(run.failureKind),
-                    httpStatus: run.httpStatus,
-                    recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
-                    timedOut: Boolean(run.timedOut),
-                  }),
-                  recommendedOwner:
-                    normalizeSpecialistHandoff(run.specialistHandoff, {
-                      nextAction: `Resolve the ${specialistKind} specialist ${status} state before merge.`,
-                      recommendedOwner: 'workspace-owner',
-                      summaryText: run.outputSummary,
-                    })?.nextHandoff?.recommendedOwner || 'workspace-owner',
-                  resumeFromRunId: normalizeText(run.resumeFromRunId) || null,
-                  runId: run.id,
-                  sessionId: run.sessionId || null,
-                  specialistHandoff:
-                    normalizeSpecialistHandoff(run.specialistHandoff, {
-                      nextAction: `Resolve the ${specialistKind} specialist ${status} state before merge.`,
-                      recommendedOwner: 'workspace-owner',
-                      summaryText: run.outputSummary,
-                    }) ||
-                    buildFallbackSpecialistHandoff({
-                      specialistKind,
-                      status,
-                      summaryText: normalizeText(run.outputSummary),
-                    }),
-                  specialistKind,
-                  specialistRootRunId: normalizeText(run.specialistRootRunId) || run.id,
-                  stageKind: normalizeText(run.stageKind) || 'specialist-branch',
-                  status,
-                  title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
-                  workspaceId: workspace.id,
-                  workspaceName: workspace.name,
-                },
-                {
-                  priority: status === 'failed' ? 'high' : 'medium',
-                  recommendedCommand,
-                  recommendedOwner: 'workspace-owner',
-                },
-              ),
+            const specialistHandoff =
+              normalizeSpecialistHandoff(run.specialistHandoff, {
+                nextAction: `Resolve the ${specialistKind} specialist ${status} state before merge.`,
+                recommendedOwner: 'workspace-owner',
+                summaryText: run.outputSummary,
+              }) ||
+              buildFallbackSpecialistHandoff({
+                specialistKind,
+                status,
+                summaryText: normalizeText(run.outputSummary),
+              });
+
+            return buildSpecialistFollowUpItem({
+              actionId: `specialist-follow-up:${group.parallelGroupId}:${specialistKind}:${run.id}`,
+              createdAt: run.endedAt || run.startedAt || now(),
+              detail: formatProviderFailureDetail({
+                attemptCount: run.attemptCount,
+                detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
+                failureKind: normalizeProviderFailureKind(run.failureKind),
+                httpStatus: run.httpStatus,
+                recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
+                timedOut: Boolean(run.timedOut),
+              }),
+              group,
+              mission,
+              providerId,
+              recommendedOwner: specialistHandoff?.nextHandoff?.recommendedOwner || 'workspace-owner',
+              run,
+              specialistHandoff,
+              specialistKind,
+              status,
+              workspace,
+            });
+          });
+
+        const directKinds = new Set(directItems.map((item) => item.specialistKind));
+        const qualityGateItems = ensureArray(group.qualityGate?.violations)
+          .filter((violation) => !directKinds.has(violation.specialistKind))
+          .map((violation) => {
+            const run = violation.sourceRun || group.latestByKind.get(violation.specialistKind) || null;
+            const providerId = normalizeText(
+              store.getSession(run?.sessionId)?.provider || run?.providerId,
+              'stub',
+            );
+            const gateRequest = `Produce a completed ${violation.specialistKind} specialist signal to satisfy the ${group.qualityGate.qualityGate} gate before merge.`;
+            const baseSpecialistHandoff =
+              normalizeSpecialistHandoff(run?.specialistHandoff, {
+                nextAction: gateRequest,
+                recommendedOwner: 'workspace-owner',
+                summaryText: violation.detail,
+              }) ||
+              buildFallbackSpecialistHandoff({
+                nextAction: gateRequest,
+                specialistKind: violation.specialistKind,
+                status: 'blocked',
+                summaryText: violation.detail,
+              });
+            const specialistHandoff = normalizeSpecialistHandoff(
               {
-                escalationRule:
-                  'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
-                slaHours: 24,
+                ...baseSpecialistHandoff,
+                blockers: [...new Set([...(baseSpecialistHandoff?.blockers || []), violation.detail].filter(Boolean))],
+                currentState: violation.detail,
+                nextHandoff: {
+                  ...(baseSpecialistHandoff?.nextHandoff || {}),
+                  recommendedOwner:
+                    baseSpecialistHandoff?.nextHandoff?.recommendedOwner || 'workspace-owner',
+                  request: gateRequest,
+                },
+              },
+              {
+                nextAction: gateRequest,
+                recommendedOwner: 'workspace-owner',
+                summaryText: violation.detail,
               },
             );
-            const reminderRecords = listSpecialistFollowUpRemindersForItem(baseItem);
-            const latestReminder = reminderRecords.at(-1) || null;
-            const reminderCadenceHours = deriveSpecialistFollowUpReminderCadenceHours(status);
-            const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
-            const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
-            const nextReminderAt =
-              baseItem.isOverdue && Number.isFinite(reminderBaseMs)
-                ? latestReminder
-                  ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
-                  : baseItem.dueAt
-                : null;
-            const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
-            const needsReminder =
-              baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
 
-            return {
-              ...baseItem,
-              lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-              latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-              needsReminder,
-              nextReminderAt,
-              remindCommand: `node src/cli.mjs action remind-specialist-follow-ups --mission ${mission.id} --status ${status} --note "<note>"`,
-              reminderCadenceHours,
-              reminderCount: reminderRecords.length,
-              reminderHistoryCount: reminderRecords.length,
-            };
+            return buildSpecialistFollowUpItem({
+              actionId: `specialist-follow-up:${group.parallelGroupId}:${violation.specialistKind}:quality-gate`,
+              createdAt: violation.at || run?.endedAt || run?.startedAt || now(),
+              detail: violation.detail,
+              followUpSource: 'quality-gate',
+              group,
+              mission,
+              providerId,
+              recommendedOwner: specialistHandoff?.nextHandoff?.recommendedOwner || 'workspace-owner',
+              run,
+              specialistHandoff,
+              specialistKind: violation.specialistKind,
+              status: 'blocked',
+              workspace,
+            });
           });
+
+        return [...directItems, ...qualityGateItems];
       })
       .filter((item) => !filter.providerId || item.providerId === filter.providerId)
       .filter((item) => !filter.needsReminderOnly || item.needsReminder)
@@ -8860,6 +9097,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
         specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
         specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
@@ -8868,6 +9106,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
         specialistMergeRunCount: parallelActivity.mergeRunCount,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
+        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
         specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
         specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistRunCount: parallelActivity.specialistRunCount,
@@ -8888,8 +9128,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
   function buildSpecialistTimelineEvents(filter = {}) {
     return buildParallelGroupStates(filter)
-      .flatMap((group) =>
-        group.runs
+      .flatMap((group) => {
+        const runEvents = group.runs
           .filter((run) => !filter.missionId || run.missionId === filter.missionId)
           .map((run) => {
             const mission = group.mission;
@@ -8932,8 +9172,28 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               workspaceName: workspace?.name || null,
             };
           })
-          .filter(Boolean),
-      )
+          .filter(Boolean);
+        const qualityGateEvents = ensureArray(group.qualityGate?.violations)
+          .filter((violation) => {
+            const latestRun = group.latestByKind.get(violation.specialistKind);
+            return !['blocked', 'failed'].includes(normalizeAgentRunStatus(latestRun?.status));
+          })
+          .map((violation) => ({
+            at: violation.at || now(),
+            detail: violation.detail,
+            kind: 'specialist-quality-gate-blocked',
+            missionId: group.mission?.id || null,
+            parallelGroupId: group.parallelGroupId,
+            runId: violation.runId || null,
+            sessionId: violation.sessionId || null,
+            specialistKind: violation.specialistKind,
+            status: violation.status || 'blocked',
+            workspaceId: group.workspace?.id || null,
+            workspaceName: group.workspace?.name || null,
+          }));
+
+        return [...runEvents, ...qualityGateEvents];
+      })
       .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
   }
 
@@ -9742,10 +10002,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
         specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
+        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
         specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
         specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
@@ -9808,10 +10071,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
         specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
+        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
         specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
         specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,

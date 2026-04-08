@@ -131,6 +131,116 @@ assert.equal(profileTimeline.summary.specialistOrchestrationProfileId, 'knowledg
 assert.equal(profileTimeline.summary.specialistLatestParallelGroup?.orchestrationProfile?.id, 'knowledge-triad');
 assert.equal(profileTimeline.timeline.filter((event) => event.kind === 'specialist-branch-completed').length, 3);
 
+const qualityGateMission = service.createMission({
+  constraints: ['orchestration-profile:knowledge-triad', 'parallel-abandon:verification'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify profile quality gate blocks merge until verification reruns successfully.',
+  title: 'Parallel specialist quality gate mission',
+  workspaceId: workspace.id,
+});
+
+const qualityGateFirstRun = await service.runMission(qualityGateMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(qualityGateFirstRun.mission.status, 'failed');
+
+const qualityGateFirstSummary = service.showMission(qualityGateMission.id).summary;
+assert.equal(qualityGateFirstSummary.specialistRunCount, 3);
+assert.equal(qualityGateFirstSummary.specialistMergeRunCount, 0);
+assert.equal(qualityGateFirstSummary.specialistFollowUpRequiredCount, 1);
+assert.equal(qualityGateFirstSummary.specialistStatusCounts.completed, 2);
+assert.equal(qualityGateFirstSummary.specialistStatusCounts.abandoned, 1);
+assert.equal(qualityGateFirstSummary.specialistQualityGate, 'verification-signal-required');
+assert.equal(qualityGateFirstSummary.specialistQualityGateStatus, 'blocked');
+assert.equal(qualityGateFirstSummary.specialistQualityGateBlockedCount, 1);
+assert.equal(qualityGateFirstSummary.specialistQualityGateViolationCount, 1);
+assert.deepEqual(qualityGateFirstSummary.specialistQualityGateRequiredKinds, ['verification']);
+assert.equal(qualityGateFirstSummary.specialistLatestQualityGateViolation?.specialistKind, 'verification');
+assert.equal(qualityGateFirstSummary.specialistLatestQualityGateViolation?.actualStatus, 'abandoned');
+assert.equal(qualityGateFirstSummary.specialistLatestParallelGroup?.qualityGate?.status, 'blocked');
+assert.deepEqual(qualityGateFirstSummary.specialistLatestParallelGroup?.qualityGate?.rerunKinds, ['verification']);
+
+const qualityGateInbox = service.getActionInbox({
+  actionClass: 'specialist-follow-up-required',
+  missionId: qualityGateMission.id,
+});
+assert.equal(qualityGateInbox.items.length, 1);
+assert.equal(qualityGateInbox.items[0].followUpSource, 'quality-gate');
+assert.equal(qualityGateInbox.items[0].specialistKind, 'verification');
+assert.equal(qualityGateInbox.items[0].status, 'blocked');
+assert.ok(qualityGateInbox.items[0].specialistHandoff);
+assert.match(qualityGateInbox.items[0].specialistHandoff.nextHandoff.request, /satisfy the verification-signal-required gate/i);
+
+const qualityGateFirstGroup = getLatestParallelGroupRuns(store, qualityGateMission.id);
+const abandonedVerificationRun = qualityGateFirstGroup.runs.find(
+  (run) => run.role === 'specialist' && run.specialistKind === 'verification' && run.status === 'abandoned',
+);
+assert.ok(qualityGateFirstGroup.parallelGroupId);
+assert.ok(abandonedVerificationRun);
+
+const qualityGateTimeline = service.getMissionTimeline(qualityGateMission.id);
+assert.equal(qualityGateTimeline.timeline.filter((event) => event.kind === 'specialist-quality-gate-blocked').length, 1);
+assert.equal(qualityGateTimeline.timeline.filter((event) => event.kind === 'specialist-merge-completed').length, 0);
+const qualityGateWorkspaceTimeline = service.getWorkspaceTimeline(workspace.id);
+assert.equal(
+  qualityGateWorkspaceTimeline.timeline.some(
+    (event) => event.kind === 'specialist-quality-gate-blocked' && event.missionId === qualityGateMission.id,
+  ),
+  true,
+);
+const qualityGateOperatorTimeline = service.getGlobalOperatorTimeline();
+assert.equal(
+  qualityGateOperatorTimeline.timeline.some(
+    (event) => event.kind === 'specialist-quality-gate-blocked' && event.missionId === qualityGateMission.id,
+  ),
+  true,
+);
+
+store.updateMission(qualityGateMission.id, (current) => ({
+  ...current,
+  constraints: ['orchestration-profile:knowledge-triad'],
+}));
+
+const qualityGateSecondRun = await service.runMission(qualityGateMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(qualityGateSecondRun.mission.status, 'completed');
+
+const qualityGateSecondSummary = service.showMission(qualityGateMission.id).summary;
+assert.equal(qualityGateSecondSummary.specialistFollowUpRequiredCount, 0);
+assert.equal(qualityGateSecondSummary.specialistMergeCompletedCount, 1);
+assert.equal(qualityGateSecondSummary.specialistQualityGateStatus, 'passed');
+assert.equal(qualityGateSecondSummary.specialistQualityGateBlockedCount, 0);
+assert.equal(qualityGateSecondSummary.specialistQualityGateViolationCount, 0);
+assert.equal(qualityGateSecondSummary.specialistLatestParallelGroup?.qualityGate?.status, 'passed');
+
+const qualityGateSecondGroup = getLatestParallelGroupRuns(store, qualityGateMission.id);
+const qualityGateVerificationRuns = qualityGateSecondGroup.runs.filter(
+  (run) => run.role === 'specialist' && run.specialistKind === 'verification',
+);
+const qualityGateResearchRuns = qualityGateSecondGroup.runs.filter(
+  (run) => run.role === 'specialist' && run.specialistKind === 'research',
+);
+const qualityGateImplementationRuns = qualityGateSecondGroup.runs.filter(
+  (run) => run.role === 'specialist' && run.specialistKind === 'implementation',
+);
+const resumedVerificationRun = qualityGateVerificationRuns.at(-1);
+
+assert.equal(qualityGateSecondGroup.parallelGroupId, qualityGateFirstGroup.parallelGroupId);
+assert.equal(qualityGateVerificationRuns.length, 2);
+assert.equal(qualityGateResearchRuns.length, 1);
+assert.equal(qualityGateImplementationRuns.length, 1);
+assert.equal(resumedVerificationRun.resumeFromRunId, abandonedVerificationRun.id);
+assert.equal(
+  resumedVerificationRun.specialistRootRunId,
+  abandonedVerificationRun.specialistRootRunId || abandonedVerificationRun.id,
+);
+
 const mixedMission = service.createMission({
   constraints: ['parallel-specialists:research,implementation,verification', 'parallel-abandon:verification'],
   deliverableType: 'decision-memo',
@@ -292,11 +402,12 @@ assert.equal(blockedTimeline.timeline.filter((event) => event.kind === 'speciali
 
 const workspaceOverview = service.getWorkspaceOverview(workspace.id);
 assert.ok(workspaceOverview.summary.specialistRunCount >= 13);
-assert.ok(workspaceOverview.summary.specialistMergeCompletedCount >= 3);
+assert.ok(workspaceOverview.summary.specialistMergeCompletedCount >= 4);
 assert.ok(workspaceOverview.summary.specialistFollowUpRequiredCount >= 1);
 assert.ok(workspaceOverview.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
 assert.equal(workspaceOverview.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 assert.equal(workspaceOverview.summary.specialistTouchedKinds.includes('verification'), true);
+assert.equal(workspaceOverview.summary.specialistQualityGateStatusCounts.blocked, 0);
 
 const workspaceTimeline = service.getWorkspaceTimeline(workspace.id);
 assert.equal(
@@ -305,16 +416,25 @@ assert.equal(
   ),
   true,
 );
+assert.equal(
+  workspaceTimeline.timeline.some(
+    (event) => event.kind === 'specialist-quality-gate-blocked' && event.missionId === qualityGateMission.id,
+  ),
+  false,
+);
 assert.ok(workspaceTimeline.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
 assert.equal(workspaceTimeline.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
+assert.equal(workspaceTimeline.summary.specialistQualityGateStatusCounts.blocked, 0);
 
 const globalOverview = service.getGlobalOverview();
 assert.ok(globalOverview.summary.specialistRunCount >= workspaceOverview.summary.specialistRunCount);
-assert.ok(globalOverview.summary.specialistMergeCompletedCount >= 3);
+assert.ok(globalOverview.summary.specialistMergeCompletedCount >= 4);
 assert.ok(globalOverview.summary.specialistFollowUpRequiredCount >= 1);
 assert.ok(globalOverview.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
 assert.equal(globalOverview.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 assert.equal(globalOverview.summary.specialistTouchedKinds.includes('verification'), true);
+assert.equal(globalOverview.summary.specialistQualityGateStatusCounts.blocked, 0);
+assert.equal(globalOverview.summary.specialistLatestQualityGateViolation, null);
 
 const globalOperatorTimeline = service.getGlobalOperatorTimeline();
 assert.equal(
@@ -325,12 +445,19 @@ assert.equal(
 );
 assert.equal(
   globalOperatorTimeline.timeline.some(
+    (event) => event.kind === 'specialist-quality-gate-blocked' && event.missionId === qualityGateMission.id,
+  ),
+  false,
+);
+assert.equal(
+  globalOperatorTimeline.timeline.some(
     (event) => event.kind === 'specialist-merge-completed' && event.missionId === successMission.id,
   ),
   true,
 );
 assert.ok(globalOperatorTimeline.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
 assert.equal(globalOperatorTimeline.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
+assert.equal(globalOperatorTimeline.summary.specialistQualityGateStatusCounts.blocked, 0);
 
 console.log(
   JSON.stringify(
@@ -340,6 +467,7 @@ console.log(
       mode: 'parallel-specialists',
       ok: true,
       profileMissionId: profileMission.id,
+      qualityGateMissionId: qualityGateMission.id,
       successMissionId: successMission.id,
     },
     null,
