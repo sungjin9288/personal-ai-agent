@@ -10239,6 +10239,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function getOrchestrationProfilesOverview(filter = {}) {
+    if (
+      filter.adoptionDriftReasonCode &&
+      !ORCHESTRATION_PROFILE_ADOPTION_DRIFT_REASON_CODES.includes(filter.adoptionDriftReasonCode)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile adoption drift reason code: ${filter.adoptionDriftReasonCode}`,
+      );
+    }
+    if (
+      filter.adoptionDriftStatus &&
+      !ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.includes(filter.adoptionDriftStatus)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile adoption drift status: ${filter.adoptionDriftStatus}`,
+      );
+    }
     if (filter.mode && !MISSION_MODES.includes(filter.mode)) {
       throw new Error(`Unsupported mission mode: ${filter.mode}`);
     }
@@ -10493,6 +10509,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceMissionCounts,
         };
       })
+      .filter(
+        (item) =>
+          !filter.adoptionDriftReasonCode ||
+          item.adoptionDrift.reasonCodes.includes(filter.adoptionDriftReasonCode),
+      )
+      .filter(
+        (item) => !filter.adoptionDriftStatus || item.adoptionDrift.status === filter.adoptionDriftStatus,
+      )
       .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')
       .filter((item) => !filter.reasonCode || item.healthDrift.reasonCodes.includes(filter.reasonCode))
       .filter((item) => !filter.status || item.healthDrift.status === filter.status)
@@ -10694,6 +10718,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     return {
       filters: {
+        adoptionDriftReasonCode: filter.adoptionDriftReasonCode || null,
+        adoptionDriftStatus: filter.adoptionDriftStatus || null,
         driftOnly: Boolean(filter.driftOnly),
         mode: filter.mode || null,
         reasonCode: filter.reasonCode || null,

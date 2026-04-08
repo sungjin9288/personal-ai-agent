@@ -109,6 +109,8 @@ const overview = runCli({
 });
 
 assert.deepEqual(overview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -388,6 +390,8 @@ const usedOnlyOverview = runCli({
 });
 
 assert.deepEqual(usedOnlyOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -411,6 +415,8 @@ const workspaceUsedOverview = runCli({
 });
 
 assert.deepEqual(workspaceUsedOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -461,6 +467,8 @@ const secondWorkspaceUsedOverview = runCli({
 });
 
 assert.deepEqual(secondWorkspaceUsedOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -511,6 +519,8 @@ const driftOnlyOverview = runCli({
 });
 
 assert.deepEqual(driftOnlyOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: true,
   mode: null,
   reasonCode: null,
@@ -534,6 +544,8 @@ const stableUsedOverview = runCli({
 });
 
 assert.deepEqual(stableUsedOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -560,6 +572,8 @@ const knowledgeOnlyOverview = runCli({
 });
 
 assert.deepEqual(knowledgeOnlyOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: 'knowledge',
   reasonCode: null,
@@ -583,6 +597,8 @@ const workspaceDriftOnlyOverview = runCli({
 });
 
 assert.deepEqual(workspaceDriftOnlyOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -606,6 +622,8 @@ const workspaceStatusOverview = runCli({
 });
 
 assert.deepEqual(workspaceStatusOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -631,6 +649,8 @@ const workspaceScopedStatusOverview = runCli({
 });
 
 assert.deepEqual(workspaceScopedStatusOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -653,6 +673,8 @@ const reasonCodeOverview = runCli({
 });
 
 assert.deepEqual(reasonCodeOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: 'quality-gate-blocked',
@@ -679,6 +701,8 @@ const workspaceReasonCodeOverview = runCli({
 });
 
 assert.deepEqual(workspaceReasonCodeOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -705,6 +729,8 @@ const growingUsageOverview = runCli({
 });
 
 assert.deepEqual(growingUsageOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -729,6 +755,8 @@ const decliningUsageOverview = runCli({
 });
 
 assert.deepEqual(decliningUsageOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -750,6 +778,8 @@ const growingWorkspaceUsageOverview = runCli({
 });
 
 assert.deepEqual(growingWorkspaceUsageOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -776,6 +806,8 @@ const decliningWorkspaceUsageOverview = runCli({
 });
 
 assert.deepEqual(decliningWorkspaceUsageOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: null,
   driftOnly: false,
   mode: null,
   reasonCode: null,
@@ -790,6 +822,55 @@ assert.deepEqual(decliningWorkspaceUsageOverview.filters, {
 });
 assert.equal(decliningWorkspaceUsageOverview.summary.total, 1);
 assert.equal(decliningWorkspaceUsageOverview.items[0].id, 'engineering-implementation-verification');
+
+const growingAdoptionOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--adoption-drift-status', 'growing', '--used-only'],
+});
+
+assert.deepEqual(growingAdoptionOverview.filters, {
+  adoptionDriftReasonCode: null,
+  adoptionDriftStatus: 'growing',
+  driftOnly: false,
+  mode: null,
+  reasonCode: null,
+  status: null,
+  usageTrend: null,
+  usedOnly: true,
+  workspaceDriftOnly: false,
+  workspaceId: null,
+  workspaceReasonCode: null,
+  workspaceStatus: null,
+  workspaceUsageTrend: null,
+});
+assert.equal(growingAdoptionOverview.summary.total, 2);
+assert.deepEqual(
+  growingAdoptionOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
+  ['engineering-triad', 'knowledge-triad'],
+);
+
+const decliningAdoptionReasonOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--adoption-drift-reason-code', 'workspace-footprint-declining', '--used-only'],
+});
+
+assert.deepEqual(decliningAdoptionReasonOverview.filters, {
+  adoptionDriftReasonCode: 'workspace-footprint-declining',
+  adoptionDriftStatus: null,
+  driftOnly: false,
+  mode: null,
+  reasonCode: null,
+  status: null,
+  usageTrend: null,
+  usedOnly: true,
+  workspaceDriftOnly: false,
+  workspaceId: null,
+  workspaceReasonCode: null,
+  workspaceStatus: null,
+  workspaceUsageTrend: null,
+});
+assert.equal(decliningAdoptionReasonOverview.summary.total, 1);
+assert.equal(decliningAdoptionReasonOverview.items[0].id, 'engineering-implementation-verification');
 
 console.log(
   JSON.stringify(
