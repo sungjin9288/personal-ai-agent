@@ -319,6 +319,8 @@ assert.equal(overview.summary.workspaceUsageTrendCounts.growing, 2);
 assert.equal(overview.summary.workspaceUsageTrendCounts.declining, 1);
 assert.equal(overview.summary.workspaceUsageTrendCounts.steady, 0);
 assert.equal(overview.summary.workspaceUsageTrendCounts.unused, 1);
+assert.equal(overview.summary.workspaceUsageTrendStatus, 'growing');
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceCount, 2);
 assert.equal(overview.summary.workspaceUsageTrendProfileCounts[workspace.id], 2);
 assert.equal(overview.summary.workspaceUsageTrendProfileCounts[secondWorkspace.id], 1);
 assert.equal(overview.summary.workspaceUsageTrendStatusCounts.growing[workspace.id], 1);
@@ -326,6 +328,16 @@ assert.equal(overview.summary.workspaceUsageTrendStatusCounts.growing[secondWork
 assert.equal(overview.summary.workspaceUsageTrendStatusCounts.declining[workspace.id], 1);
 assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.steady, {});
 assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.unused, {});
+assert.equal(overview.summary.workspaceUsageTrendLatestGrowingWorkspace.id, secondWorkspace.id);
+assert.equal(
+  overview.summary.workspaceUsageTrendLatestGrowingWorkspace.profileId,
+  'engineering-triad',
+);
+assert.equal(overview.summary.workspaceUsageTrendLatestDecliningWorkspace.id, workspace.id);
+assert.equal(
+  overview.summary.workspaceUsageTrendLatestDecliningWorkspace.profileId,
+  'engineering-implementation-verification',
+);
 assert.equal(overview.summary.workspaceAdoptionDriftProfileCounts[workspace.id], 2);
 assert.equal(overview.summary.workspaceAdoptionDriftProfileCounts[secondWorkspace.id], 1);
 assert.equal(overview.summary.workspaceAdoptionDriftWorkspaceCount, 2);
@@ -754,6 +766,18 @@ assert.deepEqual(workspaceUsedOverview.summary.touchedWorkspaceIds, [workspace.i
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftProfileCounts[workspace.id], 1);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts['follow-up-required'][workspace.id], 1);
 assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.watch, {});
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendStatus, 'steady');
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCount, 1);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.id, workspace.id);
+assert.equal(
+  workspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.profileId,
+  'knowledge-triad',
+);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestDecliningWorkspace.id, workspace.id);
+assert.equal(
+  workspaceUsedOverview.summary.workspaceUsageTrendLatestDecliningWorkspace.profileId,
+  'engineering-implementation-verification',
+);
 assert.equal(workspaceUsedOverview.summary.workspaceProfileCounts[workspace.id], 2);
 assert.equal(workspaceUsedOverview.summary.workspaceMissionCounts[workspace.id], 3);
 assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftProfileCounts[workspace.id], 2);
@@ -883,6 +907,17 @@ assert.deepEqual(secondWorkspaceUsedOverview.summary.touchedWorkspaceIds, [secon
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftProfileCounts, {});
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftStatusCounts['follow-up-required'], {});
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.watch, {});
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendStatus, 'growing');
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCount, 1);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.id,
+  secondWorkspace.id,
+);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.profileId,
+  'engineering-triad',
+);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestDecliningWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceProfileCounts[secondWorkspace.id], 1);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceMissionCounts[secondWorkspace.id], 1);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftProfileCounts[secondWorkspace.id], 1);

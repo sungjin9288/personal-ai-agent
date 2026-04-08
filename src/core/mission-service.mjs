@@ -11348,6 +11348,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.workspaceAdoptionDriftWorkspaceCount = workspaceAdoptionDrift.workspaceCount;
     summary.workspaceAdoptionDriftWorkspaceIdsByStatus =
       workspaceAdoptionDrift.workspaceIdsByStatus;
+    summary.workspaceUsageTrendStatus = workspaceUsageTrend.status;
+    summary.workspaceUsageTrendWorkspaceCount = workspaceUsageTrend.workspaceCount;
+    summary.workspaceUsageTrendLatestGrowingWorkspace =
+      workspaceUsageTrend.latestGrowingWorkspace;
+    summary.workspaceUsageTrendLatestDecliningWorkspace =
+      workspaceUsageTrend.latestDecliningWorkspace;
 
     return {
       filters: {
