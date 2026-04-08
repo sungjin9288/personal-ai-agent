@@ -2847,6 +2847,10 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
   const workspaceIdsByStatus = Object.fromEntries(
     ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, []]),
   );
+  let latestDecliningWorkspace = null;
+  let latestDecliningWorkspaceAt = null;
+  let latestGrowingWorkspace = null;
+  let latestGrowingWorkspaceAt = null;
   let latestWorkspace = null;
   let latestWorkspaceAt = null;
 
@@ -2882,6 +2886,41 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
         profileFootprintTrend: entry.profileFootprintTrend || null,
       };
     }
+    if (
+      adoptionStatus === 'growing' &&
+      candidateLatestAt &&
+      (!latestGrowingWorkspaceAt || String(latestGrowingWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestGrowingWorkspaceAt = candidateLatestAt;
+      latestGrowingWorkspace = {
+        adoptionDrift: entry.adoptionDrift || null,
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        missionTrend: entry.missionTrend || null,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileFootprintTrend: entry.profileFootprintTrend || null,
+        profileId: entry.profileId || null,
+      };
+    }
+    if (
+      adoptionStatus === 'declining' &&
+      candidateLatestAt &&
+      (!latestDecliningWorkspaceAt ||
+        String(latestDecliningWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestDecliningWorkspaceAt = candidateLatestAt;
+      latestDecliningWorkspace = {
+        adoptionDrift: entry.adoptionDrift || null,
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        missionTrend: entry.missionTrend || null,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileFootprintTrend: entry.profileFootprintTrend || null,
+        profileId: entry.profileId || null,
+      };
+    }
   }
 
   for (const status of Object.keys(workspaceIdsByStatus)) {
@@ -2891,6 +2930,8 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
   }
 
   return {
+    latestDecliningWorkspace,
+    latestGrowingWorkspace,
     latestWorkspace,
     missionTrendStatusCounts,
     profileFootprintTrendStatusCounts,
