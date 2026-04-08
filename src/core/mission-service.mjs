@@ -2354,6 +2354,13 @@ const ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES = [
   'specialist-follow-up-overdue',
 ];
 const ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES = ['declining', 'growing', 'steady', 'unused'];
+const ORCHESTRATION_PROFILE_ADOPTION_DRIFT_REASON_CODES = [
+  'mission-volume-declining',
+  'mission-volume-growing',
+  'unused-profile',
+  'workspace-footprint-declining',
+  'workspace-footprint-growing',
+];
 
 function buildOrchestrationProfileUsageMonthlyBuckets(entries = []) {
   const bucketMap = new Map();
@@ -2557,6 +2564,50 @@ function summarizeOrchestrationProfileWorkspaceUsageTrend({
     previousMonthWorkspaceCount,
     status,
     workspaceCountDelta,
+  };
+}
+
+function summarizeOrchestrationProfileAdoptionDrift({
+  usageTrend = null,
+  workspaceUsageTrend = null,
+} = {}) {
+  const normalizedUsageTrend = usageTrend?.status || 'unused';
+  const normalizedWorkspaceUsageTrend = workspaceUsageTrend?.status || 'unused';
+  const reasonCodes = [];
+
+  if (normalizedUsageTrend === 'declining') {
+    reasonCodes.push('mission-volume-declining');
+  } else if (normalizedUsageTrend === 'growing') {
+    reasonCodes.push('mission-volume-growing');
+  }
+
+  if (normalizedWorkspaceUsageTrend === 'declining') {
+    reasonCodes.push('workspace-footprint-declining');
+  } else if (normalizedWorkspaceUsageTrend === 'growing') {
+    reasonCodes.push('workspace-footprint-growing');
+  }
+
+  let status = 'steady';
+  if (normalizedUsageTrend === 'unused' && normalizedWorkspaceUsageTrend === 'unused') {
+    status = 'unused';
+    reasonCodes.push('unused-profile');
+  } else if (
+    normalizedUsageTrend === 'declining' ||
+    normalizedWorkspaceUsageTrend === 'declining'
+  ) {
+    status = 'declining';
+  } else if (
+    normalizedUsageTrend === 'growing' ||
+    normalizedWorkspaceUsageTrend === 'growing'
+  ) {
+    status = 'growing';
+  }
+
+  return {
+    reasonCodes,
+    status,
+    usageTrendStatus: normalizedUsageTrend,
+    workspaceUsageTrendStatus: normalizedWorkspaceUsageTrend,
   };
 }
 
@@ -10377,8 +10428,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           monthlyBuckets: usageSummary.usageMonthlyBuckets,
           used: missions.length > 0,
         });
+        const adoptionDrift = summarizeOrchestrationProfileAdoptionDrift({
+          usageTrend,
+          workspaceUsageTrend,
+        });
 
         return {
+          adoptionDrift,
           ...profile,
           healthDrift,
           latestMission: latestMissionEntry
@@ -10482,6 +10538,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       monthlyBuckets: usageSummary.usageMonthlyBuckets,
       used: missionEntries.length > 0,
     });
+    const adoptionDrift = summarizeOrchestrationProfileAdoptionDrift({
+      usageTrend,
+      workspaceUsageTrend,
+    });
     summary.usageTrendCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10543,6 +10603,38 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             id: item.id,
             latestUsedAt: item.latestUsedAt || '',
             workspaceUsageTrend: item.workspaceUsageTrend,
+          })),
+        'latestUsedAt',
+      ) || null;
+    summary.adoptionDriftCounts = Object.fromEntries(
+      ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+    );
+    for (const item of items) {
+      if (summary.adoptionDriftCounts[item.adoptionDrift.status] !== undefined) {
+        summary.adoptionDriftCounts[item.adoptionDrift.status] += 1;
+      }
+    }
+    summary.latestGrowingAdoptionProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.adoptionDrift.status === 'growing')
+          .map((item) => ({
+            adoptionDrift: item.adoptionDrift,
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
+          })),
+        'latestUsedAt',
+      ) || null;
+    summary.latestDecliningAdoptionProfile =
+      getLatestItem(
+        items
+          .filter((item) => item.adoptionDrift.status === 'declining')
+          .map((item) => ({
+            adoptionDrift: item.adoptionDrift,
+            displayName: item.displayName,
+            id: item.id,
+            latestUsedAt: item.latestUsedAt || '',
           })),
         'latestUsedAt',
       ) || null;
@@ -10614,6 +10706,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceStatus: filter.workspaceStatus || null,
         workspaceUsageTrend: filter.workspaceUsageTrend || null,
       },
+      adoptionDrift,
       healthDrift,
       usageTrend,
       workspaceHealthDrift,
