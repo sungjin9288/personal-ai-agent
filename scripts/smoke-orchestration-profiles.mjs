@@ -82,10 +82,12 @@ const overview = runCli({
 assert.deepEqual(overview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: false,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(overview.healthDrift.status, 'follow-up-required');
@@ -234,10 +236,12 @@ const usedOnlyOverview = runCli({
 assert.deepEqual(usedOnlyOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(usedOnlyOverview.summary.total, 3);
@@ -253,10 +257,12 @@ const workspaceUsedOverview = runCli({
 assert.deepEqual(workspaceUsedOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: workspace.id,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(workspaceUsedOverview.summary.total, 2);
@@ -289,10 +295,12 @@ const secondWorkspaceUsedOverview = runCli({
 assert.deepEqual(secondWorkspaceUsedOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: secondWorkspace.id,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
@@ -322,10 +330,12 @@ const driftOnlyOverview = runCli({
 assert.deepEqual(driftOnlyOverview.filters, {
   driftOnly: true,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: false,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(driftOnlyOverview.summary.total, 1);
@@ -341,10 +351,12 @@ const stableUsedOverview = runCli({
 assert.deepEqual(stableUsedOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: 'stable',
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(stableUsedOverview.summary.total, 2);
@@ -363,10 +375,12 @@ const knowledgeOnlyOverview = runCli({
 assert.deepEqual(knowledgeOnlyOverview.filters, {
   driftOnly: false,
   mode: 'knowledge',
+  reasonCode: null,
   status: 'follow-up-required',
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(knowledgeOnlyOverview.summary.total, 1);
@@ -382,10 +396,12 @@ const workspaceDriftOnlyOverview = runCli({
 assert.deepEqual(workspaceDriftOnlyOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: false,
   workspaceDriftOnly: true,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: null,
 });
 assert.equal(workspaceDriftOnlyOverview.summary.total, 1);
@@ -401,10 +417,12 @@ const workspaceStatusOverview = runCli({
 assert.deepEqual(workspaceStatusOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: null,
+  workspaceReasonCode: null,
   workspaceStatus: 'stable',
 });
 assert.equal(workspaceStatusOverview.summary.total, 2);
@@ -422,15 +440,65 @@ const workspaceScopedStatusOverview = runCli({
 assert.deepEqual(workspaceScopedStatusOverview.filters, {
   driftOnly: false,
   mode: null,
+  reasonCode: null,
   status: null,
   usedOnly: true,
   workspaceDriftOnly: false,
   workspaceId: workspace.id,
+  workspaceReasonCode: null,
   workspaceStatus: 'follow-up-required',
 });
 assert.equal(workspaceScopedStatusOverview.summary.total, 1);
 assert.equal(workspaceScopedStatusOverview.items.length, 1);
 assert.equal(workspaceScopedStatusOverview.items[0].id, 'knowledge-triad');
+
+const reasonCodeOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--reason-code', 'quality-gate-blocked'],
+});
+
+assert.deepEqual(reasonCodeOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  reasonCode: 'quality-gate-blocked',
+  status: null,
+  usedOnly: false,
+  workspaceDriftOnly: false,
+  workspaceId: null,
+  workspaceReasonCode: null,
+  workspaceStatus: null,
+});
+assert.equal(reasonCodeOverview.summary.total, 1);
+assert.equal(reasonCodeOverview.items.length, 1);
+assert.equal(reasonCodeOverview.items[0].id, 'knowledge-triad');
+assert.deepEqual(reasonCodeOverview.items[0].healthDrift.reasonCodes, [
+  'quality-gate-blocked',
+  'specialist-follow-up-open',
+]);
+
+const workspaceReasonCodeOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace-reason-code', 'specialist-follow-up-open'],
+});
+
+assert.deepEqual(workspaceReasonCodeOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  reasonCode: null,
+  status: null,
+  usedOnly: false,
+  workspaceDriftOnly: false,
+  workspaceId: null,
+  workspaceReasonCode: 'specialist-follow-up-open',
+  workspaceStatus: null,
+});
+assert.equal(workspaceReasonCodeOverview.summary.total, 1);
+assert.equal(workspaceReasonCodeOverview.items.length, 1);
+assert.equal(workspaceReasonCodeOverview.items[0].id, 'knowledge-triad');
+assert.deepEqual(workspaceReasonCodeOverview.items[0].workspaceHealthDrift.reasonCodes, [
+  'quality-gate-blocked',
+  'specialist-follow-up-open',
+]);
 
 console.log(
   JSON.stringify(

@@ -48,7 +48,7 @@ Commands:
   overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
-  overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-drift-only]
+  overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
   overview providers [--since <iso-timestamp>]
 
   provider list
@@ -186,10 +186,12 @@ async function main() {
       service.getOrchestrationProfilesOverview({
         driftOnly: hasOption(rest, '--drift-only'),
         mode: readOption(rest, '--mode', ''),
+        reasonCode: readOption(rest, '--reason-code', ''),
         status: readOption(rest, '--status', ''),
         usedOnly: hasOption(rest, '--used-only'),
         workspaceDriftOnly: hasOption(rest, '--workspace-drift-only'),
         workspaceId: readOption(rest, '--workspace', ''),
+        workspaceReasonCode: readOption(rest, '--workspace-reason-code', ''),
         workspaceStatus: readOption(rest, '--workspace-status', ''),
       }),
     );

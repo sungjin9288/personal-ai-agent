@@ -2347,6 +2347,13 @@ function summarizeOrchestrationProfileHealthDrift({
   };
 }
 
+const ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES = [
+  'quality-gate-blocked',
+  'specialist-follow-up-needs-reminder',
+  'specialist-follow-up-open',
+  'specialist-follow-up-overdue',
+];
+
 function summarizeWorkspaceHealthDriftEntries(entries = []) {
   const reasonCodeCounts = {};
   const statusCounts = {
@@ -9979,10 +9986,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       throw new Error(`Unsupported mission mode: ${filter.mode}`);
     }
     if (
+      filter.reasonCode &&
+      !ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES.includes(filter.reasonCode)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile health drift reason code: ${filter.reasonCode}`,
+      );
+    }
+    if (
       filter.status &&
       !['stable', 'watch', 'follow-up-required'].includes(filter.status)
     ) {
       throw new Error(`Unsupported orchestration profile health drift status: ${filter.status}`);
+    }
+    if (
+      filter.workspaceReasonCode &&
+      !ORCHESTRATION_PROFILE_HEALTH_DRIFT_REASON_CODES.includes(filter.workspaceReasonCode)
+    ) {
+      throw new Error(
+        `Unsupported orchestration profile workspace health drift reason code: ${filter.workspaceReasonCode}`,
+      );
     }
     if (
       filter.workspaceStatus &&
@@ -10172,8 +10195,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         };
       })
       .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')
+      .filter((item) => !filter.reasonCode || item.healthDrift.reasonCodes.includes(filter.reasonCode))
       .filter((item) => !filter.status || item.healthDrift.status === filter.status)
       .filter((item) => !filter.workspaceDriftOnly || item.workspaceHealthDrift.status !== 'stable')
+      .filter(
+        (item) =>
+          !filter.workspaceReasonCode ||
+          item.workspaceHealthDrift.reasonCodes.includes(filter.workspaceReasonCode),
+      )
       .filter((item) => !filter.workspaceStatus || item.workspaceHealthDrift.status === filter.workspaceStatus)
       .filter((item) => !filter.usedOnly || item.used)
       .sort((left, right) => {
@@ -10247,10 +10276,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       filters: {
         driftOnly: Boolean(filter.driftOnly),
         mode: filter.mode || null,
+        reasonCode: filter.reasonCode || null,
         status: filter.status || null,
         usedOnly: Boolean(filter.usedOnly),
         workspaceDriftOnly: Boolean(filter.workspaceDriftOnly),
         workspaceId: filter.workspaceId || null,
+        workspaceReasonCode: filter.workspaceReasonCode || null,
         workspaceStatus: filter.workspaceStatus || null,
       },
       healthDrift,
