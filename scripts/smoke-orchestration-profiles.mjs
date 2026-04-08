@@ -63,7 +63,9 @@ const overview = runCli({
 });
 
 assert.deepEqual(overview.filters, {
+  driftOnly: false,
   mode: null,
+  status: null,
   usedOnly: false,
 });
 assert.equal(overview.healthDrift.status, 'follow-up-required');
@@ -156,18 +158,58 @@ const usedOnlyOverview = runCli({
   args: ['overview', 'profiles', '--used-only'],
 });
 
+assert.deepEqual(usedOnlyOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: true,
+});
 assert.equal(usedOnlyOverview.summary.total, 2);
 assert.equal(usedOnlyOverview.summary.usedCount, 2);
 assert.equal(usedOnlyOverview.summary.unusedCount, 0);
 assert.equal(usedOnlyOverview.items.every((item) => item.used), true);
 
+const driftOnlyOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--drift-only'],
+});
+
+assert.deepEqual(driftOnlyOverview.filters, {
+  driftOnly: true,
+  mode: null,
+  status: null,
+  usedOnly: false,
+});
+assert.equal(driftOnlyOverview.summary.total, 1);
+assert.equal(driftOnlyOverview.healthDrift.status, 'follow-up-required');
+assert.equal(driftOnlyOverview.items.length, 1);
+assert.equal(driftOnlyOverview.items[0].id, 'knowledge-triad');
+
+const stableUsedOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--used-only', '--status', 'stable'],
+});
+
+assert.deepEqual(stableUsedOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: 'stable',
+  usedOnly: true,
+});
+assert.equal(stableUsedOverview.summary.total, 1);
+assert.equal(stableUsedOverview.healthDrift.status, 'stable');
+assert.equal(stableUsedOverview.items.length, 1);
+assert.equal(stableUsedOverview.items[0].id, 'engineering-implementation-verification');
+
 const knowledgeOnlyOverview = runCli({
   rootDir: tempRoot,
-  args: ['overview', 'profiles', '--mode', 'knowledge', '--used-only'],
+  args: ['overview', 'profiles', '--mode', 'knowledge', '--used-only', '--status', 'follow-up-required'],
 });
 
 assert.deepEqual(knowledgeOnlyOverview.filters, {
+  driftOnly: false,
   mode: 'knowledge',
+  status: 'follow-up-required',
   usedOnly: true,
 });
 assert.equal(knowledgeOnlyOverview.summary.total, 1);

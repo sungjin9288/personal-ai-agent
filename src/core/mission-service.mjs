@@ -9839,6 +9839,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     if (filter.mode && !MISSION_MODES.includes(filter.mode)) {
       throw new Error(`Unsupported mission mode: ${filter.mode}`);
     }
+    if (
+      filter.status &&
+      !['stable', 'watch', 'follow-up-required'].includes(filter.status)
+    ) {
+      throw new Error(`Unsupported orchestration profile health drift status: ${filter.status}`);
+    }
 
     const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
     const profileGroups = buildParallelGroupStates({});
@@ -9952,6 +9958,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceCount: touchedWorkspaceIds.length,
         };
       })
+      .filter((item) => !filter.driftOnly || item.healthDrift.status !== 'stable')
+      .filter((item) => !filter.status || item.healthDrift.status === filter.status)
       .filter((item) => !filter.usedOnly || item.used)
       .sort((left, right) => {
         const leftUsed = left.used ? 1 : 0;
@@ -9984,7 +9992,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     return {
       filters: {
+        driftOnly: Boolean(filter.driftOnly),
         mode: filter.mode || null,
+        status: filter.status || null,
         usedOnly: Boolean(filter.usedOnly),
       },
       healthDrift,
