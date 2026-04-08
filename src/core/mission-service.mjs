@@ -2612,6 +2612,50 @@ function summarizeOrchestrationProfileWorkspaceUsageTrend({
   };
 }
 
+function summarizeOrchestrationWorkspaceProfileFootprintTrend({
+  currentMonthStartDate = null,
+  monthlyBuckets = [],
+  used = false,
+} = {}) {
+  if (!used) {
+    return {
+      currentMonthProfileCount: 0,
+      currentMonthStartDate,
+      previousMonthProfileCount: 0,
+      previousMonthStartDate: currentMonthStartDate ? getPreviousUtcMonthStartDate(currentMonthStartDate) : null,
+      profileCountDelta: 0,
+      status: 'unused',
+    };
+  }
+
+  const previousMonthStartDate = currentMonthStartDate
+    ? getPreviousUtcMonthStartDate(currentMonthStartDate)
+    : null;
+  const currentBucket =
+    monthlyBuckets.find((bucket) => bucket.monthStartDate === currentMonthStartDate) || null;
+  const previousBucket =
+    monthlyBuckets.find((bucket) => bucket.monthStartDate === previousMonthStartDate) || null;
+  const currentMonthProfileCount = Number(currentBucket?.usedProfileCount || 0);
+  const previousMonthProfileCount = Number(previousBucket?.usedProfileCount || 0);
+  const profileCountDelta = currentMonthProfileCount - previousMonthProfileCount;
+
+  let status = 'steady';
+  if (profileCountDelta > 0) {
+    status = 'growing';
+  } else if (profileCountDelta < 0) {
+    status = 'declining';
+  }
+
+  return {
+    currentMonthProfileCount,
+    currentMonthStartDate,
+    previousMonthProfileCount,
+    previousMonthStartDate,
+    profileCountDelta,
+    status,
+  };
+}
+
 function summarizeOrchestrationProfileAdoptionDrift({
   usageTrend = null,
   workspaceUsageTrend = null,
@@ -2653,6 +2697,50 @@ function summarizeOrchestrationProfileAdoptionDrift({
     status,
     usageTrendStatus: normalizedUsageTrend,
     workspaceUsageTrendStatus: normalizedWorkspaceUsageTrend,
+  };
+}
+
+function summarizeWorkspaceAdoptionDrift({
+  missionTrend = null,
+  profileFootprintTrend = null,
+} = {}) {
+  const normalizedMissionTrend = missionTrend?.status || 'unused';
+  const normalizedProfileFootprintTrend = profileFootprintTrend?.status || 'unused';
+  const reasonCodes = [];
+
+  if (normalizedMissionTrend === 'declining') {
+    reasonCodes.push('workspace-mission-volume-declining');
+  } else if (normalizedMissionTrend === 'growing') {
+    reasonCodes.push('workspace-mission-volume-growing');
+  }
+
+  if (normalizedProfileFootprintTrend === 'declining') {
+    reasonCodes.push('workspace-profile-footprint-declining');
+  } else if (normalizedProfileFootprintTrend === 'growing') {
+    reasonCodes.push('workspace-profile-footprint-growing');
+  }
+
+  let status = 'steady';
+  if (normalizedMissionTrend === 'unused' && normalizedProfileFootprintTrend === 'unused') {
+    status = 'unused';
+    reasonCodes.push('unused-workspace');
+  } else if (
+    normalizedMissionTrend === 'declining' ||
+    normalizedProfileFootprintTrend === 'declining'
+  ) {
+    status = 'declining';
+  } else if (
+    normalizedMissionTrend === 'growing' ||
+    normalizedProfileFootprintTrend === 'growing'
+  ) {
+    status = 'growing';
+  }
+
+  return {
+    missionTrendStatus: normalizedMissionTrend,
+    profileFootprintTrendStatus: normalizedProfileFootprintTrend,
+    reasonCodes,
+    status,
   };
 }
 
@@ -2716,6 +2804,84 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
         : statusCounts.watch > 0
           ? 'watch'
           : 'stable',
+    statusCounts,
+    workspaceCount: entries.length,
+    workspaceIdsByStatus,
+  };
+}
+
+function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
+  const missionTrendStatusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+  );
+  const profileFootprintTrendStatusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+  );
+  const reasonCodeCounts = {};
+  const statusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+  );
+  const workspaceIdsByStatus = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, []]),
+  );
+  let latestWorkspace = null;
+  let latestWorkspaceAt = null;
+
+  for (const entry of entries) {
+    if (statusCounts[entry.status] !== undefined) {
+      statusCounts[entry.status] += 1;
+    }
+    if (missionTrendStatusCounts[entry.missionTrend?.status] !== undefined) {
+      missionTrendStatusCounts[entry.missionTrend.status] += 1;
+    }
+    if (profileFootprintTrendStatusCounts[entry.profileFootprintTrend?.status] !== undefined) {
+      profileFootprintTrendStatusCounts[entry.profileFootprintTrend.status] += 1;
+    }
+    if (workspaceIdsByStatus[entry.status]) {
+      workspaceIdsByStatus[entry.status].push(entry.id);
+    }
+    for (const reasonCode of ensureArray(entry.reasonCodes)) {
+      reasonCodeCounts[reasonCode] = (reasonCodeCounts[reasonCode] || 0) + 1;
+    }
+    const candidateLatestAt = entry.latestAt || null;
+    if (
+      candidateLatestAt &&
+      (!latestWorkspaceAt || String(latestWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestWorkspaceAt = candidateLatestAt;
+      latestWorkspace = {
+        adoptionDrift: entry.adoptionDrift || null,
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        missionTrend: entry.missionTrend || null,
+        name: entry.name || null,
+        profileFootprintTrend: entry.profileFootprintTrend || null,
+      };
+    }
+  }
+
+  for (const status of Object.keys(workspaceIdsByStatus)) {
+    workspaceIdsByStatus[status] = workspaceIdsByStatus[status].sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    );
+  }
+
+  return {
+    latestWorkspace,
+    missionTrendStatusCounts,
+    profileFootprintTrendStatusCounts,
+    reasonCodeCounts,
+    reasonCodes: Object.keys(reasonCodeCounts).sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    ),
+    status:
+      statusCounts.declining > 0
+        ? 'declining'
+        : statusCounts.growing > 0
+          ? 'growing'
+          : statusCounts.steady > 0
+            ? 'steady'
+            : 'unused',
     statusCounts,
     workspaceCount: entries.length,
     workspaceIdsByStatus,
@@ -10691,6 +10857,42 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.usageMonthlyBucketCount = usageSummary.usageMonthlyBucketCount;
     summary.usageMonthlyBuckets = usageSummary.usageMonthlyBuckets;
     summary.usageOldestMonthlyBucketStartDate = usageSummary.usageOldestMonthlyBucketStartDate;
+    const workspaceAdoptionEntries = [...workspaceById.keys()]
+      .map((workspaceId) => {
+        const workspaceEntries = missionEntries.filter((entry) => entry.workspace?.id === workspaceId);
+        if (workspaceEntries.length === 0) {
+          return null;
+        }
+        const workspace = workspaceById.get(workspaceId) || null;
+        const workspaceUsageSummary = summarizeOrchestrationProfileUsageEntries(workspaceEntries);
+        const missionTrend = summarizeOrchestrationProfileUsageTrend({
+          currentMonthStartDate: scopeLatestMonthStartDate,
+          monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
+          used: workspaceEntries.length > 0,
+        });
+        const profileFootprintTrend = summarizeOrchestrationWorkspaceProfileFootprintTrend({
+          currentMonthStartDate: scopeLatestMonthStartDate,
+          monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
+          used: workspaceEntries.length > 0,
+        });
+        const adoptionDrift = summarizeWorkspaceAdoptionDrift({
+          missionTrend,
+          profileFootprintTrend,
+        });
+        const latestWorkspaceEntry = getLatestItem(workspaceEntries, 'latestAt');
+
+        return {
+          adoptionDrift,
+          id: workspaceId,
+          latestAt: latestWorkspaceEntry?.latestAt || null,
+          missionTrend,
+          name: workspace?.name || latestWorkspaceEntry?.workspace?.name || null,
+          profileFootprintTrend,
+          reasonCodes: adoptionDrift.reasonCodes,
+          status: adoptionDrift.status,
+        };
+      })
+      .filter(Boolean);
     const usageTrend = summarizeOrchestrationProfileUsageTrend({
       currentMonthStartDate: scopeLatestMonthStartDate,
       monthlyBuckets: usageSummary.usageMonthlyBuckets,
@@ -10705,6 +10907,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       usageTrend,
       workspaceUsageTrend,
     });
+    const workspaceAdoptionDrift = summarizeWorkspaceAdoptionDriftEntries(workspaceAdoptionEntries);
     summary.usageTrendCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10984,6 +11187,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       adoptionDrift,
       healthDrift,
       usageTrend,
+      workspaceAdoptionDrift,
       workspaceHealthDrift,
       workspaceUsageTrend,
       items,
