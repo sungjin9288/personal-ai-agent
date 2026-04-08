@@ -470,7 +470,9 @@ assert.equal(specialistItem.needsReminder, true);
 assert.equal(specialistItem.reminderCount, 0);
 assert.ok(specialistItem.nextReminderAt);
 assert.match(specialistItem.remindCommand, /remind-specialist-follow-ups/);
-assert.match(specialistItem.commandHint, /mission run/);
+assert.match(specialistItem.commandHint, /action remediate-specialist-follow-up/);
+assert.match(specialistItem.fallbackRecommendedCommand, /mission run/);
+assert.equal(specialistItem.remediationRoute.routeType, 'standard-branch-remediation');
 
 const workspaceFilteredInbox = runCli({
   rootDir: tempRoot,

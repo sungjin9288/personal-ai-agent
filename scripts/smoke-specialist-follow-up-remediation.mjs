@@ -36,6 +36,60 @@ const workspace = service.addWorkspace({
   workspacePath,
 });
 
+const qualityGateMission = service.createMission({
+  constraints: ['orchestration-profile:knowledge-triad', 'parallel-abandon:verification'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify profile-aware specialist remediation routing for verification quality-gate follow-up.',
+  title: 'Specialist quality gate remediation mission',
+  workspaceId: workspace.id,
+});
+
+const qualityGateFirstRun = await service.runMission(qualityGateMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(qualityGateFirstRun.mission.status, 'failed');
+
+const qualityGateInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'specialist-follow-up-required', '--mission', qualityGateMission.id],
+});
+
+assert.equal(qualityGateInbox.items.length, 1);
+assert.equal(qualityGateInbox.items[0].specialistKind, 'verification');
+assert.equal(qualityGateInbox.items[0].followUpSource, 'quality-gate');
+assert.equal(qualityGateInbox.items[0].retryPolicy, 'resume-verification-fast');
+assert.equal(qualityGateInbox.items[0].remediationRoute.routeType, 'priority-verification-remediation');
+assert.equal(qualityGateInbox.items[0].remediationRoute.routeUrgency, 'fast');
+assert.match(qualityGateInbox.items[0].recommendedCommand, /^node src\/cli\.mjs action remediate-specialist-follow-up /);
+assert.equal(
+  qualityGateInbox.items[0].fallbackRecommendedCommand,
+  `node src/cli.mjs mission run ${qualityGateMission.id} --provider stub`,
+);
+
+store.updateMission(qualityGateMission.id, (current) => ({
+  ...current,
+  constraints: ['orchestration-profile:knowledge-triad'],
+}));
+
+const qualityGateRemediation = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'remediate-specialist-follow-up', qualityGateInbox.items[0].actionId],
+});
+
+assert.equal(qualityGateRemediation.remediationKind, 'mission-rerun');
+assert.equal(qualityGateRemediation.retryPolicy, 'resume-verification-fast');
+assert.equal(qualityGateRemediation.remediationRoute.routeType, 'priority-verification-remediation');
+assert.equal(qualityGateRemediation.recommendedCommand, qualityGateInbox.items[0].recommendedCommand);
+assert.equal(
+  qualityGateRemediation.fallbackRecommendedCommand,
+  `node src/cli.mjs mission run ${qualityGateMission.id} --provider stub`,
+);
+assert.equal(qualityGateRemediation.result.missionStatus, 'completed');
+assert.equal(qualityGateRemediation.postFollowUp.status, 'clear');
+
 const mission = service.createMission({
   constraints: ['parallel-specialists:research,implementation', 'parallel-fail:implementation'],
   deliverableType: 'decision-memo',
@@ -136,6 +190,7 @@ console.log(
     {
       mode: 'specialist-follow-up-remediation',
       ok: true,
+      qualityGateMissionId: qualityGateMission.id,
       parallelGroupId: remediation.parallelGroupId,
       resumedRunId: resumedImplementationRun.id,
     },

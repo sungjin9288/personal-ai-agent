@@ -95,6 +95,13 @@ assert.equal(failedOnly.items.length, 1);
 assert.equal(failedOnly.items[0].missionId, failedMission.id);
 assert.equal(failedOnly.items[0].specialistKind, 'implementation');
 assert.equal(failedOnly.items[0].providerId, 'stub');
+assert.match(failedOnly.items[0].recommendedCommand, /^node src\/cli\.mjs action remediate-specialist-follow-up /);
+assert.equal(
+  failedOnly.items[0].fallbackRecommendedCommand,
+  `node src/cli.mjs mission run ${failedMission.id} --provider stub`,
+);
+assert.equal(failedOnly.items[0].remediationRoute.routeType, 'standard-branch-remediation');
+assert.equal(failedOnly.items[0].remediationRoute.routeUrgency, 'standard');
 assert.ok(failedOnly.items[0].specialistHandoff);
 assert.ok(failedOnly.items[0].specialistHandoff.currentState.includes('failed'));
 assert.ok(failedOnly.items[0].specialistHandoff.blockers.length >= 1);
@@ -151,6 +158,7 @@ assert.equal(genericInbox.summary.actionClassCounts.specialistFollowUpRequired, 
 assert.equal(genericInbox.summary.specialistFollowUpProviderCounts.stub, 2);
 assert.equal(genericInbox.summary.specialistFollowUpKindCounts.implementation, 1);
 assert.equal(genericInbox.summary.specialistFollowUpKindCounts.verification, 1);
+assert.equal(genericInbox.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 2);
 assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.failed, 1);
 assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.blocked, 1);
 assert.equal(genericInbox.summary.specialistFollowUpOverdueCount, 2);

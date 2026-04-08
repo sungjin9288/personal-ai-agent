@@ -864,6 +864,53 @@ function resolveSpecialistFollowUpPolicy({ followUpSource = 'run-status', orches
   return defaultPolicy;
 }
 
+function resolveSpecialistFollowUpRoute({
+  actionId,
+  followUpSource = 'run-status',
+  missionId,
+  providerId,
+  retryPolicy,
+  specialistKind,
+}) {
+  const normalizedSpecialistKind = normalizeText(specialistKind);
+  const normalizedRetryPolicy = normalizeText(retryPolicy) || 'resume-blocked-or-failed-branch';
+  const remediationCommand = `node src/cli.mjs action remediate-specialist-follow-up ${actionId}`;
+  const fallbackCommand = `node src/cli.mjs mission run ${missionId} --provider ${providerId}`;
+  const route = {
+    fallbackCommand,
+    preferredCommand: remediationCommand,
+    routeReason:
+      followUpSource === 'quality-gate'
+        ? `Profile quality gate requires a fresh ${normalizedSpecialistKind} specialist signal before merge.`
+        : `Resume the latest ${normalizedSpecialistKind} specialist branch inside the current parallel group.`,
+    routeType: 'standard-branch-remediation',
+    routeUrgency: 'standard',
+  };
+
+  if (normalizedRetryPolicy === 'resume-verification-fast' && normalizedSpecialistKind === 'verification') {
+    return {
+      ...route,
+      routeReason: `Fast verification retry policy requires the ${normalizedSpecialistKind} specialist branch to be re-driven before merge can continue.`,
+      routeType: 'priority-verification-remediation',
+      routeUrgency: 'fast',
+    };
+  }
+
+  if (
+    normalizedRetryPolicy === 'resume-research-and-verification-fast' &&
+    ['research', 'verification'].includes(normalizedSpecialistKind)
+  ) {
+    return {
+      ...route,
+      routeReason: `Fast triad retry policy requires the ${normalizedSpecialistKind} specialist branch to be re-driven before merge can continue.`,
+      routeType: 'priority-research-verification-remediation',
+      routeUrgency: 'fast',
+    };
+  }
+
+  return route;
+}
+
 function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsReminder, status }) {
   const ownerChain = ['mission-owner', 'workspace-owner', 'human-approver'];
   const baseOwner = ACTION_OWNERS.includes(recommendedOwner) ? recommendedOwner : 'workspace-owner';
@@ -1638,6 +1685,7 @@ function summarizeReviewerFollowUps(items) {
 
 function summarizeSpecialistFollowUpItems(items) {
   const providerCounts = {};
+  const remediationRouteCounts = {};
   const retryPolicyCounts = {};
   const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
   const statusCounts = {
@@ -1655,6 +1703,10 @@ function summarizeSpecialistFollowUpItems(items) {
   for (const item of items) {
     if (item.providerId) {
       providerCounts[item.providerId] = (providerCounts[item.providerId] || 0) + 1;
+    }
+    if (item.remediationRoute?.routeType) {
+      remediationRouteCounts[item.remediationRoute.routeType] =
+        (remediationRouteCounts[item.remediationRoute.routeType] || 0) + 1;
     }
     if (item.retryPolicy) {
       retryPolicyCounts[item.retryPolicy] = (retryPolicyCounts[item.retryPolicy] || 0) + 1;
@@ -1693,6 +1745,7 @@ function summarizeSpecialistFollowUpItems(items) {
       nextReminderAt,
       overdueCount,
       providerCounts,
+      remediationRouteCounts,
       reminderCountTotal,
       retryPolicyCounts,
       specialistKindCounts,
@@ -6396,7 +6449,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       specialistKind,
       status,
     });
-    const recommendedCommand = `node src/cli.mjs mission run ${mission.id} --provider ${providerId}`;
+    const remediationRoute = resolveSpecialistFollowUpRoute({
+      actionId,
+      followUpSource,
+      missionId: mission.id,
+      providerId,
+      retryPolicy: followUpPolicy.retryPolicy,
+      specialistKind,
+    });
     const baseItem = addOperationalMetadata(
       addDispatchMetadata(
         {
@@ -6413,7 +6473,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           parentRunId: normalizeText(run?.parentRunId) || null,
           providerId,
           reason: detail,
+          remediationCommand: remediationRoute.preferredCommand,
+          remediationRoute,
           recommendedOwner,
+          fallbackRecommendedCommand: remediationRoute.fallbackCommand,
           retryPolicy: followUpPolicy.retryPolicy,
           reminderCadenceHours: followUpPolicy.reminderCadenceHours,
           resumeFromRunId: normalizeText(run?.resumeFromRunId) || null,
@@ -6430,7 +6493,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         },
         {
           priority: followUpPolicy.priority,
-          recommendedCommand,
+          recommendedCommand: remediationRoute.preferredCommand,
           recommendedOwner: 'workspace-owner',
         },
       ),
@@ -7116,6 +7179,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       specialistFollowUpNextReminderAt: specialistFollowUpSummary.nextReminderAt,
       specialistFollowUpOverdueCount: specialistFollowUpSummary.overdueCount,
       specialistFollowUpProviderCounts: specialistFollowUpSummary.providerCounts,
+      specialistFollowUpRemediationRouteCounts: specialistFollowUpSummary.remediationRouteCounts,
       specialistFollowUpReminderCountTotal: specialistFollowUpSummary.reminderCountTotal,
       specialistFollowUpRetryPolicyCounts: specialistFollowUpSummary.retryPolicyCounts,
       specialistFollowUpStatusCounts: specialistFollowUpSummary.statusCounts,
@@ -8752,7 +8816,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }),
       previousStatus: actionState.status,
       providerId,
+      fallbackRecommendedCommand: followUpItem.fallbackRecommendedCommand || null,
+      recommendedCommand: followUpItem.recommendedCommand || null,
       remediationKind: 'mission-rerun',
+      remediationRoute: followUpItem.remediationRoute || null,
       result: {
         approvalId: rerun.approval?.id || null,
         artifactPath: rerun.artifactPath || null,
@@ -8763,6 +8830,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         reviewerVerdict: rerun.reviewerVerdict || null,
         sessionId: rerun.session?.id || null,
       },
+      retryPolicy: followUpItem.retryPolicy || null,
       specialistKind: followUpItem.specialistKind,
       workspaceId: followUpItem.workspaceId || null,
     };
