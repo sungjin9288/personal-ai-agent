@@ -2110,6 +2110,11 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   const retryPolicyCounts = {};
   const specialistFollowUpRemediationRouteCounts = {};
   const specialistFollowUpRetryPolicyCounts = {};
+  const workspaceHealthDriftProfileCounts = {};
+  const workspaceHealthDriftStatusCounts = {
+    'follow-up-required': {},
+    watch: {},
+  };
   const workspaceMissionCounts = {};
   const workspaceProfileCounts = {};
   const touchedProfileIds = [];
@@ -2180,6 +2185,14 @@ function summarizeOrchestrationProfileOverviewItems(items) {
       for (const workspaceId of item.touchedWorkspaceIds || []) {
         touchedWorkspaceIds.add(workspaceId);
         workspaceProfileCounts[workspaceId] = (workspaceProfileCounts[workspaceId] || 0) + 1;
+        if (drift.status !== 'stable') {
+          workspaceHealthDriftProfileCounts[workspaceId] =
+            (workspaceHealthDriftProfileCounts[workspaceId] || 0) + 1;
+          if (workspaceHealthDriftStatusCounts[drift.status]) {
+            workspaceHealthDriftStatusCounts[drift.status][workspaceId] =
+              (workspaceHealthDriftStatusCounts[drift.status][workspaceId] || 0) + 1;
+          }
+        }
       }
       accumulateCountMap(workspaceMissionCounts, item.workspaceMissionCounts || {});
     }
@@ -2244,8 +2257,35 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     unusedCount: items.length - usedCount,
     usedCount,
     usedWorkspaceCount: touchedWorkspaceIds.size,
+    workspaceHealthDriftProfileCounts,
+    workspaceHealthDriftStatusCounts,
     workspaceMissionCounts,
     workspaceProfileCounts,
+    latestHealthDriftWorkspace:
+      getLatestItem(
+        items
+          .filter((item) => item.used && (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status !== 'stable')
+          .map((item) => ({
+            id:
+              item.latestMission?.workspaceId ||
+              item.latestParallelGroup?.workspaceId ||
+              item.touchedWorkspaceIds?.[0] ||
+              null,
+            latestUsedAt:
+              item.specialistFollowUpLatestReminderAt ||
+              item.latestUsedAt ||
+              '',
+            name:
+              item.latestMission?.workspaceName ||
+              item.latestParallelGroup?.workspaceName ||
+              null,
+            profileDisplayName: item.displayName,
+            profileId: item.id,
+            status: (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status,
+          }))
+          .filter((item) => item.id),
+        'latestUsedAt',
+      ) || null,
     latestHealthDriftProfile:
       getLatestItem(
         items
