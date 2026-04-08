@@ -112,6 +112,7 @@ node src/cli.mjs session list mission_xxx
 node src/cli.mjs session show mission_xxx
 node src/cli.mjs session show mission_xxx --session session_xxx
 node src/cli.mjs overview profiles --used-only
+node src/cli.mjs overview profiles --workspace workspace_xxx --used-only
 node src/cli.mjs overview profiles --drift-only --status follow-up-required
 node src/cli.mjs overview maintenance
 node src/cli.mjs overview maintenance --outcome effective

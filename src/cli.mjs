@@ -48,7 +48,7 @@ Commands:
   overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
-  overview profiles [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--drift-only]
+  overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--drift-only]
   overview providers [--since <iso-timestamp>]
 
   provider list
@@ -188,6 +188,7 @@ async function main() {
         mode: readOption(rest, '--mode', ''),
         status: readOption(rest, '--status', ''),
         usedOnly: hasOption(rest, '--used-only'),
+        workspaceId: readOption(rest, '--workspace', ''),
       }),
     );
     return;

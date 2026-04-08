@@ -9845,10 +9845,17 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     ) {
       throw new Error(`Unsupported orchestration profile health drift status: ${filter.status}`);
     }
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
 
     const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
-    const profileGroups = buildParallelGroupStates({});
-    const profileFollowUps = buildSpecialistFollowUpItems({});
+    const profileGroups = buildParallelGroupStates({
+      workspaceId: filter.workspaceId,
+    });
+    const profileFollowUps = buildSpecialistFollowUpItems({
+      workspaceId: filter.workspaceId,
+    });
     const missionEntries = store
       .listMissions()
       .map((mission) => {
@@ -9858,6 +9865,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         }
 
         const workspace = workspaceById.get(mission.workspaceId) || null;
+        if (filter.workspaceId && workspace?.id !== filter.workspaceId) {
+          return null;
+        }
         return {
           latestAt: mission.updatedAt || mission.createdAt || '',
           mission,
@@ -9996,6 +10006,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         mode: filter.mode || null,
         status: filter.status || null,
         usedOnly: Boolean(filter.usedOnly),
+        workspaceId: filter.workspaceId || null,
       },
       healthDrift,
       items,

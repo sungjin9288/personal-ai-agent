@@ -20,6 +20,14 @@ const workspace = service.addWorkspace({
   workspacePath,
 });
 
+const secondWorkspacePath = path.join(tempRoot, 'workspace-two');
+fs.mkdirSync(secondWorkspacePath, { recursive: true });
+
+const secondWorkspace = service.addWorkspace({
+  name: 'orchestration-profiles-workspace-two',
+  workspacePath: secondWorkspacePath,
+});
+
 const knowledgeMission = service.createMission({
   constraints: ['orchestration-profile:knowledge-triad'],
   deliverableType: 'decision-memo',
@@ -57,6 +65,15 @@ const engineeringMission = service.createMission({
   workspaceId: workspace.id,
 });
 
+const engineeringTriadMission = service.createMission({
+  constraints: ['orchestration-profile:engineering-triad'],
+  deliverableType: 'implementation-proposal',
+  mode: 'engineering',
+  objective: 'Verify workspace-scoped orchestration profile usage overview.',
+  title: 'Engineering triad second workspace mission',
+  workspaceId: secondWorkspace.id,
+});
+
 const overview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'profiles'],
@@ -67,6 +84,7 @@ assert.deepEqual(overview.filters, {
   mode: null,
   status: null,
   usedOnly: false,
+  workspaceId: null,
 });
 assert.equal(overview.healthDrift.status, 'follow-up-required');
 assert.equal(overview.healthDrift.profileCount, 1);
@@ -76,8 +94,8 @@ assert.equal(overview.healthDrift.reasonCodeCounts['quality-gate-blocked'], 1);
 assert.equal(overview.healthDrift.reasonCodeCounts['specialist-follow-up-open'], 1);
 assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
 assert.equal(overview.summary.total, 4);
-assert.equal(overview.summary.usedCount, 2);
-assert.equal(overview.summary.unusedCount, 2);
+assert.equal(overview.summary.usedCount, 3);
+assert.equal(overview.summary.unusedCount, 1);
 assert.equal(overview.summary.modeCounts.knowledge, 2);
 assert.equal(overview.summary.modeCounts.engineering, 2);
 assert.equal(overview.summary.qualityGateCounts['manager-merge-ready'], 1);
@@ -86,7 +104,7 @@ assert.equal(overview.summary.qualityGateCounts['research-and-verification-signa
 assert.equal(overview.summary.retryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(overview.summary.retryPolicyCounts['resume-verification-fast'], 2);
 assert.equal(overview.summary.retryPolicyCounts['resume-research-and-verification-fast'], 1);
-assert.equal(overview.summary.missionCountTotal, 3);
+assert.equal(overview.summary.missionCountTotal, 4);
 assert.equal(overview.summary.parallelGroupCountTotal, 2);
 assert.equal(overview.summary.mergedParallelGroupCountTotal, 1);
 assert.equal(overview.summary.qualityGateBlockedGroupCountTotal, 1);
@@ -107,9 +125,10 @@ assert.equal(overview.summary.healthDriftReasonCodeCounts['specialist-follow-up-
 assert.equal(overview.summary.latestHealthDriftProfile.id, 'knowledge-triad');
 assert.deepEqual(overview.summary.touchedProfileIds, [
   'engineering-implementation-verification',
+  'engineering-triad',
   'knowledge-triad',
 ]);
-assert.equal(overview.summary.latestUsedProfile.id, 'engineering-implementation-verification');
+assert.equal(overview.summary.latestUsedProfile.id, 'engineering-triad');
 
 const knowledgeTriad = overview.items.find((item) => item.id === 'knowledge-triad');
 assert.ok(knowledgeTriad);
@@ -153,6 +172,15 @@ assert.deepEqual(engineeringImplementationVerification.healthDrift.reasonCodes, 
 assert.equal(engineeringImplementationVerification.missionStatusCounts.created, 1);
 assert.equal(engineeringImplementationVerification.latestMission.id, engineeringMission.id);
 
+const engineeringTriad = overview.items.find((item) => item.id === 'engineering-triad');
+assert.ok(engineeringTriad);
+assert.equal(engineeringTriad.used, true);
+assert.equal(engineeringTriad.missionCount, 1);
+assert.equal(engineeringTriad.workspaceCount, 1);
+assert.deepEqual(engineeringTriad.touchedWorkspaceIds, [secondWorkspace.id]);
+assert.equal(engineeringTriad.healthDrift.status, 'stable');
+assert.equal(engineeringTriad.latestMission.id, engineeringTriadMission.id);
+
 const usedOnlyOverview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'profiles', '--used-only'],
@@ -163,11 +191,47 @@ assert.deepEqual(usedOnlyOverview.filters, {
   mode: null,
   status: null,
   usedOnly: true,
+  workspaceId: null,
 });
-assert.equal(usedOnlyOverview.summary.total, 2);
-assert.equal(usedOnlyOverview.summary.usedCount, 2);
+assert.equal(usedOnlyOverview.summary.total, 3);
+assert.equal(usedOnlyOverview.summary.usedCount, 3);
 assert.equal(usedOnlyOverview.summary.unusedCount, 0);
 assert.equal(usedOnlyOverview.items.every((item) => item.used), true);
+
+const workspaceUsedOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace', workspace.id, '--used-only'],
+});
+
+assert.deepEqual(workspaceUsedOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: true,
+  workspaceId: workspace.id,
+});
+assert.equal(workspaceUsedOverview.summary.total, 2);
+assert.equal(workspaceUsedOverview.summary.usedCount, 2);
+assert.deepEqual(
+  workspaceUsedOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
+  ['engineering-implementation-verification', 'knowledge-triad'],
+);
+
+const secondWorkspaceUsedOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'profiles', '--workspace', secondWorkspace.id, '--used-only'],
+});
+
+assert.deepEqual(secondWorkspaceUsedOverview.filters, {
+  driftOnly: false,
+  mode: null,
+  status: null,
+  usedOnly: true,
+  workspaceId: secondWorkspace.id,
+});
+assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
+assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
+assert.equal(secondWorkspaceUsedOverview.items[0].id, 'engineering-triad');
 
 const driftOnlyOverview = runCli({
   rootDir: tempRoot,
@@ -179,6 +243,7 @@ assert.deepEqual(driftOnlyOverview.filters, {
   mode: null,
   status: null,
   usedOnly: false,
+  workspaceId: null,
 });
 assert.equal(driftOnlyOverview.summary.total, 1);
 assert.equal(driftOnlyOverview.healthDrift.status, 'follow-up-required');
@@ -195,11 +260,15 @@ assert.deepEqual(stableUsedOverview.filters, {
   mode: null,
   status: 'stable',
   usedOnly: true,
+  workspaceId: null,
 });
-assert.equal(stableUsedOverview.summary.total, 1);
+assert.equal(stableUsedOverview.summary.total, 2);
 assert.equal(stableUsedOverview.healthDrift.status, 'stable');
-assert.equal(stableUsedOverview.items.length, 1);
-assert.equal(stableUsedOverview.items[0].id, 'engineering-implementation-verification');
+assert.equal(stableUsedOverview.items.length, 2);
+assert.deepEqual(
+  stableUsedOverview.items.map((item) => item.id).sort((left, right) => String(left).localeCompare(String(right))),
+  ['engineering-implementation-verification', 'engineering-triad'],
+);
 
 const knowledgeOnlyOverview = runCli({
   rootDir: tempRoot,
@@ -211,6 +280,7 @@ assert.deepEqual(knowledgeOnlyOverview.filters, {
   mode: 'knowledge',
   status: 'follow-up-required',
   usedOnly: true,
+  workspaceId: null,
 });
 assert.equal(knowledgeOnlyOverview.summary.total, 1);
 assert.equal(knowledgeOnlyOverview.summary.missionCountTotal, 2);
