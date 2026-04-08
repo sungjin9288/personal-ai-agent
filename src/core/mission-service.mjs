@@ -10695,6 +10695,50 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceUsageTrend: item.workspaceUsageTrend,
         }))
         .sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
+    summary.latestGrowingWorkspaceUsageWorkspace =
+      getLatestItem(
+        items
+          .filter((item) => item.used && item.workspaceUsageTrend.status === 'growing')
+          .map((item) => ({
+            id:
+              item.latestMission?.workspaceId ||
+              item.latestParallelGroup?.workspaceId ||
+              item.touchedWorkspaceIds?.[0] ||
+              null,
+            latestUsedAt: item.latestUsedAt || '',
+            name:
+              item.latestMission?.workspaceName ||
+              item.latestParallelGroup?.workspaceName ||
+              null,
+            profileDisplayName: item.displayName,
+            profileId: item.id,
+            workspaceUsageTrend: item.workspaceUsageTrend,
+          }))
+          .filter((item) => item.id),
+        'latestUsedAt',
+      ) || null;
+    summary.latestDecliningWorkspaceUsageWorkspace =
+      getLatestItem(
+        items
+          .filter((item) => item.used && item.workspaceUsageTrend.status === 'declining')
+          .map((item) => ({
+            id:
+              item.latestMission?.workspaceId ||
+              item.latestParallelGroup?.workspaceId ||
+              item.touchedWorkspaceIds?.[0] ||
+              null,
+            latestUsedAt: item.latestUsedAt || '',
+            name:
+              item.latestMission?.workspaceName ||
+              item.latestParallelGroup?.workspaceName ||
+              null,
+            profileDisplayName: item.displayName,
+            profileId: item.id,
+            workspaceUsageTrend: item.workspaceUsageTrend,
+          }))
+          .filter((item) => item.id),
+        'latestUsedAt',
+      ) || null;
     summary.adoptionDriftCounts = Object.fromEntries(
       ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
     );
@@ -10766,7 +10810,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     );
     adoptionDrift.statusCounts = summary.adoptionDriftStatusCounts;
     workspaceUsageTrend.latestDecliningProfile = summary.latestDecliningWorkspaceUsageProfile;
+    workspaceUsageTrend.latestDecliningWorkspace = summary.latestDecliningWorkspaceUsageWorkspace;
     workspaceUsageTrend.latestGrowingProfile = summary.latestGrowingWorkspaceUsageProfile;
+    workspaceUsageTrend.latestGrowingWorkspace = summary.latestGrowingWorkspaceUsageWorkspace;
     workspaceUsageTrend.latestUnusedProfile = summary.latestUnusedWorkspaceUsageProfile;
     workspaceUsageTrend.profileCount = summary.total;
     workspaceUsageTrend.statusCounts = summary.workspaceUsageTrendCounts;
