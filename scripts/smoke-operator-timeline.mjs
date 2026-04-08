@@ -286,6 +286,11 @@ assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-acknowled
 assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
+assert.equal(workspaceTimeline.summary.maintenanceMonthlyBucketCount, 1);
+assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(workspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(workspaceTimeline.summary.specialistFollowUpRequiredCount || 0, 0);
 assert.equal(workspaceTimeline.summary.specialistFollowUpNeedsReminderCount || 0, 0);
 assert.equal(workspaceTimeline.summary.specialistFollowUpOverdueCount || 0, 0);
@@ -313,6 +318,10 @@ assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpRequiredCount, 
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpOverdueCount, 1);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpReminderCountTotal, 1);
+assert.equal(reviewerWorkspaceTimeline.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(reviewerWorkspaceTimeline.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(reviewerWorkspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(reviewerWorkspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.missionId, specialistReminderMission.id);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.specialistKind, 'implementation');
 assert.ok(reviewerWorkspaceTimeline.summary.specialistLatestReminderAt);
@@ -384,6 +393,11 @@ assert.equal(globalTimeline.summary.eventCounts['provider-attention-resolved'], 
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
+assert.equal(globalTimeline.summary.maintenanceMonthlyBucketCount, 1);
+assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(globalTimeline.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(globalTimeline.summary.specialistFollowUpRequiredCount, 1);
 assert.equal(globalTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
 assert.equal(globalTimeline.summary.specialistFollowUpOverdueCount, 1);

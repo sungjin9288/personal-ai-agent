@@ -10468,6 +10468,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const workspace = getWorkspace(workspaceId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'workspace timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents({ workspaceId: workspace.id });
+    const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     const parallelActivity = summarizeWorkspaceParallelActivity(workspace.id);
     const providerRecentWindow = buildScopedProviderRecentWindow({
       since: providerSince,
@@ -10532,6 +10535,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerHealthDriftRecentExecutionPreviousMonthStartDate:
           providerHealthDrift.recentExecutionPreviousMonthStartDate,
         providerHealthDriftStatus: providerHealthDrift.status,
+        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
+        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
+        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
+        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
         providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
@@ -10544,6 +10551,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   function getGlobalOperatorTimeline(filter = {}) {
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'operator timeline provider since timestamp');
     const timeline = buildOperatorTimelineEvents();
+    const maintenanceRuns = store.listMaintenanceRuns();
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     const parallelActivity = summarizeScopedParallelActivity();
     const providerOverview = getProviderOverview({
       since: providerSince,
@@ -10603,6 +10613,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerHealthDriftRecentExecutionPreviousMonthStartDate:
           providerHealthDrift.recentExecutionPreviousMonthStartDate,
         providerHealthDriftStatus: providerHealthDrift.status,
+        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
+        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
+        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
+        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
         providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
         providerRecentSince: providerSince || null,
         providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
