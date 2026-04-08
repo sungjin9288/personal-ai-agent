@@ -2347,6 +2347,72 @@ function summarizeOrchestrationProfileHealthDrift({
   };
 }
 
+function summarizeWorkspaceHealthDriftEntries(entries = []) {
+  const reasonCodeCounts = {};
+  const statusCounts = {
+    'follow-up-required': 0,
+    stable: 0,
+    watch: 0,
+  };
+  const workspaceIdsByStatus = {
+    'follow-up-required': [],
+    stable: [],
+    watch: [],
+  };
+  let latestWorkspace = null;
+  let latestWorkspaceAt = null;
+
+  for (const entry of entries) {
+    if (statusCounts[entry.status] !== undefined) {
+      statusCounts[entry.status] += 1;
+    }
+    if (workspaceIdsByStatus[entry.status]) {
+      workspaceIdsByStatus[entry.status].push(entry.id);
+    }
+    for (const reasonCode of ensureArray(entry.reasonCodes)) {
+      reasonCodeCounts[reasonCode] = (reasonCodeCounts[reasonCode] || 0) + 1;
+    }
+    const candidateLatestAt = entry.latestAt || null;
+    if (
+      candidateLatestAt &&
+      (!latestWorkspaceAt || String(latestWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestWorkspaceAt = candidateLatestAt;
+      latestWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        status: entry.status,
+      };
+    }
+  }
+
+  for (const status of Object.keys(workspaceIdsByStatus)) {
+    workspaceIdsByStatus[status] = workspaceIdsByStatus[status].sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    );
+  }
+
+  return {
+    latestWorkspace,
+    reasonCodeCounts,
+    reasonCodes: Object.keys(reasonCodeCounts).sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    ),
+    status:
+      statusCounts['follow-up-required'] > 0
+        ? 'follow-up-required'
+        : statusCounts.watch > 0
+          ? 'watch'
+          : 'stable',
+    statusCounts,
+    workspaceCount: entries.length,
+    workspaceIdsByStatus,
+  };
+}
+
 export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const providerRegistry = createProviderRegistry({ rootDir });
@@ -9994,6 +10060,56 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           specialistFollowUpRequiredCount: followUps.length,
           specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
         });
+        const workspaceHealthEntries = touchedWorkspaceIds.map((workspaceId) => {
+          const workspace = workspaceById.get(workspaceId) || null;
+          const workspaceGroups = groups.filter((group) => group.workspace?.id === workspaceId);
+          const workspaceFollowUps = followUps.filter((item) => item.workspaceId === workspaceId);
+          const workspaceFollowUpSummary = summarizeSpecialistFollowUpItems(workspaceFollowUps);
+          const workspaceLatestMissionEntry = getLatestItem(
+            missions.filter((entry) => entry.workspace?.id === workspaceId),
+            'latestAt',
+          );
+          const workspaceLatestGroupEntry = getLatestItem(
+            workspaceGroups.map((group) => ({
+              group,
+              latestAt:
+                getLatestItem(
+                  group.runs.map((run) => ({ latestAt: run.endedAt || run.startedAt || '' })),
+                  'latestAt',
+                )?.latestAt || '',
+            })),
+            'latestAt',
+          );
+          const workspaceHealthDrift = summarizeOrchestrationProfileHealthDrift({
+            qualityGateBlockedGroupCount: workspaceGroups.filter((group) => group.qualityGate?.status === 'blocked')
+              .length,
+            specialistFollowUpLatestReminderAt: workspaceFollowUpSummary.latestReminderAt,
+            specialistFollowUpNeedsReminderCount: workspaceFollowUpSummary.needsReminderCount,
+            specialistFollowUpNextReminderAt: workspaceFollowUpSummary.nextReminderAt,
+            specialistFollowUpOverdueCount: workspaceFollowUpSummary.overdueCount,
+            specialistFollowUpRequiredCount: workspaceFollowUps.length,
+            specialistFollowUpReminderCountTotal: workspaceFollowUpSummary.reminderCountTotal,
+          });
+
+          return {
+            id: workspaceId,
+            latestAt:
+              workspaceFollowUpSummary.latestReminderAt ||
+              workspaceLatestMissionEntry?.latestAt ||
+              workspaceLatestGroupEntry?.latestAt ||
+              null,
+            name:
+              workspace?.name ||
+              workspaceLatestMissionEntry?.workspace?.name ||
+              workspaceLatestGroupEntry?.group.workspace?.name ||
+              null,
+            profileDisplayName: profile.displayName,
+            profileId: profile.id,
+            reasonCodes: workspaceHealthDrift.reasonCodes,
+            status: workspaceHealthDrift.status,
+          };
+        });
+        const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(workspaceHealthEntries);
 
         return {
           ...profile,
@@ -10043,6 +10159,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           touchedWorkspaceIds,
           used: missions.length > 0,
           workspaceCount: touchedWorkspaceIds.length,
+          workspaceHealthDrift,
           workspaceMissionCounts,
         };
       })
@@ -10077,37 +10194,44 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             : 'stable',
       statusCounts: summary.healthDriftStatusCounts,
     };
-    const workspaceFollowUpRequiredCount = Object.keys(
-      summary.workspaceHealthDriftStatusCounts['follow-up-required'] || {},
-    ).length;
-    const workspaceWatchCount = Object.keys(summary.workspaceHealthDriftStatusCounts.watch || {}).length;
-    const workspaceHealthDriftReasonCodeCounts = {};
-    if (workspaceFollowUpRequiredCount > 0) {
-      workspaceHealthDriftReasonCodeCounts['workspace-profile-follow-up-required'] =
-        workspaceFollowUpRequiredCount;
-    }
-    if (workspaceWatchCount > 0) {
-      workspaceHealthDriftReasonCodeCounts['workspace-profile-watch'] = workspaceWatchCount;
-    }
-    const workspaceHealthDrift = {
-      latestWorkspace: summary.latestHealthDriftWorkspace,
-      reasonCodeCounts: workspaceHealthDriftReasonCodeCounts,
-      reasonCodes: Object.keys(workspaceHealthDriftReasonCodeCounts).sort((left, right) =>
-        String(left).localeCompare(String(right)),
-      ),
-      status:
-        workspaceFollowUpRequiredCount > 0
-          ? 'follow-up-required'
-          : workspaceWatchCount > 0
-            ? 'watch'
-            : 'stable',
-      statusCounts: {
-        'follow-up-required': workspaceFollowUpRequiredCount,
-        stable: Math.max(summary.usedWorkspaceCount - workspaceFollowUpRequiredCount - workspaceWatchCount, 0),
-        watch: workspaceWatchCount,
-      },
-      workspaceCount: workspaceFollowUpRequiredCount + workspaceWatchCount,
-    };
+    const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
+      summary.touchedWorkspaceIds.map((workspaceId) => {
+        const workspace = workspaceById.get(workspaceId) || null;
+        const followUpRequiredCount =
+          Number(summary.workspaceHealthDriftStatusCounts['follow-up-required']?.[workspaceId] || 0);
+        const watchCount = Number(summary.workspaceHealthDriftStatusCounts.watch?.[workspaceId] || 0);
+        return {
+          id: workspaceId,
+          latestAt:
+            summary.latestHealthDriftWorkspace?.id === workspaceId
+              ? summary.latestHealthDriftWorkspace.latestAt ||
+                summary.latestHealthDriftWorkspace.latestUsedAt ||
+                null
+              : null,
+          name: workspace?.name || null,
+          profileDisplayName:
+            summary.latestHealthDriftWorkspace?.id === workspaceId
+              ? summary.latestHealthDriftWorkspace.profileDisplayName || null
+              : null,
+          profileId:
+            summary.latestHealthDriftWorkspace?.id === workspaceId
+              ? summary.latestHealthDriftWorkspace.profileId || null
+              : null,
+          reasonCodes:
+            followUpRequiredCount > 0
+              ? ['workspace-profile-follow-up-required']
+              : watchCount > 0
+                ? ['workspace-profile-watch']
+                : [],
+          status:
+            followUpRequiredCount > 0
+              ? 'follow-up-required'
+              : watchCount > 0
+                ? 'watch'
+                : 'stable',
+        };
+      }),
+    );
 
     return {
       filters: {

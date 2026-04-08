@@ -76,6 +76,7 @@
 - `overview profiles` summary now also exposes workspace-level profile and mission aggregates, so catalog triage can immediately show which workspace is driving preset usage and mission volume
 - `overview profiles` summary now also exposes workspace-level health-drift aggregates, so unstable preset pressure can be traced back to the owning workspace without reopening workspace or mission summaries
 - `overview profiles` now also returns root-level `workspaceHealthDrift`, so the catalog surface can summarize whether preset instability currently exists at the workspace layer without post-processing workspace count maps
+- each `overview profiles` item now also carries `workspaceHealthDrift`, so one preset reused across multiple workspaces can expose which workspace is currently stable or unstable without reopening workspace summaries
 - `action maintenance` now also sweeps due specialist follow-up reminders, so blocked or failed specialist branch follow-up uses the same local-first maintenance entrypoint already shared by escalation, owner handoff, and provider attention pressure
 - mission, workspace, and global summaries now also expose specialist reminder aggregate fields, so follow-up reminder pressure is readable without reopening the dedicated follow-up queue
 - workspace timeline and global operator timeline summary now also expose specialist reminder aggregate fields, so operator chronology payloads carry current follow-up reminder pressure without reopening the follow-up queue

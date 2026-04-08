@@ -94,7 +94,7 @@ assert.equal(overview.healthDrift.reasonCodeCounts['quality-gate-blocked'], 1);
 assert.equal(overview.healthDrift.reasonCodeCounts['specialist-follow-up-open'], 1);
 assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
 assert.equal(overview.workspaceHealthDrift.status, 'follow-up-required');
-assert.equal(overview.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(overview.workspaceHealthDrift.workspaceCount, 2);
 assert.equal(overview.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
 assert.equal(overview.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(overview.workspaceHealthDrift.statusCounts.stable, 1);
@@ -171,6 +171,13 @@ assert.equal(knowledgeTriad.specialistFollowUpLatestReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpNextReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpStatusCounts.blocked, 1);
 assert.equal(knowledgeTriad.healthDrift.status, 'follow-up-required');
+assert.equal(knowledgeTriad.workspaceHealthDrift.status, 'follow-up-required');
+assert.equal(knowledgeTriad.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
+assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts.watch, 0);
+assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts.stable, 0);
+assert.deepEqual(knowledgeTriad.workspaceHealthDrift.workspaceIdsByStatus['follow-up-required'], [workspace.id]);
+assert.equal(knowledgeTriad.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.deepEqual(knowledgeTriad.healthDrift.reasonCodes, [
   'quality-gate-blocked',
   'specialist-follow-up-open',
@@ -195,6 +202,10 @@ assert.equal(engineeringImplementationVerification.workspaceMissionCounts[worksp
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRemediationRouteCounts, {});
 assert.equal(engineeringImplementationVerification.healthDrift.status, 'stable');
+assert.equal(engineeringImplementationVerification.workspaceHealthDrift.status, 'stable');
+assert.equal(engineeringImplementationVerification.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(engineeringImplementationVerification.workspaceHealthDrift.statusCounts.stable, 1);
+assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceIdsByStatus.stable, [workspace.id]);
 assert.deepEqual(engineeringImplementationVerification.healthDrift.reasonCodes, []);
 assert.equal(engineeringImplementationVerification.missionStatusCounts.created, 1);
 assert.equal(engineeringImplementationVerification.latestMission.id, engineeringMission.id);
@@ -207,6 +218,10 @@ assert.equal(engineeringTriad.workspaceCount, 1);
 assert.deepEqual(engineeringTriad.touchedWorkspaceIds, [secondWorkspace.id]);
 assert.equal(engineeringTriad.workspaceMissionCounts[secondWorkspace.id], 1);
 assert.equal(engineeringTriad.healthDrift.status, 'stable');
+assert.equal(engineeringTriad.workspaceHealthDrift.status, 'stable');
+assert.equal(engineeringTriad.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(engineeringTriad.workspaceHealthDrift.statusCounts.stable, 1);
+assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceIdsByStatus.stable, [secondWorkspace.id]);
 assert.equal(engineeringTriad.latestMission.id, engineeringTriadMission.id);
 
 const usedOnlyOverview = runCli({
@@ -275,7 +290,7 @@ assert.deepEqual(secondWorkspaceUsedOverview.filters, {
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
-assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 0);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 1);
