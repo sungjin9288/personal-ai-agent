@@ -10077,6 +10077,37 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             : 'stable',
       statusCounts: summary.healthDriftStatusCounts,
     };
+    const workspaceFollowUpRequiredCount = Object.keys(
+      summary.workspaceHealthDriftStatusCounts['follow-up-required'] || {},
+    ).length;
+    const workspaceWatchCount = Object.keys(summary.workspaceHealthDriftStatusCounts.watch || {}).length;
+    const workspaceHealthDriftReasonCodeCounts = {};
+    if (workspaceFollowUpRequiredCount > 0) {
+      workspaceHealthDriftReasonCodeCounts['workspace-profile-follow-up-required'] =
+        workspaceFollowUpRequiredCount;
+    }
+    if (workspaceWatchCount > 0) {
+      workspaceHealthDriftReasonCodeCounts['workspace-profile-watch'] = workspaceWatchCount;
+    }
+    const workspaceHealthDrift = {
+      latestWorkspace: summary.latestHealthDriftWorkspace,
+      reasonCodeCounts: workspaceHealthDriftReasonCodeCounts,
+      reasonCodes: Object.keys(workspaceHealthDriftReasonCodeCounts).sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      ),
+      status:
+        workspaceFollowUpRequiredCount > 0
+          ? 'follow-up-required'
+          : workspaceWatchCount > 0
+            ? 'watch'
+            : 'stable',
+      statusCounts: {
+        'follow-up-required': workspaceFollowUpRequiredCount,
+        stable: Math.max(summary.usedWorkspaceCount - workspaceFollowUpRequiredCount - workspaceWatchCount, 0),
+        watch: workspaceWatchCount,
+      },
+      workspaceCount: workspaceFollowUpRequiredCount + workspaceWatchCount,
+    };
 
     return {
       filters: {
@@ -10087,6 +10118,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: filter.workspaceId || null,
       },
       healthDrift,
+      workspaceHealthDrift,
       items,
       summary,
     };

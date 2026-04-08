@@ -27,6 +27,7 @@
 - added `overview profiles --workspace` so one workspace can be audited for preset usage and preset-specific follow-up pressure without reading every mission or workspace summary that references those profiles
 - promoted workspace usage aggregates into `overview profiles` summary so profile catalog output directly shows per-workspace preset footprint and mission volume
 - promoted workspace health-drift aggregates into `overview profiles` summary so unstable preset pressure can be traced directly to the workspace that owns it
+- added root-level `workspaceHealthDrift` to `overview profiles` so workspace-layer preset instability can be read as stable, watch, or follow-up-required directly from the catalog response
 - switched specialist follow-up command hints to the dedicated remediation action and added profile-aware remediation route metadata, so fast verification policies now surface a concrete operator path instead of only a generic mission run fallback
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 - threaded specialist remediation route metadata into persisted reminder records and overdue incident markdown, so retry policy, route urgency, and fallback command survive from queue triage into reminder and incident audit trails

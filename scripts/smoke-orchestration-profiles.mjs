@@ -93,6 +93,17 @@ assert.equal(overview.healthDrift.statusCounts.watch, 0);
 assert.equal(overview.healthDrift.reasonCodeCounts['quality-gate-blocked'], 1);
 assert.equal(overview.healthDrift.reasonCodeCounts['specialist-follow-up-open'], 1);
 assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
+assert.equal(overview.workspaceHealthDrift.status, 'follow-up-required');
+assert.equal(overview.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(overview.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
+assert.equal(overview.workspaceHealthDrift.statusCounts.watch, 0);
+assert.equal(overview.workspaceHealthDrift.statusCounts.stable, 1);
+assert.equal(
+  overview.workspaceHealthDrift.reasonCodeCounts['workspace-profile-follow-up-required'],
+  1,
+);
+assert.equal(overview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
+assert.equal(overview.workspaceHealthDrift.latestWorkspace.profileId, 'knowledge-triad');
 assert.equal(overview.summary.total, 4);
 assert.equal(overview.summary.usedCount, 3);
 assert.equal(overview.summary.unusedCount, 1);
@@ -229,6 +240,12 @@ assert.deepEqual(workspaceUsedOverview.filters, {
 });
 assert.equal(workspaceUsedOverview.summary.total, 2);
 assert.equal(workspaceUsedOverview.summary.usedCount, 2);
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.status, 'follow-up-required');
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 0);
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(workspaceUsedOverview.summary.touchedWorkspaceIds, [workspace.id]);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftProfileCounts[workspace.id], 1);
@@ -257,6 +274,12 @@ assert.deepEqual(secondWorkspaceUsedOverview.filters, {
 });
 assert.equal(secondWorkspaceUsedOverview.summary.total, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.usedCount, 1);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts['follow-up-required'], 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 1);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.touchedWorkspaceIds, [secondWorkspace.id]);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftProfileCounts, {});
