@@ -248,6 +248,9 @@ assert.equal(incidentLog.summary.specialistFollowUpKindCounts.implementation, 1)
 assert.equal(incidentLog.summary.specialistFollowUpStatusCounts.failed, 1);
 assert.equal(incidentLog.summary.specialistFollowUpLatestReminderAt, null);
 assert.ok(incidentLog.summary.specialistFollowUpNextReminderAt);
+assert.equal(incidentLog.summary.providerHealthDriftOverdueCount, 1);
+assert.equal(incidentLog.summary.providerHealthDriftProviderCounts.stub, 1);
+assert.equal(incidentLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
 assert.match(incidentsContent, /Overdue Action Escalation \(5 items\)/);
@@ -258,6 +261,9 @@ assert.match(incidentsContent, /specialist follow-up reminder total: 0/);
 assert.match(incidentsContent, /specialist follow-up providers: stub=1/);
 assert.match(incidentsContent, /specialist follow-up kinds: implementation=1/);
 assert.match(incidentsContent, /specialist follow-up next reminder at: 2026-03-02T00:00:00.000Z/);
+assert.match(incidentsContent, /provider health drift overdue count: 1/);
+assert.match(incidentsContent, /provider health drift providers: stub=1/);
+assert.match(incidentsContent, /provider health drift reason codes: monthly-failed-up=1/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Maintenance sweep required for workspace-two/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
@@ -295,6 +301,9 @@ const driftOnlyLog = runCli({
 assert.equal(driftOnlyLog.logged, true);
 assert.equal(driftOnlyLog.count, 1);
 assert.equal(driftOnlyLog.summary.specialistFollowUpOverdueCount, 0);
+assert.equal(driftOnlyLog.summary.providerHealthDriftOverdueCount, 1);
+assert.equal(driftOnlyLog.summary.providerHealthDriftProviderCounts.stub, 1);
+assert.equal(driftOnlyLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
 
 const driftProviderLog = runCli({
   rootDir: tempRoot,
@@ -304,6 +313,9 @@ const driftProviderLog = runCli({
 assert.equal(driftProviderLog.logged, true);
 assert.equal(driftProviderLog.count, 1);
 assert.equal(driftProviderLog.filters.providerId, 'stub');
+assert.equal(driftProviderLog.summary.providerHealthDriftOverdueCount, 1);
+assert.equal(driftProviderLog.summary.providerHealthDriftProviderCounts.stub, 1);
+assert.equal(driftProviderLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
 
 const specialistOnlyLog = runCli({
   rootDir: tempRoot,

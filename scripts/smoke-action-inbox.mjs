@@ -345,6 +345,9 @@ assert.equal(inbox.summary.specialistFollowUpNeedsReminderCount, 1);
 assert.equal(inbox.summary.specialistFollowUpReminderCountTotal, 0);
 assert.equal(inbox.summary.specialistFollowUpLatestReminderAt, null);
 assert.ok(inbox.summary.specialistFollowUpNextReminderAt);
+assert.equal(inbox.summary.providerHealthDriftOverdueCount, 0);
+assert.equal(inbox.summary.providerHealthDriftProviderCounts.stub, 2);
+assert.equal(inbox.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 2);
 assert.equal(inbox.filters.actionClass, null);
 assert.equal(inbox.filters.needsReminderOnly, false);
 assert.equal(inbox.filters.priority, null);
@@ -547,6 +550,9 @@ assert.equal(providerHealthDriftInbox.summary.pendingActionCount, 2);
 assert.equal(providerHealthDriftInbox.filters.actionClass, 'provider-health-drift-required');
 assert.equal(providerHealthDriftInbox.items.every((item) => item.actionType === 'provider-health-drift'), true);
 assert.equal(providerHealthDriftInbox.summary.providerCounts.stub, 2);
+assert.equal(providerHealthDriftInbox.summary.providerHealthDriftOverdueCount, 0);
+assert.equal(providerHealthDriftInbox.summary.providerHealthDriftProviderCounts.stub, 2);
+assert.equal(providerHealthDriftInbox.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 2);
 
 const providerFilteredInbox = runCli({
   rootDir: tempRoot,

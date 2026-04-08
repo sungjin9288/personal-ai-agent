@@ -764,6 +764,20 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
     }
   }
 
+  if ((summary?.providerHealthDriftOverdueCount || 0) > 0) {
+    lines.push(`provider health drift overdue count: ${summary.providerHealthDriftOverdueCount || 0}`);
+
+    const providerSummary = formatIncidentCountMap(summary.providerHealthDriftProviderCounts || {});
+    if (providerSummary) {
+      lines.push(`provider health drift providers: ${providerSummary}`);
+    }
+
+    const reasonSummary = formatIncidentCountMap(summary.providerHealthDriftReasonCodeCounts || {});
+    if (reasonSummary) {
+      lines.push(`provider health drift reason codes: ${reasonSummary}`);
+    }
+  }
+
   for (const item of items) {
     lines.push(
       `[${item.actionClass}/${item.priority}] ${item.title} | workspace=${item.workspaceName} | mission=${item.missionId} | owner=${item.recommendedOwner} | dueAt=${item.dueAt}`,
@@ -6304,6 +6318,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const specialistFollowUpSummary = summarizeSpecialistFollowUpItems(
       items.filter((item) => item.actionClass === 'specialist-follow-up-required'),
     );
+    const providerHealthDriftSummary = summarizeProviderHealthDriftItems(
+      items.filter((item) => item.actionClass === 'provider-health-drift-required'),
+    );
     const providerCounts = {};
     const workspaceCounts = {};
     const actionClassCounts = {
@@ -6485,6 +6502,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       latestReminderAt,
       nextReminderAt,
       overdueCounts,
+      providerHealthDriftOverdueCount: providerHealthDriftSummary.overdueCount,
+      providerHealthDriftProviderCounts: providerHealthDriftSummary.providerCounts,
+      providerHealthDriftReasonCodeCounts: providerHealthDriftSummary.reasonCodeCounts,
       specialistFollowUpKindCounts: specialistFollowUpSummary.specialistKindCounts,
       specialistFollowUpLatestReminderAt: specialistFollowUpSummary.latestReminderAt,
       specialistFollowUpNeedsReminderCount: specialistFollowUpSummary.needsReminderCount,
