@@ -1064,6 +1064,21 @@ function accumulateCountMap(target, source = {}) {
   return target;
 }
 
+function buildCountMapDelta(currentCounts = {}, previousCounts = {}) {
+  const keys = new Set([...Object.keys(currentCounts || {}), ...Object.keys(previousCounts || {})]);
+  const delta = {};
+
+  for (const key of [...keys].sort((left, right) => String(left).localeCompare(String(right)))) {
+    const normalizedDelta = Number(currentCounts?.[key] || 0) - Number(previousCounts?.[key] || 0);
+    if (!normalizedDelta) {
+      continue;
+    }
+    delta[key] = normalizedDelta;
+  }
+
+  return delta;
+}
+
 function buildOverdueIncidentContent({ items, filters, summary }) {
   const filterSummary = [
     filters.actionClass ? `class=${filters.actionClass}` : null,
@@ -1611,11 +1626,23 @@ function buildMaintenanceDailyBuckets(items) {
       impactRunCount: 0,
       noOpRunCount: 0,
       runCount: 0,
+      specialistFollowUpRemediationRouteCounts: {},
+      specialistFollowUpRetryPolicyCounts: {},
       totalRemindedCount: 0,
     };
 
     current.runCount += 1;
     current.totalRemindedCount += Number(item.totalRemindedCount || 0);
+    accumulateCountMap(
+      current.specialistFollowUpRetryPolicyCounts,
+      item.specialistFollowUpRetryPolicyCounts || item.specialistFollowUpRemindersSummary?.retryPolicyCounts || {},
+    );
+    accumulateCountMap(
+      current.specialistFollowUpRemediationRouteCounts,
+      item.specialistFollowUpRemediationRouteCounts ||
+        item.specialistFollowUpRemindersSummary?.remediationRouteCounts ||
+        {},
+    );
     if (isEffective) {
       current.effectiveRunCount += 1;
     } else {
@@ -1643,6 +1670,8 @@ function buildMaintenanceDailyBuckets(items) {
         impactRunCount: bucket.impactRunCount,
         noOpRunCount: bucket.noOpRunCount,
         runCount: bucket.runCount,
+        specialistFollowUpRemediationRouteCounts: bucket.specialistFollowUpRemediationRouteCounts,
+        specialistFollowUpRetryPolicyCounts: bucket.specialistFollowUpRetryPolicyCounts,
         totalRemindedCount: bucket.totalRemindedCount,
       };
     })
@@ -1664,6 +1693,14 @@ function buildMaintenanceLatestBucketDelta(dailyBuckets) {
     noOpRunCountDelta: Number(current.noOpRunCount || 0) - Number(previous?.noOpRunCount || 0),
     previousDate: previous?.date || null,
     runCountDelta: Number(current.runCount || 0) - Number(previous?.runCount || 0),
+    specialistFollowUpRemediationRouteCountsDelta: buildCountMapDelta(
+      current.specialistFollowUpRemediationRouteCounts || {},
+      previous?.specialistFollowUpRemediationRouteCounts || {},
+    ),
+    specialistFollowUpRetryPolicyCountsDelta: buildCountMapDelta(
+      current.specialistFollowUpRetryPolicyCounts || {},
+      previous?.specialistFollowUpRetryPolicyCounts || {},
+    ),
     totalRemindedCountDelta: Number(current.totalRemindedCount || 0) - Number(previous?.totalRemindedCount || 0),
   };
 }

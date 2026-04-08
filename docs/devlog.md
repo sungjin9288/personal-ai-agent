@@ -25,6 +25,7 @@
 - threaded specialist remediation route metadata into persisted reminder records and overdue incident markdown, so retry policy, route urgency, and fallback command survive from queue triage into reminder and incident audit trails
 - extended `action remind-specialist-follow-ups` summary with provider, specialist kind, retry policy, remediation route, and status aggregate so reminder execution output mirrors the same recovery-path metadata already visible in queue and incident surfaces
 - extended maintenance execution summary and persisted maintenance run payloads with specialist retry policy and remediation route aggregate so maintenance sweep output keeps the same specialist recovery-path evidence as the dedicated reminder command
+- extended maintenance history and maintenance overview bucket payloads with specialist retry policy and remediation route aggregate so day-level and latest-vs-previous maintenance trend views now preserve the same specialist recovery-path evidence as the raw maintenance run record
 
 ## 2026-04-07 Provider Cost Telemetry
 

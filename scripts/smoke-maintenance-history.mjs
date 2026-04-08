@@ -77,6 +77,33 @@ const handoffFlow = createAcceptedRiskEscalation({
   objective: 'Convert one accepted-risk escalation into pending handoff pressure before maintenance history runs.',
 });
 
+const specialistMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Maintenance history specialist follow-up reminder',
+    '--objective',
+    'Create one failed specialist branch that becomes due before maintenance history runs.',
+    '--constraints',
+    'parallel-specialists:research,implementation|parallel-fail:implementation',
+  ],
+});
+
+const specialistRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', specialistMission.id],
+});
+
+assert.equal(specialistRun.status, 'failed');
+
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
 const dueTimestamp = '2026-03-02T00:00:00.000Z';
@@ -106,6 +133,17 @@ writeState((state) => {
     }
 
     return escalation;
+  });
+  state.agentRuns = state.agentRuns.map((agentRun) => {
+    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+      return {
+        ...agentRun,
+        endedAt: overdueTimestamp,
+        startedAt: overdueTimestamp,
+      };
+    }
+
+    return agentRun;
   });
 });
 
@@ -170,9 +208,10 @@ const preMaintenanceInbox = runCli({
 assert.equal(preMaintenanceInbox.summary.pendingActionCount, 1);
 assert.equal(preMaintenanceInbox.summary.actionCounts.maintenanceSweep, 1);
 assert.equal(preMaintenanceInbox.items[0].actionType, 'maintenance-sweep');
-assert.equal(preMaintenanceInbox.items[0].totalDueCandidateCount, 2);
+assert.equal(preMaintenanceInbox.items[0].totalDueCandidateCount, 3);
 assert.equal(preMaintenanceInbox.items[0].dueMonitoringCount, 1);
 assert.equal(preMaintenanceInbox.items[0].dueOwnerHandoffCount, 1);
+assert.equal(preMaintenanceInbox.items[0].dueSpecialistFollowUpCount, 1);
 assert.equal(preMaintenanceInbox.items[0].recommendedOwner, 'workspace-owner');
 assert.match(preMaintenanceInbox.items[0].commandHint, /action maintenance/);
 
@@ -182,9 +221,10 @@ const preMaintenanceOverview = runCli({
 });
 
 assert.equal(preMaintenanceOverview.summary.maintenanceRequiredCount, 1);
-assert.equal(preMaintenanceOverview.summary.currentDueCandidateCountTotal, 2);
+assert.equal(preMaintenanceOverview.summary.currentDueCandidateCountTotal, 3);
 assert.equal(preMaintenanceOverview.summary.currentDueMonitoringCountTotal, 1);
 assert.equal(preMaintenanceOverview.summary.currentDueOwnerHandoffCountTotal, 1);
+assert.equal(preMaintenanceOverview.summary.currentDueSpecialistFollowUpCountTotal, 1);
 assert.equal(preMaintenanceOverview.summary.runCount, 0);
 
 const firstMaintenance = runCli({
@@ -199,16 +239,22 @@ const firstMaintenance = runCli({
   ],
 });
 
-assert.equal(firstMaintenance.summary.totalRemindedCount, 2);
+assert.equal(firstMaintenance.summary.totalRemindedCount, 3);
 assert.equal(firstMaintenance.summary.escalationRemindedCount, 1);
 assert.equal(firstMaintenance.summary.ownerHandoffRemindedCount, 1);
+assert.equal(firstMaintenance.summary.specialistFollowUpRemindedCount, 1);
+assert.equal(firstMaintenance.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(firstMaintenance.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(firstMaintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
 assert.equal(firstMaintenance.summary.resolvedMaintenanceRequiredCount, 1);
 assert.equal(firstMaintenance.summary.remainingMaintenanceRequiredCount, 0);
 assert.deepEqual(
   [...firstMaintenance.maintenanceRun.affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
+assert.equal(firstMaintenance.maintenanceRun.specialistFollowUpRemindedCount, 1);
+assert.equal(firstMaintenance.maintenanceRun.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(firstMaintenance.maintenanceRun.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.ok(firstMaintenance.maintenanceRun.id);
 
 const secondMaintenance = runCli({
@@ -260,17 +306,20 @@ const history = runCli({
 });
 
 assert.equal(history.summary.runCount, 2);
-assert.equal(history.summary.totalRemindedCount, 2);
+assert.equal(history.summary.totalRemindedCount, 3);
 assert.equal(history.summary.effectiveRunCount, 1);
 assert.equal(history.summary.noOpRunCount, 1);
 assert.equal(history.summary.impactRunCount, 1);
 assert.equal(history.summary.escalationRemindedCountTotal, 1);
 assert.equal(history.summary.ownerHandoffRemindedCountTotal, 1);
+assert.equal(history.summary.specialistFollowUpRemindedCountTotal, 1);
+assert.equal(history.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(history.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(history.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
-assert.equal(history.summary.affectedMissionCount, 2);
+assert.equal(history.summary.affectedMissionCount, 3);
 assert.deepEqual(
   [...history.summary.affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(history.summary.resolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(history.summary.remainingMaintenanceRequiredCountTotal, 0);
@@ -279,7 +328,7 @@ assert.equal(history.summary.latestEffectiveRun.id, firstMaintenance.maintenance
 assert.equal(history.summary.latestNoOpRun.id, secondMaintenance.maintenanceRun.id);
 assert.deepEqual(
   [...history.summary.latestImpactAffectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(history.summary.runOutcomeCounts.effective, 1);
 assert.equal(history.summary.runOutcomeCounts.noOp, 1);
@@ -293,7 +342,7 @@ assert.equal(history.summary.recentRuns[1].isEffective, true);
 assert.equal(history.summary.recentRuns[1].isImpactful, true);
 assert.deepEqual(
   [...history.summary.recentRuns[1].affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(history.summary.workspaceCounts[workspace.id], 2);
 assert.equal(history.items.length, 2);
@@ -310,20 +359,27 @@ assert.equal(history.summary.latestBucketDelta.runCountDelta, 0);
 assert.equal(history.summary.latestBucketDelta.effectiveRunCountDelta, -1);
 assert.equal(history.summary.latestBucketDelta.noOpRunCountDelta, 1);
 assert.equal(history.summary.latestBucketDelta.impactRunCountDelta, -1);
-assert.equal(history.summary.latestBucketDelta.totalRemindedCountDelta, -2);
-assert.equal(history.summary.latestBucketDelta.affectedMissionCountDelta, -2);
+assert.equal(history.summary.latestBucketDelta.totalRemindedCountDelta, -3);
+assert.equal(history.summary.latestBucketDelta.affectedMissionCountDelta, -3);
+assert.equal(history.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'], -1);
+assert.equal(history.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'], -1);
 assert.equal(history.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(history.summary.dailyBuckets[0].runCount, 1);
 assert.equal(history.summary.dailyBuckets[0].noOpRunCount, 1);
 assert.equal(history.summary.dailyBuckets[0].effectiveRunCount, 0);
 assert.equal(history.summary.dailyBuckets[0].affectedMissionCount, 0);
+assert.deepEqual(history.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts, {});
+assert.deepEqual(history.summary.dailyBuckets[0].specialistFollowUpRemediationRouteCounts, {});
 assert.equal(history.summary.dailyBuckets[1].date, '2026-04-01');
 assert.equal(history.summary.dailyBuckets[1].runCount, 1);
 assert.equal(history.summary.dailyBuckets[1].effectiveRunCount, 1);
 assert.equal(history.summary.dailyBuckets[1].impactRunCount, 1);
+assert.equal(history.summary.dailyBuckets[1].totalRemindedCount, 3);
+assert.equal(history.summary.dailyBuckets[1].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(history.summary.dailyBuckets[1].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.deepEqual(
   [...history.summary.dailyBuckets[1].affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(history.summary.maintenanceRequiredCount, 0);
 assert.equal(history.summary.currentDueCandidateCountTotal, 0);
@@ -363,6 +419,8 @@ assert.equal(recentHistory.summary.latestBucketDelta.currentDate, '2026-04-06');
 assert.equal(recentHistory.summary.latestBucketDelta.previousDate, null);
 assert.equal(recentHistory.summary.latestBucketDelta.noOpRunCountDelta, 1);
 assert.equal(recentHistory.summary.latestBucketDelta.totalRemindedCountDelta, 0);
+assert.deepEqual(recentHistory.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta, {});
+assert.deepEqual(recentHistory.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta, {});
 assert.equal(recentHistory.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(recentHistory.items[0].id, secondMaintenance.maintenanceRun.id);
 
@@ -380,11 +438,11 @@ const missionHistory = runCli({
 });
 
 assert.equal(missionHistory.summary.runCount, 1);
-assert.equal(missionHistory.summary.totalRemindedCount, 2);
-assert.equal(missionHistory.summary.affectedMissionCount, 2);
+assert.equal(missionHistory.summary.totalRemindedCount, 3);
+assert.equal(missionHistory.summary.affectedMissionCount, 3);
 assert.deepEqual(
   [...missionHistory.summary.affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(missionHistory.summary.missionImpactRunCount, 1);
 assert.equal(missionHistory.summary.missionImpactTotalRemindedCount, 1);
@@ -396,10 +454,14 @@ assert.equal(missionHistory.summary.bucketCount, 1);
 assert.equal(missionHistory.summary.latestBucketDelta.currentDate, '2026-04-01');
 assert.equal(missionHistory.summary.latestBucketDelta.previousDate, null);
 assert.equal(missionHistory.summary.latestBucketDelta.effectiveRunCountDelta, 1);
-assert.equal(missionHistory.summary.latestBucketDelta.totalRemindedCountDelta, 2);
+assert.equal(missionHistory.summary.latestBucketDelta.totalRemindedCountDelta, 3);
+assert.equal(missionHistory.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'], 1);
+assert.equal(missionHistory.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'], 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].date, '2026-04-01');
 assert.equal(missionHistory.summary.dailyBuckets[0].runCount, 1);
 assert.equal(missionHistory.summary.dailyBuckets[0].impactRunCount, 1);
+assert.equal(missionHistory.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(missionHistory.summary.dailyBuckets[0].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(missionHistory.items.length, 1);
 assert.equal(missionHistory.items[0].id, firstMaintenance.maintenanceRun.id);
 
@@ -431,31 +493,44 @@ const maintenanceOverview = runCli({
 });
 
 assert.equal(maintenanceOverview.summary.runCount, 2);
-assert.equal(maintenanceOverview.summary.totalRemindedCount, 2);
+assert.equal(maintenanceOverview.summary.totalRemindedCount, 3);
 assert.equal(maintenanceOverview.summary.latestRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(maintenanceOverview.summary.latestEffectiveRun.id, firstMaintenance.maintenanceRun.id);
 assert.equal(maintenanceOverview.summary.latestNoOpRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(maintenanceOverview.summary.effectiveRunCount, 1);
 assert.equal(maintenanceOverview.summary.noOpRunCount, 1);
 assert.equal(maintenanceOverview.summary.impactRunCount, 1);
+assert.equal(maintenanceOverview.summary.specialistFollowUpRemindedCountTotal, 1);
+assert.equal(maintenanceOverview.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(maintenanceOverview.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenanceOverview.summary.acknowledgedMaintenanceRequiredCountTotal, 1);
-assert.equal(maintenanceOverview.summary.affectedMissionCount, 2);
+assert.equal(maintenanceOverview.summary.affectedMissionCount, 3);
 assert.deepEqual(
   [...maintenanceOverview.summary.affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(maintenanceOverview.summary.resolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(maintenanceOverview.summary.remainingMaintenanceRequiredCountTotal, 0);
 assert.equal(maintenanceOverview.summary.latestImpactRun.id, firstMaintenance.maintenanceRun.id);
 assert.deepEqual(
   [...maintenanceOverview.summary.latestImpactAffectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(maintenanceOverview.summary.bucketCount, 2);
 assert.equal(maintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-06');
 assert.equal(maintenanceOverview.summary.latestBucketDelta.previousDate, '2026-04-01');
+assert.equal(
+  maintenanceOverview.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
+  -1,
+);
+assert.equal(
+  maintenanceOverview.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
+  -1,
+);
 assert.equal(maintenanceOverview.summary.dailyBuckets[0].date, '2026-04-06');
 assert.equal(maintenanceOverview.summary.dailyBuckets[1].date, '2026-04-01');
+assert.equal(maintenanceOverview.summary.dailyBuckets[1].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(maintenanceOverview.summary.dailyBuckets[1].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(maintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
@@ -465,14 +540,14 @@ const missionMaintenanceOverview = runCli({
 });
 
 assert.equal(missionMaintenanceOverview.summary.runCount, 1);
-assert.equal(missionMaintenanceOverview.summary.totalRemindedCount, 2);
+assert.equal(missionMaintenanceOverview.summary.totalRemindedCount, 3);
 assert.equal(missionMaintenanceOverview.summary.effectiveRunCount, 1);
 assert.equal(missionMaintenanceOverview.summary.noOpRunCount, 0);
 assert.equal(missionMaintenanceOverview.summary.impactRunCount, 1);
-assert.equal(missionMaintenanceOverview.summary.affectedMissionCount, 2);
+assert.equal(missionMaintenanceOverview.summary.affectedMissionCount, 3);
 assert.deepEqual(
   [...missionMaintenanceOverview.summary.affectedMissionIds].sort(),
-  [handoffFlow.mission.id, monitoringFlow.mission.id].sort(),
+  [handoffFlow.mission.id, monitoringFlow.mission.id, specialistMission.id].sort(),
 );
 assert.equal(missionMaintenanceOverview.summary.missionImpactRunCount, 1);
 assert.equal(missionMaintenanceOverview.summary.missionImpactTotalRemindedCount, 1);
@@ -483,7 +558,23 @@ assert.equal(missionMaintenanceOverview.summary.latestMissionImpactRunAt, firstM
 assert.equal(missionMaintenanceOverview.summary.bucketCount, 1);
 assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.currentDate, '2026-04-01');
 assert.equal(missionMaintenanceOverview.summary.latestBucketDelta.previousDate, null);
+assert.equal(
+  missionMaintenanceOverview.summary.latestBucketDelta.specialistFollowUpRetryPolicyCountsDelta['resume-blocked-or-failed-branch'],
+  1,
+);
+assert.equal(
+  missionMaintenanceOverview.summary.latestBucketDelta.specialistFollowUpRemediationRouteCountsDelta['standard-branch-remediation'],
+  1,
+);
 assert.equal(missionMaintenanceOverview.summary.dailyBuckets[0].date, '2026-04-01');
+assert.equal(
+  missionMaintenanceOverview.summary.dailyBuckets[0].specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'],
+  1,
+);
+assert.equal(
+  missionMaintenanceOverview.summary.dailyBuckets[0].specialistFollowUpRemediationRouteCounts['standard-branch-remediation'],
+  1,
+);
 assert.equal(missionMaintenanceOverview.summary.maintenanceRequiredCount, 0);
 assert.equal(missionMaintenanceOverview.summary.currentDueCandidateCountTotal, 0);
 
@@ -520,15 +611,16 @@ const workspaceOverview = runCli({
 });
 
 assert.equal(workspaceOverview.summary.maintenanceRunCount, 2);
-assert.equal(workspaceOverview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(workspaceOverview.summary.maintenanceTotalRemindedCount, 3);
 assert.equal(workspaceOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(workspaceOverview.summary.maintenanceSpecialistFollowUpRemindedCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(workspaceOverview.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
 assert.equal(workspaceOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(workspaceOverview.summary.maintenanceRequiredCount, 0);
-assert.equal(workspaceOverview.summary.maintenanceDueCandidateCountTotal, 2);
+assert.equal(workspaceOverview.summary.maintenanceDueCandidateCountTotal, 3);
 
 const globalOverview = runCli({
   rootDir: tempRoot,
@@ -536,15 +628,16 @@ const globalOverview = runCli({
 });
 
 assert.equal(globalOverview.summary.maintenanceRunCount, 2);
-assert.equal(globalOverview.summary.maintenanceTotalRemindedCount, 2);
+assert.equal(globalOverview.summary.maintenanceTotalRemindedCount, 3);
 assert.equal(globalOverview.summary.maintenanceEscalationRemindedCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceOwnerHandoffRemindedCountTotal, 1);
+assert.equal(globalOverview.summary.maintenanceSpecialistFollowUpRemindedCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceAcknowledgedMaintenanceRequiredCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceResolvedMaintenanceRequiredCountTotal, 1);
 assert.equal(globalOverview.summary.maintenanceRemainingMaintenanceRequiredCountTotal, 0);
 assert.equal(globalOverview.summary.latestMaintenanceRun.id, secondMaintenance.maintenanceRun.id);
 assert.equal(globalOverview.summary.maintenanceRequiredCount, 0);
-assert.equal(globalOverview.summary.maintenanceDueCandidateCountTotal, 2);
+assert.equal(globalOverview.summary.maintenanceDueCandidateCountTotal, 3);
 
 const postMaintenanceInbox = runCli({
   rootDir: tempRoot,
@@ -565,7 +658,7 @@ assert.equal(
   workspaceTimeline.timeline.some(
     (event) =>
       event.kind === 'maintenance-required-acknowledged' &&
-      /covering 2 due candidate/i.test(event.detail),
+      /covering 3 due candidate/i.test(event.detail),
   ),
   true,
 );
@@ -586,6 +679,7 @@ console.log(
       latestMaintenanceRunId: secondMaintenance.maintenanceRun.id,
       mode: 'maintenance-history',
       runCount: history.summary.runCount,
+      specialistFollowUpRetryPolicyCounts: history.summary.specialistFollowUpRetryPolicyCounts,
       totalRemindedCount: history.summary.totalRemindedCount,
     },
     null,
