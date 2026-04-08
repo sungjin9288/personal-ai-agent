@@ -186,6 +186,20 @@ assert.equal(overview.workspaceUsageTrend.statusCounts.growing, 2);
 assert.equal(overview.workspaceUsageTrend.statusCounts.declining, 1);
 assert.equal(overview.workspaceUsageTrend.statusCounts.steady, 0);
 assert.equal(overview.workspaceUsageTrend.statusCounts.unused, 1);
+assert.equal(overview.workspaceUsageTrend.workspaceCount, 2);
+assert.equal(overview.workspaceUsageTrend.workspaceProfileCounts[workspace.id], 2);
+assert.equal(overview.workspaceUsageTrend.workspaceProfileCounts[secondWorkspace.id], 1);
+assert.equal(overview.workspaceUsageTrend.workspaceStatusCounts.growing, 2);
+assert.equal(overview.workspaceUsageTrend.workspaceStatusCounts.declining, 1);
+assert.equal(overview.workspaceUsageTrend.workspaceStatusCounts.steady, 0);
+assert.equal(overview.workspaceUsageTrend.workspaceStatusCounts.unused, 0);
+assert.deepEqual(
+  overview.workspaceUsageTrend.workspaceIdsByStatus.growing,
+  [secondWorkspace.id, workspace.id].sort((left, right) => String(left).localeCompare(String(right))),
+);
+assert.deepEqual(overview.workspaceUsageTrend.workspaceIdsByStatus.declining, [workspace.id]);
+assert.deepEqual(overview.workspaceUsageTrend.workspaceIdsByStatus.steady, []);
+assert.deepEqual(overview.workspaceUsageTrend.workspaceIdsByStatus.unused, []);
 assert.equal(overview.workspaceUsageTrend.latestGrowingProfile.id, 'engineering-triad');
 assert.equal(overview.workspaceUsageTrend.latestDecliningProfile.id, 'engineering-implementation-verification');
 assert.equal(overview.workspaceUsageTrend.latestUnusedProfile.id, 'knowledge-research-implementation');
@@ -271,6 +285,13 @@ assert.equal(overview.summary.workspaceUsageTrendCounts.growing, 2);
 assert.equal(overview.summary.workspaceUsageTrendCounts.declining, 1);
 assert.equal(overview.summary.workspaceUsageTrendCounts.steady, 0);
 assert.equal(overview.summary.workspaceUsageTrendCounts.unused, 1);
+assert.equal(overview.summary.workspaceUsageTrendProfileCounts[workspace.id], 2);
+assert.equal(overview.summary.workspaceUsageTrendProfileCounts[secondWorkspace.id], 1);
+assert.equal(overview.summary.workspaceUsageTrendStatusCounts.growing[workspace.id], 1);
+assert.equal(overview.summary.workspaceUsageTrendStatusCounts.growing[secondWorkspace.id], 1);
+assert.equal(overview.summary.workspaceUsageTrendStatusCounts.declining[workspace.id], 1);
+assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.steady, {});
+assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.unused, {});
 assert.equal(overview.summary.latestGrowingWorkspaceUsageProfile.id, 'engineering-triad');
 assert.equal(
   overview.summary.latestDecliningWorkspaceUsageProfile.id,
@@ -496,6 +517,16 @@ assert.equal(workspaceUsedOverview.workspaceUsageTrend.status, 'steady');
 assert.equal(workspaceUsedOverview.workspaceUsageTrend.currentMonthWorkspaceCount, 1);
 assert.equal(workspaceUsedOverview.workspaceUsageTrend.previousMonthWorkspaceCount, 1);
 assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceCountDelta, 0);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceCount, 1);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceProfileCounts[workspace.id], 2);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.growing, 1);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.declining, 1);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.steady, 0);
+assert.equal(workspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.unused, 0);
+assert.deepEqual(workspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.growing, [workspace.id]);
+assert.deepEqual(workspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.declining, [workspace.id]);
+assert.deepEqual(workspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.steady, []);
+assert.deepEqual(workspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.unused, []);
 assert.equal(workspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(workspaceUsedOverview.summary.touchedWorkspaceIds, [workspace.id]);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftProfileCounts[workspace.id], 1);
@@ -551,6 +582,22 @@ assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.status, 'growing');
 assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.currentMonthWorkspaceCount, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.previousMonthWorkspaceCount, 0);
 assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceCountDelta, 1);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceCount, 1);
+assert.equal(
+  secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceProfileCounts[secondWorkspace.id],
+  1,
+);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.growing, 1);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.declining, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.steady, 0);
+assert.equal(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceStatusCounts.unused, 0);
+assert.deepEqual(
+  secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.growing,
+  [secondWorkspace.id],
+);
+assert.deepEqual(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.declining, []);
+assert.deepEqual(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.steady, []);
+assert.deepEqual(secondWorkspaceUsedOverview.workspaceUsageTrend.workspaceIdsByStatus.unused, []);
 assert.equal(secondWorkspaceUsedOverview.summary.usedWorkspaceCount, 1);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.touchedWorkspaceIds, [secondWorkspace.id]);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftProfileCounts, {});

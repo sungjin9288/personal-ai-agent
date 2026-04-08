@@ -2119,6 +2119,10 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     'follow-up-required': {},
     watch: {},
   };
+  const workspaceUsageTrendProfileCounts = {};
+  const workspaceUsageTrendStatusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, {}]),
+  );
   const workspaceMissionCounts = {};
   const workspaceProfileCounts = {};
   const touchedProfileIds = [];
@@ -2140,6 +2144,7 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   for (const item of items) {
     const adoptionDrift = item.adoptionDrift || summarizeOrchestrationProfileAdoptionDrift(item);
     const drift = item.healthDrift || summarizeOrchestrationProfileHealthDrift(item);
+    const workspaceUsageTrend = item.workspaceUsageTrend || { status: 'unused' };
 
     if (adoptionDriftStatusCounts[adoptionDrift.status] !== undefined) {
       adoptionDriftStatusCounts[adoptionDrift.status] += 1;
@@ -2200,6 +2205,12 @@ function summarizeOrchestrationProfileOverviewItems(items) {
       for (const workspaceId of item.touchedWorkspaceIds || []) {
         touchedWorkspaceIds.add(workspaceId);
         workspaceProfileCounts[workspaceId] = (workspaceProfileCounts[workspaceId] || 0) + 1;
+        workspaceUsageTrendProfileCounts[workspaceId] =
+          (workspaceUsageTrendProfileCounts[workspaceId] || 0) + 1;
+        if (workspaceUsageTrendStatusCounts[workspaceUsageTrend.status]) {
+          workspaceUsageTrendStatusCounts[workspaceUsageTrend.status][workspaceId] =
+            (workspaceUsageTrendStatusCounts[workspaceUsageTrend.status][workspaceId] || 0) + 1;
+        }
         if (drift.status !== 'stable') {
           workspaceHealthDriftProfileCounts[workspaceId] =
             (workspaceHealthDriftProfileCounts[workspaceId] || 0) + 1;
@@ -2279,6 +2290,8 @@ function summarizeOrchestrationProfileOverviewItems(items) {
     workspaceHealthDriftStatusCounts,
     workspaceMissionCounts,
     workspaceProfileCounts,
+    workspaceUsageTrendProfileCounts,
+    workspaceUsageTrendStatusCounts,
     latestHealthDriftWorkspace:
       getLatestItem(
         items
@@ -10757,6 +10770,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     workspaceUsageTrend.latestUnusedProfile = summary.latestUnusedWorkspaceUsageProfile;
     workspaceUsageTrend.profileCount = summary.total;
     workspaceUsageTrend.statusCounts = summary.workspaceUsageTrendCounts;
+    workspaceUsageTrend.workspaceCount = Object.keys(summary.workspaceUsageTrendProfileCounts || {}).length;
+    workspaceUsageTrend.workspaceIdsByStatus = Object.fromEntries(
+      ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [
+        status,
+        Object.keys(summary.workspaceUsageTrendStatusCounts?.[status] || {}).sort((left, right) =>
+          String(left).localeCompare(String(right)),
+        ),
+      ]),
+    );
+    workspaceUsageTrend.workspaceProfileCounts = summary.workspaceUsageTrendProfileCounts;
+    workspaceUsageTrend.workspaceStatusCounts = Object.fromEntries(
+      ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [
+        status,
+        Object.keys(summary.workspaceUsageTrendStatusCounts?.[status] || {}).length,
+      ]),
+    );
     const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
       summary.touchedWorkspaceIds.map((workspaceId) => {
         const workspace = workspaceById.get(workspaceId) || null;
