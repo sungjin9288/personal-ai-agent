@@ -32,6 +32,7 @@
 - linked the same maintenance monthly quick fields into workspace timeline and global operator timeline summaries, so chronology-first operator payloads can expose current month maintenance drift without reopening the maintenance read-model
 - linked the same maintenance monthly quick fields into immediate `action maintenance` summary output, so sweep execution receipts can expose current month maintenance drift without reopening the maintenance history surface
 - linked the same maintenance monthly quick fields into unified `action inbox` summary when maintenance-required pressure is present, so mixed queue triage can expose current month maintenance drift without reopening the maintenance history surface
+- switched `action log-overdue` to reuse the same enriched overdue inbox summary and exposed maintenance monthly quick fields in incident markdown, so incident triage keeps the same maintenance drift contract as queue summaries
 
 ## 2026-04-07 Provider Cost Telemetry
 

@@ -253,6 +253,10 @@ assert.ok(incidentLog.summary.specialistFollowUpNextReminderAt);
 assert.equal(incidentLog.summary.providerHealthDriftOverdueCount, 1);
 assert.equal(incidentLog.summary.providerHealthDriftProviderCounts.stub, 1);
 assert.equal(incidentLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+assert.equal(incidentLog.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(incidentLog.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(incidentLog.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(incidentLog.summary.maintenanceLatestMonthlyBucketDelta, null);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
 assert.match(incidentsContent, /Overdue Action Escalation \(5 items\)/);
@@ -270,6 +274,10 @@ assert.match(incidentsContent, /specialist follow-up next reminder at: 2026-03-0
 assert.match(incidentsContent, /provider health drift overdue count: 1/);
 assert.match(incidentsContent, /provider health drift providers: stub=1/);
 assert.match(incidentsContent, /provider health drift reason codes: monthly-failed-up=1/);
+assert.match(incidentsContent, /maintenance monthly bucket count: 0/);
+assert.match(incidentsContent, /maintenance latest monthly bucket start: none/);
+assert.match(incidentsContent, /maintenance oldest monthly bucket start: none/);
+assert.match(incidentsContent, /maintenance latest monthly delta: none/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Maintenance sweep required for workspace-two/);
 assert.match(incidentsContent, /Blocked after rejected approval/);

@@ -1144,6 +1144,19 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
     }
   }
 
+  if ((summary?.actionCounts?.maintenanceSweep || 0) > 0) {
+    lines.push(`maintenance monthly bucket count: ${summary.maintenanceMonthlyBucketCount || 0}`);
+    lines.push(`maintenance latest monthly bucket start: ${summary.maintenanceLatestMonthlyBucketStartDate || 'none'}`);
+    lines.push(`maintenance oldest monthly bucket start: ${summary.maintenanceOldestMonthlyBucketStartDate || 'none'}`);
+    if (summary.maintenanceLatestMonthlyBucketDelta) {
+      lines.push(
+        `maintenance latest monthly delta: current=${summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate || 'none'} previous=${summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate || 'none'}`,
+      );
+    } else {
+      lines.push('maintenance latest monthly delta: none');
+    }
+  }
+
   for (const item of items) {
     lines.push(
       `[${item.actionClass}/${item.priority}] ${item.title} | workspace=${item.workspaceName} | mission=${item.missionId} | owner=${item.recommendedOwner} | dueAt=${item.dueAt}`,
@@ -7787,7 +7800,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     const title = buildOverdueIncidentTitle(overdueInbox.items.length);
-    const summary = summarizeActionInbox(overdueInbox.items);
+    const summary = overdueInbox.summary;
     const content = buildOverdueIncidentContent({
       filters: overdueInbox.filters,
       items: overdueInbox.items,
