@@ -17,6 +17,7 @@
 - extended the same overdue incident payload with provider health drift provider and reason-code aggregate, so queue triage and incident documentation keep the same provider drift summary contract
 - consolidated provider metadata into a shared provider catalog inspired by OpenHarness registry layering, so registry readiness rendering and adapter runtime defaults now derive from one source of truth instead of per-file literals
 - added a typed `specialistHandoff` contract for specialist branches and threaded it through manager merge prompts, persisted agent runs, and specialist follow-up queue items, inspired by agency-agents handoff template discipline
+- added `orchestration-profile:<id>` specialist presets and threaded profile metadata through mission/workspace/global/operator summaries plus latest parallel group state, so profile-driven fan-out stays explicit and auditable without reconstructing branch policy from raw constraints
 - extended `action log-overdue` contract and smoke coverage so overdue `specialist-follow-up-required` items also enter the incident trail, keeping specialist pressure aligned with other tracked overdue operator classes
 
 ## 2026-04-07 Provider Cost Telemetry

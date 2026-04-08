@@ -351,7 +351,10 @@ assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentEventFamilyCo
 assert.deepEqual(recentReviewerWorkspaceTimeline.summary.providerRecentTouchedProviderIds, ['stub']);
 assert.deepEqual(recentReviewerWorkspaceTimeline.providerRecentWindow.touchedProviderIds, ['stub']);
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionBucketCount, 1);
-assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestBucketDate, '2026-04-07');
+assert.equal(
+  recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestBucketDate,
+  recentReviewerWorkspaceTimeline.providerRecentWindow.executionDailyBuckets[0].date,
+);
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
@@ -494,7 +497,10 @@ assert.deepEqual(recentGlobalTimeline.summary.providerRecentTouchedProviderIds, 
 assert.deepEqual(recentGlobalTimeline.providerRecentWindow.touchedProviderIds, ['stub']);
 assert.equal(recentGlobalTimeline.providerRecentWindow.eventFamilyCounts.probe, 0);
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionBucketCount, 1);
-assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestBucketDate, '2026-04-07');
+assert.equal(
+  recentGlobalTimeline.providerRecentWindow.executionLatestBucketDate,
+  recentGlobalTimeline.providerRecentWindow.executionDailyBuckets[0].date,
+);
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);

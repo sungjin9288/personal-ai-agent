@@ -99,6 +99,38 @@ const successTimeline = service.getMissionTimeline(successMission.id);
 assert.equal(successTimeline.timeline.filter((event) => event.kind === 'specialist-branch-completed').length, 2);
 assert.equal(successTimeline.timeline.filter((event) => event.kind === 'specialist-merge-completed').length, 1);
 
+const profileMission = service.createMission({
+  constraints: ['orchestration-profile:knowledge-triad'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify orchestration profile specialist preset selection.',
+  title: 'Parallel specialist profile mission',
+  workspaceId: workspace.id,
+});
+
+const profileRun = await service.runMission(profileMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(profileRun.mission.status, 'completed');
+
+const profileSummary = service.showMission(profileMission.id).summary;
+assert.equal(profileSummary.specialistRunCount, 3);
+assert.equal(profileSummary.specialistOrchestrationProfileId, 'knowledge-triad');
+assert.equal(profileSummary.specialistOrchestrationProfileDisplayName, 'Knowledge Triad');
+assert.equal(profileSummary.specialistOrchestrationProfileQualityGate, 'verification-signal-required');
+assert.equal(profileSummary.specialistOrchestrationProfileRetryPolicy, 'resume-blocked-or-failed-branch');
+assert.equal(profileSummary.specialistOrchestrationProfileSource, 'orchestration-profile');
+assert.deepEqual(profileSummary.specialistConfiguredKinds, ['research', 'implementation', 'verification']);
+assert.equal(profileSummary.specialistLatestParallelGroup?.orchestrationProfile?.id, 'knowledge-triad');
+assert.equal(profileSummary.specialistLatestOrchestrationProfile?.id, 'knowledge-triad');
+
+const profileTimeline = service.getMissionTimeline(profileMission.id);
+assert.equal(profileTimeline.summary.specialistOrchestrationProfileId, 'knowledge-triad');
+assert.equal(profileTimeline.summary.specialistLatestParallelGroup?.orchestrationProfile?.id, 'knowledge-triad');
+assert.equal(profileTimeline.timeline.filter((event) => event.kind === 'specialist-branch-completed').length, 3);
+
 const mixedMission = service.createMission({
   constraints: ['parallel-specialists:research,implementation,verification', 'parallel-abandon:verification'],
   deliverableType: 'decision-memo',
@@ -259,9 +291,11 @@ const blockedTimeline = service.getMissionTimeline(blockedMission.id);
 assert.equal(blockedTimeline.timeline.filter((event) => event.kind === 'specialist-branch-blocked').length, 1);
 
 const workspaceOverview = service.getWorkspaceOverview(workspace.id);
-assert.ok(workspaceOverview.summary.specialistRunCount >= 10);
+assert.ok(workspaceOverview.summary.specialistRunCount >= 13);
 assert.ok(workspaceOverview.summary.specialistMergeCompletedCount >= 3);
 assert.ok(workspaceOverview.summary.specialistFollowUpRequiredCount >= 1);
+assert.ok(workspaceOverview.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
+assert.equal(workspaceOverview.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 assert.equal(workspaceOverview.summary.specialistTouchedKinds.includes('verification'), true);
 
 const workspaceTimeline = service.getWorkspaceTimeline(workspace.id);
@@ -271,11 +305,15 @@ assert.equal(
   ),
   true,
 );
+assert.ok(workspaceTimeline.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
+assert.equal(workspaceTimeline.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 
 const globalOverview = service.getGlobalOverview();
 assert.ok(globalOverview.summary.specialistRunCount >= workspaceOverview.summary.specialistRunCount);
 assert.ok(globalOverview.summary.specialistMergeCompletedCount >= 3);
 assert.ok(globalOverview.summary.specialistFollowUpRequiredCount >= 1);
+assert.ok(globalOverview.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
+assert.equal(globalOverview.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 assert.equal(globalOverview.summary.specialistTouchedKinds.includes('verification'), true);
 
 const globalOperatorTimeline = service.getGlobalOperatorTimeline();
@@ -291,6 +329,8 @@ assert.equal(
   ),
   true,
 );
+assert.ok(globalOperatorTimeline.summary.specialistOrchestrationProfileCounts['knowledge-triad'] >= 1);
+assert.equal(globalOperatorTimeline.summary.specialistTouchedOrchestrationProfileIds.includes('knowledge-triad'), true);
 
 console.log(
   JSON.stringify(
@@ -299,6 +339,7 @@ console.log(
       failedResumeMissionId: failedResumeMission.id,
       mode: 'parallel-specialists',
       ok: true,
+      profileMissionId: profileMission.id,
       successMissionId: successMission.id,
     },
     null,

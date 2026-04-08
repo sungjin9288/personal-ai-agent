@@ -39,6 +39,7 @@ import {
   isProviderFailureError,
   roundUsdAmount,
 } from '../providers/provider-runtime-utils.mjs';
+import { resolveOrchestrationProfile } from './orchestration-profiles.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -445,6 +446,7 @@ function formatProviderFailureDetail({ detail, failureKind, httpStatus, timedOut
 
 function parseMissionConstraintDirectives(mission) {
   const directives = {
+    orchestrationProfileId: '',
     parallelSpecialists: [],
     specialistAbandonKinds: [],
     specialistBlockKinds: [],
@@ -464,7 +466,9 @@ function parseMissionConstraintDirectives(mission) {
       .map((item) => normalizeText(item).toLowerCase())
       .filter((item) => SPECIALIST_KINDS.includes(item));
 
-    if (key === 'parallel-specialists') {
+    if (key === 'orchestration-profile') {
+      directives.orchestrationProfileId = normalizeText(rawValue).toLowerCase();
+    } else if (key === 'parallel-specialists') {
       directives.parallelSpecialists = values;
     } else if (key === 'parallel-fail') {
       directives.specialistFailKinds = values;
@@ -476,6 +480,90 @@ function parseMissionConstraintDirectives(mission) {
   }
 
   return directives;
+}
+
+function extractOrchestrationProfileMetadata(item) {
+  const profileId = normalizeText(item?.orchestrationProfileId).toLowerCase();
+  if (!profileId) {
+    return null;
+  }
+
+  return {
+    deliverableTypes: normalizeStringList(item?.orchestrationProfileDeliverableTypes),
+    description: normalizeText(item?.orchestrationProfileDescription) || null,
+    displayName: normalizeText(item?.orchestrationProfileDisplayName, profileId),
+    id: profileId,
+    mergeOwner: normalizeText(item?.orchestrationProfileMergeOwner) || null,
+    mode: normalizeText(item?.orchestrationProfileMode) || null,
+    parallelSpecialistKinds: normalizeStringList(item?.orchestrationProfileParallelSpecialistKinds).filter((kind) =>
+      SPECIALIST_KINDS.includes(kind),
+    ),
+    qualityGate: normalizeText(item?.orchestrationProfileQualityGate) || null,
+    retryPolicy: normalizeText(item?.orchestrationProfileRetryPolicy) || null,
+    source: normalizeText(item?.orchestrationProfileSource) || null,
+  };
+}
+
+function createOrchestrationProfileMetadata(profile, { effectiveKinds = [], source = '' } = {}) {
+  if (!profile) {
+    return null;
+  }
+
+  return {
+    ...profile,
+    source: normalizeText(source) || null,
+  };
+}
+
+function getLatestOrchestrationProfileMetadata(items, getTimestamp) {
+  let latest = null;
+
+  for (const item of ensureArray(items)) {
+    const metadata = extractOrchestrationProfileMetadata(item);
+    if (!metadata) {
+      continue;
+    }
+
+    const at = normalizeText(getTimestamp(item));
+    if (!latest || String(latest.at) <= at) {
+      latest = {
+        at,
+        metadata,
+      };
+    }
+  }
+
+  return latest?.metadata || null;
+}
+
+function resolveMissionParallelPlan(mission) {
+  const directives = parseMissionConstraintDirectives(mission);
+  const explicitKinds = [...new Set(directives.parallelSpecialists)].slice(0, 3);
+  const profile = directives.orchestrationProfileId
+    ? resolveOrchestrationProfile({
+        deliverableType: mission?.deliverableType,
+        mode: mission?.mode,
+        profileId: directives.orchestrationProfileId,
+      })
+    : null;
+  const effectiveKinds = [...new Set(explicitKinds.length ? explicitKinds : profile?.parallelSpecialistKinds || [])].slice(0, 3);
+  const source = explicitKinds.length
+    ? profile
+      ? 'profile-with-explicit-specialists'
+      : 'explicit-specialists'
+    : profile
+      ? 'orchestration-profile'
+      : 'none';
+
+  return {
+    directives,
+    effectiveKinds,
+    orchestrationProfile: createOrchestrationProfileMetadata(profile, {
+      effectiveKinds,
+      source,
+    }),
+    source,
+  };
 }
 
 function sortTimelineEvents(items) {
@@ -1572,6 +1660,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       createdAt,
       updatedAt: createdAt,
     };
+
+    resolveMissionParallelPlan(mission);
 
     return store.saveMission(mission);
   }
@@ -3503,13 +3593,21 @@ function summarizeProviderExecutions(executions) {
 
   function summarizeScopedParallelActivity(filter = {}) {
     const groups = buildParallelGroupStates(filter);
+    const orchestrationProfileCounts = {};
     const specialistKindCounts = Object.fromEntries(SPECIALIST_KINDS.map((kind) => [kind, 0]));
     const statusCounts = Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0]));
+    const touchedOrchestrationProfileIds = new Set();
     const touchedSpecialistKinds = new Set();
     let mergeRunCount = 0;
     let specialistRunCount = 0;
 
     for (const group of groups) {
+      if (group.orchestrationProfile?.id) {
+        orchestrationProfileCounts[group.orchestrationProfile.id] =
+          (orchestrationProfileCounts[group.orchestrationProfile.id] || 0) + 1;
+        touchedOrchestrationProfileIds.add(group.orchestrationProfile.id);
+      }
+
       for (const run of group.runs) {
         if (normalizeText(run.stageKind) === 'parallel-merge') {
           mergeRunCount += 1;
@@ -3536,6 +3634,20 @@ function summarizeProviderExecutions(executions) {
 
     const followUpItems = buildSpecialistFollowUpItems(filter);
     const followUpSummary = summarizeSpecialistFollowUpItems(followUpItems);
+    const latestParallelGroup =
+      getLatestItem(
+        groups.map((group) => ({
+          createdAt:
+            getLatestItem(
+              group.runs.map((run) => ({ createdAt: run.endedAt || run.startedAt || '' })),
+              'createdAt',
+            )?.createdAt || '',
+          id: group.parallelGroupId,
+          orchestrationProfile: group.orchestrationProfile,
+          requiredKinds: group.requiredKinds,
+        })),
+        'createdAt',
+      ) || null;
 
     return {
       latestFollowUp: followUpSummary.latestItem,
@@ -3544,23 +3656,14 @@ function summarizeProviderExecutions(executions) {
           groups
             .map((group) => group.latestMergeRun)
             .filter(Boolean),
-          'endedAt',
-        ) || null,
-      latestParallelGroup:
-        getLatestItem(
-          groups.map((group) => ({
-            createdAt:
-              getLatestItem(
-                group.runs.map((run) => ({ createdAt: run.endedAt || run.startedAt || '' })),
-                'createdAt',
-              )?.createdAt || '',
-            id: group.parallelGroupId,
-            requiredKinds: group.requiredKinds,
-          })),
-          'createdAt',
-        ) || null,
+            'endedAt',
+          ) || null,
+      latestOrchestrationProfile: latestParallelGroup?.orchestrationProfile || null,
+      latestParallelGroup,
       mergeCompletedCount: groups.filter((group) => group.wasMerged).length,
       mergeRunCount,
+      orchestrationProfileCounts,
+      specialistOrchestrationProfileCount: touchedOrchestrationProfileIds.size,
       specialistFollowUpRequiredCount: followUpItems.length,
       specialistFollowUpNeedsReminderCount: followUpSummary.needsReminderCount,
       specialistFollowUpOverdueCount: followUpSummary.overdueCount,
@@ -3570,6 +3673,9 @@ function summarizeProviderExecutions(executions) {
       specialistNextReminderAt: followUpSummary.nextReminderAt,
       specialistRunCount,
       statusCounts,
+      touchedOrchestrationProfileIds: [...touchedOrchestrationProfileIds].sort((left, right) =>
+        String(left).localeCompare(String(right)),
+      ),
       touchedSpecialistKinds: [...touchedSpecialistKinds].sort((left, right) => String(left).localeCompare(String(right))),
       totalGroupCount: groups.length,
     };
@@ -3885,8 +3991,7 @@ function summarizeProviderExecutions(executions) {
   }
 
   function getParallelSpecialistKinds(mission) {
-    const directives = parseMissionConstraintDirectives(mission);
-    return [...new Set(directives.parallelSpecialists)].slice(0, 3);
+    return resolveMissionParallelPlan(mission).effectiveKinds;
   }
 
   function getLatestParallelGroupState(missionId) {
@@ -3945,6 +4050,7 @@ function summarizeProviderExecutions(executions) {
       [...mergeRuns].sort((left, right) =>
         String(left.endedAt || left.startedAt || '').localeCompare(String(right.endedAt || right.startedAt || '')),
       ).at(-1) || null;
+    const orchestrationProfile = getLatestOrchestrationProfileMetadata(groupRuns, (run) => run.endedAt || run.startedAt || '');
     const requiredKinds = latestMergeRun?.parallelRequiredKinds?.length
       ? ensureArray(latestMergeRun.parallelRequiredKinds)
       : [...new Set(groupRuns.flatMap((run) => ensureArray(run.parallelRequiredKinds).concat(normalizeText(run.specialistKind))))]
@@ -3956,6 +4062,7 @@ function summarizeProviderExecutions(executions) {
     return {
       latestMergeRun,
       latestRuns,
+      orchestrationProfile,
       parallelGroupId: latestGroupId,
       requiredKinds,
       unresolvedRuns,
@@ -4315,7 +4422,8 @@ function summarizeProviderExecutions(executions) {
 
     const pack = getMissionPack({ mission, workspace });
     const memoryEntries = collectRelevantMemoryEntries({ mission, workspace });
-    const parallelSpecialistKinds = getParallelSpecialistKinds(mission);
+    const parallelPlan = resolveMissionParallelPlan(mission);
+    const parallelSpecialistKinds = parallelPlan.effectiveKinds;
     const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
     const shouldRunParallelSpecialists = parallelSpecialistKinds.length >= 2;
     const session = harness.startSession({
@@ -4417,6 +4525,17 @@ function summarizeProviderExecutions(executions) {
           outputTitle: `${specialistKind} specialist ${pack.artifactTitle}`,
           runMetadata: {
             mergeStatus: 'pending',
+            orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
+            orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
+            orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+            orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
+            orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
+            orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
+            orchestrationProfileParallelSpecialistKinds:
+              parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
+            orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+            orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
+            orchestrationProfileSource: parallelPlan.source,
             parallelGroupId,
             parallelRequiredKinds: parallelSpecialistKinds,
             parentRunId: plannerStage.run.id,
@@ -4470,6 +4589,16 @@ function summarizeProviderExecutions(executions) {
         previousOutputs,
         runMetadata: {
           mergeStatus: 'merged',
+          orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
+          orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
+          orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+          orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
+          orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
+          orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
+          orchestrationProfileParallelSpecialistKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
+          orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+          orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
+          orchestrationProfileSource: parallelPlan.source,
           parallelGroupId,
           parallelRequiredKinds: parallelSpecialistKinds,
           parentRunId: plannerStage.run.id,
@@ -4684,6 +4813,7 @@ function summarizeProviderExecutions(executions) {
   }
 
   function summarizeMission(mission, filter = {}) {
+    const parallelPlan = resolveMissionParallelPlan(mission);
     const sessions = listSessions(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
@@ -4864,7 +4994,9 @@ function summarizeProviderExecutions(executions) {
       specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
       specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
       specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+      specialistConfiguredKinds: parallelPlan.effectiveKinds,
       specialistKindCounts: parallelActivity.specialistKindCounts,
+      specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
       specialistLatestFollowUp: parallelActivity.latestFollowUp,
       specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
       specialistLatestMergeRun: parallelActivity.latestMergeRun,
@@ -4872,8 +5004,21 @@ function summarizeProviderExecutions(executions) {
       specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
       specialistMergeRunCount: parallelActivity.mergeRunCount,
       specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+      specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
+      specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
+      specialistOrchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
+      specialistOrchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
+      specialistOrchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+      specialistOrchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
+      specialistOrchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
+      specialistOrchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
+      specialistOrchestrationProfilePresetKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
+      specialistOrchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+      specialistOrchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
+      specialistOrchestrationProfileSource: parallelPlan.source,
       specialistRunCount: parallelActivity.specialistRunCount,
       specialistStatusCounts: parallelActivity.statusCounts,
+      specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
       specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
       specialistTotalGroupCount: parallelActivity.totalGroupCount,
       providerTouchedCount: providerActivity.summary.touchedProviderCount,
@@ -5219,6 +5364,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
         specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistLatestMergeRun: parallelActivity.latestMergeRun,
@@ -5226,8 +5372,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
         specialistMergeRunCount: parallelActivity.mergeRunCount,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
+        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistRunCount: parallelActivity.specialistRunCount,
         specialistStatusCounts: parallelActivity.statusCounts,
+        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
         specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
         specialistTotalGroupCount: parallelActivity.totalGroupCount,
         providerTouchedCount: providerActivity.summary.touchedProviderCount,
@@ -5940,6 +6089,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
       const current = groups.get(parallelGroupId) || {
         mission,
+        orchestrationProfile: null,
+        orchestrationProfileAt: '',
         parallelGroupId,
         requiredKinds: [],
         runs: [],
@@ -5954,6 +6105,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             .filter((kind) => SPECIALIST_KINDS.includes(kind)),
         ),
       ];
+      const orchestrationProfile = extractOrchestrationProfileMetadata(run);
+      const orchestrationProfileAt = normalizeText(run.endedAt || run.startedAt || '');
+      if (orchestrationProfile && (!current.orchestrationProfile || String(current.orchestrationProfileAt) <= orchestrationProfileAt)) {
+        current.orchestrationProfile = orchestrationProfile;
+        current.orchestrationProfileAt = orchestrationProfileAt;
+      }
       groups.set(parallelGroupId, current);
     }
 
@@ -5991,6 +6148,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestMergeRun,
         latestRuns,
         mission: group.mission,
+        orchestrationProfile: group.orchestrationProfile,
         parallelGroupId: group.parallelGroupId,
         requiredKinds: group.requiredKinds,
         runs: group.runs,
@@ -6031,6 +6189,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                   deliverableType: mission.deliverableType,
                   mergeStatus: normalizeText(run.mergeStatus) || 'pending',
                   missionId: mission.id,
+                  orchestrationProfile: group.orchestrationProfile,
                   parallelGroupId: group.parallelGroupId,
                   parentRunId: normalizeText(run.parentRunId) || null,
                   providerId,
@@ -8701,6 +8860,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
         specialistKindCounts: parallelActivity.specialistKindCounts,
+        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistLatestMergeRun: parallelActivity.latestMergeRun,
@@ -8708,8 +8868,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
         specialistMergeRunCount: parallelActivity.mergeRunCount,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
+        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
         specialistRunCount: parallelActivity.specialistRunCount,
         specialistStatusCounts: parallelActivity.statusCounts,
+        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
         specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
         specialistTotalGroupCount: parallelActivity.totalGroupCount,
         providerUnprobedCount: providerOverview.summary.unprobedCount,
@@ -9579,9 +9742,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
+        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
+        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
         latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
         latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
         providerRecentEventCount: providerRecentWindow?.eventCount || 0,
@@ -9641,9 +9808,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
         specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
         specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
+        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
         specialistLatestFollowUp: parallelActivity.latestFollowUp,
         specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
         specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
+        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
+        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
+        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
         latestRecentProviderEvent: providerOverview.recentWindow?.latestEvent || null,
         latestRecentProviderExecution: providerOverview.recentWindow?.latestExecution || null,
         latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
