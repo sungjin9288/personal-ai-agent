@@ -48,6 +48,7 @@ Commands:
   overview global [--provider-since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
+  overview profiles [--mode <engineering|knowledge>] [--used-only]
   overview providers [--since <iso-timestamp>]
 
   provider list
@@ -175,6 +176,16 @@ async function main() {
     printJson(
       service.getGlobalOperatorTimeline({
         providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'overview' && command === 'profiles') {
+    printJson(
+      service.getOrchestrationProfilesOverview({
+        mode: readOption(rest, '--mode', ''),
+        usedOnly: hasOption(rest, '--used-only'),
       }),
     );
     return;

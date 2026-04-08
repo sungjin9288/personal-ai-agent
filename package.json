@@ -47,6 +47,7 @@
     "smoke:provider-probe": "node scripts/smoke-provider-probe.mjs",
     "smoke:provider-history": "node scripts/smoke-provider-history.mjs",
     "smoke:provider-timeline": "node scripts/smoke-provider-timeline.mjs",
+    "smoke:orchestration-profiles": "node scripts/smoke-orchestration-profiles.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",

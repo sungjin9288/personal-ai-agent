@@ -39,7 +39,7 @@ import {
   isProviderFailureError,
   roundUsdAmount,
 } from '../providers/provider-runtime-utils.mjs';
-import { resolveOrchestrationProfile } from './orchestration-profiles.mjs';
+import { listOrchestrationProfiles, resolveOrchestrationProfile } from './orchestration-profiles.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -2095,6 +2095,70 @@ function summarizeOperatorTimeline(events) {
     latestEvent: events.at(-1) || null,
     total: events.length,
     workspaceCounts,
+  };
+}
+
+function summarizeOrchestrationProfileOverviewItems(items) {
+  const modeCounts = Object.fromEntries(MISSION_MODES.map((mode) => [mode, 0]));
+  const qualityGateCounts = {};
+  const retryPolicyCounts = {};
+  const touchedProfileIds = [];
+  let missionCountTotal = 0;
+  let parallelGroupCountTotal = 0;
+  let mergedParallelGroupCountTotal = 0;
+  let qualityGateBlockedGroupCountTotal = 0;
+  let specialistFollowUpNeedsReminderCountTotal = 0;
+  let specialistFollowUpOverdueCountTotal = 0;
+  let specialistFollowUpRequiredCountTotal = 0;
+  let usedCount = 0;
+
+  for (const item of items) {
+    if (modeCounts[item.mode] !== undefined) {
+      modeCounts[item.mode] += 1;
+    }
+    qualityGateCounts[item.qualityGate || 'none'] = (qualityGateCounts[item.qualityGate || 'none'] || 0) + 1;
+    retryPolicyCounts[item.retryPolicy || 'none'] = (retryPolicyCounts[item.retryPolicy || 'none'] || 0) + 1;
+    missionCountTotal += Number(item.missionCount || 0);
+    parallelGroupCountTotal += Number(item.parallelGroupCount || 0);
+    mergedParallelGroupCountTotal += Number(item.mergedParallelGroupCount || 0);
+    qualityGateBlockedGroupCountTotal += Number(item.qualityGateBlockedGroupCount || 0);
+    specialistFollowUpRequiredCountTotal += Number(item.specialistFollowUpRequiredCount || 0);
+    specialistFollowUpNeedsReminderCountTotal += Number(item.specialistFollowUpNeedsReminderCount || 0);
+    specialistFollowUpOverdueCountTotal += Number(item.specialistFollowUpOverdueCount || 0);
+    if (item.used) {
+      usedCount += 1;
+      touchedProfileIds.push(item.id);
+    }
+  }
+
+  return {
+    latestUsedProfile:
+      getLatestItem(
+        items
+          .filter((item) => item.latestUsedAt)
+          .map((item) => ({
+            displayName: item.displayName,
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt,
+          })),
+        'latestUsedAt',
+      ) || null,
+    mergedParallelGroupCountTotal,
+    missionCountTotal,
+    modeCounts,
+    parallelGroupCountTotal,
+    qualityGateBlockedGroupCountTotal,
+    qualityGateCounts,
+    retryPolicyCounts,
+    specialistFollowUpNeedsReminderCountTotal,
+    specialistFollowUpOverdueCountTotal,
+    specialistFollowUpRequiredCountTotal,
+    total: items.length,
+    touchedProfileIds: touchedProfileIds.sort((left, right) => String(left).localeCompare(String(right))),
+    unusedCount: items.length - usedCount,
+    usedCount,
   };
 }
 
@@ -9659,6 +9723,130 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
+  function getOrchestrationProfilesOverview(filter = {}) {
+    if (filter.mode && !MISSION_MODES.includes(filter.mode)) {
+      throw new Error(`Unsupported mission mode: ${filter.mode}`);
+    }
+
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+    const profileGroups = buildParallelGroupStates({});
+    const profileFollowUps = buildSpecialistFollowUpItems({});
+    const missionEntries = store
+      .listMissions()
+      .map((mission) => {
+        const plan = resolveMissionParallelPlan(mission);
+        if (!plan.orchestrationProfile) {
+          return null;
+        }
+
+        const workspace = workspaceById.get(mission.workspaceId) || null;
+        return {
+          latestAt: mission.updatedAt || mission.createdAt || '',
+          mission,
+          profile: plan.orchestrationProfile,
+          workspace,
+        };
+      })
+      .filter(Boolean);
+
+    const items = listOrchestrationProfiles()
+      .filter((profile) => !filter.mode || profile.mode === filter.mode)
+      .map((profile) => {
+        const missions = missionEntries.filter((entry) => entry.profile.id === profile.id);
+        const missionIds = new Set(missions.map((entry) => entry.mission.id));
+        const groups = profileGroups.filter((group) => group.orchestrationProfile?.id === profile.id);
+        const followUps = profileFollowUps.filter((item) => item.orchestrationProfile?.id === profile.id);
+        const followUpSummary = summarizeSpecialistFollowUpItems(followUps);
+        const missionStatusCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
+        const latestMissionEntry = getLatestItem(missions, 'latestAt');
+        const latestGroupEntry = getLatestItem(
+          groups.map((group) => ({
+            group,
+            latestAt:
+              getLatestItem(
+                group.runs.map((run) => ({ latestAt: run.endedAt || run.startedAt || '' })),
+                'latestAt',
+              )?.latestAt || '',
+          })),
+          'latestAt',
+        );
+        const touchedWorkspaceIds = [...new Set(missions.map((entry) => entry.workspace?.id).filter(Boolean))].sort((left, right) =>
+          String(left).localeCompare(String(right)),
+        );
+
+        for (const entry of missions) {
+          if (missionStatusCounts[entry.mission.status] !== undefined) {
+            missionStatusCounts[entry.mission.status] += 1;
+          }
+        }
+
+        return {
+          ...profile,
+          latestMission: latestMissionEntry
+            ? {
+                id: latestMissionEntry.mission.id,
+                status: latestMissionEntry.mission.status,
+                title: latestMissionEntry.mission.title,
+                updatedAt: latestMissionEntry.latestAt || null,
+                workspaceId: latestMissionEntry.workspace?.id || latestMissionEntry.mission.workspaceId,
+                workspaceName: latestMissionEntry.workspace?.name || null,
+              }
+            : null,
+          latestParallelGroup: latestGroupEntry
+            ? {
+                latestAt: latestGroupEntry.latestAt || null,
+                missionId: latestGroupEntry.group.mission?.id || null,
+                missionTitle: latestGroupEntry.group.mission?.title || null,
+                parallelGroupId: latestGroupEntry.group.parallelGroupId,
+                qualityGate: latestGroupEntry.group.qualityGate,
+                requiredKinds: latestGroupEntry.group.requiredKinds,
+                wasMerged: latestGroupEntry.group.wasMerged,
+                workspaceId: latestGroupEntry.group.workspace?.id || null,
+                workspaceName: latestGroupEntry.group.workspace?.name || null,
+              }
+            : null,
+          latestUsedAt: latestMissionEntry?.latestAt || latestGroupEntry?.latestAt || null,
+          mergedParallelGroupCount: groups.filter((group) => group.wasMerged).length,
+          missionCount: missions.length,
+          missionStatusCounts,
+          parallelGroupCount: groups.length,
+          qualityGateBlockedGroupCount: groups.filter((group) => group.qualityGate?.status === 'blocked').length,
+          specialistFollowUpLatestItem: followUpSummary.latestItem,
+          specialistFollowUpNeedsReminderCount: followUpSummary.needsReminderCount,
+          specialistFollowUpOverdueCount: followUpSummary.overdueCount,
+          specialistFollowUpProviderCounts: followUpSummary.providerCounts,
+          specialistFollowUpRequiredCount: followUps.length,
+          specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
+          specialistFollowUpStatusCounts: followUpSummary.statusCounts,
+          touchedMissionIds: [...missionIds].sort((left, right) => String(left).localeCompare(String(right))),
+          touchedWorkspaceIds,
+          used: missions.length > 0,
+          workspaceCount: touchedWorkspaceIds.length,
+        };
+      })
+      .filter((item) => !filter.usedOnly || item.used)
+      .sort((left, right) => {
+        const leftUsed = left.used ? 1 : 0;
+        const rightUsed = right.used ? 1 : 0;
+        if (leftUsed !== rightUsed) {
+          return rightUsed - leftUsed;
+        }
+        if (left.missionCount !== right.missionCount) {
+          return right.missionCount - left.missionCount;
+        }
+        return String(left.id).localeCompare(String(right.id));
+      });
+
+    return {
+      filters: {
+        mode: filter.mode || null,
+        usedOnly: Boolean(filter.usedOnly),
+      },
+      items,
+      summary: summarizeOrchestrationProfileOverviewItems(items),
+    };
+  }
+
   function buildSpecialistTimelineEvents(filter = {}) {
     return buildParallelGroupStates(filter)
       .flatMap((group) => {
@@ -10914,6 +11102,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getEscalatedInbox,
     getGlobalOverview,
     getMaintenanceOverview,
+    getOrchestrationProfilesOverview,
     getOwnerHandoffInbox,
     getProviderAttentionInbox,
     getProviderHealthDriftInbox,
