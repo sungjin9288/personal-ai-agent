@@ -312,6 +312,8 @@ assert.equal(overview.summary.usageTrendCounts.growing, 2);
 assert.equal(overview.summary.usageTrendCounts.declining, 1);
 assert.equal(overview.summary.usageTrendCounts.steady, 0);
 assert.equal(overview.summary.usageTrendCounts.unused, 1);
+assert.equal(overview.summary.usageTrendStatus, 'growing');
+assert.equal(overview.summary.usageTrendProfileCount, 4);
 assert.equal(overview.summary.latestGrowingProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningProfile.id, 'engineering-implementation-verification');
 assert.equal(overview.summary.latestUnusedProfile.id, 'knowledge-research-implementation');
@@ -403,12 +405,21 @@ assert.equal(overview.summary.adoptionDriftCounts.growing, 2);
 assert.equal(overview.summary.adoptionDriftCounts.declining, 1);
 assert.equal(overview.summary.adoptionDriftCounts.steady, 0);
 assert.equal(overview.summary.adoptionDriftCounts.unused, 1);
+assert.equal(overview.summary.adoptionDriftStatus, 'growing');
 assert.equal(overview.summary.adoptionDriftProfileCount, 4);
+assert.deepEqual(overview.summary.adoptionDriftReasonCodes, [
+  'mission-volume-declining',
+  'mission-volume-growing',
+  'unused-profile',
+  'workspace-footprint-declining',
+  'workspace-footprint-growing',
+]);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['mission-volume-growing'], 2);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['workspace-footprint-growing'], 2);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['mission-volume-declining'], 1);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['workspace-footprint-declining'], 1);
 assert.equal(overview.summary.adoptionDriftReasonCodeCounts['unused-profile'], 1);
+assert.equal(overview.summary.adoptionDriftLatestProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestAdoptionDriftProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestGrowingAdoptionProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningAdoptionProfile.id, 'engineering-implementation-verification');
