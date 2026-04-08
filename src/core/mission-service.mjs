@@ -11295,6 +11295,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         };
       }),
     );
+    summary.workspaceAdoptionDriftCounts = workspaceAdoptionDrift.statusCounts;
+    summary.workspaceAdoptionDriftReasonCodeCounts = workspaceAdoptionDrift.reasonCodeCounts;
+    summary.workspaceAdoptionDriftWorkspaceCount = workspaceAdoptionDrift.workspaceCount;
 
     return {
       filters: {
