@@ -216,6 +216,11 @@ assert.equal(overview.summary.openEscalationIds.length, 4);
 assert.equal(overview.summary.latestEscalation.workspaceId, workspace.id);
 assert.equal(overview.summary.maintenanceRunCount, 1);
 assert.equal(overview.summary.maintenanceTotalRemindedCount, 5);
+assert.equal(overview.summary.maintenanceMonthlyBucketCount, 1);
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(overview.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(overview.summary.maintenanceAffectedMissionCount, 3);
 assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
 assert.deepEqual(

@@ -5345,7 +5345,10 @@ function summarizeProviderExecutions(executions) {
       since: filter.providerSince,
     });
     const parallelActivity = summarizeMissionParallelActivity(mission.id);
-    const maintenanceSummary = summarizeMaintenanceRuns(store.listMaintenanceRuns({ missionId: mission.id }));
+    const missionMaintenanceRuns = store.listMaintenanceRuns({ missionId: mission.id });
+    const maintenanceSummary = summarizeMaintenanceRuns(missionMaintenanceRuns);
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(missionMaintenanceRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries({ missionId: mission.id }));
     const maintenanceImpactSummary = summarizeMissionMaintenanceImpact(mission.id);
     const relatedMaintenanceRuns = listRelatedMaintenanceRunsForMission(mission.id);
@@ -5427,6 +5430,10 @@ function summarizeProviderExecutions(executions) {
       maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
       maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
       maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
+      maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
+      maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
+      maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
+      maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
       maintenanceRunCount: maintenanceSummary.runCount,
       maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
       maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
@@ -5714,6 +5721,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const parallelActivity = summarizeWorkspaceParallelActivity(workspace.id);
     const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     const maintenanceImpactSummary = summarizeMaintenanceImpact(
       maintenanceRuns,
       missionEntries.map((entry) => entry.mission.id),
@@ -5807,6 +5816,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
         maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
+        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
+        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
+        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
+        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
         maintenanceRunCount: maintenanceSummary.runCount,
         maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
         maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
@@ -9355,6 +9368,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const workspaceOverviews = store.listWorkspaces().map((workspace) => getWorkspaceOverview(workspace.id));
     const maintenanceRuns = store.listMaintenanceRuns();
     const maintenanceSummary = summarizeMaintenanceRuns(maintenanceRuns);
+    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
+    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     const maintenanceImpactSummary = summarizeMaintenanceImpact(maintenanceRuns);
     const maintenancePressureSummary = summarizeMaintenancePressure(listMaintenancePressureEntries());
     const missionCounts = Object.fromEntries(MISSION_STATUSES.map((status) => [status, 0]));
@@ -9442,6 +9457,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
         maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
         maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
+        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
+        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
+        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
+        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
         maintenanceRemainingMaintenanceRequiredCountTotal:
           maintenanceSummary.remainingMaintenanceRequiredCountTotal,
         maintenanceRunCount: maintenanceSummary.runCount,

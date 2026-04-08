@@ -28,6 +28,7 @@
 - extended maintenance history and maintenance overview bucket payloads with specialist retry policy and remediation route aggregate so day-level and latest-vs-previous maintenance trend views now preserve the same specialist recovery-path evidence as the raw maintenance run record
 - extended maintenance history and maintenance overview with weeklyBuckets plus latestWeeklyBucketDelta, so maintenance trend can now be read at a coarser weekly rollup without losing specialist retry-policy and remediation-route evidence
 - extended maintenance history and maintenance overview with monthlyBuckets plus latestMonthlyBucketDelta, so maintenance trend can now be read at monthly resolution without losing specialist retry-policy and remediation-route evidence
+- promoted maintenance monthly trend quick fields into mission, workspace, and global summaries so top-level control-plane surfaces can read current month maintenance drift without reopening dedicated maintenance history or overview payloads
 
 ## 2026-04-07 Provider Cost Telemetry
 
