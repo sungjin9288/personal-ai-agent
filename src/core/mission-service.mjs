@@ -11259,6 +11259,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       statusCounts: summary.healthDriftStatusCounts,
     };
     summary.healthDriftStatus = healthDrift.status;
+    summary.healthDriftCounts = healthDrift.statusCounts;
     summary.healthDriftReasonCodes = healthDrift.reasonCodes;
     summary.healthDriftLatestProfile = healthDrift.latestProfile;
     usageTrend.latestDecliningProfile = summary.latestDecliningProfile;
@@ -11388,10 +11389,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceUsageTrend.latestDecliningWorkspace;
     summary.usageTrendStatus = usageTrend.status;
     summary.usageTrendProfileCount = usageTrend.profileCount;
+    summary.usageTrendStatusCounts = usageTrend.statusCounts;
     summary.usageTrendLatestGrowingProfile = usageTrend.latestGrowingProfile;
     summary.usageTrendLatestDecliningProfile = usageTrend.latestDecliningProfile;
     summary.usageTrendLatestUnusedProfile = usageTrend.latestUnusedProfile;
     summary.adoptionDriftStatus = adoptionDrift.status;
+    summary.adoptionDriftStatusCounts = adoptionDrift.statusCounts;
     summary.adoptionDriftReasonCodes = adoptionDrift.reasonCodes;
     summary.adoptionDriftLatestProfile = adoptionDrift.latestProfile;
     summary.adoptionDriftLatestGrowingProfile = adoptionDrift.latestGrowingProfile;

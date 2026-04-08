@@ -267,6 +267,9 @@ assert.deepEqual(overview.summary.healthDriftReasonCodes, [
   'quality-gate-blocked',
   'specialist-follow-up-open',
 ]);
+assert.equal(overview.summary.healthDriftCounts['follow-up-required'], 1);
+assert.equal(overview.summary.healthDriftCounts.watch, 0);
+assert.equal(overview.summary.healthDriftCounts.stable, 3);
 assert.equal(overview.summary.healthDriftStatusCounts['follow-up-required'], 1);
 assert.equal(overview.summary.healthDriftStatusCounts.watch, 0);
 assert.equal(overview.summary.healthDriftStatusCounts.stable, 3);
@@ -339,6 +342,10 @@ assert.equal(overview.summary.usageTrendCounts.steady, 0);
 assert.equal(overview.summary.usageTrendCounts.unused, 1);
 assert.equal(overview.summary.usageTrendStatus, 'growing');
 assert.equal(overview.summary.usageTrendProfileCount, 4);
+assert.equal(overview.summary.usageTrendStatusCounts.growing, 2);
+assert.equal(overview.summary.usageTrendStatusCounts.declining, 1);
+assert.equal(overview.summary.usageTrendStatusCounts.steady, 0);
+assert.equal(overview.summary.usageTrendStatusCounts.unused, 1);
 assert.equal(overview.summary.usageTrendLatestGrowingProfile.id, 'engineering-triad');
 assert.equal(
   overview.summary.usageTrendLatestDecliningProfile.id,
@@ -463,6 +470,10 @@ assert.equal(overview.summary.adoptionDriftCounts.growing, 2);
 assert.equal(overview.summary.adoptionDriftCounts.declining, 1);
 assert.equal(overview.summary.adoptionDriftCounts.steady, 0);
 assert.equal(overview.summary.adoptionDriftCounts.unused, 1);
+assert.equal(overview.summary.adoptionDriftStatusCounts.growing, 2);
+assert.equal(overview.summary.adoptionDriftStatusCounts.declining, 1);
+assert.equal(overview.summary.adoptionDriftStatusCounts.steady, 0);
+assert.equal(overview.summary.adoptionDriftStatusCounts.unused, 1);
 assert.equal(overview.summary.adoptionDriftStatus, 'growing');
 assert.equal(overview.summary.adoptionDriftProfileCount, 4);
 assert.deepEqual(overview.summary.adoptionDriftReasonCodes, [
