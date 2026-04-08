@@ -125,6 +125,10 @@ assert.equal(
   resumedImplementationRun.specialistRootRunId,
   failedImplementationRun.specialistRootRunId || failedImplementationRun.id,
 );
+assert.ok(resumedImplementationRun.specialistHandoff);
+assert.ok(resumedImplementationRun.specialistHandoff.currentState);
+assert.ok(resumedImplementationRun.specialistHandoff.deliverables.length > 0);
+assert.equal(resumedImplementationRun.specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
 assert.ok(mergeRun);
 
 console.log(

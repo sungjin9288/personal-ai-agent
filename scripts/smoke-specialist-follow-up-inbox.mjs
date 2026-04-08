@@ -95,6 +95,10 @@ assert.equal(failedOnly.items.length, 1);
 assert.equal(failedOnly.items[0].missionId, failedMission.id);
 assert.equal(failedOnly.items[0].specialistKind, 'implementation');
 assert.equal(failedOnly.items[0].providerId, 'stub');
+assert.ok(failedOnly.items[0].specialistHandoff);
+assert.ok(failedOnly.items[0].specialistHandoff.currentState.includes('failed'));
+assert.ok(failedOnly.items[0].specialistHandoff.blockers.length >= 1);
+assert.equal(failedOnly.items[0].specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
 
 const blockedOnly = runCli({
   rootDir: tempRoot,
@@ -105,6 +109,10 @@ assert.equal(blockedOnly.filters.status, 'blocked');
 assert.equal(blockedOnly.items.length, 1);
 assert.equal(blockedOnly.items[0].missionId, blockedMission.id);
 assert.equal(blockedOnly.items[0].specialistKind, 'verification');
+assert.ok(blockedOnly.items[0].specialistHandoff);
+assert.ok(blockedOnly.items[0].specialistHandoff.currentState.includes('blocked'));
+assert.ok(blockedOnly.items[0].specialistHandoff.blockers.length >= 1);
+assert.equal(blockedOnly.items[0].specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
 
 const overdueOnly = runCli({
   rootDir: tempRoot,

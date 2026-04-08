@@ -66,12 +66,77 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function ensureObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
 function formatDateUtc(value) {
   if (!Number.isFinite(value)) {
     return '';
   }
 
   return new Date(value).toISOString().slice(0, 10);
+}
+
+function normalizeStringList(items) {
+  return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
+}
+
+function normalizeActionOwner(value, fallback = 'workspace-owner') {
+  const normalized = normalizeText(value, fallback);
+  return ACTION_OWNERS.includes(normalized) ? normalized : fallback;
+}
+
+function normalizeSpecialistHandoff(handoff, fallback = {}) {
+  const source = ensureObject(handoff);
+  const nextSource = ensureObject(source.nextHandoff);
+  const currentState = normalizeText(source.currentState, fallback.currentState || fallback.summaryText || '');
+  const deliverables = normalizeStringList(source.deliverables);
+  const acceptanceCriteria = normalizeStringList(source.acceptanceCriteria);
+  const evidence = normalizeStringList(source.evidence);
+  const blockers = normalizeStringList(source.blockers);
+  const nextHandoff = {
+    recommendedOwner: normalizeActionOwner(nextSource.recommendedOwner, fallback.recommendedOwner || 'workspace-owner'),
+    request: normalizeText(nextSource.request, fallback.nextAction || ''),
+    targetRole: normalizeText(nextSource.targetRole, fallback.targetRole || 'manager-merge'),
+  };
+
+  if (!currentState && !deliverables.length && !acceptanceCriteria.length && !evidence.length && !nextHandoff.request) {
+    return null;
+  }
+
+  return {
+    acceptanceCriteria,
+    blockers,
+    currentState,
+    deliverables,
+    evidence,
+    nextHandoff,
+  };
+}
+
+function buildFallbackSpecialistHandoff({
+  specialistKind,
+  status,
+  summaryText,
+  nextAction = '',
+  recommendedOwner = 'workspace-owner',
+}) {
+  return normalizeSpecialistHandoff(
+    {
+      acceptanceCriteria: [`Close the ${specialistKind} branch in status ${status}.`],
+      blockers: ['blocked', 'failed'].includes(status) ? [summaryText || `${specialistKind} branch requires follow-up.`] : [],
+      currentState: summaryText || `${specialistKind} branch is ${status}.`,
+      deliverables: [summaryText || `${specialistKind} specialist branch recorded a draft.`],
+      evidence: [summaryText || `${specialistKind} specialist branch state captured.`],
+      nextHandoff: {
+        recommendedOwner,
+        request: nextAction || `Review the ${specialistKind} branch and decide whether to resume or merge it.`,
+        targetRole: 'manager-merge',
+      },
+    },
+    {},
+  );
 }
 
 function getUtcMonthStartTimestamp(value = now()) {
@@ -3910,15 +3975,29 @@ function summarizeProviderExecutions(executions) {
   function buildSpecialistOutputEntry(run) {
     const artifact = getRunArtifact(run);
     const artifactContent = artifact?.path && fs.existsSync(artifact.path) ? fs.readFileSync(artifact.path, 'utf8') : '';
+    const specialistKind = normalizeText(run.specialistKind);
+    const status = normalizeAgentRunStatus(run.status);
+    const handoff =
+      normalizeSpecialistHandoff(run.specialistHandoff, {
+        nextAction: `Use the ${specialistKind} specialist branch in the next manager merge decision.`,
+        recommendedOwner: 'workspace-owner',
+        summaryText: normalizeText(run.outputSummary),
+      }) ||
+      buildFallbackSpecialistHandoff({
+        specialistKind,
+        status,
+        summaryText: normalizeText(run.outputSummary),
+      });
 
     return {
       artifactId: artifact?.id || null,
       content: artifactContent,
+      handoff,
       path: artifact?.path || null,
       runId: run.id,
-      specialistKind: normalizeText(run.specialistKind),
-      status: normalizeAgentRunStatus(run.status),
-      summaryText: normalizeText(run.outputSummary),
+      specialistKind,
+      status,
+      summaryText: normalizeText(run.outputSummary, handoff?.currentState || ''),
     };
   }
 
@@ -3951,6 +4030,17 @@ function summarizeProviderExecutions(executions) {
 
     let nextStatus = baseStatus;
     let nextSummary = runStage.run.outputSummary;
+    let nextHandoff =
+      normalizeSpecialistHandoff(runStage.run.specialistHandoff, {
+        nextAction: `Review the ${specialistKind} specialist branch before merge.`,
+        recommendedOwner: 'workspace-owner',
+        summaryText: runStage.run.outputSummary,
+      }) ||
+      buildFallbackSpecialistHandoff({
+        specialistKind,
+        status: baseStatus,
+        summaryText: runStage.run.outputSummary,
+      });
 
     if (directives.specialistAbandonKinds.includes(specialistKind)) {
       nextStatus = 'abandoned';
@@ -3967,12 +4057,41 @@ function summarizeProviderExecutions(executions) {
       return runStage;
     }
 
+    nextHandoff = normalizeSpecialistHandoff(
+      {
+        ...nextHandoff,
+        blockers:
+          nextStatus === 'blocked' || nextStatus === 'failed'
+            ? [...new Set([...(nextHandoff?.blockers || []), nextSummary].filter(Boolean))]
+            : nextHandoff?.blockers || [],
+        currentState: nextSummary,
+        deliverables:
+          nextStatus === 'abandoned'
+            ? [...new Set([...(nextHandoff?.deliverables || []), `${specialistKind} branch was intentionally abandoned.`])]
+            : nextHandoff?.deliverables || [],
+        nextHandoff: {
+          ...(nextHandoff?.nextHandoff || {}),
+          recommendedOwner: 'workspace-owner',
+          request:
+            nextStatus === 'completed'
+              ? `Merge the ${specialistKind} specialist artifact into the manager-controlled executor draft.`
+              : `Resolve the ${specialistKind} specialist ${nextStatus} state before merge.`,
+        },
+      },
+      {
+        nextAction: `Resolve the ${specialistKind} specialist ${nextStatus} state before merge.`,
+        recommendedOwner: 'workspace-owner',
+        summaryText: nextSummary,
+      },
+    );
+
     const updatedRun = store.updateAgentRun(runStage.run.id, (current) => ({
       ...current,
       mergeStatus: nextStatus === 'completed' ? 'pending' : normalizeText(current.mergeStatus, 'pending'),
       outputSummary: nextSummary,
       parallelGroupId,
       parallelRequiredKinds: requiredKinds,
+      specialistHandoff: nextHandoff,
       status: nextStatus,
       updatedAt: now(),
     }));
@@ -3982,6 +4101,7 @@ function summarizeProviderExecutions(executions) {
       output: runStage.output
         ? {
             ...runStage.output,
+            specialistHandoff: nextHandoff,
             summaryText: nextSummary,
           }
         : runStage.output,
@@ -4058,6 +4178,20 @@ function summarizeProviderExecutions(executions) {
     try {
       const providerOutput = await provider.run(providerInput);
       const normalizedOutput = provider.normalizeOutput(providerOutput, providerInput);
+      const specialistHandoff =
+        role === 'specialist'
+          ? normalizeSpecialistHandoff(normalizedOutput.specialistHandoff, {
+              nextAction: normalizedOutput.nextAction,
+              recommendedOwner: 'workspace-owner',
+              summaryText: normalizedOutput.summaryText,
+            }) ||
+            buildFallbackSpecialistHandoff({
+              nextAction: normalizedOutput.nextAction,
+              specialistKind: normalizeText(runMetadata.specialistKind) || 'implementation',
+              status: 'completed',
+              summaryText: normalizedOutput.summaryText,
+            })
+          : null;
 
       const outputArtifact = harness.writeArtifact({
         missionId: mission.id,
@@ -4086,6 +4220,7 @@ function summarizeProviderExecutions(executions) {
           usageTotalTokens: normalizeTelemetryNumber(providerOutput?.usageTotalTokens),
           workflowRole: providerRole,
           ...runMetadata,
+          specialistHandoff,
           specialistRootRunId:
             normalizeText(runMetadata.specialistKind) && !normalizeText(runMetadata.specialistRootRunId)
               ? agentRun.id
@@ -4124,6 +4259,15 @@ function summarizeProviderExecutions(executions) {
           usageTotalTokens: normalizeTelemetryNumber(failure.usageTotalTokens),
           workflowRole: providerRole,
           ...runMetadata,
+          specialistHandoff:
+            role === 'specialist'
+              ? buildFallbackSpecialistHandoff({
+                  nextAction: `Resolve the ${normalizeText(runMetadata.specialistKind) || 'specialist'} branch failure before merge.`,
+                  specialistKind: normalizeText(runMetadata.specialistKind) || 'implementation',
+                  status: 'failed',
+                  summaryText: failure.message,
+                })
+              : null,
           specialistRootRunId:
             normalizeText(runMetadata.specialistKind) && !normalizeText(runMetadata.specialistRootRunId)
               ? agentRun.id
@@ -5892,16 +6036,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                   providerId,
                   reason: formatProviderFailureDetail({
                     attemptCount: run.attemptCount,
-                    detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
+                  detail: run.outputSummary || `${specialistKind} specialist branch requires follow-up.`,
                     failureKind: normalizeProviderFailureKind(run.failureKind),
                     httpStatus: run.httpStatus,
                     recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
                     timedOut: Boolean(run.timedOut),
                   }),
-                  recommendedOwner: 'workspace-owner',
+                  recommendedOwner:
+                    normalizeSpecialistHandoff(run.specialistHandoff, {
+                      nextAction: `Resolve the ${specialistKind} specialist ${status} state before merge.`,
+                      recommendedOwner: 'workspace-owner',
+                      summaryText: run.outputSummary,
+                    })?.nextHandoff?.recommendedOwner || 'workspace-owner',
                   resumeFromRunId: normalizeText(run.resumeFromRunId) || null,
                   runId: run.id,
                   sessionId: run.sessionId || null,
+                  specialistHandoff:
+                    normalizeSpecialistHandoff(run.specialistHandoff, {
+                      nextAction: `Resolve the ${specialistKind} specialist ${status} state before merge.`,
+                      recommendedOwner: 'workspace-owner',
+                      summaryText: run.outputSummary,
+                    }) ||
+                    buildFallbackSpecialistHandoff({
+                      specialistKind,
+                      status,
+                      summaryText: normalizeText(run.outputSummary),
+                    }),
                   specialistKind,
                   specialistRootRunId: normalizeText(run.specialistRootRunId) || run.id,
                   stageKind: normalizeText(run.stageKind) || 'specialist-branch',

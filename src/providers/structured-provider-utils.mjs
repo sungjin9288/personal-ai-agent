@@ -149,6 +149,34 @@ export function extractChatCompletionText(payload) {
 }
 
 export function buildRoleContract({ role, pack }) {
+  if (role === 'specialist') {
+    return `Return only valid JSON with this shape:
+{
+  "summaryText": "short summary",
+  "artifactContent": "# Specialist Draft\\n...",
+  "adaptationNotes": ["note 1"],
+  "nextAction": "single next action sentence",
+  "specialistHandoff": {
+    "currentState": "what this branch completed or why it needs follow-up",
+    "deliverables": ["deliverable 1"],
+    "acceptanceCriteria": ["criterion 1"],
+    "evidence": ["evidence 1"],
+    "blockers": ["blocker 1"],
+    "nextHandoff": {
+      "targetRole": "manager-merge",
+      "recommendedOwner": "workspace-owner",
+      "request": "what the next actor should do"
+    }
+  }
+}
+
+Artifact rules:
+- artifactContent must be Markdown
+- include all required sections exactly once
+- required sections: ${pack.requiredSections.join(', ')}
+- include sections Specialist Handoff, Deliverables, Acceptance Criteria, Evidence, Blockers, Next Handoff`;
+  }
+
   if (role === 'manager') {
     return `Return only valid JSON with this shape:
 {
@@ -217,15 +245,10 @@ Artifact rules:
 }
 
 export function buildRequestPrompt(input, delegatedPrompt) {
-  const roleInput = {
-    ...input,
-    role: input.providerRole || input.role,
-  };
-
   return `${delegatedPrompt.trim()}
 
 ## Structured Output Contract
-${buildRoleContract(roleInput)}
+${buildRoleContract(input)}
 `;
 }
 
@@ -317,6 +340,49 @@ function normalizeExecutorOutput(output, input) {
   };
 }
 
+function normalizeSpecialistHandoff(handoff, output) {
+  const currentState = normalizeText(handoff?.currentState, output.summaryText);
+  const deliverables = normalizeStringArray(handoff?.deliverables);
+  const acceptanceCriteria = normalizeStringArray(handoff?.acceptanceCriteria);
+  const evidence = normalizeStringArray(handoff?.evidence);
+  const blockers = normalizeStringArray(handoff?.blockers);
+  const targetRole = normalizeText(handoff?.nextHandoff?.targetRole, 'manager-merge');
+  const recommendedOwner = normalizeText(handoff?.nextHandoff?.recommendedOwner, 'workspace-owner');
+  const request = normalizeText(handoff?.nextHandoff?.request, output.nextAction);
+
+  if (!currentState || !deliverables.length || !acceptanceCriteria.length || !evidence.length || !request) {
+    throw createProviderFailure('Specialist output is missing required handoff fields.', {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(handoff),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+
+  return {
+    acceptanceCriteria,
+    blockers,
+    currentState,
+    deliverables,
+    evidence,
+    nextHandoff: {
+      recommendedOwner,
+      request,
+      targetRole,
+    },
+  };
+}
+
+function normalizeSpecialistOutput(output, input) {
+  const baseOutput = normalizeExecutorOutput(output, input);
+
+  return {
+    ...baseOutput,
+    specialistHandoff: normalizeSpecialistHandoff(output.specialistHandoff, baseOutput),
+    type: 'specialist',
+  };
+}
+
 function normalizeReviewerChecks(checks) {
   return Array.isArray(checks)
     ? checks
@@ -364,7 +430,7 @@ function normalizeReviewerOutput(output, providerLabel) {
 
 export function normalizeStructuredOutput(result, input, providerLabel) {
   const output = result?.output || result;
-  const role = normalizeText(result?.role || input?.providerRole || input?.role);
+  const role = normalizeText(result?.role || input?.role || input?.providerRole);
 
   if (role === 'manager') {
     return normalizeManagerOutput(output);
@@ -376,6 +442,10 @@ export function normalizeStructuredOutput(result, input, providerLabel) {
 
   if (role === 'executor') {
     return normalizeExecutorOutput(output, input);
+  }
+
+  if (role === 'specialist') {
+    return normalizeSpecialistOutput(output, input);
   }
 
   if (role === 'reviewer') {

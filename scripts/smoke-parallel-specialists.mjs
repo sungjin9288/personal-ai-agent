@@ -27,6 +27,13 @@ function getLatestParallelGroupRuns(store, missionId) {
   };
 }
 
+function getDeliverableArtifact(store, run) {
+  const artifactId = (run.artifactIds || [])
+    .map((artifactId) => store.getArtifact(artifactId))
+    .find((artifact) => artifact?.kind === 'deliverable')?.id;
+  return artifactId ? store.getArtifact(artifactId) : null;
+}
+
 const store = createStore({ rootDir: tempRoot });
 const service = createMissionService({ store, rootDir: tempRoot });
 
@@ -68,6 +75,25 @@ assert.equal(
     .every((run) => run.status === 'completed' && run.mergeStatus === 'merged'),
   true,
 );
+assert.equal(
+  successGroup.runs
+    .filter((run) => run.role === 'specialist')
+    .every(
+      (run) =>
+        Boolean(run.specialistHandoff?.currentState) &&
+        Array.isArray(run.specialistHandoff?.deliverables) &&
+        run.specialistHandoff.deliverables.length > 0 &&
+        Boolean(run.specialistHandoff?.nextHandoff?.request),
+    ),
+  true,
+);
+
+const successMergeRun = successGroup.runs.find((run) => run.stageKind === 'parallel-merge' && run.status === 'completed');
+const successMergeArtifact = getDeliverableArtifact(store, successMergeRun);
+const successMergeContent = fs.readFileSync(successMergeArtifact.path, 'utf8');
+assert.match(successMergeContent, /## Specialist Inputs/);
+assert.match(successMergeContent, /next=Merge the research specialist artifact into the manager-controlled executor draft\./);
+assert.match(successMergeContent, /next=Merge the implementation specialist artifact into the manager-controlled executor draft\./);
 
 const successTimeline = service.getMissionTimeline(successMission.id);
 assert.equal(successTimeline.timeline.filter((event) => event.kind === 'specialist-branch-completed').length, 2);
@@ -128,6 +154,10 @@ const failedResumeInbox = service.getActionInbox({
 assert.equal(failedResumeInbox.items.length, 1);
 assert.equal(failedResumeInbox.items[0].specialistKind, 'implementation');
 assert.equal(failedResumeInbox.items[0].status, 'failed');
+assert.ok(failedResumeInbox.items[0].specialistHandoff);
+assert.ok(failedResumeInbox.items[0].specialistHandoff.currentState.includes('failed'));
+assert.equal(failedResumeInbox.items[0].specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
+assert.ok(failedResumeInbox.items[0].specialistHandoff.blockers.length >= 1);
 
 const failedResumeFirstGroup = getLatestParallelGroupRuns(store, failedResumeMission.id);
 const failedImplementationRun = failedResumeFirstGroup.runs.find(
@@ -176,6 +206,8 @@ assert.equal(
   resumedImplementationRun.specialistRootRunId,
   failedImplementationRun.specialistRootRunId || failedImplementationRun.id,
 );
+assert.ok(resumedImplementationRun.specialistHandoff?.currentState);
+assert.ok(resumedImplementationRun.specialistHandoff?.deliverables?.length > 0);
 assert.ok(latestMergeRun);
 assert.equal(
   failedResumeSecondGroup.runs
@@ -219,6 +251,9 @@ assert.equal(blockedInbox.items.length, 1);
 assert.equal(blockedInbox.items[0].specialistKind, 'verification');
 assert.equal(blockedInbox.items[0].status, 'blocked');
 assert.equal(blockedInbox.items[0].parallelGroupId, getLatestParallelGroupRuns(store, blockedMission.id).parallelGroupId);
+assert.ok(blockedInbox.items[0].specialistHandoff);
+assert.ok(blockedInbox.items[0].specialistHandoff.blockers.length >= 1);
+assert.equal(blockedInbox.items[0].specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
 
 const blockedTimeline = service.getMissionTimeline(blockedMission.id);
 assert.equal(blockedTimeline.timeline.filter((event) => event.kind === 'specialist-branch-blocked').length, 1);

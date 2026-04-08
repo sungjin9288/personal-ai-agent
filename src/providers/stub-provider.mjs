@@ -60,7 +60,7 @@ function buildPromptContext({
     ? previousOutputs.specialists
         .map(
           (item) =>
-            `- ${item.specialistKind}: status=${item.status} summary=${item.summaryText || 'no summary'} path=${item.path || 'n/a'}`,
+            `- ${item.specialistKind}: status=${item.status} currentState=${item.handoff?.currentState || item.summaryText || 'no summary'} path=${item.path || 'n/a'}`,
         )
         .join('\n')
     : '- no specialist branch outputs';
@@ -68,7 +68,7 @@ function buildPromptContext({
     ? previousOutputs.specialists
         .map(
           (item) =>
-            `### ${item.specialistKind}\n- status: ${item.status}\n- path: ${item.path || 'n/a'}\n\n${item.content || '_no specialist artifact content_'}`,
+            `### ${item.specialistKind}\n- status: ${item.status}\n- path: ${item.path || 'n/a'}\n- current state: ${item.handoff?.currentState || item.summaryText || 'no summary'}\n- deliverables: ${(item.handoff?.deliverables || []).join('; ') || 'none'}\n- blockers: ${(item.handoff?.blockers || []).join('; ') || 'none'}\n- next request: ${item.handoff?.nextHandoff?.request || 'none'}\n\n${item.content || '_no specialist artifact content_'}`,
         )
         .join('\n\n')
     : 'No specialist artifact content available.';
@@ -207,7 +207,10 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) 
 
   if (Array.isArray(previousOutputs.specialists) && previousOutputs.specialists.length) {
     artifactContent = `${artifactContent.trim()}\n\n## Specialist Inputs\n${previousOutputs.specialists
-      .map((item) => `- ${item.specialistKind}: ${item.summaryText || 'no summary available'}`)
+      .map(
+        (item) =>
+          `- ${item.specialistKind}: ${item.handoff?.currentState || item.summaryText || 'no summary available'} | next=${item.handoff?.nextHandoff?.request || 'none'}`,
+      )
       .join('\n')}\n`;
   }
 
@@ -236,13 +239,33 @@ function buildSpecialistOutput(input) {
   const baseOutput = buildExecutorOutput(input);
   const specialistKind = input.specialistKind || 'implementation';
   const title = `${specialistKind[0].toUpperCase()}${specialistKind.slice(1)} Specialist Draft`;
+  const specialistHandoff = {
+    currentState: `${specialistKind} branch prepared a bounded artifact for ${input.mission.title}.`,
+    deliverables: [
+      `${specialistKind} specialist draft captured in ${baseOutput.artifactFileName}.`,
+    ],
+    acceptanceCriteria: input.pack.requiredSections.map(
+      (sectionName) => `Deliverable includes the ${sectionName} section for ${specialistKind} review.`,
+    ),
+    evidence: [
+      baseOutput.summaryText,
+      ...(baseOutput.adaptationNotes || []).map((note) => `Adaptation note: ${note}`),
+    ],
+    blockers: [],
+    nextHandoff: {
+      targetRole: 'manager-merge',
+      recommendedOwner: 'workspace-owner',
+      request: `Merge the ${specialistKind} specialist artifact into the manager-controlled executor draft.`,
+    },
+  };
 
   return {
     ...baseOutput,
     artifactTitle: title,
-    artifactContent: `${baseOutput.artifactContent.trim()}\n\n## Specialist Role\n- kind: ${specialistKind}\n`,
+    artifactContent: `${baseOutput.artifactContent.trim()}\n\n## Specialist Role\n- kind: ${specialistKind}\n\n## Specialist Handoff\n- current state: ${specialistHandoff.currentState}\n\n## Deliverables\n${joinBullets(specialistHandoff.deliverables, 'No deliverables recorded.')}\n\n## Acceptance Criteria\n${joinBullets(specialistHandoff.acceptanceCriteria, 'No acceptance criteria recorded.')}\n\n## Evidence\n${joinBullets(specialistHandoff.evidence, 'No evidence recorded.')}\n\n## Blockers\n${joinBullets(specialistHandoff.blockers, 'No blockers recorded.')}\n\n## Next Handoff\n- target role: ${specialistHandoff.nextHandoff.targetRole}\n- recommended owner: ${specialistHandoff.nextHandoff.recommendedOwner}\n- request: ${specialistHandoff.nextHandoff.request}\n`,
+    specialistHandoff,
     summaryText: `${title} generated for ${input.mission.title}.`,
-    type: 'executor',
+    type: 'specialist',
   };
 }
 
