@@ -327,6 +327,10 @@ assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 4);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 2);
 assert.equal(inbox.summary.providerCounts.stub, 3);
+assert.equal(inbox.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(inbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(inbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(inbox.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.equal(inbox.summary.reminderCounts.total, 8);
 assert.equal(inbox.summary.reminderCounts.eligible, 2);
 assert.equal(inbox.summary.reminderCounts.needsReminder, 2);
@@ -480,6 +484,10 @@ const workspaceFilteredInbox = runCli({
 });
 
 assert.equal(workspaceFilteredInbox.summary.pendingActionCount, 2);
+assert.equal(workspaceFilteredInbox.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(workspaceFilteredInbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(workspaceFilteredInbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(workspaceFilteredInbox.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.deepEqual(
   workspaceFilteredInbox.items.map((item) => item.actionType).sort(),
   ['provider-health-drift', 'reviewer-follow-up'],
@@ -540,6 +548,10 @@ const maintenanceRequiredInbox = runCli({
 
 assert.equal(maintenanceRequiredInbox.summary.pendingActionCount, 1);
 assert.equal(maintenanceRequiredInbox.filters.actionClass, 'maintenance-required');
+assert.equal(maintenanceRequiredInbox.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(maintenanceRequiredInbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(maintenanceRequiredInbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(maintenanceRequiredInbox.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.equal(maintenanceRequiredInbox.items[0].actionType, 'maintenance-sweep');
 assert.equal(maintenanceRequiredInbox.items[0].workspaceId, workspaceOne.id);
 
@@ -564,6 +576,10 @@ const providerFilteredInbox = runCli({
 assert.equal(providerFilteredInbox.filters.providerId, 'stub');
 assert.equal(providerFilteredInbox.summary.pendingActionCount, 3);
 assert.equal(providerFilteredInbox.summary.providerCounts.stub, 3);
+assert.equal(providerFilteredInbox.summary.maintenanceMonthlyBucketCount, 0);
+assert.equal(providerFilteredInbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
+assert.equal(providerFilteredInbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
+assert.equal(providerFilteredInbox.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.equal(Object.keys(providerFilteredInbox.summary.providerCounts).length, 1);
 assert.equal(providerFilteredInbox.items.every((item) => item.providerId === 'stub'), true);
 assert.deepEqual(

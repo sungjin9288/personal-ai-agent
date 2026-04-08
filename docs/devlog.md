@@ -31,6 +31,7 @@
 - promoted maintenance monthly trend quick fields into mission, workspace, and global summaries so top-level control-plane surfaces can read current month maintenance drift without reopening dedicated maintenance history or overview payloads
 - linked the same maintenance monthly quick fields into workspace timeline and global operator timeline summaries, so chronology-first operator payloads can expose current month maintenance drift without reopening the maintenance read-model
 - linked the same maintenance monthly quick fields into immediate `action maintenance` summary output, so sweep execution receipts can expose current month maintenance drift without reopening the maintenance history surface
+- linked the same maintenance monthly quick fields into unified `action inbox` summary when maintenance-required pressure is present, so mixed queue triage can expose current month maintenance drift without reopening the maintenance history surface
 
 ## 2026-04-07 Provider Cost Telemetry
 

@@ -7733,6 +7733,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
 
+    const summary = summarizeActionInbox(items);
+    if (items.some((item) => item.actionType === 'maintenance-sweep') && !filter.providerId) {
+      const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
+        missionId: filter.missionId,
+        owner: filter.owner,
+        workspaceId: filter.workspaceId,
+      });
+      const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
+      summary.maintenanceMonthlyBucketCount = maintenanceMonthlyBuckets.length;
+      summary.maintenanceLatestMonthlyBucketStartDate = maintenanceMonthlyBuckets[0]?.monthStartDate || null;
+      summary.maintenanceOldestMonthlyBucketStartDate = maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null;
+      summary.maintenanceLatestMonthlyBucketDelta =
+        buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
+    } else {
+      summary.maintenanceMonthlyBucketCount = 0;
+      summary.maintenanceLatestMonthlyBucketStartDate = null;
+      summary.maintenanceOldestMonthlyBucketStartDate = null;
+      summary.maintenanceLatestMonthlyBucketDelta = null;
+    }
+
     return {
       filters: {
         actionClass: filter.actionClass || null,
@@ -7746,7 +7766,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: filter.workspaceId || null,
       },
       items,
-      summary: summarizeActionInbox(items),
+      summary,
     };
   }
 
