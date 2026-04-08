@@ -11341,7 +11341,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceAdoptionDrift.missionTrendStatusCounts;
     summary.workspaceAdoptionDriftProfileFootprintTrendStatusCounts =
       workspaceAdoptionDrift.profileFootprintTrendStatusCounts;
+    summary.workspaceAdoptionDriftStatus = workspaceAdoptionDrift.status;
+    summary.workspaceAdoptionDriftReasonCodes = workspaceAdoptionDrift.reasonCodes;
     summary.workspaceAdoptionDriftReasonCodeCounts = workspaceAdoptionDrift.reasonCodeCounts;
+    summary.workspaceAdoptionDriftLatestWorkspace = workspaceAdoptionDrift.latestWorkspace;
     summary.workspaceAdoptionDriftWorkspaceCount = workspaceAdoptionDrift.workspaceCount;
     summary.workspaceAdoptionDriftWorkspaceIdsByStatus =
       workspaceAdoptionDrift.workspaceIdsByStatus;
