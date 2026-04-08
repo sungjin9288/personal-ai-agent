@@ -355,6 +355,17 @@ assert.equal(overview.summary.workspaceUsageTrendStatusCounts.growing[secondWork
 assert.equal(overview.summary.workspaceUsageTrendStatusCounts.declining[workspace.id], 1);
 assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.steady, {});
 assert.deepEqual(overview.summary.workspaceUsageTrendStatusCounts.unused, {});
+assert.deepEqual(
+  overview.summary.workspaceUsageTrendWorkspaceIdsByStatus.growing,
+  [secondWorkspace.id, workspace.id].sort((left, right) => String(left).localeCompare(String(right))),
+);
+assert.deepEqual(overview.summary.workspaceUsageTrendWorkspaceIdsByStatus.declining, [workspace.id]);
+assert.deepEqual(overview.summary.workspaceUsageTrendWorkspaceIdsByStatus.steady, []);
+assert.deepEqual(overview.summary.workspaceUsageTrendWorkspaceIdsByStatus.unused, []);
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceStatusCounts.growing, 2);
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceStatusCounts.declining, 1);
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceStatusCounts.steady, 0);
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceStatusCounts.unused, 0);
 assert.equal(overview.summary.workspaceUsageTrendLatestGrowingWorkspace.id, secondWorkspace.id);
 assert.equal(
   overview.summary.workspaceUsageTrendLatestGrowingWorkspace.profileId,
@@ -825,6 +836,14 @@ assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts['fol
 assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.watch, {});
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendStatus, 'steady');
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCount, 1);
+assert.deepEqual(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.growing, [workspace.id]);
+assert.deepEqual(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.declining, [workspace.id]);
+assert.deepEqual(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.steady, []);
+assert.deepEqual(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.unused, []);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.growing, 1);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.declining, 1);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.steady, 0);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.unused, 0);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.id, workspace.id);
 assert.equal(
   workspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.profileId,
@@ -983,6 +1002,20 @@ assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftStatusC
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.watch, {});
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendStatus, 'growing');
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCount, 1);
+assert.deepEqual(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.growing,
+  [secondWorkspace.id],
+);
+assert.deepEqual(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.declining,
+  [],
+);
+assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.steady, []);
+assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceIdsByStatus.unused, []);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.growing, 1);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.declining, 0);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.steady, 0);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceStatusCounts.unused, 0);
 assert.equal(
   secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestGrowingWorkspace.id,
   secondWorkspace.id,
