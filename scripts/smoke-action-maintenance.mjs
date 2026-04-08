@@ -237,12 +237,16 @@ assert.equal(maintenance.ownerHandoffReminders.items[0].id, handoffFlow.resoluti
 assert.equal(maintenance.specialistFollowUpReminders.filters.dueOnly, true);
 assert.equal(maintenance.specialistFollowUpReminders.summary.dueCandidateCount, 1);
 assert.equal(maintenance.specialistFollowUpReminders.summary.remindedCount, 1);
+assert.equal(maintenance.specialistFollowUpReminders.summary.retryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(maintenance.specialistFollowUpReminders.summary.remediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenance.specialistFollowUpReminders.items[0].missionId, specialistMission.id);
 assert.equal(maintenance.specialistFollowUpReminders.items[0].specialistKind, 'implementation');
 assert.equal(maintenance.summary.dueCandidateCountTotal, 3);
 assert.equal(maintenance.summary.escalationRemindedCount, 1);
 assert.equal(maintenance.summary.ownerHandoffRemindedCount, 1);
 assert.equal(maintenance.summary.specialistFollowUpRemindedCount, 1);
+assert.equal(maintenance.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(maintenance.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenance.summary.totalRemindedCount, 3);
 assert.equal(maintenance.summary.acknowledgedMaintenanceRequiredCount, 1);
 assert.equal(maintenance.summary.resolvedMaintenanceRequiredCount, 1);
@@ -256,6 +260,8 @@ assert.equal(maintenance.maintenanceRun.afterPressureSummary.maintenanceRequired
 assert.equal(maintenance.maintenanceRun.beforePressureSummary.currentDueSpecialistFollowUpCountTotal, 1);
 assert.equal(maintenance.maintenanceRun.afterPressureSummary.currentDueSpecialistFollowUpCountTotal, 0);
 assert.equal(maintenance.maintenanceRun.specialistFollowUpRemindedCount, 1);
+assert.equal(maintenance.maintenanceRun.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
+assert.equal(maintenance.maintenanceRun.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 
 const postMaintenanceReminderInbox = runCli({
   rootDir: tempRoot,

@@ -783,7 +783,17 @@ function formatEscalationOwnerHandoffReminderDetail(reminder) {
 function formatMaintenanceRunDetail(run) {
   const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
   const noteSuffix = run.note ? ` note=${run.note}` : '';
-  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, specialist-follow-up=${run.specialistFollowUpRemindedCount || 0}, acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
+  const specialistRetrySummary = formatIncidentCountMap(
+    run.specialistFollowUpRetryPolicyCounts || run.specialistFollowUpRemindersSummary?.retryPolicyCounts || {},
+  );
+  const specialistRouteSummary = formatIncidentCountMap(
+    run.specialistFollowUpRemediationRouteCounts || run.specialistFollowUpRemindersSummary?.remediationRouteCounts || {},
+  );
+  const specialistSuffix =
+    specialistRetrySummary || specialistRouteSummary
+      ? ` specialist-retry=${specialistRetrySummary || 'none'}, specialist-routes=${specialistRouteSummary || 'none'},`
+      : '';
+  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, specialist-follow-up=${run.specialistFollowUpRemindedCount || 0},${specialistSuffix} acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
 function getMeaningfulOwnerTransitions(ownerHistory) {
@@ -1040,6 +1050,18 @@ function formatIncidentCountMap(counts = {}) {
     .sort(([left], [right]) => String(left).localeCompare(String(right)))
     .map(([key, count]) => `${key}=${count}`)
     .join(', ');
+}
+
+function accumulateCountMap(target, source = {}) {
+  for (const [key, value] of Object.entries(source || {})) {
+    const normalizedValue = Number(value || 0);
+    if (!normalizedValue) {
+      continue;
+    }
+    target[key] = (target[key] || 0) + normalizedValue;
+  }
+
+  return target;
 }
 
 function buildOverdueIncidentContent({ items, filters, summary }) {
@@ -1395,6 +1417,8 @@ function summarizeMaintenanceRuns(items) {
   let ownerHandoffRemindedCountTotal = 0;
   let providerAttentionRemindedCountTotal = 0;
   let specialistFollowUpRemindedCountTotal = 0;
+  const specialistFollowUpRemediationRouteCounts = {};
+  const specialistFollowUpRetryPolicyCounts = {};
   let noOpRunCount = 0;
   let remainingMaintenanceRequiredCountTotal = 0;
   const recentRuns = [];
@@ -1411,6 +1435,16 @@ function summarizeMaintenanceRuns(items) {
     ownerHandoffRemindedCountTotal += Number(item.ownerHandoffRemindedCount || 0);
     providerAttentionRemindedCountTotal += Number(item.providerAttentionRemindedCount || 0);
     specialistFollowUpRemindedCountTotal += Number(item.specialistFollowUpRemindedCount || 0);
+    accumulateCountMap(
+      specialistFollowUpRetryPolicyCounts,
+      item.specialistFollowUpRetryPolicyCounts || item.specialistFollowUpRemindersSummary?.retryPolicyCounts || {},
+    );
+    accumulateCountMap(
+      specialistFollowUpRemediationRouteCounts,
+      item.specialistFollowUpRemediationRouteCounts ||
+        item.specialistFollowUpRemindersSummary?.remediationRouteCounts ||
+        {},
+    );
     remainingMaintenanceRequiredCountTotal += Number(item.remainingMaintenanceRequiredCount || 0);
     resolvedMaintenanceRequiredCountTotal += Number(item.resolvedMaintenanceRequiredCount || 0);
     syncedCountTotal += Number(item.syncedCount || 0);
@@ -1473,7 +1507,9 @@ function summarizeMaintenanceRuns(items) {
     noOpRunCount,
     ownerHandoffRemindedCountTotal,
     providerAttentionRemindedCountTotal,
+    specialistFollowUpRemediationRouteCounts,
     specialistFollowUpRemindedCountTotal,
+    specialistFollowUpRetryPolicyCounts,
     recentRuns: recentRuns
       .sort((left, right) => String(right.createdAt || '').localeCompare(String(left.createdAt || '')))
       .slice(0, 5),
@@ -7887,7 +7923,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       latestReminderAt,
       ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
       providerAttentionRemindedCount: Number(providerAttentionReminders.summary.remindedCount || 0),
+      specialistFollowUpRemediationRouteCounts: specialistFollowUpReminders.summary.remediationRouteCounts || {},
       specialistFollowUpRemindedCount: Number(specialistFollowUpReminders.summary.remindedCount || 0),
+      specialistFollowUpRetryPolicyCounts: specialistFollowUpReminders.summary.retryPolicyCounts || {},
       remainingMaintenanceRequiredCount: remainingActionIds.length,
       resolvedMaintenanceRequiredCount: resolvedActionIds.length,
       syncedCount: Number(sync.summary.syncedCount || 0),
@@ -7924,8 +7962,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ownerHandoffRemindersSummary: ownerHandoffReminders.summary,
       providerAttentionRemindedCount: summary.providerAttentionRemindedCount,
       providerAttentionRemindersSummary: providerAttentionReminders.summary,
+      specialistFollowUpRemediationRouteCounts: summary.specialistFollowUpRemediationRouteCounts,
       specialistFollowUpRemindedCount: summary.specialistFollowUpRemindedCount,
       specialistFollowUpRemindersSummary: specialistFollowUpReminders.summary,
+      specialistFollowUpRetryPolicyCounts: summary.specialistFollowUpRetryPolicyCounts,
       remainingActionIds,
       remainingMaintenanceRequiredCount: summary.remainingMaintenanceRequiredCount,
       resolvedActionIds,
