@@ -34,6 +34,7 @@
 - added root-level `usageTrend` to `overview profiles`, so catalog responses expose the aggregate month-over-month mission volume status as a quick field alongside workspace footprint trend
 - added combined `adoptionDrift` to `overview profiles` root and items, so orchestration preset adoption can be read from one status instead of manually combining mission volume and workspace footprint trends
 - added `overview profiles --adoption-drift-status` and `--adoption-drift-reason-code`, so combined adoption drift can be sliced directly from the catalog query surface
+- added root-level and summary-level adoption drift aggregates with reasonCodeCounts and latestUnusedAdoptionProfile, so orchestration preset adoption pressure can be triaged without reopening item payloads
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface

@@ -143,9 +143,24 @@ assert.equal(overview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.equal(overview.workspaceHealthDrift.latestWorkspace.profileId, 'knowledge-triad');
 assert.equal(overview.adoptionDrift.status, 'growing');
 assert.deepEqual(overview.adoptionDrift.reasonCodes, [
+  'mission-volume-declining',
   'mission-volume-growing',
+  'unused-profile',
+  'workspace-footprint-declining',
   'workspace-footprint-growing',
 ]);
+assert.equal(overview.adoptionDrift.profileCount, 4);
+assert.equal(overview.adoptionDrift.statusCounts.growing, 2);
+assert.equal(overview.adoptionDrift.statusCounts.declining, 1);
+assert.equal(overview.adoptionDrift.statusCounts.steady, 0);
+assert.equal(overview.adoptionDrift.statusCounts.unused, 1);
+assert.equal(overview.adoptionDrift.reasonCodeCounts['mission-volume-growing'], 2);
+assert.equal(overview.adoptionDrift.reasonCodeCounts['workspace-footprint-growing'], 2);
+assert.equal(overview.adoptionDrift.reasonCodeCounts['mission-volume-declining'], 1);
+assert.equal(overview.adoptionDrift.reasonCodeCounts['workspace-footprint-declining'], 1);
+assert.equal(overview.adoptionDrift.reasonCodeCounts['unused-profile'], 1);
+assert.equal(overview.adoptionDrift.latestProfile.id, 'engineering-triad');
+assert.equal(overview.adoptionDrift.latestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.adoptionDrift.usageTrendStatus, 'growing');
 assert.equal(overview.adoptionDrift.workspaceUsageTrendStatus, 'growing');
 assert.equal(overview.usageTrend.status, 'growing');
@@ -248,8 +263,16 @@ assert.equal(overview.summary.adoptionDriftCounts.growing, 2);
 assert.equal(overview.summary.adoptionDriftCounts.declining, 1);
 assert.equal(overview.summary.adoptionDriftCounts.steady, 0);
 assert.equal(overview.summary.adoptionDriftCounts.unused, 1);
+assert.equal(overview.summary.adoptionDriftProfileCount, 4);
+assert.equal(overview.summary.adoptionDriftReasonCodeCounts['mission-volume-growing'], 2);
+assert.equal(overview.summary.adoptionDriftReasonCodeCounts['workspace-footprint-growing'], 2);
+assert.equal(overview.summary.adoptionDriftReasonCodeCounts['mission-volume-declining'], 1);
+assert.equal(overview.summary.adoptionDriftReasonCodeCounts['workspace-footprint-declining'], 1);
+assert.equal(overview.summary.adoptionDriftReasonCodeCounts['unused-profile'], 1);
+assert.equal(overview.summary.latestAdoptionDriftProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestGrowingAdoptionProfile.id, 'engineering-triad');
 assert.equal(overview.summary.latestDecliningAdoptionProfile.id, 'engineering-implementation-verification');
+assert.equal(overview.summary.latestUnusedAdoptionProfile.id, 'knowledge-research-implementation');
 
 const knowledgeTriad = overview.items.find((item) => item.id === 'knowledge-triad');
 assert.ok(knowledgeTriad);
@@ -438,7 +461,12 @@ assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 0);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.adoptionDrift.status, 'growing');
-assert.deepEqual(workspaceUsedOverview.adoptionDrift.reasonCodes, ['mission-volume-growing']);
+assert.deepEqual(workspaceUsedOverview.adoptionDrift.reasonCodes, [
+  'mission-volume-declining',
+  'mission-volume-growing',
+  'workspace-footprint-declining',
+  'workspace-footprint-growing',
+]);
 assert.equal(workspaceUsedOverview.usageTrend.status, 'growing');
 assert.equal(workspaceUsedOverview.usageTrend.currentMonthMissionCount, 2);
 assert.equal(workspaceUsedOverview.usageTrend.previousMonthMissionCount, 1);

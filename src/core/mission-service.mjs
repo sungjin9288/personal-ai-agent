@@ -2099,6 +2099,10 @@ function summarizeOperatorTimeline(events) {
 }
 
 function summarizeOrchestrationProfileOverviewItems(items) {
+  const adoptionDriftReasonCodeCounts = {};
+  const adoptionDriftStatusCounts = Object.fromEntries(
+    ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, 0]),
+  );
   const healthDriftReasonCodeCounts = {};
   const healthDriftStatusCounts = {
     'follow-up-required': 0,
@@ -2119,6 +2123,7 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   const workspaceProfileCounts = {};
   const touchedProfileIds = [];
   const touchedWorkspaceIds = new Set();
+  let adoptionDriftProfileCount = 0;
   let healthDriftProfileCount = 0;
   let missionCountTotal = 0;
   let parallelGroupCountTotal = 0;
@@ -2133,8 +2138,18 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   let usedCount = 0;
 
   for (const item of items) {
+    const adoptionDrift = item.adoptionDrift || summarizeOrchestrationProfileAdoptionDrift(item);
     const drift = item.healthDrift || summarizeOrchestrationProfileHealthDrift(item);
 
+    if (adoptionDriftStatusCounts[adoptionDrift.status] !== undefined) {
+      adoptionDriftStatusCounts[adoptionDrift.status] += 1;
+    }
+    if (adoptionDrift.status !== 'steady') {
+      adoptionDriftProfileCount += 1;
+    }
+    for (const reasonCode of adoptionDrift.reasonCodes) {
+      adoptionDriftReasonCodeCounts[reasonCode] = (adoptionDriftReasonCodeCounts[reasonCode] || 0) + 1;
+    }
     if (healthDriftStatusCounts[drift.status] !== undefined) {
       healthDriftStatusCounts[drift.status] += 1;
     }
@@ -2199,6 +2214,9 @@ function summarizeOrchestrationProfileOverviewItems(items) {
   }
 
   return {
+    adoptionDriftProfileCount,
+    adoptionDriftReasonCodeCounts,
+    adoptionDriftStatusCounts,
     healthDriftProfileCount,
     healthDriftReasonCodeCounts,
     healthDriftStatusCounts,
@@ -2297,6 +2315,20 @@ function summarizeOrchestrationProfileOverviewItems(items) {
             latestMission: item.latestMission,
             latestParallelGroup: item.latestParallelGroup,
             latestUsedAt: item.latestUsedAt || item.specialistFollowUpLatestReminderAt || '',
+          })),
+        'latestUsedAt',
+      ) || null,
+    latestAdoptionDriftProfile:
+      getLatestItem(
+        items
+          .filter((item) => (item.adoptionDrift || summarizeOrchestrationProfileAdoptionDrift(item)).status !== 'steady')
+          .map((item) => ({
+            adoptionDrift: item.adoptionDrift || summarizeOrchestrationProfileAdoptionDrift(item),
+            displayName: item.displayName,
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt || '',
           })),
         'latestUsedAt',
       ) || null,
@@ -10662,6 +10694,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           })),
         'latestUsedAt',
       ) || null;
+    summary.latestUnusedAdoptionProfile =
+      items
+        .filter((item) => item.adoptionDrift.status === 'unused')
+        .map((item) => ({
+          adoptionDrift: item.adoptionDrift,
+          displayName: item.displayName,
+          id: item.id,
+          latestUsedAt: item.latestUsedAt || null,
+        }))
+        .sort((left, right) => String(left.id).localeCompare(String(right.id)))[0] || null;
     const healthDrift = {
       latestProfile: summary.latestHealthDriftProfile,
       profileCount: summary.healthDriftProfileCount,
@@ -10677,6 +10719,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             : 'stable',
       statusCounts: summary.healthDriftStatusCounts,
     };
+    adoptionDrift.latestProfile = summary.latestAdoptionDriftProfile;
+    adoptionDrift.latestUnusedProfile = summary.latestUnusedAdoptionProfile;
+    adoptionDrift.profileCount = summary.adoptionDriftProfileCount;
+    adoptionDrift.reasonCodeCounts = summary.adoptionDriftReasonCodeCounts;
+    adoptionDrift.reasonCodes = Object.keys(summary.adoptionDriftReasonCodeCounts).sort((left, right) =>
+      String(left).localeCompare(String(right)),
+    );
+    adoptionDrift.statusCounts = summary.adoptionDriftStatusCounts;
     const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
       summary.touchedWorkspaceIds.map((workspaceId) => {
         const workspace = workspaceById.get(workspaceId) || null;
