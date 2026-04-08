@@ -401,6 +401,23 @@ assert.deepEqual(knowledgeTriad.workspaceUsageTrend.workspaceIdsByStatus.unused,
 assert.equal(knowledgeTriad.workspaceUsageTrend.latestGrowingWorkspace.id, workspace.id);
 assert.equal(knowledgeTriad.workspaceUsageTrend.latestGrowingWorkspace.profileId, 'knowledge-triad');
 assert.equal(knowledgeTriad.workspaceUsageTrend.latestDecliningWorkspace, null);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.status, 'growing');
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.workspaceCount, 1);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.statusCounts.growing, 1);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.statusCounts.declining, 0);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.missionTrendStatusCounts.growing, 1);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.profileFootprintTrendStatusCounts.growing, 1);
+assert.equal(
+  knowledgeTriad.workspaceAdoptionDrift.reasonCodeCounts['workspace-mission-volume-growing'],
+  1,
+);
+assert.equal(
+  knowledgeTriad.workspaceAdoptionDrift.reasonCodeCounts['workspace-profile-footprint-growing'],
+  1,
+);
+assert.deepEqual(knowledgeTriad.workspaceAdoptionDrift.workspaceIdsByStatus.growing, [workspace.id]);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestWorkspace.id, workspace.id);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status, 'growing');
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
 assert.equal(knowledgeTriad.missionStatusCounts.failed, 1);
 assert.equal(knowledgeTriad.workspaceMissionCounts[workspace.id], 2);
@@ -473,6 +490,34 @@ assert.equal(
   engineeringImplementationVerification.workspaceUsageTrend.latestDecliningWorkspace.profileId,
   'engineering-implementation-verification',
 );
+assert.equal(engineeringImplementationVerification.workspaceAdoptionDrift.status, 'declining');
+assert.equal(engineeringImplementationVerification.workspaceAdoptionDrift.workspaceCount, 1);
+assert.equal(engineeringImplementationVerification.workspaceAdoptionDrift.statusCounts.declining, 1);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.missionTrendStatusCounts.declining,
+  1,
+);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.profileFootprintTrendStatusCounts.declining,
+  1,
+);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.reasonCodeCounts['workspace-mission-volume-declining'],
+  1,
+);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.reasonCodeCounts['workspace-profile-footprint-declining'],
+  1,
+);
+assert.deepEqual(
+  engineeringImplementationVerification.workspaceAdoptionDrift.workspaceIdsByStatus.declining,
+  [workspace.id],
+);
+assert.equal(engineeringImplementationVerification.workspaceAdoptionDrift.latestWorkspace.id, workspace.id);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status,
+  'declining',
+);
 assert.equal(engineeringImplementationVerification.adoptionDrift.status, 'declining');
 assert.deepEqual(engineeringImplementationVerification.adoptionDrift.reasonCodes, [
   'mission-volume-declining',
@@ -518,6 +563,25 @@ assert.deepEqual(engineeringTriad.workspaceUsageTrend.workspaceIdsByStatus.unuse
 assert.equal(engineeringTriad.workspaceUsageTrend.latestGrowingWorkspace.id, secondWorkspace.id);
 assert.equal(engineeringTriad.workspaceUsageTrend.latestGrowingWorkspace.profileId, 'engineering-triad');
 assert.equal(engineeringTriad.workspaceUsageTrend.latestDecliningWorkspace, null);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.status, 'growing');
+assert.equal(engineeringTriad.workspaceAdoptionDrift.workspaceCount, 1);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.statusCounts.growing, 1);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.missionTrendStatusCounts.growing, 1);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.profileFootprintTrendStatusCounts.growing, 1);
+assert.equal(
+  engineeringTriad.workspaceAdoptionDrift.reasonCodeCounts['workspace-mission-volume-growing'],
+  1,
+);
+assert.equal(
+  engineeringTriad.workspaceAdoptionDrift.reasonCodeCounts['workspace-profile-footprint-growing'],
+  1,
+);
+assert.deepEqual(
+  engineeringTriad.workspaceAdoptionDrift.workspaceIdsByStatus.growing,
+  [secondWorkspace.id],
+);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.latestWorkspace.id, secondWorkspace.id);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status, 'growing');
 assert.equal(engineeringTriad.adoptionDrift.status, 'growing');
 assert.deepEqual(engineeringTriad.adoptionDrift.reasonCodes, [
   'mission-volume-growing',

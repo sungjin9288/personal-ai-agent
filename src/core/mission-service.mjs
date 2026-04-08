@@ -2828,8 +2828,9 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
   let latestWorkspaceAt = null;
 
   for (const entry of entries) {
-    if (statusCounts[entry.status] !== undefined) {
-      statusCounts[entry.status] += 1;
+    const adoptionStatus = entry.adoptionDrift?.status || 'unused';
+    if (statusCounts[adoptionStatus] !== undefined) {
+      statusCounts[adoptionStatus] += 1;
     }
     if (missionTrendStatusCounts[entry.missionTrend?.status] !== undefined) {
       missionTrendStatusCounts[entry.missionTrend.status] += 1;
@@ -2837,8 +2838,8 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
     if (profileFootprintTrendStatusCounts[entry.profileFootprintTrend?.status] !== undefined) {
       profileFootprintTrendStatusCounts[entry.profileFootprintTrend.status] += 1;
     }
-    if (workspaceIdsByStatus[entry.status]) {
-      workspaceIdsByStatus[entry.status].push(entry.id);
+    if (workspaceIdsByStatus[adoptionStatus]) {
+      workspaceIdsByStatus[adoptionStatus].push(entry.id);
     }
     for (const reasonCode of ensureArray(entry.reasonCodes)) {
       reasonCodeCounts[reasonCode] = (reasonCodeCounts[reasonCode] || 0) + 1;
@@ -10732,14 +10733,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
             monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
             used: workspaceMissions.length > 0,
           });
+          const perWorkspaceMissionTrend = summarizeOrchestrationProfileUsageTrend({
+            currentMonthStartDate: scopeLatestMonthStartDate,
+            monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
+            used: workspaceMissions.length > 0,
+          });
+          const perWorkspaceProfileFootprintTrend = summarizeOrchestrationWorkspaceProfileFootprintTrend({
+            currentMonthStartDate: scopeLatestMonthStartDate,
+            monthlyBuckets: workspaceUsageSummary.usageMonthlyBuckets,
+            used: workspaceMissions.length > 0,
+          });
+          const workspaceAdoptionDrift = summarizeWorkspaceAdoptionDrift({
+            missionTrend: perWorkspaceMissionTrend,
+            profileFootprintTrend: perWorkspaceProfileFootprintTrend,
+          });
 
           return {
             id: workspaceId,
             latestAt: workspaceLatestMissionEntry?.latestAt || null,
+            missionTrend: perWorkspaceMissionTrend,
             name: workspace?.name || workspaceLatestMissionEntry?.workspace?.name || null,
             profileDisplayName: profile.displayName,
             profileId: profile.id,
+            profileFootprintTrend: perWorkspaceProfileFootprintTrend,
+            reasonCodes: workspaceAdoptionDrift.reasonCodes,
             status: perWorkspaceUsageTrend.status,
+            adoptionDrift: workspaceAdoptionDrift,
             workspaceUsageTrend: perWorkspaceUsageTrend,
           };
         });
@@ -10749,6 +10768,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceUsageTrend.workspaceCount = workspaceUsageAggregate.workspaceCount;
         workspaceUsageTrend.workspaceIdsByStatus = workspaceUsageAggregate.workspaceIdsByStatus;
         workspaceUsageTrend.workspaceStatusCounts = workspaceUsageAggregate.statusCounts;
+        const workspaceAdoptionDrift = summarizeWorkspaceAdoptionDriftEntries(workspaceUsageEntries);
         const adoptionDrift = summarizeOrchestrationProfileAdoptionDrift({
           usageTrend,
           workspaceUsageTrend,
@@ -10809,6 +10829,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           usageOldestMonthlyBucketStartDate: usageSummary.usageOldestMonthlyBucketStartDate,
           usageTrend,
           workspaceCount: touchedWorkspaceIds.length,
+          workspaceAdoptionDrift,
           workspaceHealthDrift,
           workspaceUsageTrend,
           workspaceMissionCounts,
