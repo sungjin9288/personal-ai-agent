@@ -563,3 +563,8 @@
 - extended maintenance history and maintenance overview summaries with affected mission breadth plus latest impact linkage so maintenance-specific audit surfaces can answer reach questions directly
 - reused the same maintenance impact helper already used by mission and overview summaries instead of introducing a separate maintenance-history-only contract
 - strengthened maintenance history smoke coverage to verify the first effective sweep touched exactly two missions while the later no-op sweep does not replace the latest impact run metadata
+
+## 2026-04-09 Orchestration Profile Workspace Usage Summary Symmetry
+
+- promoted `workspaceUsageTrend` month-over-month comparison fields into `overview profiles` summary so `currentMonthStartDate`, `currentMonthWorkspaceCount`, `previousMonthStartDate`, `previousMonthWorkspaceCount`, and `workspaceCountDelta` are available without reopening the root quick field
+- extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new summary aliases for growing and steady workspace footprint cases

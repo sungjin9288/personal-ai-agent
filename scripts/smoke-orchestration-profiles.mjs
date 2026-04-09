@@ -404,6 +404,11 @@ assert.equal(overview.summary.workspaceUsageTrendCounts.steady, 0);
 assert.equal(overview.summary.workspaceUsageTrendCounts.unused, 1);
 assert.equal(overview.summary.workspaceUsageTrendStatus, 'growing');
 assert.equal(overview.summary.workspaceUsageTrendProfileCount, 4);
+assert.equal(overview.summary.workspaceUsageTrendCurrentMonthStartDate, currentMonthStartDate);
+assert.equal(overview.summary.workspaceUsageTrendCurrentMonthWorkspaceCount, 2);
+assert.equal(overview.summary.workspaceUsageTrendPreviousMonthStartDate, previousMonthStartDate);
+assert.equal(overview.summary.workspaceUsageTrendPreviousMonthWorkspaceCount, 1);
+assert.equal(overview.summary.workspaceUsageTrendWorkspaceCountDelta, 1);
 assert.equal(overview.summary.workspaceUsageTrendProfileStatusCounts.growing, 2);
 assert.equal(overview.summary.workspaceUsageTrendProfileStatusCounts.declining, 1);
 assert.equal(overview.summary.workspaceUsageTrendProfileStatusCounts.steady, 0);
@@ -1037,6 +1042,11 @@ assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.
 assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftWorkspaceStatusCounts.watch, {});
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendStatus, 'steady');
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendProfileCount, 2);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendCurrentMonthStartDate, currentMonthStartDate);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendCurrentMonthWorkspaceCount, 1);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendPreviousMonthStartDate, previousMonthStartDate);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendPreviousMonthWorkspaceCount, 1);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCountDelta, 0);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.growing, 1);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.declining, 1);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.steady, 0);
@@ -1274,6 +1284,17 @@ assert.deepEqual(
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftWorkspaceStatusCounts.watch, {});
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendStatus, 'growing');
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendProfileCount, 1);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendCurrentMonthStartDate,
+  currentMonthStartDate,
+);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendCurrentMonthWorkspaceCount, 1);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendPreviousMonthStartDate,
+  previousMonthStartDate,
+);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendPreviousMonthWorkspaceCount, 0);
+assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendWorkspaceCountDelta, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.growing, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.declining, 0);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendProfileStatusCounts.steady, 0);
