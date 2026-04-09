@@ -701,3 +701,9 @@
 - reworked `결과 보기` around a representative deliverable spotlight plus a separate closeout checklist so the final stage reads like “confirm the outcome” instead of another generic stage card
 - widened the artifact detail view into an asymmetric result-first layout, keeping the deliverable body dominant while moving timeline and secondary context into a narrower companion pane
 - tied the output checklist and detail context to the same artifact/session selection helpers so final result verification, review state, and run history stay synchronized across the lower workbench
+
+## 2026-04-10 Mission Inbox Compression And Closeout Checklist Pass
+
+- compressed the left mission queue into a denser inbox row format with stage, updated time, objective summary, next action, and provider context so operators can choose the next mission without scanning multiple boxed chips
+- changed the output-stage closeout surface from generic mini cards into indexed checklist rows, making the final confirmation path read as ordered verification work instead of parallel widgets
+- added UI-only label cleanup for mission mode values and reused the latest reviewer or objective summary as the queue snippet so Korean operators see purpose-first copy before opening a mission

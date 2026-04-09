@@ -202,11 +202,13 @@ const DISPLAY_LABELS = {
   completed: '완료',
   'decision-memo': '의사결정 메모',
   deliverable: '최종 산출물',
+  engineering: '엔지니어링 작업',
   'env-missing': '환경 변수 누락',
   'execution-handoff': '실행 인계',
   failed: '실패',
   high: '높음',
   'implementation-proposal': '구현 제안서',
+  knowledge: '지식 작업',
   low: '낮음',
   manager: '매니저',
   medium: '보통',
@@ -233,6 +235,18 @@ function getDisplayLabel(value, fallback = '-') {
 
   const raw = String(value).trim();
   return DISPLAY_LABELS[raw] || DISPLAY_LABELS[raw.toLowerCase()] || raw;
+}
+
+function summarizeText(value, fallback = '') {
+  const normalized = String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalized) {
+    return fallback;
+  }
+
+  return normalized.length > 92 ? `${normalized.slice(0, 92).trim()}…` : normalized;
 }
 
 function getTimelineKindLabel(value) {
@@ -828,13 +842,21 @@ function renderMissionList() {
       const snapshot = getMissionQueueSnapshot(mission, latestSession);
       const providerLabel = latestSession?.provider || '미정';
       const updatedLabel = formatDate(mission.updatedAt);
+      const summary = summarizeText(
+        mission.objective,
+        latestSession?.reviewerSummary || snapshot.nextAction.replace(/^다음:\s*/, ''),
+      );
       return `
         <div class="mission-row ${active}">
           <button type="button" data-mission-id="${escapeHtml(mission.id)}">
+            <div class="mission-row-topline">
+              <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
+              <span class="mission-row-updated">${escapeHtml(updatedLabel)}</span>
+            </div>
             <div class="mission-row-head">
               <div class="mission-row-main">
                 <div class="item-title">${escapeHtml(mission.title)}</div>
-                <div class="item-subtitle">${escapeHtml(snapshot.stage)}</div>
+                <div class="mission-row-summary">${escapeHtml(summary)}</div>
               </div>
               <div class="mission-row-state">
                 <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
@@ -846,13 +868,13 @@ function renderMissionList() {
               </div>
             </div>
             <div class="mission-next-action">
-              <span class="mission-next-label">다음</span>
+              <span class="mission-next-label">다음 액션</span>
               <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
             </div>
             <div class="mission-row-foot">
               <span>${escapeHtml(workspace?.name || mission.workspaceId)}</span>
-              <span>${escapeHtml(mission.mode)}</span>
-              <span>${escapeHtml(updatedLabel)}</span>
+              <span>${escapeHtml(getDisplayLabel(mission.mode, mission.mode))}</span>
+              <span>${escapeHtml(providerLabel)}</span>
             </div>
           </button>
         </div>
@@ -1404,16 +1426,17 @@ function renderOutputCloseout() {
 
   elements.outputCloseout.innerHTML = closeoutItems
     .map(
-      (item) => `
+      (item, index) => `
         <div class="closeout-item ${item.ready ? 'is-ready' : 'is-blocked'}">
           <div class="closeout-item-head">
-            <div>
+            <span class="closeout-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
+            <div class="closeout-item-body">
               <span class="closeout-label">${escapeHtml(item.label)}</span>
               <strong>${escapeHtml(item.ready ? '확인 완료 또는 바로 확인 가능' : '아직 확인 필요')}</strong>
+              <p class="closeout-copy">${escapeHtml(item.detail)}</p>
             </div>
             <span class="status-badge ${item.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(item.ready ? '준비됨' : '확인 필요')}</span>
           </div>
-          <p class="closeout-copy">${escapeHtml(item.detail)}</p>
           <div class="closeout-actions">
             <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(item.actionValue)}">
               ${escapeHtml(item.actionLabel)}
