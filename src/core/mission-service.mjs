@@ -2382,6 +2382,23 @@ function summarizeOrchestrationProfileOverviewItems(items) {
           })),
         'latestUsedAt',
       ) || null,
+    latestHealthDriftStableProfile:
+      getLatestItem(
+        items
+          .filter(
+            (item) =>
+              (item.healthDrift || summarizeOrchestrationProfileHealthDrift(item)).status === 'stable',
+          )
+          .map((item) => ({
+            displayName: item.displayName,
+            healthDrift: item.healthDrift || summarizeOrchestrationProfileHealthDrift(item),
+            id: item.id,
+            latestMission: item.latestMission,
+            latestParallelGroup: item.latestParallelGroup,
+            latestUsedAt: item.latestUsedAt || item.specialistFollowUpLatestReminderAt || '',
+          })),
+        'latestUsedAt',
+      ) || null,
     latestAdoptionDriftProfile:
       getLatestItem(
         items
@@ -2816,6 +2833,8 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
   };
   let latestFollowUpRequiredWorkspace = null;
   let latestFollowUpRequiredWorkspaceAt = null;
+  let latestStableWorkspace = null;
+  let latestStableWorkspaceAt = null;
   let latestWatchWorkspace = null;
   let latestWatchWorkspaceAt = null;
   let latestWorkspace = null;
@@ -2877,6 +2896,21 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
         status: entry.status,
       };
     }
+    if (
+      entry.status === 'stable' &&
+      candidateLatestAt &&
+      (!latestStableWorkspaceAt || String(latestStableWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestStableWorkspaceAt = candidateLatestAt;
+      latestStableWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        status: entry.status,
+      };
+    }
   }
 
   for (const status of Object.keys(workspaceIdsByStatus)) {
@@ -2887,6 +2921,7 @@ function summarizeWorkspaceHealthDriftEntries(entries = []) {
 
   return {
     latestFollowUpRequiredWorkspace,
+    latestStableWorkspace,
     latestWatchWorkspace,
     latestWorkspace,
     reasonCodeCounts,
@@ -11318,6 +11353,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const healthDrift = {
       latestFollowUpRequiredProfile: summary.latestHealthDriftFollowUpRequiredProfile,
       latestProfile: summary.latestHealthDriftProfile,
+      latestStableProfile: summary.latestHealthDriftStableProfile,
       latestWatchProfile: summary.latestHealthDriftWatchProfile,
       profileCount: summary.healthDriftProfileCount,
       reasonCodeCounts: summary.healthDriftReasonCodeCounts,
@@ -11337,6 +11373,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.healthDriftReasonCodes = healthDrift.reasonCodes;
     summary.healthDriftLatestFollowUpRequiredProfile = healthDrift.latestFollowUpRequiredProfile;
     summary.healthDriftLatestProfile = healthDrift.latestProfile;
+    summary.healthDriftLatestStableProfile = healthDrift.latestStableProfile;
     summary.healthDriftLatestWatchProfile = healthDrift.latestWatchProfile;
     usageTrend.latestDecliningProfile = summary.latestDecliningProfile;
     usageTrend.latestGrowingProfile = summary.latestGrowingProfile;
@@ -11383,38 +11420,70 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(
       summary.touchedWorkspaceIds.map((workspaceId) => {
         const workspace = workspaceById.get(workspaceId) || null;
-        const followUpRequiredCount =
-          Number(summary.workspaceHealthDriftStatusCounts['follow-up-required']?.[workspaceId] || 0);
-        const watchCount = Number(summary.workspaceHealthDriftStatusCounts.watch?.[workspaceId] || 0);
+        const workspaceMissions = missionEntries.filter((entry) => entry.workspace?.id === workspaceId);
+        const workspaceGroups = profileGroups.filter((group) => group.workspace?.id === workspaceId);
+        const workspaceFollowUps = profileFollowUps.filter((item) => item.workspaceId === workspaceId);
+        const workspaceFollowUpSummary = summarizeSpecialistFollowUpItems(workspaceFollowUps);
+        const workspaceLatestMissionEntry = getLatestItem(workspaceMissions, 'latestAt');
+        const workspaceLatestGroupEntry = getLatestItem(
+          workspaceGroups.map((group) => ({
+            group,
+            latestAt:
+              getLatestItem(
+                group.runs.map((run) => ({ latestAt: run.endedAt || run.startedAt || '' })),
+                'latestAt',
+              )?.latestAt || '',
+          })),
+          'latestAt',
+        );
+        const workspaceDrift = summarizeOrchestrationProfileHealthDrift({
+          qualityGateBlockedGroupCount: workspaceGroups.filter((group) => group.qualityGate?.status === 'blocked')
+            .length,
+          specialistFollowUpLatestReminderAt: workspaceFollowUpSummary.latestReminderAt,
+          specialistFollowUpNeedsReminderCount: workspaceFollowUpSummary.needsReminderCount,
+          specialistFollowUpNextReminderAt: workspaceFollowUpSummary.nextReminderAt,
+          specialistFollowUpOverdueCount: workspaceFollowUpSummary.overdueCount,
+          specialistFollowUpRequiredCount: workspaceFollowUps.length,
+          specialistFollowUpReminderCountTotal: workspaceFollowUpSummary.reminderCountTotal,
+        });
+
         return {
           id: workspaceId,
           latestAt:
-            summary.latestHealthDriftWorkspace?.id === workspaceId
-              ? summary.latestHealthDriftWorkspace.latestAt ||
-                summary.latestHealthDriftWorkspace.latestUsedAt ||
-                null
-              : null,
-          name: workspace?.name || null,
+            workspaceFollowUpSummary.latestReminderAt ||
+            workspaceLatestMissionEntry?.latestAt ||
+            workspaceLatestGroupEntry?.latestAt ||
+            null,
+          name:
+            workspace?.name ||
+            workspaceLatestMissionEntry?.workspace?.name ||
+            workspaceLatestGroupEntry?.group.workspace?.name ||
+            null,
           profileDisplayName:
             summary.latestHealthDriftWorkspace?.id === workspaceId
-              ? summary.latestHealthDriftWorkspace.profileDisplayName || null
-              : null,
+              ? summary.latestHealthDriftWorkspace.profileDisplayName ||
+                workspaceLatestMissionEntry?.profile?.displayName ||
+                workspaceLatestGroupEntry?.group.orchestrationProfile?.displayName ||
+                null
+              : workspaceLatestMissionEntry?.profile?.displayName ||
+                workspaceLatestGroupEntry?.group.orchestrationProfile?.displayName ||
+                null,
           profileId:
             summary.latestHealthDriftWorkspace?.id === workspaceId
-              ? summary.latestHealthDriftWorkspace.profileId || null
-              : null,
+              ? summary.latestHealthDriftWorkspace.profileId ||
+                workspaceLatestMissionEntry?.profile?.id ||
+                workspaceLatestGroupEntry?.group.orchestrationProfile?.id ||
+                null
+              : workspaceLatestMissionEntry?.profile?.id ||
+                workspaceLatestGroupEntry?.group.orchestrationProfile?.id ||
+                null,
           reasonCodes:
-            followUpRequiredCount > 0
+            workspaceDrift.status === 'follow-up-required'
               ? ['workspace-profile-follow-up-required']
-              : watchCount > 0
+              : workspaceDrift.status === 'watch'
                 ? ['workspace-profile-watch']
                 : [],
-          status:
-            followUpRequiredCount > 0
-              ? 'follow-up-required'
-              : watchCount > 0
-                ? 'watch'
-                : 'stable',
+          status: workspaceDrift.status,
         };
       }),
     );
@@ -11422,6 +11491,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       summary.workspaceHealthDriftProfileCounts;
     workspaceHealthDrift.workspaceStatusCounts =
       summary.workspaceHealthDriftStatusCounts;
+    workspaceHealthDrift.latestWorkspace = summary.latestHealthDriftWorkspace;
     summary.workspaceHealthDriftStatus = workspaceHealthDrift.status;
     summary.workspaceHealthDriftCounts = workspaceHealthDrift.statusCounts;
     summary.workspaceHealthDriftReasonCodes = workspaceHealthDrift.reasonCodes;
@@ -11429,6 +11499,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceHealthDrift.reasonCodeCounts;
     summary.workspaceHealthDriftLatestFollowUpRequiredWorkspace =
       workspaceHealthDrift.latestFollowUpRequiredWorkspace;
+    summary.workspaceHealthDriftLatestStableWorkspace =
+      workspaceHealthDrift.latestStableWorkspace;
     summary.workspaceHealthDriftLatestWatchWorkspace =
       workspaceHealthDrift.latestWatchWorkspace;
     summary.workspaceHealthDriftLatestWorkspace = workspaceHealthDrift.latestWorkspace;

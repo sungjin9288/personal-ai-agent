@@ -138,6 +138,7 @@ assert.equal(overview.healthDrift.reasonCodeCounts['quality-gate-blocked'], 1);
 assert.equal(overview.healthDrift.reasonCodeCounts['specialist-follow-up-open'], 1);
 assert.equal(overview.healthDrift.latestProfile.id, 'knowledge-triad');
 assert.equal(overview.healthDrift.latestFollowUpRequiredProfile.id, 'knowledge-triad');
+assert.equal(overview.healthDrift.latestStableProfile.id, 'engineering-triad');
 assert.equal(overview.healthDrift.latestWatchProfile, null);
 assert.equal(overview.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(overview.workspaceHealthDrift.workspaceCount, 2);
@@ -160,6 +161,11 @@ assert.equal(overview.workspaceHealthDrift.latestFollowUpRequiredWorkspace.id, w
 assert.equal(
   overview.workspaceHealthDrift.latestFollowUpRequiredWorkspace.profileId,
   'knowledge-triad',
+);
+assert.equal(overview.workspaceHealthDrift.latestStableWorkspace.id, secondWorkspace.id);
+assert.equal(
+  overview.workspaceHealthDrift.latestStableWorkspace.profileId,
+  'engineering-triad',
 );
 assert.equal(overview.workspaceHealthDrift.latestWatchWorkspace, null);
 assert.equal(overview.workspaceAdoptionDrift.status, 'growing');
@@ -291,6 +297,7 @@ assert.equal(overview.summary.healthDriftReasonCodeCounts['quality-gate-blocked'
 assert.equal(overview.summary.healthDriftReasonCodeCounts['specialist-follow-up-open'], 1);
 assert.equal(overview.summary.healthDriftLatestFollowUpRequiredProfile.id, 'knowledge-triad');
 assert.equal(overview.summary.healthDriftLatestProfile.id, 'knowledge-triad');
+assert.equal(overview.summary.healthDriftLatestStableProfile.id, 'engineering-triad');
 assert.equal(overview.summary.healthDriftLatestWatchProfile, null);
 assert.equal(overview.summary.latestHealthDriftProfile.id, 'knowledge-triad');
 assert.deepEqual(overview.summary.touchedProfileIds, [
@@ -320,6 +327,11 @@ assert.equal(
 assert.equal(
   overview.summary.workspaceHealthDriftLatestFollowUpRequiredWorkspace.profileId,
   'knowledge-triad',
+);
+assert.equal(overview.summary.workspaceHealthDriftLatestStableWorkspace.id, secondWorkspace.id);
+assert.equal(
+  overview.summary.workspaceHealthDriftLatestStableWorkspace.profileId,
+  'engineering-triad',
 );
 assert.equal(overview.summary.workspaceHealthDriftLatestWatchWorkspace, null);
 assert.equal(overview.summary.workspaceHealthDriftWorkspaceCount, 2);
@@ -878,8 +890,13 @@ assert.equal(
   workspaceUsedOverview.workspaceHealthDrift.latestFollowUpRequiredWorkspace.id,
   workspace.id,
 );
+assert.equal(workspaceUsedOverview.workspaceHealthDrift.latestStableWorkspace, null);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.latestWatchWorkspace, null);
 assert.equal(workspaceUsedOverview.healthDrift.latestFollowUpRequiredProfile.id, 'knowledge-triad');
+assert.equal(
+  workspaceUsedOverview.healthDrift.latestStableProfile.id,
+  'engineering-implementation-verification',
+);
 assert.equal(workspaceUsedOverview.healthDrift.latestWatchProfile, null);
 assert.equal(workspaceUsedOverview.adoptionDrift.status, 'growing');
 assert.deepEqual(workspaceUsedOverview.adoptionDrift.reasonCodes, [
@@ -950,10 +967,15 @@ assert.equal(
   workspaceUsedOverview.summary.workspaceHealthDriftLatestFollowUpRequiredWorkspace.id,
   workspace.id,
 );
+assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftLatestStableWorkspace, null);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftLatestWatchWorkspace, null);
 assert.equal(
   workspaceUsedOverview.summary.healthDriftLatestFollowUpRequiredProfile.id,
   'knowledge-triad',
+);
+assert.equal(
+  workspaceUsedOverview.summary.healthDriftLatestStableProfile.id,
+  'engineering-implementation-verification',
 );
 assert.equal(workspaceUsedOverview.summary.healthDriftLatestWatchProfile, null);
 assert.equal(workspaceUsedOverview.summary.workspaceHealthDriftWorkspaceCount, 1);
@@ -1095,8 +1117,14 @@ assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.watch
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.statusCounts.stable, 1);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestFollowUpRequiredWorkspace, null);
+assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestStableWorkspace.id, secondWorkspace.id);
+assert.equal(
+  secondWorkspaceUsedOverview.workspaceHealthDrift.latestStableWorkspace.profileId,
+  'engineering-triad',
+);
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.latestWatchWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.healthDrift.latestFollowUpRequiredProfile, null);
+assert.equal(secondWorkspaceUsedOverview.healthDrift.latestStableProfile.id, 'engineering-triad');
 assert.equal(secondWorkspaceUsedOverview.healthDrift.latestWatchProfile, null);
 assert.equal(secondWorkspaceUsedOverview.adoptionDrift.status, 'growing');
 assert.deepEqual(secondWorkspaceUsedOverview.adoptionDrift.reasonCodes, [
@@ -1172,8 +1200,17 @@ assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftReasonC
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftReasonCodeCounts, {});
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceHealthDriftLatestWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceHealthDriftLatestFollowUpRequiredWorkspace, null);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceHealthDriftLatestStableWorkspace.id,
+  secondWorkspace.id,
+);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceHealthDriftLatestStableWorkspace.profileId,
+  'engineering-triad',
+);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceHealthDriftLatestWatchWorkspace, null);
 assert.equal(secondWorkspaceUsedOverview.summary.healthDriftLatestFollowUpRequiredProfile, null);
+assert.equal(secondWorkspaceUsedOverview.summary.healthDriftLatestStableProfile.id, 'engineering-triad');
 assert.equal(secondWorkspaceUsedOverview.summary.healthDriftLatestWatchProfile, null);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceHealthDriftWorkspaceCount, 1);
 assert.deepEqual(
