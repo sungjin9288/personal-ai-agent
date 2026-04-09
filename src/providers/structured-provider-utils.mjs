@@ -115,21 +115,45 @@ function repairJsonCandidate(candidate) {
   let escaped = false;
   let prevNonWhitespace = '';
 
-  for (const char of candidate) {
+  for (let index = 0; index < candidate.length; index += 1) {
+    const char = candidate[index];
+
     if (inString) {
-      output += char;
       if (escaped) {
+        output += char;
         escaped = false;
         continue;
       }
+
       if (char === '\\') {
+        output += char;
         escaped = true;
         continue;
       }
+
       if (char === '"') {
-        inString = false;
-        prevNonWhitespace = '"';
+        let lookahead = index + 1;
+        while (lookahead < candidate.length && /\s/.test(candidate[lookahead])) {
+          lookahead += 1;
+        }
+        const next = candidate[lookahead];
+        if (next === ',' || next === '}' || next === ']') {
+          inString = false;
+          output += char;
+          prevNonWhitespace = '"';
+          continue;
+        }
+        if (next === '"') {
+          inString = false;
+          output += char;
+          prevNonWhitespace = '"';
+          continue;
+        }
+        output += '\\"';
+        continue;
       }
+
+      output += char;
       continue;
     }
 
