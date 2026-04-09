@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
   "scripts": {
+    "ui": "node src/web/server.mjs",
     "smoke": "node scripts/smoke.mjs",
     "smoke:action-inbox": "node scripts/smoke-action-inbox.mjs",
     "smoke:action-maintenance": "node scripts/smoke-action-maintenance.mjs",

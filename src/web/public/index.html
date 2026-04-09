@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>에이전트 운영 콘솔</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="nav-rail">
+        <div class="brand-block">
+          <p class="eyebrow">AI 멀티 에이전트 운영</p>
+          <h1>에이전트 운영 콘솔</h1>
+          <p class="brand-copy">미션을 정하고, 실행하고, 검토하고, 결과를 확정하는 한 화면 운영 워크스페이스.</p>
+        </div>
+
+        <section class="rail-card rail-controls">
+          <label class="compact-label">
+            워크스페이스
+            <select name="workspaceId" id="workspace-select"></select>
+          </label>
+          <button id="toggle-create-button" class="primary-button" type="button">1단계로 이동</button>
+        </section>
+
+        <section class="rail-card rail-queue">
+          <div class="mini-head">
+            <div>
+              <p class="section-kicker">미션 큐</p>
+              <h2>미션 선택</h2>
+            </div>
+          </div>
+          <input id="mission-filter" class="mission-filter" type="search" placeholder="제목, 상태, 제공자 검색" />
+          <div id="mission-list" class="mission-list"></div>
+        </section>
+      </aside>
+
+      <main class="main-stage">
+        <header class="topbar">
+          <div class="mission-brief">
+            <p class="eyebrow">선택된 미션</p>
+            <h2 id="mission-title">미션을 선택하세요</h2>
+            <p id="mission-subtitle" class="workspace-subtitle">
+              왼쪽에서 미션을 고르고, 가운데 4단계를 순서대로 진행하고, 오른쪽에서 세션과 세부 결과를 확인하세요.
+            </p>
+            <div id="hero-signals" class="signal-row">
+              <span class="hero-signal">미션 선택</span>
+              <span class="hero-signal">실행</span>
+              <span class="hero-signal">검토</span>
+              <span class="hero-signal">결과 확정</span>
+            </div>
+          </div>
+          <div id="hero-metrics" class="metric-grid"></div>
+        </header>
+
+        <section class="workbench">
+          <section class="workspace-stage">
+            <div class="flow-shell">
+              <div class="flow-strip-head">
+                <div class="flow-nav-head">
+                  <p class="section-kicker">진행 흐름</p>
+                  <h3>선택부터 결과까지</h3>
+                  <p>사용자는 1단계부터 4단계까지 클릭하며 최종 산출물을 얻습니다.</p>
+                </div>
+
+                <div id="flow-status" class="flow-status">
+                  <p class="flow-status-label">지금 해야 할 일</p>
+                  <strong class="flow-status-value">미션 선택 또는 작성</strong>
+                  <p class="flow-status-copy">왼쪽 미션 큐에서 고르거나 템플릿으로 새 미션을 만드세요.</p>
+                  <div class="flow-status-actions">
+                    <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+                      1단계에서 시작
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <nav class="flow-nav" aria-label="진행 흐름">
+                <button class="flow-step is-active" type="button" data-step-target="step-setup">
+                  <span class="flow-step-no">01</span>
+                  <span class="flow-step-copy">
+                    <strong>미션 정하기</strong>
+                    <small>미션을 선택하거나 새로 작성</small>
+                  </span>
+                </button>
+
+                <button class="flow-step" type="button" data-step-target="step-run">
+                  <span class="flow-step-no">02</span>
+                  <span class="flow-step-copy">
+                    <strong>실행하기</strong>
+                    <small>제공자를 고르고 실행 시작</small>
+                  </span>
+                </button>
+
+                <button class="flow-step" type="button" data-step-target="step-review">
+                  <span class="flow-step-no">03</span>
+                  <span class="flow-step-copy">
+                    <strong>검토하기</strong>
+                    <small>후속 작업과 승인 항목 처리</small>
+                  </span>
+                </button>
+
+                <button class="flow-step" type="button" data-step-target="step-output">
+                  <span class="flow-step-no">04</span>
+                  <span class="flow-step-copy">
+                    <strong>결과 보기</strong>
+                    <small>산출물과 세션 결과 확인</small>
+                  </span>
+                </button>
+              </nav>
+            </div>
+
+            <section class="step-stage">
+            <article id="step-setup" class="step-panel is-active">
+              <div class="panel-head">
+                <div>
+                  <p class="section-kicker">1단계</p>
+                  <h2>미션 선택 / 작성</h2>
+                  <p>템플릿으로 시작하거나 목표와 제약 조건을 직접 입력해 시작 지점을 만듭니다.</p>
+                </div>
+              </div>
+
+              <div class="step-grid step-grid-setup">
+                <section class="surface panel-span-full">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">운영 플레이북</p>
+                      <h3>운영 방식 선택</h3>
+                    </div>
+                  </div>
+                  <div id="playbook-list" class="playbook-list"></div>
+                </section>
+
+                <section class="surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">빠른 시작</p>
+                      <h3>빠른 시작</h3>
+                    </div>
+                  </div>
+                  <div id="template-list" class="template-list"></div>
+                </section>
+
+                <section class="surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">미션 작성</p>
+                      <h3>새 미션 작성</h3>
+                    </div>
+                  </div>
+
+                  <section id="mission-create-panel" class="composer-card">
+                    <form id="mission-form" class="mission-form">
+                      <label class="compact-label">
+                        모드
+                        <select name="mode">
+                          <option value="knowledge">지식 작업</option>
+                          <option value="engineering">엔지니어링 작업</option>
+                        </select>
+                      </label>
+
+                      <label class="compact-label">
+                        산출물
+                        <select name="deliverableType">
+                          <option value="prd">PRD</option>
+                          <option value="implementation-proposal">구현 제안서</option>
+                          <option value="decision-memo">의사결정 메모</option>
+                        </select>
+                      </label>
+
+                      <label class="compact-label">
+                        제목
+                        <input type="text" name="title" placeholder="예: 운영 원칙 정리" required />
+                      </label>
+
+                      <label class="compact-label">
+                        목표
+                        <textarea
+                          name="objective"
+                          rows="4"
+                          placeholder="예: 프로젝트 운영 방향성과 의사결정 구조를 문서화"
+                        ></textarea>
+                      </label>
+
+                      <label class="compact-label">
+                        제약 조건
+                        <textarea
+                          name="constraints"
+                          rows="4"
+                          placeholder="한 줄에 하나씩 입력&#10;예: 운영 원칙 포함&#10;예: 의사결정 cadence 정의"
+                        ></textarea>
+                      </label>
+
+                      <button type="submit" class="primary-button">미션 생성</button>
+                    </form>
+                  </section>
+                </section>
+
+                <section class="surface panel-span-full">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">미션 요약</p>
+                      <h3>선택된 미션 요약</h3>
+                    </div>
+                  </div>
+                  <div id="mission-summary" class="summary-grid empty-state">선택된 미션이 없습니다.</div>
+                </section>
+              </div>
+            </article>
+
+            <article id="step-run" class="step-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="section-kicker">2단계</p>
+                  <h2>실행과 진행 상태</h2>
+                  <p>제공자를 고르고 실행한 뒤, 현재 에이전트 진행과 상태 신호를 확인합니다.</p>
+                </div>
+              </div>
+
+              <div class="step-grid step-grid-run">
+                <section class="surface dispatch-surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">실행 제어</p>
+                      <h3>미션 실행</h3>
+                    </div>
+                  </div>
+                  <div class="dispatch-copy">
+                  <p>선택한 미션을 기본 제공자 정책 또는 지정한 제공자로 다시 실행합니다.</p>
+                  </div>
+                  <div class="dispatch-controls">
+                    <select id="run-provider-select">
+                      <option value="">기본 제공자 정책</option>
+                      <option value="openai">OpenAI</option>
+                      <option value="anthropic">Anthropic</option>
+                      <option value="stub">Stub</option>
+                      <option value="local">Local</option>
+                    </select>
+                    <button id="run-mission-button" class="primary-button" disabled>이 미션 실행</button>
+                  </div>
+                </section>
+
+                <section class="surface panel-span-full">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">에이전트 진행</p>
+                      <h3>매니저 → 플래너 → 실행 → 리뷰어</h3>
+                    </div>
+                  </div>
+                  <section id="agent-lane" class="agent-lane"></section>
+                </section>
+              </div>
+            </article>
+
+            <article id="step-review" class="step-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="section-kicker">3단계</p>
+                  <h2>리뷰와 승인 처리</h2>
+                  <p>후속 액션과 승인 대기를 함께 보고, rerun과 결정을 한 자리에서 처리합니다.</p>
+                </div>
+              </div>
+
+              <div class="step-grid step-grid-review">
+                <section class="surface panel-span-full">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">검토 준비 상태</p>
+                      <h3>지금 승인 가능한 상태인지 확인</h3>
+                    </div>
+                  </div>
+                  <div id="review-readiness" class="readiness-grid empty-state">리뷰 준비 상태가 여기에 표시됩니다.</div>
+                </section>
+
+                <section class="surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">후속 작업 큐</p>
+                      <h3>후속 액션</h3>
+                    </div>
+                  </div>
+                  <div id="action-summary" class="summary-inline empty-state">선택한 미션의 액션 요약이 여기에 표시됩니다.</div>
+                  <div id="action-list" class="action-list"></div>
+                </section>
+
+                <section class="surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">승인 대기함</p>
+                      <h3>승인 대기</h3>
+                    </div>
+                  </div>
+                  <div id="approval-list" class="approval-list"></div>
+                </section>
+              </div>
+            </article>
+
+            <article id="step-output" class="step-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="section-kicker">4단계</p>
+                  <h2>산출물과 세션 결과</h2>
+                  <p>최종 문서, 타임라인, 세션 상태를 한 화면에서 같이 확인합니다.</p>
+                </div>
+              </div>
+
+              <div class="step-grid step-grid-output">
+                <section class="surface output-surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">산출물 보기</p>
+                      <h3>산출물 읽기</h3>
+                    </div>
+                  </div>
+                  <div id="artifact-meta" class="artifact-meta empty-state">아직 선택된 산출물이 없습니다.</div>
+                  <article id="artifact-viewer" class="artifact-viewer markdown-surface">
+                    <p class="empty-state">산출물을 선택하면 여기에서 바로 확인할 수 있습니다.</p>
+                  </article>
+                </section>
+
+                <section class="surface side-surface">
+                  <div class="mini-head">
+                    <div>
+                      <p class="section-kicker">실행 타임라인</p>
+                      <h3>실행 흐름</h3>
+                    </div>
+                  </div>
+                  <div id="timeline-list" class="timeline-list empty-state">미션을 선택하면 타임라인을 보여줍니다.</div>
+                </section>
+              </div>
+            </article>
+            </section>
+          </section>
+
+          <aside class="live-inspector">
+            <section class="surface inspector-surface">
+              <div class="mini-head">
+                <div>
+                  <p class="section-kicker">세션 목록</p>
+                  <h3>세션 목록</h3>
+                </div>
+              </div>
+              <div id="session-list" class="session-list empty-state">세션이 없습니다.</div>
+            </section>
+
+            <section class="surface inspector-surface">
+              <div class="mini-head">
+                <div>
+                  <p class="section-kicker">세션 상세</p>
+                  <h3>현재 세션</h3>
+                </div>
+              </div>
+              <div id="session-detail" class="session-detail empty-state">세션을 선택하면 실행 이력, 승인 이력, 산출물을 보여줍니다.</div>
+            </section>
+
+            <section class="surface inspector-surface">
+              <div class="mini-head">
+                <div>
+                  <p class="section-kicker">제공자 상태</p>
+                  <h3>제공자 상태</h3>
+                </div>
+              </div>
+              <div id="provider-list" class="provider-list"></div>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

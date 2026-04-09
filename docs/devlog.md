@@ -1,5 +1,64 @@
 # Devlog
 
+## 2026-04-09 Visual Density Polish
+
+- tightened the console from a soft card-heavy dashboard into a calmer operator workspace with lower shadow depth, denser spacing, and fewer competing emphasis treatments
+- compressed the top status bar, step strip, and content surfaces so more of the actual working state fits into the first viewport without dropping the guided flow
+- reduced visual noise across chips, cards, and buttons by lowering border weight, lightening surface contrast, and keeping cobalt as the single dominant action color
+- pushed the UI closer to a restrained product control-plane feel rather than a marketing-style hero composition, while keeping the same single-screen operator structure intact
+
+## 2026-04-09 Reference Playbook Integration
+
+- folded patterns from public agent repos into the operator surface as explicit playbooks instead of leaving them as undocumented inspiration
+- added four setup-stage playbooks derived from staged pipeline, research-first, review-readiness, and verify-before-close operating models so users can start from a workflow intent instead of only a blank mission form
+- added a review-readiness grid inspired by review dashboards and gate-driven agent workflows, making approval readiness visible as discrete `ready` or `blocked` signals before the user resolves actions or signs off
+- kept these borrowings inside the existing mission form and review surfaces, so the UI gains stronger operator guidance without adding a new backend abstraction or extra navigation depth
+
+## 2026-04-09 Sequential One-Screen Flow Pass
+
+- reworked the console again around an actual left-to-right operator sequence instead of a generic information surface, so users now move through `Setup → Run → Review → Output` inside one viewport
+- moved the guided flow from a tall side stack into a compact top strip over the main workspace, which frees horizontal space for the active step content while keeping the full sequence always visible
+- added a persistent `Recommended Next` state card plus done or ready step states, so the UI tells the operator what to do next instead of expecting them to infer the flow from raw panels
+- changed mission selection to land on the currently recommended step rather than always forcing the run stage, which better matches completed missions, approval-pending missions, and output-ready missions
+- tightened shell padding, heading scale, and panel density so the console reads more like a task-oriented product control plane and less like a document layout
+- kept the dependency-free local server and existing mission APIs unchanged while shifting the frontend toward a more explicit operator journey
+
+## 2026-04-09 Single-Page Console Navigation
+
+- removed the old tabbed mission-detail model and rebuilt the workspace as one continuous operator surface, so objective, queue, artifact, timeline, and session history can be scanned without mode switching
+- added a sidebar workspace menu plus a sticky in-workspace section ribbon, both wired to the same section targets and scroll-synced so operators can jump by function and still keep orientation while reading down the page
+- regrouped the main surface by operator intent instead of data type: `Mission Snapshot`, `Action & Approval`, `Artifact Viewer`, `Timeline`, and `Sessions` now read as explicit product sections
+- moved approval handling into the same action section as mission follow-up work, so reruns, reviewer follow-up resolution, and human approvals live in one operational queue instead of being split across the page
+- cleaned up the UI language from tab-oriented terminology to section-oriented navigation, matching the new single-page information architecture and reducing operator confusion
+
+## 2026-04-09 Guided Operator Flow Redesign
+
+- replaced the section-stack console with a single-viewport guided operator flow, so the primary UI now reads as `Setup → Run → Review → Output` instead of a long document surface
+- removed the oversized hero treatment and rebuilt the shell around a compact top status bar, a left mission rail, a center step canvas, and a persistent right inspector, improving scan speed and reducing dead space
+- moved mission creation into the first guided step and made rerun, approval handling, and artifact reading successive stages in the same viewport, so operators can progress to a final output through explicit step choices
+- kept timeline, session selection, and provider state visible within the same screen through internal panel scrolling rather than page-length stacking, preserving one-screen operability while retaining detail depth
+
+## 2026-04-09 Console IA Refresh
+
+- rebuilt the operator console information architecture around a three-column product layout: dark navigation rail, mission workspace, and inspector, so the UI reads like an operations tool instead of a flat card stack
+- replaced the previous control-plane styling with a lighter and more legible product surface, stronger typography hierarchy, calmer chrome, and one accent system so mission state, action pressure, and artifacts are easier to scan
+- reworked mission detail rendering to foreground objective, constraints, latest session, approval counts, and reviewer signal before deeper history, reducing the amount of operator inference needed to understand the current mission state
+- fixed UI flow issues while redesigning: workspace selection now scopes mission browsing and mission creation, selecting a mission returns to overview by default, and automatic artifact loading no longer steals focus from the current tab
+- kept the dependency-free local server model and existing mission APIs intact while upgrading the frontend shell, so the console redesign does not increase production runtime complexity
+- layered in inspiration from current public agent products by making prompt entry, trust checkpoints, and step observability explicit in the UI: hero signals, dispatch trust points, and a visible manager→planner→executor→reviewer lane now frame the mission surface
+- kept the create panel open by default and upgraded empty states into action-oriented cards, so first-run users see what to do next instead of landing on dead surfaces
+- added staged surface motion and active-step emphasis, so the console feels more product-like without introducing a frontend dependency stack
+
+## 2026-04-09 Operator Console v0
+
+- added a local operator console served by a dependency-free Node HTTP server so missions no longer require terminal-only navigation for basic orchestration
+- exposed JSON API routes for mission list/detail, session detail, mission creation, mission run, approval inbox, approval resolution, provider catalog, and artifact preview by reusing the existing `mission-service` and `store` surfaces instead of creating a parallel backend
+- added a Korean-language frontend focused on operator visibility, with mission queue browsing, latest session status, approval action buttons, provider-aware reruns, and markdown artifact viewing in one console
+- expanded the console with mission templates, mission-scoped action inbox, and mission timeline rendering so operators can create common planning missions faster and inspect follow-up pressure and execution chronology without returning to the CLI
+- added direct operator actions in the console so mission-scoped reviewer follow-ups can be resolved from UI and retry-ready actions can trigger the recommended mission rerun without reconstructing commands in the terminal
+- made timeline items session-aware so clicking a timeline event can jump the operator directly into the related session detail and artifact context
+- documented the new `npm run ui` workflow and kept the implementation local-first with no new production dependencies
+
 ## 2026-04-09 Default Provider Policy
 
 - changed `mission run` default provider resolution to prefer OpenAI when `OPENAI_API_KEY` is configured, while keeping `stub` as the automatic fallback for offline bootstrap and smoke testing
@@ -606,3 +665,9 @@
 
 - promoted generic `latestProfile` into `usageTrend` and `workspaceUsageTrend`, and generic `latestWorkspace` into `workspaceUsageTrend`, then mirrored them as summary aliases so trend consumers can resolve the newest preset or workspace without relying on direction-specific latest links only
 - extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new generic latest linkage contract for mission-volume and workspace-footprint trends
+
+## 2026-04-09 Korean Single-Screen Operator Flow Polish
+
+- localized the operator console surface into Korean so navigation chrome, guided steps, empty states, and workflow helper copy read as a coherent product UI instead of an internal mixed-language tool
+- tightened the single-screen operator flow around `미션 정하기 → 실행하기 → 검토하기 → 결과 보기` and aligned setup, review, artifact, session, and provider surfaces to that explicit user journey
+- added display-only label translation for mission/session/action/approval statuses and common timeline event kinds so backend contract values can remain stable while the UI stays readable for Korean-speaking operators
