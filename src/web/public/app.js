@@ -447,6 +447,7 @@ function setActiveDetailTab(tabId) {
   elements.detailPanels.forEach((panel) => {
     panel.classList.toggle('is-active', panel.id === `detail-${tabId}`);
   });
+  renderDetailTabLabels();
   renderDetailContextbar();
 }
 
@@ -889,6 +890,28 @@ function renderMissionQueueSummary(missions = filteredMissions()) {
     <div class="queue-pill"><span>검토 필요</span><strong>${escapeHtml(String(reviewNeeded))}개</strong></div>
     <div class="queue-pill"><span>완료</span><strong>${escapeHtml(String(completed))}개</strong></div>
   `;
+}
+
+function renderDetailTabLabels() {
+  const artifactsCount = state.currentSessionPayload?.artifacts?.length || 0;
+  const runsCount = state.missionDetail?.sessions?.length || 0;
+  const reviewsCount =
+    (state.currentSessionPayload?.approvals?.length || 0) + Number(state.missionActions?.summary?.pendingActionCount || 0);
+  const counts = {
+    artifacts: artifactsCount,
+    runs: runsCount,
+    reviews: reviewsCount,
+    config: 0,
+  };
+
+  elements.detailTabButtons.forEach((button) => {
+    if (!button.dataset.baseLabel) {
+      button.dataset.baseLabel = button.textContent?.trim() || '';
+    }
+    const baseLabel = button.dataset.baseLabel || '';
+    const count = counts[button.dataset.detailTab] || 0;
+    button.textContent = count > 0 ? `${baseLabel} ${count}` : baseLabel;
+  });
 }
 
 function renderHeroMetrics() {
@@ -1706,6 +1729,7 @@ function renderSessionDetail(sessionPayload) {
       title: '현재 선택된 세션이 없습니다',
     });
     wireQuickActions(elements.sessionDetail);
+    renderDetailTabLabels();
     renderDetailContextbar();
     return;
   }
@@ -1779,6 +1803,7 @@ function renderSessionDetail(sessionPayload) {
   elements.sessionDetail.querySelectorAll('[data-artifact-id]').forEach((button) => {
     button.addEventListener('click', () => loadArtifact(button.dataset.artifactId));
   });
+  renderDetailTabLabels();
   renderDetailContextbar();
 }
 
@@ -1926,6 +1951,7 @@ function clearMissionSelection() {
   renderSessionDetail(null);
   renderArtifact(null);
   renderFlowState();
+  renderDetailTabLabels();
   renderDetailContextbar();
   setActiveStep('step-setup');
   setActiveDetailTab('config');

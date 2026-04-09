@@ -689,3 +689,9 @@
 - reshaped the left mission queue into a more operational inbox with queue counters, clearer `다음 액션` emphasis, and denser row metadata so users can judge what to open without parsing several separate cards
 - added a `detail-contextbar` above the lower tabs so the selected mission, current detail mode, latest session, artifact count, and review state are visible before drilling into results or logs
 - kept the single-screen flow intact while making the lower `결과와 기록` surface feel less like detached tabs and more like a contextual workbench tied to the currently selected mission/session
+
+## 2026-04-10 Dark Inbox Rail And Unified Detail Strip Polish
+
+- restyled the left rail away from stacked white cards into a darker inbox-like list so selected missions and next actions scan faster against the control-plane background
+- turned the lower result area into a flatter contextual strip by reducing card treatment around the detail context bar and tab labels, keeping current mode, session, artifact, and review state visible without adding another dashboard row
+- added tab count labels for artifacts, runs, and reviews so the lower workbench communicates depth before the user opens each tab
