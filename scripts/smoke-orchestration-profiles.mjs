@@ -591,6 +591,13 @@ assert.equal(knowledgeTriad.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
 assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts.watch, 0);
 assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts.stable, 0);
+assert.equal(knowledgeTriad.workspaceHealthDrift.workspaceProfileCounts[workspace.id], 1);
+assert.deepEqual(
+  knowledgeTriad.workspaceHealthDrift.workspaceStatusCounts['follow-up-required'],
+  { [workspace.id]: 1 },
+);
+assert.deepEqual(knowledgeTriad.workspaceHealthDrift.workspaceStatusCounts.watch, {});
+assert.deepEqual(knowledgeTriad.workspaceHealthDrift.workspaceStatusCounts.stable, {});
 assert.deepEqual(knowledgeTriad.workspaceHealthDrift.workspaceIdsByStatus['follow-up-required'], [workspace.id]);
 assert.equal(knowledgeTriad.workspaceHealthDrift.latestWorkspace.id, workspace.id);
 assert.equal(knowledgeTriad.workspaceHealthDrift.latestFollowUpRequiredWorkspace.id, workspace.id);
@@ -683,6 +690,13 @@ assert.equal(engineeringImplementationVerification.healthDrift.latestWatchProfil
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.status, 'stable');
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.statusCounts.stable, 1);
+assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceProfileCounts, {});
+assert.deepEqual(
+  engineeringImplementationVerification.workspaceHealthDrift.workspaceStatusCounts['follow-up-required'],
+  {},
+);
+assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceStatusCounts.watch, {});
+assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceStatusCounts.stable, {});
 assert.deepEqual(engineeringImplementationVerification.workspaceHealthDrift.workspaceIdsByStatus.stable, [workspace.id]);
 assert.equal(engineeringImplementationVerification.usageMonthlyBucketCount, 1);
 assert.equal(
@@ -793,6 +807,13 @@ assert.equal(engineeringTriad.healthDrift.latestWatchProfile, null);
 assert.equal(engineeringTriad.workspaceHealthDrift.status, 'stable');
 assert.equal(engineeringTriad.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringTriad.workspaceHealthDrift.statusCounts.stable, 1);
+assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceProfileCounts, {});
+assert.deepEqual(
+  engineeringTriad.workspaceHealthDrift.workspaceStatusCounts['follow-up-required'],
+  {},
+);
+assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceStatusCounts.watch, {});
+assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceStatusCounts.stable, {});
 assert.deepEqual(engineeringTriad.workspaceHealthDrift.workspaceIdsByStatus.stable, [secondWorkspace.id]);
 assert.equal(engineeringTriad.usageMonthlyBucketCount, 1);
 assert.equal(engineeringTriad.usageLatestMonthlyBucketStartDate, currentMonthStartDate);

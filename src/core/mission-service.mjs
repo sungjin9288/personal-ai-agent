@@ -10941,6 +10941,24 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           };
         });
         const workspaceHealthDrift = summarizeWorkspaceHealthDriftEntries(workspaceHealthEntries);
+        workspaceHealthDrift.workspaceProfileCounts = Object.fromEntries(
+          workspaceHealthEntries
+            .filter((entry) => entry.status !== 'stable')
+            .map((entry) => [entry.id, 1]),
+        );
+        workspaceHealthDrift.workspaceStatusCounts = {
+          'follow-up-required': Object.fromEntries(
+            workspaceHealthEntries
+              .filter((entry) => entry.status === 'follow-up-required')
+              .map((entry) => [entry.id, 1]),
+          ),
+          stable: {},
+          watch: Object.fromEntries(
+            workspaceHealthEntries
+              .filter((entry) => entry.status === 'watch')
+              .map((entry) => [entry.id, 1]),
+          ),
+        };
         const usageSummary = summarizeOrchestrationProfileUsageEntries(missions);
         const usageTrend = summarizeOrchestrationProfileUsageTrend({
           currentMonthStartDate: scopeLatestMonthStartDate,

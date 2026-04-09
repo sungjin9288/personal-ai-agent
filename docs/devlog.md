@@ -68,6 +68,7 @@
 - added `latestFollowUpRequiredProfile` and `latestWatchProfile` to root `healthDrift` and matching summary aliases so the most recent unstable preset is now readable by health direction without reinterpreting generic latest-profile linkage
 - added `latestStableProfile` and `latestStableWorkspace` to health quick fields and matching summary aliases so the most recent stable preset and stable workspace now use the same direction-aware contract as unstable health states
 - added `latestProfile`, `latestFollowUpRequiredProfile`, `latestWatchProfile`, and `latestStableProfile` to each profile item `healthDrift` so item payloads now match the direction-aware linkage shape of the root health quick field
+- added `workspaceProfileCounts` and `workspaceStatusCounts` to each profile item `workspaceHealthDrift` so item-level workspace health maps now match the root quick field contract
 - added `overview profiles --workspace-drift-only` and `--workspace-status` so workspace-level unstable presets can be queried directly instead of filtering item payloads client-side
 - added `overview profiles --reason-code` and `--workspace-reason-code` so preset drift can now be sliced by blocked quality gate versus open specialist follow-up cause without post-processing the full catalog payload
 - added monthly usage buckets and monthly delta to `overview profiles` summary and item payloads so orchestration preset adoption trend can be read directly from the profile catalog surface
