@@ -3102,6 +3102,8 @@ function summarizeWorkspaceUsageTrendEntries(entries = []) {
   const workspaceIdsByStatus = Object.fromEntries(
     ORCHESTRATION_PROFILE_USAGE_TREND_STATUSES.map((status) => [status, []]),
   );
+  let latestWorkspace = null;
+  let latestWorkspaceAt = null;
   let latestGrowingWorkspace = null;
   let latestGrowingWorkspaceAt = null;
   let latestDecliningWorkspace = null;
@@ -3115,6 +3117,20 @@ function summarizeWorkspaceUsageTrendEntries(entries = []) {
       workspaceIdsByStatus[entry.status].push(entry.id);
     }
     const candidateLatestAt = entry.latestAt || null;
+    if (
+      candidateLatestAt &&
+      (!latestWorkspaceAt || String(latestWorkspaceAt) < String(candidateLatestAt))
+    ) {
+      latestWorkspaceAt = candidateLatestAt;
+      latestWorkspace = {
+        id: entry.id,
+        latestAt: candidateLatestAt,
+        name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
+        workspaceUsageTrend: entry.workspaceUsageTrend || null,
+      };
+    }
     if (
       entry.status === 'growing' &&
       candidateLatestAt &&
@@ -3155,6 +3171,7 @@ function summarizeWorkspaceUsageTrendEntries(entries = []) {
 
   return {
     latestDecliningWorkspace,
+    latestWorkspace,
     latestGrowingWorkspace,
     statusCounts,
     workspaceCount: entries.length,
@@ -11047,6 +11064,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         const workspaceUsageAggregate = summarizeWorkspaceUsageTrendEntries(workspaceUsageEntries);
         workspaceUsageTrend.latestDecliningWorkspace = workspaceUsageAggregate.latestDecliningWorkspace;
         workspaceUsageTrend.latestGrowingWorkspace = workspaceUsageAggregate.latestGrowingWorkspace;
+        workspaceUsageTrend.latestWorkspace = workspaceUsageAggregate.latestWorkspace;
         workspaceUsageTrend.workspaceCount = workspaceUsageAggregate.workspaceCount;
         workspaceUsageTrend.workspaceIdsByStatus = workspaceUsageAggregate.workspaceIdsByStatus;
         workspaceUsageTrend.workspaceStatusCounts = workspaceUsageAggregate.statusCounts;
