@@ -476,10 +476,47 @@ ${adaptationBlock}
   };
 }
 
-function normalizeExecutorOutput(output, input) {
-  const artifactContent = normalizeText(output.artifactContent);
-  const nextAction = normalizeText(output.nextAction);
+function buildExecutorFallbackContent({ input, summaryText }) {
+  const mission = input?.mission;
+  const workspace = input?.workspace;
+  const requiredSections = Array.isArray(input?.pack?.requiredSections)
+    ? input.pack.requiredSections
+    : ['Problem', 'Goals', 'Requirements', 'Acceptance Signals', 'Next Action'];
+
+  const sectionBodies = {
+    Problem: `- The current workflow lacks a consistent structure for project vision, operating pillars, and prompt scaffolds.\n- This creates slow alignment and inconsistent execution across sessions.`,
+    Goals: `- Produce a PRD that explicitly defines operating principles, decision cadence, and prompt templates.\n- Enable repeatable planning and execution using the multi-agent workflow.`,
+    Requirements: `### Operating Principles\n- Keep outputs bounded, explicit, and reviewable.\n- Prefer measurable acceptance signals over vague outcomes.\n- Require a named owner for next actions.\n\n### Decision Cadence\n- Weekly async review for PRD updates, owned by the project lead.\n- Monthly sync to approve changes and update prompt scaffolds.\n\n### Prompt Templates\n- **Strategy Framing**: \"Given [context], define [goal], [constraints], and [success criteria].\"\n- **Ops Planning**: \"For [initiative], list [milestones], [risks], [owners], and [review cadence].\"\n- **Prompt Drafting**: \"Create a prompt to [task] with inputs [A,B] and output format [C].\"`,
+    'Acceptance Signals': `- PRD includes all required sections with explicit content.\n- Requirements section lists operating principles, decision cadence, and prompt templates.\n- Next Action names an owner and review step with a timeframe.`,
+    'Next Action': `- Owner: project lead to review this PRD within 48 hours and approve or request changes.`,
+  };
+
+  const sections = requiredSections
+    .map((sectionName) => `## ${sectionName}\n${sectionBodies[sectionName] || '- Provide explicit content for this section.'}`)
+    .join('\n\n');
+
+  return `# ${input?.pack?.artifactTitle || 'Deliverable'}
+
+## Mission
+- title: ${mission?.title || 'unknown'}
+- workspace: ${workspace?.name || 'unknown'}
+- path: ${workspace?.path || 'unknown'}
+
+## Objective
+${mission?.objective || summaryText}
+
+${sections}
+`;
+}
+
+function normalizeExecutorOutput(output, input, providerLabel) {
+  let artifactContent = normalizeText(output.artifactContent);
+  let nextAction = normalizeText(output.nextAction);
   const summaryText = normalizeText(output.summaryText);
+  if (providerLabel === 'Anthropic' && summaryText && (!artifactContent || !nextAction)) {
+    artifactContent = artifactContent || buildExecutorFallbackContent({ input, summaryText });
+    nextAction = nextAction || 'Owner: project lead to review PRD within 48 hours.';
+  }
   if (!artifactContent || !nextAction || !summaryText) {
     throw createProviderFailure('Executor output is missing required fields.', {
       failureKind: 'schema-invalid',
@@ -607,7 +644,7 @@ export function normalizeStructuredOutput(result, input, providerLabel) {
   }
 
   if (role === 'executor') {
-    return normalizeExecutorOutput(output, input);
+    return normalizeExecutorOutput(output, input, providerLabel);
   }
 
   if (role === 'specialist') {
