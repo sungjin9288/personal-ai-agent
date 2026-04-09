@@ -8,6 +8,7 @@
 ## Completed In This Milestone
 
 - CLI-first Node.js ESM scaffold
+- local bootstrap command now registers a workspace, creates a starter mission, and runs the stub provider so first-run testing is one command
 - managed role order: `manager -> planner -> executor -> reviewer`
 - runtime/provider path is now async-safe so network-backed providers can be introduced without changing the mission/session contract again
 - OpenAI provider adapter now exists behind the current provider contract, with env validation and Responses API request wiring

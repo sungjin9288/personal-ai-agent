@@ -54,6 +54,7 @@
     "smoke:specialist-follow-up-remediation": "node scripts/smoke-specialist-follow-up-remediation.mjs",
     "smoke:openai-provider": "node scripts/smoke-openai-provider.mjs",
     "smoke:anthropic-provider": "node scripts/smoke-anthropic-provider.mjs",
-    "smoke:local-provider": "node scripts/smoke-local-provider.mjs"
+    "smoke:local-provider": "node scripts/smoke-local-provider.mjs",
+    "bootstrap:local": "node scripts/bootstrap-local.mjs --run"
   }
 }

@@ -1,5 +1,10 @@
 # Devlog
 
+## 2026-04-09 Local Bootstrap Command
+
+- added `scripts/bootstrap-local.mjs` and `npm run bootstrap:local` so first-run testing can create a workspace, create a starter mission, and execute the stub provider in one command
+- made the bootstrap command return workspace, mission, and optional run payload as JSON so local inspection is immediate without digging into state files
+
 ## 2026-04-07 Specialist Follow-Up Remediation
 
 - added `action remediate-specialist-follow-up` so blocked or failed specialist branches can be resumed from the operator surface instead of requiring a manual `mission run` reconstruction

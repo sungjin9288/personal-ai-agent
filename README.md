@@ -36,6 +36,14 @@ See [docs/reference-repos.md](/Users/sungjin/dev/personal/personal-ai-agent/docs
 
 ## Current Commands
 
+Local bootstrap for first test run:
+
+```bash
+npm run bootstrap:local
+```
+
+`bootstrap:local` registers the current repo as a workspace, creates a starter mission, runs it with the `stub` provider, and prints the workspace/mission/run payload so you can inspect the full flow without external API keys. Use `node scripts/bootstrap-local.mjs --workspace /path --name my-repo --run --provider stub` for custom paths or providers.
+
 Register a workspace:
 
 ```bash
