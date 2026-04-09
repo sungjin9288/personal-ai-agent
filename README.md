@@ -54,10 +54,11 @@ npm run ui
 - 좌측 rail에서 workspace 선택과 mission queue 탐색
 - 상단 운영 헤더에서 현재 mission, 현재 단계, 지금 해야 할 일, 막힌 이유를 한 번에 확인
 - 상단 진행 흐름 strip에서 `완료 / 현재 / 다음 단계`를 같은 문맥 안에서 읽고 바로 이동
+- 좌측 mission queue는 `표시 중 / 검토 필요 / 완료` 요약과 `다음 액션` 중심 행 디자인으로 빠르게 스캔
 - `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성
 - `실행하기` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
 - `검토하기` 단계에서 review readiness, action queue, approval inbox를 묶어서 처리
-- `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
+- `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인
 
 현재 playbook presets는 공개 agent repo 운영 패턴을 참고해 구성되어 있습니다.

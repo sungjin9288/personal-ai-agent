@@ -683,3 +683,9 @@
 - merged the previous separated progress strip into the command header so mission identity, current action, and stage flow read as one operator control surface instead of two stacked dashboards
 - introduced a single `workspace-shell` that groups `현재 단계 작업판` and `결과와 기록` into the same vertical working column, reducing scan distance and making the “choose → act → confirm” loop feel like one screen
 - compressed rail density, inline status metrics, and detail tabs so the console shows more actionable state above the fold while keeping the Korean step flow and review/output surfaces intact
+
+## 2026-04-10 Mission Queue Scanability And Detail Context Bar
+
+- reshaped the left mission queue into a more operational inbox with queue counters, clearer `다음 액션` emphasis, and denser row metadata so users can judge what to open without parsing several separate cards
+- added a `detail-contextbar` above the lower tabs so the selected mission, current detail mode, latest session, artifact count, and review state are visible before drilling into results or logs
+- kept the single-screen flow intact while making the lower `결과와 기록` surface feel less like detached tabs and more like a contextual workbench tied to the currently selected mission/session

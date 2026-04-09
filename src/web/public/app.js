@@ -121,6 +121,7 @@ const elements = {
   approvalList: document.getElementById('approval-list'),
   artifactMeta: document.getElementById('artifact-meta'),
   artifactViewer: document.getElementById('artifact-viewer'),
+  detailContextbar: document.getElementById('detail-contextbar'),
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
   flowStatus: document.getElementById('flow-status'),
@@ -148,6 +149,7 @@ const elements = {
   timelineList: document.getElementById('timeline-list'),
   toggleCreateButton: document.getElementById('toggle-create-button'),
   outputStageSummary: document.getElementById('output-stage-summary'),
+  missionQueueSummary: document.getElementById('mission-queue-summary'),
   workspaceSelect: document.getElementById('workspace-select'),
 };
 
@@ -445,6 +447,7 @@ function setActiveDetailTab(tabId) {
   elements.detailPanels.forEach((panel) => {
     panel.classList.toggle('is-active', panel.id === `detail-${tabId}`);
   });
+  renderDetailContextbar();
 }
 
 function openComposer() {
@@ -796,6 +799,7 @@ function getMissionQueueSnapshot(mission, latestSession) {
 
 function renderMissionList() {
   const missions = filteredMissions();
+  renderMissionQueueSummary(missions);
   if (!missions.length) {
     elements.missionList.innerHTML = state.missions.length
       ? emptyStateCard({
@@ -820,25 +824,34 @@ function renderMissionList() {
     .map(({ mission, latestSession, workspace }) => {
       const active = mission.id === state.selectedMissionId ? 'is-active' : '';
       const snapshot = getMissionQueueSnapshot(mission, latestSession);
+      const providerLabel = latestSession?.provider || '미정';
+      const updatedLabel = formatDate(mission.updatedAt);
       return `
         <div class="mission-row ${active}">
           <button type="button" data-mission-id="${escapeHtml(mission.id)}">
-            <div class="status-row">
-              <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
-              ${
-                latestSession
-                  ? `<span class="mini-badge ${getStatusClass(latestSession.provider || '')}">${escapeHtml(
-                      latestSession.provider || '미정',
-                    )}</span>`
-                  : ''
-              }
+            <div class="mission-row-head">
+              <div class="mission-row-main">
+                <div class="item-title">${escapeHtml(mission.title)}</div>
+                <div class="item-subtitle">${escapeHtml(snapshot.stage)}</div>
+              </div>
+              <div class="mission-row-state">
+                <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
+                ${
+                  latestSession
+                    ? `<span class="mini-badge ${getStatusClass(providerLabel)}">${escapeHtml(providerLabel)}</span>`
+                    : ''
+                }
+              </div>
             </div>
-            <div class="item-title">${escapeHtml(mission.title)}</div>
-            <div class="item-subtitle">${escapeHtml(snapshot.stage)}</div>
-            <div class="item-meta">
-              ${escapeHtml(snapshot.nextAction)}
+            <div class="mission-next-action">
+              <span class="mission-next-label">다음</span>
+              <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
             </div>
-            <div class="item-meta">${escapeHtml(workspace?.name || mission.workspaceId)} · ${escapeHtml(mission.mode)} · ${formatDate(mission.updatedAt)}</div>
+            <div class="mission-row-foot">
+              <span>${escapeHtml(workspace?.name || mission.workspaceId)}</span>
+              <span>${escapeHtml(mission.mode)}</span>
+              <span>${escapeHtml(updatedLabel)}</span>
+            </div>
           </button>
         </div>
       `;
@@ -848,6 +861,34 @@ function renderMissionList() {
   elements.missionList.querySelectorAll('[data-mission-id]').forEach((button) => {
     button.addEventListener('click', () => selectMission(button.dataset.missionId));
   });
+}
+
+function renderMissionQueueSummary(missions = filteredMissions()) {
+  if (!elements.missionQueueSummary) {
+    return;
+  }
+
+  if (!missions.length) {
+    elements.missionQueueSummary.innerHTML = `
+      <div class="queue-pill"><span>표시 중</span><strong>0개</strong></div>
+      <div class="queue-pill"><span>검토 필요</span><strong>0개</strong></div>
+      <div class="queue-pill"><span>완료</span><strong>0개</strong></div>
+    `;
+    return;
+  }
+
+  const reviewNeeded = missions.filter(({ mission, latestSession }) => {
+    return mission.status === 'awaiting_approval' || latestSession?.currentStage === 'reviewer';
+  }).length;
+  const completed = missions.filter(({ mission, latestSession }) => {
+    return mission.status === 'completed' || latestSession?.status === 'completed';
+  }).length;
+
+  elements.missionQueueSummary.innerHTML = `
+    <div class="queue-pill"><span>표시 중</span><strong>${escapeHtml(String(missions.length))}개</strong></div>
+    <div class="queue-pill"><span>검토 필요</span><strong>${escapeHtml(String(reviewNeeded))}개</strong></div>
+    <div class="queue-pill"><span>완료</span><strong>${escapeHtml(String(completed))}개</strong></div>
+  `;
 }
 
 function renderHeroMetrics() {
@@ -1255,6 +1296,64 @@ function renderOutputStageSummary() {
   wireQuickActions(elements.outputStageSummary);
 }
 
+function renderDetailContextbar() {
+  if (!elements.detailContextbar) {
+    return;
+  }
+
+  if (!state.missionDetail) {
+    elements.detailContextbar.innerHTML = `
+      <div class="detail-context-empty">미션을 선택하면 결과물, 실행 기록, 검토 이력의 기준 맥락이 여기에 표시됩니다.</div>
+    `;
+    return;
+  }
+
+  const mission = state.missionDetail.mission;
+  const latestSession = state.currentSessionPayload?.session || state.missionDetail.summary?.latestSession || null;
+  const artifacts = state.currentSessionPayload?.artifacts || [];
+  const approvals = state.currentSessionPayload?.approvals || [];
+  const currentTabLabel = {
+    artifacts: '결과물 확인 중',
+    runs: '실행 기록 확인 중',
+    reviews: '검토 이력 확인 중',
+    config: '입력값과 설정 확인 중',
+  }[state.activeDetailTab];
+
+  const highlightedArtifact =
+    state.selectedArtifactId && state.artifactsById.has(state.selectedArtifactId)
+      ? state.artifactsById.get(state.selectedArtifactId)?.artifact?.title ||
+        state.artifactsById.get(state.selectedArtifactId)?.artifact?.fileName
+      : artifacts.slice().reverse().find((artifact) =>
+          ['deliverable', 'execution-handoff', 'approval-resolution'].includes(artifact.kind),
+        )?.title ||
+        artifacts.slice().reverse().find((artifact) =>
+          ['deliverable', 'execution-handoff', 'approval-resolution'].includes(artifact.kind),
+        )?.fileName ||
+        '선택된 결과물 없음';
+
+  elements.detailContextbar.innerHTML = `
+    <div class="detail-context-main">
+      <span class="detail-context-label">현재 세부 보기</span>
+      <strong>${escapeHtml(currentTabLabel || '세부 보기')}</strong>
+      <p>${escapeHtml(mission.title)} 기준으로 결과와 기록을 한곳에서 확인합니다.</p>
+    </div>
+    <div class="detail-context-stats">
+      <div class="detail-context-pill">
+        <span>최근 세션</span>
+        <strong>${escapeHtml(latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>결과물</span>
+        <strong>${escapeHtml(String(artifacts.length))}개 · ${escapeHtml(highlightedArtifact || '없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>검토 상태</span>
+        <strong>${escapeHtml(approvals.length ? `승인 ${approvals.length}건 기록` : '승인 기록 없음')}</strong>
+      </div>
+    </div>
+  `;
+}
+
 function renderStageSummaries() {
   renderRunStageSummary();
   renderReviewStageSummary();
@@ -1607,6 +1706,7 @@ function renderSessionDetail(sessionPayload) {
       title: '현재 선택된 세션이 없습니다',
     });
     wireQuickActions(elements.sessionDetail);
+    renderDetailContextbar();
     return;
   }
 
@@ -1679,6 +1779,7 @@ function renderSessionDetail(sessionPayload) {
   elements.sessionDetail.querySelectorAll('[data-artifact-id]').forEach((button) => {
     button.addEventListener('click', () => loadArtifact(button.dataset.artifactId));
   });
+  renderDetailContextbar();
 }
 
 function renderArtifact(payload) {
@@ -1693,6 +1794,7 @@ function renderArtifact(payload) {
       title: '선택된 산출물이 없습니다',
     });
     wireQuickActions(elements.artifactViewer);
+    renderDetailContextbar();
     return;
   }
 
@@ -1701,6 +1803,7 @@ function renderArtifact(payload) {
     <div class="item-meta mono">${escapeHtml(payload.path)}</div>
   `;
   elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
+  renderDetailContextbar();
 }
 
 async function loadArtifact(artifactId, { activateTab = true } = {}) {
@@ -1823,6 +1926,7 @@ function clearMissionSelection() {
   renderSessionDetail(null);
   renderArtifact(null);
   renderFlowState();
+  renderDetailContextbar();
   setActiveStep('step-setup');
   setActiveDetailTab('config');
 }
