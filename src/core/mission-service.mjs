@@ -2958,6 +2958,7 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
   let latestDecliningWorkspaceAt = null;
   let latestGrowingWorkspace = null;
   let latestGrowingWorkspaceAt = null;
+  let latestProfile = null;
   let latestWorkspace = null;
   let latestWorkspaceAt = null;
 
@@ -2990,8 +2991,22 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
         latestAt: candidateLatestAt,
         missionTrend: entry.missionTrend || null,
         name: entry.name || null,
+        profileDisplayName: entry.profileDisplayName || null,
+        profileId: entry.profileId || null,
         profileFootprintTrend: entry.profileFootprintTrend || null,
       };
+      latestProfile = entry.profileId
+        ? {
+            adoptionDrift: entry.adoptionDrift || null,
+            displayName: entry.profileDisplayName || null,
+            id: entry.profileId || null,
+            latestAt: candidateLatestAt,
+            missionTrend: entry.missionTrend || null,
+            workspaceId: entry.id,
+            workspaceName: entry.name || null,
+            profileFootprintTrend: entry.profileFootprintTrend || null,
+          }
+        : null;
     }
     if (
       adoptionStatus === 'growing' &&
@@ -3056,6 +3071,7 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
   return {
     latestDecliningWorkspace,
     latestGrowingWorkspace,
+    latestProfile,
     latestWorkspace,
     missionTrendStatus,
     missionTrendStatusCounts,
@@ -11184,6 +11200,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           latestAt: latestWorkspaceEntry?.latestAt || null,
           missionTrend,
           name: workspace?.name || latestWorkspaceEntry?.workspace?.name || null,
+          profileDisplayName: latestWorkspaceEntry?.profile?.displayName || null,
+          profileId: latestWorkspaceEntry?.profile?.id || null,
           profileFootprintTrend,
           reasonCodes: adoptionDrift.reasonCodes,
           status: adoptionDrift.status,
@@ -11607,6 +11625,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceAdoptionDrift.latestGrowingProfile;
     summary.workspaceAdoptionDriftLatestDecliningProfile =
       workspaceAdoptionDrift.latestDecliningProfile;
+    summary.workspaceAdoptionDriftLatestProfile = workspaceAdoptionDrift.latestProfile;
     summary.workspaceAdoptionDriftLatestGrowingWorkspace =
       workspaceAdoptionDrift.latestGrowingWorkspace;
     summary.workspaceAdoptionDriftLatestDecliningWorkspace =

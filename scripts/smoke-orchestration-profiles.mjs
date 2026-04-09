@@ -186,6 +186,8 @@ assert.deepEqual(
 assert.deepEqual(overview.workspaceAdoptionDrift.workspaceIdsByStatus.declining, []);
 assert.equal(overview.workspaceAdoptionDrift.latestWorkspace.id, secondWorkspace.id);
 assert.equal(overview.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status, 'growing');
+assert.equal(overview.workspaceAdoptionDrift.latestProfile.id, 'engineering-triad');
+assert.equal(overview.workspaceAdoptionDrift.latestProfile.workspaceId, secondWorkspace.id);
 assert.equal(overview.workspaceAdoptionDrift.latestWorkspace.missionTrend.status, 'growing');
 assert.equal(overview.workspaceAdoptionDrift.latestWorkspace.profileFootprintTrend.status, 'growing');
 assert.equal(overview.adoptionDrift.status, 'growing');
@@ -524,6 +526,8 @@ assert.deepEqual(overview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.ste
 assert.deepEqual(overview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.unused, []);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestWorkspace.id, secondWorkspace.id);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestWorkspace.adoptionDrift.status, 'growing');
+assert.equal(overview.summary.workspaceAdoptionDriftLatestProfile.id, 'engineering-triad');
+assert.equal(overview.summary.workspaceAdoptionDriftLatestProfile.workspaceId, secondWorkspace.id);
 assert.equal(overview.summary.workspaceAdoptionDriftLatestGrowingProfile.id, 'engineering-triad');
 assert.equal(
   overview.summary.workspaceAdoptionDriftLatestDecliningProfile.id,
@@ -679,6 +683,8 @@ assert.deepEqual(knowledgeTriad.workspaceAdoptionDrift.workspaceIdsByStatus.grow
 assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestGrowingWorkspace.id, workspace.id);
 assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestGrowingWorkspace.profileId, 'knowledge-triad');
 assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestDecliningWorkspace, null);
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestProfile.id, 'knowledge-triad');
+assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestProfile.workspaceId, workspace.id);
 assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestWorkspace.id, workspace.id);
 assert.equal(knowledgeTriad.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status, 'growing');
 assert.equal(knowledgeTriad.missionStatusCounts.completed, 1);
@@ -799,6 +805,14 @@ assert.equal(
   workspace.id,
 );
 assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.latestProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(
+  engineeringImplementationVerification.workspaceAdoptionDrift.latestProfile.workspaceId,
+  workspace.id,
+);
+assert.equal(
   engineeringImplementationVerification.workspaceAdoptionDrift.latestDecliningWorkspace.profileId,
   'engineering-implementation-verification',
 );
@@ -883,6 +897,8 @@ assert.deepEqual(
 assert.equal(engineeringTriad.workspaceAdoptionDrift.latestGrowingWorkspace.id, secondWorkspace.id);
 assert.equal(engineeringTriad.workspaceAdoptionDrift.latestGrowingWorkspace.profileId, 'engineering-triad');
 assert.equal(engineeringTriad.workspaceAdoptionDrift.latestDecliningWorkspace, null);
+assert.equal(engineeringTriad.workspaceAdoptionDrift.latestProfile.id, 'engineering-triad');
+assert.equal(engineeringTriad.workspaceAdoptionDrift.latestProfile.workspaceId, secondWorkspace.id);
 assert.equal(engineeringTriad.workspaceAdoptionDrift.latestWorkspace.id, secondWorkspace.id);
 assert.equal(engineeringTriad.workspaceAdoptionDrift.latestWorkspace.adoptionDrift.status, 'growing');
 assert.equal(engineeringTriad.adoptionDrift.status, 'growing');
@@ -900,6 +916,7 @@ assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestProfile, nu
 assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestFollowUpRequiredProfile, null);
 assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestStableProfile, null);
 assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestWatchProfile, null);
+assert.equal(unusedKnowledgeResearchImplementation.workspaceAdoptionDrift.latestProfile, null);
 assert.equal(unusedKnowledgeResearchImplementation.used, false);
 assert.equal(unusedKnowledgeResearchImplementation.adoptionDrift.status, 'unused');
 assert.deepEqual(unusedKnowledgeResearchImplementation.adoptionDrift.reasonCodes, ['unused-profile']);
@@ -1013,6 +1030,8 @@ assert.equal(
 assert.deepEqual(workspaceUsedOverview.workspaceAdoptionDrift.workspaceIdsByStatus.growing, [workspace.id]);
 assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestGrowingWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestDecliningWorkspace, null);
+assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestProfile.id, 'knowledge-triad');
+assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestProfile.workspaceId, workspace.id);
 assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.workspaceAdoptionDrift.latestWorkspace.profileFootprintTrend.status, 'steady');
 assert.equal(workspaceUsedOverview.summary.usedWorkspaceCount, 1);
@@ -1153,6 +1172,8 @@ assert.deepEqual(workspaceUsedOverview.summary.workspaceAdoptionDriftWorkspaceId
 assert.deepEqual(workspaceUsedOverview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.steady, []);
 assert.deepEqual(workspaceUsedOverview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.unused, []);
 assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.id, workspace.id);
+assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestProfile.id, 'knowledge-triad');
+assert.equal(workspaceUsedOverview.summary.workspaceAdoptionDriftLatestProfile.workspaceId, workspace.id);
 assert.equal(
   workspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.profileFootprintTrend.status,
   'steady',
@@ -1276,6 +1297,11 @@ assert.equal(
   secondWorkspace.id,
 );
 assert.equal(secondWorkspaceUsedOverview.workspaceAdoptionDrift.latestDecliningWorkspace, null);
+assert.equal(secondWorkspaceUsedOverview.workspaceAdoptionDrift.latestProfile.id, 'engineering-triad');
+assert.equal(
+  secondWorkspaceUsedOverview.workspaceAdoptionDrift.latestProfile.workspaceId,
+  secondWorkspace.id,
+);
 assert.equal(secondWorkspaceUsedOverview.workspaceAdoptionDrift.latestWorkspace.id, secondWorkspace.id);
 assert.equal(secondWorkspaceUsedOverview.workspaceAdoptionDrift.latestWorkspace.profileFootprintTrend.status, 'growing');
 assert.equal(secondWorkspaceUsedOverview.summary.usedWorkspaceCount, 1);
@@ -1446,6 +1472,14 @@ assert.deepEqual(
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.steady, []);
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftWorkspaceIdsByStatus.unused, []);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.id, secondWorkspace.id);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestProfile.id,
+  'engineering-triad',
+);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestProfile.workspaceId,
+  secondWorkspace.id,
+);
 assert.equal(
   secondWorkspaceUsedOverview.summary.workspaceAdoptionDriftLatestWorkspace.profileFootprintTrend.status,
   'growing',
