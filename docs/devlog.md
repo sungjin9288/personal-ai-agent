@@ -713,3 +713,9 @@
 - reduced the top command header to three core metrics plus a shorter signal row so mission identity, review pressure, and latest run read faster without competing cards
 - shortened the default mission subtitle and each stage panel description into more direct Korean utility copy, removing extra explanatory weight from the first viewport
 - kept the same single-screen operator structure while lowering visual density in the first screen, so users can scan state and move into the active stage with less interpretation overhead
+
+## 2026-04-10 Unified Command Surface Pass
+
+- flattened the `지금 할 일` panel from stacked meta cards into a single decision block with inline status chips so the operator reads action, stage, and progress state in one pass
+- turned the progress strip into a footer-style rail inside the same command surface by removing its separate card treatment and giving it a shared divider/background continuation
+- shortened the progress rail helper copy and stage cards so the top viewport feels like one coordinated control surface instead of separate dashboard modules

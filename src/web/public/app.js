@@ -569,25 +569,29 @@ function renderFlowState() {
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
       <p class="flow-status-label">지금 해야 할 일</p>
-      <strong class="flow-status-value">${escapeHtml(flow.label)}</strong>
-      <p class="flow-status-copy">${escapeHtml(flow.copy)}</p>
-      <div class="flow-status-meta">
-        <div class="flow-meta">
-          <span>현재 단계</span>
-          <strong>${escapeHtml(flow.currentStepLabel)}</strong>
+      <div class="flow-status-main">
+        <div class="flow-status-copyblock">
+          <strong class="flow-status-value">${escapeHtml(flow.label)}</strong>
+          <p class="flow-status-copy">${escapeHtml(flow.copy)}</p>
         </div>
-        <div class="flow-meta">
-          <span>막힌 이유 / 상태</span>
-          <strong>${escapeHtml(flow.blocker)}</strong>
+        <div class="flow-status-actions">
+          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
+            ${escapeHtml(flow.buttonLabel)}
+          </button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}">
+            ${escapeHtml(flow.secondaryActionLabel)}
+          </button>
         </div>
       </div>
-      <div class="flow-status-actions">
-        <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
-          ${escapeHtml(flow.buttonLabel)}
-        </button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}">
-          ${escapeHtml(flow.secondaryActionLabel)}
-        </button>
+      <div class="flow-status-inline">
+        <span class="flow-inline-item">
+          <em>현재 단계</em>
+          <strong>${escapeHtml(flow.currentStepLabel)}</strong>
+        </span>
+        <span class="flow-inline-item">
+          <em>진행 상태</em>
+          <strong>${escapeHtml(flow.blocker)}</strong>
+        </span>
       </div>
     `;
     wireQuickActions(elements.flowStatus);
