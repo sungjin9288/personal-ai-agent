@@ -2275,6 +2275,7 @@ function summarizeOrchestrationProfileOverviewItems(items) {
               null,
             profileDisplayName: item.displayName,
             profileId: item.id,
+            workspaceUsageTrend: item.workspaceUsageTrend || null,
           }))
           .filter((item) => item.id),
         'latestUsedAt',
@@ -11689,6 +11690,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceUsageTrend.latestDecliningWorkspace;
     summary.workspaceUsageTrendLatestProfile = workspaceUsageTrend.latestProfile;
     summary.workspaceUsageTrendLatestWorkspace = workspaceUsageTrend.latestWorkspace;
+    summary.workspaceUsageTrendLatestWorkspaceProfileId =
+      workspaceUsageTrend.latestWorkspace?.profileId || null;
+    summary.workspaceUsageTrendLatestWorkspaceStatus =
+      workspaceUsageTrend.latestWorkspace?.workspaceUsageTrend?.status || null;
     summary.usageTrendStatus = usageTrend.status;
     summary.usageTrendProfileCount = usageTrend.profileCount;
     summary.usageTrendCurrentMonthStartDate = usageTrend.currentMonthStartDate;
