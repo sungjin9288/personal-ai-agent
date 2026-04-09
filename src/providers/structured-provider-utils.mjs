@@ -94,6 +94,10 @@ export function parseJsonText(text, providerLabel) {
     try {
       return JSON.parse(repaired);
     } catch (repairError) {
+      const salvaged = salvageJsonLike(candidate);
+      if (salvaged) {
+        return salvaged;
+      }
       throw createProviderFailure(
         `${providerLabel} provider returned non-JSON content: ${
           repairError instanceof Error ? repairError.message : String(repairError)
@@ -107,6 +111,65 @@ export function parseJsonText(text, providerLabel) {
       );
     }
   }
+}
+
+function decodeJsonStringLiteral(value) {
+  if (!value) {
+    return '';
+  }
+
+  try {
+    return JSON.parse(`"${value}"`);
+  } catch {
+    return value
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, '\\');
+  }
+}
+
+function extractJsonStringField(text, key) {
+  const regex = new RegExp(`"${key}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`, 's');
+  const match = text.match(regex);
+  if (!match) {
+    return '';
+  }
+
+  return decodeJsonStringLiteral(match[1]);
+}
+
+function extractJsonStringArrayField(text, key) {
+  const regex = new RegExp(`"${key}"\\s*:\\s*\\[(.*?)(?:\\]|$)`, 's');
+  const match = text.match(regex);
+  if (!match) {
+    return [];
+  }
+
+  const rawItems = match[1].match(/"(?:\\\\.|[^"\\\\])*"/gs) || [];
+  return rawItems
+    .map((item) => decodeJsonStringLiteral(item.slice(1, -1)))
+    .filter(Boolean);
+}
+
+function salvageJsonLike(candidate) {
+  const summaryText = extractJsonStringField(candidate, 'summaryText');
+  const artifactContent = extractJsonStringField(candidate, 'artifactContent');
+  if (!summaryText && !artifactContent) {
+    return null;
+  }
+
+  const output = {
+    summaryText,
+    artifactContent,
+    nextAction: extractJsonStringField(candidate, 'nextAction'),
+    verdict: extractJsonStringField(candidate, 'verdict'),
+    planSteps: extractJsonStringArrayField(candidate, 'planSteps'),
+    adaptationNotes: extractJsonStringArrayField(candidate, 'adaptationNotes'),
+    findings: extractJsonStringArrayField(candidate, 'findings'),
+  };
+
+  return output;
 }
 
 function repairJsonCandidate(candidate) {
