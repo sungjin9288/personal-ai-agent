@@ -262,6 +262,10 @@ assert.equal(
 assert.equal(overview.workspaceUsageTrend.latestProfile.id, 'engineering-triad');
 assert.equal(overview.workspaceUsageTrend.latestWorkspace.id, secondWorkspace.id);
 assert.equal(overview.workspaceUsageTrend.latestWorkspace.profileId, 'engineering-triad');
+assert.equal(overview.workspaceUsageTrend.latestWorkspaceId, secondWorkspace.id);
+assert.equal(overview.workspaceUsageTrend.latestWorkspaceName, secondWorkspace.name);
+assert.equal(overview.workspaceUsageTrend.latestWorkspaceProfileId, 'engineering-triad');
+assert.equal(overview.workspaceUsageTrend.latestWorkspaceStatus, 'growing');
 assert.equal(overview.summary.workspaceUsageTrendLatestWorkspaceProfileId, 'engineering-triad');
 assert.equal(overview.summary.workspaceUsageTrendLatestWorkspaceId, secondWorkspace.id);
 assert.equal(

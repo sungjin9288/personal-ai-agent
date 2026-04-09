@@ -11512,6 +11512,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     workspaceUsageTrend.latestProfile = summary.latestUsedProfile;
     workspaceUsageTrend.latestUnusedProfile = summary.latestUnusedWorkspaceUsageProfile;
     workspaceUsageTrend.latestWorkspace = summary.latestUsedWorkspace;
+    workspaceUsageTrend.latestWorkspaceId = workspaceUsageTrend.latestWorkspace?.id || null;
+    workspaceUsageTrend.latestWorkspaceName = workspaceUsageTrend.latestWorkspace?.name || null;
+    workspaceUsageTrend.latestWorkspaceProfileId =
+      workspaceUsageTrend.latestWorkspace?.profileId || null;
+    workspaceUsageTrend.latestWorkspaceStatus =
+      workspaceUsageTrend.latestWorkspace?.workspaceUsageTrend?.status || null;
     workspaceUsageTrend.profileCount = summary.total;
     workspaceUsageTrend.statusCounts = summary.workspaceUsageTrendCounts;
     workspaceUsageTrend.workspaceCount = Object.keys(summary.workspaceUsageTrendProfileCounts || {}).length;

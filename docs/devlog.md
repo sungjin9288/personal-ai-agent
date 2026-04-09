@@ -38,6 +38,7 @@
 - upgraded root-level `usageTrend` and `workspaceUsageTrend` to include profileCount, statusCounts, and latest unused profile linkage so usage quick fields are symmetric with adoption drift triage
 - extended `workspaceUsageTrend` again with workspace-level aggregate maps, so `overview profiles` can show which workspace IDs and how many presets are driving growing or declining workspace footprint directly from the root quick field and summary
 - added `latestGrowingWorkspace` and `latestDecliningWorkspace` to root `workspaceUsageTrend`, so the profile catalog can point directly to the most recent workspace driving footprint expansion or contraction
+- added `latestWorkspaceId`, `latestWorkspaceName`, `latestWorkspaceProfileId`, and `latestWorkspaceStatus` to root `workspaceUsageTrend`, so the newest workspace footprint signal identity is readable from the quick field without opening nested workspace objects
 - extended item-level `workspaceUsageTrend` with per-workspace status aggregate and latest workspace linkage, so one orchestration preset can show which workspace is currently growing or shrinking its footprint without reopening mission history
 - added root-level `workspaceAdoptionDrift` to `overview profiles`, so workspace mission volume drift and preset footprint drift can now be triaged as one combined adoption signal directly from the catalog response
 - extended each profile item with `workspaceAdoptionDrift`, so combined workspace adoption pressure is now readable inside one preset payload without reopening root workspace aggregates
