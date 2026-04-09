@@ -385,6 +385,11 @@ assert.equal(overview.summary.usageTrendCounts.steady, 0);
 assert.equal(overview.summary.usageTrendCounts.unused, 1);
 assert.equal(overview.summary.usageTrendStatus, 'growing');
 assert.equal(overview.summary.usageTrendProfileCount, 4);
+assert.equal(overview.summary.usageTrendCurrentMonthStartDate, currentMonthStartDate);
+assert.equal(overview.summary.usageTrendCurrentMonthMissionCount, 3);
+assert.equal(overview.summary.usageTrendPreviousMonthStartDate, previousMonthStartDate);
+assert.equal(overview.summary.usageTrendPreviousMonthMissionCount, 1);
+assert.equal(overview.summary.usageTrendMissionCountDelta, 2);
 assert.equal(overview.summary.usageTrendStatusCounts.growing, 2);
 assert.equal(overview.summary.usageTrendStatusCounts.declining, 1);
 assert.equal(overview.summary.usageTrendStatusCounts.steady, 0);
@@ -1040,6 +1045,11 @@ assert.equal(
 );
 assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftStatusCounts.watch, {});
 assert.deepEqual(workspaceUsedOverview.summary.workspaceHealthDriftWorkspaceStatusCounts.watch, {});
+assert.equal(workspaceUsedOverview.summary.usageTrendCurrentMonthStartDate, currentMonthStartDate);
+assert.equal(workspaceUsedOverview.summary.usageTrendCurrentMonthMissionCount, 2);
+assert.equal(workspaceUsedOverview.summary.usageTrendPreviousMonthStartDate, previousMonthStartDate);
+assert.equal(workspaceUsedOverview.summary.usageTrendPreviousMonthMissionCount, 1);
+assert.equal(workspaceUsedOverview.summary.usageTrendMissionCountDelta, 1);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendStatus, 'steady');
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendProfileCount, 2);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendCurrentMonthStartDate, currentMonthStartDate);
@@ -1282,6 +1292,11 @@ assert.deepEqual(
   {},
 );
 assert.deepEqual(secondWorkspaceUsedOverview.summary.workspaceHealthDriftWorkspaceStatusCounts.watch, {});
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendCurrentMonthStartDate, currentMonthStartDate);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendCurrentMonthMissionCount, 1);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendPreviousMonthStartDate, previousMonthStartDate);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendPreviousMonthMissionCount, 0);
+assert.equal(secondWorkspaceUsedOverview.summary.usageTrendMissionCountDelta, 1);
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendStatus, 'growing');
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendProfileCount, 1);
 assert.equal(

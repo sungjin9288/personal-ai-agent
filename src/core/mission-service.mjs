@@ -11626,6 +11626,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceUsageTrend.latestDecliningWorkspace;
     summary.usageTrendStatus = usageTrend.status;
     summary.usageTrendProfileCount = usageTrend.profileCount;
+    summary.usageTrendCurrentMonthStartDate = usageTrend.currentMonthStartDate;
+    summary.usageTrendCurrentMonthMissionCount = usageTrend.currentMonthMissionCount;
+    summary.usageTrendPreviousMonthStartDate = usageTrend.previousMonthStartDate;
+    summary.usageTrendPreviousMonthMissionCount = usageTrend.previousMonthMissionCount;
+    summary.usageTrendMissionCountDelta = usageTrend.missionCountDelta;
     summary.usageTrendStatusCounts = usageTrend.statusCounts;
     summary.usageTrendLatestGrowingProfile = usageTrend.latestGrowingProfile;
     summary.usageTrendLatestDecliningProfile = usageTrend.latestDecliningProfile;
