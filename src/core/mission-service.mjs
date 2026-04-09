@@ -10851,6 +10851,46 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           specialistFollowUpRequiredCount: followUps.length,
           specialistFollowUpReminderCountTotal: followUpSummary.reminderCountTotal,
         });
+        const latestHealthProfileLink =
+          followUpSummary.latestReminderAt || latestMissionEntry?.latestAt || latestGroupEntry?.latestAt
+            ? {
+                displayName: profile.displayName,
+                id: profile.id,
+                latestMission:
+                  latestMissionEntry?.mission
+                    ? {
+                        id: latestMissionEntry.mission.id,
+                        status: latestMissionEntry.mission.status,
+                        updatedAt: latestMissionEntry.latestAt || null,
+                        workspaceId: latestMissionEntry.workspace?.id || null,
+                        workspaceName: latestMissionEntry.workspace?.name || null,
+                      }
+                    : null,
+                latestParallelGroup: latestGroupEntry?.group
+                  ? {
+                      id: latestGroupEntry.group.id,
+                      missionId: latestGroupEntry.group.missionId,
+                      status: latestGroupEntry.group.status,
+                      workspaceId: latestGroupEntry.group.workspace?.id || null,
+                      workspaceName: latestGroupEntry.group.workspace?.name || null,
+                    }
+                  : null,
+                latestUsedAt:
+                  followUpSummary.latestReminderAt ||
+                  latestMissionEntry?.latestAt ||
+                  latestGroupEntry?.latestAt ||
+                  null,
+                reasonCodes: healthDrift.reasonCodes,
+                status: healthDrift.status,
+              }
+            : null;
+        healthDrift.latestProfile = latestHealthProfileLink;
+        healthDrift.latestFollowUpRequiredProfile =
+          healthDrift.status === 'follow-up-required' ? latestHealthProfileLink : null;
+        healthDrift.latestWatchProfile =
+          healthDrift.status === 'watch' ? latestHealthProfileLink : null;
+        healthDrift.latestStableProfile =
+          healthDrift.status === 'stable' ? latestHealthProfileLink : null;
         const workspaceHealthEntries = touchedWorkspaceIds.map((workspaceId) => {
           const workspace = workspaceById.get(workspaceId) || null;
           const workspaceGroups = groups.filter((group) => group.workspace?.id === workspaceId);

@@ -582,6 +582,10 @@ assert.equal(knowledgeTriad.specialistFollowUpLatestReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpNextReminderAt, null);
 assert.equal(knowledgeTriad.specialistFollowUpStatusCounts.blocked, 1);
 assert.equal(knowledgeTriad.healthDrift.status, 'follow-up-required');
+assert.equal(knowledgeTriad.healthDrift.latestProfile.id, 'knowledge-triad');
+assert.equal(knowledgeTriad.healthDrift.latestFollowUpRequiredProfile.id, 'knowledge-triad');
+assert.equal(knowledgeTriad.healthDrift.latestStableProfile, null);
+assert.equal(knowledgeTriad.healthDrift.latestWatchProfile, null);
 assert.equal(knowledgeTriad.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(knowledgeTriad.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(knowledgeTriad.workspaceHealthDrift.statusCounts['follow-up-required'], 1);
@@ -666,6 +670,16 @@ assert.equal(engineeringImplementationVerification.workspaceMissionCounts[worksp
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRetryPolicyCounts, {});
 assert.deepEqual(engineeringImplementationVerification.specialistFollowUpRemediationRouteCounts, {});
 assert.equal(engineeringImplementationVerification.healthDrift.status, 'stable');
+assert.equal(
+  engineeringImplementationVerification.healthDrift.latestProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(engineeringImplementationVerification.healthDrift.latestFollowUpRequiredProfile, null);
+assert.equal(
+  engineeringImplementationVerification.healthDrift.latestStableProfile.id,
+  'engineering-implementation-verification',
+);
+assert.equal(engineeringImplementationVerification.healthDrift.latestWatchProfile, null);
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.status, 'stable');
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringImplementationVerification.workspaceHealthDrift.statusCounts.stable, 1);
@@ -772,6 +786,10 @@ assert.equal(engineeringTriad.workspaceCount, 1);
 assert.deepEqual(engineeringTriad.touchedWorkspaceIds, [secondWorkspace.id]);
 assert.equal(engineeringTriad.workspaceMissionCounts[secondWorkspace.id], 1);
 assert.equal(engineeringTriad.healthDrift.status, 'stable');
+assert.equal(engineeringTriad.healthDrift.latestProfile.id, 'engineering-triad');
+assert.equal(engineeringTriad.healthDrift.latestFollowUpRequiredProfile, null);
+assert.equal(engineeringTriad.healthDrift.latestStableProfile.id, 'engineering-triad');
+assert.equal(engineeringTriad.healthDrift.latestWatchProfile, null);
 assert.equal(engineeringTriad.workspaceHealthDrift.status, 'stable');
 assert.equal(engineeringTriad.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(engineeringTriad.workspaceHealthDrift.statusCounts.stable, 1);
@@ -833,6 +851,10 @@ const unusedKnowledgeResearchImplementation = overview.items.find(
   (item) => item.id === 'knowledge-research-implementation',
 );
 assert.ok(unusedKnowledgeResearchImplementation);
+assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestProfile, null);
+assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestFollowUpRequiredProfile, null);
+assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestStableProfile, null);
+assert.equal(unusedKnowledgeResearchImplementation.healthDrift.latestWatchProfile, null);
 assert.equal(unusedKnowledgeResearchImplementation.used, false);
 assert.equal(unusedKnowledgeResearchImplementation.adoptionDrift.status, 'unused');
 assert.deepEqual(unusedKnowledgeResearchImplementation.adoptionDrift.reasonCodes, ['unused-profile']);
