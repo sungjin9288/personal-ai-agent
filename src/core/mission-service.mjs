@@ -4077,7 +4077,7 @@ function summarizeProviderExecutions(executions) {
   function summarizeProviderStatusEntries(providers) {
     return {
       configuredCount: providers.filter((provider) => provider.configured).length,
-      defaultProviderId: providers.find((provider) => provider.defaultProvider)?.id || 'stub',
+      defaultProviderId: providerRegistry.getDefaultProviderId(),
       implementedCount: providers.filter((provider) => provider.implemented).length,
       total: providers.length,
     };
@@ -6082,7 +6082,7 @@ function summarizeProviderExecutions(executions) {
   async function runMission(missionId, options = {}) {
     const mission = getMission(missionId);
     const workspace = getWorkspace(mission.workspaceId);
-    const providerId = normalizeText(options.provider, 'stub');
+    const providerId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
     const explicitProviderSelection = Boolean(options.providerSpecified);
     const provider = providerRegistry.getProvider(providerId);
 

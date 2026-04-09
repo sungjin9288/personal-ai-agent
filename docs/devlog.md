@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-04-09 Default Provider Policy
+
+- changed `mission run` default provider resolution to prefer OpenAI when `OPENAI_API_KEY` is configured, while keeping `stub` as the automatic fallback for offline bootstrap and smoke testing
+- aligned provider summary surfaces so the reported default provider now reflects the same runtime policy used by `mission run`
+- documented Anthropic as an explicit comparison or fallback path instead of the operational default, matching the current stability findings from the PRD mission comparison
+- corrected Anthropic runtime timeout to 45 seconds and kept OpenAI at 20 seconds, so provider-specific runtime limits match the current reliability envelope
+- hardened Anthropic execution with JSON-like salvage, planner or executor fallback artifact generation, and reviewer prompt serialization fixes so provider comparison now reflects model behavior rather than obvious runtime wiring defects
+
 ## 2026-04-09 Local Bootstrap Command
 
 - added `scripts/bootstrap-local.mjs` and `npm run bootstrap:local` so first-run testing can create a workspace, create a starter mission, and execute the stub provider in one command

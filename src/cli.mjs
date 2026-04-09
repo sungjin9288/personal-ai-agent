@@ -348,7 +348,7 @@ async function main() {
 
   if (group === 'mission' && command === 'run') {
     const missionId = rest[0];
-    const provider = readOption(rest, '--provider', 'stub');
+    const provider = readOption(rest, '--provider', '');
     const result = await service.runMission(missionId, {
       provider,
       providerSpecified: hasOption(rest, '--provider'),

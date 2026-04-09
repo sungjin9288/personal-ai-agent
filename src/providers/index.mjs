@@ -27,12 +27,12 @@ function buildProviderConfiguration(spec, env) {
   );
 }
 
-function buildProviderStatus(spec, env, provider) {
+function buildProviderStatus(spec, env, provider, defaultProviderId = '') {
   const missingEnv = spec.requiredEnv.filter((key) => !normalizeText(env[key]));
   const configured = missingEnv.length === 0;
   const status = {
     configured,
-    defaultProvider: spec.defaultProvider,
+    defaultProvider: spec.id === defaultProviderId,
     displayName: spec.displayName,
     id: spec.id,
     implemented: Boolean(provider?.implemented),
@@ -55,7 +55,27 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
     local: createLocalProvider({ rootDir, env, fetchImpl }),
   };
 
+  function getDefaultProviderId() {
+    const openAIStatus = buildProviderStatus(getProviderSpec('openai'), env, providers.openai);
+    if (openAIStatus.implemented && openAIStatus.configured) {
+      return 'openai';
+    }
+
+    const stubStatus = buildProviderStatus(getProviderSpec('stub'), env, providers.stub);
+    if (stubStatus.implemented) {
+      return 'stub';
+    }
+
+    const firstConfiguredProvider = listProviderSpecs().find((spec) => {
+      const status = buildProviderStatus(spec, env, providers[spec.id]);
+      return status.implemented && status.configured;
+    });
+
+    return firstConfiguredProvider?.id || 'stub';
+  }
+
   return {
+    getDefaultProviderId,
     getProvider(providerId) {
       const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
       if (!PROVIDER_IDS.includes(normalizedProviderId) || !providers[normalizedProviderId]) {
@@ -65,7 +85,8 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
       return providers[normalizedProviderId];
     },
     listProviders() {
-      return listProviderSpecs().map((spec) => buildProviderStatus(spec, env, providers[spec.id]));
+      const defaultProviderId = getDefaultProviderId();
+      return listProviderSpecs().map((spec) => buildProviderStatus(spec, env, providers[spec.id], defaultProviderId));
     },
     getProviderStatus(providerId) {
       const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
@@ -73,7 +94,12 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         throw new Error(`Unsupported provider: ${normalizedProviderId}`);
       }
 
-      return buildProviderStatus(getProviderSpec(normalizedProviderId), env, providers[normalizedProviderId]);
+      return buildProviderStatus(
+        getProviderSpec(normalizedProviderId),
+        env,
+        providers[normalizedProviderId],
+        getDefaultProviderId(),
+      );
     },
     async probeProvider(providerId) {
       const normalizedProviderId = String(providerId || 'stub').trim() || 'stub';
@@ -81,7 +107,12 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
         throw new Error(`Unsupported provider: ${normalizedProviderId}`);
       }
 
-      const status = buildProviderStatus(getProviderSpec(normalizedProviderId), env, providers[normalizedProviderId]);
+      const status = buildProviderStatus(
+        getProviderSpec(normalizedProviderId),
+        env,
+        providers[normalizedProviderId],
+        getDefaultProviderId(),
+      );
       if (!status.implemented) {
         return {
           ...status,

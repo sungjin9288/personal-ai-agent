@@ -112,6 +112,17 @@ assert.equal(localCheck.configuration.baseUrl, 'http://127.0.0.1:1234/v1');
 assert.equal(localCheck.configuration.model, 'llama3.1-local');
 assert.equal(localCheck.configuration.maxTokens, '1024');
 
+const providerListWithOpenAIResult = runCli({
+  args: ['provider', 'list'],
+  env: {
+    OPENAI_API_KEY: 'test-openai-key',
+  },
+});
+
+assert.equal(providerListWithOpenAIResult.status, 0);
+const providerListWithOpenAI = JSON.parse(providerListWithOpenAIResult.stdout);
+assert.equal(providerListWithOpenAI.summary.defaultProviderId, 'openai');
+
 console.log(
   JSON.stringify(
     {
