@@ -57,6 +57,7 @@ npm run ui
 - 좌측 mission queue는 `표시 중 / 검토 필요 / 완료` 요약과 `다음 액션` 중심 행 디자인으로 빠르게 스캔
 - 좌측 mission queue는 밝은 카드 더미 대신 dark inbox 밀도로 정리되어, 어떤 mission을 먼저 열어야 하는지 한눈에 판단
 - 각 mission row는 단계, 목표 요약, 다음 액션, 최신 provider를 한 줄 흐름으로 압축해 PM/운영자도 우선순위를 빠르게 고를 수 있게 정리
+- 상단 command header는 핵심 3개 메트릭과 짧은 상태 신호만 남겨, 첫 화면에서 현재 단계와 다음 행동이 바로 읽히도록 압축
 - `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성
 - `실행하기` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
 - `결과 보기` 단계는 대표 결과물, 검토 상태, 마무리 체크리스트를 먼저 보여주고, 아래 `결과와 기록` workbench에서 본문과 실행 타임라인을 함께 확인

@@ -707,3 +707,9 @@
 - compressed the left mission queue into a denser inbox row format with stage, updated time, objective summary, next action, and provider context so operators can choose the next mission without scanning multiple boxed chips
 - changed the output-stage closeout surface from generic mini cards into indexed checklist rows, making the final confirmation path read as ordered verification work instead of parallel widgets
 - added UI-only label cleanup for mission mode values and reused the latest reviewer or objective summary as the queue snippet so Korean operators see purpose-first copy before opening a mission
+
+## 2026-04-10 Command Header Compression Pass
+
+- reduced the top command header to three core metrics plus a shorter signal row so mission identity, review pressure, and latest run read faster without competing cards
+- shortened the default mission subtitle and each stage panel description into more direct Korean utility copy, removing extra explanatory weight from the first viewport
+- kept the same single-screen operator structure while lowering visual density in the first screen, so users can scan state and move into the active stage with less interpretation overhead

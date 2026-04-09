@@ -945,11 +945,7 @@ function renderHeroMetrics() {
         <strong>1단계 · 미션 정하기</strong>
       </div>
       <div class="metric-card">
-        <span>현재 상태</span>
-        <strong>선택 전</strong>
-      </div>
-      <div class="metric-card">
-        <span>검토 대기</span>
+        <span>검토와 후속</span>
         <strong>승인 0건 · 후속 0건</strong>
       </div>
       <div class="metric-card">
@@ -966,8 +962,7 @@ function renderHeroMetrics() {
   const actionSummary = state.missionActions?.summary || {};
   const metrics = [
     ['현재 단계', flow.currentStepLabel],
-    ['현재 상태', getDisplayLabel(state.missionDetail.mission.status)],
-    ['검토 대기', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
+    ['검토와 후속', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
     ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
   ];
 
@@ -986,9 +981,9 @@ function renderHeroMetrics() {
 function renderHeroSignals() {
   if (!state.missionDetail) {
     elements.heroSignals.innerHTML = `
-      <span class="hero-signal">미션 선택</span>
-      <span class="hero-signal">실행 준비</span>
-      <span class="hero-signal">검토 없음</span>
+      <span class="hero-signal">상태 없음</span>
+      <span class="hero-signal">실행 전</span>
+      <span class="hero-signal">결과 없음</span>
     `;
     return;
   }
@@ -997,12 +992,10 @@ function renderHeroSignals() {
   const playbook = inferPlaybook(mission);
   const latestSession = state.missionDetail.summary?.latestSession || {};
   const signals = [
-    playbook ? `플레이북 · ${playbook.title}` : '사용자 정의 미션',
+    `상태 · ${getDisplayLabel(mission.status, mission.status)}`,
     mission.deliverableType ? `산출물 · ${getDisplayLabel(mission.deliverableType, mission.deliverableType)}` : '산출물 유형 미정',
     latestSession.provider ? `제공자 · ${latestSession.provider}` : '제공자 선택 전',
-    state.missionActions?.summary?.pendingActionCount
-      ? `후속 작업 · ${state.missionActions.summary.pendingActionCount}건`
-      : '후속 작업 없음',
+    playbook ? `플레이북 · ${playbook.title}` : '사용자 정의 미션',
   ];
 
   elements.heroSignals.innerHTML = signals
@@ -1113,7 +1106,10 @@ function renderMissionSummary() {
   const constraints = mission.constraints || [];
   const flow = getFlowState();
   elements.missionTitle.textContent = mission.title;
-  elements.missionSubtitle.textContent = mission.objective || '목표가 없습니다.';
+  elements.missionSubtitle.textContent = summarizeText(
+    mission.objective,
+    latestSession?.reviewerSummary || '목표가 없습니다.',
+  );
   elements.runMissionButton.disabled = false;
 
   elements.missionSummary.innerHTML = `
