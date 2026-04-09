@@ -11692,6 +11692,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.workspaceUsageTrendLatestWorkspace = workspaceUsageTrend.latestWorkspace;
     summary.workspaceUsageTrendLatestWorkspaceProfileId =
       workspaceUsageTrend.latestWorkspace?.profileId || null;
+    summary.workspaceUsageTrendLatestWorkspaceId =
+      workspaceUsageTrend.latestWorkspace?.id || null;
+    summary.workspaceUsageTrendLatestWorkspaceName =
+      workspaceUsageTrend.latestWorkspace?.name || null;
     summary.workspaceUsageTrendLatestWorkspaceStatus =
       workspaceUsageTrend.latestWorkspace?.workspaceUsageTrend?.status || null;
     summary.usageTrendStatus = usageTrend.status;

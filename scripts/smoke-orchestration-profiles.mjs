@@ -263,6 +263,11 @@ assert.equal(overview.workspaceUsageTrend.latestProfile.id, 'engineering-triad')
 assert.equal(overview.workspaceUsageTrend.latestWorkspace.id, secondWorkspace.id);
 assert.equal(overview.workspaceUsageTrend.latestWorkspace.profileId, 'engineering-triad');
 assert.equal(overview.summary.workspaceUsageTrendLatestWorkspaceProfileId, 'engineering-triad');
+assert.equal(overview.summary.workspaceUsageTrendLatestWorkspaceId, secondWorkspace.id);
+assert.equal(
+  overview.summary.workspaceUsageTrendLatestWorkspaceName,
+  secondWorkspace.name,
+);
 assert.equal(overview.summary.workspaceUsageTrendLatestWorkspaceStatus, 'growing');
 assert.equal(overview.workspaceUsageTrend.latestUnusedProfile.id, 'knowledge-research-implementation');
 assert.equal(overview.summary.total, 4);
@@ -1141,6 +1146,8 @@ assert.equal(
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspace.id, workspace.id);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspace.profileId, 'knowledge-triad');
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceProfileId, 'knowledge-triad');
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceId, workspace.id);
+assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceName, workspace.name);
 assert.equal(workspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceStatus, 'growing');
 assert.equal(workspaceUsedOverview.summary.workspaceProfileCounts[workspace.id], 2);
 assert.equal(workspaceUsedOverview.summary.workspaceMissionCounts[workspace.id], 3);
@@ -1434,6 +1441,14 @@ assert.equal(
 assert.equal(
   secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceProfileId,
   'engineering-triad',
+);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceId,
+  secondWorkspace.id,
+);
+assert.equal(
+  secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceName,
+  secondWorkspace.name,
 );
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceUsageTrendLatestWorkspaceStatus, 'growing');
 assert.equal(secondWorkspaceUsedOverview.summary.workspaceProfileCounts[secondWorkspace.id], 1);
