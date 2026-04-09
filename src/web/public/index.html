@@ -292,7 +292,7 @@
             </div>
 
             <div class="step-grid step-grid-output">
-              <section class="surface">
+              <section class="surface surface-result-main">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">결과 요약</p>
@@ -304,16 +304,15 @@
                 </div>
               </section>
 
-              <section class="surface">
+              <section class="surface surface-result-side">
                 <div class="mini-head">
                   <div>
-                    <p class="section-kicker">빠른 이동</p>
-                    <h4>결과와 기록 열기</h4>
+                    <p class="section-kicker">마무리 확인</p>
+                    <h4>이번 미션 닫기 전 체크</h4>
                   </div>
                 </div>
-                <div class="quick-actions">
-                  <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 보기</button>
-                  <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+                <div id="output-closeout" class="closeout-list empty-state">
+                  결과가 준비되면 최종 확인할 항목과 빠른 이동 버튼을 여기에서 정리합니다.
                 </div>
               </section>
             </div>
@@ -337,12 +336,12 @@
             </nav>
 
             <article id="detail-artifacts" class="detail-panel is-active">
-            <div class="detail-grid detail-grid-two">
-              <section class="surface">
+            <div class="detail-grid detail-grid-artifacts">
+              <section class="surface surface-result-main">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">최종 결과</p>
-                    <h4>결과물 읽기</h4>
+                    <h4>결과물 본문</h4>
                   </div>
                 </div>
                 <div id="artifact-meta" class="artifact-meta empty-state">아직 선택된 산출물이 없습니다.</div>
@@ -351,11 +350,11 @@
                 </article>
               </section>
 
-              <section class="surface">
+              <section class="surface surface-result-side">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">실행 흐름</p>
-                    <h4>타임라인</h4>
+                    <h4>타임라인과 보조 정보</h4>
                   </div>
                 </div>
                 <div id="timeline-list" class="timeline-list empty-state">미션을 선택하면 타임라인을 보여줍니다.</div>

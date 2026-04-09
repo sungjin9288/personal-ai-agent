@@ -695,3 +695,9 @@
 - restyled the left rail away from stacked white cards into a darker inbox-like list so selected missions and next actions scan faster against the control-plane background
 - turned the lower result area into a flatter contextual strip by reducing card treatment around the detail context bar and tab labels, keeping current mode, session, artifact, and review state visible without adding another dashboard row
 - added tab count labels for artifacts, runs, and reviews so the lower workbench communicates depth before the user opens each tab
+
+## 2026-04-10 Result-First Output Workbench
+
+- reworked `결과 보기` around a representative deliverable spotlight plus a separate closeout checklist so the final stage reads like “confirm the outcome” instead of another generic stage card
+- widened the artifact detail view into an asymmetric result-first layout, keeping the deliverable body dominant while moving timeline and secondary context into a narrower companion pane
+- tied the output checklist and detail context to the same artifact/session selection helpers so final result verification, review state, and run history stay synchronized across the lower workbench

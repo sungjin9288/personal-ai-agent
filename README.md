@@ -58,6 +58,7 @@ npm run ui
 - 좌측 mission queue는 밝은 카드 더미 대신 dark inbox 밀도로 정리되어, 어떤 mission을 먼저 열어야 하는지 한눈에 판단
 - `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성
 - `실행하기` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
+- `결과 보기` 단계는 대표 결과물, 검토 상태, 마무리 체크리스트를 먼저 보여주고, 아래 `결과와 기록` workbench에서 본문과 실행 타임라인을 함께 확인
 - `검토하기` 단계에서 review readiness, action queue, approval inbox를 묶어서 처리
 - `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
