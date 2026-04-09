@@ -13,6 +13,37 @@ function uniqueTexts(items) {
   return [...new Set(items.filter(Boolean))];
 }
 
+function formatPreviousOutputSection(role, value) {
+  if (!value || typeof value !== 'object') {
+    return `## ${role}\n${String(value || '').trim()}`;
+  }
+
+  const lines = [];
+  if (value.summaryText) {
+    lines.push(`- summary: ${value.summaryText}`);
+  }
+  if (Array.isArray(value.planSteps) && value.planSteps.length) {
+    lines.push('- plan steps:');
+    lines.push(...value.planSteps.map((step) => `  - ${step}`));
+  }
+  if (Array.isArray(value.adaptationNotes) && value.adaptationNotes.length) {
+    lines.push('- adaptation notes:');
+    lines.push(...value.adaptationNotes.map((note) => `  - ${note}`));
+  }
+  if (value.nextAction) {
+    lines.push(`- next action: ${value.nextAction}`);
+  }
+  if (value.verdict) {
+    lines.push(`- verdict: ${value.verdict}`);
+  }
+  if (value.artifactContent) {
+    lines.push('');
+    lines.push(value.artifactContent);
+  }
+
+  return `## ${role}\n${lines.join('\n') || '- no prior output content available'}`;
+}
+
 function deriveMemoryAdaptation(memoryEntries) {
   const relevantEntries = memoryEntries.filter((entry) => entry.scope === 'mission');
   const adaptationNotes = uniqueTexts(relevantEntries.map((entry) => entry.content));
@@ -54,7 +85,7 @@ function buildPromptContext({
 
   const previousOutputSummary = Object.entries(previousOutputs || {})
     .filter(([key]) => key !== 'specialists')
-    .map(([key, value]) => `## ${key}\n${value}`)
+    .map(([key, value]) => formatPreviousOutputSection(key, value))
     .join('\n\n');
   const specialistSummary = Array.isArray(previousOutputs?.specialists) && previousOutputs.specialists.length
     ? previousOutputs.specialists
