@@ -578,3 +578,8 @@
 
 - promoted `adoptionDriftUsageTrendStatus` and `adoptionDriftWorkspaceUsageTrendStatus` into `overview profiles` summary so combined adoption status can be decomposed into mission-volume and workspace-footprint trend signals without reopening the root quick field
 - extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new summary aliases for growing and steady combined adoption cases
+
+## 2026-04-09 Workspace Adoption Composition Symmetry
+
+- promoted `missionTrendStatus` and `profileFootprintTrendStatus` into root `workspaceAdoptionDrift` and mirrored them as `workspaceAdoptionDriftMissionTrendStatus` and `workspaceAdoptionDriftProfileFootprintTrendStatus` in summary so workspace-level combined adoption pressure can be decomposed into mission-volume and footprint trend sources without reopening count maps
+- extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new workspace adoption composition aliases for growing and steady workspace cases

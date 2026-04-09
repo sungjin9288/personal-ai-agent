@@ -3036,11 +3036,30 @@ function summarizeWorkspaceAdoptionDriftEntries(entries = []) {
     );
   }
 
+  const missionTrendStatus =
+    missionTrendStatusCounts.declining > 0
+      ? 'declining'
+      : missionTrendStatusCounts.growing > 0
+        ? 'growing'
+        : missionTrendStatusCounts.steady > 0
+          ? 'steady'
+          : 'unused';
+  const profileFootprintTrendStatus =
+    profileFootprintTrendStatusCounts.declining > 0
+      ? 'declining'
+      : profileFootprintTrendStatusCounts.growing > 0
+        ? 'growing'
+        : profileFootprintTrendStatusCounts.steady > 0
+          ? 'steady'
+          : 'unused';
+
   return {
     latestDecliningWorkspace,
     latestGrowingWorkspace,
     latestWorkspace,
+    missionTrendStatus,
     missionTrendStatusCounts,
+    profileFootprintTrendStatus,
     profileFootprintTrendStatusCounts,
     reasonCodeCounts,
     reasonCodes: Object.keys(reasonCodeCounts).sort((left, right) =>
@@ -11570,8 +11589,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.workspaceHealthDriftWorkspaceIdsByStatus =
       workspaceHealthDrift.workspaceIdsByStatus;
     summary.workspaceAdoptionDriftCounts = workspaceAdoptionDrift.statusCounts;
+    summary.workspaceAdoptionDriftMissionTrendStatus =
+      workspaceAdoptionDrift.missionTrendStatus;
     summary.workspaceAdoptionDriftMissionTrendStatusCounts =
       workspaceAdoptionDrift.missionTrendStatusCounts;
+    summary.workspaceAdoptionDriftProfileFootprintTrendStatus =
+      workspaceAdoptionDrift.profileFootprintTrendStatus;
     summary.workspaceAdoptionDriftProfileFootprintTrendStatusCounts =
       workspaceAdoptionDrift.profileFootprintTrendStatusCounts;
     summary.workspaceAdoptionDriftStatus = workspaceAdoptionDrift.status;
