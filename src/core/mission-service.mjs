@@ -83,6 +83,67 @@ function normalizeStringList(items) {
   return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
 }
 
+function joinBullets(items, fallback) {
+  const list = ensureArray(items).filter(Boolean);
+  if (!list.length) {
+    return `- ${fallback}`;
+  }
+
+  return list.map((item) => `- ${item}`).join('\n');
+}
+
+function evaluateArtifactContent({ artifactContent, pack }) {
+  const content = normalizeText(artifactContent);
+  const requiredSections = ensureArray(pack?.requiredSections);
+  const missingSections = requiredSections.filter((sectionName) => !content.includes(`## ${sectionName}`));
+  const findings = missingSections.map((sectionName) => `Missing required section: ${sectionName}`);
+  const checks = [];
+
+  checks.push({
+    id: 'required-sections',
+    description: `Required sections present: ${requiredSections.join(', ') || 'none'}`,
+    passed: missingSections.length === 0,
+  });
+
+  for (const rule of ensureArray(pack?.reviewRules)) {
+    const passed = Boolean(rule?.pattern?.test(content));
+    checks.push({
+      id: normalizeText(rule?.id, 'rule'),
+      description: normalizeText(rule?.description, 'review rule'),
+      passed,
+    });
+    if (!passed) {
+      findings.push(normalizeText(rule?.message, 'Review rule failed.'));
+    }
+  }
+
+  return {
+    verdict: findings.length ? 'fail' : 'pass',
+    findings,
+    checks,
+  };
+}
+
+function renderReviewerReport({ verdict, findings, checks }) {
+  return `# Reviewer Report
+
+## Verdict
+- verdict: ${verdict}
+
+## Checks
+${joinBullets(
+  ensureArray(checks).map((check) => `${check.passed ? 'pass' : 'fail'}: ${check.id} - ${check.description}`),
+  'No additional rubric checks recorded.',
+)}
+
+## Findings
+${joinBullets(findings, 'No findings. The draft preserves required sections and includes a next action.')}
+
+## Next Action
+${verdict === 'pass' ? '- continue to completion or approval gate' : '- revise the draft before proceeding'}
+`;
+}
+
 function normalizeActionOwner(value, fallback = 'workspace-owner') {
   const normalized = normalizeText(value, fallback);
   return ACTION_OWNERS.includes(normalized) ? normalized : fallback;
@@ -6292,6 +6353,41 @@ function summarizeProviderExecutions(executions) {
         providerId,
         session,
       });
+    }
+    const deterministicReview = evaluateArtifactContent({
+      artifactContent: executorOutput?.artifactContent || '',
+      pack,
+    });
+    const reviewerVerdict = normalizeText(reviewerStage.output?.verdict);
+    if (reviewerVerdict && reviewerVerdict !== deterministicReview.verdict) {
+      const report = renderReviewerReport(deterministicReview);
+      if (reviewerStage.artifact?.path) {
+        fs.writeFileSync(reviewerStage.artifact.path, report, 'utf8');
+      }
+      if (reviewerStage.artifact?.id) {
+        store.updateArtifact(reviewerStage.artifact.id, (current) => ({
+          ...current,
+          title: normalizeText(current.title, 'Reviewer Report'),
+        }));
+      }
+      const updatedRun = store.updateAgentRun(reviewerStage.run.id, (current) => ({
+        ...current,
+        status: deterministicReview.verdict === 'fail' ? 'failed' : 'completed',
+        outputSummary:
+          deterministicReview.verdict === 'fail'
+            ? 'Deterministic review failed after provider mismatch.'
+            : 'Deterministic review passed after provider mismatch.',
+        updatedAt: now(),
+      }));
+      reviewerStage.run = updatedRun;
+      reviewerStage.output = {
+        ...reviewerStage.output,
+        verdict: deterministicReview.verdict,
+        findings: deterministicReview.findings,
+        checks: deterministicReview.checks,
+        summaryText: updatedRun.outputSummary,
+        artifactContent: report,
+      };
     }
     previousOutputs.reviewer = reviewerStage.output;
 
