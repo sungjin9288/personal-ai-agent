@@ -11638,6 +11638,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     summary.adoptionDriftStatus = adoptionDrift.status;
     summary.adoptionDriftStatusCounts = adoptionDrift.statusCounts;
     summary.adoptionDriftReasonCodes = adoptionDrift.reasonCodes;
+    summary.adoptionDriftUsageTrendStatus = adoptionDrift.usageTrendStatus;
+    summary.adoptionDriftWorkspaceUsageTrendStatus =
+      adoptionDrift.workspaceUsageTrendStatus;
     summary.adoptionDriftLatestProfile = adoptionDrift.latestProfile;
     summary.adoptionDriftLatestGrowingProfile = adoptionDrift.latestGrowingProfile;
     summary.adoptionDriftLatestDecliningProfile = adoptionDrift.latestDecliningProfile;

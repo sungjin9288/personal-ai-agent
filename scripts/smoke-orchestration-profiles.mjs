@@ -552,6 +552,8 @@ assert.equal(overview.summary.adoptionDriftStatusCounts.steady, 0);
 assert.equal(overview.summary.adoptionDriftStatusCounts.unused, 1);
 assert.equal(overview.summary.adoptionDriftStatus, 'growing');
 assert.equal(overview.summary.adoptionDriftProfileCount, 4);
+assert.equal(overview.summary.adoptionDriftUsageTrendStatus, 'growing');
+assert.equal(overview.summary.adoptionDriftWorkspaceUsageTrendStatus, 'growing');
 assert.deepEqual(overview.summary.adoptionDriftReasonCodes, [
   'mission-volume-declining',
   'mission-volume-growing',
@@ -927,6 +929,8 @@ assert.equal(
   'engineering-implementation-verification',
 );
 assert.equal(workspaceUsedOverview.summary.adoptionDriftLatestUnusedProfile, null);
+assert.equal(workspaceUsedOverview.summary.adoptionDriftUsageTrendStatus, 'growing');
+assert.equal(workspaceUsedOverview.summary.adoptionDriftWorkspaceUsageTrendStatus, 'steady');
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.status, 'follow-up-required');
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.equal(workspaceUsedOverview.workspaceHealthDrift.workspaceProfileCounts[workspace.id], 1);
@@ -1167,6 +1171,8 @@ assert.equal(secondWorkspaceUsedOverview.summary.usageTrendLatestUnusedProfile, 
 assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestGrowingProfile.id, 'engineering-triad');
 assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestDecliningProfile, null);
 assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftLatestUnusedProfile, null);
+assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftUsageTrendStatus, 'growing');
+assert.equal(secondWorkspaceUsedOverview.summary.adoptionDriftWorkspaceUsageTrendStatus, 'growing');
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.status, 'stable');
 assert.equal(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceCount, 1);
 assert.deepEqual(secondWorkspaceUsedOverview.workspaceHealthDrift.workspaceProfileCounts, {});

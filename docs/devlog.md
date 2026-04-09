@@ -573,3 +573,8 @@
 
 - promoted `usageTrend` month-over-month comparison fields into `overview profiles` summary so `currentMonthStartDate`, `currentMonthMissionCount`, `previousMonthStartDate`, `previousMonthMissionCount`, and `missionCountDelta` are available without reopening the root quick field
 - extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new mission-volume summary aliases for growing and steady usage cases
+
+## 2026-04-09 Orchestration Profile Adoption Composition Summary Symmetry
+
+- promoted `adoptionDriftUsageTrendStatus` and `adoptionDriftWorkspaceUsageTrendStatus` into `overview profiles` summary so combined adoption status can be decomposed into mission-volume and workspace-footprint trend signals without reopening the root quick field
+- extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new summary aliases for growing and steady combined adoption cases
