@@ -90,16 +90,67 @@ export function parseJsonText(text, providerLabel) {
   try {
     return JSON.parse(candidate);
   } catch (error) {
-    throw createProviderFailure(
-      `${providerLabel} provider returned non-JSON content: ${error instanceof Error ? error.message : String(error)}`,
-      {
-        failureKind: 'non-json-output',
-        rawMessage: candidate,
-        recoverable: false,
-        timedOut: false,
-      },
-    );
+    const repaired = repairJsonCandidate(candidate);
+    try {
+      return JSON.parse(repaired);
+    } catch (repairError) {
+      throw createProviderFailure(
+        `${providerLabel} provider returned non-JSON content: ${
+          repairError instanceof Error ? repairError.message : String(repairError)
+        }`,
+        {
+          failureKind: 'non-json-output',
+          rawMessage: candidate,
+          recoverable: false,
+          timedOut: false,
+        },
+      );
+    }
   }
+}
+
+function repairJsonCandidate(candidate) {
+  let output = '';
+  let inString = false;
+  let escaped = false;
+  let prevNonWhitespace = '';
+
+  for (const char of candidate) {
+    if (inString) {
+      output += char;
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === '\\') {
+        escaped = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = false;
+        prevNonWhitespace = '"';
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      if (prevNonWhitespace && !['{', '[', ',', ':'].includes(prevNonWhitespace)) {
+        output += ',';
+        prevNonWhitespace = ',';
+      }
+      inString = true;
+      output += char;
+      prevNonWhitespace = '"';
+      continue;
+    }
+
+    output += char;
+    if (!/\s/.test(char)) {
+      prevNonWhitespace = char;
+    }
+  }
+
+  return output;
 }
 
 function extractTextFromContentParts(items) {
