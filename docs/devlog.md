@@ -677,3 +677,9 @@
 - removed the always-open right inspector and rebuilt the console around a single main workspace with a sticky command header, explicit next-action banner, and stronger step navigation so operators can understand current state before scanning lower details
 - split the lower half into dedicated detail tabs for `결과물`, `실행 기록`, `검토 이력`, and `입력값과 설정`, which keeps result reading, session tracing, and provider context on one screen without forcing a three-column scan
 - updated mission queue copy and step summaries so Korean operators see natural task language like `지금 할 일`, `막힌 이유 / 상태`, `검토와 승인 처리가 필요합니다`, and `최종 결과를 확인하고 확정하세요` instead of having to infer meaning from dispersed system labels
+
+## 2026-04-10 Command Surface Compression And Workspace Merge
+
+- merged the previous separated progress strip into the command header so mission identity, current action, and stage flow read as one operator control surface instead of two stacked dashboards
+- introduced a single `workspace-shell` that groups `현재 단계 작업판` and `결과와 기록` into the same vertical working column, reducing scan distance and making the “choose → act → confirm” loop feel like one screen
+- compressed rail density, inline status metrics, and detail tabs so the console shows more actionable state above the fold while keeping the Korean step flow and review/output surfaces intact
