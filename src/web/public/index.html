@@ -36,20 +36,8 @@
       </aside>
 
       <main class="main-stage">
-        <header class="app-topbar">
-          <div class="topbar-copy">
-            <p class="eyebrow">운영 보기</p>
-            <h2>한 화면에서 선택, 실행, 검토, 결과 확인까지 끝내기</h2>
-          </div>
-          <div class="topbar-hint">
-            <span class="mini-badge">좌측은 미션 큐</span>
-            <span class="mini-badge">중앙은 현재 작업</span>
-            <span class="mini-badge">하단은 결과와 기록</span>
-          </div>
-        </header>
-
-        <section class="command-hero">
-          <div class="command-primary">
+        <section class="command-header">
+          <div class="command-overview">
             <p class="section-kicker">현재 미션</p>
             <h2 id="mission-title">미션을 선택하세요</h2>
             <p id="mission-subtitle" class="command-subtitle">
@@ -63,8 +51,8 @@
             </div>
           </div>
 
-          <div class="command-secondary">
-            <div id="hero-metrics" class="metric-grid"></div>
+          <div class="command-control">
+            <div id="hero-metrics" class="command-statusbar"></div>
             <div id="flow-status" class="flow-status">
               <p class="flow-status-label">지금 할 일</p>
               <strong class="flow-status-value">미션을 선택하거나 새로 만드세요</strong>
@@ -73,39 +61,45 @@
           </div>
         </section>
 
-        <nav class="flow-nav" aria-label="진행 흐름">
-          <button class="flow-step is-active" type="button" data-step-target="step-setup">
-            <span class="flow-step-no">01</span>
-            <span class="flow-step-copy">
-              <strong>미션 정하기</strong>
-              <small>목표와 입력값을 정리합니다</small>
-            </span>
-          </button>
+        <section class="flow-shell">
+          <div class="flow-shell-head">
+            <p class="section-kicker">진행 흐름</p>
+            <h3>지금 단계와 다음 단계</h3>
+          </div>
+          <nav class="flow-nav" aria-label="진행 흐름">
+            <button class="flow-step is-active" type="button" data-step-target="step-setup">
+              <span class="flow-step-no">01</span>
+              <span class="flow-step-copy">
+                <strong>미션 정하기</strong>
+                <small>목표와 입력값을 정리합니다</small>
+              </span>
+            </button>
 
-          <button class="flow-step" type="button" data-step-target="step-run">
-            <span class="flow-step-no">02</span>
-            <span class="flow-step-copy">
-              <strong>실행하기</strong>
-              <small>제공자를 고르고 실행을 시작합니다</small>
-            </span>
-          </button>
+            <button class="flow-step" type="button" data-step-target="step-run">
+              <span class="flow-step-no">02</span>
+              <span class="flow-step-copy">
+                <strong>실행하기</strong>
+                <small>제공자를 고르고 실행을 시작합니다</small>
+              </span>
+            </button>
 
-          <button class="flow-step" type="button" data-step-target="step-review">
-            <span class="flow-step-no">03</span>
-            <span class="flow-step-copy">
-              <strong>검토하기</strong>
-              <small>승인과 후속 작업을 정리합니다</small>
-            </span>
-          </button>
+            <button class="flow-step" type="button" data-step-target="step-review">
+              <span class="flow-step-no">03</span>
+              <span class="flow-step-copy">
+                <strong>검토하기</strong>
+                <small>승인과 후속 작업을 정리합니다</small>
+              </span>
+            </button>
 
-          <button class="flow-step" type="button" data-step-target="step-output">
-            <span class="flow-step-no">04</span>
-            <span class="flow-step-copy">
-              <strong>결과 보기</strong>
-              <small>최종 산출물과 실행 결과를 확인합니다</small>
-            </span>
-          </button>
-        </nav>
+            <button class="flow-step" type="button" data-step-target="step-output">
+              <span class="flow-step-no">04</span>
+              <span class="flow-step-copy">
+                <strong>결과 보기</strong>
+                <small>최종 산출물과 실행 결과를 확인합니다</small>
+              </span>
+            </button>
+          </nav>
+        </section>
 
         <section class="stage-shell">
           <article id="step-setup" class="step-panel is-active">
