@@ -21,7 +21,7 @@ export const KNOWLEDGE_DELIVERABLES = {
         id: 'prd-acceptance-signals',
         description: 'Acceptance Signals must include explicit success criteria.',
         pattern:
-          /## Acceptance Signals[\s\S]*?(success criteria|success is|success will be|success means|kpi|metric|%|percent|accepted|approval|pass condition|measured)/i,
+          /## Acceptance Signals[\s\S]*?(success criteria|criteria|success is|success will be|success means|kpi|metric|%|percent|accepted|approval|pass condition|measured|validation|reviewer)/i,
         message: 'Acceptance Signals do not include explicit success criteria.',
       },
       {
