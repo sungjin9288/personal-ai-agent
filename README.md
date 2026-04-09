@@ -49,15 +49,15 @@ npm run bootstrap:local
 npm run ui
 ```
 
-기본 주소는 `http://127.0.0.1:4317`이며, 콘솔은 `한 화면` 안에서 `Setup → Run → Review → Output` 순서로 따라가는 operator flow로 동작합니다.
+기본 주소는 `http://127.0.0.1:4317`이며, 콘솔은 `한 화면` 안에서 `미션 정하기 → 실행하기 → 검토하기 → 결과 보기` 순서로 따라가는 한국어 operator flow로 동작합니다.
 
 - 좌측 rail에서 workspace 선택과 mission queue 탐색
-- 중앙 상단 guided flow strip에서 현재 권장 단계와 전체 진행 순서를 바로 확인
-- `Setup` 단계에서 playbook 선택, 템플릿 선택, mission 작성, 선택된 mission snapshot 확인
-- `Run` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
-- `Review` 단계에서 mission-scoped action queue, approval inbox, review readiness 상태를 같은 화면에서 처리
-- `Output` 단계에서 artifact, timeline, session 결과를 한 번에 읽기
-- 우측 inspector에서 선택 session의 runs, approvals, artifacts와 provider 상태를 지속적으로 확인
+- 상단 운영 헤더에서 현재 mission, 현재 단계, 지금 해야 할 일, 막힌 이유를 한 번에 확인
+- `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성
+- `실행하기` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
+- `검토하기` 단계에서 review readiness, action queue, approval inbox를 묶어서 처리
+- `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 하단 세부 탭에서 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
+- 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인
 
 현재 playbook presets는 공개 agent repo 운영 패턴을 참고해 구성되어 있습니다.
 

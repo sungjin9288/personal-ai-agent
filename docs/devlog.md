@@ -671,3 +671,9 @@
 - localized the operator console surface into Korean so navigation chrome, guided steps, empty states, and workflow helper copy read as a coherent product UI instead of an internal mixed-language tool
 - tightened the single-screen operator flow around `미션 정하기 → 실행하기 → 검토하기 → 결과 보기` and aligned setup, review, artifact, session, and provider surfaces to that explicit user journey
 - added display-only label translation for mission/session/action/approval statuses and common timeline event kinds so backend contract values can remain stable while the UI stays readable for Korean-speaking operators
+
+## 2026-04-09 Command Header And Detail Tabs Reframe
+
+- removed the always-open right inspector and rebuilt the console around a single main workspace with a sticky command header, explicit next-action banner, and stronger step navigation so operators can understand current state before scanning lower details
+- split the lower half into dedicated detail tabs for `결과물`, `실행 기록`, `검토 이력`, and `입력값과 설정`, which keeps result reading, session tracing, and provider context on one screen without forcing a three-column scan
+- updated mission queue copy and step summaries so Korean operators see natural task language like `지금 할 일`, `막힌 이유 / 상태`, `검토와 승인 처리가 필요합니다`, and `최종 결과를 확인하고 확정하세요` instead of having to infer meaning from dispersed system labels

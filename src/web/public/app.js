@@ -1,5 +1,6 @@
 const state = {
   activeStep: 'step-setup',
+  activeDetailTab: 'artifacts',
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
@@ -120,6 +121,8 @@ const elements = {
   approvalList: document.getElementById('approval-list'),
   artifactMeta: document.getElementById('artifact-meta'),
   artifactViewer: document.getElementById('artifact-viewer'),
+  detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
+  detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
   flowStatus: document.getElementById('flow-status'),
   heroMetrics: document.getElementById('hero-metrics'),
   heroSignals: document.getElementById('hero-signals'),
@@ -132,8 +135,11 @@ const elements = {
   missionTitle: document.getElementById('mission-title'),
   providerList: document.getElementById('provider-list'),
   reviewReadiness: document.getElementById('review-readiness'),
+  reviewReadinessDetail: document.getElementById('review-readiness-detail'),
   runMissionButton: document.getElementById('run-mission-button'),
   runProviderSelect: document.getElementById('run-provider-select'),
+  reviewStageSummary: document.getElementById('review-stage-summary'),
+  runStageSummary: document.getElementById('run-stage-summary'),
   sessionDetail: document.getElementById('session-detail'),
   sessionList: document.getElementById('session-list'),
   stepButtons: Array.from(document.querySelectorAll('[data-step-target]')),
@@ -141,7 +147,15 @@ const elements = {
   templateList: document.getElementById('template-list'),
   timelineList: document.getElementById('timeline-list'),
   toggleCreateButton: document.getElementById('toggle-create-button'),
+  outputStageSummary: document.getElementById('output-stage-summary'),
   workspaceSelect: document.getElementById('workspace-select'),
+};
+
+const STEP_TO_DETAIL_TAB = {
+  'step-setup': 'config',
+  'step-run': 'runs',
+  'step-review': 'reviews',
+  'step-output': 'artifacts',
 };
 
 function getSelectedWorkspaceId() {
@@ -397,26 +411,39 @@ function wireQuickActions(scope = document) {
         return;
       }
 
-      if (action === 'open-create') {
-        openComposer();
+      if (action === 'jump-step' || action === 'jump-section') {
+        setActiveStep(value || 'step-setup');
         return;
       }
 
-      if (action === 'jump-step' || action === 'jump-section' || action === 'switch-tab') {
-        setActiveStep(value || 'step-setup');
-        return;
+      if (action === 'switch-tab') {
+        setActiveDetailTab(value || 'artifacts');
       }
     });
   });
 }
 
-function setActiveStep(stepId) {
+function setActiveStep(stepId, { syncDetailTab = true } = {}) {
   state.activeStep = stepId;
   elements.stepButtons.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.stepTarget === stepId);
   });
   elements.stepPanels.forEach((panel) => {
     panel.classList.toggle('is-active', panel.id === stepId);
+  });
+
+  if (syncDetailTab) {
+    setActiveDetailTab(STEP_TO_DETAIL_TAB[stepId] || 'artifacts');
+  }
+}
+
+function setActiveDetailTab(tabId) {
+  state.activeDetailTab = tabId;
+  elements.detailTabButtons.forEach((button) => {
+    button.classList.toggle('is-active', button.dataset.detailTab === tabId);
+  });
+  elements.detailPanels.forEach((panel) => {
+    panel.classList.toggle('is-active', panel.id === `detail-${tabId}`);
   });
 }
 
@@ -430,11 +457,15 @@ function getFlowState() {
     return {
       buttonLabel: '1단계에서 시작',
       completedSteps: [],
-      copy: '왼쪽 미션 큐에서 고르거나 템플릿으로 새 미션을 만드세요.',
-      label: '미션 선택 또는 작성',
+      copy: '왼쪽 미션 큐에서 고르거나 템플릿으로 새 미션을 만들면 실행 준비를 시작할 수 있습니다.',
+      currentStepLabel: '1단계 · 미션 정하기',
+      blocker: '아직 선택된 미션이 없습니다.',
+      label: '실행할 미션을 먼저 정하세요',
       pendingActionCount: 0,
       pendingApprovalCount: 0,
       recommendedStep: 'step-setup',
+      secondaryActionLabel: '입력값과 설정 보기',
+      secondaryActionTab: 'config',
     };
   }
 
@@ -443,15 +474,35 @@ function getFlowState() {
   const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const completedSteps = ['step-setup'];
 
+  if (latestSession?.status === 'failed') {
+    return {
+      buttonLabel: '실행 단계 다시 보기',
+      completedSteps,
+      copy: latestSession.reviewerSummary || latestSession.outputSummary || '최근 실행이 중간에 멈췄습니다. 오류 원인을 확인한 뒤 다시 실행해야 합니다.',
+      currentStepLabel: '2단계 · 실행하기',
+      blocker: '최근 실행이 실패했습니다.',
+      label: '실행 오류를 확인하고 다시 시작하세요',
+      pendingActionCount,
+      pendingApprovalCount,
+      recommendedStep: 'step-run',
+      secondaryActionLabel: '실행 기록 보기',
+      secondaryActionTab: 'runs',
+    };
+  }
+
   if (!latestSession) {
     return {
       buttonLabel: '2단계 실행으로 이동',
       completedSteps,
-      copy: '제공자를 선택하고 첫 실행을 시작해야 리뷰어 검토와 산출물이 생성됩니다.',
-      label: '실행 준비',
+      copy: '입력값은 준비됐습니다. 제공자를 선택하고 첫 실행을 시작하면 검토와 결과가 생성됩니다.',
+      currentStepLabel: '2단계 · 실행하기',
+      blocker: '아직 첫 실행 세션이 없습니다.',
+      label: '제공자를 고르고 실행을 시작하세요',
       pendingActionCount,
       pendingApprovalCount,
       recommendedStep: 'step-run',
+      secondaryActionLabel: '입력값과 설정 보기',
+      secondaryActionTab: 'config',
     };
   }
 
@@ -459,26 +510,37 @@ function getFlowState() {
 
   if (pendingApprovalCount > 0 || pendingActionCount > 0) {
     return {
-      buttonLabel: '3단계 리뷰로 이동',
+      buttonLabel: '3단계 검토 열기',
       completedSteps,
-      copy: `승인 ${pendingApprovalCount}건, 후속 액션 ${pendingActionCount}건을 먼저 처리해야 최종 결과가 정리됩니다.`,
-      label: '리뷰 필요',
+      copy: `승인 ${pendingApprovalCount}건, 후속 작업 ${pendingActionCount}건이 남아 있습니다. 이 항목을 정리해야 결과를 확정할 수 있습니다.`,
+      currentStepLabel: '3단계 · 검토하기',
+      blocker:
+        pendingApprovalCount > 0
+          ? `사람의 승인 ${pendingApprovalCount}건이 남아 있습니다.`
+          : `후속 작업 ${pendingActionCount}건을 먼저 처리해야 합니다.`,
+      label: '검토와 승인 처리가 필요합니다',
       pendingActionCount,
       pendingApprovalCount,
       recommendedStep: 'step-review',
+      secondaryActionLabel: '검토 이력 보기',
+      secondaryActionTab: 'reviews',
     };
   }
 
   completedSteps.push('step-review');
 
   return {
-    buttonLabel: '4단계 결과 확인',
+    buttonLabel: '4단계 결과 열기',
     completedSteps,
-    copy: '산출물, 타임라인, 세션 결과를 검토하고 최종 아웃풋을 확정하세요.',
-    label: '최종 결과 확인',
+    copy: '막힌 항목이 없습니다. 최종 산출물, 실행 흐름, 세션 기록을 확인하고 이번 미션을 마무리하세요.',
+    currentStepLabel: '4단계 · 결과 보기',
+    blocker: '승인 대기와 후속 작업이 모두 정리되었습니다.',
+    label: '최종 결과를 확인하고 확정하세요',
     pendingActionCount,
     pendingApprovalCount,
     recommendedStep: 'step-output',
+    secondaryActionLabel: '실행 기록 보기',
+    secondaryActionTab: 'runs',
   };
 }
 
@@ -490,9 +552,22 @@ function renderFlowState() {
       <p class="flow-status-label">지금 해야 할 일</p>
       <strong class="flow-status-value">${escapeHtml(flow.label)}</strong>
       <p class="flow-status-copy">${escapeHtml(flow.copy)}</p>
+      <div class="flow-status-meta">
+        <div class="flow-meta">
+          <span>현재 단계</span>
+          <strong>${escapeHtml(flow.currentStepLabel)}</strong>
+        </div>
+        <div class="flow-meta">
+          <span>막힌 이유 / 상태</span>
+          <strong>${escapeHtml(flow.blocker)}</strong>
+        </div>
+      </div>
       <div class="flow-status-actions">
         <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
           ${escapeHtml(flow.buttonLabel)}
+        </button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}">
+          ${escapeHtml(flow.secondaryActionLabel)}
         </button>
       </div>
     `;
@@ -679,6 +754,46 @@ function filteredMissions() {
   });
 }
 
+function getMissionQueueSnapshot(mission, latestSession) {
+  if (!latestSession) {
+    return {
+      nextAction: '다음: 제공자를 고르고 첫 실행 시작',
+      stage: '1단계 · 실행 준비',
+      status: getDisplayLabel(mission.status, mission.status),
+    };
+  }
+
+  if (latestSession.status === 'failed') {
+    return {
+      nextAction: '다음: 실행 오류 확인 후 다시 실행',
+      stage: '2단계 · 실행 점검',
+      status: '실행 실패',
+    };
+  }
+
+  if (mission.status === 'awaiting_approval' || latestSession.currentStage === 'reviewer') {
+    return {
+      nextAction: '다음: 승인 또는 후속 작업 처리',
+      stage: '3단계 · 검토',
+      status: getDisplayLabel(mission.status, mission.status),
+    };
+  }
+
+  if (mission.status === 'completed' || latestSession.status === 'completed') {
+    return {
+      nextAction: '다음: 결과물과 실행 기록 확인',
+      stage: '4단계 · 결과 확인',
+      status: '완료',
+    };
+  }
+
+  return {
+    nextAction: '다음: 진행 상태 확인',
+    stage: '2단계 · 실행 중',
+    status: getDisplayLabel(latestSession.status, latestSession.status),
+  };
+}
+
 function renderMissionList() {
   const missions = filteredMissions();
   if (!missions.length) {
@@ -704,11 +819,12 @@ function renderMissionList() {
   elements.missionList.innerHTML = missions
     .map(({ mission, latestSession, workspace }) => {
       const active = mission.id === state.selectedMissionId ? 'is-active' : '';
+      const snapshot = getMissionQueueSnapshot(mission, latestSession);
       return `
         <div class="mission-row ${active}">
           <button type="button" data-mission-id="${escapeHtml(mission.id)}">
             <div class="status-row">
-              <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(getDisplayLabel(mission.status))}</span>
+              <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
               ${
                 latestSession
                   ? `<span class="mini-badge ${getStatusClass(latestSession.provider || '')}">${escapeHtml(
@@ -718,11 +834,11 @@ function renderMissionList() {
               }
             </div>
             <div class="item-title">${escapeHtml(mission.title)}</div>
-            <div class="item-subtitle">${escapeHtml(mission.objective || workspace?.name || mission.workspaceId)}</div>
+            <div class="item-subtitle">${escapeHtml(snapshot.stage)}</div>
             <div class="item-meta">
-              ${escapeHtml(workspace?.name || mission.workspaceId)} · ${escapeHtml(mission.mode)} · 생성 ${formatDate(mission.createdAt)}
-              ${latestSession ? ` · 최근 ${escapeHtml(getDisplayLabel(latestSession.status))}` : ''}
+              ${escapeHtml(snapshot.nextAction)}
             </div>
+            <div class="item-meta">${escapeHtml(workspace?.name || mission.workspaceId)} · ${escapeHtml(mission.mode)} · ${formatDate(mission.updatedAt)}</div>
           </button>
         </div>
       `;
@@ -736,18 +852,36 @@ function renderMissionList() {
 
 function renderHeroMetrics() {
   if (!state.missionDetail) {
-    elements.heroMetrics.innerHTML = '';
+    elements.heroMetrics.innerHTML = `
+      <div class="metric-card">
+        <span>현재 단계</span>
+        <strong>1단계 · 미션 정하기</strong>
+      </div>
+      <div class="metric-card">
+        <span>현재 상태</span>
+        <strong>선택 전</strong>
+      </div>
+      <div class="metric-card">
+        <span>검토 대기</span>
+        <strong>승인 0건 · 후속 0건</strong>
+      </div>
+      <div class="metric-card">
+        <span>최근 실행</span>
+        <strong>아직 실행 전</strong>
+      </div>
+    `;
     return;
   }
 
   const summary = state.missionDetail.summary || {};
   const latestSession = summary.latestSession || {};
+  const flow = getFlowState();
   const actionSummary = state.missionActions?.summary || {};
   const metrics = [
-    ['미션 상태', getDisplayLabel(state.missionDetail.mission.status)],
-    ['최근 제공자', latestSession.provider || '-'],
-    ['최근 세션', getDisplayLabel(latestSession.status)],
-    ['남은 후속 작업', String(actionSummary.pendingActionCount ?? 0)],
+    ['현재 단계', flow.currentStepLabel],
+    ['현재 상태', getDisplayLabel(state.missionDetail.mission.status)],
+    ['검토 대기', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
+    ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
   ];
 
   elements.heroMetrics.innerHTML = metrics
@@ -765,9 +899,9 @@ function renderHeroMetrics() {
 function renderHeroSignals() {
   if (!state.missionDetail) {
     elements.heroSignals.innerHTML = `
-      <span class="hero-signal">미션 중심</span>
-      <span class="hero-signal">승인 인지</span>
-      <span class="hero-signal">산출물 중심</span>
+      <span class="hero-signal">미션 선택</span>
+      <span class="hero-signal">실행 준비</span>
+      <span class="hero-signal">검토 없음</span>
     `;
     return;
   }
@@ -776,12 +910,12 @@ function renderHeroSignals() {
   const playbook = inferPlaybook(mission);
   const latestSession = state.missionDetail.summary?.latestSession || {};
   const signals = [
-    playbook ? `플레이북 ${playbook.title}` : '사용자 정의 플레이북',
-    latestSession.provider ? `제공자 ${latestSession.provider}` : '제공자 선택 대기',
-    mission.deliverableType ? `산출물 ${mission.deliverableType}` : '산출물 유형 미정',
+    playbook ? `플레이북 · ${playbook.title}` : '사용자 정의 미션',
+    mission.deliverableType ? `산출물 · ${getDisplayLabel(mission.deliverableType, mission.deliverableType)}` : '산출물 유형 미정',
+    latestSession.provider ? `제공자 · ${latestSession.provider}` : '제공자 선택 전',
     state.missionActions?.summary?.pendingActionCount
-      ? `후속 작업 ${state.missionActions.summary.pendingActionCount}건`
-      : '처리할 후속 작업 없음',
+      ? `후속 작업 · ${state.missionActions.summary.pendingActionCount}건`
+      : '후속 작업 없음',
   ];
 
   elements.heroSignals.innerHTML = signals
@@ -975,6 +1109,158 @@ function renderMissionSummary() {
   wireQuickActions(elements.missionSummary);
 }
 
+function renderRunStageSummary() {
+  if (!elements.runStageSummary) {
+    return;
+  }
+
+  if (!state.missionDetail) {
+    elements.runStageSummary.innerHTML = emptyStateCard({
+      action: 'jump-step',
+      actionLabel: '1단계 열기',
+      actionValue: 'step-setup',
+      icon: 'RN',
+      message: '미션을 먼저 선택하면 어떤 제공자로 언제 실행할지 여기에서 정리됩니다.',
+      title: '실행할 미션이 없습니다',
+    });
+    wireQuickActions(elements.runStageSummary);
+    return;
+  }
+
+  const latestSession = state.missionDetail.summary?.latestSession || null;
+  const flow = getFlowState();
+  elements.runStageSummary.innerHTML = `
+    <div class="stage-summary-card">
+      <p class="summary-label">현재 안내</p>
+      <h4 class="summary-statement">${escapeHtml(flow.label)}</h4>
+      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || latestSession?.outputSummary || flow.copy)}</p>
+      <div class="definition-list">
+        <div class="definition-item">
+          <span>최근 세션</span>
+          <strong>${escapeHtml(latestSession ? getDisplayLabel(latestSession.status) : '아직 실행 전')}</strong>
+        </div>
+        <div class="definition-item">
+          <span>제공자</span>
+          <strong>${escapeHtml(latestSession?.provider || '선택 전')}</strong>
+        </div>
+        <div class="definition-item">
+          <span>현재 단계</span>
+          <strong>${escapeHtml(flow.currentStepLabel)}</strong>
+        </div>
+        <div class="definition-item">
+          <span>최근 업데이트</span>
+          <strong>${escapeHtml(formatDate(state.missionDetail.mission.updatedAt))}</strong>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.runStageSummary);
+}
+
+function renderReviewStageSummary() {
+  if (!elements.reviewStageSummary) {
+    return;
+  }
+
+  if (!state.missionDetail) {
+    elements.reviewStageSummary.innerHTML = emptyStateCard({
+      action: 'jump-step',
+      actionLabel: '미션 선택하기',
+      actionValue: 'step-setup',
+      icon: 'RV',
+      message: '미션을 고르면 승인 대기와 후속 작업 상태를 이 단계에서 바로 판단할 수 있습니다.',
+      title: '검토할 미션이 없습니다',
+    });
+    wireQuickActions(elements.reviewStageSummary);
+    return;
+  }
+
+  const latestSession = state.missionDetail.summary?.latestSession || null;
+  const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
+  const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
+  const flow = getFlowState();
+
+  elements.reviewStageSummary.innerHTML = `
+    <div class="stage-summary-card">
+      <p class="summary-label">지금 판단할 내용</p>
+      <h4 class="summary-statement">${escapeHtml(flow.label)}</h4>
+      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
+      <div class="summary-inline">
+        <div class="summary-chip">
+          <span>승인 대기</span>
+          <strong>${escapeHtml(String(pendingApprovalCount))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>후속 작업</span>
+          <strong>${escapeHtml(String(pendingActionCount))}건</strong>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">검토 항목 열기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.reviewStageSummary);
+}
+
+function renderOutputStageSummary() {
+  if (!elements.outputStageSummary) {
+    return;
+  }
+
+  const latestArtifact = state.currentSessionPayload?.artifacts?.slice().reverse().find((artifact) =>
+    ['deliverable', 'execution-handoff', 'approval-resolution'].includes(artifact.kind),
+  );
+  const latestSession = state.missionDetail?.summary?.latestSession || null;
+  const flow = getFlowState();
+
+  if (!state.missionDetail) {
+    elements.outputStageSummary.innerHTML = emptyStateCard({
+      action: 'jump-step',
+      actionLabel: '1단계 열기',
+      actionValue: 'step-setup',
+      icon: 'OT',
+      message: '미션을 선택하고 실행이 끝나면 결과 요약이 이 단계에 표시됩니다.',
+      title: '확인할 결과가 없습니다',
+    });
+    wireQuickActions(elements.outputStageSummary);
+    return;
+  }
+
+  elements.outputStageSummary.innerHTML = `
+    <div class="stage-summary-card">
+      <p class="summary-label">최종 결과 준비 상태</p>
+      <h4 class="summary-statement">${escapeHtml(latestArtifact?.title || latestArtifact?.fileName || flow.label)}</h4>
+      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
+      <div class="definition-list">
+        <div class="definition-item">
+          <span>최근 세션</span>
+          <strong>${escapeHtml(latestSession ? getDisplayLabel(latestSession.status) : '아직 실행 전')}</strong>
+        </div>
+        <div class="definition-item">
+          <span>산출물</span>
+          <strong>${escapeHtml(latestArtifact ? getDisplayLabel(latestArtifact.kind, latestArtifact.kind) : '준비 중')}</strong>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.outputStageSummary);
+}
+
+function renderStageSummaries() {
+  renderRunStageSummary();
+  renderReviewStageSummary();
+  renderOutputStageSummary();
+}
+
 function getReadinessItems() {
   if (!state.missionDetail) {
     return [];
@@ -1024,7 +1310,7 @@ function getReadinessItems() {
 
 function renderReviewReadiness() {
   if (!state.missionDetail) {
-    elements.reviewReadiness.innerHTML = emptyStateCard({
+    const empty = emptyStateCard({
       action: 'jump-step',
       actionLabel: '1단계로 이동',
       actionValue: 'step-setup',
@@ -1032,12 +1318,19 @@ function renderReviewReadiness() {
       message: '미션을 고르면 승인, 후속 요청, 산출물 기준으로 준비 상태를 자동 계산합니다.',
       title: '리뷰 준비 상태를 계산할 미션이 없습니다',
     });
+    elements.reviewReadiness.innerHTML = empty;
+    if (elements.reviewReadinessDetail) {
+      elements.reviewReadinessDetail.innerHTML = empty;
+    }
     wireQuickActions(elements.reviewReadiness);
+    if (elements.reviewReadinessDetail) {
+      wireQuickActions(elements.reviewReadinessDetail);
+    }
     return;
   }
 
   const readinessItems = getReadinessItems();
-  elements.reviewReadiness.innerHTML = readinessItems
+  const content = readinessItems
     .map(
       (item) => `
         <article class="readiness-item readiness-${escapeHtml(item.state)}">
@@ -1052,6 +1345,10 @@ function renderReviewReadiness() {
       `,
     )
     .join('');
+  elements.reviewReadiness.innerHTML = content;
+  if (elements.reviewReadinessDetail) {
+    elements.reviewReadinessDetail.innerHTML = content;
+  }
 }
 
 function inferProviderFromCommand(command = '') {
@@ -1281,12 +1578,13 @@ function renderSessionList() {
               <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
               <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(session.provider || '미정')}</span>
             </div>
-            <div class="item-title">${escapeHtml(session.id)}</div>
+            <div class="item-title">${escapeHtml(formatDate(session.startedAt))} 실행</div>
             <div class="item-meta">
-              ${formatDate(session.startedAt)} · 단계 ${escapeHtml(getDisplayLabel(session.currentStage))} · 실행 ${escapeHtml(
+              단계 ${escapeHtml(getDisplayLabel(session.currentStage))} · 실행 ${escapeHtml(
                 String(session.agentRunCount || 0),
-              )}
+              )}회
             </div>
+            <div class="item-meta mono">${escapeHtml(session.id)}</div>
           </button>
         </div>
       `;
@@ -1416,6 +1714,7 @@ async function loadArtifact(artifactId, { activateTab = true } = {}) {
     renderSessionDetail(state.currentSessionPayload);
     if (activateTab) {
       setActiveStep('step-output');
+      setActiveDetailTab('artifacts');
     }
     return;
   }
@@ -1427,6 +1726,7 @@ async function loadArtifact(artifactId, { activateTab = true } = {}) {
   renderSessionDetail(state.currentSessionPayload);
   if (activateTab) {
     setActiveStep('step-output');
+    setActiveDetailTab('artifacts');
   }
 }
 
@@ -1468,7 +1768,8 @@ function renderTimeline() {
   elements.timelineList.querySelectorAll('[data-session-id]').forEach((button) => {
     button.addEventListener('click', async () => {
       await selectSession(button.dataset.sessionId);
-      setActiveStep('step-output');
+      setActiveStep('step-output', { syncDetailTab: false });
+      setActiveDetailTab('artifacts');
     });
   });
 }
@@ -1479,6 +1780,7 @@ async function selectSession(sessionId) {
   }
 
   state.selectedSessionId = sessionId;
+  setActiveDetailTab('runs');
   renderSessionList();
 
   const payload = await api(
@@ -1513,6 +1815,7 @@ function clearMissionSelection() {
 
   renderMissionList();
   renderMissionSummary();
+  renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();
   renderTimeline();
@@ -1521,6 +1824,7 @@ function clearMissionSelection() {
   renderArtifact(null);
   renderFlowState();
   setActiveStep('step-setup');
+  setActiveDetailTab('config');
 }
 
 async function selectMission(missionId) {
@@ -1544,6 +1848,7 @@ async function selectMission(missionId) {
   setActiveStep(getFlowState().recommendedStep);
 
   renderMissionSummary();
+  renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();
   renderTimeline();
@@ -1589,6 +1894,9 @@ async function loadApprovals() {
   state.approvals = payload.items || [];
   renderApprovals();
   renderReviewReadiness();
+  renderStageSummaries();
+  renderFlowState();
+  renderHeroMetrics();
 }
 
 async function loadMissions() {
@@ -1677,6 +1985,9 @@ function attachEvents() {
   });
   elements.stepButtons.forEach((button) => {
     button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget));
+  });
+  elements.detailTabButtons.forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab));
   });
 }
 
