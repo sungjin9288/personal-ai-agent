@@ -216,7 +216,8 @@ Artifact rules:
 Artifact rules:
 - artifactContent must be Markdown
 - include all required sections exactly once
-- required sections: ${pack.requiredSections.join(', ')}`;
+- required sections: ${pack.requiredSections.join(', ')}
+- Next Action must name the next owner or the next review step`;
   }
 
   if (role === 'reviewer') {
@@ -238,7 +239,9 @@ Artifact rules:
 Artifact rules:
 - artifactContent must be Markdown
 - include sections Verdict, Checks, Findings, Next Action
-- verdict must match findings`;
+- verdict must match findings
+- verify required sections exist: ${pack.requiredSections.join(', ')}
+- verify review rules: ${(pack.reviewRules || []).map((rule) => rule.description).join(' | ') || 'none'}`;
   }
 
   throw new Error(`Unsupported provider role: ${role}`);

@@ -23,6 +23,12 @@ export const KNOWLEDGE_DELIVERABLES = {
         pattern: /## Acceptance Signals[\s\S]*?success criteria/i,
         message: 'Acceptance Signals do not include explicit success criteria.',
       },
+      {
+        id: 'prd-next-owner',
+        description: 'Next Action must identify an owner or review step.',
+        pattern: /## Next Action[\s\S]*?(owner|review|responsible|decision)/i,
+        message: 'Next Action does not identify the next owner or review step.',
+      },
     ],
   },
   'execution-plan': {

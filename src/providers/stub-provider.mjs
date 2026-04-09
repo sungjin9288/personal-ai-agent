@@ -99,6 +99,12 @@ ${joinBullets(mission.constraints, 'No explicit constraints recorded.')}
 ## Required Sections
 ${joinBullets(pack.requiredSections, 'No required sections recorded.')}
 
+## Review Rules
+${joinBullets(
+  (pack.reviewRules || []).map((rule) => rule.description),
+  'No additional review rules recorded.',
+)}
+
 ## Memory
 ${memorySummary}
 
