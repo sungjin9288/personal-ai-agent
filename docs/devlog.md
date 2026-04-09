@@ -583,3 +583,8 @@
 
 - promoted `missionTrendStatus` and `profileFootprintTrendStatus` into root `workspaceAdoptionDrift` and mirrored them as `workspaceAdoptionDriftMissionTrendStatus` and `workspaceAdoptionDriftProfileFootprintTrendStatus` in summary so workspace-level combined adoption pressure can be decomposed into mission-volume and footprint trend sources without reopening count maps
 - extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new workspace adoption composition aliases for growing and steady workspace cases
+
+## 2026-04-09 Trend Latest Linkage Symmetry
+
+- promoted generic `latestProfile` into `usageTrend` and `workspaceUsageTrend`, and generic `latestWorkspace` into `workspaceUsageTrend`, then mirrored them as summary aliases so trend consumers can resolve the newest preset or workspace without relying on direction-specific latest links only
+- extended orchestration profile smoke coverage across root overview, mixed single-workspace overview, and second-workspace overview to verify the new generic latest linkage contract for mission-volume and workspace-footprint trends
