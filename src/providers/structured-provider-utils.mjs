@@ -428,9 +428,34 @@ function normalizeManagerOutput(output) {
   };
 }
 
-function normalizePlannerOutput(output) {
-  const artifactContent = normalizeText(output.artifactContent);
+function normalizePlannerOutput(output, providerLabel) {
+  let artifactContent = normalizeText(output.artifactContent);
   const summaryText = normalizeText(output.summaryText);
+  const planSteps = normalizeStringArray(output.planSteps);
+  const adaptationNotes = normalizeStringArray(output.adaptationNotes);
+
+  if (!artifactContent && providerLabel === 'Anthropic' && summaryText) {
+    const fallbackSteps = planSteps.length ? planSteps : [summaryText];
+    const adaptationBlock = adaptationNotes.length
+      ? adaptationNotes.map((note) => `- ${note}`).join('\n')
+      : '- none';
+    artifactContent = `# Planner Plan
+
+## Mission
+- summary: ${summaryText}
+
+## Plan
+${fallbackSteps.map((step) => `- ${step}`).join('\n')}
+
+## Adaptation Signals
+${adaptationBlock}
+
+## Verification Lens
+- confirm required sections are present in the final deliverable
+- ensure Acceptance Signals are explicit and testable
+`;
+  }
+
   if (!artifactContent || !summaryText) {
     throw createProviderFailure('Planner output is missing required fields.', {
       failureKind: 'schema-invalid',
@@ -441,11 +466,11 @@ function normalizePlannerOutput(output) {
   }
 
   return {
-    adaptationNotes: normalizeStringArray(output.adaptationNotes),
+    adaptationNotes,
     artifactContent,
     artifactFileName: 'planner-plan.md',
     artifactTitle: 'Planner Plan',
-    planSteps: normalizeStringArray(output.planSteps),
+    planSteps,
     summaryText,
     type: 'planner',
   };
@@ -578,7 +603,7 @@ export function normalizeStructuredOutput(result, input, providerLabel) {
   }
 
   if (role === 'planner') {
-    return normalizePlannerOutput(output);
+    return normalizePlannerOutput(output, providerLabel);
   }
 
   if (role === 'executor') {
