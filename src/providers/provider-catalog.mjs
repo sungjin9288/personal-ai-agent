@@ -43,7 +43,7 @@ const PROVIDER_CATALOG = Object.freeze({
     runtime: Object.freeze({
       maxAttempts: 2,
       probeTimeoutMs: 8000,
-      runTimeoutMs: 20000,
+      runTimeoutMs: 45000,
     }),
     configurationFields: Object.freeze([
       Object.freeze({
