@@ -258,7 +258,7 @@
             </div>
 
             <div class="step-grid step-grid-review">
-              <section class="surface">
+              <section class="surface surface-review-primary">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">검토 요약</p>
@@ -270,7 +270,7 @@
                 </div>
               </section>
 
-              <section class="surface">
+              <section class="surface surface-review-readiness">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">검토 준비 상태</p>
@@ -388,7 +388,17 @@
 
             <article id="detail-reviews" class="detail-panel">
             <div class="detail-grid detail-grid-three">
-              <section class="surface">
+              <section class="surface surface-review-primary">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">승인 대기</p>
+                    <h4>사람의 결정이 필요한 항목</h4>
+                  </div>
+                </div>
+                <div id="approval-list" class="approval-list"></div>
+              </section>
+
+              <section class="surface surface-review-side">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">후속 작업</p>
@@ -399,17 +409,7 @@
                 <div id="action-list" class="action-list"></div>
               </section>
 
-              <section class="surface">
-                <div class="mini-head">
-                  <div>
-                    <p class="section-kicker">승인 대기</p>
-                    <h4>사람의 결정이 필요한 항목</h4>
-                  </div>
-                </div>
-                <div id="approval-list" class="approval-list"></div>
-              </section>
-
-              <section class="surface">
+              <section class="surface surface-review-readiness">
                 <div class="mini-head">
                   <div>
                     <p class="section-kicker">검토 준비 상태</p>

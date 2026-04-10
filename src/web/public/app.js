@@ -1271,25 +1271,43 @@ function renderReviewStageSummary() {
   const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
   const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const flow = getFlowState();
+  const primaryDecision =
+    pendingApprovalCount > 0
+      ? `승인 ${pendingApprovalCount}건부터 처리하세요`
+      : pendingActionCount > 0
+        ? `후속 작업 ${pendingActionCount}건을 먼저 정리하세요`
+        : '검토 단계 정리가 끝났습니다';
+  const decisionCopy =
+    pendingApprovalCount > 0
+      ? '사람의 승인 항목이 남아 있어 결과를 확정할 수 없습니다.'
+      : pendingActionCount > 0
+        ? '후속 작업을 닫아야 승인과 결과 확정이 깔끔하게 이어집니다.'
+        : '승인 대기와 후속 작업이 모두 정리되어 결과 확인 단계로 넘어갈 수 있습니다.';
 
   elements.reviewStageSummary.innerHTML = `
-    <div class="stage-summary-card">
+    <div class="stage-summary-card review-spotlight">
       <p class="summary-label">지금 판단할 내용</p>
-      <h4 class="summary-statement">${escapeHtml(flow.label)}</h4>
-      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
-      <div class="summary-inline">
-        <div class="summary-chip">
+      <div class="review-decision-strip">
+        <div class="decision-chip ${pendingApprovalCount > 0 ? 'is-active' : 'is-clear'}">
           <span>승인 대기</span>
           <strong>${escapeHtml(String(pendingApprovalCount))}건</strong>
         </div>
-        <div class="summary-chip">
+        <div class="decision-chip ${pendingActionCount > 0 ? 'is-active' : 'is-clear'}">
           <span>후속 작업</span>
           <strong>${escapeHtml(String(pendingActionCount))}건</strong>
         </div>
+        <div class="decision-chip is-neutral">
+          <span>최근 세션</span>
+          <strong>${escapeHtml(latestSession ? `${getDisplayLabel(latestSession.currentStage)} · ${getDisplayLabel(latestSession.status)}` : '세션 없음')}</strong>
+        </div>
       </div>
+      <h4 class="summary-statement">${escapeHtml(primaryDecision)}</h4>
+      <p class="summary-note review-priority-copy">${escapeHtml(decisionCopy)}</p>
+      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">검토 항목 열기</button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">승인 항목 보기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">후속 작업 보기</button>
+        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
       </div>
     </div>
   `;
@@ -1662,7 +1680,14 @@ function renderMissionActions() {
     return;
   }
 
-  elements.actionList.innerHTML = items
+  const callout = `
+    <div class="review-callout review-callout-action">
+      <strong>후속 작업 ${escapeHtml(String(items.length))}건</strong>
+      <p>재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.</p>
+    </div>
+  `;
+
+  elements.actionList.innerHTML = `${callout}${items
     .map(
       (item) => `
         <div class="action-item">
@@ -1698,7 +1723,7 @@ function renderMissionActions() {
         </div>
       `,
     )
-    .join('');
+    .join('')}`;
 
   elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -1771,7 +1796,14 @@ function renderApprovals() {
     return;
   }
 
-  elements.approvalList.innerHTML = items
+  const callout = `
+    <div class="review-callout review-callout-approval">
+      <strong>사람의 승인 ${escapeHtml(String(items.length))}건이 남아 있습니다</strong>
+      <p>이 항목을 먼저 처리해야 현재 미션을 결과 확정 단계로 넘길 수 있습니다.</p>
+    </div>
+  `;
+
+  elements.approvalList.innerHTML = `${callout}${items
     .map(
       (item) => `
         <div class="approval-item">
@@ -1790,7 +1822,7 @@ function renderApprovals() {
         </div>
       `,
     )
-    .join('');
+    .join('')}`;
 
   elements.approvalList.querySelectorAll('[data-approval-open]').forEach((button) => {
     button.addEventListener('click', async () => {

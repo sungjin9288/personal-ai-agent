@@ -731,3 +731,9 @@
 - widened the artifact-first split so the final deliverable body holds more horizontal space while the companion timeline and run context stay secondary
 - tightened the lower detail shell chrome and promoted selected artifact metadata into a clearer title plus kind/path row, making the result area feel more like a reading surface than a generic tab panel
 - added compact count badges and divider-based grouping to session detail so execution history, approvals, and artifact lists read as structured inspection lanes instead of same-weight card stacks
+
+## 2026-04-10 Review Decision Priority Pass
+
+- reordered the review detail area so human approvals appear before follow-up tasks, keeping the most blocking decision path at the front of the review workspace
+- reframed the review summary into a decision spotlight with explicit approval count, follow-up count, latest session state, and primary next-action buttons so operators can tell what to clear first
+- added approval and action callouts plus stronger visual separation for readiness checks, making the review stage read as a triage surface rather than three same-weight boxes
