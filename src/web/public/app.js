@@ -1841,12 +1841,13 @@ function renderSessionList() {
     .reverse()
     .map((session) => {
       const active = session.id === state.selectedSessionId ? 'is-active' : '';
+      const providerUiLabel = getDisplayLabel(session.provider || '미정', session.provider || '미정');
       return `
         <div class="session-row ${active}">
           <button type="button" data-session-id="${escapeHtml(session.id)}">
             <div class="status-row">
               <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
-              <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(session.provider || '미정')}</span>
+              <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(providerUiLabel)}</span>
             </div>
             <div class="item-title">${escapeHtml(formatDate(session.startedAt))} 실행</div>
             <div class="item-meta">
@@ -1881,6 +1882,10 @@ function renderSessionDetail(sessionPayload) {
     renderDetailContextbar();
     return;
   }
+
+  const runCount = (sessionPayload.agentRuns || []).length;
+  const approvalCount = (sessionPayload.approvals || []).length;
+  const artifactCount = (sessionPayload.artifacts || []).length;
 
   const runs = (sessionPayload.agentRuns || [])
     .slice()
@@ -1934,15 +1939,15 @@ function renderSessionDetail(sessionPayload) {
   elements.sessionDetail.innerHTML = `
     <div class="inspector-stack">
       <div class="inspector-group">
-        <h4>실행 이력</h4>
+        <h4>실행 이력 <span class="section-count">${escapeHtml(String(runCount))}</span></h4>
         ${runs || '<p class="empty-state">실행 정보가 없습니다.</p>'}
       </div>
       <div class="inspector-group">
-        <h4>승인 이력</h4>
+        <h4>승인 이력 <span class="section-count">${escapeHtml(String(approvalCount))}</span></h4>
         ${approvals || '<p class="empty-state">승인 이력이 없습니다.</p>'}
       </div>
       <div class="inspector-group">
-        <h4>산출물 목록</h4>
+        <h4>산출물 목록 <span class="section-count">${escapeHtml(String(artifactCount))}</span></h4>
         ${artifacts || '<p class="empty-state">산출물이 없습니다.</p>'}
       </div>
     </div>
@@ -1972,8 +1977,12 @@ function renderArtifact(payload) {
   }
 
   elements.artifactMeta.innerHTML = `
+    <span class="detail-context-label">선택된 결과물</span>
     <strong>${escapeHtml(payload.artifact.title || payload.artifact.fileName || payload.artifact.id)}</strong>
-    <div class="item-meta mono">${escapeHtml(payload.path)}</div>
+    <div class="artifact-meta-row">
+      <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
+      <div class="item-meta mono">${escapeHtml(payload.path)}</div>
+    </div>
   `;
   elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
   renderDetailContextbar();

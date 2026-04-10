@@ -725,3 +725,9 @@
 - reduced the left rail width, brand copy, queue counters, and mission row padding so the inbox stops competing with the main workspace for first-screen attention
 - reshaped each mission row into a tighter operator list with one inline `다음 액션` line and a condensed context footer that combines mode and provider into a single chip-like label
 - kept the queue readable for Korean PM and operations users while giving more horizontal room to the command header and result workbench
+
+## 2026-04-10 Result Workbench Hierarchy Pass
+
+- widened the artifact-first split so the final deliverable body holds more horizontal space while the companion timeline and run context stay secondary
+- tightened the lower detail shell chrome and promoted selected artifact metadata into a clearer title plus kind/path row, making the result area feel more like a reading surface than a generic tab panel
+- added compact count badges and divider-based grouping to session detail so execution history, approvals, and artifact lists read as structured inspection lanes instead of same-weight card stacks
