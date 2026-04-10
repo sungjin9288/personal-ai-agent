@@ -57,6 +57,7 @@ npm run ui
 - 좌측 mission queue는 `표시 중 / 검토 필요 / 완료` 요약과 `다음 액션` 중심 행 디자인으로 빠르게 스캔
 - 좌측 mission queue는 밝은 카드 더미 대신 dark inbox 밀도로 정리되어, 어떤 mission을 먼저 열어야 하는지 한눈에 판단
 - 각 mission row는 단계, 목표 요약, 다음 액션, 최신 provider를 한 줄 흐름으로 압축해 PM/운영자도 우선순위를 빠르게 고를 수 있게 정리
+- 좌측 rail 폭과 mission row 패딩을 더 줄여, queue는 덜 무겁게 보이고 메인 작업면은 더 넓고 선명하게 읽히도록 조정
 - 상단 command header는 핵심 3개 메트릭과 짧은 상태 신호만 남겨, 첫 화면에서 현재 단계와 다음 행동이 바로 읽히도록 압축
 - `지금 할 일` 패널과 진행 흐름 strip은 하나의 상단 control surface처럼 이어져, 현재 단계 판단과 다음 이동을 같은 문맥에서 처리
 - `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성

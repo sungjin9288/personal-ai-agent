@@ -61,16 +61,16 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   height: 100vh;
 }
 
 .nav-rail {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-height: 0;
-  padding: 12px;
+  padding: 10px;
   color: var(--rail-text);
   background:
     radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 18rem),
@@ -81,12 +81,12 @@ button {
 .brand-block {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .brand-block h1 {
   margin: 0;
-  font-size: 1.62rem;
+  font-size: 1.48rem;
   line-height: 1;
   word-break: keep-all;
 }
@@ -94,8 +94,8 @@ button {
 .brand-copy {
   margin: 0;
   color: var(--rail-muted);
-  font-size: 0.8rem;
-  line-height: 1.42;
+  font-size: 0.74rem;
+  line-height: 1.34;
 }
 
 .rail-card,
@@ -111,9 +111,9 @@ button {
 .rail-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   border-radius: var(--radius-lg);
-  padding: 11px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.035);
   backdrop-filter: blur(12px);
   box-shadow: none;
@@ -576,7 +576,7 @@ button {
 
 .mission-filter {
   margin-top: 2px;
-  padding: 10px 12px;
+  padding: 9px 11px;
 }
 
 .dispatch-copy p {
@@ -697,27 +697,27 @@ button:disabled {
 .queue-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
 }
 
 .queue-pill {
-  padding: 9px 10px;
-  border-radius: 12px;
+  padding: 7px 8px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.07);
 }
 
 .queue-pill span {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   color: var(--rail-muted);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
 }
 
 .queue-pill strong {
   display: block;
   color: var(--rail-text);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
 .template-list,
@@ -729,7 +729,7 @@ button:disabled {
 .timeline-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-height: 0;
   overflow: auto;
 }
@@ -823,7 +823,7 @@ button:disabled {
 .session-row button,
 .artifact-link button {
   width: 100%;
-  padding: 10px 11px;
+  padding: 9px 10px;
   color: inherit;
   text-align: left;
   background: transparent;
@@ -831,16 +831,16 @@ button:disabled {
 
 .mission-row {
   border-color: rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .mission-row:hover {
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(96, 165, 250, 0.2);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .mission-row.is-active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-color: rgba(96, 165, 250, 0.28);
 }
 
@@ -853,12 +853,12 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .mission-row-stage,
 .mission-row-updated {
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   letter-spacing: 0.04em;
 }
 
@@ -894,10 +894,10 @@ button:disabled {
 }
 
 .mission-row-summary {
-  margin-top: 4px;
+  margin-top: 3px;
   color: rgba(230, 238, 250, 0.68);
-  font-size: 0.77rem;
-  line-height: 1.42;
+  font-size: 0.73rem;
+  line-height: 1.34;
 }
 
 .mission-row-state {
@@ -909,18 +909,22 @@ button:disabled {
   flex: 0 0 auto;
 }
 
+.mission-row-state .status-badge,
+.mission-row-state .mini-badge {
+  font-size: 0.61rem;
+}
+
 .mission-next-action {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 9px;
-  padding-top: 9px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .mission-next-label {
   color: rgba(191, 219, 254, 0.76);
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -928,14 +932,26 @@ button:disabled {
 
 .mission-next-action strong {
   display: block;
-  font-size: 0.76rem;
-  line-height: 1.38;
+  font-size: 0.73rem;
+  line-height: 1.32;
   color: var(--rail-text);
 }
 
 .mission-row-foot {
-  margin-top: 8px;
-  font-size: 0.72rem;
+  margin-top: 7px;
+  font-size: 0.67rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.mission-row-foot span {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .approval-item,

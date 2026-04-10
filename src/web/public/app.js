@@ -845,7 +845,10 @@ function renderMissionList() {
       const active = mission.id === state.selectedMissionId ? 'is-active' : '';
       const snapshot = getMissionQueueSnapshot(mission, latestSession);
       const providerLabel = latestSession?.provider || '미정';
+      const providerUiLabel = getDisplayLabel(providerLabel, providerLabel);
       const updatedLabel = formatDate(mission.updatedAt);
+      const workspaceLabel = workspace?.name || mission.workspaceId;
+      const contextLabel = `${getDisplayLabel(mission.mode, mission.mode)} · ${providerUiLabel}`;
       const summary = summarizeText(
         mission.objective,
         latestSession?.reviewerSummary || snapshot.nextAction.replace(/^다음:\s*/, ''),
@@ -866,7 +869,7 @@ function renderMissionList() {
                 <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
                 ${
                   latestSession
-                    ? `<span class="mini-badge ${getStatusClass(providerLabel)}">${escapeHtml(providerLabel)}</span>`
+                    ? `<span class="mini-badge ${getStatusClass(providerLabel)}">${escapeHtml(providerUiLabel)}</span>`
                     : ''
                 }
               </div>
@@ -876,9 +879,8 @@ function renderMissionList() {
               <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
             </div>
             <div class="mission-row-foot">
-              <span>${escapeHtml(workspace?.name || mission.workspaceId)}</span>
-              <span>${escapeHtml(getDisplayLabel(mission.mode, mission.mode))}</span>
-              <span>${escapeHtml(providerLabel)}</span>
+              <span>${escapeHtml(workspaceLabel)}</span>
+              <span>${escapeHtml(contextLabel)}</span>
             </div>
           </button>
         </div>

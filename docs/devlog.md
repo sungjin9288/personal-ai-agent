@@ -719,3 +719,9 @@
 - flattened the `지금 할 일` panel from stacked meta cards into a single decision block with inline status chips so the operator reads action, stage, and progress state in one pass
 - turned the progress strip into a footer-style rail inside the same command surface by removing its separate card treatment and giving it a shared divider/background continuation
 - shortened the progress rail helper copy and stage cards so the top viewport feels like one coordinated control surface instead of separate dashboard modules
+
+## 2026-04-10 Inbox Rail Compression Pass
+
+- reduced the left rail width, brand copy, queue counters, and mission row padding so the inbox stops competing with the main workspace for first-screen attention
+- reshaped each mission row into a tighter operator list with one inline `다음 액션` line and a condensed context footer that combines mode and provider into a single chip-like label
+- kept the queue readable for Korean PM and operations users while giving more horizontal room to the command header and result workbench
