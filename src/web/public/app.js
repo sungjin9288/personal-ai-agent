@@ -143,6 +143,7 @@ const elements = {
   runStageSummary: document.getElementById('run-stage-summary'),
   sessionDetail: document.getElementById('session-detail'),
   sessionList: document.getElementById('session-list'),
+  selectionBridge: document.getElementById('selection-bridge'),
   stepButtons: Array.from(document.querySelectorAll('[data-step-target]')),
   stepPanels: Array.from(document.querySelectorAll('.step-panel')),
   templateList: document.getElementById('template-list'),
@@ -159,6 +160,13 @@ const STEP_TO_DETAIL_TAB = {
   'step-run': 'runs',
   'step-review': 'reviews',
   'step-output': 'artifacts',
+};
+
+const STEP_META = {
+  'step-output': { label: '4단계 · 결과 보기', shortLabel: '결과 보기' },
+  'step-review': { label: '3단계 · 검토하기', shortLabel: '검토하기' },
+  'step-run': { label: '2단계 · 실행하기', shortLabel: '실행하기' },
+  'step-setup': { label: '1단계 · 미션 정하기', shortLabel: '미션 정하기' },
 };
 
 function getSelectedWorkspaceId() {
@@ -235,6 +243,15 @@ function getDisplayLabel(value, fallback = '-') {
 
   const raw = String(value).trim();
   return DISPLAY_LABELS[raw] || DISPLAY_LABELS[raw.toLowerCase()] || raw;
+}
+
+function getStepLabel(stepId, { short = false } = {}) {
+  const meta = STEP_META[stepId];
+  if (!meta) {
+    return short ? '단계 없음' : '단계 없음';
+  }
+
+  return short ? meta.shortLabel : meta.label;
 }
 
 function summarizeText(value, fallback = '') {
@@ -452,6 +469,8 @@ function setActiveStep(stepId, { syncDetailTab = true } = {}) {
   if (syncDetailTab) {
     setActiveDetailTab(STEP_TO_DETAIL_TAB[stepId] || 'artifacts');
   }
+
+  renderSelectionBridge();
 }
 
 function setActiveDetailTab(tabId) {
@@ -817,8 +836,18 @@ function getMissionQueueSnapshot(mission, latestSession) {
   };
 }
 
+function getSelectedMissionRecord() {
+  if (!state.selectedMissionId) {
+    return null;
+  }
+
+  return state.missions.find(({ mission }) => mission.id === state.selectedMissionId) || null;
+}
+
 function renderMissionList() {
   const missions = filteredMissions();
+  const selectedFlow =
+    state.selectedMissionId && state.missionDetail?.mission?.id === state.selectedMissionId ? getFlowState() : null;
   renderMissionQueueSummary(missions);
   if (!missions.length) {
     elements.missionList.innerHTML = state.missions.length
@@ -844,6 +873,7 @@ function renderMissionList() {
     .map(({ mission, latestSession, workspace }) => {
       const active = mission.id === state.selectedMissionId ? 'is-active' : '';
       const snapshot = getMissionQueueSnapshot(mission, latestSession);
+      const activeStageLabel = active && selectedFlow ? getStepLabel(state.activeStep) : snapshot.stage;
       const providerLabel = latestSession?.provider || '미정';
       const providerUiLabel = getDisplayLabel(providerLabel, providerLabel);
       const updatedLabel = formatDate(mission.updatedAt);
@@ -857,7 +887,10 @@ function renderMissionList() {
         <div class="mission-row ${active}">
           <button type="button" data-mission-id="${escapeHtml(mission.id)}">
             <div class="mission-row-topline">
-              <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
+              <div class="mission-row-topline-main">
+                <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
+                ${active ? '<span class="mission-row-focus">현재 작업 중</span>' : ''}
+              </div>
               <span class="mission-row-updated">${escapeHtml(updatedLabel)}</span>
             </div>
             <div class="mission-row-head">
@@ -878,6 +911,16 @@ function renderMissionList() {
               <span class="mission-next-label">다음 액션</span>
               <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
             </div>
+            ${
+              active
+                ? `
+                  <div class="mission-row-focusline">
+                    <span>현재 작업판</span>
+                    <strong>${escapeHtml(activeStageLabel)}</strong>
+                  </div>
+                `
+                : ''
+            }
             <div class="mission-row-foot">
               <span>${escapeHtml(workspaceLabel)}</span>
               <span>${escapeHtml(contextLabel)}</span>
@@ -1094,6 +1137,7 @@ function renderMissionSummary() {
       title: '아직 선택된 미션이 없습니다',
     });
     elements.runMissionButton.disabled = true;
+    renderSelectionBridge();
     renderHeroMetrics();
     renderHeroSignals();
     renderAgentLane();
@@ -1117,6 +1161,7 @@ function renderMissionSummary() {
     latestSession?.reviewerSummary || '목표가 없습니다.',
   );
   elements.runMissionButton.disabled = false;
+  renderSelectionBridge();
 
   elements.missionSummary.innerHTML = `
     <section class="summary-section summary-emphasis">
@@ -1196,6 +1241,74 @@ function renderMissionSummary() {
   renderAgentLane();
   renderFlowState();
   wireQuickActions(elements.missionSummary);
+}
+
+function renderSelectionBridge() {
+  if (!elements.selectionBridge) {
+    return;
+  }
+
+  const selectedRecord = getSelectedMissionRecord();
+  if (!selectedRecord) {
+    elements.selectionBridge.innerHTML = `
+      <div class="selection-bridge-empty">왼쪽 작업 대기열에서 미션을 고르면 현재 작업면, 결과물, 실행 기록이 같은 기준으로 묶여 보여집니다.</div>
+    `;
+    return;
+  }
+
+  const mission = state.missionDetail?.mission?.id === selectedRecord.mission.id ? state.missionDetail.mission : selectedRecord.mission;
+  const latestSession =
+    state.currentSessionPayload?.session ||
+    state.missionDetail?.summary?.latestSession ||
+    selectedRecord.latestSession ||
+    null;
+  const workspaceLabel = selectedRecord.workspace?.name || mission.workspaceId;
+  const snapshot = getMissionQueueSnapshot(mission, latestSession);
+  const flow =
+    state.missionDetail?.mission?.id === selectedRecord.mission.id
+      ? getFlowState()
+      : {
+          buttonLabel: '미션 불러오는 중',
+          copy: '세부 정보를 가져오는 동안 현재 단계와 다음 액션을 동기화하고 있습니다.',
+          currentStepLabel: getStepLabel(state.activeStep),
+          label: '선택한 미션을 불러오는 중입니다',
+          recommendedStep: state.activeStep,
+        };
+  const latestExecutionLabel = latestSession
+    ? `${getDisplayLabel(latestSession.provider, latestSession.provider)} · ${getDisplayLabel(latestSession.status)}`
+    : '아직 실행 전';
+
+  elements.selectionBridge.innerHTML = `
+    <div class="selection-bridge-main">
+      <div class="selection-bridge-copy">
+        <span class="selection-bridge-kicker">선택한 미션</span>
+        <strong>${escapeHtml(mission.title)}</strong>
+        <p>${escapeHtml(summarizeText(mission.objective, '왼쪽 작업 대기열에서 선택한 미션을 현재 작업면 기준으로 동기화했습니다.'))}</p>
+      </div>
+      <div class="selection-bridge-actions">
+        <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
+        <span class="mini-badge">${escapeHtml(workspaceLabel)}</span>
+        <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
+          ${escapeHtml(getStepLabel(flow.recommendedStep, { short: true }))}
+        </button>
+      </div>
+    </div>
+    <div class="selection-bridge-track">
+      <div class="selection-bridge-pill is-active">
+        <span>현재 열어둔 단계</span>
+        <strong>${escapeHtml(getStepLabel(state.activeStep))}</strong>
+      </div>
+      <div class="selection-bridge-pill">
+        <span>다음 액션</span>
+        <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
+      </div>
+      <div class="selection-bridge-pill">
+        <span>최근 실행</span>
+        <strong>${escapeHtml(latestExecutionLabel)}</strong>
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.selectionBridge);
 }
 
 function renderRunStageSummary() {
@@ -2104,6 +2217,7 @@ async function selectSession(sessionId) {
     `/api/missions/${encodeURIComponent(state.selectedMissionId)}/session?sessionId=${encodeURIComponent(sessionId)}`,
   );
   state.currentSessionPayload = payload;
+  renderSelectionBridge();
   renderSessionDetail(payload);
 
   const latestDeliverable = (payload.artifacts || [])
@@ -2133,6 +2247,7 @@ function clearMissionSelection() {
   state.selectedSessionId = null;
 
   renderMissionList();
+  renderSelectionBridge();
   renderMissionSummary();
   renderStageSummaries();
   renderMissionActions();
@@ -2156,6 +2271,7 @@ async function selectMission(missionId) {
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
   renderMissionList();
+  renderSelectionBridge();
 
   const [detail, timelinePayload, actionPayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),

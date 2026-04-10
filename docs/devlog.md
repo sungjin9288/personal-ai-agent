@@ -737,3 +737,9 @@
 - reordered the review detail area so human approvals appear before follow-up tasks, keeping the most blocking decision path at the front of the review workspace
 - reframed the review summary into a decision spotlight with explicit approval count, follow-up count, latest session state, and primary next-action buttons so operators can tell what to clear first
 - added approval and action callouts plus stronger visual separation for readiness checks, making the review stage read as a triage surface rather than three same-weight boxes
+
+## 2026-04-10 Mission Selection Bridge Pass
+
+- inserted a compact `선택한 미션` bridge strip above the stage workspace so the left inbox choice, the currently opened step, the next action, and the latest execution state read as one connected operator context
+- strengthened the active mission row with `현재 작업 중` and `현재 작업판` cues, reducing the feeling that the queue selection and the central workbench are separate surfaces
+- kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
