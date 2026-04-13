@@ -10,6 +10,7 @@
 - added a mission-scoped memory authoring form inside the harness tab so operators can persist fact / decision / preference context without leaving the console
 - expanded layered memory authoring to workspace scope as well, so long-lived operating rules can be captured without overloading mission-scoped recall
 - added a source-of-record document logging form inside the harness tab so Markdown working notes can be pushed into docs/reference, devlog, or incidents from the same mission surface
+- added browser-side file intake for Markdown/txt/json notes so external working drafts can prefill the source-of-record form without introducing a new conversion dependency
 
 ## 2026-04-09 Visual Density Polish
 

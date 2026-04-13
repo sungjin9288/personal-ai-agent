@@ -124,6 +124,7 @@ const elements = {
   detailContextbar: document.getElementById('detail-contextbar'),
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
+  documentLogFile: document.getElementById('document-log-file'),
   documentLogForm: document.getElementById('document-log-form'),
   documentLogSubmitButton: document.getElementById('document-log-submit-button'),
   flowStatus: document.getElementById('flow-status'),
@@ -181,6 +182,10 @@ const STEP_META = {
 
 function getSelectedWorkspaceId() {
   return String(elements.workspaceSelect.value || state.workspaces[0]?.id || '').trim();
+}
+
+function stripFileExtension(fileName = '') {
+  return String(fileName).replace(/\.[^.]+$/, '');
 }
 
 function escapeHtml(value) {
@@ -2882,6 +2887,34 @@ async function handleDocumentLogCreate(event) {
   }
 }
 
+async function readTextFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('선택한 파일을 읽을 수 없습니다.'));
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.readAsText(file);
+  });
+}
+
+async function handleDocumentLogFilePick(event) {
+  const file = event.target?.files?.[0];
+  if (!file || !elements.documentLogForm) {
+    return;
+  }
+
+  const content = await readTextFile(file);
+  const titleField = elements.documentLogForm.querySelector('input[name="title"]');
+  const contentField = elements.documentLogForm.querySelector('textarea[name="content"]');
+
+  if (titleField && !String(titleField.value || '').trim()) {
+    titleField.value = stripFileExtension(file.name);
+  }
+
+  if (contentField) {
+    contentField.value = content;
+  }
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.missionFilter.addEventListener('input', renderMissionList);
@@ -2928,6 +2961,16 @@ function attachEvents() {
       window.alert(error.message);
       elements.documentLogSubmitButton.disabled = false;
       elements.documentLogSubmitButton.textContent = '문서 기록 저장';
+    }
+  });
+  elements.documentLogFile?.addEventListener('change', async (event) => {
+    try {
+      await handleDocumentLogFilePick(event);
+    } catch (error) {
+      window.alert(error.message);
+      if (elements.documentLogFile) {
+        elements.documentLogFile.value = '';
+      }
     }
   });
   elements.runMissionButton.addEventListener('click', async () => {
