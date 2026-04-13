@@ -6770,6 +6770,7 @@ function summarizeProviderExecutions(executions) {
   function buildHarnessDocumentRegistry() {
     const docsDir = docService.docsDir;
     const adrDir = path.join(docsDir, 'adr');
+    const legacyStatus = docService.getLegacyDocumentLogStatus();
     const baseEntries = [
       {
         id: 'roadmap',
@@ -6832,8 +6833,10 @@ function summarizeProviderExecutions(executions) {
       summary: {
         adrCount: adrEntries.length,
         availableCount,
+        legacyDevlogCount: legacyStatus.legacyDevlogCount,
         latestUpdatedAt: latestItem?.updatedAt || null,
         totalCount: items.length,
+        trackedDevlogCount: legacyStatus.trackedDevlogCount,
       },
     };
   }
@@ -13339,6 +13342,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return docService.deleteDocumentLogEntry(entryId);
   }
 
+  function migrateLegacyDocumentLogs() {
+    return docService.migrateLegacyDocumentLogEntries();
+  }
+
   function showMission(missionId, filter = {}) {
     const mission = getMission(missionId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'mission provider since timestamp');
@@ -13425,6 +13432,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     logOverdueActions,
     deleteDocumentLog,
     logDocument,
+    migrateLegacyDocumentLogs,
     acknowledgeOwnerHandoff,
     deleteMemory,
     resolveProviderAttention,

@@ -303,6 +303,22 @@ async function handleApi(request, response, url) {
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
     pathParts[2] &&
+    pathParts[3] === 'document-log' &&
+    pathParts[4] === 'migrate-legacy'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    service.showMission(missionId);
+    const result = service.migrateLegacyDocumentLogs();
+
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
     pathParts[3] === 'document-log'
   ) {
     const missionId = decodePathSegment(pathParts[2]);

@@ -2005,6 +2005,17 @@ function renderHarnessPanel() {
       <div class="summary-chip"><span>최근 갱신</span><strong>${escapeHtml(formatDate(documentSummary.latestUpdatedAt))}</strong></div>
     </div>
     ${
+      Number(documentSummary.legacyDevlogCount || 0) > 0
+        ? `<div class="harness-callout">
+            <strong>기존 개발 로그 ${escapeHtml(String(documentSummary.legacyDevlogCount || 0))}건이 아직 tracked entry가 아닙니다.</strong>
+            <p>예전 append-only 섹션을 편집 가능한 문서 기록으로 한 번에 전환합니다. 전환 후에는 하네스에서 바로 수정/삭제할 수 있습니다.</p>
+            <div class="inline-actions">
+              <button class="ghost-button" type="button" data-document-action="migrate-legacy">기존 개발 로그 전환</button>
+            </div>
+          </div>`
+        : ''
+    }
+    ${
       latestArtifact
         ? `<div class="harness-callout">
             <strong>대표 산출물</strong>
@@ -2220,6 +2231,16 @@ function wireDocumentRowActions() {
       const entryId = String(button.dataset.documentId || '').trim();
       try {
         await handleDocumentLogDelete(entryId);
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="migrate-legacy"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        await handleLegacyDocumentMigration();
       } catch (error) {
         window.alert(error.message);
       }
@@ -3217,6 +3238,42 @@ async function handleDocumentLogDelete(entryId) {
   await selectMission(state.selectedMissionId);
   setActiveStep(currentStep, { syncDetailTab: false });
   setActiveDetailTab('harness');
+}
+
+async function handleLegacyDocumentMigration() {
+  if (!state.selectedMissionId) {
+    return;
+  }
+
+  const legacyCount = Number(state.missionDetail?.harness?.documents?.summary?.legacyDevlogCount || 0);
+  if (!legacyCount) {
+    window.alert('전환할 기존 개발 로그가 없습니다.');
+    return;
+  }
+
+  const confirmMessage = `기존 개발 로그 ${legacyCount}건을 tracked entry로 전환할까요?\n\n전환 후에는 하네스에서 바로 수정하거나 삭제할 수 있습니다.`;
+  if (!window.confirm(confirmMessage)) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  if (elements.documentLogFormStatus) {
+    elements.documentLogFormStatus.textContent = `기존 개발 로그 ${legacyCount}건을 tracked entry로 전환하는 중입니다.`;
+  }
+
+  const result = await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log/migrate-legacy`, {
+    method: 'POST',
+  });
+
+  resetDocumentLogForm();
+  await Promise.all([loadMissions(), loadApprovals()]);
+  await selectMission(state.selectedMissionId);
+  setActiveStep(currentStep, { syncDetailTab: false });
+  setActiveDetailTab('harness');
+
+  if (elements.documentLogFormStatus) {
+    elements.documentLogFormStatus.textContent = `기존 개발 로그 ${result.migratedCount || 0}건을 tracked entry로 전환했습니다.`;
+  }
 }
 
 async function readTextFile(file) {

@@ -156,6 +156,125 @@ function writeDocumentFile(filePath, content) {
   fs.writeFileSync(filePath, content.endsWith('\n') ? content : `${content}\n`, 'utf8');
 }
 
+function trimEdgeBlankLines(lines) {
+  const nextLines = [...lines];
+  while (nextLines.length && !String(nextLines[0] || '').trim()) {
+    nextLines.shift();
+  }
+  while (nextLines.length && !String(nextLines[nextLines.length - 1] || '').trim()) {
+    nextLines.pop();
+  }
+  return nextLines;
+}
+
+function normalizeLegacyEntryContent(lines) {
+  return trimEdgeBlankLines(lines)
+    .map((line) => (line.startsWith('- ') ? line.slice(2) : line))
+    .join('\n')
+    .trim();
+}
+
+function inferLegacyEntryTimestamp(title, fallbackTimestamp) {
+  const titleMatch = String(title || '').match(/(?<date>\d{4}-\d{2}-\d{2})/);
+  if (!titleMatch?.groups?.date) {
+    return fallbackTimestamp;
+  }
+
+  const parsed = new Date(`${titleMatch.groups.date}T00:00:00.000Z`);
+  return Number.isNaN(parsed.getTime()) ? fallbackTimestamp : parsed.toISOString();
+}
+
+function parseLegacyDevlogStructure(fileContent) {
+  const lines = String(fileContent || '').split('\n');
+  const segments = [];
+  let buffer = [];
+  let currentLegacyTitle = null;
+  let inTrackedBlock = false;
+  let trackedLines = [];
+
+  function flushRawBuffer() {
+    if (!buffer.length) {
+      return;
+    }
+    segments.push({
+      kind: 'raw',
+      text: buffer.join('\n'),
+    });
+    buffer = [];
+  }
+
+  function flushLegacyBuffer() {
+    if (!currentLegacyTitle) {
+      return;
+    }
+    segments.push({
+      bodyLines: trimEdgeBlankLines(buffer),
+      kind: 'legacy',
+      title: currentLegacyTitle,
+    });
+    currentLegacyTitle = null;
+    buffer = [];
+  }
+
+  for (const line of lines) {
+    if (line.startsWith('<!-- document-log:start ')) {
+      flushLegacyBuffer();
+      flushRawBuffer();
+      inTrackedBlock = true;
+      trackedLines = [line];
+      continue;
+    }
+
+    if (inTrackedBlock) {
+      trackedLines.push(line);
+      if (line === '<!-- document-log:end -->') {
+        segments.push({
+          kind: 'tracked',
+          text: trackedLines.join('\n'),
+        });
+        trackedLines = [];
+        inTrackedBlock = false;
+      }
+      continue;
+    }
+
+    if (line.startsWith('## ')) {
+      if (currentLegacyTitle) {
+        flushLegacyBuffer();
+      } else {
+        flushRawBuffer();
+      }
+      currentLegacyTitle = line.slice(3).trim();
+      continue;
+    }
+
+    buffer.push(line);
+  }
+
+  if (inTrackedBlock && trackedLines.length) {
+    segments.push({
+      kind: 'tracked',
+      text: trackedLines.join('\n'),
+    });
+  }
+
+  if (currentLegacyTitle) {
+    flushLegacyBuffer();
+  } else {
+    flushRawBuffer();
+  }
+
+  const [headerSegment, ...bodySegments] = segments;
+  const header = headerSegment?.kind === 'raw' ? headerSegment.text.trim() : '# Devlog';
+
+  return {
+    bodySegments: headerSegment?.kind === 'raw' ? bodySegments : segments,
+    header: header || '# Devlog',
+    legacySections: segments.filter((segment) => segment.kind === 'legacy'),
+    trackedSections: segments.filter((segment) => segment.kind === 'tracked'),
+  };
+}
+
 function getDocumentPath(rootDir, type) {
   if (type === 'devlog') {
     return path.join(rootDir, 'docs', 'devlog.md');
@@ -217,6 +336,20 @@ export function createDocService({ rootDir }) {
     }).sort((left, right) => String(left.updatedAt || '').localeCompare(String(right.updatedAt || '')));
 
     return entries.slice(-limit).reverse();
+  }
+
+  function getLegacyDocumentLogStatus() {
+    ensureDocs();
+    const devlogPath = getDocumentPath(rootDir, 'devlog');
+    const fileContent = readDocumentFile(devlogPath);
+    const structure = parseLegacyDevlogStructure(fileContent);
+
+    return {
+      devlogPath: path.relative(rootDir, devlogPath),
+      hasLegacySections: structure.legacySections.length > 0,
+      legacyDevlogCount: structure.legacySections.length,
+      trackedDevlogCount: structure.trackedSections.length,
+    };
   }
 
   function createDocumentLogEntry({ content, title, type }) {
@@ -301,6 +434,56 @@ export function createDocService({ rootDir }) {
     };
   }
 
+  function migrateLegacyDocumentLogEntries() {
+    ensureDocs();
+
+    const targetPath = getDocumentPath(rootDir, 'devlog');
+    const fileContent = readDocumentFile(targetPath);
+    const structure = parseLegacyDevlogStructure(fileContent);
+    const fallbackTimestamp = fs.existsSync(targetPath)
+      ? fs.statSync(targetPath).mtime.toISOString()
+      : new Date().toISOString();
+
+    if (!structure.legacySections.length) {
+      return {
+        entries: [],
+        migratedCount: 0,
+        path: path.relative(rootDir, targetPath),
+      };
+    }
+
+    const migratedEntries = [];
+    const nextBodyBlocks = structure.bodySegments.map((segment) => {
+      if (segment.kind !== 'legacy') {
+        return segment.text.trim();
+      }
+
+      const timestamp = inferLegacyEntryTimestamp(segment.title, fallbackTimestamp);
+      const entry = {
+        content: normalizeLegacyEntryContent(segment.bodyLines),
+        createdAt: timestamp,
+        id: createId('doclog'),
+        title: segment.title,
+        type: 'devlog',
+        updatedAt: timestamp,
+      };
+      migratedEntries.push({
+        ...entry,
+        path: path.relative(rootDir, targetPath),
+      });
+      return serializeDocumentLogEntry(entry).trim();
+    });
+
+    const nextContent = [structure.header, ...nextBodyBlocks.filter(Boolean)].join('\n\n');
+    writeDocumentFile(targetPath, `${nextContent}\n`);
+
+    return {
+      entries: migratedEntries,
+      migratedCount: migratedEntries.length,
+      path: path.relative(rootDir, targetPath),
+    };
+  }
+
   function deleteDocumentLogEntry(entryId) {
     const currentEntry = findDocumentLogEntry(entryId);
     if (!currentEntry) {
@@ -328,8 +511,10 @@ export function createDocService({ rootDir }) {
     deleteDocumentLogEntry,
     docsDir,
     ensureDocs,
+    getLegacyDocumentLogStatus,
     listDocumentLogEntries,
     logDocument,
+    migrateLegacyDocumentLogEntries,
     updateDocumentLogEntry,
   };
 }
