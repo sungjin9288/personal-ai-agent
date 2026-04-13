@@ -337,6 +337,7 @@
               <button class="detail-tab" type="button" data-detail-tab="runs">실행 기록</button>
               <button class="detail-tab" type="button" data-detail-tab="reviews">검토 이력</button>
               <button class="detail-tab" type="button" data-detail-tab="config">입력값과 설정</button>
+              <button class="detail-tab" type="button" data-detail-tab="harness">하네스</button>
             </nav>
 
             <article id="detail-artifacts" class="detail-panel is-active">
@@ -447,6 +448,40 @@
                   </div>
                 </div>
                 <div id="provider-list" class="provider-list"></div>
+              </section>
+            </div>
+            </article>
+
+            <article id="detail-harness" class="detail-panel">
+            <div class="detail-grid detail-grid-three">
+              <section class="surface">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">소스 오브 레코드</p>
+                    <h4>문서와 대표 산출물</h4>
+                  </div>
+                </div>
+                <div id="harness-source" class="harness-stack empty-state">문서 하네스 정보를 로드하면 여기에 표시됩니다.</div>
+              </section>
+
+              <section class="surface">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">메모리 레이어</p>
+                    <h4>미션 기억과 작업 메모</h4>
+                  </div>
+                </div>
+                <div id="harness-memory" class="harness-stack empty-state">메모리 하네스 정보를 로드하면 여기에 표시됩니다.</div>
+              </section>
+
+              <section class="surface">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">운영 루프</p>
+                    <h4>검토, 유지보수, 제공자 상태</h4>
+                  </div>
+                </div>
+                <div id="harness-loops" class="harness-stack empty-state">운영 하네스 상태를 계산하면 여기에 표시됩니다.</div>
               </section>
             </div>
             </article>

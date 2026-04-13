@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-04-14 Harness Lens Integration
+
+- researched current harness patterns around Markdown-first document normalization, session-first agent runtime loops, and layered memory recall, then mapped only the directly usable pieces into the existing runtime instead of bolting on a parallel framework
+- extended mission detail payloads with a dedicated `harness` summary that exposes source-of-record docs, recent mission/workspace memory, review and maintenance pressure, provider health drift, and lightweight operator recommendations
+- added a new `하네스` tab to the lower workbench so operators can inspect document anchors, memory buildup, and operational loops from the same mission screen without leaving the guided workflow
+- kept the implementation dependency-free: no new document conversion package was added yet, but the UI now makes the Markdown source-of-record rule explicit so later ingestion work can plug into an already visible harness surface
+
 ## 2026-04-09 Visual Density Polish
 
 - tightened the console from a soft card-heavy dashboard into a calmer operator workspace with lower shadow depth, denser spacing, and fewer competing emphasis treatments

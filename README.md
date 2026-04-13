@@ -67,7 +67,9 @@ npm run ui
 - `결과 보기` 단계는 대표 결과물, 검토 상태, 마무리 체크리스트를 먼저 보여주고, 아래 `결과와 기록` workbench에서 본문과 실행 타임라인을 함께 확인
 - `검토하기` 단계에서 review readiness, action queue, approval inbox를 묶어서 처리
 - `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
+- `결과와 기록`에 `하네스` 탭을 추가해 문서 source-of-record, 미션/워크스페이스 메모리, 유지보수·검토·provider 상태를 한 번에 확인
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
+- `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, MemPalace식 layered memory recall, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인
 - `결과와 기록` workbench는 결과 본문이 더 넓고 또렷하게 읽히도록 비율과 타이포를 조정했고, 실행/승인/산출물 목록은 더 얇은 검사 패널처럼 분리
 - `검토하기` 단계와 검토 탭은 `승인 대기 → 후속 작업 → 준비 상태` 순서로 재배치해, 사람이 먼저 결정해야 하는 항목이 가장 먼저 보이도록 정리

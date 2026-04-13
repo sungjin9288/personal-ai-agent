@@ -125,6 +125,9 @@ const elements = {
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
   flowStatus: document.getElementById('flow-status'),
+  harnessLoops: document.getElementById('harness-loops'),
+  harnessMemory: document.getElementById('harness-memory'),
+  harnessSource: document.getElementById('harness-source'),
   heroMetrics: document.getElementById('hero-metrics'),
   heroSignals: document.getElementById('hero-signals'),
   missionFilter: document.getElementById('mission-filter'),
@@ -969,11 +972,13 @@ function renderDetailTabLabels() {
   const runsCount = state.missionDetail?.sessions?.length || 0;
   const reviewsCount =
     (state.currentSessionPayload?.approvals?.length || 0) + Number(state.missionActions?.summary?.pendingActionCount || 0);
+  const harnessCount = state.missionDetail?.harness?.recommendations?.length || 0;
   const counts = {
     artifacts: artifactsCount,
     runs: runsCount,
     reviews: reviewsCount,
     config: 0,
+    harness: harnessCount,
   };
 
   elements.detailTabButtons.forEach((button) => {
@@ -1044,6 +1049,9 @@ function renderHeroSignals() {
     `상태 · ${getDisplayLabel(mission.status, mission.status)}`,
     mission.deliverableType ? `산출물 · ${getDisplayLabel(mission.deliverableType, mission.deliverableType)}` : '산출물 유형 미정',
     latestSession.provider ? `제공자 · ${latestSession.provider}` : '제공자 선택 전',
+    state.missionDetail.harness
+      ? `하네스 · 문서 ${state.missionDetail.harness.documents?.summary?.availableCount || 0} / 메모 ${state.missionDetail.harness.memory?.missionCounts?.total || 0}`
+      : '하네스 정보 없음',
     playbook ? `플레이북 · ${playbook.title}` : '사용자 정의 미션',
   ];
 
@@ -1604,6 +1612,7 @@ function renderDetailContextbar() {
     runs: '실행 기록 확인 중',
     reviews: '검토 이력 확인 중',
     config: '입력값과 설정 확인 중',
+    harness: '하네스 상태 확인 중',
   }[state.activeDetailTab];
 
   const highlightedArtifact =
@@ -1631,6 +1640,198 @@ function renderDetailContextbar() {
       <div class="detail-context-pill">
         <span>검토 상태</span>
         <strong>${escapeHtml(approvals.length ? `승인 ${approvals.length}건 기록` : '승인 기록 없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>하네스</span>
+        <strong>${escapeHtml(`${state.missionDetail?.harness?.recommendations?.length || 0}건 권장 · 메모 ${state.missionDetail?.harness?.memory?.missionCounts?.total || 0}개`)}</strong>
+      </div>
+    </div>
+  `;
+}
+
+function renderHarnessPanel() {
+  if (!state.missionDetail?.harness) {
+    const empty = emptyStateCard({
+      action: 'jump-step',
+      actionLabel: '1단계로 이동',
+      actionValue: 'step-setup',
+      icon: 'HS',
+      message: '미션을 선택하면 문서 기준점, 메모리, 운영 루프를 묶은 하네스 뷰를 보여줍니다.',
+      title: '하네스 정보를 계산할 미션이 없습니다',
+    });
+    elements.harnessSource.innerHTML = empty;
+    elements.harnessMemory.innerHTML = empty;
+    elements.harnessLoops.innerHTML = empty;
+    wireQuickActions(elements.harnessSource);
+    wireQuickActions(elements.harnessMemory);
+    wireQuickActions(elements.harnessLoops);
+    return;
+  }
+
+  const harnessSummary = state.missionDetail.harness;
+  const documentSummary = harnessSummary.documents?.summary || {};
+  const documentItems = harnessSummary.documents?.items || [];
+  const memory = harnessSummary.memory || {};
+  const loops = harnessSummary.loops || {};
+  const recommendations = harnessSummary.recommendations || [];
+  const latestArtifact = harnessSummary.documents?.latestArtifact || null;
+
+  elements.harnessSource.innerHTML = `
+    <div class="harness-overview-grid">
+      <div class="summary-chip"><span>문서</span><strong>${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}</strong></div>
+      <div class="summary-chip"><span>ADR</span><strong>${escapeHtml(String(documentSummary.adrCount || 0))}개</strong></div>
+      <div class="summary-chip"><span>최근 갱신</span><strong>${escapeHtml(formatDate(documentSummary.latestUpdatedAt))}</strong></div>
+    </div>
+    ${
+      latestArtifact
+        ? `<div class="harness-callout">
+            <strong>대표 산출물</strong>
+            <p>${escapeHtml(latestArtifact.title)}</p>
+            <div class="item-meta mono">${escapeHtml(latestArtifact.path || '-')}</div>
+          </div>`
+        : ''
+    }
+    <div class="harness-list">
+      ${documentItems
+        .map(
+          (item) => `
+            <div class="harness-row">
+              <div>
+                <div class="item-title">${escapeHtml(item.label)}</div>
+                <div class="item-meta mono">${escapeHtml(item.path || '-')}</div>
+              </div>
+              <div class="harness-row-meta">
+                <span class="mini-badge ${item.exists ? 'status-completed' : 'status-failed'}">${escapeHtml(item.exists ? '기록됨' : '누락')}</span>
+                <span class="item-meta">${escapeHtml(formatDate(item.updatedAt))}</span>
+              </div>
+            </div>
+          `,
+        )
+        .join('')}
+    </div>
+    <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
+  `;
+
+  elements.harnessMemory.innerHTML = `
+    <div class="harness-overview-grid">
+      <div class="summary-chip"><span>미션 메모</span><strong>${escapeHtml(String(memory.missionCounts?.total || 0))}개</strong></div>
+      <div class="summary-chip"><span>결정</span><strong>${escapeHtml(String(memory.missionCounts?.decision || 0))}개</strong></div>
+      <div class="summary-chip"><span>워크스페이스</span><strong>${escapeHtml(String(memory.workspaceCount || 0))}개</strong></div>
+    </div>
+    <div class="harness-callout">
+      <strong>레이어드 메모리</strong>
+      <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
+    </div>
+    <div class="harness-list">
+      ${(memory.recentMissionEntries || [])
+        .map(
+          (entry) => `
+            <div class="harness-row">
+              <div>
+                <div class="item-title">${escapeHtml(getDisplayLabel(entry.kind, entry.kind))}</div>
+                <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
+              </div>
+              <div class="harness-row-meta">
+                <span class="item-meta">${escapeHtml(formatDate(entry.createdAt))}</span>
+              </div>
+            </div>
+          `,
+        )
+        .join('') || '<p class="empty-state">아직 이 미션에 기록된 메모리가 없습니다.</p>'}
+    </div>
+    ${
+      (memory.recentWorkspaceEntries || []).length
+        ? `<div class="harness-subsection">
+            <p class="summary-label">워크스페이스 기억</p>
+            <div class="harness-list">
+              ${memory.recentWorkspaceEntries
+                .map(
+                  (entry) => `
+                    <div class="harness-row">
+                      <div>
+                        <div class="item-title">${escapeHtml(getDisplayLabel(entry.kind, entry.kind))}</div>
+                        <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="item-meta">${escapeHtml(formatDate(entry.createdAt))}</span>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>
+          </div>`
+        : ''
+    }
+  `;
+
+  elements.harnessLoops.innerHTML = `
+    <div class="harness-callout">
+      <strong>현재 권장 조치</strong>
+      <p>${escapeHtml(recommendations[0]?.title || '열린 하네스 경고가 없습니다. 문서, 메모리, 운영 루프가 안정 상태입니다.')}</p>
+    </div>
+    <div class="harness-overview-grid">
+      <div class="summary-chip"><span>검토</span><strong>승인 ${escapeHtml(String(loops.review?.pendingApprovals || 0))} · 후속 ${escapeHtml(String(loops.review?.pendingActions || 0))}</strong></div>
+      <div class="summary-chip"><span>유지보수</span><strong>${escapeHtml(String(loops.maintenance?.requiredCount || 0))}건</strong></div>
+      <div class="summary-chip"><span>제공자</span><strong>${escapeHtml(getDisplayLabel(loops.provider?.healthDriftStatus || 'stable'))}</strong></div>
+    </div>
+    <div class="harness-list">
+      <div class="harness-row">
+        <div>
+          <div class="item-title">검토 루프</div>
+          <div class="item-meta">${escapeHtml(loops.review?.latestReviewerSummary || '최근 reviewer summary가 없습니다.')}</div>
+        </div>
+        <div class="harness-row-meta"><span class="mini-badge ${getStatusClass(loops.review?.latestReviewerStatus || 'pending')}">${escapeHtml(getDisplayLabel(loops.review?.latestReviewerStatus || 'pending'))}</span></div>
+      </div>
+      <div class="harness-row">
+        <div>
+          <div class="item-title">유지보수 루프</div>
+          <div class="item-meta">최근 sweep ${escapeHtml(formatDate(loops.maintenance?.latestRunAt))} · 다음 due ${escapeHtml(formatDate(loops.maintenance?.nextDueAt))}</div>
+        </div>
+        <div class="harness-row-meta"><span class="mini-badge ${getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')}">${escapeHtml((loops.maintenance?.requiredCount || 0) > 0 ? '점검 필요' : '안정')}</span></div>
+      </div>
+      <div class="harness-row">
+        <div>
+          <div class="item-title">품질 게이트</div>
+          <div class="item-meta">blocked ${escapeHtml(String(loops.quality?.blockedCount || 0))}건 · 상태 ${escapeHtml(getDisplayLabel(loops.quality?.status || 'none'))}</div>
+        </div>
+        <div class="harness-row-meta"><span class="item-meta">${escapeHtml(formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt))}</span></div>
+      </div>
+    </div>
+    ${
+      recommendations.length > 1
+        ? `<div class="harness-subsection">
+            <p class="summary-label">추가 권장 항목</p>
+            <div class="harness-list">
+              ${recommendations
+                .slice(1, 4)
+                .map(
+                  (item) => `
+                    <div class="harness-row">
+                      <div class="item-meta">${escapeHtml(item.title)}</div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>
+          </div>`
+        : ''
+    }
+    <div class="harness-subsection">
+      <p class="summary-label">이번에 적용한 하네스 원칙</p>
+      <div class="harness-list">
+        ${(harnessSummary.adoptedPatterns || [])
+          .map(
+            (pattern) => `
+              <div class="harness-row">
+                <div>
+                  <div class="item-title">${escapeHtml(pattern.label)}</div>
+                  <div class="item-meta">${escapeHtml(pattern.detail)}</div>
+                </div>
+              </div>
+            `,
+          )
+          .join('')}
       </div>
     </div>
   `;
@@ -2252,6 +2453,7 @@ function clearMissionSelection() {
   renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();
+  renderHarnessPanel();
   renderTimeline();
   renderSessionList();
   renderSessionDetail(null);
@@ -2288,6 +2490,7 @@ async function selectMission(missionId) {
   renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();
+  renderHarnessPanel();
   renderTimeline();
   renderSessionList();
 

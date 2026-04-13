@@ -6767,6 +6767,206 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
+  function buildHarnessDocumentRegistry() {
+    const docsDir = docService.docsDir;
+    const adrDir = path.join(docsDir, 'adr');
+    const baseEntries = [
+      {
+        id: 'roadmap',
+        category: 'core-doc',
+        label: '로드맵',
+        filePath: path.join(docsDir, 'roadmap.md'),
+      },
+      {
+        id: 'reference-repos',
+        category: 'core-doc',
+        label: '참고 레포 기록',
+        filePath: path.join(docsDir, 'reference-repos.md'),
+      },
+      {
+        id: 'devlog',
+        category: 'operating-log',
+        label: '개발 로그',
+        filePath: path.join(docsDir, 'devlog.md'),
+      },
+      {
+        id: 'incidents',
+        category: 'operating-log',
+        label: '인시던트 기록',
+        filePath: path.join(docsDir, 'incidents.md'),
+      },
+    ];
+    const adrEntries = fs.existsSync(adrDir)
+      ? fs
+          .readdirSync(adrDir)
+          .filter((fileName) => fileName.endsWith('.md'))
+          .sort()
+          .map((fileName, index) => ({
+            id: `adr-${index + 1}`,
+            category: 'adr',
+            label: fileName.replace(/\.md$/i, ''),
+            filePath: path.join(adrDir, fileName),
+          }))
+      : [];
+    const items = [...baseEntries, ...adrEntries].map((entry) => {
+      const exists = fs.existsSync(entry.filePath);
+      const stats = exists ? fs.statSync(entry.filePath) : null;
+      return {
+        category: entry.category,
+        exists,
+        id: entry.id,
+        label: entry.label,
+        path: exists ? path.relative(rootDir, entry.filePath) : path.relative(rootDir, entry.filePath),
+        updatedAt: stats ? stats.mtime.toISOString() : null,
+      };
+    });
+    const availableCount = items.filter((item) => item.exists).length;
+    const latestItem = items
+      .filter((item) => item.updatedAt)
+      .sort((left, right) => String(left.updatedAt || '').localeCompare(String(right.updatedAt || '')))
+      .at(-1);
+
+    return {
+      items,
+      summary: {
+        adrCount: adrEntries.length,
+        availableCount,
+        latestUpdatedAt: latestItem?.updatedAt || null,
+        totalCount: items.length,
+      },
+    };
+  }
+
+  function summarizeMissionHarness(mission, summary) {
+    const missionSessions = store.listSessionsByMission(mission.id);
+    const missionArtifacts = missionSessions
+      .flatMap((session) => store.listArtifactsBySession(session.id))
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const latestArtifact = missionArtifacts
+      .filter((artifact) => ['deliverable', 'execution-handoff', 'approval-resolution', 'reviewer-report'].includes(artifact.kind))
+      .at(-1) || null;
+    const missionMemoryEntries = store
+      .listMemoryEntries({ scope: 'mission', scopeId: mission.id })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const workspaceMemoryEntries = store
+      .listMemoryEntries({ scope: 'workspace', scopeId: mission.workspaceId })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const documentRegistry = buildHarnessDocumentRegistry();
+    const actionInbox = getActionInbox({ missionId: mission.id });
+    const recommendations = [];
+
+    if (!latestArtifact) {
+      recommendations.push({
+        level: 'attention',
+        title: '최종 산출물이 source-of-record로 아직 고정되지 않았습니다.',
+      });
+    }
+
+    if (Number(summary.approvalCounts?.pending || 0) > 0) {
+      recommendations.push({
+        level: 'attention',
+        title: `사람의 승인 ${summary.approvalCounts.pending}건을 먼저 해소해야 하네스가 닫힙니다.`,
+      });
+    }
+
+    if (Number(actionInbox.summary?.pendingActionCount || 0) > 0) {
+      recommendations.push({
+        level: 'attention',
+        title: `후속 작업 ${actionInbox.summary.pendingActionCount}건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.`,
+      });
+    }
+
+    if (Number(summary.maintenanceRequiredCount || 0) > 0) {
+      recommendations.push({
+        level: 'warning',
+        title: `유지보수 루프가 ${summary.maintenanceRequiredCount}건 열려 있습니다. 정기 sweep 결과를 확인해야 합니다.`,
+      });
+    }
+
+    if (summary.providerHealthDriftStatus !== 'stable') {
+      recommendations.push({
+        level: 'warning',
+        title: 'provider health drift가 안정 상태가 아닙니다. 최근 attention/retry 이력을 확인해야 합니다.',
+      });
+    }
+
+    if (!missionMemoryEntries.length) {
+      recommendations.push({
+        level: 'info',
+        title: '미션 메모리가 비어 있습니다. 핵심 결정과 사실을 memory로 남기면 다음 실행 품질이 올라갑니다.',
+      });
+    }
+
+    return {
+      adoptedPatterns: [
+        {
+          detail: '비정형 입력은 작업용 Markdown으로 정규화한 뒤 docs/와 artifact 경로를 source-of-record로 유지합니다.',
+          label: 'Markdown source-of-record',
+        },
+        {
+          detail: '세션, 승인, 산출물, 유지보수 이벤트를 분리하지 않고 하나의 운영 루프로 관찰합니다.',
+          label: 'Session-first harness loop',
+        },
+        {
+          detail: '결정/사실/선호 메모를 mission 단위로 누적하고, 필요한 경우 workspace 메모리까지 확장합니다.',
+          label: 'Layered memory recall',
+        },
+      ],
+      documents: {
+        ...documentRegistry,
+        latestArtifact: latestArtifact
+          ? {
+              kind: latestArtifact.kind,
+              path: latestArtifact.path ? path.relative(rootDir, latestArtifact.path) : null,
+              title: latestArtifact.title || latestArtifact.fileName || latestArtifact.id,
+              updatedAt: latestArtifact.createdAt || null,
+            }
+          : null,
+      },
+      loops: {
+        maintenance: {
+          latestRunAt: summary.latestMaintenanceRunAt || null,
+          nextDueAt: summary.maintenanceNextDueAt || null,
+          requiredCount: summary.maintenanceRequiredCount || 0,
+        },
+        provider: {
+          healthDriftStatus: summary.providerHealthDriftStatus || 'stable',
+          latestFailureAt: summary.latestFailedProviderExecution?.endedAt || null,
+          latestFailureKind: summary.latestFailedProviderExecution?.failureKind || null,
+          latestSuccessAt: summary.latestSuccessfulProviderExecution?.endedAt || null,
+        },
+        quality: {
+          blockedCount: summary.specialistQualityGateBlockedCount || 0,
+          latestViolation: summary.specialistLatestQualityGateViolation || null,
+          status: summary.specialistQualityGateStatus || 'none',
+        },
+        review: {
+          latestReviewerSummary: summary.latestSession?.reviewerSummary || null,
+          latestReviewerStatus: summary.latestSession?.reviewerStatus || null,
+          pendingActions: actionInbox.summary?.pendingActionCount || 0,
+          pendingApprovals: summary.approvalCounts?.pending || 0,
+        },
+      },
+      memory: {
+        missionCounts: summary.memoryCounts,
+        recentMissionEntries: missionMemoryEntries.slice(-5).reverse().map((entry) => ({
+          createdAt: entry.createdAt,
+          id: entry.id,
+          kind: entry.kind,
+          content: entry.content,
+        })),
+        recentWorkspaceEntries: workspaceMemoryEntries.slice(-3).reverse().map((entry) => ({
+          createdAt: entry.createdAt,
+          id: entry.id,
+          kind: entry.kind,
+          content: entry.content,
+        })),
+        workspaceCount: workspaceMemoryEntries.length,
+      },
+      recommendations,
+    };
+  }
+
   function listMissionSummariesByWorkspace(workspaceId) {
     return store
       .listMissions()
@@ -13062,11 +13262,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       recentWindow: providerRecentWindow,
     });
     syncEscalations({ missionId: mission.id });
+    const summary = summarizeMission(mission, { providerSince });
     return {
+      harness: summarizeMissionHarness(mission, summary),
       mission,
       providerHealthDrift,
       providerRecentWindow,
-      summary: summarizeMission(mission, { providerSince }),
+      summary,
       sessions: listSessions(mission.id),
     };
   }
