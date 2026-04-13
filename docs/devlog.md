@@ -761,3 +761,9 @@
 - added mission and workspace memory PATCH/DELETE routes so layered memory is no longer add-only and operators can correct or remove stale fact/decision/preference entries without leaving the console
 - wired the harness memory rows with `불러오기` and `삭제` actions plus edit-mode status copy and cancel controls, letting the existing forms switch between create and update flows with minimal extra chrome
 - verified the full memory lifecycle by creating temporary mission/workspace entries, updating both, deleting both, and confirming the temporary ids were removed from `var/state.json`
+
+## 2026-04-14 Source-Of-Record Document CRUD Pass
+
+- introduced tracked document-log blocks with stable `doclog_*` ids so harness document intake can support update and delete instead of remaining append-only markdown output
+- extended the harness source panel with recent document entries plus `불러오기` and `삭제` actions, and added edit-mode status/cancel flow to the existing document log form
+- verified the full document lifecycle by creating a temporary reference entry, moving it to `devlog` through PATCH, deleting it, and confirming the temporary id and content no longer exist in any docs file

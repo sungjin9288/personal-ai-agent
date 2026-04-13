@@ -126,6 +126,8 @@ const elements = {
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
   documentLogFile: document.getElementById('document-log-file'),
   documentLogForm: document.getElementById('document-log-form'),
+  documentLogFormStatus: document.getElementById('document-log-form-status'),
+  documentLogCancelButton: document.getElementById('document-log-cancel-button'),
   documentLogSubmitButton: document.getElementById('document-log-submit-button'),
   flowStatus: document.getElementById('flow-status'),
   harnessLoops: document.getElementById('harness-loops'),
@@ -226,6 +228,11 @@ function getHarnessMemoryEntry(scope, memoryId) {
   return entries.find((entry) => entry.id === memoryId) || null;
 }
 
+function getHarnessDocumentEntry(entryId) {
+  const entries = state.missionDetail?.harness?.documents?.recentEntries || [];
+  return entries.find((entry) => entry.id === entryId) || null;
+}
+
 function resetMemoryForm(scope) {
   const config = getMemoryFormConfig(scope);
   if (!config.form) {
@@ -269,6 +276,61 @@ function populateMemoryForm(scope, entry) {
   }
   if (config.cancelButton) {
     config.cancelButton.hidden = false;
+  }
+}
+
+function resetDocumentLogForm() {
+  if (!elements.documentLogForm) {
+    return;
+  }
+
+  elements.documentLogForm.reset();
+  delete elements.documentLogForm.dataset.editingId;
+  if (elements.documentLogFormStatus) {
+    elements.documentLogFormStatus.textContent = 'Markdown, txt, json 파일은 브라우저에서 읽어 본문으로 채운 뒤 같은 route로 저장합니다.';
+  }
+  if (elements.documentLogSubmitButton) {
+    elements.documentLogSubmitButton.textContent = '문서 기록 저장';
+  }
+  if (elements.documentLogCancelButton) {
+    elements.documentLogCancelButton.hidden = true;
+  }
+  if (elements.documentLogFile) {
+    elements.documentLogFile.value = '';
+  }
+}
+
+function populateDocumentLogForm(entry) {
+  if (!elements.documentLogForm || !entry) {
+    return;
+  }
+
+  elements.documentLogForm.dataset.editingId = entry.id;
+  const missionTitlePrefix = state.missionDetail?.mission?.title ? `${state.missionDetail.mission.title} · ` : '';
+  const typeField = elements.documentLogForm.querySelector('select[name="type"]');
+  const titleField = elements.documentLogForm.querySelector('input[name="title"]');
+  const contentField = elements.documentLogForm.querySelector('textarea[name="content"]');
+
+  if (typeField) {
+    typeField.value = entry.type;
+  }
+  if (titleField) {
+    titleField.value = missionTitlePrefix && String(entry.title || '').startsWith(missionTitlePrefix)
+      ? String(entry.title || '').slice(missionTitlePrefix.length)
+      : entry.title;
+  }
+  if (contentField) {
+    contentField.value = entry.content;
+    contentField.focus();
+  }
+  if (elements.documentLogFormStatus) {
+    elements.documentLogFormStatus.textContent = `문서 기록 수정 중 · ${getDisplayLabel(entry.type, entry.type)} · ${formatDate(entry.updatedAt || entry.createdAt)}`;
+  }
+  if (elements.documentLogSubmitButton) {
+    elements.documentLogSubmitButton.textContent = '문서 기록 수정';
+  }
+  if (elements.documentLogCancelButton) {
+    elements.documentLogCancelButton.hidden = false;
   }
 }
 
@@ -1934,6 +1996,7 @@ function renderHarnessPanel() {
   const loops = harnessSummary.loops || {};
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
+  const recentDocumentEntries = harnessSummary.documents?.recentEntries || [];
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -1968,6 +2031,35 @@ function renderHarnessPanel() {
         )
         .join('')}
     </div>
+    ${
+      recentDocumentEntries.length
+        ? `<div class="harness-subsection">
+            <p class="summary-label">최근 문서 기록</p>
+            <div class="harness-list">
+              ${recentDocumentEntries
+                .map(
+                  (entry) => `
+                    <div class="harness-row">
+                      <div>
+                        <div class="item-title">${escapeHtml(entry.title)}</div>
+                        <div class="item-meta">${escapeHtml(getDisplayLabel(entry.type, entry.type))} · ${escapeHtml(summarizeText(entry.content, '-'))}</div>
+                        <div class="item-meta mono">${escapeHtml(entry.path || '-')}</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                        <div class="inline-actions">
+                          <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}">불러오기</button>
+                          <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}">삭제</button>
+                        </div>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>
+          </div>`
+        : ''
+    }
     <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
   `;
 
@@ -2102,7 +2194,37 @@ function renderHarnessPanel() {
       </div>
     </div>
   `;
+  wireDocumentRowActions();
   wireMemoryRowActions();
+}
+
+function wireDocumentRowActions() {
+  if (!elements.harnessSource) {
+    return;
+  }
+
+  elements.harnessSource.querySelectorAll('[data-document-action="edit"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const entryId = String(button.dataset.documentId || '').trim();
+      const entry = getHarnessDocumentEntry(entryId);
+      if (!entry) {
+        window.alert('문서 기록을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
+        return;
+      }
+      populateDocumentLogForm(entry);
+    });
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="delete"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const entryId = String(button.dataset.documentId || '').trim();
+      try {
+        await handleDocumentLogDelete(entryId);
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
 }
 
 function wireMemoryRowActions() {
@@ -2746,6 +2868,7 @@ function clearMissionSelection() {
   state.selectedMissionId = null;
   state.selectedSessionId = null;
 
+  resetDocumentLogForm();
   resetMemoryForm('mission');
   resetMemoryForm('workspace');
   renderMissionList();
@@ -2774,6 +2897,7 @@ async function selectMission(missionId) {
 
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
+  resetDocumentLogForm();
   resetMemoryForm('mission');
   resetMemoryForm('workspace');
   renderMissionList();
@@ -3034,6 +3158,7 @@ async function handleDocumentLogCreate(event) {
 
   const currentStep = state.activeStep;
   const formData = new FormData(elements.documentLogForm);
+  const editingId = getFormEditingId(elements.documentLogForm);
   const title = String(formData.get('title') || '').trim();
   const content = String(formData.get('content') || '').trim();
   const type = String(formData.get('type') || '').trim();
@@ -3051,11 +3176,16 @@ async function handleDocumentLogCreate(event) {
   elements.documentLogSubmitButton.textContent = '저장 중...';
 
   try {
-    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log`, {
+    await api(
+      editingId
+        ? `/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log/${encodeURIComponent(editingId)}`
+        : `/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log`,
+      {
       body: JSON.stringify({ content, title, type }),
-      method: 'POST',
-    });
-    elements.documentLogForm.reset();
+      method: editingId ? 'PATCH' : 'POST',
+    },
+    );
+    resetDocumentLogForm();
     await Promise.all([loadMissions(), loadApprovals()]);
     await selectMission(state.selectedMissionId);
     setActiveStep(currentStep, { syncDetailTab: false });
@@ -3064,6 +3194,29 @@ async function handleDocumentLogCreate(event) {
     elements.documentLogSubmitButton.disabled = false;
     elements.documentLogSubmitButton.textContent = '문서 기록 저장';
   }
+}
+
+async function handleDocumentLogDelete(entryId) {
+  if (!entryId || !state.selectedMissionId) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const entry = getHarnessDocumentEntry(entryId);
+  const confirmMessage = `이 문서 기록을 삭제할까요?\n\n${entry?.title || '제목 없음'}`;
+  if (!window.confirm(confirmMessage)) {
+    return;
+  }
+
+  await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log/${encodeURIComponent(entryId)}`, {
+    method: 'DELETE',
+  });
+
+  resetDocumentLogForm();
+  await Promise.all([loadMissions(), loadApprovals()]);
+  await selectMission(state.selectedMissionId);
+  setActiveStep(currentStep, { syncDetailTab: false });
+  setActiveDetailTab('harness');
 }
 
 async function readTextFile(file) {
@@ -3144,6 +3297,7 @@ function attachEvents() {
       elements.documentLogSubmitButton.textContent = '문서 기록 저장';
     }
   });
+  elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
   elements.documentLogFile?.addEventListener('change', async (event) => {
     try {
       await handleDocumentLogFilePick(event);

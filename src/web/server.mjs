@@ -259,6 +259,46 @@ async function handleApi(request, response, url) {
   }
 
   if (
+    request.method === 'PATCH' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'document-log' &&
+    pathParts[4]
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const entryId = decodePathSegment(pathParts[4]);
+    const mission = service.showMission(missionId).mission;
+    const body = await readJsonBody(request);
+    const rawTitle = String(body.title || '').trim();
+    const prefixedTitle = rawTitle.startsWith(`${mission.title} · `) ? rawTitle : `${mission.title} · ${rawTitle}`;
+    const result = service.updateDocumentLog({
+      content: String(body.content || '').trim(),
+      entryId,
+      title: prefixedTitle,
+      type: String(body.type || '').trim(),
+    });
+
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'DELETE' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'document-log' &&
+    pathParts[4]
+  ) {
+    const entryId = decodePathSegment(pathParts[4]);
+    const result = service.deleteDocumentLog(entryId);
+
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
     request.method === 'POST' &&
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
@@ -268,9 +308,11 @@ async function handleApi(request, response, url) {
     const missionId = decodePathSegment(pathParts[2]);
     const mission = service.showMission(missionId).mission;
     const body = await readJsonBody(request);
+    const rawTitle = String(body.title || '').trim();
+    const prefixedTitle = rawTitle.startsWith(`${mission.title} · `) ? rawTitle : `${mission.title} · ${rawTitle}`;
     const result = service.logDocument({
       content: String(body.content || '').trim(),
-      title: `${mission.title} · ${String(body.title || '').trim()}`,
+      title: prefixedTitle,
       type: String(body.type || '').trim(),
     });
 

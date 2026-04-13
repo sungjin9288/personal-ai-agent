@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { DOCUMENT_LOG_TYPES } from './constants.mjs';
+import { createId } from './id.mjs';
 
 const DOC_TEMPLATES = {
   roadmap: `# Roadmap
@@ -95,12 +96,64 @@ function ensureDirectory(directoryPath) {
   fs.mkdirSync(directoryPath, { recursive: true });
 }
 
-function appendMarkdownEntry(filePath, title, content) {
-  const entry = `\n## ${title}\n\n- date: ${new Date().toISOString()}\n${content
+function serializeDocumentLogEntry({ content, createdAt, id, title, type, updatedAt = createdAt }) {
+  const metadata = JSON.stringify({ createdAt, id, type, updatedAt });
+  const bulletLines = String(content)
     .split('\n')
     .map((line) => `- ${line}`)
-    .join('\n')}\n`;
-  fs.appendFileSync(filePath, entry, 'utf8');
+    .join('\n');
+
+  return [
+    '',
+    `<!-- document-log:start ${metadata} -->`,
+    `## ${title}`,
+    '',
+    `- date: ${updatedAt}`,
+    bulletLines,
+    '<!-- document-log:end -->',
+    '',
+  ].join('\n');
+}
+
+function readDocumentFile(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function parseTrackedDocumentLogEntries(fileContent) {
+  const entries = [];
+  const entryPattern = /<!-- document-log:start (?<meta>\{.*?\}) -->\n(?<body>[\s\S]*?)\n<!-- document-log:end -->/g;
+
+  for (const match of fileContent.matchAll(entryPattern)) {
+    try {
+      const metadata = JSON.parse(match.groups?.meta || '{}');
+      const body = String(match.groups?.body || '');
+      const titleMatch = body.match(/^## (?<title>.+)$/m);
+      const bulletLines = body
+        .split('\n')
+        .filter((line) => line.startsWith('- '))
+        .map((line) => line.slice(2))
+        .filter((line) => !line.startsWith('date: '));
+
+      entries.push({
+        content: bulletLines.join('\n').trim(),
+        createdAt: metadata.createdAt || null,
+        end: (match.index || 0) + match[0].length,
+        id: metadata.id || null,
+        start: match.index || 0,
+        title: titleMatch?.groups?.title?.trim() || '',
+        type: metadata.type || null,
+        updatedAt: metadata.updatedAt || metadata.createdAt || null,
+      });
+    } catch {
+      // Ignore malformed blocks and continue parsing the rest of the file.
+    }
+  }
+
+  return entries;
+}
+
+function writeDocumentFile(filePath, content) {
+  fs.writeFileSync(filePath, content.endsWith('\n') ? content : `${content}\n`, 'utf8');
 }
 
 function getDocumentPath(rootDir, type) {
@@ -145,13 +198,138 @@ export function createDocService({ rootDir }) {
 
     ensureDocs();
     const targetPath = getDocumentPath(rootDir, type);
-    appendMarkdownEntry(targetPath, title, content);
+    fs.appendFileSync(targetPath, `\n## ${title}\n\n- date: ${new Date().toISOString()}\n${content
+      .split('\n')
+      .map((line) => `- ${line}`)
+      .join('\n')}\n`, 'utf8');
     return targetPath;
   }
 
+  function listDocumentLogEntries({ limit = 6 } = {}) {
+    ensureDocs();
+    const entries = DOCUMENT_LOG_TYPES.flatMap((type) => {
+      const targetPath = getDocumentPath(rootDir, type);
+      const fileContent = readDocumentFile(targetPath);
+      return parseTrackedDocumentLogEntries(fileContent).map((entry) => ({
+        ...entry,
+        path: path.relative(rootDir, targetPath),
+      }));
+    }).sort((left, right) => String(left.updatedAt || '').localeCompare(String(right.updatedAt || '')));
+
+    return entries.slice(-limit).reverse();
+  }
+
+  function createDocumentLogEntry({ content, title, type }) {
+    if (!DOCUMENT_LOG_TYPES.includes(type)) {
+      throw new Error(`Unsupported log type: ${type}`);
+    }
+
+    ensureDocs();
+    const targetPath = getDocumentPath(rootDir, type);
+    const createdAt = new Date().toISOString();
+    const entry = {
+      content,
+      createdAt,
+      id: createId('doclog'),
+      title,
+      type,
+      updatedAt: createdAt,
+    };
+    fs.appendFileSync(targetPath, serializeDocumentLogEntry(entry), 'utf8');
+    return {
+      ...entry,
+      path: path.relative(rootDir, targetPath),
+    };
+  }
+
+  function findDocumentLogEntry(entryId) {
+    ensureDocs();
+
+    for (const type of DOCUMENT_LOG_TYPES) {
+      const targetPath = getDocumentPath(rootDir, type);
+      const fileContent = readDocumentFile(targetPath);
+      const entry = parseTrackedDocumentLogEntries(fileContent).find((item) => item.id === entryId);
+      if (entry) {
+        return {
+          ...entry,
+          fileContent,
+          filePath: targetPath,
+        };
+      }
+    }
+
+    return null;
+  }
+
+  function updateDocumentLogEntry({ content, entryId, title, type }) {
+    if (!DOCUMENT_LOG_TYPES.includes(type)) {
+      throw new Error(`Unsupported log type: ${type}`);
+    }
+
+    const currentEntry = findDocumentLogEntry(entryId);
+    if (!currentEntry) {
+      throw new Error(`Document log entry not found: ${entryId}`);
+    }
+
+    const updatedEntry = {
+      content,
+      createdAt: currentEntry.createdAt || new Date().toISOString(),
+      id: currentEntry.id,
+      title,
+      type,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (currentEntry.type === type) {
+      const nextContent =
+        currentEntry.fileContent.slice(0, currentEntry.start) +
+        serializeDocumentLogEntry(updatedEntry) +
+        currentEntry.fileContent.slice(currentEntry.end);
+      writeDocumentFile(currentEntry.filePath, nextContent);
+    } else {
+      const prunedContent =
+        currentEntry.fileContent.slice(0, currentEntry.start) +
+        currentEntry.fileContent.slice(currentEntry.end);
+      writeDocumentFile(currentEntry.filePath, prunedContent);
+      const nextTargetPath = getDocumentPath(rootDir, type);
+      fs.appendFileSync(nextTargetPath, serializeDocumentLogEntry(updatedEntry), 'utf8');
+    }
+
+    return {
+      ...updatedEntry,
+      path: path.relative(rootDir, getDocumentPath(rootDir, type)),
+    };
+  }
+
+  function deleteDocumentLogEntry(entryId) {
+    const currentEntry = findDocumentLogEntry(entryId);
+    if (!currentEntry) {
+      throw new Error(`Document log entry not found: ${entryId}`);
+    }
+
+    const nextContent =
+      currentEntry.fileContent.slice(0, currentEntry.start) +
+      currentEntry.fileContent.slice(currentEntry.end);
+    writeDocumentFile(currentEntry.filePath, nextContent);
+
+    return {
+      content: currentEntry.content,
+      createdAt: currentEntry.createdAt,
+      id: currentEntry.id,
+      path: path.relative(rootDir, currentEntry.filePath),
+      title: currentEntry.title,
+      type: currentEntry.type,
+      updatedAt: currentEntry.updatedAt,
+    };
+  }
+
   return {
+    createDocumentLogEntry,
+    deleteDocumentLogEntry,
     docsDir,
     ensureDocs,
+    listDocumentLogEntries,
     logDocument,
+    updateDocumentLogEntry,
   };
 }

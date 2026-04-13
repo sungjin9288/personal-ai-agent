@@ -6828,6 +6828,7 @@ function summarizeProviderExecutions(executions) {
 
     return {
       items,
+      recentEntries: docService.listDocumentLogEntries({ limit: 6 }),
       summary: {
         adrCount: adrEntries.length,
         availableCount,
@@ -13296,15 +13297,46 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       throw new Error('Document log content is required.');
     }
 
+    const entry = docService.createDocumentLogEntry({
+      content: normalizedContent,
+      title: normalizedTitle,
+      type,
+    });
+
     return {
-      path: docService.logDocument({
-        type,
-        title: normalizedTitle,
-        content: normalizedContent,
-      }),
+      ...entry,
       title: normalizedTitle,
       type,
     };
+  }
+
+  function updateDocumentLog({ entryId, type, title, content }) {
+    const normalizedTitle = normalizeText(title);
+    const normalizedContent = normalizeText(content);
+
+    if (!normalizedTitle) {
+      throw new Error('Document log title is required.');
+    }
+    if (!normalizedContent) {
+      throw new Error('Document log content is required.');
+    }
+
+    const entry = docService.updateDocumentLogEntry({
+      content: normalizedContent,
+      entryId,
+      title: normalizedTitle,
+      type,
+    });
+
+    return {
+      ...entry,
+      title: normalizedTitle,
+      type,
+    };
+  }
+
+  function deleteDocumentLog(entryId) {
+    return docService.deleteDocumentLogEntry(entryId);
   }
 
   function showMission(missionId, filter = {}) {
@@ -13391,6 +13423,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     listProviders,
     listSessions,
     logOverdueActions,
+    deleteDocumentLog,
     logDocument,
     acknowledgeOwnerHandoff,
     deleteMemory,
@@ -13410,6 +13443,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     runMission,
     showMission,
     showSession,
+    updateDocumentLog,
     updateMemory,
   };
 }
