@@ -755,3 +755,9 @@
 - inserted a compact `선택한 미션` bridge strip above the stage workspace so the left inbox choice, the currently opened step, the next action, and the latest execution state read as one connected operator context
 - strengthened the active mission row with `현재 작업 중` and `현재 작업판` cues, reducing the feeling that the queue selection and the central workbench are separate surfaces
 - kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
+
+## 2026-04-14 Harness Memory CRUD Pass
+
+- added mission and workspace memory PATCH/DELETE routes so layered memory is no longer add-only and operators can correct or remove stale fact/decision/preference entries without leaving the console
+- wired the harness memory rows with `불러오기` and `삭제` actions plus edit-mode status copy and cancel controls, letting the existing forms switch between create and update flows with minimal extra chrome
+- verified the full memory lifecycle by creating temporary mission/workspace entries, updating both, deleting both, and confirming the temporary ids were removed from `var/state.json`

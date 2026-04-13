@@ -137,8 +137,12 @@ const elements = {
   missionForm: document.getElementById('mission-form'),
   missionList: document.getElementById('mission-list'),
   memoryForm: document.getElementById('memory-form'),
+  memoryFormStatus: document.getElementById('memory-form-status'),
+  memoryCancelButton: document.getElementById('memory-cancel-button'),
   memorySubmitButton: document.getElementById('memory-submit-button'),
   workspaceMemoryForm: document.getElementById('workspace-memory-form'),
+  workspaceMemoryFormStatus: document.getElementById('workspace-memory-form-status'),
+  workspaceMemoryCancelButton: document.getElementById('workspace-memory-cancel-button'),
   workspaceMemorySubmitButton: document.getElementById('workspace-memory-submit-button'),
   missionSubtitle: document.getElementById('mission-subtitle'),
   playbookList: document.getElementById('playbook-list'),
@@ -186,6 +190,86 @@ function getSelectedWorkspaceId() {
 
 function stripFileExtension(fileName = '') {
   return String(fileName).replace(/\.[^.]+$/, '');
+}
+
+function getFormEditingId(form) {
+  return String(form?.dataset?.editingId || '').trim();
+}
+
+function getMemoryFormConfig(scope) {
+  if (scope === 'workspace') {
+    return {
+      cancelButton: elements.workspaceMemoryCancelButton,
+      defaultStatus: '장기 운영 규칙과 팀 공통 선호를 저장합니다.',
+      form: elements.workspaceMemoryForm,
+      status: elements.workspaceMemoryFormStatus,
+      submitButton: elements.workspaceMemorySubmitButton,
+      submitText: '워크스페이스 메모 저장',
+      updatingText: '워크스페이스 메모 수정',
+    };
+  }
+
+  return {
+    cancelButton: elements.memoryCancelButton,
+    defaultStatus: '현재 실행 문맥에 필요한 사실, 결정, 선호를 저장합니다.',
+    form: elements.memoryForm,
+    status: elements.memoryFormStatus,
+    submitButton: elements.memorySubmitButton,
+    submitText: '미션 메모 저장',
+    updatingText: '미션 메모 수정',
+  };
+}
+
+function getHarnessMemoryEntry(scope, memoryId) {
+  const memory = state.missionDetail?.harness?.memory;
+  const entries = scope === 'workspace' ? memory?.recentWorkspaceEntries || [] : memory?.recentMissionEntries || [];
+  return entries.find((entry) => entry.id === memoryId) || null;
+}
+
+function resetMemoryForm(scope) {
+  const config = getMemoryFormConfig(scope);
+  if (!config.form) {
+    return;
+  }
+
+  config.form.reset();
+  delete config.form.dataset.editingId;
+  if (config.status) {
+    config.status.textContent = config.defaultStatus;
+  }
+  if (config.submitButton) {
+    config.submitButton.textContent = config.submitText;
+  }
+  if (config.cancelButton) {
+    config.cancelButton.hidden = true;
+  }
+}
+
+function populateMemoryForm(scope, entry) {
+  const config = getMemoryFormConfig(scope);
+  if (!config.form || !entry) {
+    return;
+  }
+
+  config.form.dataset.editingId = entry.id;
+  const kindField = config.form.querySelector('select[name="kind"]');
+  const contentField = config.form.querySelector('textarea[name="content"]');
+  if (kindField) {
+    kindField.value = entry.kind;
+  }
+  if (contentField) {
+    contentField.value = entry.content;
+    contentField.focus();
+  }
+  if (config.status) {
+    config.status.textContent = `${scope === 'workspace' ? '워크스페이스' : '미션'} 메모 수정 중 · ${getDisplayLabel(entry.kind, entry.kind)} · ${formatDate(entry.updatedAt || entry.createdAt)}`;
+  }
+  if (config.submitButton) {
+    config.submitButton.textContent = config.updatingText;
+  }
+  if (config.cancelButton) {
+    config.cancelButton.hidden = false;
+  }
 }
 
 function escapeHtml(value) {
@@ -1907,7 +1991,11 @@ function renderHarnessPanel() {
                 <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
               </div>
               <div class="harness-row-meta">
-                <span class="item-meta">${escapeHtml(formatDate(entry.createdAt))}</span>
+                <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                <div class="inline-actions">
+                  <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission">불러오기</button>
+                  <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission">삭제</button>
+                </div>
               </div>
             </div>
           `,
@@ -1928,7 +2016,11 @@ function renderHarnessPanel() {
                         <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
                       </div>
                       <div class="harness-row-meta">
-                        <span class="item-meta">${escapeHtml(formatDate(entry.createdAt))}</span>
+                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                        <div class="inline-actions">
+                          <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace">불러오기</button>
+                          <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace">삭제</button>
+                        </div>
                       </div>
                     </div>
                   `,
@@ -2010,6 +2102,38 @@ function renderHarnessPanel() {
       </div>
     </div>
   `;
+  wireMemoryRowActions();
+}
+
+function wireMemoryRowActions() {
+  if (!elements.harnessMemory) {
+    return;
+  }
+
+  elements.harnessMemory.querySelectorAll('[data-memory-action="edit"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const scope = String(button.dataset.memoryScope || 'mission').trim();
+      const memoryId = String(button.dataset.memoryId || '').trim();
+      const entry = getHarnessMemoryEntry(scope, memoryId);
+      if (!entry) {
+        window.alert('메모 항목을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
+        return;
+      }
+      populateMemoryForm(scope, entry);
+    });
+  });
+
+  elements.harnessMemory.querySelectorAll('[data-memory-action="delete"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const scope = String(button.dataset.memoryScope || 'mission').trim();
+      const memoryId = String(button.dataset.memoryId || '').trim();
+      try {
+        await handleMemoryDelete(scope, memoryId);
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
 }
 
 function renderStageSummaries() {
@@ -2622,6 +2746,8 @@ function clearMissionSelection() {
   state.selectedMissionId = null;
   state.selectedSessionId = null;
 
+  resetMemoryForm('mission');
+  resetMemoryForm('workspace');
   renderMissionList();
   renderSelectionBridge();
   renderMissionSummary();
@@ -2648,6 +2774,8 @@ async function selectMission(missionId) {
 
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
+  resetMemoryForm('mission');
+  resetMemoryForm('workspace');
   renderMissionList();
   renderSelectionBridge();
 
@@ -2778,6 +2906,7 @@ async function handleMemoryCreate(event) {
 
   const currentStep = state.activeStep;
   const formData = new FormData(elements.memoryForm);
+  const editingId = getFormEditingId(elements.memoryForm);
   const payload = {
     content: String(formData.get('content') || '').trim(),
     kind: String(formData.get('kind') || '').trim(),
@@ -2792,18 +2921,23 @@ async function handleMemoryCreate(event) {
   elements.memorySubmitButton.textContent = '저장 중...';
 
   try {
-    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/memory`, {
+    await api(
+      editingId
+        ? `/api/missions/${encodeURIComponent(state.selectedMissionId)}/memory/${encodeURIComponent(editingId)}`
+        : `/api/missions/${encodeURIComponent(state.selectedMissionId)}/memory`,
+      {
       body: JSON.stringify(payload),
-      method: 'POST',
-    });
-    elements.memoryForm.reset();
+      method: editingId ? 'PATCH' : 'POST',
+    },
+    );
+    resetMemoryForm('mission');
     await Promise.all([loadMissions(), loadApprovals()]);
     await selectMission(state.selectedMissionId);
     setActiveStep(currentStep, { syncDetailTab: false });
     setActiveDetailTab('harness');
   } finally {
     elements.memorySubmitButton.disabled = false;
-    elements.memorySubmitButton.textContent = '미션 메모 저장';
+    elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
   }
 }
 
@@ -2816,6 +2950,7 @@ async function handleWorkspaceMemoryCreate(event) {
 
   const currentStep = state.activeStep;
   const formData = new FormData(elements.workspaceMemoryForm);
+  const editingId = getFormEditingId(elements.workspaceMemoryForm);
   const payload = {
     content: String(formData.get('content') || '').trim(),
     kind: String(formData.get('kind') || '').trim(),
@@ -2830,11 +2965,16 @@ async function handleWorkspaceMemoryCreate(event) {
   elements.workspaceMemorySubmitButton.textContent = '저장 중...';
 
   try {
-    await api(`/api/workspaces/${encodeURIComponent(workspaceId)}/memory`, {
+    await api(
+      editingId
+        ? `/api/workspaces/${encodeURIComponent(workspaceId)}/memory/${encodeURIComponent(editingId)}`
+        : `/api/workspaces/${encodeURIComponent(workspaceId)}/memory`,
+      {
       body: JSON.stringify(payload),
-      method: 'POST',
-    });
-    elements.workspaceMemoryForm.reset();
+      method: editingId ? 'PATCH' : 'POST',
+    },
+    );
+    resetMemoryForm('workspace');
     await Promise.all([loadMissions(), loadApprovals()]);
     if (state.selectedMissionId) {
       await selectMission(state.selectedMissionId);
@@ -2843,7 +2983,46 @@ async function handleWorkspaceMemoryCreate(event) {
     }
   } finally {
     elements.workspaceMemorySubmitButton.disabled = false;
-    elements.workspaceMemorySubmitButton.textContent = '워크스페이스 메모 저장';
+    elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
+  }
+}
+
+async function handleMemoryDelete(scope, memoryId) {
+  if (!memoryId) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const scopeId =
+    scope === 'workspace'
+      ? state.missionDetail?.mission?.workspaceId || getSelectedWorkspaceId()
+      : state.selectedMissionId;
+
+  if (!scopeId) {
+    return;
+  }
+
+  const entry = getHarnessMemoryEntry(scope, memoryId);
+  const confirmMessage = `이 ${scope === 'workspace' ? '워크스페이스' : '미션'} 메모를 삭제할까요?\n\n${summarizeText(entry?.content || '', '메모 내용 없음')}`;
+  if (!window.confirm(confirmMessage)) {
+    return;
+  }
+
+  await api(`/${['api', scope === 'workspace' ? 'workspaces' : 'missions', encodeURIComponent(scopeId), 'memory', encodeURIComponent(memoryId)].join('/')}`, {
+    method: 'DELETE',
+  });
+
+  if (scope === 'workspace') {
+    resetMemoryForm('workspace');
+  } else {
+    resetMemoryForm('mission');
+  }
+
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await selectMission(state.selectedMissionId);
+    setActiveStep(currentStep, { syncDetailTab: false });
+    setActiveDetailTab('harness');
   }
 }
 
@@ -2942,18 +3121,20 @@ function attachEvents() {
     } catch (error) {
       window.alert(error.message);
       elements.memorySubmitButton.disabled = false;
-      elements.memorySubmitButton.textContent = '미션 메모 저장';
+      elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
     }
   });
+  elements.memoryCancelButton?.addEventListener('click', () => resetMemoryForm('mission'));
   elements.workspaceMemoryForm?.addEventListener('submit', async (event) => {
     try {
       await handleWorkspaceMemoryCreate(event);
     } catch (error) {
       window.alert(error.message);
       elements.workspaceMemorySubmitButton.disabled = false;
-      elements.workspaceMemorySubmitButton.textContent = '워크스페이스 메모 저장';
+      elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
     }
   });
+  elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
   elements.documentLogForm?.addEventListener('submit', async (event) => {
     try {
       await handleDocumentLogCreate(event);

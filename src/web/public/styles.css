@@ -1892,6 +1892,19 @@ button:disabled {
   min-width: 112px;
 }
 
+.inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.inline-actions .ghost-button,
+.inline-actions .danger-button {
+  min-height: auto;
+  padding: 7px 10px;
+}
+
 .harness-note {
   padding-top: 2px;
 }

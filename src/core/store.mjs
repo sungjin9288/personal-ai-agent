@@ -134,6 +134,19 @@ export function createStore({ rootDir }) {
     return nextItem;
   }
 
+  function deleteCollectionItem(collectionName, id) {
+    const state = loadState();
+    const itemIndex = state[collectionName].findIndex((item) => item.id === id);
+
+    if (itemIndex === -1) {
+      throw new Error(`${collectionName} item not found: ${id}`);
+    }
+
+    const [removedItem] = state[collectionName].splice(itemIndex, 1);
+    saveState(state);
+    return removedItem;
+  }
+
   function getMissionDir(missionId) {
     return path.join(missionsDir, missionId);
   }
@@ -443,11 +456,17 @@ export function createStore({ rootDir }) {
     updateProviderAttentionAcknowledgement(providerAttentionAcknowledgementId, updater) {
       return updateCollectionItem('providerAttentionAcknowledgements', providerAttentionAcknowledgementId, updater);
     },
+    updateMemoryEntry(memoryEntryId, updater) {
+      return updateCollectionItem('memoryEntries', memoryEntryId, updater);
+    },
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);
     },
     updateSession(sessionId, updater) {
       return updateCollectionItem('sessions', sessionId, updater);
+    },
+    deleteMemoryEntry(memoryEntryId) {
+      return deleteCollectionItem('memoryEntries', memoryEntryId);
     },
     varDir,
     writeArtifactContent,

@@ -13227,6 +13227,60 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     });
   }
 
+  function getScopedMemoryEntryOrThrow({ scope, scopeId, memoryId }) {
+    const entry = store.listMemoryEntries({ scope, scopeId }).find((item) => item.id === memoryId);
+
+    if (!entry) {
+      throw new Error(`Memory entry not found: ${memoryId}`);
+    }
+
+    return entry;
+  }
+
+  function updateMemory({ scope, scopeId, memoryId, kind, content }) {
+    if (!MEMORY_SCOPES.includes(scope)) {
+      throw new Error(`Unsupported memory scope: ${scope}`);
+    }
+    if (!MEMORY_KINDS.includes(kind)) {
+      throw new Error(`Unsupported memory kind: ${kind}`);
+    }
+    if (!normalizeText(content)) {
+      throw new Error('Memory content is required.');
+    }
+
+    if (scope === 'workspace') {
+      getWorkspace(scopeId);
+    }
+    if (scope === 'mission') {
+      getMission(scopeId);
+    }
+
+    getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
+
+    return store.updateMemoryEntry(memoryId, (entry) => ({
+      ...entry,
+      content: normalizeText(content),
+      kind,
+      updatedAt: now(),
+    }));
+  }
+
+  function deleteMemory({ scope, scopeId, memoryId }) {
+    if (!MEMORY_SCOPES.includes(scope)) {
+      throw new Error(`Unsupported memory scope: ${scope}`);
+    }
+
+    if (scope === 'workspace') {
+      getWorkspace(scopeId);
+    }
+    if (scope === 'mission') {
+      getMission(scopeId);
+    }
+
+    getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
+    return store.deleteMemoryEntry(memoryId);
+  }
+
   function listMemory(filter = {}) {
     return store.listMemoryEntries(filter);
   }
@@ -13339,6 +13393,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     logOverdueActions,
     logDocument,
     acknowledgeOwnerHandoff,
+    deleteMemory,
     resolveProviderAttention,
     runActionMaintenance,
     remindEscalations,
@@ -13355,5 +13410,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     runMission,
     showMission,
     showSession,
+    updateMemory,
   };
 }

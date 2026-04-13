@@ -71,6 +71,7 @@ npm run ui
 - `미션 정하기` 단계와 상단 `지금 해야 할 일`에도 하네스 권장 조치를 끌어올려, review/action/maintenance 압력이 있으면 바로 관련 단계나 탭으로 이동
 - `하네스 > 메모리 레이어`에서 fact / decision / preference 메모를 바로 추가할 수 있어, 미션 실행 문맥을 UI에서 직접 누적
 - `하네스 > 메모리 레이어`는 미션 메모뿐 아니라 워크스페이스 메모도 같은 화면에서 저장할 수 있어, 장기 운영 규칙과 현재 실행 문맥을 분리해 누적
+- `하네스 > 메모리 레이어`에서 저장된 미션/워크스페이스 메모를 `불러오기 → 수정 저장 / 삭제`까지 처리할 수 있어, add-only가 아니라 실제 운영용 memory curation surface로 사용할 수 있음
 - `하네스 > 소스 오브 레코드`에서 핵심 내용을 Markdown 본문으로 바로 기록해 `reference/devlog/incident` 문서에 남길 수 있어, 문서 intake를 콘솔 안에서 시작 가능
 - `하네스 > 소스 오브 레코드`는 Markdown/txt/json 파일을 브라우저에서 바로 읽어 제목과 본문에 채워 넣을 수 있어, 외부 작업 메모를 dependency 없이 Markdown source-of-record로 흡수 가능
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치

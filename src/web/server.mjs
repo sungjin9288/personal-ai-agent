@@ -279,6 +279,53 @@ async function handleApi(request, response, url) {
   }
 
   if (
+    request.method === 'PATCH' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'workspaces' &&
+    pathParts[2] &&
+    pathParts[3] === 'memory' &&
+    pathParts[4]
+  ) {
+    const workspaceId = decodePathSegment(pathParts[2]);
+    const memoryId = decodePathSegment(pathParts[4]);
+    const body = await readJsonBody(request);
+    const entry = service.updateMemory({
+      content: String(body.content || '').trim(),
+      kind: String(body.kind || '').trim(),
+      memoryId,
+      scope: 'workspace',
+      scopeId: workspaceId,
+    });
+
+    sendJson(response, 200, {
+      entry,
+    });
+    return;
+  }
+
+  if (
+    request.method === 'DELETE' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'workspaces' &&
+    pathParts[2] &&
+    pathParts[3] === 'memory' &&
+    pathParts[4]
+  ) {
+    const workspaceId = decodePathSegment(pathParts[2]);
+    const memoryId = decodePathSegment(pathParts[4]);
+    const entry = service.deleteMemory({
+      memoryId,
+      scope: 'workspace',
+      scopeId: workspaceId,
+    });
+
+    sendJson(response, 200, {
+      entry,
+    });
+    return;
+  }
+
+  if (
     request.method === 'POST' &&
     pathParts[0] === 'api' &&
     pathParts[1] === 'workspaces' &&
@@ -295,6 +342,53 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 201, {
+      entry,
+    });
+    return;
+  }
+
+  if (
+    request.method === 'PATCH' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'memory' &&
+    pathParts[4]
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const memoryId = decodePathSegment(pathParts[4]);
+    const body = await readJsonBody(request);
+    const entry = service.updateMemory({
+      content: String(body.content || '').trim(),
+      kind: String(body.kind || '').trim(),
+      memoryId,
+      scope: 'mission',
+      scopeId: missionId,
+    });
+
+    sendJson(response, 200, {
+      entry,
+    });
+    return;
+  }
+
+  if (
+    request.method === 'DELETE' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'memory' &&
+    pathParts[4]
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const memoryId = decodePathSegment(pathParts[4]);
+    const entry = service.deleteMemory({
+      memoryId,
+      scope: 'mission',
+      scopeId: missionId,
+    });
+
+    sendJson(response, 200, {
       entry,
     });
     return;

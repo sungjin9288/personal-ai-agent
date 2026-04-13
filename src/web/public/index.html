@@ -520,6 +520,7 @@
                 <div class="memory-form-grid">
                   <form id="memory-form" class="memory-form">
                     <p class="summary-label">미션 메모</p>
+                    <p id="memory-form-status" class="item-meta">현재 실행 문맥에 필요한 사실, 결정, 선호를 저장합니다.</p>
                     <label class="compact-label">
                       메모 유형
                       <select name="kind">
@@ -538,10 +539,12 @@
                     </label>
                     <div class="action-row">
                       <button id="memory-submit-button" class="primary-button" type="submit">미션 메모 저장</button>
+                      <button id="memory-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
                     </div>
                   </form>
                   <form id="workspace-memory-form" class="memory-form">
                     <p class="summary-label">워크스페이스 메모</p>
+                    <p id="workspace-memory-form-status" class="item-meta">장기 운영 규칙과 팀 공통 선호를 저장합니다.</p>
                     <label class="compact-label">
                       메모 유형
                       <select name="kind">
@@ -560,6 +563,7 @@
                     </label>
                     <div class="action-row">
                       <button id="workspace-memory-submit-button" class="primary-button" type="submit">워크스페이스 메모 저장</button>
+                      <button id="workspace-memory-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
                     </div>
                   </form>
                 </div>
