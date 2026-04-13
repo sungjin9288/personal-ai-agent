@@ -281,6 +281,28 @@ async function handleApi(request, response, url) {
   if (
     request.method === 'POST' &&
     pathParts[0] === 'api' &&
+    pathParts[1] === 'workspaces' &&
+    pathParts[2] &&
+    pathParts[3] === 'memory'
+  ) {
+    const workspaceId = decodePathSegment(pathParts[2]);
+    const body = await readJsonBody(request);
+    const entry = service.addMemory({
+      content: String(body.content || '').trim(),
+      kind: String(body.kind || '').trim(),
+      scope: 'workspace',
+      scopeId: workspaceId,
+    });
+
+    sendJson(response, 201, {
+      entry,
+    });
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
     pathParts[2] &&
     pathParts[3] === 'memory'

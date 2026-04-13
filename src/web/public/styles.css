@@ -1837,6 +1837,12 @@ button:disabled {
   background: rgba(248, 250, 252, 0.9);
 }
 
+.memory-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .harness-overview-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2035,7 +2041,8 @@ button:disabled {
   .readiness-grid,
   .form-grid,
   .agent-lane,
-  .queue-summary {
+  .queue-summary,
+  .memory-form-grid {
     grid-template-columns: 1fr;
   }
 

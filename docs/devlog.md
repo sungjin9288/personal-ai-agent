@@ -8,6 +8,7 @@
 - kept the implementation dependency-free: no new document conversion package was added yet, but the UI now makes the Markdown source-of-record rule explicit so later ingestion work can plug into an already visible harness surface
 - pulled the top harness recommendation into the command header and setup stage so operators can jump straight to the blocking review/run/harness surface instead of hunting through the detail tabs first
 - added a mission-scoped memory authoring form inside the harness tab so operators can persist fact / decision / preference context without leaving the console
+- expanded layered memory authoring to workspace scope as well, so long-lived operating rules can be captured without overloading mission-scoped recall
 - added a source-of-record document logging form inside the harness tab so Markdown working notes can be pushed into docs/reference, devlog, or incidents from the same mission surface
 
 ## 2026-04-09 Visual Density Polish

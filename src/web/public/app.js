@@ -137,6 +137,8 @@ const elements = {
   missionList: document.getElementById('mission-list'),
   memoryForm: document.getElementById('memory-form'),
   memorySubmitButton: document.getElementById('memory-submit-button'),
+  workspaceMemoryForm: document.getElementById('workspace-memory-form'),
+  workspaceMemorySubmitButton: document.getElementById('workspace-memory-submit-button'),
   missionSubtitle: document.getElementById('mission-subtitle'),
   playbookList: document.getElementById('playbook-list'),
   missionSummary: document.getElementById('mission-summary'),
@@ -2800,6 +2802,46 @@ async function handleMemoryCreate(event) {
   }
 }
 
+async function handleWorkspaceMemoryCreate(event) {
+  event.preventDefault();
+  const workspaceId = state.missionDetail?.mission?.workspaceId || getSelectedWorkspaceId();
+  if (!workspaceId || !elements.workspaceMemoryForm) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const formData = new FormData(elements.workspaceMemoryForm);
+  const payload = {
+    content: String(formData.get('content') || '').trim(),
+    kind: String(formData.get('kind') || '').trim(),
+  };
+
+  if (!payload.content) {
+    window.alert('저장할 워크스페이스 메모 내용을 입력해 주세요.');
+    return;
+  }
+
+  elements.workspaceMemorySubmitButton.disabled = true;
+  elements.workspaceMemorySubmitButton.textContent = '저장 중...';
+
+  try {
+    await api(`/api/workspaces/${encodeURIComponent(workspaceId)}/memory`, {
+      body: JSON.stringify(payload),
+      method: 'POST',
+    });
+    elements.workspaceMemoryForm.reset();
+    await Promise.all([loadMissions(), loadApprovals()]);
+    if (state.selectedMissionId) {
+      await selectMission(state.selectedMissionId);
+      setActiveStep(currentStep, { syncDetailTab: false });
+      setActiveDetailTab('harness');
+    }
+  } finally {
+    elements.workspaceMemorySubmitButton.disabled = false;
+    elements.workspaceMemorySubmitButton.textContent = '워크스페이스 메모 저장';
+  }
+}
+
 async function handleDocumentLogCreate(event) {
   event.preventDefault();
   if (!state.selectedMissionId || !elements.documentLogForm) {
@@ -2868,6 +2910,15 @@ function attachEvents() {
       window.alert(error.message);
       elements.memorySubmitButton.disabled = false;
       elements.memorySubmitButton.textContent = '미션 메모 저장';
+    }
+  });
+  elements.workspaceMemoryForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleWorkspaceMemoryCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.workspaceMemorySubmitButton.disabled = false;
+      elements.workspaceMemorySubmitButton.textContent = '워크스페이스 메모 저장';
     }
   });
   elements.documentLogForm?.addEventListener('submit', async (event) => {
