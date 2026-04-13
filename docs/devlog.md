@@ -6,6 +6,7 @@
 - extended mission detail payloads with a dedicated `harness` summary that exposes source-of-record docs, recent mission/workspace memory, review and maintenance pressure, provider health drift, and lightweight operator recommendations
 - added a new `하네스` tab to the lower workbench so operators can inspect document anchors, memory buildup, and operational loops from the same mission screen without leaving the guided workflow
 - kept the implementation dependency-free: no new document conversion package was added yet, but the UI now makes the Markdown source-of-record rule explicit so later ingestion work can plug into an already visible harness surface
+- pulled the top harness recommendation into the command header and setup stage so operators can jump straight to the blocking review/run/harness surface instead of hunting through the detail tabs first
 
 ## 2026-04-09 Visual Density Polish
 

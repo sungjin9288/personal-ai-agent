@@ -144,6 +144,7 @@ const elements = {
   runProviderSelect: document.getElementById('run-provider-select'),
   reviewStageSummary: document.getElementById('review-stage-summary'),
   runStageSummary: document.getElementById('run-stage-summary'),
+  setupHarnessSummary: document.getElementById('setup-harness-summary'),
   sessionDetail: document.getElementById('session-detail'),
   sessionList: document.getElementById('session-list'),
   selectionBridge: document.getElementById('selection-bridge'),
@@ -238,6 +239,76 @@ const DISPLAY_LABELS = {
   stub: '스텁',
   verification: '검증',
 };
+
+function getHarnessRecommendationAction(recommendation) {
+  const code = String(recommendation?.code || '').trim();
+  switch (code) {
+    case 'pending-approvals':
+      return {
+        action: 'jump-step',
+        label: '검토 단계 열기',
+        secondaryAction: 'switch-tab',
+        secondaryLabel: '승인 항목 보기',
+        secondaryValue: 'reviews',
+        value: 'step-review',
+      };
+    case 'pending-actions':
+      return {
+        action: 'jump-step',
+        label: '검토 단계 열기',
+        secondaryAction: 'switch-tab',
+        secondaryLabel: '후속 작업 보기',
+        secondaryValue: 'reviews',
+        value: 'step-review',
+      };
+    case 'missing-artifact':
+      return {
+        action: 'jump-step',
+        label: '실행 단계 열기',
+        secondaryAction: 'switch-tab',
+        secondaryLabel: '실행 기록 보기',
+        secondaryValue: 'runs',
+        value: 'step-run',
+      };
+    case 'empty-memory':
+      return {
+        action: 'jump-step',
+        label: '1단계 입력 점검',
+        secondaryAction: 'switch-tab',
+        secondaryLabel: '하네스 보기',
+        secondaryValue: 'harness',
+        value: 'step-setup',
+      };
+    case 'maintenance-required':
+    case 'provider-health-drift':
+    default:
+      return {
+        action: 'switch-tab',
+        label: '하네스 보기',
+        secondaryAction: 'switch-tab',
+        secondaryLabel: '실행 기록 보기',
+        secondaryValue: 'runs',
+        value: 'harness',
+      };
+  }
+}
+
+function getHarnessSummaryState() {
+  const harness = state.missionDetail?.harness || null;
+  const topRecommendation = harness?.recommendations?.[0] || null;
+  const recommendationAction = getHarnessRecommendationAction(topRecommendation);
+  return {
+    docsAvailableCount: harness?.documents?.summary?.availableCount || 0,
+    docsTotalCount: harness?.documents?.summary?.totalCount || 0,
+    memoryTotalCount: harness?.memory?.missionCounts?.total || 0,
+    pendingActionCount: harness?.loops?.review?.pendingActions || 0,
+    pendingApprovalCount: harness?.loops?.review?.pendingApprovals || 0,
+    providerHealthStatus: harness?.loops?.provider?.healthDriftStatus || 'stable',
+    recommendationAction,
+    recommendationCount: harness?.recommendations?.length || 0,
+    topRecommendation,
+  };
+}
 
 function getDisplayLabel(value, fallback = '-') {
   if (value === undefined || value === null || value === '') {
@@ -587,6 +658,9 @@ function getFlowState() {
 
 function renderFlowState() {
   const flow = getFlowState();
+  const harnessState = getHarnessSummaryState();
+  const hasHarnessRecommendation = Boolean(harnessState.topRecommendation);
+  const topHarnessAction = harnessState.recommendationAction;
 
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
@@ -603,6 +677,15 @@ function renderFlowState() {
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}">
             ${escapeHtml(flow.secondaryActionLabel)}
           </button>
+          ${
+            hasHarnessRecommendation
+              ? `
+                <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}">
+                  ${escapeHtml(topHarnessAction.label)}
+                </button>
+              `
+              : ''
+          }
         </div>
       </div>
       <div class="flow-status-inline">
@@ -613,6 +696,10 @@ function renderFlowState() {
         <span class="flow-inline-item">
           <em>진행 상태</em>
           <strong>${escapeHtml(flow.blocker)}</strong>
+        </span>
+        <span class="flow-inline-item ${hasHarnessRecommendation ? 'is-warning' : ''}">
+          <em>하네스</em>
+          <strong>${escapeHtml(hasHarnessRecommendation ? harnessState.topRecommendation.title : `권장 조치 없음 · 문서 ${harnessState.docsAvailableCount}/${harnessState.docsTotalCount}`)}</strong>
         </span>
       </div>
     `;
@@ -1285,6 +1372,10 @@ function renderSelectionBridge() {
   const latestExecutionLabel = latestSession
     ? `${getDisplayLabel(latestSession.provider, latestSession.provider)} · ${getDisplayLabel(latestSession.status)}`
     : '아직 실행 전';
+  const harnessState = getHarnessSummaryState();
+  const harnessLabel = harnessState.topRecommendation
+    ? harnessState.topRecommendation.title
+    : `권장 조치 없음 · 메모 ${harnessState.memoryTotalCount}개`;
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main">
@@ -1314,9 +1405,82 @@ function renderSelectionBridge() {
         <span>최근 실행</span>
         <strong>${escapeHtml(latestExecutionLabel)}</strong>
       </div>
+      <div class="selection-bridge-pill ${harnessState.topRecommendation ? 'is-active' : ''}">
+        <span>하네스 상태</span>
+        <strong>${escapeHtml(harnessLabel)}</strong>
+      </div>
     </div>
   `;
   wireQuickActions(elements.selectionBridge);
+}
+
+function renderSetupHarnessSummary() {
+  if (!elements.setupHarnessSummary) {
+    return;
+  }
+
+  if (!state.missionDetail?.harness) {
+    elements.setupHarnessSummary.innerHTML = emptyStateCard({
+      action: 'open-create',
+      actionLabel: '새 미션 작성',
+      icon: 'HS',
+      message: '미션을 고르면 문서 기준점, 기억, 운영 루프 기준으로 지금 먼저 정리할 항목을 여기에서 보여줍니다.',
+      title: '하네스 준비 상태를 계산할 미션이 없습니다',
+    });
+    wireQuickActions(elements.setupHarnessSummary);
+    return;
+  }
+
+  const harnessState = getHarnessSummaryState();
+  const topRecommendation = harnessState.topRecommendation;
+  const topHarnessAction = topRecommendation
+    ? harnessState.recommendationAction
+    : {
+        action: 'jump-step',
+        label: '2단계 실행 열기',
+        value: 'step-run',
+      };
+  const secondaryButton = topRecommendation?.code
+    ? `
+      <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.secondaryAction)}" data-ui-value="${escapeHtml(topHarnessAction.secondaryValue)}">
+        ${escapeHtml(topHarnessAction.secondaryLabel)}
+      </button>
+    `
+    : `
+      <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">
+        하네스 탭 열기
+      </button>
+    `;
+
+  elements.setupHarnessSummary.innerHTML = `
+    <div class="stage-summary-card harness-prep-card">
+      <div class="harness-overview-grid">
+        <div class="summary-chip">
+          <span>문서 기준점</span>
+          <strong>${escapeHtml(String(harnessState.docsAvailableCount))}/${escapeHtml(String(harnessState.docsTotalCount))}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>미션 메모리</span>
+          <strong>${escapeHtml(String(harnessState.memoryTotalCount))}개</strong>
+        </div>
+        <div class="summary-chip">
+          <span>운영 루프</span>
+          <strong>${escapeHtml(`승인 ${harnessState.pendingApprovalCount} · 후속 ${harnessState.pendingActionCount}`)}</strong>
+        </div>
+      </div>
+      <div class="harness-callout">
+        <strong>${escapeHtml(topRecommendation ? '지금 먼저 정리할 하네스 항목' : '하네스 기준점이 준비되어 있습니다')}</strong>
+        <p>${escapeHtml(topRecommendation?.title || '문서 source-of-record, memory, 운영 루프가 현재 안정 상태입니다. 실행 전 세부 기준만 마지막으로 확인하면 됩니다.')}</p>
+      </div>
+      <div class="action-row">
+        <button class="primary-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}">
+          ${escapeHtml(topRecommendation ? topHarnessAction.label : '2단계 실행 열기')}
+        </button>
+        ${secondaryButton}
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.setupHarnessSummary);
 }
 
 function renderRunStageSummary() {
@@ -2450,6 +2614,7 @@ function clearMissionSelection() {
   renderMissionList();
   renderSelectionBridge();
   renderMissionSummary();
+  renderSetupHarnessSummary();
   renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();
@@ -2487,6 +2652,7 @@ async function selectMission(missionId) {
   setActiveStep(getFlowState().recommendedStep);
 
   renderMissionSummary();
+  renderSetupHarnessSummary();
   renderStageSummaries();
   renderMissionActions();
   renderReviewReadiness();

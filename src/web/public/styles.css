@@ -308,6 +308,11 @@ button {
   border: 1px solid rgba(15, 23, 42, 0.05);
 }
 
+.flow-inline-item.is-warning {
+  border-color: rgba(184, 105, 23, 0.16);
+  background: rgba(255, 249, 240, 0.9);
+}
+
 .flow-inline-item em {
   font-style: normal;
   color: var(--text-3);

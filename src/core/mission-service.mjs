@@ -6857,6 +6857,7 @@ function summarizeProviderExecutions(executions) {
 
     if (!latestArtifact) {
       recommendations.push({
+        code: 'missing-artifact',
         level: 'attention',
         title: '최종 산출물이 source-of-record로 아직 고정되지 않았습니다.',
       });
@@ -6864,6 +6865,7 @@ function summarizeProviderExecutions(executions) {
 
     if (Number(summary.approvalCounts?.pending || 0) > 0) {
       recommendations.push({
+        code: 'pending-approvals',
         level: 'attention',
         title: `사람의 승인 ${summary.approvalCounts.pending}건을 먼저 해소해야 하네스가 닫힙니다.`,
       });
@@ -6871,6 +6873,7 @@ function summarizeProviderExecutions(executions) {
 
     if (Number(actionInbox.summary?.pendingActionCount || 0) > 0) {
       recommendations.push({
+        code: 'pending-actions',
         level: 'attention',
         title: `후속 작업 ${actionInbox.summary.pendingActionCount}건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.`,
       });
@@ -6878,6 +6881,7 @@ function summarizeProviderExecutions(executions) {
 
     if (Number(summary.maintenanceRequiredCount || 0) > 0) {
       recommendations.push({
+        code: 'maintenance-required',
         level: 'warning',
         title: `유지보수 루프가 ${summary.maintenanceRequiredCount}건 열려 있습니다. 정기 sweep 결과를 확인해야 합니다.`,
       });
@@ -6885,6 +6889,7 @@ function summarizeProviderExecutions(executions) {
 
     if (summary.providerHealthDriftStatus !== 'stable') {
       recommendations.push({
+        code: 'provider-health-drift',
         level: 'warning',
         title: 'provider health drift가 안정 상태가 아닙니다. 최근 attention/retry 이력을 확인해야 합니다.',
       });
@@ -6892,6 +6897,7 @@ function summarizeProviderExecutions(executions) {
 
     if (!missionMemoryEntries.length) {
       recommendations.push({
+        code: 'empty-memory',
         level: 'info',
         title: '미션 메모리가 비어 있습니다. 핵심 결정과 사실을 memory로 남기면 다음 실행 품질이 올라갑니다.',
       });
