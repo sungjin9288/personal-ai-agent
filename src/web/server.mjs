@@ -263,6 +263,26 @@ async function handleApi(request, response, url) {
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
     pathParts[2] &&
+    pathParts[3] === 'document-log'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const mission = service.showMission(missionId).mission;
+    const body = await readJsonBody(request);
+    const result = service.logDocument({
+      content: String(body.content || '').trim(),
+      title: `${mission.title} · ${String(body.title || '').trim()}`,
+      type: String(body.type || '').trim(),
+    });
+
+    sendJson(response, 201, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
     pathParts[3] === 'memory'
   ) {
     const missionId = decodePathSegment(pathParts[2]);

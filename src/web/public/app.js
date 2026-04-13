@@ -124,6 +124,8 @@ const elements = {
   detailContextbar: document.getElementById('detail-contextbar'),
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
+  documentLogForm: document.getElementById('document-log-form'),
+  documentLogSubmitButton: document.getElementById('document-log-submit-button'),
   flowStatus: document.getElementById('flow-status'),
   harnessLoops: document.getElementById('harness-loops'),
   harnessMemory: document.getElementById('harness-memory'),
@@ -2798,6 +2800,46 @@ async function handleMemoryCreate(event) {
   }
 }
 
+async function handleDocumentLogCreate(event) {
+  event.preventDefault();
+  if (!state.selectedMissionId || !elements.documentLogForm) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const formData = new FormData(elements.documentLogForm);
+  const title = String(formData.get('title') || '').trim();
+  const content = String(formData.get('content') || '').trim();
+  const type = String(formData.get('type') || '').trim();
+
+  if (!title) {
+    window.alert('기록할 문서 제목을 입력해 주세요.');
+    return;
+  }
+  if (!content) {
+    window.alert('기록할 Markdown 본문을 입력해 주세요.');
+    return;
+  }
+
+  elements.documentLogSubmitButton.disabled = true;
+  elements.documentLogSubmitButton.textContent = '저장 중...';
+
+  try {
+    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/document-log`, {
+      body: JSON.stringify({ content, title, type }),
+      method: 'POST',
+    });
+    elements.documentLogForm.reset();
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await selectMission(state.selectedMissionId);
+    setActiveStep(currentStep, { syncDetailTab: false });
+    setActiveDetailTab('harness');
+  } finally {
+    elements.documentLogSubmitButton.disabled = false;
+    elements.documentLogSubmitButton.textContent = '문서 기록 저장';
+  }
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.missionFilter.addEventListener('input', renderMissionList);
@@ -2826,6 +2868,15 @@ function attachEvents() {
       window.alert(error.message);
       elements.memorySubmitButton.disabled = false;
       elements.memorySubmitButton.textContent = '미션 메모 저장';
+    }
+  });
+  elements.documentLogForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleDocumentLogCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.documentLogSubmitButton.disabled = false;
+      elements.documentLogSubmitButton.textContent = '문서 기록 저장';
     }
   });
   elements.runMissionButton.addEventListener('click', async () => {

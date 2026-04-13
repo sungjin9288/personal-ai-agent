@@ -473,6 +473,31 @@
                     <h4>문서와 대표 산출물</h4>
                   </div>
                 </div>
+                <form id="document-log-form" class="memory-form">
+                  <label class="compact-label">
+                    기록 위치
+                    <select name="type">
+                      <option value="reference">참고 레포 기록</option>
+                      <option value="devlog">개발 로그</option>
+                      <option value="incident">인시던트 기록</option>
+                    </select>
+                  </label>
+                  <label class="compact-label">
+                    문서 제목
+                    <input type="text" name="title" placeholder="예: Strategy framing A/B - source note" />
+                  </label>
+                  <label class="compact-label">
+                    Markdown 본문
+                    <textarea
+                      name="content"
+                      rows="4"
+                      placeholder="예: 외부 문서를 Markdown 작업본으로 옮긴 뒤 이 미션의 source-of-record로 사용한다."
+                    ></textarea>
+                  </label>
+                  <div class="action-row">
+                    <button id="document-log-submit-button" class="primary-button" type="submit">문서 기록 저장</button>
+                  </div>
+                </form>
                 <div id="harness-source" class="harness-stack empty-state">문서 하네스 정보를 로드하면 여기에 표시됩니다.</div>
               </section>
 
