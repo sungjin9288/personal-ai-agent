@@ -69,6 +69,7 @@ npm run ui
 - `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
 - `결과와 기록`에 `하네스` 탭을 추가해 문서 source-of-record, 미션/워크스페이스 메모리, 유지보수·검토·provider 상태를 한 번에 확인
 - `미션 정하기` 단계와 상단 `지금 해야 할 일`에도 하네스 권장 조치를 끌어올려, review/action/maintenance 압력이 있으면 바로 관련 단계나 탭으로 이동
+- `하네스 > 메모리 레이어`에서 fact / decision / preference 메모를 바로 추가할 수 있어, 미션 실행 문맥을 UI에서 직접 누적
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
 - `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, MemPalace식 layered memory recall, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인

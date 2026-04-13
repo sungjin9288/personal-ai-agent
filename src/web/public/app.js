@@ -133,6 +133,8 @@ const elements = {
   missionFilter: document.getElementById('mission-filter'),
   missionForm: document.getElementById('mission-form'),
   missionList: document.getElementById('mission-list'),
+  memoryForm: document.getElementById('memory-form'),
+  memorySubmitButton: document.getElementById('memory-submit-button'),
   missionSubtitle: document.getElementById('mission-subtitle'),
   playbookList: document.getElementById('playbook-list'),
   missionSummary: document.getElementById('mission-summary'),
@@ -2759,6 +2761,43 @@ async function handleMissionRun() {
   }
 }
 
+async function handleMemoryCreate(event) {
+  event.preventDefault();
+  if (!state.selectedMissionId || !elements.memoryForm) {
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const formData = new FormData(elements.memoryForm);
+  const payload = {
+    content: String(formData.get('content') || '').trim(),
+    kind: String(formData.get('kind') || '').trim(),
+  };
+
+  if (!payload.content) {
+    window.alert('저장할 메모 내용을 입력해 주세요.');
+    return;
+  }
+
+  elements.memorySubmitButton.disabled = true;
+  elements.memorySubmitButton.textContent = '저장 중...';
+
+  try {
+    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/memory`, {
+      body: JSON.stringify(payload),
+      method: 'POST',
+    });
+    elements.memoryForm.reset();
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await selectMission(state.selectedMissionId);
+    setActiveStep(currentStep, { syncDetailTab: false });
+    setActiveDetailTab('harness');
+  } finally {
+    elements.memorySubmitButton.disabled = false;
+    elements.memorySubmitButton.textContent = '미션 메모 저장';
+  }
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.missionFilter.addEventListener('input', renderMissionList);
@@ -2778,6 +2817,15 @@ function attachEvents() {
       await handleMissionCreate(event);
     } catch (error) {
       window.alert(error.message);
+    }
+  });
+  elements.memoryForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleMemoryCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.memorySubmitButton.disabled = false;
+      elements.memorySubmitButton.textContent = '미션 메모 저장';
     }
   });
   elements.runMissionButton.addEventListener('click', async () => {

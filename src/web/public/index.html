@@ -483,6 +483,27 @@
                     <h4>미션 기억과 작업 메모</h4>
                   </div>
                 </div>
+                <form id="memory-form" class="memory-form">
+                  <label class="compact-label">
+                    메모 유형
+                    <select name="kind">
+                      <option value="fact">사실</option>
+                      <option value="decision">결정</option>
+                      <option value="preference">선호</option>
+                    </select>
+                  </label>
+                  <label class="compact-label">
+                    메모 내용
+                    <textarea
+                      name="content"
+                      rows="3"
+                      placeholder="예: 이번 미션에서는 의사결정 주기를 주간 cadence로 고정한다."
+                    ></textarea>
+                  </label>
+                  <div class="action-row">
+                    <button id="memory-submit-button" class="primary-button" type="submit">미션 메모 저장</button>
+                  </div>
+                </form>
                 <div id="harness-memory" class="harness-stack empty-state">메모리 하네스 정보를 로드하면 여기에 표시됩니다.</div>
               </section>
 

@@ -1826,6 +1826,17 @@ button:disabled {
   gap: 10px;
 }
 
+.memory-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(248, 250, 252, 0.9);
+}
+
 .harness-overview-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
