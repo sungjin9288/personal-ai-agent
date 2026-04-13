@@ -1,5 +1,15 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414094500_0f3a21","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Document Search and Filter
+
+- date: 2026-04-14T00:00:00.000Z
+- expanded the harness document registry from a recent-entry snapshot into a full tracked-entry surface so the UI can browse all source-of-record logs instead of only the latest six items
+- added search and type filter controls for tracked document entries, letting operators narrow source logs by title, body, path, and `reference/devlog/incident` type from the same harness panel
+- kept the backend contract minimal by extending mission harness payloads with `entries` and `trackedEntryCount` while preserving the existing `recentEntries` slice for lightweight summaries
+- kept the implementation dependency-free and UI-local: no new package or search index was introduced, only client-side filtering on the tracked harness payload already available in mission detail
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260413210753_c24400","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Lens Integration
 

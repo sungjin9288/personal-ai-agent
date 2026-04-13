@@ -508,6 +508,21 @@
                     <button id="document-log-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
                   </div>
                 </form>
+                <div class="harness-searchbar">
+                  <label class="compact-label">
+                    기록 검색
+                    <input id="document-log-search" type="search" placeholder="제목, 본문, 경로 검색" />
+                  </label>
+                  <label class="compact-label">
+                    기록 위치 필터
+                    <select id="document-log-filter">
+                      <option value="all">전체</option>
+                      <option value="reference">참고 레포 기록</option>
+                      <option value="devlog">개발 로그</option>
+                      <option value="incident">인시던트 기록</option>
+                    </select>
+                  </label>
+                </div>
                 <div id="harness-source" class="harness-stack empty-state">문서 하네스 정보를 로드하면 여기에 표시됩니다.</div>
               </section>
 

@@ -4,6 +4,8 @@ const state = {
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
+  harnessDocumentFilter: 'all',
+  harnessDocumentQuery: '',
   missionActions: null,
   missionDetail: null,
   missionTimeline: null,
@@ -125,8 +127,10 @@ const elements = {
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
   documentLogFile: document.getElementById('document-log-file'),
+  documentLogFilter: document.getElementById('document-log-filter'),
   documentLogForm: document.getElementById('document-log-form'),
   documentLogFormStatus: document.getElementById('document-log-form-status'),
+  documentLogSearch: document.getElementById('document-log-search'),
   documentLogCancelButton: document.getElementById('document-log-cancel-button'),
   documentLogSubmitButton: document.getElementById('document-log-submit-button'),
   flowStatus: document.getElementById('flow-status'),
@@ -229,8 +233,35 @@ function getHarnessMemoryEntry(scope, memoryId) {
 }
 
 function getHarnessDocumentEntry(entryId) {
-  const entries = state.missionDetail?.harness?.documents?.recentEntries || [];
+  const entries = state.missionDetail?.harness?.documents?.entries || [];
   return entries.find((entry) => entry.id === entryId) || null;
+}
+
+function getFilteredHarnessDocumentEntries() {
+  const entries = state.missionDetail?.harness?.documents?.entries || [];
+  const query = String(state.harnessDocumentQuery || '').trim().toLowerCase();
+  const typeFilter = String(state.harnessDocumentFilter || 'all').trim();
+
+  return entries.filter((entry) => {
+    if (typeFilter !== 'all' && entry.type !== typeFilter) {
+      return false;
+    }
+
+    if (!query) {
+      return true;
+    }
+
+    const haystack = [
+      entry.title,
+      entry.type,
+      entry.path,
+      entry.content,
+    ]
+      .map((value) => String(value || '').toLowerCase())
+      .join('\n');
+
+    return haystack.includes(query);
+  });
 }
 
 function resetMemoryForm(scope) {
@@ -1971,6 +2002,13 @@ function renderDetailContextbar() {
 }
 
 function renderHarnessPanel() {
+  if (elements.documentLogSearch) {
+    elements.documentLogSearch.value = state.harnessDocumentQuery;
+  }
+  if (elements.documentLogFilter) {
+    elements.documentLogFilter.value = state.harnessDocumentFilter;
+  }
+
   if (!state.missionDetail?.harness) {
     const empty = emptyStateCard({
       action: 'jump-step',
@@ -1996,7 +2034,11 @@ function renderHarnessPanel() {
   const loops = harnessSummary.loops || {};
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
-  const recentDocumentEntries = harnessSummary.documents?.recentEntries || [];
+  const filteredDocumentEntries = getFilteredHarnessDocumentEntries();
+  const documentQuery = String(state.harnessDocumentQuery || '').trim();
+  const documentFilterLabel = state.harnessDocumentFilter === 'all'
+    ? '전체'
+    : getDisplayLabel(state.harnessDocumentFilter, state.harnessDocumentFilter);
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2042,35 +2084,43 @@ function renderHarnessPanel() {
         )
         .join('')}
     </div>
-    ${
-      recentDocumentEntries.length
-        ? `<div class="harness-subsection">
-            <p class="summary-label">최근 문서 기록</p>
-            <div class="harness-list">
-              ${recentDocumentEntries
-                .map(
-                  (entry) => `
-                    <div class="harness-row">
-                      <div>
-                        <div class="item-title">${escapeHtml(entry.title)}</div>
-                        <div class="item-meta">${escapeHtml(getDisplayLabel(entry.type, entry.type))} · ${escapeHtml(summarizeText(entry.content, '-'))}</div>
-                        <div class="item-meta mono">${escapeHtml(entry.path || '-')}</div>
-                      </div>
-                      <div class="harness-row-meta">
-                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
-                        <div class="inline-actions">
-                          <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}">불러오기</button>
-                          <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}">삭제</button>
+    <div class="harness-subsection">
+      <div class="harness-filter-row">
+        <p class="summary-label">문서 기록 탐색</p>
+        <div class="item-meta">총 ${escapeHtml(String(documentSummary.trackedEntryCount || 0))}건 · 현재 ${escapeHtml(String(filteredDocumentEntries.length))}건</div>
+      </div>
+      ${
+        filteredDocumentEntries.length || documentQuery || state.harnessDocumentFilter !== 'all'
+          ? `<div class="harness-list">
+              ${filteredDocumentEntries.length
+                ? filteredDocumentEntries
+                    .map(
+                      (entry) => `
+                        <div class="harness-row">
+                          <div>
+                            <div class="item-title">${escapeHtml(entry.title)}</div>
+                            <div class="item-meta">${escapeHtml(getDisplayLabel(entry.type, entry.type))} · ${escapeHtml(summarizeText(entry.content, '-'))}</div>
+                            <div class="item-meta mono">${escapeHtml(entry.path || '-')}</div>
+                          </div>
+                          <div class="harness-row-meta">
+                            <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                            <div class="inline-actions">
+                              <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}">불러오기</button>
+                              <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}">삭제</button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>
-          </div>`
-        : ''
-    }
+                      `,
+                    )
+                    .join('')
+                : `<div class="harness-empty-inline">
+                    <strong>일치하는 문서 기록이 없습니다.</strong>
+                    <p>${escapeHtml(documentFilterLabel)} 범위에서 ${escapeHtml(documentQuery || '검색 조건')}와 맞는 항목을 찾지 못했습니다.</p>
+                  </div>`}
+            </div>`
+          : ''
+      }
+    </div>
     <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
   `;
 
@@ -2882,6 +2932,8 @@ async function selectSession(sessionId) {
 
 function clearMissionSelection() {
   state.currentSessionPayload = null;
+  state.harnessDocumentFilter = 'all';
+  state.harnessDocumentQuery = '';
   state.missionActions = null;
   state.missionDetail = null;
   state.missionTimeline = null;
@@ -2916,6 +2968,8 @@ async function selectMission(missionId) {
     return;
   }
 
+  state.harnessDocumentFilter = 'all';
+  state.harnessDocumentQuery = '';
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
   resetDocumentLogForm();
@@ -3276,6 +3330,16 @@ async function handleLegacyDocumentMigration() {
   }
 }
 
+function handleHarnessDocumentSearch(event) {
+  state.harnessDocumentQuery = String(event.target?.value || '');
+  renderHarnessPanel();
+}
+
+function handleHarnessDocumentFilter(event) {
+  state.harnessDocumentFilter = String(event.target?.value || 'all').trim() || 'all';
+  renderHarnessPanel();
+}
+
 async function readTextFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -3354,6 +3418,8 @@ function attachEvents() {
       elements.documentLogSubmitButton.textContent = '문서 기록 저장';
     }
   });
+  elements.documentLogSearch?.addEventListener('input', handleHarnessDocumentSearch);
+  elements.documentLogFilter?.addEventListener('change', handleHarnessDocumentFilter);
   elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
   elements.documentLogFile?.addEventListener('change', async (event) => {
     try {

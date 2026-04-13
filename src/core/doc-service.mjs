@@ -335,6 +335,10 @@ export function createDocService({ rootDir }) {
       }));
     }).sort((left, right) => String(left.updatedAt || '').localeCompare(String(right.updatedAt || '')));
 
+    if (typeof limit !== 'number' || !Number.isFinite(limit) || limit <= 0) {
+      return entries.reverse();
+    }
+
     return entries.slice(-limit).reverse();
   }
 

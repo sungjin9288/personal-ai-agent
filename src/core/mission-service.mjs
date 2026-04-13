@@ -6771,6 +6771,7 @@ function summarizeProviderExecutions(executions) {
     const docsDir = docService.docsDir;
     const adrDir = path.join(docsDir, 'adr');
     const legacyStatus = docService.getLegacyDocumentLogStatus();
+    const trackedEntries = docService.listDocumentLogEntries({ limit: null });
     const baseEntries = [
       {
         id: 'roadmap',
@@ -6828,13 +6829,15 @@ function summarizeProviderExecutions(executions) {
       .at(-1);
 
     return {
+      entries: trackedEntries,
       items,
-      recentEntries: docService.listDocumentLogEntries({ limit: 6 }),
+      recentEntries: trackedEntries.slice(0, 6),
       summary: {
         adrCount: adrEntries.length,
         availableCount,
         legacyDevlogCount: legacyStatus.legacyDevlogCount,
         latestUpdatedAt: latestItem?.updatedAt || null,
+        trackedEntryCount: trackedEntries.length,
         totalCount: items.length,
         trackedDevlogCount: legacyStatus.trackedDevlogCount,
       },

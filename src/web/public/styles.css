@@ -1843,6 +1843,13 @@ button:disabled {
   gap: 12px;
 }
 
+.harness-searchbar {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .harness-overview-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1907,6 +1914,30 @@ button:disabled {
 
 .harness-note {
   padding-top: 2px;
+}
+
+.harness-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.harness-empty-inline {
+  padding: 12px 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.harness-empty-inline strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.harness-empty-inline p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 .empty-card {
