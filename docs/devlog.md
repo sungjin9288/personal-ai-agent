@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414131000_1f7a42","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse UI Contract Smoke
+
+- date: 2026-04-14T00:00:00.000Z
+- added a dedicated `smoke:ui-harness-browse` path that seeds a temporary workspace and mission, populates source-of-record and layered memory data, then validates the served harness surface through UI asset checks and browse API assertions
+- validated the harness operator contract instead of only static payload shape: the smoke now checks document and memory filter, search, pagination, and reset semantics through the same mission-scoped endpoints the UI consumes
+- in the same pass, embedded an inline SVG favicon so the served UI no longer requests `/favicon.ico`, removing unnecessary browser-console noise from future manual UI verification
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414122500_93dc55","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse Context Chips
 
