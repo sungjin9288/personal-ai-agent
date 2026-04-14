@@ -1,5 +1,15 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414100500_6b5f8e","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Memory Search and Filter
+
+- date: 2026-04-14T00:00:00.000Z
+- expanded the harness memory payload from recent snippets into full mission/workspace entry lists so the UI can curate layered memory instead of only sampling it
+- added memory search plus `scope` and `kind` filters in the harness tab, letting operators narrow fact/decision/preference entries across mission and workspace memory from one surface
+- reused the existing memory edit/delete flow and only widened the read model, so memory curation stays dependency-free and keeps the same CRUD contract already used by the add/edit forms
+- kept recent-entry summaries intact for quick overview while moving the detailed memory browse experience to filterable client-side exploration inside the same harness panel
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414094500_0f3a21","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Document Search and Filter
 

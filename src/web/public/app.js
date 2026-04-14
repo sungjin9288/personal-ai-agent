@@ -6,6 +6,9 @@ const state = {
   currentSessionPayload: null,
   harnessDocumentFilter: 'all',
   harnessDocumentQuery: '',
+  harnessMemoryFilterKind: 'all',
+  harnessMemoryFilterScope: 'all',
+  harnessMemoryQuery: '',
   missionActions: null,
   missionDetail: null,
   missionTimeline: null,
@@ -228,7 +231,7 @@ function getMemoryFormConfig(scope) {
 
 function getHarnessMemoryEntry(scope, memoryId) {
   const memory = state.missionDetail?.harness?.memory;
-  const entries = scope === 'workspace' ? memory?.recentWorkspaceEntries || [] : memory?.recentMissionEntries || [];
+  const entries = scope === 'workspace' ? memory?.workspaceEntries || [] : memory?.missionEntries || [];
   return entries.find((entry) => entry.id === memoryId) || null;
 }
 
@@ -262,6 +265,46 @@ function getFilteredHarnessDocumentEntries() {
 
     return haystack.includes(query);
   });
+}
+
+function getFilteredHarnessMemoryEntries() {
+  const memory = state.missionDetail?.harness?.memory || {};
+  const missionEntries = memory.missionEntries || [];
+  const workspaceEntries = memory.workspaceEntries || [];
+  const scopeFilter = String(state.harnessMemoryFilterScope || 'all').trim();
+  const kindFilter = String(state.harnessMemoryFilterKind || 'all').trim();
+  const query = String(state.harnessMemoryQuery || '').trim().toLowerCase();
+
+  function matches(entry, scope) {
+    if (scopeFilter !== 'all' && scopeFilter !== scope) {
+      return false;
+    }
+    if (kindFilter !== 'all' && entry.kind !== kindFilter) {
+      return false;
+    }
+    if (!query) {
+      return true;
+    }
+
+    const haystack = [entry.kind, entry.content]
+      .map((value) => String(value || '').toLowerCase())
+      .join('\n');
+
+    return haystack.includes(query);
+  }
+
+  const filteredMissionEntries = missionEntries.filter((entry) => matches(entry, 'mission'));
+  const filteredWorkspaceEntries = workspaceEntries.filter((entry) => matches(entry, 'workspace'));
+
+  return {
+    filteredMissionEntries,
+    filteredTotal: filteredMissionEntries.length + filteredWorkspaceEntries.length,
+    filteredWorkspaceEntries,
+    kindFilter,
+    query,
+    scopeFilter,
+    total: missionEntries.length + workspaceEntries.length,
+  };
 }
 
 function resetMemoryForm(scope) {
@@ -329,6 +372,13 @@ function resetDocumentLogForm() {
   if (elements.documentLogFile) {
     elements.documentLogFile.value = '';
   }
+}
+
+function getHarnessMemoryFilterLabel({ scopeFilter, kindFilter, query }) {
+  const scopeLabel = scopeFilter === 'all' ? '전체 범위' : scopeFilter === 'mission' ? '미션 메모' : '워크스페이스 메모';
+  const kindLabel = kindFilter === 'all' ? '전체 종류' : getDisplayLabel(kindFilter, kindFilter);
+  const queryLabel = query || '검색 조건';
+  return `${scopeLabel} · ${kindLabel} · ${queryLabel}`;
 }
 
 function populateDocumentLogForm(entry) {
@@ -2035,10 +2085,12 @@ function renderHarnessPanel() {
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
   const filteredDocumentEntries = getFilteredHarnessDocumentEntries();
+  const filteredMemoryEntries = getFilteredHarnessMemoryEntries();
   const documentQuery = String(state.harnessDocumentQuery || '').trim();
   const documentFilterLabel = state.harnessDocumentFilter === 'all'
     ? '전체'
     : getDisplayLabel(state.harnessDocumentFilter, state.harnessDocumentFilter);
+  const memoryFilterLabel = getHarnessMemoryFilterLabel(filteredMemoryEntries);
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2134,8 +2186,38 @@ function renderHarnessPanel() {
       <strong>레이어드 메모리</strong>
       <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
     </div>
-    <div class="harness-list">
-      ${(memory.recentMissionEntries || [])
+    <div class="harness-searchbar">
+      <label class="compact-label">
+        메모 검색
+        <input id="harness-memory-search" type="search" value="${escapeHtml(filteredMemoryEntries.query)}" placeholder="내용 또는 kind 검색" />
+      </label>
+      <div class="harness-filter-row">
+        <label class="compact-label">
+          범위
+          <select id="harness-memory-scope-filter">
+            <option value="all" ${filteredMemoryEntries.scopeFilter === 'all' ? 'selected' : ''}>전체</option>
+            <option value="mission" ${filteredMemoryEntries.scopeFilter === 'mission' ? 'selected' : ''}>미션 메모</option>
+            <option value="workspace" ${filteredMemoryEntries.scopeFilter === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
+          </select>
+        </label>
+        <label class="compact-label">
+          종류
+          <select id="harness-memory-kind-filter">
+            <option value="all" ${filteredMemoryEntries.kindFilter === 'all' ? 'selected' : ''}>전체</option>
+            <option value="fact" ${filteredMemoryEntries.kindFilter === 'fact' ? 'selected' : ''}>사실</option>
+            <option value="decision" ${filteredMemoryEntries.kindFilter === 'decision' ? 'selected' : ''}>결정</option>
+            <option value="preference" ${filteredMemoryEntries.kindFilter === 'preference' ? 'selected' : ''}>선호</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="harness-subsection">
+      <div class="harness-filter-row">
+        <p class="summary-label">메모 탐색</p>
+        <span class="item-meta">총 ${escapeHtml(String(filteredMemoryEntries.total))}건 · 현재 ${escapeHtml(String(filteredMemoryEntries.filteredTotal))}건</span>
+      </div>
+      <div class="harness-list">
+      ${(filteredMemoryEntries.filteredMissionEntries || [])
         .map(
           (entry) => `
             <div class="harness-row">
@@ -2153,14 +2235,15 @@ function renderHarnessPanel() {
             </div>
           `,
         )
-        .join('') || '<p class="empty-state">아직 이 미션에 기록된 메모리가 없습니다.</p>'}
+        .join('')}
+      </div>
     </div>
     ${
-      (memory.recentWorkspaceEntries || []).length
+      (filteredMemoryEntries.filteredWorkspaceEntries || []).length
         ? `<div class="harness-subsection">
             <p class="summary-label">워크스페이스 기억</p>
             <div class="harness-list">
-              ${memory.recentWorkspaceEntries
+              ${filteredMemoryEntries.filteredWorkspaceEntries
                 .map(
                   (entry) => `
                     <div class="harness-row">
@@ -2180,6 +2263,14 @@ function renderHarnessPanel() {
                 )
                 .join('')}
             </div>
+          </div>`
+        : ''
+    }
+    ${
+      filteredMemoryEntries.filteredTotal === 0
+        ? `<div class="harness-empty-inline">
+            <strong>일치하는 메모리가 없습니다.</strong>
+            <p>${escapeHtml(memoryFilterLabel)} 기준으로 일치하는 메모를 찾지 못했습니다.</p>
           </div>`
         : ''
     }
@@ -2326,6 +2417,21 @@ function wireMemoryRowActions() {
         window.alert(error.message);
       }
     });
+  });
+
+  elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', (event) => {
+    state.harnessMemoryQuery = String(event.target.value || '');
+    renderHarnessPanel();
+  });
+
+  elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', (event) => {
+    state.harnessMemoryFilterScope = String(event.target.value || 'all');
+    renderHarnessPanel();
+  });
+
+  elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', (event) => {
+    state.harnessMemoryFilterKind = String(event.target.value || 'all');
+    renderHarnessPanel();
   });
 }
 
@@ -2934,6 +3040,9 @@ function clearMissionSelection() {
   state.currentSessionPayload = null;
   state.harnessDocumentFilter = 'all';
   state.harnessDocumentQuery = '';
+  state.harnessMemoryFilterKind = 'all';
+  state.harnessMemoryFilterScope = 'all';
+  state.harnessMemoryQuery = '';
   state.missionActions = null;
   state.missionDetail = null;
   state.missionTimeline = null;
@@ -2970,6 +3079,9 @@ async function selectMission(missionId) {
 
   state.harnessDocumentFilter = 'all';
   state.harnessDocumentQuery = '';
+  state.harnessMemoryFilterKind = 'all';
+  state.harnessMemoryFilterScope = 'all';
+  state.harnessMemoryQuery = '';
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
   resetDocumentLogForm();

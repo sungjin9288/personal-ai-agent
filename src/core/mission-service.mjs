@@ -6962,17 +6962,33 @@ function summarizeProviderExecutions(executions) {
       },
       memory: {
         missionCounts: summary.memoryCounts,
+        missionEntries: missionMemoryEntries.slice().reverse().map((entry) => ({
+          createdAt: entry.createdAt,
+          id: entry.id,
+          kind: entry.kind,
+          content: entry.content,
+          updatedAt: entry.updatedAt || null,
+        })),
         recentMissionEntries: missionMemoryEntries.slice(-5).reverse().map((entry) => ({
           createdAt: entry.createdAt,
           id: entry.id,
           kind: entry.kind,
           content: entry.content,
+          updatedAt: entry.updatedAt || null,
+        })),
+        workspaceEntries: workspaceMemoryEntries.slice().reverse().map((entry) => ({
+          createdAt: entry.createdAt,
+          id: entry.id,
+          kind: entry.kind,
+          content: entry.content,
+          updatedAt: entry.updatedAt || null,
         })),
         recentWorkspaceEntries: workspaceMemoryEntries.slice(-3).reverse().map((entry) => ({
           createdAt: entry.createdAt,
           id: entry.id,
           kind: entry.kind,
           content: entry.content,
+          updatedAt: entry.updatedAt || null,
         })),
         workspaceCount: workspaceMemoryEntries.length,
       },
