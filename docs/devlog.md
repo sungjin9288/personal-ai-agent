@@ -1162,6 +1162,15 @@
 - kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415091500_5c8b4e","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Browser History Navigation Pass
+
+- date: 2026-04-15T00:00:00.000Z
+- split URL state writes into `push` for direct operator navigation and `replace` for internal refresh flows, so bookmarkable console state also participates in normal browser back/forward navigation
+- added `popstate` restore on top of the existing query bootstrap logic, which lets mission, step, detail tab, session, and artifact context rewind without losing the single-screen operator workflow
+- verified the served asset exports `pushState`/`popstate` handling and updated README copy to reflect refresh, sharing, and browser-history recovery behavior
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414091500_3f2d41","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 URL State Sync Pass
 

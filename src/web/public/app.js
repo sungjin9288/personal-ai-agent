@@ -235,7 +235,7 @@ function parseUiStateFromUrl() {
   };
 }
 
-function writeUiStateToUrl() {
+function buildUiStateUrl() {
   const url = new URL(window.location.href);
   const params = url.searchParams;
   const workspaceId = getSelectedWorkspaceId();
@@ -291,10 +291,15 @@ function writeUiStateToUrl() {
     }
   }
 
-  const nextUrl = `${url.pathname}${params.toString() ? `?${params.toString()}` : ''}${url.hash}`;
+  return `${url.pathname}${params.toString() ? `?${params.toString()}` : ''}${url.hash}`;
+}
+
+function writeUiStateToUrl({ historyMode = 'replace' } = {}) {
+  const nextUrl = buildUiStateUrl();
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
   if (nextUrl !== currentUrl) {
-    window.history.replaceState(null, '', nextUrl);
+    const method = historyMode === 'push' ? 'pushState' : 'replaceState';
+    window.history[method](null, '', nextUrl);
   }
 }
 
@@ -874,18 +879,18 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'jump-step' || action === 'jump-section') {
-        setActiveStep(value || 'step-setup');
+        setActiveStep(value || 'step-setup', { urlMode: 'push' });
         return;
       }
 
       if (action === 'switch-tab') {
-        setActiveDetailTab(value || 'artifacts');
+        setActiveDetailTab(value || 'artifacts', { urlMode: 'push' });
       }
     });
   });
 }
 
-function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true } = {}) {
+function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeStep = stepId;
   elements.stepButtons.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.stepTarget === stepId);
@@ -900,11 +905,11 @@ function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true } = {}) {
 
   renderSelectionBridge();
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
-function setActiveDetailTab(tabId, { syncUrl = true } = {}) {
+function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeDetailTab = tabId;
   elements.detailTabButtons.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.detailTab === tabId);
@@ -915,12 +920,12 @@ function setActiveDetailTab(tabId, { syncUrl = true } = {}) {
   renderDetailTabLabels();
   renderDetailContextbar();
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
 function openComposer() {
-  setActiveStep('step-setup');
+  setActiveStep('step-setup', { urlMode: 'push' });
   elements.missionForm.elements.title?.focus();
 }
 
@@ -1382,7 +1387,7 @@ function renderMissionList() {
     .join('');
 
   elements.missionList.querySelectorAll('[data-mission-id]').forEach((button) => {
-    button.addEventListener('click', () => selectMission(button.dataset.missionId));
+    button.addEventListener('click', () => selectMission(button.dataset.missionId, { urlMode: 'push' }));
   });
 }
 
@@ -3151,8 +3156,11 @@ function renderMissionActions() {
 
   elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
     button.addEventListener('click', async () => {
-      await selectMission(button.dataset.actionOpen);
-      setActiveStep('step-review');
+      await selectMission(button.dataset.actionOpen, {
+        preferredDetailTab: 'reviews',
+        preferredStep: 'step-review',
+        urlMode: 'push',
+      });
     });
   });
 
@@ -3179,7 +3187,7 @@ function renderMissionActions() {
 
       await Promise.all([loadMissions(), loadApprovals()]);
       if (state.selectedMissionId === item.missionId) {
-        await selectMission(item.missionId);
+        await selectMission(item.missionId, { urlMode: 'replace' });
       }
     });
   });
@@ -3203,7 +3211,7 @@ function renderMissionActions() {
         method: 'POST',
       });
       if (state.selectedMissionId) {
-        await selectMission(state.selectedMissionId);
+        await selectMission(state.selectedMissionId, { urlMode: 'replace' });
       }
     });
   });
@@ -3251,8 +3259,11 @@ function renderApprovals() {
   elements.approvalList.querySelectorAll('[data-approval-open]').forEach((button) => {
     button.addEventListener('click', async () => {
       if (button.dataset.approvalOpen) {
-        await selectMission(button.dataset.approvalOpen);
-        setActiveStep('step-review');
+        await selectMission(button.dataset.approvalOpen, {
+          preferredDetailTab: 'reviews',
+          preferredStep: 'step-review',
+          urlMode: 'push',
+        });
       }
     });
   });
@@ -3319,7 +3330,7 @@ function renderSessionList() {
     .join('');
 
   elements.sessionList.querySelectorAll('[data-session-id]').forEach((button) => {
-    button.addEventListener('click', () => selectSession(button.dataset.sessionId));
+    button.addEventListener('click', () => selectSession(button.dataset.sessionId, { urlMode: 'push' }));
   });
 }
 
@@ -3410,7 +3421,7 @@ function renderSessionDetail(sessionPayload) {
   `;
 
   elements.sessionDetail.querySelectorAll('[data-artifact-id]').forEach((button) => {
-    button.addEventListener('click', () => loadArtifact(button.dataset.artifactId));
+    button.addEventListener('click', () => loadArtifact(button.dataset.artifactId, { urlMode: 'push' }));
   });
   renderDetailTabLabels();
   renderDetailContextbar();
@@ -3444,7 +3455,7 @@ function renderArtifact(payload) {
   renderDetailContextbar();
 }
 
-async function loadArtifact(artifactId, { activateTab = true, syncUrl = true } = {}) {
+async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   if (!artifactId) {
     return;
   }
@@ -3458,7 +3469,7 @@ async function loadArtifact(artifactId, { activateTab = true, syncUrl = true } =
       setActiveDetailTab('artifacts', { syncUrl: false });
     }
     if (syncUrl) {
-      writeUiStateToUrl();
+      writeUiStateToUrl({ historyMode: urlMode });
     }
     return;
   }
@@ -3473,7 +3484,7 @@ async function loadArtifact(artifactId, { activateTab = true, syncUrl = true } =
     setActiveDetailTab('artifacts', { syncUrl: false });
   }
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
@@ -3514,14 +3525,17 @@ function renderTimeline() {
 
   elements.timelineList.querySelectorAll('[data-session-id]').forEach((button) => {
     button.addEventListener('click', async () => {
-      await selectSession(button.dataset.sessionId);
-      setActiveStep('step-output', { syncDetailTab: false });
-      setActiveDetailTab('artifacts');
+      await selectSession(button.dataset.sessionId, { urlMode: 'push' });
+      setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
+      setActiveDetailTab('artifacts', { urlMode: 'push' });
     });
   });
 }
 
-async function selectSession(sessionId, { focusRuns = true, preferredArtifactId = null, syncUrl = true } = {}) {
+async function selectSession(
+  sessionId,
+  { focusRuns = true, preferredArtifactId = null, syncUrl = true, urlMode = 'replace' } = {},
+) {
   if (!state.selectedMissionId || !sessionId) {
     return;
   }
@@ -3561,11 +3575,11 @@ async function selectSession(sessionId, { focusRuns = true, preferredArtifactId 
 
   renderStageSummaries();
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
-function clearMissionSelection({ syncUrl = true } = {}) {
+function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
   state.currentSessionPayload = null;
   state.harnessDocumentResult = null;
   state.harnessMemoryResult = null;
@@ -3599,13 +3613,20 @@ function clearMissionSelection({ syncUrl = true } = {}) {
   setActiveStep('step-setup', { syncDetailTab: false, syncUrl: false });
   setActiveDetailTab('config', { syncUrl: false });
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
 async function selectMission(
   missionId,
-  { preferredArtifactId = null, preferredDetailTab = null, preferredSessionId = null, preferredStep = null, syncUrl = true } = {},
+  {
+    preferredArtifactId = null,
+    preferredDetailTab = null,
+    preferredSessionId = null,
+    preferredStep = null,
+    syncUrl = true,
+    urlMode = 'replace',
+  } = {},
 ) {
   if (!missionId) {
     return;
@@ -3678,7 +3699,7 @@ async function selectMission(
   renderFlowState();
 
   if (syncUrl) {
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: urlMode });
   }
 }
 
@@ -3722,7 +3743,7 @@ async function loadMissions() {
   renderMissionList();
 }
 
-async function restoreUiStateFromUrl() {
+async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
   if (urlState.workspaceId && state.workspaces.some((workspace) => workspace.id === urlState.workspaceId)) {
@@ -3755,7 +3776,9 @@ async function restoreUiStateFromUrl() {
     }
   }
 
-  writeUiStateToUrl();
+  if (syncUrl) {
+    writeUiStateToUrl();
+  }
 }
 
 async function loadHarnessDocuments(missionId = state.selectedMissionId) {
@@ -3856,8 +3879,11 @@ async function handleMissionCreate(event) {
 
   elements.missionForm.reset();
   await loadMissions();
-  await selectMission(result.mission.id);
-  setActiveStep('step-run');
+  await selectMission(result.mission.id, {
+    preferredDetailTab: 'runs',
+    preferredStep: 'step-run',
+    urlMode: 'push',
+  });
 }
 
 async function handleMissionRun() {
@@ -3875,10 +3901,10 @@ async function handleMissionRun() {
       method: 'POST',
     });
     await Promise.all([loadMissions(), loadApprovals()]);
-    await selectMission(state.selectedMissionId);
+    await selectMission(state.selectedMissionId, { urlMode: 'replace' });
     const pendingApproval = state.approvals.some((item) => item.missionId === state.selectedMissionId);
     const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
-    setActiveStep(pendingApproval || pendingActionCount ? 'step-review' : 'step-output');
+    setActiveStep(pendingApproval || pendingActionCount ? 'step-review' : 'step-output', { urlMode: 'push' });
   } finally {
     elements.runMissionButton.disabled = false;
     elements.runMissionButton.textContent = '이 미션 실행';
@@ -4171,10 +4197,10 @@ function attachEvents() {
       return;
     }
     if (!visibleMission.some(({ mission }) => mission.id === state.selectedMissionId)) {
-      await selectMission(visibleMission[0].mission.id);
+      await selectMission(visibleMission[0].mission.id, { urlMode: 'push' });
       return;
     }
-    writeUiStateToUrl();
+    writeUiStateToUrl({ historyMode: 'push' });
   });
   elements.missionForm.addEventListener('submit', async (event) => {
     try {
@@ -4247,10 +4273,17 @@ function attachEvents() {
     }
   });
   elements.stepButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget));
+    button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
   });
   elements.detailTabButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab));
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab, { urlMode: 'push' }));
+  });
+  window.addEventListener('popstate', async () => {
+    try {
+      await restoreUiStateFromUrl({ syncUrl: false });
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 }
 
