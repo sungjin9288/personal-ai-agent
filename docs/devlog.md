@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414120500_4a5c3b","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse State Preservation
+
+- date: 2026-04-14T00:00:00.000Z
+- changed harness CRUD refresh flows so document and memory mutations reload the selected mission while preserving the current harness search, filter, sort, page size, and page position instead of resetting the entire browse surface
+- added `페이지 크기` selectors and `필터 초기화` controls to both source-of-record and layered memory browsing, which makes the harness panel usable as an operator workbench instead of a fixed 12-row viewer
+- kept the implementation within the existing local UI loop: no backend contract change was needed beyond the paging metadata added earlier, only mission refresh orchestration and browse-state helpers in app.js
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414115000_1bb30f","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse Meta Contract
 

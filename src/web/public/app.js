@@ -2227,15 +2227,26 @@ function renderHarnessPanel() {
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
-        <label class="compact-label">
-          문서 정렬
-          <select id="document-log-sort">
-            <option value="latest" ${state.harnessDocumentSort === 'latest' ? 'selected' : ''}>최신순</option>
-            <option value="oldest" ${state.harnessDocumentSort === 'oldest' ? 'selected' : ''}>오래된 순</option>
-            <option value="title" ${state.harnessDocumentSort === 'title' ? 'selected' : ''}>제목순</option>
-            <option value="type" ${state.harnessDocumentSort === 'type' ? 'selected' : ''}>유형순</option>
-          </select>
-        </label>
+        <div class="inline-actions">
+          <label class="compact-label">
+            문서 정렬
+            <select id="document-log-sort">
+              <option value="latest" ${state.harnessDocumentSort === 'latest' ? 'selected' : ''}>최신순</option>
+              <option value="oldest" ${state.harnessDocumentSort === 'oldest' ? 'selected' : ''}>오래된 순</option>
+              <option value="title" ${state.harnessDocumentSort === 'title' ? 'selected' : ''}>제목순</option>
+              <option value="type" ${state.harnessDocumentSort === 'type' ? 'selected' : ''}>유형순</option>
+            </select>
+          </label>
+          <label class="compact-label">
+            페이지 크기
+            <select id="document-log-limit">
+              <option value="12" ${Number(state.harnessDocumentVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
+              <option value="24" ${Number(state.harnessDocumentVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
+              <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
+            </select>
+          </label>
+          <button class="ghost-button" type="button" data-document-action="reset-browse">필터 초기화</button>
+        </div>
       </div>
       ${
         Number(documentBrowse.summary?.filteredCount || 0) || documentQuery || documentTypeFilter !== 'all'
@@ -2326,14 +2337,25 @@ function renderHarnessPanel() {
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
-        <label class="compact-label">
-          메모 정렬
-          <select id="harness-memory-sort">
-            <option value="latest" ${state.harnessMemorySort === 'latest' ? 'selected' : ''}>최신순</option>
-            <option value="oldest" ${state.harnessMemorySort === 'oldest' ? 'selected' : ''}>오래된 순</option>
-            <option value="kind" ${state.harnessMemorySort === 'kind' ? 'selected' : ''}>종류순</option>
-          </select>
-        </label>
+        <div class="inline-actions">
+          <label class="compact-label">
+            메모 정렬
+            <select id="harness-memory-sort">
+              <option value="latest" ${state.harnessMemorySort === 'latest' ? 'selected' : ''}>최신순</option>
+              <option value="oldest" ${state.harnessMemorySort === 'oldest' ? 'selected' : ''}>오래된 순</option>
+              <option value="kind" ${state.harnessMemorySort === 'kind' ? 'selected' : ''}>종류순</option>
+            </select>
+          </label>
+          <label class="compact-label">
+            페이지 크기
+            <select id="harness-memory-limit">
+              <option value="12" ${Number(state.harnessMemoryVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
+              <option value="24" ${Number(state.harnessMemoryVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
+              <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
+            </select>
+          </label>
+          <button class="ghost-button" type="button" data-memory-action="reset-browse">필터 초기화</button>
+        </div>
       </div>
       <div class="harness-list">
       ${(visibleMissionMemoryEntries || [])
@@ -2530,6 +2552,29 @@ function wireDocumentRowActions() {
     }
   });
 
+  elements.harnessSource.querySelector('#document-log-limit')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessDocumentVisibleCount = Number(event.target.value || 12) || 12;
+      state.harnessDocumentOffset = 0;
+      await loadHarnessDocuments();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="reset-browse"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        resetHarnessDocumentBrowseState();
+        await loadHarnessDocuments();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+
   elements.harnessSource.querySelectorAll('[data-document-action="prev-page"]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
@@ -2621,6 +2666,17 @@ function wireMemoryRowActions() {
     }
   });
 
+  elements.harnessMemory.querySelector('#harness-memory-limit')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessMemoryVisibleCount = Number(event.target.value || 12) || 12;
+      state.harnessMemoryOffset = 0;
+      await loadHarnessMemory();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
   elements.harnessMemory.querySelector('#harness-memory-sort')?.addEventListener('change', async (event) => {
     try {
       state.harnessMemorySort = String(event.target.value || 'latest').trim() || 'latest';
@@ -2630,6 +2686,18 @@ function wireMemoryRowActions() {
     } catch (error) {
       window.alert(error.message);
     }
+  });
+
+  elements.harnessMemory.querySelectorAll('[data-memory-action="reset-browse"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        resetHarnessMemoryBrowseState();
+        await loadHarnessMemory();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
   });
 
   elements.harnessMemory.querySelectorAll('[data-memory-action="prev-page"]').forEach((button) => {
@@ -2666,6 +2734,23 @@ function resetHarnessFilterState() {
   state.harnessDocumentQuery = '';
   state.harnessDocumentSort = 'latest';
   state.harnessDocumentVisibleCount = 12;
+  state.harnessMemoryFilterKind = 'all';
+  state.harnessMemoryFilterScope = 'all';
+  state.harnessMemoryOffset = 0;
+  state.harnessMemoryQuery = '';
+  state.harnessMemorySort = 'latest';
+  state.harnessMemoryVisibleCount = 12;
+}
+
+function resetHarnessDocumentBrowseState() {
+  state.harnessDocumentFilter = 'all';
+  state.harnessDocumentOffset = 0;
+  state.harnessDocumentQuery = '';
+  state.harnessDocumentSort = 'latest';
+  state.harnessDocumentVisibleCount = 12;
+}
+
+function resetHarnessMemoryBrowseState() {
   state.harnessMemoryFilterKind = 'all';
   state.harnessMemoryFilterScope = 'all';
   state.harnessMemoryOffset = 0;
@@ -3452,6 +3537,41 @@ async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
   return { documents, memory };
 }
 
+async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } = {}) {
+  if (!state.selectedMissionId) {
+    return;
+  }
+
+  const missionId = state.selectedMissionId;
+  const [detail, timelinePayload, actionPayload] = await Promise.all([
+    api(`/api/missions/${encodeURIComponent(missionId)}`),
+    api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
+    api(`/api/actions?missionId=${encodeURIComponent(missionId)}`),
+  ]);
+
+  state.missionDetail = detail;
+  state.missionTimeline = timelinePayload;
+  state.missionActions = actionPayload;
+
+  if (preserveHarnessBrowse) {
+    await loadHarnessBrowsers(missionId);
+  }
+
+  renderSelectionBridge();
+  renderMissionSummary();
+  renderSetupHarnessSummary();
+  renderStageSummaries();
+  renderMissionActions();
+  renderReviewReadiness();
+  renderHarnessPanel();
+  renderTimeline();
+  renderSessionList();
+  renderFlowState();
+  renderHeroMetrics();
+  renderDetailTabLabels();
+  renderDetailContextbar();
+}
+
 async function handleMissionCreate(event) {
   event.preventDefault();
   const formData = new FormData(elements.missionForm);
@@ -3534,7 +3654,7 @@ async function handleMemoryCreate(event) {
     );
     resetMemoryForm('mission');
     await Promise.all([loadMissions(), loadApprovals()]);
-    await selectMission(state.selectedMissionId);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
     setActiveStep(currentStep, { syncDetailTab: false });
     setActiveDetailTab('harness');
   } finally {
@@ -3579,7 +3699,7 @@ async function handleWorkspaceMemoryCreate(event) {
     resetMemoryForm('workspace');
     await Promise.all([loadMissions(), loadApprovals()]);
     if (state.selectedMissionId) {
-      await selectMission(state.selectedMissionId);
+      await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
       setActiveStep(currentStep, { syncDetailTab: false });
       setActiveDetailTab('harness');
     }
@@ -3622,7 +3742,7 @@ async function handleMemoryDelete(scope, memoryId) {
 
   await Promise.all([loadMissions(), loadApprovals()]);
   if (state.selectedMissionId) {
-    await selectMission(state.selectedMissionId);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
     setActiveStep(currentStep, { syncDetailTab: false });
     setActiveDetailTab('harness');
   }
@@ -3665,7 +3785,7 @@ async function handleDocumentLogCreate(event) {
     );
     resetDocumentLogForm();
     await Promise.all([loadMissions(), loadApprovals()]);
-    await selectMission(state.selectedMissionId);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
     setActiveStep(currentStep, { syncDetailTab: false });
     setActiveDetailTab('harness');
   } finally {
@@ -3692,7 +3812,7 @@ async function handleDocumentLogDelete(entryId) {
 
   resetDocumentLogForm();
   await Promise.all([loadMissions(), loadApprovals()]);
-  await selectMission(state.selectedMissionId);
+  await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
   setActiveStep(currentStep, { syncDetailTab: false });
   setActiveDetailTab('harness');
 }
@@ -3724,7 +3844,7 @@ async function handleLegacyDocumentMigration() {
 
   resetDocumentLogForm();
   await Promise.all([loadMissions(), loadApprovals()]);
-  await selectMission(state.selectedMissionId);
+  await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
   setActiveStep(currentStep, { syncDetailTab: false });
   setActiveDetailTab('harness');
 
