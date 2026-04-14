@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414122500_93dc55","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse Context Chips
+
+- date: 2026-04-14T00:00:00.000Z
+- surfaced current harness browse conditions as compact chips so operators can see active search, scope/type filter, sort order, and page size without re-reading the summary sentence
+- changed previous/next paging controls to use the active page size instead of hardcoded `12건`, which keeps the browse chrome consistent after the new page-size selector is changed
+- disabled `필터 초기화` until the browse state actually deviates from default, reducing visual noise in the source-of-record and memory panels
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414120500_4a5c3b","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse State Preservation
 

@@ -76,6 +76,7 @@ npm run ui
 - `하네스 > 메모리 레이어`와 `하네스 > 소스 오브 레코드`는 각각 `정렬 + 페이지 탐색`을 지원하므로, 누적된 메모/문서가 길어져도 전용 browse API 기준으로 이전/다음 페이지를 넘기며 안정적으로 스캔 가능
 - 하네스 browse API는 `currentPage / totalPages / hasPrev / hasNext / pageStart / pageEnd`를 함께 내려주므로, 프론트는 offset 계산 없이 현재 범위와 페이지 이동 가능 여부를 그대로 렌더링
 - 하네스에서 메모/문서를 추가·수정·삭제한 뒤에도 현재 검색/필터/페이지 상태를 유지한 채 재조회하며, 문서·메모리 탐색 모두 `페이지 크기 변경`과 `필터 초기화`를 같은 패널에서 바로 처리할 수 있음
+- 하네스 탐색 패널은 현재 `검색 / 유형·범위 / 정렬 / 페이지 크기`를 chip으로 바로 노출하고, 이전·다음 버튼도 현재 페이지 크기에 맞춰 표기하므로 operator가 지금 어떤 조건으로 기록을 보고 있는지 즉시 파악 가능
 - 하네스 문서/메모리 탐색은 전용 browse API로 분리되어, `showMission` payload는 recent summary만 유지하고 실제 검색·정렬·더 보기는 server-side filtered result로 처리
 - `하네스 > 소스 오브 레코드`에서 핵심 내용을 Markdown 본문으로 바로 기록해 `reference/devlog/incident` 문서에 남길 수 있어, 문서 intake를 콘솔 안에서 시작 가능
 - `하네스 > 소스 오브 레코드`는 Markdown/txt/json 파일을 브라우저에서 바로 읽어 제목과 본문에 채워 넣을 수 있어, 외부 작업 메모를 dependency 없이 Markdown source-of-record로 흡수 가능

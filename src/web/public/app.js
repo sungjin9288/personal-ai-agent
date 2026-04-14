@@ -343,6 +343,11 @@ function getHarnessDocumentSortLabel() {
   return '최신순';
 }
 
+function getHarnessPageSizeLabel(limit) {
+  const normalized = Number(limit || 12) || 12;
+  return `${normalized}건씩`;
+}
+
 function getHarnessMemorySortLabel() {
   const sort = String(state.harnessMemorySort || 'latest').trim();
   if (sort === 'oldest') {
@@ -370,6 +375,27 @@ function getHarnessRangeLabel(summary = {}, totalCount = 0) {
     return '표시할 항목이 없습니다';
   }
   return `${pageStart}-${pageEnd} / ${totalCount}건`;
+}
+
+function renderHarnessFilterChips(items = []) {
+  if (!items.length) {
+    return '';
+  }
+
+  return `
+    <div class="harness-active-filters">
+      ${items
+        .map(
+          (item) => `
+            <span class="filter-chip">
+              <em>${escapeHtml(item.label)}</em>
+              <strong>${escapeHtml(item.value)}</strong>
+            </span>
+          `,
+        )
+        .join('')}
+    </div>
+  `;
 }
 
 function populateDocumentLogForm(entry) {
@@ -2175,6 +2201,52 @@ function renderHarnessPanel() {
     memoryBrowse.summary,
     Number(memoryBrowse.summary?.filteredTotal || 0),
   );
+  const documentPageSize = Number(documentBrowse.filters?.limit || state.harnessDocumentVisibleCount || 12) || 12;
+  const memoryPageSize = Number(memoryBrowse.filters?.limit || state.harnessMemoryVisibleCount || 12) || 12;
+  const memoryScopeFilter = String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim();
+  const memoryKindFilter = String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim();
+  const memoryQuery = String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim();
+  const isDocumentBrowseDirty = Boolean(
+    documentQuery ||
+      documentTypeFilter !== 'all' ||
+      String(state.harnessDocumentSort || 'latest').trim() !== 'latest' ||
+      documentPageSize !== 12 ||
+      Number(documentBrowse.summary?.currentPage || 0) > 1,
+  );
+  const isMemoryBrowseDirty = Boolean(
+    memoryQuery ||
+      memoryScopeFilter !== 'all' ||
+      memoryKindFilter !== 'all' ||
+      String(state.harnessMemorySort || 'latest').trim() !== 'latest' ||
+      memoryPageSize !== 12 ||
+      Number(memoryBrowse.summary?.currentPage || 0) > 1,
+  );
+  const documentFilterChips = [
+    { label: '정렬', value: getHarnessDocumentSortLabel() },
+    { label: '페이지', value: getHarnessPageSizeLabel(documentPageSize) },
+  ];
+  if (documentTypeFilter !== 'all') {
+    documentFilterChips.unshift({ label: '유형', value: documentFilterLabel });
+  }
+  if (documentQuery) {
+    documentFilterChips.unshift({ label: '검색', value: documentQuery });
+  }
+  const memoryFilterChips = [
+    { label: '정렬', value: getHarnessMemorySortLabel() },
+    { label: '페이지', value: getHarnessPageSizeLabel(memoryPageSize) },
+  ];
+  if (memoryScopeFilter !== 'all') {
+    memoryFilterChips.unshift({
+      label: '범위',
+      value: memoryScopeFilter === 'mission' ? '미션 메모' : '워크스페이스 메모',
+    });
+  }
+  if (memoryKindFilter !== 'all') {
+    memoryFilterChips.unshift({ label: '종류', value: getDisplayLabel(memoryKindFilter, memoryKindFilter) });
+  }
+  if (memoryQuery) {
+    memoryFilterChips.unshift({ label: '검색', value: memoryQuery });
+  }
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2225,6 +2297,7 @@ function renderHarnessPanel() {
         <p class="summary-label">문서 기록 탐색</p>
         <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(documentPageLabel)} · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
       </div>
+      ${renderHarnessFilterChips(documentFilterChips)}
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
         <div class="inline-actions">
@@ -2245,7 +2318,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-document-action="reset-browse">필터 초기화</button>
+          <button class="ghost-button" type="button" data-document-action="reset-browse" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       ${
@@ -2282,8 +2355,8 @@ function renderHarnessPanel() {
                       <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
                       <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="prev-page" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 12건</button>
-                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 12건</button>
+                        <button class="ghost-button" type="button" data-document-action="prev-page" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
+                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
                       </div>
                     </div>`
                   : ''
@@ -2335,6 +2408,7 @@ function renderHarnessPanel() {
         <p class="summary-label">메모 탐색</p>
         <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(memoryPageLabel)} · ${escapeHtml(getHarnessMemorySortLabel())}</span>
       </div>
+      ${renderHarnessFilterChips(memoryFilterChips)}
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
         <div class="inline-actions">
@@ -2354,7 +2428,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-memory-action="reset-browse">필터 초기화</button>
+          <button class="ghost-button" type="button" data-memory-action="reset-browse" ${isMemoryBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       <div class="harness-list">
@@ -2413,8 +2487,8 @@ function renderHarnessPanel() {
             <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
             <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-memory-action="prev-page" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 12건</button>
-              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 12건</button>
+              <button class="ghost-button" type="button" data-memory-action="prev-page" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(memoryPageSize))}건</button>
+              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(memoryPageSize))}건</button>
             </div>
           </div>`
         : ''
