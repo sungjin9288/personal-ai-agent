@@ -1,5 +1,15 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414101500_64c90e","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse Pagination and Sort
+
+- date: 2026-04-14T00:00:00.000Z
+- added sort controls and staged `더 보기` browsing for both source-of-record documents and layered memory entries so the harness tab no longer dumps the full filtered list at once
+- kept the interaction local to the existing mission detail payload: search/filter still operate client-side, while sort mode and visible-count state now let operators scan large logs without losing the single-screen console flow
+- aligned document and memory browse patterns so both surfaces now share the same `search → filter → sort → show more` mental model instead of diverging between recent-only memory and full document history
+- kept the implementation dependency-free and render-local, which avoids introducing pagination endpoints before actual record volume or latency makes server-side indexing necessary
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414100500_6b5f8e","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Memory Search and Filter
 
