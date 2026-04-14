@@ -1,5 +1,13 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414182000_5b3d11","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Playwright Session Artifact Hygiene
+
+- date: 2026-04-14T00:00:00.000Z
+- ignored `.playwright-cli/` at the repo root so manual Playwright CLI snapshots and browser-session metadata stop polluting git status during UI verification work
+- documented the ignore rule in the README next to the harness smoke guidance, making it explicit that browser verification artifacts are local operator state rather than source-of-record files
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414131000_1f7a42","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse UI Contract Smoke
 

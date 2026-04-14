@@ -79,6 +79,7 @@ npm run ui
 - 하네스 탐색 패널은 현재 `검색 / 유형·범위 / 정렬 / 페이지 크기`를 chip으로 바로 노출하고, 이전·다음 버튼도 현재 페이지 크기에 맞춰 표기하므로 operator가 지금 어떤 조건으로 기록을 보고 있는지 즉시 파악 가능
 - 하네스 문서/메모리 탐색은 전용 browse API로 분리되어, `showMission` payload는 recent summary만 유지하고 실제 검색·정렬·더 보기는 server-side filtered result로 처리
 - `npm run smoke:ui-harness-browse`는 임시 root에 seed data를 만든 뒤 served UI asset과 하네스 browse API의 검색, 필터, 페이지 이동, reset contract를 함께 검증하는 UI contract smoke 경로
+- 수동 Playwright CLI 확인에서 생기는 `.playwright-cli/` 세션 아티팩트는 `.gitignore`로 제외되어, 브라우저 확인 뒤에도 워크트리가 불필요하게 dirty 상태로 남지 않음
 - `하네스 > 소스 오브 레코드`에서 핵심 내용을 Markdown 본문으로 바로 기록해 `reference/devlog/incident` 문서에 남길 수 있어, 문서 intake를 콘솔 안에서 시작 가능
 - `하네스 > 소스 오브 레코드`는 Markdown/txt/json 파일을 브라우저에서 바로 읽어 제목과 본문에 채워 넣을 수 있어, 외부 작업 메모를 dependency 없이 Markdown source-of-record로 흡수 가능
 - `하네스 > 소스 오브 레코드`에서 저장된 tracked Markdown entry를 `불러오기 → 수정 저장 / 삭제`까지 처리할 수 있어, source log도 add-only가 아니라 실제 운영용 기록면으로 다룰 수 있음
