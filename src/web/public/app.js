@@ -4,10 +4,12 @@ const state = {
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
+  harnessDocumentResult: null,
   harnessDocumentFilter: 'all',
   harnessDocumentQuery: '',
   harnessDocumentSort: 'latest',
   harnessDocumentVisibleCount: 12,
+  harnessMemoryResult: null,
   harnessMemoryFilterKind: 'all',
   harnessMemoryFilterScope: 'all',
   harnessMemoryQuery: '',
@@ -234,118 +236,21 @@ function getMemoryFormConfig(scope) {
 }
 
 function getHarnessMemoryEntry(scope, memoryId) {
-  const memory = state.missionDetail?.harness?.memory;
-  const entries = scope === 'workspace' ? memory?.workspaceEntries || [] : memory?.missionEntries || [];
+  const result = state.harnessMemoryResult;
+  const recentMemory = state.missionDetail?.harness?.memory;
+  const entries = result
+    ? scope === 'workspace'
+      ? result.workspaceEntries || []
+      : result.missionEntries || []
+    : scope === 'workspace'
+      ? recentMemory?.recentWorkspaceEntries || []
+      : recentMemory?.recentMissionEntries || [];
   return entries.find((entry) => entry.id === memoryId) || null;
 }
 
 function getHarnessDocumentEntry(entryId) {
-  const entries = state.missionDetail?.harness?.documents?.entries || [];
+  const entries = state.harnessDocumentResult?.entries || state.missionDetail?.harness?.documents?.recentEntries || [];
   return entries.find((entry) => entry.id === entryId) || null;
-}
-
-function getFilteredHarnessDocumentEntries() {
-  const entries = state.missionDetail?.harness?.documents?.entries || [];
-  const query = String(state.harnessDocumentQuery || '').trim().toLowerCase();
-  const typeFilter = String(state.harnessDocumentFilter || 'all').trim();
-  const sort = String(state.harnessDocumentSort || 'latest').trim();
-
-  const filteredEntries = entries.filter((entry) => {
-    if (typeFilter !== 'all' && entry.type !== typeFilter) {
-      return false;
-    }
-
-    if (!query) {
-      return true;
-    }
-
-    const haystack = [
-      entry.title,
-      entry.type,
-      entry.path,
-      entry.content,
-    ]
-      .map((value) => String(value || '').toLowerCase())
-      .join('\n');
-
-    return haystack.includes(query);
-  });
-
-  filteredEntries.sort((left, right) => {
-    const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
-    const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
-
-    if (sort === 'oldest') {
-      return leftTimestamp - rightTimestamp;
-    }
-    if (sort === 'title') {
-      return String(left.title || '').localeCompare(String(right.title || ''), 'ko');
-    }
-    if (sort === 'type') {
-      const typeOrder = String(left.type || '').localeCompare(String(right.type || ''), 'ko');
-      return typeOrder || String(left.title || '').localeCompare(String(right.title || ''), 'ko');
-    }
-    return rightTimestamp - leftTimestamp;
-  });
-
-  return filteredEntries;
-}
-
-function getFilteredHarnessMemoryEntries() {
-  const memory = state.missionDetail?.harness?.memory || {};
-  const missionEntries = memory.missionEntries || [];
-  const workspaceEntries = memory.workspaceEntries || [];
-  const scopeFilter = String(state.harnessMemoryFilterScope || 'all').trim();
-  const kindFilter = String(state.harnessMemoryFilterKind || 'all').trim();
-  const query = String(state.harnessMemoryQuery || '').trim().toLowerCase();
-  const sort = String(state.harnessMemorySort || 'latest').trim();
-
-  function matches(entry, scope) {
-    if (scopeFilter !== 'all' && scopeFilter !== scope) {
-      return false;
-    }
-    if (kindFilter !== 'all' && entry.kind !== kindFilter) {
-      return false;
-    }
-    if (!query) {
-      return true;
-    }
-
-    const haystack = [entry.kind, entry.content]
-      .map((value) => String(value || '').toLowerCase())
-      .join('\n');
-
-    return haystack.includes(query);
-  }
-
-  const sortEntries = (entries) =>
-    entries.slice().sort((left, right) => {
-      const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
-      const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
-
-      if (sort === 'oldest') {
-        return leftTimestamp - rightTimestamp;
-      }
-      if (sort === 'kind') {
-        const kindOrder = String(left.kind || '').localeCompare(String(right.kind || ''), 'ko');
-        return kindOrder || rightTimestamp - leftTimestamp;
-      }
-      return rightTimestamp - leftTimestamp;
-    });
-
-  const filteredMissionEntries = sortEntries(missionEntries.filter((entry) => matches(entry, 'mission')));
-  const filteredWorkspaceEntries = sortEntries(workspaceEntries.filter((entry) => matches(entry, 'workspace')));
-
-  return {
-    filteredMissionEntries,
-    filteredTotal: filteredMissionEntries.length + filteredWorkspaceEntries.length,
-    filteredWorkspaceEntries,
-    kindFilter,
-    query,
-    scopeFilter,
-    sort,
-    total: missionEntries.length + workspaceEntries.length,
-  };
 }
 
 function resetMemoryForm(scope) {
@@ -2146,20 +2051,62 @@ function renderHarnessPanel() {
   const harnessSummary = state.missionDetail.harness;
   const documentSummary = harnessSummary.documents?.summary || {};
   const documentItems = harnessSummary.documents?.items || [];
+  const documentBrowse = state.harnessDocumentResult || {
+    entries: harnessSummary.documents?.recentEntries || [],
+    filters: {
+      query: String(state.harnessDocumentQuery || ''),
+      sort: String(state.harnessDocumentSort || 'latest'),
+      type: String(state.harnessDocumentFilter || 'all'),
+    },
+    hasMore: false,
+    summary: {
+      filteredCount: harnessSummary.documents?.recentEntries?.length || 0,
+      trackedEntryCount: documentSummary.trackedEntryCount || 0,
+      visibleCount: harnessSummary.documents?.recentEntries?.length || 0,
+    },
+  };
+  const memoryBrowse = state.harnessMemoryResult || {
+    entries: [],
+    filters: {
+      kind: String(state.harnessMemoryFilterKind || 'all'),
+      query: String(state.harnessMemoryQuery || ''),
+      scope: String(state.harnessMemoryFilterScope || 'all'),
+      sort: String(state.harnessMemorySort || 'latest'),
+    },
+    hasMore: false,
+    missionEntries: harnessSummary.memory?.recentMissionEntries || [],
+    summary: {
+      filteredMissionCount: harnessSummary.memory?.recentMissionEntries?.length || 0,
+      filteredTotal:
+        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
+        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
+      filteredWorkspaceCount: harnessSummary.memory?.recentWorkspaceEntries?.length || 0,
+      missionTotal: harnessSummary.memory?.missionCounts?.total || 0,
+      total: (harnessSummary.memory?.missionCounts?.total || 0) + (harnessSummary.memory?.workspaceCount || 0),
+      visibleCount:
+        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
+        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
+      workspaceTotal: harnessSummary.memory?.workspaceCount || 0,
+    },
+    workspaceEntries: harnessSummary.memory?.recentWorkspaceEntries || [],
+  };
   const memory = harnessSummary.memory || {};
   const loops = harnessSummary.loops || {};
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
-  const filteredDocumentEntries = getFilteredHarnessDocumentEntries();
-  const filteredMemoryEntries = getFilteredHarnessMemoryEntries();
-  const visibleDocumentEntries = filteredDocumentEntries.slice(0, state.harnessDocumentVisibleCount);
-  const visibleMissionMemoryEntries = filteredMemoryEntries.filteredMissionEntries.slice(0, state.harnessMemoryVisibleCount);
-  const visibleWorkspaceMemoryEntries = filteredMemoryEntries.filteredWorkspaceEntries.slice(0, state.harnessMemoryVisibleCount);
-  const documentQuery = String(state.harnessDocumentQuery || '').trim();
-  const documentFilterLabel = state.harnessDocumentFilter === 'all'
+  const visibleDocumentEntries = documentBrowse.entries || [];
+  const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
+  const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
+  const documentQuery = String(documentBrowse.filters?.query || '').trim();
+  const documentTypeFilter = String(documentBrowse.filters?.type || state.harnessDocumentFilter || 'all').trim();
+  const documentFilterLabel = documentTypeFilter === 'all'
     ? '전체'
-    : getDisplayLabel(state.harnessDocumentFilter, state.harnessDocumentFilter);
-  const memoryFilterLabel = getHarnessMemoryFilterLabel(filteredMemoryEntries);
+    : getDisplayLabel(documentTypeFilter, documentTypeFilter);
+  const memoryFilterLabel = getHarnessMemoryFilterLabel({
+    kindFilter: String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim(),
+    query: String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim(),
+    scopeFilter: String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim(),
+  });
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2208,7 +2155,7 @@ function renderHarnessPanel() {
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">문서 기록 탐색</p>
-        <div class="item-meta">총 ${escapeHtml(String(documentSummary.trackedEntryCount || 0))}건 · 현재 ${escapeHtml(String(filteredDocumentEntries.length))}건 · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
+        <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 현재 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
@@ -2223,9 +2170,9 @@ function renderHarnessPanel() {
         </label>
       </div>
       ${
-        filteredDocumentEntries.length || documentQuery || state.harnessDocumentFilter !== 'all'
+        Number(documentBrowse.summary?.filteredCount || 0) || documentQuery || documentTypeFilter !== 'all'
           ? `<div class="harness-list">
-              ${filteredDocumentEntries.length
+              ${Number(documentBrowse.summary?.filteredCount || 0)
                 ? visibleDocumentEntries
                     .map(
                       (entry) => `
@@ -2251,10 +2198,10 @@ function renderHarnessPanel() {
                     <p>${escapeHtml(documentFilterLabel)} 범위에서 ${escapeHtml(documentQuery || '검색 조건')}와 맞는 항목을 찾지 못했습니다.</p>
                   </div>`}
               ${
-                filteredDocumentEntries.length > visibleDocumentEntries.length
+                documentBrowse.hasMore
                   ? `<div class="harness-empty-inline">
-                      <strong>아직 ${escapeHtml(String(filteredDocumentEntries.length - visibleDocumentEntries.length))}건이 더 있습니다.</strong>
-                      <p>지금은 ${escapeHtml(String(visibleDocumentEntries.length))}건만 먼저 보여주고 있습니다.</p>
+                      <strong>아직 ${escapeHtml(String((documentBrowse.summary?.filteredCount || 0) - (documentBrowse.summary?.visibleCount || visibleDocumentEntries.length || 0)))}건이 더 있습니다.</strong>
+                      <p>지금은 ${escapeHtml(String(documentBrowse.summary?.visibleCount || visibleDocumentEntries.length || 0))}건만 먼저 보여주고 있습니다.</p>
                       <div class="inline-actions">
                         <button class="ghost-button" type="button" data-document-action="show-more">문서 더 보기</button>
                       </div>
@@ -2281,24 +2228,24 @@ function renderHarnessPanel() {
     <div class="harness-searchbar">
       <label class="compact-label">
         메모 검색
-        <input id="harness-memory-search" type="search" value="${escapeHtml(filteredMemoryEntries.query)}" placeholder="내용 또는 kind 검색" />
+        <input id="harness-memory-search" type="search" value="${escapeHtml(String(memoryBrowse.filters?.query || ''))}" placeholder="내용 또는 kind 검색" />
       </label>
       <div class="harness-filter-row">
         <label class="compact-label">
           범위
           <select id="harness-memory-scope-filter">
-            <option value="all" ${filteredMemoryEntries.scopeFilter === 'all' ? 'selected' : ''}>전체</option>
-            <option value="mission" ${filteredMemoryEntries.scopeFilter === 'mission' ? 'selected' : ''}>미션 메모</option>
-            <option value="workspace" ${filteredMemoryEntries.scopeFilter === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
+            <option value="all" ${String(memoryBrowse.filters?.scope || 'all') === 'all' ? 'selected' : ''}>전체</option>
+            <option value="mission" ${String(memoryBrowse.filters?.scope || 'all') === 'mission' ? 'selected' : ''}>미션 메모</option>
+            <option value="workspace" ${String(memoryBrowse.filters?.scope || 'all') === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
           </select>
         </label>
         <label class="compact-label">
           종류
           <select id="harness-memory-kind-filter">
-            <option value="all" ${filteredMemoryEntries.kindFilter === 'all' ? 'selected' : ''}>전체</option>
-            <option value="fact" ${filteredMemoryEntries.kindFilter === 'fact' ? 'selected' : ''}>사실</option>
-            <option value="decision" ${filteredMemoryEntries.kindFilter === 'decision' ? 'selected' : ''}>결정</option>
-            <option value="preference" ${filteredMemoryEntries.kindFilter === 'preference' ? 'selected' : ''}>선호</option>
+            <option value="all" ${String(memoryBrowse.filters?.kind || 'all') === 'all' ? 'selected' : ''}>전체</option>
+            <option value="fact" ${String(memoryBrowse.filters?.kind || 'all') === 'fact' ? 'selected' : ''}>사실</option>
+            <option value="decision" ${String(memoryBrowse.filters?.kind || 'all') === 'decision' ? 'selected' : ''}>결정</option>
+            <option value="preference" ${String(memoryBrowse.filters?.kind || 'all') === 'preference' ? 'selected' : ''}>선호</option>
           </select>
         </label>
       </div>
@@ -2306,7 +2253,7 @@ function renderHarnessPanel() {
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">메모 탐색</p>
-        <span class="item-meta">총 ${escapeHtml(String(filteredMemoryEntries.total))}건 · 현재 ${escapeHtml(String(filteredMemoryEntries.filteredTotal))}건 · ${escapeHtml(getHarnessMemorySortLabel())}</span>
+        <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 현재 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(getHarnessMemorySortLabel())}</span>
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
@@ -2370,10 +2317,10 @@ function renderHarnessPanel() {
         : ''
     }
     ${
-      filteredMemoryEntries.filteredTotal > visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length
+      memoryBrowse.hasMore
         ? `<div class="harness-empty-inline">
-            <strong>아직 ${escapeHtml(String(filteredMemoryEntries.filteredTotal - (visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length)))}건이 더 있습니다.</strong>
-            <p>지금은 ${escapeHtml(String(visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length))}건만 먼저 보여주고 있습니다.</p>
+            <strong>아직 ${escapeHtml(String((memoryBrowse.summary?.filteredTotal || 0) - (memoryBrowse.summary?.visibleCount || visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length)))}건이 더 있습니다.</strong>
+            <p>지금은 ${escapeHtml(String(memoryBrowse.summary?.visibleCount || visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length))}건만 먼저 보여주고 있습니다.</p>
             <div class="inline-actions">
               <button class="ghost-button" type="button" data-memory-action="show-more">메모 더 보기</button>
             </div>
@@ -2381,7 +2328,7 @@ function renderHarnessPanel() {
         : ''
     }
     ${
-      filteredMemoryEntries.filteredTotal === 0
+      Number(memoryBrowse.summary?.filteredTotal || 0) === 0
         ? `<div class="harness-empty-inline">
             <strong>일치하는 메모리가 없습니다.</strong>
             <p>${escapeHtml(memoryFilterLabel)} 기준으로 일치하는 메모를 찾지 못했습니다.</p>
@@ -2502,16 +2449,26 @@ function wireDocumentRowActions() {
     });
   });
 
-  elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', (event) => {
-    state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest';
-    state.harnessDocumentVisibleCount = 12;
-    renderHarnessPanel();
+  elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest';
+      state.harnessDocumentVisibleCount = 12;
+      await loadHarnessDocuments();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 
   elements.harnessSource.querySelectorAll('[data-document-action="show-more"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      state.harnessDocumentVisibleCount += 12;
-      renderHarnessPanel();
+    button.addEventListener('click', async () => {
+      try {
+        state.harnessDocumentVisibleCount += 12;
+        await loadHarnessDocuments();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
     });
   });
 }
@@ -2546,34 +2503,59 @@ function wireMemoryRowActions() {
     });
   });
 
-  elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', (event) => {
-    state.harnessMemoryQuery = String(event.target.value || '');
-    state.harnessMemoryVisibleCount = 12;
-    renderHarnessPanel();
+  elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
+    try {
+      state.harnessMemoryQuery = String(event.target.value || '');
+      state.harnessMemoryVisibleCount = 12;
+      await loadHarnessMemory();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 
-  elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', (event) => {
-    state.harnessMemoryFilterScope = String(event.target.value || 'all');
-    state.harnessMemoryVisibleCount = 12;
-    renderHarnessPanel();
+  elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessMemoryFilterScope = String(event.target.value || 'all');
+      state.harnessMemoryVisibleCount = 12;
+      await loadHarnessMemory();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 
-  elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', (event) => {
-    state.harnessMemoryFilterKind = String(event.target.value || 'all');
-    state.harnessMemoryVisibleCount = 12;
-    renderHarnessPanel();
+  elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessMemoryFilterKind = String(event.target.value || 'all');
+      state.harnessMemoryVisibleCount = 12;
+      await loadHarnessMemory();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 
-  elements.harnessMemory.querySelector('#harness-memory-sort')?.addEventListener('change', (event) => {
-    state.harnessMemorySort = String(event.target.value || 'latest').trim() || 'latest';
-    state.harnessMemoryVisibleCount = 12;
-    renderHarnessPanel();
+  elements.harnessMemory.querySelector('#harness-memory-sort')?.addEventListener('change', async (event) => {
+    try {
+      state.harnessMemorySort = String(event.target.value || 'latest').trim() || 'latest';
+      state.harnessMemoryVisibleCount = 12;
+      await loadHarnessMemory();
+      renderHarnessPanel();
+    } catch (error) {
+      window.alert(error.message);
+    }
   });
 
   elements.harnessMemory.querySelectorAll('[data-memory-action="show-more"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      state.harnessMemoryVisibleCount += 12;
-      renderHarnessPanel();
+    button.addEventListener('click', async () => {
+      try {
+        state.harnessMemoryVisibleCount += 12;
+        await loadHarnessMemory();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
     });
   });
 }
@@ -3202,6 +3184,8 @@ async function selectSession(sessionId) {
 
 function clearMissionSelection() {
   state.currentSessionPayload = null;
+  state.harnessDocumentResult = null;
+  state.harnessMemoryResult = null;
   resetHarnessFilterState();
   state.missionActions = null;
   state.missionDetail = null;
@@ -3241,6 +3225,8 @@ async function selectMission(missionId) {
   resetHarnessFilterState();
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
+  state.harnessDocumentResult = null;
+  state.harnessMemoryResult = null;
   resetHarnessFilterInputs();
   resetDocumentLogForm();
   resetMemoryForm('mission');
@@ -3257,6 +3243,7 @@ async function selectMission(missionId) {
   state.missionDetail = detail;
   state.missionTimeline = timelinePayload;
   state.missionActions = actionPayload;
+  await loadHarnessBrowsers(missionId);
   setActiveStep(getFlowState().recommendedStep);
 
   renderMissionSummary();
@@ -3317,6 +3304,46 @@ async function loadMissions() {
   const payload = await api('/api/missions');
   state.missions = payload.missions || [];
   renderMissionList();
+}
+
+async function loadHarnessDocuments(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.harnessDocumentResult = null;
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    limit: String(state.harnessDocumentVisibleCount || 12),
+    query: String(state.harnessDocumentQuery || ''),
+    sort: String(state.harnessDocumentSort || 'latest'),
+    type: String(state.harnessDocumentFilter || 'all'),
+  });
+  const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/documents?${params.toString()}`);
+  state.harnessDocumentResult = payload;
+  return payload;
+}
+
+async function loadHarnessMemory(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.harnessMemoryResult = null;
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    kind: String(state.harnessMemoryFilterKind || 'all'),
+    limit: String(state.harnessMemoryVisibleCount || 12),
+    query: String(state.harnessMemoryQuery || ''),
+    scope: String(state.harnessMemoryFilterScope || 'all'),
+    sort: String(state.harnessMemorySort || 'latest'),
+  });
+  const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/memory?${params.toString()}`);
+  state.harnessMemoryResult = payload;
+  return payload;
+}
+
+async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
+  const [documents, memory] = await Promise.all([loadHarnessDocuments(missionId), loadHarnessMemory(missionId)]);
+  return { documents, memory };
 }
 
 async function handleMissionCreate(event) {
@@ -3600,15 +3627,17 @@ async function handleLegacyDocumentMigration() {
   }
 }
 
-function handleHarnessDocumentSearch(event) {
+async function handleHarnessDocumentSearch(event) {
   state.harnessDocumentQuery = String(event.target?.value || '');
   state.harnessDocumentVisibleCount = 12;
+  await loadHarnessDocuments();
   renderHarnessPanel();
 }
 
-function handleHarnessDocumentFilter(event) {
+async function handleHarnessDocumentFilter(event) {
   state.harnessDocumentFilter = String(event.target?.value || 'all').trim() || 'all';
   state.harnessDocumentVisibleCount = 12;
+  await loadHarnessDocuments();
   renderHarnessPanel();
 }
 
@@ -3690,8 +3719,20 @@ function attachEvents() {
       elements.documentLogSubmitButton.textContent = '문서 기록 저장';
     }
   });
-  elements.documentLogSearch?.addEventListener('input', handleHarnessDocumentSearch);
-  elements.documentLogFilter?.addEventListener('change', handleHarnessDocumentFilter);
+  elements.documentLogSearch?.addEventListener('input', async (event) => {
+    try {
+      await handleHarnessDocumentSearch(event);
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+  elements.documentLogFilter?.addEventListener('change', async (event) => {
+    try {
+      await handleHarnessDocumentFilter(event);
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
   elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
   elements.documentLogFile?.addEventListener('change', async (event) => {
     try {

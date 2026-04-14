@@ -74,6 +74,7 @@ npm run ui
 - `하네스 > 메모리 레이어`에서 저장된 미션/워크스페이스 메모를 `불러오기 → 수정 저장 / 삭제`까지 처리할 수 있어, add-only가 아니라 실제 운영용 memory curation surface로 사용할 수 있음
 - `하네스 > 메모리 레이어`는 전체 미션/워크스페이스 메모를 `내용 검색 + 범위 필터 + kind 필터`로 바로 좁혀 볼 수 있어, recent entry 몇 개를 넘어서 누적된 layered memory를 같은 화면에서 큐레이션 가능
 - `하네스 > 메모리 레이어`와 `하네스 > 소스 오브 레코드`는 각각 `정렬 + 더 보기`까지 지원하므로, 누적된 메모/문서가 길어져도 한 번에 전부 펼치지 않고 최신순·오래된 순·종류 기준으로 단계적으로 스캔 가능
+- 하네스 문서/메모리 탐색은 전용 browse API로 분리되어, `showMission` payload는 recent summary만 유지하고 실제 검색·정렬·더 보기는 server-side filtered result로 처리
 - `하네스 > 소스 오브 레코드`에서 핵심 내용을 Markdown 본문으로 바로 기록해 `reference/devlog/incident` 문서에 남길 수 있어, 문서 intake를 콘솔 안에서 시작 가능
 - `하네스 > 소스 오브 레코드`는 Markdown/txt/json 파일을 브라우저에서 바로 읽어 제목과 본문에 채워 넣을 수 있어, 외부 작업 메모를 dependency 없이 Markdown source-of-record로 흡수 가능
 - `하네스 > 소스 오브 레코드`에서 저장된 tracked Markdown entry를 `불러오기 → 수정 저장 / 삭제`까지 처리할 수 있어, source log도 add-only가 아니라 실제 운영용 기록면으로 다룰 수 있음

@@ -6844,6 +6844,164 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
+  function normalizeHarnessBrowseLimit(value, fallback = 12) {
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+      return fallback;
+    }
+
+    return Math.min(Math.max(Math.trunc(numericValue), 1), 200);
+  }
+
+  function browseMissionHarnessDocuments(missionId, filter = {}) {
+    getMission(missionId);
+
+    const documentRegistry = buildHarnessDocumentRegistry();
+    const query = normalizeText(filter.query).toLowerCase();
+    const type = normalizeText(filter.type, 'all').toLowerCase() || 'all';
+    const sort = normalizeText(filter.sort, 'latest').toLowerCase() || 'latest';
+    const limit = normalizeHarnessBrowseLimit(filter.limit, 12);
+
+    const filteredEntries = documentRegistry.entries.filter((entry) => {
+      if (type !== 'all' && normalizeText(entry.type).toLowerCase() !== type) {
+        return false;
+      }
+
+      if (!query) {
+        return true;
+      }
+
+      const haystack = [entry.title, entry.type, entry.path, entry.content]
+        .map((value) => normalizeText(value).toLowerCase())
+        .join('\n');
+
+      return haystack.includes(query);
+    });
+
+    filteredEntries.sort((left, right) => {
+      const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
+      const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
+
+      if (sort === 'oldest') {
+        return leftTimestamp - rightTimestamp;
+      }
+      if (sort === 'title') {
+        return normalizeText(left.title).localeCompare(normalizeText(right.title), 'ko');
+      }
+      if (sort === 'type') {
+        const typeOrder = normalizeText(left.type).localeCompare(normalizeText(right.type), 'ko');
+        return typeOrder || normalizeText(left.title).localeCompare(normalizeText(right.title), 'ko');
+      }
+
+      return rightTimestamp - leftTimestamp;
+    });
+
+    const entries = filteredEntries.slice(0, limit);
+
+    return {
+      entries,
+      filters: {
+        limit,
+        query: normalizeText(filter.query),
+        sort,
+        type,
+      },
+      hasMore: filteredEntries.length > entries.length,
+      summary: {
+        ...documentRegistry.summary,
+        filteredCount: filteredEntries.length,
+        visibleCount: entries.length,
+      },
+    };
+  }
+
+  function browseMissionHarnessMemory(missionId, filter = {}) {
+    const mission = getMission(missionId);
+    const query = normalizeText(filter.query).toLowerCase();
+    const scope = normalizeText(filter.scope, 'all').toLowerCase() || 'all';
+    const kind = normalizeText(filter.kind, 'all').toLowerCase() || 'all';
+    const sort = normalizeText(filter.sort, 'latest').toLowerCase() || 'latest';
+    const limit = normalizeHarnessBrowseLimit(filter.limit, 12);
+
+    const missionEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id }).map((entry) => ({
+      content: entry.content,
+      createdAt: entry.createdAt,
+      id: entry.id,
+      kind: entry.kind,
+      scope: 'mission',
+      updatedAt: entry.updatedAt || null,
+    }));
+    const workspaceEntries = store
+      .listMemoryEntries({ scope: 'workspace', scopeId: mission.workspaceId })
+      .map((entry) => ({
+        content: entry.content,
+        createdAt: entry.createdAt,
+        id: entry.id,
+        kind: entry.kind,
+        scope: 'workspace',
+        updatedAt: entry.updatedAt || null,
+      }));
+    const allEntries = [...missionEntries, ...workspaceEntries];
+
+    const filteredEntries = allEntries.filter((entry) => {
+      if (scope !== 'all' && entry.scope !== scope) {
+        return false;
+      }
+      if (kind !== 'all' && normalizeText(entry.kind).toLowerCase() !== kind) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+
+      const haystack = [entry.kind, entry.content]
+        .map((value) => normalizeText(value).toLowerCase())
+        .join('\n');
+
+      return haystack.includes(query);
+    });
+
+    filteredEntries.sort((left, right) => {
+      const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
+      const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
+
+      if (sort === 'oldest') {
+        return leftTimestamp - rightTimestamp;
+      }
+      if (sort === 'kind') {
+        const kindOrder = normalizeText(left.kind).localeCompare(normalizeText(right.kind), 'ko');
+        return kindOrder || rightTimestamp - leftTimestamp;
+      }
+
+      return rightTimestamp - leftTimestamp;
+    });
+
+    const entries = filteredEntries.slice(0, limit);
+
+    return {
+      entries,
+      filters: {
+        kind,
+        limit,
+        query: normalizeText(filter.query),
+        scope,
+        sort,
+      },
+      hasMore: filteredEntries.length > entries.length,
+      missionEntries: entries.filter((entry) => entry.scope === 'mission'),
+      summary: {
+        filteredMissionCount: filteredEntries.filter((entry) => entry.scope === 'mission').length,
+        filteredTotal: filteredEntries.length,
+        filteredWorkspaceCount: filteredEntries.filter((entry) => entry.scope === 'workspace').length,
+        missionTotal: missionEntries.length,
+        total: allEntries.length,
+        visibleCount: entries.length,
+        workspaceTotal: workspaceEntries.length,
+      },
+      workspaceEntries: entries.filter((entry) => entry.scope === 'workspace'),
+    };
+  }
+
   function summarizeMissionHarness(mission, summary) {
     const missionSessions = store.listSessionsByMission(mission.id);
     const missionArtifacts = missionSessions
@@ -6926,7 +7084,8 @@ function summarizeProviderExecutions(executions) {
         },
       ],
       documents: {
-        ...documentRegistry,
+        items: documentRegistry.items,
+        recentEntries: documentRegistry.recentEntries,
         latestArtifact: latestArtifact
           ? {
               kind: latestArtifact.kind,
@@ -6962,21 +7121,7 @@ function summarizeProviderExecutions(executions) {
       },
       memory: {
         missionCounts: summary.memoryCounts,
-        missionEntries: missionMemoryEntries.slice().reverse().map((entry) => ({
-          createdAt: entry.createdAt,
-          id: entry.id,
-          kind: entry.kind,
-          content: entry.content,
-          updatedAt: entry.updatedAt || null,
-        })),
         recentMissionEntries: missionMemoryEntries.slice(-5).reverse().map((entry) => ({
-          createdAt: entry.createdAt,
-          id: entry.id,
-          kind: entry.kind,
-          content: entry.content,
-          updatedAt: entry.updatedAt || null,
-        })),
-        workspaceEntries: workspaceMemoryEntries.slice().reverse().map((entry) => ({
           createdAt: entry.createdAt,
           id: entry.id,
           kind: entry.kind,
@@ -13419,6 +13564,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     addMemory,
     addWorkspace,
     acknowledgeProviderAttention,
+    browseMissionHarnessDocuments,
+    browseMissionHarnessMemory,
     checkProvider,
     createMission,
     getActionInbox,

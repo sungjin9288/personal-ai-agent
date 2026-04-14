@@ -1,5 +1,15 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414110500_3c7b91","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse API Split
+
+- date: 2026-04-14T00:00:00.000Z
+- split harness document and memory browse into dedicated mission-scoped APIs so `showMission` no longer needs to ship the full tracked log and memory corpus on every selection
+- moved document search/filter/sort/더 보기 onto `/harness/documents` and memory search/filter/sort/더 보기 onto `/harness/memory`, with the frontend now reloading those result sets instead of slicing large arrays locally
+- reduced the default mission detail payload back to recent harness samples while preserving counts and summaries, which keeps the single-screen console flow intact but lowers payload growth pressure as tracked records accumulate
+- kept the implementation dependency-free and incremental: no indexing package or pagination library was introduced, only service-level browse helpers and lightweight query routing in the existing local UI server
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414101500_64c90e","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse Pagination and Sort
 

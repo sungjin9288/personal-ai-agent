@@ -251,6 +251,51 @@ async function handleApi(request, response, url) {
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
     pathParts[2] &&
+    pathParts[3] === 'harness' &&
+    pathParts[4] === 'documents'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    sendJson(
+      response,
+      200,
+      service.browseMissionHarnessDocuments(missionId, {
+        limit: String(url.searchParams.get('limit') || '').trim(),
+        query: String(url.searchParams.get('query') || '').trim(),
+        sort: String(url.searchParams.get('sort') || '').trim(),
+        type: String(url.searchParams.get('type') || '').trim(),
+      }),
+    );
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'harness' &&
+    pathParts[4] === 'memory'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    sendJson(
+      response,
+      200,
+      service.browseMissionHarnessMemory(missionId, {
+        kind: String(url.searchParams.get('kind') || '').trim(),
+        limit: String(url.searchParams.get('limit') || '').trim(),
+        query: String(url.searchParams.get('query') || '').trim(),
+        scope: String(url.searchParams.get('scope') || '').trim(),
+        sort: String(url.searchParams.get('sort') || '').trim(),
+      }),
+    );
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
     pathParts[3] === 'timeline'
   ) {
     const missionId = decodePathSegment(pathParts[2]);
