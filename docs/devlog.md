@@ -1162,6 +1162,15 @@
 - kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414091500_3f2d41","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 URL State Sync Pass
+
+- date: 2026-04-14T00:00:00.000Z
+- added URL query sync for selected workspace, mission, step, detail tab, session, and artifact so the single-screen operator console can recover the same working context after refresh
+- introduced URL-aware restore logic during bootstrap and let mission/session/artifact selection accept preferred targets, which avoids the default recommended-step jump overriding bookmarked state
+- verified the served UI asset exports the new parse/write/restore helpers and that syntax and diff checks pass without widening the change beyond `app.js` and UI docs
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260413210753_5288a9","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Memory CRUD Pass
 
