@@ -363,6 +363,15 @@ function getHarnessPageLabel(summary = {}) {
   return `${currentPage} / ${totalPages} 페이지`;
 }
 
+function getHarnessRangeLabel(summary = {}, totalCount = 0) {
+  const pageStart = Number(summary.pageStart || 0);
+  const pageEnd = Number(summary.pageEnd || 0);
+  if (!pageStart || !pageEnd || !totalCount) {
+    return '표시할 항목이 없습니다';
+  }
+  return `${pageStart}-${pageEnd} / ${totalCount}건`;
+}
+
 function populateDocumentLogForm(entry) {
   if (!elements.documentLogForm || !entry) {
     return;
@@ -2075,8 +2084,12 @@ function renderHarnessPanel() {
     summary: {
       currentPage: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
       filteredCount: harnessSummary.documents?.recentEntries?.length || 0,
+      hasNext: false,
+      hasPrev: false,
       offset: Number(state.harnessDocumentOffset || 0),
       pageCount: harnessSummary.documents?.recentEntries?.length || 0,
+      pageEnd: harnessSummary.documents?.recentEntries?.length || 0,
+      pageStart: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
       remainingCount: 0,
       trackedEntryCount: documentSummary.trackedEntryCount || 0,
       totalPages: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
@@ -2106,11 +2119,21 @@ function renderHarnessPanel() {
         (harnessSummary.memory?.recentMissionEntries?.length || 0) +
         (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
       filteredWorkspaceCount: harnessSummary.memory?.recentWorkspaceEntries?.length || 0,
+      hasNext: false,
+      hasPrev: false,
       missionTotal: harnessSummary.memory?.missionCounts?.total || 0,
       offset: Number(state.harnessMemoryOffset || 0),
       pageCount:
         (harnessSummary.memory?.recentMissionEntries?.length || 0) +
         (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
+      pageEnd:
+        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
+        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
+      pageStart:
+        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
+          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
+          ? 1
+          : 0,
       remainingCount: 0,
       total: (harnessSummary.memory?.missionCounts?.total || 0) + (harnessSummary.memory?.workspaceCount || 0),
       totalPages:
@@ -2144,6 +2167,14 @@ function renderHarnessPanel() {
     scopeFilter: String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim(),
   });
   const memoryPageLabel = getHarnessPageLabel(memoryBrowse.summary);
+  const documentRangeLabel = getHarnessRangeLabel(
+    documentBrowse.summary,
+    Number(documentBrowse.summary?.filteredCount || 0),
+  );
+  const memoryRangeLabel = getHarnessRangeLabel(
+    memoryBrowse.summary,
+    Number(memoryBrowse.summary?.filteredTotal || 0),
+  );
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2237,11 +2268,11 @@ function renderHarnessPanel() {
               ${
                 Number(documentBrowse.summary?.filteredCount || 0)
                   ? `<div class="harness-empty-inline">
-                      <strong>${escapeHtml(documentPageLabel)} · 현재 ${escapeHtml(String(documentBrowse.summary?.pageCount || visibleDocumentEntries.length || 0))}건 표시 중</strong>
+                      <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
                       <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="prev-page" ${Number(documentBrowse.summary?.offset || 0) <= 0 ? 'disabled' : ''}>이전 12건</button>
-                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.hasMore ? '' : 'disabled'}>다음 12건</button>
+                        <button class="ghost-button" type="button" data-document-action="prev-page" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 12건</button>
+                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 12건</button>
                       </div>
                     </div>`
                   : ''
@@ -2357,11 +2388,11 @@ function renderHarnessPanel() {
     ${
       Number(memoryBrowse.summary?.filteredTotal || 0)
         ? `<div class="harness-empty-inline">
-            <strong>${escapeHtml(memoryPageLabel)} · 현재 ${escapeHtml(String(memoryBrowse.summary?.pageCount || (visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length) || 0))}건 표시 중</strong>
+            <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
             <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-memory-action="prev-page" ${Number(memoryBrowse.summary?.offset || 0) <= 0 ? 'disabled' : ''}>이전 12건</button>
-              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.hasMore ? '' : 'disabled'}>다음 12건</button>
+              <button class="ghost-button" type="button" data-memory-action="prev-page" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 12건</button>
+              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 12건</button>
             </div>
           </div>`
         : ''

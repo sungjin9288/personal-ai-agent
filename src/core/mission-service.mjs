@@ -6923,6 +6923,10 @@ function summarizeProviderExecutions(executions) {
     const pageCount = entries.length;
     const visibleEnd = offset + pageCount;
     const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
+    const hasPrev = offset > 0;
+    const hasNext = visibleEnd < filteredEntries.length;
+    const pageStart = pageCount ? offset + 1 : 0;
+    const pageEnd = pageCount ? visibleEnd : 0;
 
     return {
       entries,
@@ -6933,13 +6937,17 @@ function summarizeProviderExecutions(executions) {
         sort,
         type,
       },
-      hasMore: visibleEnd < filteredEntries.length,
+      hasMore: hasNext,
       summary: {
         ...documentRegistry.summary,
         currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
         filteredCount: filteredEntries.length,
+        hasNext,
+        hasPrev,
         offset,
         pageCount,
+        pageEnd,
+        pageStart,
         remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
         totalPages,
         visibleCount: pageCount,
@@ -7019,6 +7027,10 @@ function summarizeProviderExecutions(executions) {
     const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
     const filteredMissionCount = filteredEntries.filter((entry) => entry.scope === 'mission').length;
     const filteredWorkspaceCount = filteredEntries.filter((entry) => entry.scope === 'workspace').length;
+    const hasPrev = offset > 0;
+    const hasNext = visibleEnd < filteredEntries.length;
+    const pageStart = pageCount ? offset + 1 : 0;
+    const pageEnd = pageCount ? visibleEnd : 0;
 
     return {
       entries,
@@ -7030,16 +7042,20 @@ function summarizeProviderExecutions(executions) {
         scope,
         sort,
       },
-      hasMore: visibleEnd < filteredEntries.length,
+      hasMore: hasNext,
       missionEntries: entries.filter((entry) => entry.scope === 'mission'),
       summary: {
         currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
         filteredMissionCount,
         filteredTotal: filteredEntries.length,
         filteredWorkspaceCount,
+        hasNext,
+        hasPrev,
         missionTotal: missionEntries.length,
         offset,
         pageCount,
+        pageEnd,
+        pageStart,
         remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
         total: allEntries.length,
         totalPages,

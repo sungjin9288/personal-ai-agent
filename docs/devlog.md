@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414115000_1bb30f","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Browse Meta Contract
+
+- date: 2026-04-14T00:00:00.000Z
+- extended the harness browse summary contract so documents and memory now expose `hasPrev`, `hasNext`, `pageStart`, and `pageEnd` in addition to offset and page counts
+- moved the UI away from interpreting raw offset math directly, which makes the browse layer easier to reason about and keeps the paging controls aligned with server-clamped offsets after filter or sort changes
+- updated the harness panel copy to show `현재 범위 / 전체 검색 결과` semantics instead of only visible count, which gives operators a clearer sense of where they are inside long devlog and memory timelines
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414114000_a8f241","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Offset Paging
 
