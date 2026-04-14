@@ -1,5 +1,15 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414114000_a8f241","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
+## 2026-04-14 Harness Offset Paging
+
+- date: 2026-04-14T00:00:00.000Z
+- replaced the old `limit only` harness browse flow with mission-scoped offset paging so document and memory exploration now move across fixed browse windows instead of inflating the payload on every `더 보기`
+- added `offset` handling to both harness browse APIs and surfaced page/remaining counts in the UI, which makes larger tracked logs easier to scan without losing the single-screen operator flow
+- changed the frontend from cumulative `더 보기` state to explicit `이전 12건 / 다음 12건` navigation, resetting browse position whenever search, filter, or sort changes to keep result interpretation predictable
+- kept the implementation dependency-free and incremental: no new data store or pagination package was introduced, only service-level paging math, lightweight query routing, and browse-state wiring in the existing local UI
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414110500_3c7b91","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Harness Browse API Split
 

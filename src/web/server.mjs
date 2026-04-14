@@ -260,6 +260,7 @@ async function handleApi(request, response, url) {
       200,
       service.browseMissionHarnessDocuments(missionId, {
         limit: String(url.searchParams.get('limit') || '').trim(),
+        offset: String(url.searchParams.get('offset') || '').trim(),
         query: String(url.searchParams.get('query') || '').trim(),
         sort: String(url.searchParams.get('sort') || '').trim(),
         type: String(url.searchParams.get('type') || '').trim(),
@@ -283,6 +284,7 @@ async function handleApi(request, response, url) {
       service.browseMissionHarnessMemory(missionId, {
         kind: String(url.searchParams.get('kind') || '').trim(),
         limit: String(url.searchParams.get('limit') || '').trim(),
+        offset: String(url.searchParams.get('offset') || '').trim(),
         query: String(url.searchParams.get('query') || '').trim(),
         scope: String(url.searchParams.get('scope') || '').trim(),
         sort: String(url.searchParams.get('sort') || '').trim(),

@@ -6853,6 +6853,24 @@ function summarizeProviderExecutions(executions) {
     return Math.min(Math.max(Math.trunc(numericValue), 1), 200);
   }
 
+  function normalizeHarnessBrowseOffset(value, fallback = 0) {
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue) || numericValue < 0) {
+      return fallback;
+    }
+
+    return Math.max(Math.trunc(numericValue), 0);
+  }
+
+  function resolveHarnessBrowseOffset(offset, totalCount, limit) {
+    if (!totalCount) {
+      return 0;
+    }
+
+    const lastPageOffset = Math.floor((totalCount - 1) / limit) * limit;
+    return Math.min(offset, lastPageOffset);
+  }
+
   function browseMissionHarnessDocuments(missionId, filter = {}) {
     getMission(missionId);
 
@@ -6896,21 +6914,35 @@ function summarizeProviderExecutions(executions) {
       return rightTimestamp - leftTimestamp;
     });
 
-    const entries = filteredEntries.slice(0, limit);
+    const offset = resolveHarnessBrowseOffset(
+      normalizeHarnessBrowseOffset(filter.offset, 0),
+      filteredEntries.length,
+      limit,
+    );
+    const entries = filteredEntries.slice(offset, offset + limit);
+    const pageCount = entries.length;
+    const visibleEnd = offset + pageCount;
+    const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
 
     return {
       entries,
       filters: {
         limit,
+        offset,
         query: normalizeText(filter.query),
         sort,
         type,
       },
-      hasMore: filteredEntries.length > entries.length,
+      hasMore: visibleEnd < filteredEntries.length,
       summary: {
         ...documentRegistry.summary,
+        currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
         filteredCount: filteredEntries.length,
-        visibleCount: entries.length,
+        offset,
+        pageCount,
+        remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
+        totalPages,
+        visibleCount: pageCount,
       },
     };
   }
@@ -6976,26 +7008,42 @@ function summarizeProviderExecutions(executions) {
       return rightTimestamp - leftTimestamp;
     });
 
-    const entries = filteredEntries.slice(0, limit);
+    const offset = resolveHarnessBrowseOffset(
+      normalizeHarnessBrowseOffset(filter.offset, 0),
+      filteredEntries.length,
+      limit,
+    );
+    const entries = filteredEntries.slice(offset, offset + limit);
+    const pageCount = entries.length;
+    const visibleEnd = offset + pageCount;
+    const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
+    const filteredMissionCount = filteredEntries.filter((entry) => entry.scope === 'mission').length;
+    const filteredWorkspaceCount = filteredEntries.filter((entry) => entry.scope === 'workspace').length;
 
     return {
       entries,
       filters: {
         kind,
         limit,
+        offset,
         query: normalizeText(filter.query),
         scope,
         sort,
       },
-      hasMore: filteredEntries.length > entries.length,
+      hasMore: visibleEnd < filteredEntries.length,
       missionEntries: entries.filter((entry) => entry.scope === 'mission'),
       summary: {
-        filteredMissionCount: filteredEntries.filter((entry) => entry.scope === 'mission').length,
+        currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
+        filteredMissionCount,
         filteredTotal: filteredEntries.length,
-        filteredWorkspaceCount: filteredEntries.filter((entry) => entry.scope === 'workspace').length,
+        filteredWorkspaceCount,
         missionTotal: missionEntries.length,
+        offset,
+        pageCount,
+        remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
         total: allEntries.length,
-        visibleCount: entries.length,
+        totalPages,
+        visibleCount: pageCount,
         workspaceTotal: workspaceEntries.length,
       },
       workspaceEntries: entries.filter((entry) => entry.scope === 'workspace'),

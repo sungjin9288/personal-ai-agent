@@ -4,11 +4,13 @@ const state = {
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
+  harnessDocumentOffset: 0,
   harnessDocumentResult: null,
   harnessDocumentFilter: 'all',
   harnessDocumentQuery: '',
   harnessDocumentSort: 'latest',
   harnessDocumentVisibleCount: 12,
+  harnessMemoryOffset: 0,
   harnessMemoryResult: null,
   harnessMemoryFilterKind: 'all',
   harnessMemoryFilterScope: 'all',
@@ -350,6 +352,15 @@ function getHarnessMemorySortLabel() {
     return '종류순';
   }
   return '최신순';
+}
+
+function getHarnessPageLabel(summary = {}) {
+  const currentPage = Number(summary.currentPage || 0);
+  const totalPages = Number(summary.totalPages || 0);
+  if (!currentPage || !totalPages) {
+    return '0 / 0 페이지';
+  }
+  return `${currentPage} / ${totalPages} 페이지`;
 }
 
 function populateDocumentLogForm(entry) {
@@ -2054,14 +2065,21 @@ function renderHarnessPanel() {
   const documentBrowse = state.harnessDocumentResult || {
     entries: harnessSummary.documents?.recentEntries || [],
     filters: {
+      limit: Number(state.harnessDocumentVisibleCount || 12),
+      offset: Number(state.harnessDocumentOffset || 0),
       query: String(state.harnessDocumentQuery || ''),
       sort: String(state.harnessDocumentSort || 'latest'),
       type: String(state.harnessDocumentFilter || 'all'),
     },
     hasMore: false,
     summary: {
+      currentPage: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
       filteredCount: harnessSummary.documents?.recentEntries?.length || 0,
+      offset: Number(state.harnessDocumentOffset || 0),
+      pageCount: harnessSummary.documents?.recentEntries?.length || 0,
+      remainingCount: 0,
       trackedEntryCount: documentSummary.trackedEntryCount || 0,
+      totalPages: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
       visibleCount: harnessSummary.documents?.recentEntries?.length || 0,
     },
   };
@@ -2069,6 +2087,8 @@ function renderHarnessPanel() {
     entries: [],
     filters: {
       kind: String(state.harnessMemoryFilterKind || 'all'),
+      limit: Number(state.harnessMemoryVisibleCount || 12),
+      offset: Number(state.harnessMemoryOffset || 0),
       query: String(state.harnessMemoryQuery || ''),
       scope: String(state.harnessMemoryFilterScope || 'all'),
       sort: String(state.harnessMemorySort || 'latest'),
@@ -2076,13 +2096,28 @@ function renderHarnessPanel() {
     hasMore: false,
     missionEntries: harnessSummary.memory?.recentMissionEntries || [],
     summary: {
+      currentPage:
+        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
+          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
+          ? 1
+          : 0,
       filteredMissionCount: harnessSummary.memory?.recentMissionEntries?.length || 0,
       filteredTotal:
         (harnessSummary.memory?.recentMissionEntries?.length || 0) +
         (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
       filteredWorkspaceCount: harnessSummary.memory?.recentWorkspaceEntries?.length || 0,
       missionTotal: harnessSummary.memory?.missionCounts?.total || 0,
+      offset: Number(state.harnessMemoryOffset || 0),
+      pageCount:
+        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
+        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
+      remainingCount: 0,
       total: (harnessSummary.memory?.missionCounts?.total || 0) + (harnessSummary.memory?.workspaceCount || 0),
+      totalPages:
+        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
+          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
+          ? 1
+          : 0,
       visibleCount:
         (harnessSummary.memory?.recentMissionEntries?.length || 0) +
         (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
@@ -2102,11 +2137,13 @@ function renderHarnessPanel() {
   const documentFilterLabel = documentTypeFilter === 'all'
     ? '전체'
     : getDisplayLabel(documentTypeFilter, documentTypeFilter);
+  const documentPageLabel = getHarnessPageLabel(documentBrowse.summary);
   const memoryFilterLabel = getHarnessMemoryFilterLabel({
     kindFilter: String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim(),
     query: String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim(),
     scopeFilter: String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim(),
   });
+  const memoryPageLabel = getHarnessPageLabel(memoryBrowse.summary);
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -2155,7 +2192,7 @@ function renderHarnessPanel() {
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">문서 기록 탐색</p>
-        <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 현재 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
+        <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(documentPageLabel)} · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
@@ -2198,12 +2235,13 @@ function renderHarnessPanel() {
                     <p>${escapeHtml(documentFilterLabel)} 범위에서 ${escapeHtml(documentQuery || '검색 조건')}와 맞는 항목을 찾지 못했습니다.</p>
                   </div>`}
               ${
-                documentBrowse.hasMore
+                Number(documentBrowse.summary?.filteredCount || 0)
                   ? `<div class="harness-empty-inline">
-                      <strong>아직 ${escapeHtml(String((documentBrowse.summary?.filteredCount || 0) - (documentBrowse.summary?.visibleCount || visibleDocumentEntries.length || 0)))}건이 더 있습니다.</strong>
-                      <p>지금은 ${escapeHtml(String(documentBrowse.summary?.visibleCount || visibleDocumentEntries.length || 0))}건만 먼저 보여주고 있습니다.</p>
+                      <strong>${escapeHtml(documentPageLabel)} · 현재 ${escapeHtml(String(documentBrowse.summary?.pageCount || visibleDocumentEntries.length || 0))}건 표시 중</strong>
+                      <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="show-more">문서 더 보기</button>
+                        <button class="ghost-button" type="button" data-document-action="prev-page" ${Number(documentBrowse.summary?.offset || 0) <= 0 ? 'disabled' : ''}>이전 12건</button>
+                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.hasMore ? '' : 'disabled'}>다음 12건</button>
                       </div>
                     </div>`
                   : ''
@@ -2253,7 +2291,7 @@ function renderHarnessPanel() {
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">메모 탐색</p>
-        <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 현재 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(getHarnessMemorySortLabel())}</span>
+        <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(memoryPageLabel)} · ${escapeHtml(getHarnessMemorySortLabel())}</span>
       </div>
       <div class="harness-filter-row">
         <p class="summary-label">정렬</p>
@@ -2317,12 +2355,13 @@ function renderHarnessPanel() {
         : ''
     }
     ${
-      memoryBrowse.hasMore
+      Number(memoryBrowse.summary?.filteredTotal || 0)
         ? `<div class="harness-empty-inline">
-            <strong>아직 ${escapeHtml(String((memoryBrowse.summary?.filteredTotal || 0) - (memoryBrowse.summary?.visibleCount || visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length)))}건이 더 있습니다.</strong>
-            <p>지금은 ${escapeHtml(String(memoryBrowse.summary?.visibleCount || visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length))}건만 먼저 보여주고 있습니다.</p>
+            <strong>${escapeHtml(memoryPageLabel)} · 현재 ${escapeHtml(String(memoryBrowse.summary?.pageCount || (visibleMissionMemoryEntries.length + visibleWorkspaceMemoryEntries.length) || 0))}건 표시 중</strong>
+            <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-memory-action="show-more">메모 더 보기</button>
+              <button class="ghost-button" type="button" data-memory-action="prev-page" ${Number(memoryBrowse.summary?.offset || 0) <= 0 ? 'disabled' : ''}>이전 12건</button>
+              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.hasMore ? '' : 'disabled'}>다음 12건</button>
             </div>
           </div>`
         : ''
@@ -2452,7 +2491,7 @@ function wireDocumentRowActions() {
   elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', async (event) => {
     try {
       state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest';
-      state.harnessDocumentVisibleCount = 12;
+      state.harnessDocumentOffset = 0;
       await loadHarnessDocuments();
       renderHarnessPanel();
     } catch (error) {
@@ -2460,10 +2499,25 @@ function wireDocumentRowActions() {
     }
   });
 
-  elements.harnessSource.querySelectorAll('[data-document-action="show-more"]').forEach((button) => {
+  elements.harnessSource.querySelectorAll('[data-document-action="prev-page"]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
-        state.harnessDocumentVisibleCount += 12;
+        state.harnessDocumentOffset = Math.max(
+          Number(state.harnessDocumentOffset || 0) - Number(state.harnessDocumentVisibleCount || 12),
+          0,
+        );
+        await loadHarnessDocuments();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="next-page"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        state.harnessDocumentOffset += Number(state.harnessDocumentVisibleCount || 12);
         await loadHarnessDocuments();
         renderHarnessPanel();
       } catch (error) {
@@ -2506,7 +2560,7 @@ function wireMemoryRowActions() {
   elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
     try {
       state.harnessMemoryQuery = String(event.target.value || '');
-      state.harnessMemoryVisibleCount = 12;
+      state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
     } catch (error) {
@@ -2517,7 +2571,7 @@ function wireMemoryRowActions() {
   elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', async (event) => {
     try {
       state.harnessMemoryFilterScope = String(event.target.value || 'all');
-      state.harnessMemoryVisibleCount = 12;
+      state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
     } catch (error) {
@@ -2528,7 +2582,7 @@ function wireMemoryRowActions() {
   elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', async (event) => {
     try {
       state.harnessMemoryFilterKind = String(event.target.value || 'all');
-      state.harnessMemoryVisibleCount = 12;
+      state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
     } catch (error) {
@@ -2539,7 +2593,7 @@ function wireMemoryRowActions() {
   elements.harnessMemory.querySelector('#harness-memory-sort')?.addEventListener('change', async (event) => {
     try {
       state.harnessMemorySort = String(event.target.value || 'latest').trim() || 'latest';
-      state.harnessMemoryVisibleCount = 12;
+      state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
     } catch (error) {
@@ -2547,10 +2601,25 @@ function wireMemoryRowActions() {
     }
   });
 
-  elements.harnessMemory.querySelectorAll('[data-memory-action="show-more"]').forEach((button) => {
+  elements.harnessMemory.querySelectorAll('[data-memory-action="prev-page"]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
-        state.harnessMemoryVisibleCount += 12;
+        state.harnessMemoryOffset = Math.max(
+          Number(state.harnessMemoryOffset || 0) - Number(state.harnessMemoryVisibleCount || 12),
+          0,
+        );
+        await loadHarnessMemory();
+        renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+
+  elements.harnessMemory.querySelectorAll('[data-memory-action="next-page"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        state.harnessMemoryOffset += Number(state.harnessMemoryVisibleCount || 12);
         await loadHarnessMemory();
         renderHarnessPanel();
       } catch (error) {
@@ -2562,11 +2631,13 @@ function wireMemoryRowActions() {
 
 function resetHarnessFilterState() {
   state.harnessDocumentFilter = 'all';
+  state.harnessDocumentOffset = 0;
   state.harnessDocumentQuery = '';
   state.harnessDocumentSort = 'latest';
   state.harnessDocumentVisibleCount = 12;
   state.harnessMemoryFilterKind = 'all';
   state.harnessMemoryFilterScope = 'all';
+  state.harnessMemoryOffset = 0;
   state.harnessMemoryQuery = '';
   state.harnessMemorySort = 'latest';
   state.harnessMemoryVisibleCount = 12;
@@ -3314,11 +3385,13 @@ async function loadHarnessDocuments(missionId = state.selectedMissionId) {
 
   const params = new URLSearchParams({
     limit: String(state.harnessDocumentVisibleCount || 12),
+    offset: String(state.harnessDocumentOffset || 0),
     query: String(state.harnessDocumentQuery || ''),
     sort: String(state.harnessDocumentSort || 'latest'),
     type: String(state.harnessDocumentFilter || 'all'),
   });
   const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/documents?${params.toString()}`);
+  state.harnessDocumentOffset = Number(payload.filters?.offset || 0);
   state.harnessDocumentResult = payload;
   return payload;
 }
@@ -3332,11 +3405,13 @@ async function loadHarnessMemory(missionId = state.selectedMissionId) {
   const params = new URLSearchParams({
     kind: String(state.harnessMemoryFilterKind || 'all'),
     limit: String(state.harnessMemoryVisibleCount || 12),
+    offset: String(state.harnessMemoryOffset || 0),
     query: String(state.harnessMemoryQuery || ''),
     scope: String(state.harnessMemoryFilterScope || 'all'),
     sort: String(state.harnessMemorySort || 'latest'),
   });
   const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/memory?${params.toString()}`);
+  state.harnessMemoryOffset = Number(payload.filters?.offset || 0);
   state.harnessMemoryResult = payload;
   return payload;
 }
@@ -3629,14 +3704,14 @@ async function handleLegacyDocumentMigration() {
 
 async function handleHarnessDocumentSearch(event) {
   state.harnessDocumentQuery = String(event.target?.value || '');
-  state.harnessDocumentVisibleCount = 12;
+  state.harnessDocumentOffset = 0;
   await loadHarnessDocuments();
   renderHarnessPanel();
 }
 
 async function handleHarnessDocumentFilter(event) {
   state.harnessDocumentFilter = String(event.target?.value || 'all').trim() || 'all';
-  state.harnessDocumentVisibleCount = 12;
+  state.harnessDocumentOffset = 0;
   await loadHarnessDocuments();
   renderHarnessPanel();
 }
