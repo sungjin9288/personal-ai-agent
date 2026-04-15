@@ -63,6 +63,7 @@ npm run ui
 - 상단 command header는 핵심 3개 메트릭과 짧은 상태 신호만 남겨, 첫 화면에서 현재 단계와 다음 행동이 바로 읽히도록 압축
 - `지금 할 일` 패널과 진행 흐름 strip은 하나의 상단 control surface처럼 이어져, 현재 단계 판단과 다음 이동을 같은 문맥에서 처리
 - 현재 선택한 `workspace / mission / 단계 / 세부 탭 / session / artifact`는 URL query로 같이 동기화되며, 직접 클릭해 바꾼 상태는 browser history에도 쌓여 새로고침, 링크 공유, 뒤로가기/앞으로가기까지 같은 작업면 기준으로 복원 가능
+- 상단 `지금 해야 할 일` 패널에는 `현재 링크 복사`와 `보기 초기화` 액션이 있어, operator가 현재 작업면을 바로 공유하거나 추천 단계 기준 기본 보기로 빠르게 되돌릴 수 있음
 - `미션 정하기` 단계에서 playbook 선택, 템플릿 선택, mission 작성
 - `실행하기` 단계에서 provider 지정 실행과 manager → planner → executor → reviewer 흐름 확인
 - `결과 보기` 단계는 대표 결과물, 검토 상태, 마무리 체크리스트를 먼저 보여주고, 아래 `결과와 기록` workbench에서 본문과 실행 타임라인을 함께 확인

@@ -1162,6 +1162,15 @@
 - kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415102000_24a51b","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Share/Reset View Pass
+
+- date: 2026-04-15T00:00:00.000Z
+- added `현재 링크 복사` and `보기 초기화` actions to the top control surface so the new URL-synced operator state is immediately usable for sharing and quick recovery
+- implemented a lightweight UI notice path instead of extra modal chrome, which keeps the single-screen work surface intact while still confirming copy/reset actions
+- kept reset semantics narrow: it reopens the currently selected mission in its default recommended view or falls back to the first visible mission, rather than mutating any underlying mission data
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415091500_5c8b4e","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Browser History Navigation Pass
 

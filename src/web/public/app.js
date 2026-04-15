@@ -26,6 +26,8 @@ const state = {
   selectedArtifactId: null,
   selectedMissionId: null,
   selectedSessionId: null,
+  uiNotice: '',
+  uiNoticeTimer: null,
   workspaces: [],
 };
 
@@ -305,6 +307,23 @@ function writeUiStateToUrl({ historyMode = 'replace' } = {}) {
 
 function stripFileExtension(fileName = '') {
   return String(fileName).replace(/\.[^.]+$/, '');
+}
+
+function setUiNotice(message = '') {
+  state.uiNotice = String(message || '').trim();
+  if (state.uiNoticeTimer) {
+    window.clearTimeout(state.uiNoticeTimer);
+    state.uiNoticeTimer = null;
+  }
+  renderFlowState();
+
+  if (state.uiNotice) {
+    state.uiNoticeTimer = window.setTimeout(() => {
+      state.uiNotice = '';
+      state.uiNoticeTimer = null;
+      renderFlowState();
+    }, 2400);
+  }
 }
 
 function getFormEditingId(form) {
@@ -885,6 +904,16 @@ function wireQuickActions(scope = document) {
 
       if (action === 'switch-tab') {
         setActiveDetailTab(value || 'artifacts', { urlMode: 'push' });
+        return;
+      }
+
+      if (action === 'copy-view-link') {
+        void copyCurrentViewLink();
+        return;
+      }
+
+      if (action === 'reset-view') {
+        void resetCurrentView();
       }
     });
   });
@@ -927,6 +956,37 @@ function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {})
 function openComposer() {
   setActiveStep('step-setup', { urlMode: 'push' });
   elements.missionForm.elements.title?.focus();
+}
+
+async function copyCurrentViewLink() {
+  const currentUrl = `${window.location.origin}${buildUiStateUrl()}`;
+  try {
+    if (!navigator.clipboard?.writeText) {
+      throw new Error('clipboard-unavailable');
+    }
+    await navigator.clipboard.writeText(currentUrl);
+    setUiNotice('현재 작업면 링크를 복사했습니다.');
+  } catch {
+    window.prompt('현재 작업면 링크를 복사하세요.', currentUrl);
+    setUiNotice('현재 작업면 링크를 표시했습니다.');
+  }
+}
+
+async function resetCurrentView() {
+  const visibleMission = filteredMissions();
+  const targetMissionId =
+    state.selectedMissionId && visibleMission.some(({ mission }) => mission.id === state.selectedMissionId)
+      ? state.selectedMissionId
+      : visibleMission[0]?.mission?.id || null;
+
+  if (targetMissionId) {
+    await selectMission(targetMissionId, { urlMode: 'push' });
+    setUiNotice('현재 보기를 기본 단계 기준으로 정리했습니다.');
+    return;
+  }
+
+  clearMissionSelection({ urlMode: 'push' });
+  setUiNotice('현재 보기를 초기 상태로 정리했습니다.');
 }
 
 function getFlowState() {
@@ -1026,6 +1086,7 @@ function renderFlowState() {
   const harnessState = getHarnessSummaryState();
   const hasHarnessRecommendation = Boolean(harnessState.topRecommendation);
   const topHarnessAction = harnessState.recommendationAction;
+  const hasMissionSelection = Boolean(state.selectedMissionId);
 
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
@@ -1051,6 +1112,12 @@ function renderFlowState() {
               `
               : ''
           }
+          <button class="ghost-button" type="button" data-ui-action="copy-view-link">
+            현재 링크 복사
+          </button>
+          <button class="ghost-button" type="button" data-ui-action="reset-view">
+            ${hasMissionSelection ? '보기 초기화' : '초기 상태로'}
+          </button>
         </div>
       </div>
       <div class="flow-status-inline">
@@ -1067,6 +1134,11 @@ function renderFlowState() {
           <strong>${escapeHtml(hasHarnessRecommendation ? harnessState.topRecommendation.title : `권장 조치 없음 · 문서 ${harnessState.docsAvailableCount}/${harnessState.docsTotalCount}`)}</strong>
         </span>
       </div>
+      ${
+        state.uiNotice
+          ? `<p class="flow-status-note">${escapeHtml(state.uiNotice)}</p>`
+          : ''
+      }
     `;
     wireQuickActions(elements.flowStatus);
   }

@@ -333,6 +333,13 @@ button {
   flex: 0 0 auto;
 }
 
+.flow-status-note {
+  margin: -1px 0 0;
+  color: var(--accent);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
 .flow-shell {
   grid-area: flow;
   display: flex;
