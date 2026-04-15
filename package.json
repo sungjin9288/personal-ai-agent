@@ -15,6 +15,7 @@
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",
     "closeout:execution-v1": "node scripts/build-execution-v1-closeout.mjs",
+    "snapshot:execution-v1": "node scripts/archive-execution-v1-snapshot.mjs",
     "preflight:execution-v1:openai": "node scripts/preflight-execution-v1-live.mjs openai",
     "preflight:execution-v1:anthropic": "node scripts/preflight-execution-v1-live.mjs anthropic",
     "preflight:execution-v1:local": "node scripts/preflight-execution-v1-live.mjs local",
