@@ -167,6 +167,20 @@ export function parseOptionalUsdRate(value, label) {
   return parsed;
 }
 
+export function parseOptionalTimeoutMs(value, fallback, label) {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return Number(fallback);
+  }
+
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`${label} must be a non-negative number. Received: ${normalized}`);
+  }
+
+  return parsed;
+}
+
 export function estimateUsageCostUsd({ pricing = {}, usage = {} } = {}) {
   const inputTokens = normalizeMetricNumber(usage.inputTokens, null);
   const outputTokens = normalizeMetricNumber(usage.outputTokens, null);

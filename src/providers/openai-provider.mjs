@@ -4,6 +4,7 @@ import {
   estimateUsageCostUsd,
   extractProviderFailure,
   normalizeUsageMetrics,
+  parseOptionalTimeoutMs,
   parseOptionalUsdRate,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
@@ -31,6 +32,8 @@ function resolveOpenAIConfig(env) {
 
   let inputCostPer1MUsd;
   let outputCostPer1MUsd;
+  let probeTimeoutMs;
+  let runTimeoutMs;
   try {
     inputCostPer1MUsd = parseOptionalUsdRate(
       env[OPENAI_SPEC.envKeys.inputCostPer1MUsd],
@@ -39,6 +42,16 @@ function resolveOpenAIConfig(env) {
     outputCostPer1MUsd = parseOptionalUsdRate(
       env[OPENAI_SPEC.envKeys.outputCostPer1MUsd],
       OPENAI_SPEC.envKeys.outputCostPer1MUsd,
+    );
+    probeTimeoutMs = parseOptionalTimeoutMs(
+      env.OPENAI_PROBE_TIMEOUT_MS,
+      OPENAI_SPEC.runtime.probeTimeoutMs,
+      'OPENAI_PROBE_TIMEOUT_MS',
+    );
+    runTimeoutMs = parseOptionalTimeoutMs(
+      env.OPENAI_RUN_TIMEOUT_MS,
+      OPENAI_SPEC.runtime.runTimeoutMs,
+      'OPENAI_RUN_TIMEOUT_MS',
     );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
@@ -56,6 +69,11 @@ function resolveOpenAIConfig(env) {
     pricing: {
       inputCostPer1MUsd,
       outputCostPer1MUsd,
+    },
+    runtime: {
+      maxAttempts: OPENAI_SPEC.runtime.maxAttempts,
+      probeTimeoutMs,
+      runTimeoutMs,
     },
   };
 }
@@ -84,10 +102,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
         },
-        maxAttempts: OPENAI_SPEC.runtime.maxAttempts,
+        maxAttempts: config.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'OpenAI',
-        timeoutMs: OPENAI_SPEC.runtime.probeTimeoutMs,
+        timeoutMs: config.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
       const models = Array.isArray(payload?.data)
@@ -124,10 +142,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
             model: config.model,
           }),
         },
-        maxAttempts: OPENAI_SPEC.runtime.maxAttempts,
+        maxAttempts: config.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'OpenAI',
-        timeoutMs: OPENAI_SPEC.runtime.runTimeoutMs,
+        timeoutMs: config.runtime.runTimeoutMs,
         url: `${config.baseUrl}/responses`,
       });
       const providerResponseId = normalizeText(payload.id);

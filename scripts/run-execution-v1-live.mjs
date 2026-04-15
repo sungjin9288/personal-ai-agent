@@ -1,6 +1,9 @@
+import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const repoDir = process.cwd();
+const evidenceScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-evidence.mjs');
+const closeoutScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-closeout.mjs');
 
 const providerConfig = {
   anthropic: {
@@ -48,8 +51,8 @@ if (!process.env[config.envKey]) {
   process.exit(1);
 }
 
-const evidenceResult = runJsonScript('npm', ['run', 'evidence:execution-v1', '--', config.flag]);
-const closeoutResult = runJsonScript('npm', ['run', 'closeout:execution-v1', '--', config.flag]);
+const evidenceResult = runJsonScript(evidenceScriptPath, [config.flag]);
+const closeoutResult = runJsonScript(closeoutScriptPath, [config.flag]);
 const liveResult = Array.isArray(evidenceResult.liveValidation)
   ? evidenceResult.liveValidation.find((item) => item.provider === provider) || null
   : null;
@@ -91,7 +94,7 @@ console.log(
 );
 
 function runJsonScript(command, args) {
-  const result = spawnSync(command, args, {
+  const result = spawnSync(process.execPath, [command, ...args], {
     cwd: repoDir,
     encoding: 'utf8',
     env: process.env,

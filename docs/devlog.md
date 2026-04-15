@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T19:00:00.000Z","id":"doclog_20260415190000_b6d1af","type":"devlog","updatedAt":"2026-04-15T19:00:00.000Z"} -->
+## 2026-04-15 OpenAI Timeout Envelope Hardening
+
+- date: 2026-04-15T19:00:00.000Z
+- raised the default OpenAI provider `runTimeoutMs` from 20 seconds to 45 seconds after inspecting a real live-validation failure where manager completed but planner hit the old timeout ceiling twice
+- added `OPENAI_RUN_TIMEOUT_MS` and `OPENAI_PROBE_TIMEOUT_MS` env overrides so operator reruns can widen or narrow the provider timeout envelope without another code change
+- extended the deterministic OpenAI smoke to assert that the env timeout override actually produces a bounded timeout failure path, so the new escape hatch is covered even when no live API key is available
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T18:25:00.000Z","id":"doclog_20260415182500_a4c91e","type":"devlog","updatedAt":"2026-04-15T18:25:00.000Z"} -->
 ## 2026-04-15 Live Validation Failure Triage Surface
 

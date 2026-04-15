@@ -24,6 +24,8 @@ const PROVIDER_CATALOG = Object.freeze({
     optionalEnv: Object.freeze([
       'OPENAI_MODEL',
       'OPENAI_BASE_URL',
+      'OPENAI_PROBE_TIMEOUT_MS',
+      'OPENAI_RUN_TIMEOUT_MS',
       'OPENAI_INPUT_COST_PER_1M_USD',
       'OPENAI_OUTPUT_COST_PER_1M_USD',
     ]),
@@ -43,7 +45,7 @@ const PROVIDER_CATALOG = Object.freeze({
     runtime: Object.freeze({
       maxAttempts: 2,
       probeTimeoutMs: 8000,
-      runTimeoutMs: 20000,
+      runTimeoutMs: 45000,
     }),
     configurationFields: Object.freeze([
       Object.freeze({
@@ -60,6 +62,16 @@ const PROVIDER_CATALOG = Object.freeze({
         key: 'model',
         envKey: 'OPENAI_MODEL',
         defaultValue: 'gpt-5.2',
+      }),
+      Object.freeze({
+        key: 'probeTimeoutMs',
+        envKey: 'OPENAI_PROBE_TIMEOUT_MS',
+        defaultValue: '8000',
+      }),
+      Object.freeze({
+        key: 'runTimeoutMs',
+        envKey: 'OPENAI_RUN_TIMEOUT_MS',
+        defaultValue: '45000',
       }),
       Object.freeze({
         key: 'inputCostPer1MUsd',
