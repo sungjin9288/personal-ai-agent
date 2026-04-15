@@ -467,7 +467,63 @@ function buildLiveValidationArgs(body = {}) {
   return args;
 }
 
+function buildExecutionV1RefreshPreflight(args = []) {
+  const normalizedArgs = Array.isArray(args) ? args.filter(Boolean) : [];
+  const status = buildExecutionV1Status();
+  const liveProvider = normalizedArgs.includes('--live-openai')
+    ? 'openai'
+    : normalizedArgs.includes('--live-anthropic')
+      ? 'anthropic'
+      : normalizedArgs.includes('--live-local')
+        ? 'local'
+        : '';
+
+  if (!liveProvider) {
+    return {
+      action: 'current-surface',
+      allowed: true,
+      checkedAt: new Date().toISOString(),
+      confirmRequired: true,
+      notes: status.refreshPlan?.notes || [],
+      affectedPaths: status.refreshPlan?.affectsPaths || [],
+      summary:
+        status.refreshPlan?.summary
+        || 'current surface evidence와 closeout를 다시 쓰고 deterministic verification을 재실행합니다.',
+    };
+  }
+
+  const providerPreflight = runExecutionV1Preflight(liveProvider);
+  const allowed = providerPreflight.status === 'ready-for-live-validation';
+  return {
+    action: `live-${liveProvider}`,
+    allowed,
+    checkedAt: new Date().toISOString(),
+    confirmRequired: false,
+    notes: [
+      providerPreflight.status === 'ready-but-missing-env'
+        ? `${providerPreflight.envKey}가 필요합니다.`
+        : providerPreflight.status === 'blocked'
+          ? 'deterministic readiness가 아직 닫히지 않았습니다.'
+          : 'live validation 실행 가능 상태입니다.',
+    ],
+    provider: liveProvider,
+    providerPreflight,
+    summary: allowed
+      ? `${liveProvider} live validation과 current surface regeneration을 실행할 수 있습니다.`
+      : `${liveProvider} live validation은 아직 실행할 수 없습니다.`,
+  };
+}
+
 function refreshExecutionV1Artifacts(args = []) {
+  const preflight = buildExecutionV1RefreshPreflight(args);
+  if (!preflight.allowed) {
+    const reason = preflight.providerPreflight?.status === 'ready-but-missing-env'
+      ? `${preflight.providerPreflight.envKey}가 필요합니다.`
+      : preflight.providerPreflight?.status === 'blocked'
+        ? 'provider live validation preflight가 통과되지 않았습니다.'
+        : 'execution-v1 refresh preflight가 통과되지 않았습니다.';
+    throw new Error(reason);
+  }
   const result = spawnSync(process.execPath, [closeoutScriptPath, ...args], {
     cwd: rootDir,
     encoding: 'utf8',
@@ -677,7 +733,37 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/refresh') {
     const body = await readJsonBody(request);
-    sendJson(response, 200, refreshExecutionV1Artifacts(buildLiveValidationArgs(body)));
+    const args = buildLiveValidationArgs(body);
+    const preflight = buildExecutionV1RefreshPreflight(args);
+    const isCurrentSurfaceRefresh = !args.length;
+    if (!preflight.allowed) {
+      sendJson(response, 409, {
+        error: 'refresh-not-allowed',
+        message: preflight.summary,
+        preflight,
+        status: buildExecutionV1Status(),
+      });
+      return;
+    }
+    if (isCurrentSurfaceRefresh && !body.confirmCurrentSurfaceRewrite) {
+      sendJson(response, 409, {
+        error: 'refresh-confirmation-required',
+        message: 'current surface evidence/closeout 재생성은 명시적 확인이 필요합니다.',
+        preflight,
+        status: buildExecutionV1Status(),
+      });
+      return;
+    }
+    sendJson(response, 200, refreshExecutionV1Artifacts(args));
+    return;
+  }
+
+  if (request.method === 'POST' && pathname === '/api/execution-v1/refresh/preflight') {
+    const body = await readJsonBody(request);
+    sendJson(response, 200, {
+      preflight: buildExecutionV1RefreshPreflight(buildLiveValidationArgs(body)),
+      status: buildExecutionV1Status(),
+    });
     return;
   }
 

@@ -26,6 +26,7 @@ const state = {
   missions: [],
   providers: [],
   releaseRegenerationConfirmArmed: false,
+  releaseRefreshPreflight: null,
   releasePreflightResults: {},
   releaseStatus: null,
   selectedPlaybookId: 'team-pipeline',
@@ -1009,17 +1010,16 @@ function wireQuickActions(scope = document) {
 
       if (action === 'regenerate-release-surface') {
         if (!state.releaseRegenerationConfirmArmed) {
-          state.releaseRegenerationConfirmArmed = true;
-          renderReleaseStatus();
-          setUiNotice('current surface 재생성 확인이 필요합니다. 영향 요약을 확인한 뒤 재생성 확인을 눌러 주세요.');
+          void armReleaseRegenerationConfirm();
           return;
         }
-        void refreshReleaseStatus();
+        void refreshReleaseStatus('', { confirmCurrentSurfaceRewrite: true });
         return;
       }
 
       if (action === 'cancel-regenerate-release-surface') {
         state.releaseRegenerationConfirmArmed = false;
+        state.releaseRefreshPreflight = null;
         renderReleaseStatus();
         setUiNotice('current surface 재생성 확인을 취소했습니다.');
         return;
@@ -3221,6 +3221,7 @@ function renderReleaseStatus() {
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const refreshPlan = release.refreshPlan || null;
+  const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
@@ -3339,8 +3340,11 @@ function renderReleaseStatus() {
           ${regenerationConfirmArmed
             ? `
                 <div class="release-stale-note">
-                  <div class="release-stale-line">재생성 확인이 활성화되었습니다. 이 작업은 current surface evidence와 closeout를 다시 쓰고, deterministic verification을 다시 실행합니다.</div>
+                  <div class="release-stale-line">${escapeHtml(releaseRefreshPreflight?.summary || '재생성 확인이 활성화되었습니다. 이 작업은 current surface evidence와 closeout를 다시 쓰고, deterministic verification을 다시 실행합니다.')}</div>
                   <div class="release-stale-line">실행하려면 아래의 재생성 확인을 누르고, 취소하려면 현재 재생성 취소를 선택하세요.</div>
+                  ${(releaseRefreshPreflight?.notes || [])
+                    .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
+                    .join('')}
                 </div>
               `
             : ''}
@@ -4729,6 +4733,7 @@ async function loadReleaseStatus() {
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
   state.releaseRegenerationConfirmArmed = false;
+  state.releaseRefreshPreflight = null;
   renderReleaseStatus();
   renderDetailTabLabels();
   renderDetailContextbar();
@@ -4747,10 +4752,42 @@ async function reloadReleaseStatus() {
 }
 
 async function refreshReleaseStatus(liveMode = '') {
+  return refreshReleaseStatusWithOptions(liveMode, {});
+}
+
+async function armReleaseRegenerationConfirm() {
+  try {
+    setUiNotice('current surface 재생성 preflight를 확인 중입니다.');
+    const payload = await api('/api/execution-v1/refresh/preflight', {
+      body: JSON.stringify({
+        liveAnthropic: false,
+        liveLocal: false,
+        liveOpenAI: false,
+      }),
+      method: 'POST',
+    });
+    if (!payload.preflight?.allowed) {
+      window.alert(payload.preflight?.summary || 'current surface 재생성 preflight가 차단되었습니다.');
+      return;
+    }
+    state.releaseStatus = payload.status || state.releaseStatus;
+    state.releaseRefreshPreflight = payload.preflight;
+    state.releaseRegenerationConfirmArmed = true;
+    renderReleaseStatus();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    setUiNotice('current surface 재생성 확인이 준비되었습니다. 영향 요약을 확인한 뒤 재생성 확인을 눌러 주세요.');
+  } catch (error) {
+    window.alert(error.message || 'current surface 재생성 preflight 확인에 실패했습니다.');
+  }
+}
+
+async function refreshReleaseStatusWithOptions(liveMode = '', { confirmCurrentSurfaceRewrite = false } = {}) {
   try {
     const normalizedLiveMode = String(liveMode || '').trim();
     const isLiveRun = Boolean(normalizedLiveMode);
     state.releaseRegenerationConfirmArmed = false;
+    state.releaseRefreshPreflight = null;
     setUiNotice(
       isLiveRun
         ? `${normalizedLiveMode} live validation과 current surface를 갱신 중입니다.`
@@ -4758,6 +4795,7 @@ async function refreshReleaseStatus(liveMode = '') {
     );
     const payload = await api('/api/execution-v1/refresh', {
       body: JSON.stringify({
+        confirmCurrentSurfaceRewrite,
         liveAnthropic: normalizedLiveMode === 'anthropic',
         liveLocal: normalizedLiveMode === 'local',
         liveOpenAI: normalizedLiveMode === 'openai',

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:30:00.000Z","id":"doclog_20260416003000_184a62","type":"devlog","updatedAt":"2026-04-16T00:30:00.000Z"} -->
+## 2026-04-16 Server-Side Regeneration Preflight
+
+- date: 2026-04-16T00:30:00.000Z
+- added `/api/execution-v1/refresh/preflight` so current surface regeneration is armed only after the server re-evaluates overwrite impact and deterministic rerun semantics, instead of relying on stale client-side state alone
+- changed `/api/execution-v1/refresh` to require `confirmCurrentSurfaceRewrite` for plain current-surface regeneration and to return a 409 with preflight metadata when the explicit confirm flag is missing
+- kept provider live rerun behavior unchanged while making current-surface rewrite a server-guarded action, which closes the gap between UI confirmation and actual mutation permission
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:15:00.000Z","id":"doclog_20260416001500_703c11","type":"devlog","updatedAt":"2026-04-16T00:15:00.000Z"} -->
 ## 2026-04-16 Release Regeneration Confirm Step
 
