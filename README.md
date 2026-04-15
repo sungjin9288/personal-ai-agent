@@ -544,3 +544,5 @@ provider live validation도 같은 operator contract를 따릅니다. release ta
 release tab은 이제 `권장 다음 액션`도 같이 계산합니다. 이 목록은 stale current surface, snapshot freeze 가능 여부, provider env/preflight 상태를 기반으로 `지금 눌러야 할 버튼`과 `왜 필요한지`를 먼저 보여 줍니다. 따라서 operator는 summary badge를 해석한 뒤 다음 액션을 추론하지 않고, mutable current surface 운영과 optional provider expansion을 바로 분리해서 볼 수 있습니다.
 
 release tab에는 `recent release action history`도 함께 쌓입니다. `/api/execution-v1/refresh(preflight)`, `/api/execution-v1/snapshot(preflight)`, `/api/execution-v1/preflight`에서 발생한 `allowed / blocked / confirmation-required / completed / failed` 결과를 최근 순으로 보여 주므로, operator는 방금 어떤 release action을 눌렀고 왜 막혔는지를 같은 화면에서 다시 확인할 수 있습니다.
+
+`권장 다음 액션` 카드도 이제 이 history와 연결됩니다. 같은 액션에 대한 최근 preflight나 confirmation-required 결과가 있으면 카드 안에서 `최근 시도 / 마지막 summary`를 바로 보여 주므로, operator는 history 섹션까지 내려가지 않아도 왜 해당 액션이 다시 필요한지 즉시 파악할 수 있습니다.

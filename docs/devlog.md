@@ -9,6 +9,15 @@
 - kept the change storage-free by deriving the queue entirely from current evidence/closeout summary, snapshot eligibility, and provider readiness instead of introducing new persisted release state
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:30:00.000Z","id":"doclog_20260416003000_d1b84c","type":"devlog","updatedAt":"2026-04-16T00:30:00.000Z"} -->
+## 2026-04-16 Recommendation History Link Pass
+
+- date: 2026-04-16T00:30:00.000Z
+- linked `권장 다음 액션` cards to the persisted release action history so each recommendation can surface its latest relevant preflight, confirmation-required, or blocked attempt inline
+- kept the implementation read-only by deriving the latest matching history entry in the client from existing `recommendedActions` and `releaseActionHistory` payloads instead of adding another server-side summary layer
+- improved operator triage speed by showing `최근 시도 / 마지막 summary / 시각` directly on the recommendation card, which reduces the need to scan the full history list for the same action context
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:00:00.000Z","id":"doclog_20260416000000_7a4f31","type":"devlog","updatedAt":"2026-04-16T00:00:00.000Z"} -->
 ## 2026-04-16 Release Action History Pass
 

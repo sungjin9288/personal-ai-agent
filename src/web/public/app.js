@@ -799,6 +799,45 @@ function getReleaseActionScopeLabel(scope = '') {
   );
 }
 
+function getLatestReleaseActionForRecommendation(item, releaseActionHistory = [], providerReadiness = []) {
+  const action = String(item?.action || '').trim();
+  const actionProvider = String(item?.actionProvider || '').trim();
+  const providerFromEnv = String(
+    providerReadiness.find((entry) => String(entry.envKey || '').trim() === String(item?.envKey || '').trim())?.provider || '',
+  ).trim();
+  const provider = actionProvider || providerFromEnv;
+
+  if (!Array.isArray(releaseActionHistory) || !releaseActionHistory.length) {
+    return null;
+  }
+
+  return (
+    releaseActionHistory.find((historyItem) => {
+      const historyAction = String(historyItem?.action || '').trim();
+      const historyScope = String(historyItem?.scope || '').trim();
+      const historyProvider = String(historyItem?.provider || '').trim();
+
+      if (action === 'regenerate-release-surface') {
+        return historyScope === 'current-surface' && (historyAction === 'refresh' || historyAction === 'refresh-preflight');
+      }
+
+      if (action === 'archive-release-snapshot') {
+        return historyScope === 'snapshot' && (historyAction === 'snapshot' || historyAction === 'snapshot-preflight');
+      }
+
+      if (action === 'run-release-preflight' && provider) {
+        return historyAction === 'provider-preflight' && historyProvider === provider;
+      }
+
+      if (!action && provider) {
+        return historyProvider === provider;
+      }
+
+      return false;
+    }) || null
+  );
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -3514,11 +3553,21 @@ function renderReleaseStatus() {
               ${(recommendedActions.length
                 ? recommendedActions
                   .map(
-                    (item) => `
+                    (item) => {
+                      const latestAction = getLatestReleaseActionForRecommendation(item, releaseActionHistory, providerReadiness);
+                      return `
                       <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')}">
                         <div>
                           <div class="item-title">${escapeHtml(item.label || '권장 액션')}</div>
                           <div class="item-meta">${escapeHtml(item.description || '')}</div>
+                          ${latestAction
+                            ? `
+                                <div class="item-meta">
+                                  최근 시도 · ${escapeHtml(getReleaseActionLabel(latestAction.action))} · ${escapeHtml(latestAction.outcome || 'unknown')} · ${escapeHtml(formatDate(latestAction.createdAt))}
+                                </div>
+                                <div class="item-meta">${escapeHtml(latestAction.summary || '최근 action summary가 없습니다.')}</div>
+                              `
+                            : ''}
                         </div>
                         <div class="release-provider-meta">
                           <span class="mini-badge ${getReleaseStatusBadge(item.category === 'required' ? 'blocked' : item.category === 'release' ? 'ready' : 'not-run')}">${escapeHtml(item.category || 'info')}</span>
@@ -3536,7 +3585,8 @@ function renderReleaseStatus() {
                               : ''}
                         </div>
                       </article>
-                    `,
+                    `;
+                    },
                   )
                   .join('')
                 : `
