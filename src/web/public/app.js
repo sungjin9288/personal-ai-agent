@@ -4,6 +4,9 @@ const state = {
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
+  executionLogs: null,
+  executionPollTimer: null,
+  executionStatus: null,
   harnessDocumentOffset: 0,
   harnessDocumentResult: null,
   harnessDocumentFilter: 'all',
@@ -146,6 +149,7 @@ const elements = {
   documentLogSearch: document.getElementById('document-log-search'),
   documentLogCancelButton: document.getElementById('document-log-cancel-button'),
   documentLogSubmitButton: document.getElementById('document-log-submit-button'),
+  executionConsole: document.getElementById('execution-console'),
   flowStatus: document.getElementById('flow-status'),
   harnessLoops: document.getElementById('harness-loops'),
   harnessMemory: document.getElementById('harness-memory'),
@@ -576,6 +580,21 @@ function getStatusClass(status = '') {
   return `status-${String(status).trim().replaceAll(' ', '-').replaceAll('/', '-').toLowerCase()}`;
 }
 
+function stopExecutionPolling() {
+  if (state.executionPollTimer) {
+    clearInterval(state.executionPollTimer);
+    state.executionPollTimer = null;
+  }
+}
+
+function getExecutionStatusPayload() {
+  return state.executionStatus?.execution || state.missionDetail?.execution || null;
+}
+
+function isExecutionMissionSelected() {
+  return state.missionDetail?.mission?.mode === 'engineering';
+}
+
 const DISPLAY_LABELS = {
   'approval-resolution': '승인 처리 결과',
   approved: '승인됨',
@@ -591,6 +610,10 @@ const DISPLAY_LABELS = {
   engineering: '엔지니어링 작업',
   'env-missing': '환경 변수 누락',
   'execution-handoff': '실행 인계',
+  execution_lease: '실행 lease',
+  'execution-manifest': '실행 manifest',
+  execution_ready: '실행 준비',
+  execution_running: '실행 중',
   failed: '실패',
   fact: '사실',
   high: '높음',
@@ -603,17 +626,22 @@ const DISPLAY_LABELS = {
   normal: '보통',
   open: '열림',
   pending: '대기',
+  'pending-approval': '승인 대기',
   planner: '플래너',
   prd: 'PRD',
   queued: '대기열',
   ready: '준비됨',
+  'approval-required': '승인 필요',
+  required: '필요',
   reference: '참고 레포 기록',
   rejected: '반려됨',
   retryReady: '재실행 권장',
   reviewer: '리뷰어',
   running: '실행 중',
+  stopped: '중단됨',
   stable: '안정',
   stub: '스텁',
+  supported: '지원됨',
   preference: '선호',
   verification: '검증',
 };
@@ -926,6 +954,21 @@ function wireQuickActions(scope = document) {
 
       if (action === 'reset-view') {
         void resetCurrentView();
+        return;
+      }
+
+      if (action === 'execution-preflight') {
+        void handleExecutionPreflight(value === 'request-approval');
+        return;
+      }
+
+      if (action === 'execution-start') {
+        void handleExecutionStart();
+        return;
+      }
+
+      if (action === 'execution-stop') {
+        void handleExecutionStop();
       }
     });
   });
@@ -1073,6 +1116,84 @@ function getFlowState() {
       recommendedStep: 'step-review',
       secondaryActionLabel: '검토 이력 보기',
       secondaryActionTab: 'reviews',
+    };
+  }
+
+  const execution = getExecutionStatusPayload();
+  const latestExecutionSession = execution?.latestExecutionSession || null;
+  if (state.missionDetail?.mission?.mode === 'engineering' && execution?.supported) {
+    if (latestExecutionSession?.status === 'running') {
+      return {
+        buttonLabel: '실행 콘솔 열기',
+        completedSteps,
+        copy: '현재 리포에서 실행 세션이 돌고 있습니다. 라이브 로그와 step 상태를 확인하세요.',
+        currentStepLabel: '2단계 · 실행하기',
+        blocker: '실행 세션이 진행 중입니다.',
+        label: '실행 로그와 step 상태를 모니터링하세요',
+        pendingActionCount,
+        pendingApprovalCount,
+        recommendedStep: 'step-run',
+        secondaryActionLabel: '실행 기록 보기',
+        secondaryActionTab: 'runs',
+      };
+    }
+
+    if (latestExecutionSession && ['failed', 'stopped', 'blocked'].includes(latestExecutionSession.status)) {
+      completedSteps.push('step-run');
+      return {
+        buttonLabel: '3단계 검토 열기',
+        completedSteps,
+        copy: latestExecutionSession.verification?.summary || '실행 세션이 멈췄습니다. 실패 원인과 변경 파일을 검토하세요.',
+        currentStepLabel: '3단계 · 검토하기',
+        blocker: '실행 실패 또는 중단 상태입니다.',
+        label: '실행 결과를 검토하고 다음 조치를 정하세요',
+        pendingActionCount,
+        pendingApprovalCount,
+        recommendedStep: 'step-review',
+        secondaryActionLabel: '실행 기록 보기',
+        secondaryActionTab: 'runs',
+      };
+    }
+
+    if (latestExecutionSession?.status === 'completed') {
+      completedSteps.push('step-run', 'step-review');
+      return {
+        buttonLabel: '4단계 결과 열기',
+        completedSteps,
+        copy: latestExecutionSession.verification?.summary || '실행 세션이 완료됐습니다. 결과와 검증 흔적을 확인하세요.',
+        currentStepLabel: '4단계 · 결과 보기',
+        blocker: '실행과 검증이 끝났습니다.',
+        label: '최종 결과와 변경 파일을 확인하세요',
+        pendingActionCount,
+        pendingApprovalCount,
+        recommendedStep: 'step-output',
+        secondaryActionLabel: '실행 기록 보기',
+        secondaryActionTab: 'runs',
+      };
+    }
+
+    return {
+      buttonLabel: execution?.currentLease ? '실행 시작' : '실행 준비 확인',
+      completedSteps,
+      copy: execution?.currentLease
+        ? '승인 lease가 준비됐습니다. 현재 리포에서 한 번의 실행 세션을 시작할 수 있습니다.'
+        : execution?.blockedReasons?.length
+          ? execution.blockedReasons[0]
+          : '검토를 통과한 제안서를 기준으로 preflight, 승인, 실행 시작을 진행하세요.',
+      currentStepLabel: '2단계 · 실행하기',
+      blocker: execution?.currentLease
+        ? 'one-time execution lease가 활성 상태입니다.'
+        : execution?.latestApproval?.status === 'pending'
+          ? '실행 승인 대기 중입니다.'
+          : execution?.blockedReasons?.length
+            ? '정책 또는 범위 문제로 실행이 막혔습니다.'
+            : '실행 preflight가 아직 시작되지 않았습니다.',
+      label: execution?.currentLease ? '현재 리포 실행을 시작할 수 있습니다' : '실행 preflight와 승인 상태를 먼저 확인하세요',
+      pendingActionCount,
+      pendingApprovalCount,
+      recommendedStep: 'step-run',
+      secondaryActionLabel: '입력값과 설정 보기',
+      secondaryActionTab: 'config',
     };
   }
 
@@ -1976,6 +2097,7 @@ function renderRunStageSummary() {
   }
 
   const latestSession = state.missionDetail.summary?.latestSession || null;
+  const execution = getExecutionStatusPayload();
   const flow = getFlowState();
   elements.runStageSummary.innerHTML = `
     <div class="stage-summary-card">
@@ -1999,6 +2121,16 @@ function renderRunStageSummary() {
           <span>최근 업데이트</span>
           <strong>${escapeHtml(formatDate(state.missionDetail.mission.updatedAt))}</strong>
         </div>
+        ${
+          isExecutionMissionSelected()
+            ? `
+              <div class="definition-item">
+                <span>실행 자격</span>
+                <strong>${escapeHtml(execution?.supported ? (execution.currentLease ? '실행 가능' : getDisplayLabel(execution.eligibility || 'required', execution.eligibility || 'required')) : '미지원')}</strong>
+              </div>
+            `
+            : ''
+        }
       </div>
       <div class="action-row">
         <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
@@ -2006,6 +2138,117 @@ function renderRunStageSummary() {
     </div>
   `;
   wireQuickActions(elements.runStageSummary);
+}
+
+function renderExecutionConsole() {
+  if (!elements.executionConsole) {
+    return;
+  }
+
+  if (!state.missionDetail) {
+    elements.executionConsole.innerHTML = '<p class="empty-state">미션을 선택하면 실행 preflight와 live log를 여기에 표시합니다.</p>';
+    return;
+  }
+
+  if (!isExecutionMissionSelected()) {
+    elements.executionConsole.innerHTML = '<p class="empty-state">지식 작업 모드는 직접 shell 실행을 지원하지 않습니다.</p>';
+    return;
+  }
+
+  const execution = getExecutionStatusPayload();
+  const executionSession = execution?.latestExecutionSession || null;
+  const latestLease = execution?.currentLease || execution?.latestLease || null;
+  const logs = state.executionLogs?.lines || [];
+  const reviewSessionId = execution?.reviewSessionId || '-';
+  const policy = execution?.policy || { allowedCount: 0, warningCount: 0, blockedCount: 0 };
+  const verification = executionSession?.verification || null;
+  const primaryAction = execution?.currentLease
+    ? '<button class="primary-button" type="button" data-ui-action="execution-start">실행 시작</button>'
+    : execution?.latestApproval?.status === 'pending'
+      ? '<button class="secondary-button" type="button" disabled>승인 대기 중</button>'
+      : '<button class="primary-button" type="button" data-ui-action="execution-preflight" data-ui-value="request-approval">실행 승인 요청</button>';
+  const secondaryAction = executionSession?.status === 'running'
+    ? '<button class="ghost-button" type="button" data-ui-action="execution-stop">실행 중단</button>'
+    : '<button class="ghost-button" type="button" data-ui-action="execution-preflight">preflight 새로고침</button>';
+  const manifestSteps = Array.isArray(execution?.manifest?.steps) ? execution.manifest.steps : [];
+  const blockedList = (execution?.blockedReasons || []).slice(0, 3);
+  const changedFiles = (executionSession?.changedFiles || []).slice(0, 5);
+  const stepRows = (executionSession?.steps || manifestSteps || [])
+    .map(
+      (step, index) => `
+        <li class="execution-step-row">
+          <span class="execution-step-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
+          <div class="execution-step-copy">
+            <strong>${escapeHtml(step.title || `${getDisplayLabel(step.kind || 'command', step.kind || 'command')} step`)}</strong>
+            <p>${escapeHtml(step.reason || getDisplayLabel(step.kind || 'command', step.kind || 'command'))}</p>
+          </div>
+          <span class="status-badge ${getStatusClass(step.status || 'pending')}">${escapeHtml(getDisplayLabel(step.status || 'pending', step.status || 'pending'))}</span>
+        </li>
+      `,
+    )
+    .join('');
+
+  elements.executionConsole.innerHTML = `
+    <div class="execution-console-grid">
+      <section class="execution-card">
+        <p class="summary-label">preflight</p>
+        <h4 class="summary-statement">${escapeHtml(execution?.supported ? '현재 리포 실행 가능 여부를 확인했습니다.' : '이 미션은 실행 대상이 아닙니다.')}</h4>
+        <div class="definition-list">
+          <div class="definition-item"><span>실행 자격</span><strong>${escapeHtml(getDisplayLabel(execution?.eligibility || 'required', execution?.eligibility || 'required'))}</strong></div>
+          <div class="definition-item"><span>검토 세션</span><strong>${escapeHtml(reviewSessionId)}</strong></div>
+          <div class="definition-item"><span>manifest step</span><strong>${escapeHtml(String(manifestSteps.length))}건</strong></div>
+          <div class="definition-item"><span>정책 상태</span><strong>${escapeHtml(`허용 ${policy.allowedCount} · 경고 ${policy.warningCount} · 차단 ${policy.blockedCount}`)}</strong></div>
+        </div>
+        ${
+          blockedList.length
+            ? `<div class="execution-inline-list">${blockedList.map((item) => `<span class="tag tag-warning">${escapeHtml(item)}</span>`).join('')}</div>`
+            : '<p class="summary-note">차단 사유가 없으면 approval lease 발급 후 한 번의 실행 세션을 시작할 수 있습니다.</p>'
+        }
+        <div class="action-row">
+          ${primaryAction}
+          ${secondaryAction}
+        </div>
+      </section>
+      <section class="execution-card">
+        <p class="summary-label">승인 lease</p>
+        <h4 class="summary-statement">${escapeHtml(execution?.currentLease ? '승인 lease 활성 상태' : execution?.latestApproval?.status === 'pending' ? '사람의 승인을 기다리는 중' : latestLease ? `최근 lease 상태 · ${getDisplayLabel(latestLease.status, latestLease.status)}` : '아직 발급된 lease가 없습니다.')}</h4>
+        <div class="definition-list">
+          <div class="definition-item"><span>최근 승인</span><strong>${escapeHtml(execution?.latestApproval ? `${getDisplayLabel(execution.latestApproval.status)} · ${formatDate(execution.latestApproval.createdAt)}` : '없음')}</strong></div>
+          <div class="definition-item"><span>manifest hash</span><strong class="mono">${escapeHtml(execution?.manifestHash ? execution.manifestHash.slice(0, 12) : '-')}</strong></div>
+          <div class="definition-item"><span>브랜치</span><strong>${escapeHtml(latestLease?.gitBranch || execution?.latestApproval?.metadata?.gitBranch || '-')}</strong></div>
+          <div class="definition-item"><span>워크스페이스</span><strong class="mono">${escapeHtml(execution?.workspacePath || '-')}</strong></div>
+        </div>
+        <p class="summary-note">${escapeHtml(execution?.currentLease ? '현재 manifest hash와 브랜치에 묶인 one-time lease입니다. 실행 1회 후 자동 소진됩니다.' : latestLease?.status === 'used' ? '가장 최근 lease는 이미 사용 완료되었습니다. 다시 실행하려면 새 승인이 필요합니다.' : '승인 후 manifest가 바뀌면 기존 lease는 자동 무효화됩니다.')}</p>
+      </section>
+      <section class="execution-card execution-card-log">
+        <p class="summary-label">execution session</p>
+        <h4 class="summary-statement">${escapeHtml(executionSession ? `${getDisplayLabel(executionSession.status)} · ${executionSession.id}` : '아직 실행 세션이 없습니다.')}</h4>
+        <div class="definition-list">
+          <div class="definition-item"><span>현재 step</span><strong>${escapeHtml(executionSession?.steps?.[executionSession?.currentStepIndex]?.title || '-')}</strong></div>
+          <div class="definition-item"><span>검증</span><strong>${escapeHtml(getDisplayLabel(verification?.status, verification?.status || 'pending'))}</strong></div>
+          <div class="definition-item"><span>변경 파일</span><strong>${escapeHtml(String(executionSession?.changedFiles?.length || 0))}건</strong></div>
+          <div class="definition-item"><span>종료 코드</span><strong>${escapeHtml(executionSession?.exitCode === null || executionSession?.exitCode === undefined ? '-' : String(executionSession.exitCode))}</strong></div>
+        </div>
+        ${
+          verification?.summary
+            ? `<p class="summary-note">${escapeHtml(verification.summary)}</p>`
+            : ''
+        }
+        ${
+          stepRows
+            ? `<ul class="execution-step-list">${stepRows}</ul>`
+            : '<p class="summary-note">실행 step 목록이 아직 없습니다.</p>'
+        }
+        ${
+          changedFiles.length
+            ? `<div class="execution-inline-list">${changedFiles.map((file) => `<span class="tag">${escapeHtml(file)}</span>`).join('')}</div>`
+            : ''
+        }
+        <pre class="execution-log-surface">${escapeHtml(logs.slice(-24).join('\n') || '실행 로그가 아직 없습니다.')}</pre>
+      </section>
+    </div>
+  `;
+  wireQuickActions(elements.executionConsole);
 }
 
 function renderReviewStageSummary() {
@@ -2027,6 +2270,8 @@ function renderReviewStageSummary() {
   }
 
   const latestSession = state.missionDetail.summary?.latestSession || null;
+  const execution = getExecutionStatusPayload();
+  const latestExecutionSession = execution?.latestExecutionSession || null;
   const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
   const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const flow = getFlowState();
@@ -2059,10 +2304,20 @@ function renderReviewStageSummary() {
           <span>최근 세션</span>
           <strong>${escapeHtml(latestSession ? `${getDisplayLabel(latestSession.currentStage)} · ${getDisplayLabel(latestSession.status)}` : '세션 없음')}</strong>
         </div>
+        ${
+          latestExecutionSession
+            ? `
+              <div class="decision-chip is-neutral">
+                <span>실행 세션</span>
+                <strong>${escapeHtml(`${getDisplayLabel(latestExecutionSession.status)} · 검증 ${getDisplayLabel(latestExecutionSession.verification?.status, latestExecutionSession.verification?.status || 'pending')}`)}</strong>
+              </div>
+            `
+            : ''
+        }
       </div>
       <h4 class="summary-statement">${escapeHtml(primaryDecision)}</h4>
       <p class="summary-note review-priority-copy">${escapeHtml(decisionCopy)}</p>
-      <p class="summary-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
+      <p class="summary-note">${escapeHtml(latestExecutionSession?.verification?.summary || latestSession?.reviewerSummary || flow.copy)}</p>
       <div class="action-row">
         <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">승인 항목 보기</button>
         <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">후속 작업 보기</button>
@@ -2080,6 +2335,8 @@ function renderOutputStageSummary() {
 
   const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
   const latestSession = state.missionDetail?.summary?.latestSession || null;
+  const execution = getExecutionStatusPayload();
+  const latestExecutionSession = execution?.latestExecutionSession || null;
   const flow = getFlowState();
 
   if (!state.missionDetail) {
@@ -2118,6 +2375,16 @@ function renderOutputStageSummary() {
           <span>현재 단계</span>
           <strong>${escapeHtml(flow.currentStepLabel)}</strong>
         </div>
+        ${
+          latestExecutionSession
+            ? `
+              <div class="summary-chip">
+                <span>검증 결과</span>
+                <strong>${escapeHtml(getDisplayLabel(latestExecutionSession.verification?.status, latestExecutionSession.verification?.status || 'pending'))}</strong>
+              </div>
+            `
+            : ''
+        }
         <div class="definition-item">
           <span>결과 유형</span>
           <strong>${escapeHtml(latestArtifact ? getDisplayLabel(latestArtifact.kind, latestArtifact.kind) : '준비 중')}</strong>
@@ -2132,6 +2399,16 @@ function renderOutputStageSummary() {
           <span>검토 상태</span>
           <strong>${escapeHtml(flow.blocker)}</strong>
         </div>
+        ${
+          latestExecutionSession
+            ? `
+              <div class="definition-item">
+                <span>변경 파일</span>
+                <strong>${escapeHtml(String(latestExecutionSession.changedFiles?.length || 0))}건</strong>
+              </div>
+            `
+            : ''
+        }
       </div>
       <div class="action-row">
         <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
@@ -3063,6 +3340,7 @@ function resetHarnessFilterInputs() {
 
 function renderStageSummaries() {
   renderRunStageSummary();
+  renderExecutionConsole();
   renderReviewStageSummary();
   renderOutputStageSummary();
   renderOutputCloseout();
@@ -3689,7 +3967,10 @@ async function selectSession(
 }
 
 function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
+  stopExecutionPolling();
   state.currentSessionPayload = null;
+  state.executionLogs = null;
+  state.executionStatus = null;
   state.harnessDocumentResult = null;
   state.harnessMemoryResult = null;
   resetHarnessFilterState();
@@ -3763,6 +4044,8 @@ async function selectMission(
   state.missionTimeline = timelinePayload;
   state.missionActions = actionPayload;
   await loadHarnessBrowsers(missionId);
+  await loadExecutionStatus(missionId);
+  ensureExecutionPolling();
 
   renderMissionSummary();
   renderSetupHarnessSummary();
@@ -3850,6 +4133,57 @@ async function loadMissions() {
   const payload = await api('/api/missions');
   state.missions = payload.missions || [];
   renderMissionList();
+}
+
+async function loadExecutionStatus(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.executionStatus = null;
+    state.executionLogs = null;
+    stopExecutionPolling();
+    renderExecutionConsole();
+    return null;
+  }
+
+  const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/execution`);
+  state.executionStatus = payload;
+  if (state.missionDetail?.mission?.id === missionId) {
+    state.missionDetail.execution = payload.execution;
+  }
+  const executionId = payload.execution?.latestExecutionSession?.id || '';
+  if (executionId) {
+    state.executionLogs = await api(
+      `/api/missions/${encodeURIComponent(missionId)}/execution/logs?executionId=${encodeURIComponent(executionId)}`,
+    );
+  } else {
+    state.executionLogs = {
+      execution: null,
+      lines: [],
+      logFilePath: null,
+    };
+  }
+  renderExecutionConsole();
+  return payload;
+}
+
+function ensureExecutionPolling() {
+  stopExecutionPolling();
+  const execution = getExecutionStatusPayload()?.latestExecutionSession;
+  if (!execution || execution.status !== 'running' || !state.selectedMissionId) {
+    return;
+  }
+
+  state.executionPollTimer = setInterval(async () => {
+    if (!state.selectedMissionId) {
+      stopExecutionPolling();
+      return;
+    }
+    try {
+      await Promise.all([loadExecutionStatus(state.selectedMissionId), loadApprovals()]);
+      await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+    } catch {
+      stopExecutionPolling();
+    }
+  }, 2000);
 }
 
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
@@ -3949,6 +4283,8 @@ async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } =
   state.missionDetail = detail;
   state.missionTimeline = timelinePayload;
   state.missionActions = actionPayload;
+  await loadExecutionStatus(missionId);
+  ensureExecutionPolling();
 
   if (preserveHarnessBrowse) {
     await loadHarnessBrowsers(missionId);
@@ -4017,6 +4353,86 @@ async function handleMissionRun() {
   } finally {
     elements.runMissionButton.disabled = false;
     elements.runMissionButton.textContent = '이 미션 실행';
+  }
+}
+
+async function handleExecutionPreflight(requestApproval = false) {
+  if (!state.selectedMissionId || !isExecutionMissionSelected()) {
+    return;
+  }
+
+  try {
+    const result = await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/execution/preflight`, {
+      body: JSON.stringify({ requestApproval }),
+      method: 'POST',
+    });
+
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+    setActiveStep('step-run', { syncDetailTab: false });
+    setActiveDetailTab('runs');
+
+    if (requestApproval && result.approval?.status === 'pending') {
+      setUiNotice('실행 승인 요청을 생성했습니다.');
+      return;
+    }
+
+    if (result.execution?.currentLease) {
+      setUiNotice('실행 lease가 준비됐습니다. 실행을 시작할 수 있습니다.');
+      return;
+    }
+
+    if (result.execution?.blockedReasons?.length) {
+      setUiNotice(`실행 preflight가 막혔습니다: ${result.execution.blockedReasons[0]}`);
+      return;
+    }
+
+    setUiNotice('실행 preflight를 새로고침했습니다.');
+  } catch (error) {
+    window.alert(error.message || '실행 preflight 처리에 실패했습니다.');
+  }
+}
+
+async function handleExecutionStart() {
+  if (!state.selectedMissionId || !isExecutionMissionSelected()) {
+    return;
+  }
+
+  try {
+    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/execution/start`, {
+      method: 'POST',
+    });
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+    setActiveStep('step-run', { syncDetailTab: false });
+    setActiveDetailTab('runs');
+    setUiNotice('실행 세션을 시작했습니다.');
+  } catch (error) {
+    window.alert(error.message || '실행 시작에 실패했습니다.');
+  }
+}
+
+async function handleExecutionStop() {
+  if (!state.selectedMissionId || !isExecutionMissionSelected()) {
+    return;
+  }
+
+  const executionSession = getExecutionStatusPayload()?.latestExecutionSession || null;
+  if (executionSession?.status === 'running' && !window.confirm('현재 실행 세션을 중단할까요?')) {
+    return;
+  }
+
+  try {
+    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/execution/stop`, {
+      method: 'POST',
+    });
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+    setActiveStep('step-run', { syncDetailTab: false });
+    setActiveDetailTab('runs');
+    setUiNotice('실행 세션 중단을 요청했습니다.');
+  } catch (error) {
+    window.alert(error.message || '실행 중단에 실패했습니다.');
   }
 }
 

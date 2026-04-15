@@ -350,6 +350,79 @@ async function handleApi(request, response, url) {
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&
     pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    pathParts[4] === 'preflight'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const body = await readJsonBody(request);
+    const result = service.preflightExecution(missionId, {
+      requestApproval: Boolean(body.requestApproval),
+    });
+
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    pathParts[4] === 'start'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const result = service.startExecution(missionId);
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    pathParts[4] === 'stop'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const result = service.stopExecution(missionId);
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    !pathParts[4]
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    sendJson(response, 200, service.getExecutionStatus(missionId));
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    pathParts[4] === 'logs'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const executionId = decodePathSegment(url.searchParams.get('executionId') || '');
+    sendJson(response, 200, service.getExecutionLogs(missionId, { executionId }));
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
     pathParts[3] === 'document-log' &&
     pathParts[4] === 'migrate-legacy'
   ) {

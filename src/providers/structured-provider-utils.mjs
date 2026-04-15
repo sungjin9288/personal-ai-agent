@@ -169,6 +169,15 @@ function salvageJsonLike(candidate) {
     findings: extractJsonStringArrayField(candidate, 'findings'),
   };
 
+  const executionManifestMatch = candidate.match(/"executionManifest"\s*:\s*(\{[\s\S]*\})/);
+  if (executionManifestMatch) {
+    try {
+      output.executionManifest = JSON.parse(executionManifestMatch[1]);
+    } catch {
+      // ignore malformed manifest salvage; deterministic fallback will handle it
+    }
+  }
+
   return output;
 }
 
@@ -348,14 +357,36 @@ Artifact rules:
   "summaryText": "short summary",
   "artifactContent": "# ${pack.artifactTitle}\\n...",
   "adaptationNotes": ["note 1"],
-  "nextAction": "single next action sentence"
+  "nextAction": "single next action sentence",
+  "executionManifest": {
+    "summary": "brief execution summary",
+    "steps": [
+      {
+        "kind": "inspect | edit | command | test | build | artifact",
+        "title": "what this step does",
+        "reason": "why this step is needed",
+        "cwd": ".",
+        "command": "repo-local shell command for inspect/command/test/build steps",
+        "filePath": "relative/path for edit steps",
+        "operation": "append | replace | write",
+        "findText": "required when operation is replace",
+        "replaceText": "required when operation is replace",
+        "content": "required when operation is append or write",
+        "expectedOutputs": ["what should exist after this step"],
+        "verificationTarget": "what to verify after the step",
+        "riskClassification": "low | medium | high"
+      }
+    ]
+  }
 }
 
 Artifact rules:
 - artifactContent must be Markdown
 - include all required sections exactly once
 - required sections: ${pack.requiredSections.join(', ')}
-- Next Action must name the next owner or the next review step`;
+- Next Action must name the next owner or the next review step
+- executionManifest is required for engineering mode and must stay repo-local
+- do not include sudo, destructive git reset/checkout, repo-external paths, or background daemon commands`;
   }
 
   if (role === 'reviewer') {
@@ -531,6 +562,7 @@ function normalizeExecutorOutput(output, input, providerLabel) {
     artifactContent,
     artifactFileName: input.pack.artifactFileName,
     artifactTitle: input.pack.artifactTitle,
+    executionManifest: output.executionManifest && typeof output.executionManifest === 'object' ? output.executionManifest : null,
     nextAction,
     proposedAction: {
       kind: input.pack.riskProfile.actionKind,

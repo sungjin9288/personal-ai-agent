@@ -71,6 +71,11 @@ Commands:
   mission run <missionId> [--provider <stub|openai|anthropic|local>]
   mission show <missionId> [--provider-since <iso-timestamp>]
   mission timeline <missionId> [--provider-since <iso-timestamp>]
+  mission execution preflight <missionId> [--request-approval]
+  mission execution start <missionId>
+  mission execution stop <missionId>
+  mission execution status <missionId>
+  mission execution logs <missionId> [--execution <executionSessionId>]
 
   session list <missionId>
   session show <missionId>
@@ -382,6 +387,43 @@ async function main() {
       }),
     );
     return;
+  }
+
+  if (group === 'mission' && command === 'execution') {
+    const [subcommand, missionId, ...executionRest] = rest;
+
+    if (subcommand === 'preflight') {
+      printJson(
+        service.preflightExecution(missionId, {
+          requestApproval: hasOption(executionRest, '--request-approval'),
+        }),
+      );
+      return;
+    }
+
+    if (subcommand === 'start') {
+      printJson(service.startExecution(missionId));
+      return;
+    }
+
+    if (subcommand === 'stop') {
+      printJson(service.stopExecution(missionId));
+      return;
+    }
+
+    if (subcommand === 'status') {
+      printJson(service.getExecutionStatus(missionId));
+      return;
+    }
+
+    if (subcommand === 'logs') {
+      printJson(
+        service.getExecutionLogs(missionId, {
+          executionId: readOption(executionRest, '--execution', ''),
+        }),
+      );
+      return;
+    }
   }
 
   if (group === 'session' && command === 'show') {

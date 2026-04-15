@@ -1,13 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync, spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 import {
   AGENT_ROLES,
   AGENT_RUN_STATUSES,
   ACTION_CLASSES,
+  APPROVAL_KINDS,
   ACTION_OWNERS,
   ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
+  EXECUTION_LEASE_STATUSES,
+  EXECUTION_SESSION_STATUSES,
   ESCALATION_REMINDER_CADENCE_HOURS,
   ESCALATION_STATUSES,
   ESCALATION_TIERS,
@@ -29,6 +34,13 @@ import {
   SPECIALIST_KINDS,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
+import {
+  buildFallbackExecutionManifest,
+  evaluateExecutionPolicy,
+  getCurrentGitBranch,
+  hashExecutionManifest,
+  normalizeExecutionManifest,
+} from './execution-utils.mjs';
 import { createId } from './id.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
@@ -3245,8 +3257,450 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const providerRegistry = createProviderRegistry({ rootDir });
   const harness = createRuntimeHarness({ store });
+  const activeExecutionRuntimes = new Map();
+  const executionRepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
   docService.ensureDocs();
+
+  function getExecutionDir(missionId, executionSessionId) {
+    return path.join(store.getMissionDir(missionId), 'executions', executionSessionId);
+  }
+
+  function ensureExecutionDir(missionId, executionSessionId) {
+    const executionDir = getExecutionDir(missionId, executionSessionId);
+    fs.mkdirSync(executionDir, { recursive: true });
+    return executionDir;
+  }
+
+  function isExecutionCapableWorkspace(workspace) {
+    return path.resolve(workspace.path) === executionRepoRoot;
+  }
+
+  function isExecutionCapableMission(mission, workspace) {
+    return mission.mode === 'engineering' && isExecutionCapableWorkspace(workspace);
+  }
+
+  function getLatestExecutionSessionForMission(missionId) {
+    return getLatestItem(store.listExecutionSessions({ missionId }), 'createdAt');
+  }
+
+  function getCurrentExecutionLeaseForMission(missionId) {
+    return getLatestItem(
+      store.listExecutionLeases({ missionId }).filter((lease) => lease.status === 'active'),
+      'createdAt',
+    );
+  }
+
+  function getLatestExecutionLeaseForMission(missionId) {
+    return getLatestItem(store.listExecutionLeases({ missionId }), 'createdAt');
+  }
+
+  function getLatestExecutionApprovalForSession(sessionId) {
+    return getLatestItem(
+      store
+        .listApprovals({ sessionId })
+        .filter((approval) => normalizeText(approval.kind) === 'execution_lease'),
+      'createdAt',
+    );
+  }
+
+  function getLatestReviewableEngineeringSession(missionId) {
+    const sessions = store.listSessionsByMission(missionId);
+    return [...sessions]
+      .reverse()
+      .find((session) => {
+        const deliverableArtifact = store
+          .listArtifactsBySession(session.id)
+          .filter((artifact) => artifact.kind === 'deliverable')
+          .at(-1);
+        if (!deliverableArtifact) {
+          return false;
+        }
+        const reviewerRun = store
+          .listAgentRunsBySession(session.id)
+          .filter((run) => run.role === 'reviewer')
+          .at(-1);
+        if (!reviewerRun) {
+          return false;
+        }
+        return normalizeAgentRunStatus(reviewerRun.status) !== 'failed';
+      }) || null;
+  }
+
+  function deriveExecutionManifest({ mission, reviewSession, workspace }) {
+    const agentRuns = store.listAgentRunsBySession(reviewSession.id);
+    const plannerRun = agentRuns.filter((run) => run.role === 'planner').at(-1) || null;
+    const executorRun = agentRuns.filter((run) => run.role === 'executor').at(-1) || null;
+    const deliverableArtifact = store
+      .listArtifactsBySession(reviewSession.id)
+      .filter((artifact) => artifact.kind === 'deliverable')
+      .at(-1);
+    const proposalContent =
+      deliverableArtifact?.path && fs.existsSync(deliverableArtifact.path)
+        ? fs.readFileSync(deliverableArtifact.path, 'utf8')
+        : '';
+    const normalizedManifest = normalizeExecutionManifest(executorRun?.executionManifest, {
+      workspacePath: workspace.path,
+    });
+
+    if (normalizedManifest) {
+      return normalizedManifest;
+    }
+
+    return buildFallbackExecutionManifest({
+      mission,
+      plannerSteps: ensureArray(plannerRun?.planSteps),
+      proposalContent,
+      workspace,
+    });
+  }
+
+  function buildExecutionPolicySummary(policy) {
+    return {
+      allowed: Boolean(policy.allowed),
+      allowedCount: ensureArray(policy.allowedItems).length,
+      blockedCount: ensureArray(policy.blockedItems).length,
+      warningCount: ensureArray(policy.warningItems).length,
+      allowedItems: ensureArray(policy.allowedItems),
+      blockedItems: ensureArray(policy.blockedItems),
+      warningItems: ensureArray(policy.warningItems),
+    };
+  }
+
+  function buildExecutionContext(missionId) {
+    const mission = getMission(missionId);
+    const workspace = getWorkspace(mission.workspaceId);
+    const reviewSession = getLatestReviewableEngineeringSession(mission.id);
+    const executionSupported = isExecutionCapableMission(mission, workspace);
+    const blockedReasons = [];
+
+    if (mission.mode !== 'engineering') {
+      blockedReasons.push('knowledge 모드는 문서/메모 중심이며 직접 실행을 지원하지 않습니다.');
+    } else if (!executionSupported) {
+      blockedReasons.push(`현재 리포(${executionRepoRoot})만 실행 대상으로 지원합니다.`);
+    }
+
+    if (!reviewSession) {
+      blockedReasons.push('실행에 사용할 검토 완료 세션이 아직 없습니다.');
+    }
+
+    const manifest = reviewSession && executionSupported
+      ? deriveExecutionManifest({
+          mission,
+          reviewSession,
+          workspace,
+        })
+      : null;
+    const manifestHash = manifest ? hashExecutionManifest(manifest) : '';
+    const policy = manifest
+      ? evaluateExecutionPolicy({
+          manifest,
+          rootDir: executionRepoRoot,
+          workspacePath: path.resolve(workspace.path),
+        })
+      : {
+          allowed: false,
+          allowedItems: [],
+          blockedItems: [],
+          warningItems: [],
+        };
+
+    blockedReasons.push(...ensureArray(policy.blockedItems));
+
+    const latestExecutionSession = getLatestExecutionSessionForMission(mission.id);
+    const latestExecutionApproval = reviewSession ? getLatestExecutionApprovalForSession(reviewSession.id) : null;
+    let latestLease = getLatestExecutionLeaseForMission(mission.id);
+    const currentLease = getCurrentExecutionLeaseForMission(mission.id);
+    const activeLease =
+      currentLease &&
+      currentLease.status === 'active' &&
+      currentLease.manifestHash === manifestHash &&
+      currentLease.sessionId === reviewSession?.id
+        ? currentLease
+        : null;
+
+    if (currentLease && !activeLease && currentLease.status === 'active') {
+      latestLease = harness.updateExecutionLease(currentLease.id, {
+        revokedAt: now(),
+        status: 'revoked',
+      });
+    }
+
+    const approvalStatus = activeLease
+      ? 'ready'
+      : latestExecutionApproval?.status === 'pending'
+        ? 'pending'
+        : latestExecutionApproval?.status === 'approved'
+          ? 'consumed'
+          : 'required';
+
+    return {
+      activeLease,
+      approvalStatus,
+      blockedReasons,
+      executionSupported,
+      latestExecutionApproval,
+      latestLease,
+      latestExecutionSession,
+      manifest,
+      manifestHash,
+      mission,
+      policy: buildExecutionPolicySummary(policy),
+      reviewSession,
+      workspace,
+    };
+  }
+
+  function appendExecutionLog(executionSessionId, line) {
+    const executionSession = store.getExecutionSession(executionSessionId);
+    if (!executionSession) {
+      return;
+    }
+
+    const executionDir = ensureExecutionDir(executionSession.missionId, executionSessionId);
+    const logFilePath = executionSession.logFilePath || path.join(executionDir, 'execution.log');
+    fs.appendFileSync(logFilePath, `${line}\n`, 'utf8');
+
+    if (executionSession.logFilePath !== logFilePath) {
+      store.updateExecutionSession(executionSessionId, (current) => ({
+        ...current,
+        logFilePath,
+      }));
+    }
+  }
+
+  function updateExecutionStepRecord(executionSessionId, stepIndex, updater) {
+    return store.updateExecutionSession(executionSessionId, (session) => {
+      const nextSteps = ensureArray(session.steps).map((step, index) =>
+        index === stepIndex ? updater(step) : step,
+      );
+      return {
+        ...session,
+        steps: nextSteps,
+        updatedAt: now(),
+      };
+    });
+  }
+
+  function captureChangedFiles(workspacePath) {
+    try {
+      const output = normalizeText(
+        fs.existsSync(path.join(workspacePath, '.git'))
+          ? execFileSync('git', ['status', '--short'], {
+              cwd: workspacePath,
+              encoding: 'utf8',
+            })
+          : '',
+      );
+      return output
+        .split('\n')
+        .map((line) => normalizeText(line))
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  function computeExecutionVerification(steps) {
+    const verificationSteps = ensureArray(steps).filter((step) => ['test', 'build'].includes(step.kind));
+    if (!verificationSteps.length) {
+      return {
+        status: 'not-run',
+        summary: '검증 step가 manifest에 없습니다.',
+      };
+    }
+
+    const failed = verificationSteps.filter((step) => step.status !== 'completed');
+    return {
+      status: failed.length ? 'failed' : 'passed',
+      summary: failed.length
+        ? `검증 step ${failed.length}건이 실패하거나 중단되었습니다.`
+        : `검증 step ${verificationSteps.length}건이 모두 통과했습니다.`,
+    };
+  }
+
+  function applyEditStep(step, workspacePath) {
+    const targetPath = path.resolve(workspacePath, step.filePath || '');
+    if (!targetPath.startsWith(executionRepoRoot)) {
+      throw new Error(`Edit path escapes current repo: ${targetPath}`);
+    }
+
+    const existingContent = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, 'utf8') : '';
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+
+    if (step.operation === 'append') {
+      const payload = existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
+      fs.writeFileSync(targetPath, payload, 'utf8');
+      return;
+    }
+
+    if (step.operation === 'write') {
+      fs.writeFileSync(targetPath, `${step.content}`, 'utf8');
+      return;
+    }
+
+    if (!step.findText) {
+      throw new Error(`Replace operation requires findText for ${step.title}`);
+    }
+
+    if (!existingContent.includes(step.findText)) {
+      throw new Error(`Replace target not found in ${step.filePath}`);
+    }
+
+    fs.writeFileSync(targetPath, existingContent.replace(step.findText, step.replaceText), 'utf8');
+  }
+
+  function startExecutionRunner(executionSessionId) {
+    const executionSession = store.getExecutionSession(executionSessionId);
+    if (!executionSession || activeExecutionRuntimes.has(executionSessionId)) {
+      return;
+    }
+
+    const runtimeState = {
+      currentChild: null,
+      stopRequested: false,
+    };
+    activeExecutionRuntimes.set(executionSessionId, runtimeState);
+
+    const run = async () => {
+      const baseSession = store.getExecutionSession(executionSessionId);
+      if (!baseSession) {
+        activeExecutionRuntimes.delete(executionSessionId);
+        return;
+      }
+
+      store.updateExecutionSession(executionSessionId, (current) => ({
+        ...current,
+        startedAt: current.startedAt || now(),
+        status: 'running',
+        updatedAt: now(),
+      }));
+      appendExecutionLog(executionSessionId, `[${now()}] execution started`);
+
+      try {
+        for (let index = 0; index < ensureArray(baseSession.steps).length; index += 1) {
+          const latestSession = store.getExecutionSession(executionSessionId);
+          const step = ensureArray(latestSession?.steps)[index];
+          if (!latestSession || !step) {
+            break;
+          }
+
+          if (runtimeState.stopRequested || latestSession.stopRequested) {
+            throw new Error('Execution stopped by operator.');
+          }
+
+          store.updateExecutionSession(executionSessionId, (current) => ({
+            ...current,
+            currentStepIndex: index,
+            updatedAt: now(),
+          }));
+          updateExecutionStepRecord(executionSessionId, index, (current) => ({
+            ...current,
+            startedAt: now(),
+            status: 'running',
+          }));
+          appendExecutionLog(executionSessionId, `[${now()}] ${step.id} start :: ${step.title}`);
+
+          try {
+            if (step.kind === 'edit') {
+              applyEditStep(step, latestSession.workspacePath);
+              appendExecutionLog(executionSessionId, `[${now()}] ${step.id} edit applied :: ${step.filePath}`);
+            } else if (step.kind === 'artifact') {
+              appendExecutionLog(executionSessionId, `[${now()}] ${step.id} artifact noted`);
+            } else {
+              await new Promise((resolve, reject) => {
+                const child = spawn(step.command, {
+                  cwd: path.resolve(latestSession.workspacePath, step.cwd || '.'),
+                  shell: true,
+                  stdio: ['ignore', 'pipe', 'pipe'],
+                });
+                runtimeState.currentChild = child;
+
+                child.stdout.on('data', (chunk) => {
+                  String(chunk)
+                    .split(/\r?\n/)
+                    .filter(Boolean)
+                    .forEach((line) => appendExecutionLog(executionSessionId, `[stdout] ${line}`));
+                });
+                child.stderr.on('data', (chunk) => {
+                  String(chunk)
+                    .split(/\r?\n/)
+                    .filter(Boolean)
+                    .forEach((line) => appendExecutionLog(executionSessionId, `[stderr] ${line}`));
+                });
+                child.on('error', reject);
+                child.on('close', (code, signal) => {
+                  runtimeState.currentChild = null;
+                  if (signal && runtimeState.stopRequested) {
+                    reject(new Error('Execution stopped by operator.'));
+                    return;
+                  }
+                  if (code !== 0) {
+                    reject(new Error(`Command exited with code ${code}: ${step.command}`));
+                    return;
+                  }
+                  resolve();
+                });
+              });
+            }
+
+            updateExecutionStepRecord(executionSessionId, index, (current) => ({
+              ...current,
+              endedAt: now(),
+              exitCode: 0,
+              status: 'completed',
+            }));
+          } catch (error) {
+            updateExecutionStepRecord(executionSessionId, index, (current) => ({
+              ...current,
+              endedAt: now(),
+              error: error instanceof Error ? error.message : String(error),
+              exitCode: 1,
+              status: runtimeState.stopRequested ? 'stopped' : 'failed',
+            }));
+            throw error;
+          }
+        }
+
+        const completedSession = store.updateExecutionSession(executionSessionId, (current) => ({
+          ...current,
+          changedFiles: captureChangedFiles(current.workspacePath),
+          endedAt: now(),
+          status: 'completed',
+          verification: computeExecutionVerification(current.steps),
+        }));
+        harness.updateExecutionLease(completedSession.leaseId, {
+          status: 'used',
+          usedAt: now(),
+        });
+        harness.touchMission(completedSession.missionId, 'completed');
+        appendExecutionLog(executionSessionId, `[${now()}] execution completed`);
+      } catch (error) {
+        const current = store.getExecutionSession(executionSessionId);
+        const finalStatus = runtimeState.stopRequested ? 'stopped' : 'failed';
+        store.updateExecutionSession(executionSessionId, (session) => ({
+          ...session,
+          blockedReasons: finalStatus === 'failed' ? [error instanceof Error ? error.message : String(error)] : [],
+          changedFiles: captureChangedFiles(session.workspacePath),
+          endedAt: now(),
+          status: finalStatus,
+          verification: computeExecutionVerification(session.steps),
+        }));
+        if (current?.leaseId) {
+          harness.updateExecutionLease(current.leaseId, {
+            status: 'used',
+            usedAt: now(),
+          });
+        }
+        harness.touchMission(current?.missionId, 'failed');
+        appendExecutionLog(executionSessionId, `[${now()}] execution ${finalStatus}: ${error instanceof Error ? error.message : String(error)}`);
+      } finally {
+        activeExecutionRuntimes.delete(executionSessionId);
+      }
+    };
+
+    void run();
+  }
 
   function addWorkspace({ workspacePath, name }) {
     const normalizedPath = normalizeText(workspacePath);
@@ -5998,6 +6452,10 @@ function summarizeProviderExecutions(executions) {
           usageOutputTokens: normalizeTelemetryNumber(providerOutput?.usageOutputTokens),
           usageTotalTokens: normalizeTelemetryNumber(providerOutput?.usageTotalTokens),
           workflowRole: providerRole,
+          adaptationNotes: ensureArray(normalizedOutput.adaptationNotes),
+          executionManifest: ensureObject(normalizedOutput.executionManifest),
+          nextAction: normalizeText(normalizedOutput.nextAction),
+          planSteps: ensureArray(normalizedOutput.planSteps),
           ...runMetadata,
           specialistHandoff,
           specialistRootRunId:
@@ -6446,11 +6904,49 @@ function summarizeProviderExecutions(executions) {
       };
     }
 
-    harness.touchMission(mission.id, 'reviewed');
+    const executionCapable = isExecutionCapableMission(mission, workspace);
+    const reviewedMission = harness.touchMission(mission.id, executionCapable ? 'reviewed' : 'reviewed');
     harness.updateSession(session.id, {
       currentStage: 'reviewer',
-      status: 'reviewed',
+      endedAt: executionCapable ? now() : null,
+      status: executionCapable ? 'completed' : 'reviewed',
     });
+
+    if (executionCapable) {
+      const executionContext = buildExecutionContext(mission.id);
+      if (executionContext.manifest) {
+        harness.writeArtifact({
+          missionId: mission.id,
+          sessionId: session.id,
+          role: 'executor',
+          kind: 'execution-manifest',
+          fileName: 'execution-manifest.json',
+          title: 'Execution Manifest',
+          content: `${JSON.stringify(
+            {
+              generatedAt: now(),
+              manifestHash: executionContext.manifestHash,
+              missionId: mission.id,
+              reviewSessionId: executionContext.reviewSession?.id || null,
+              workspacePath: workspace.path,
+              ...executionContext.manifest,
+            },
+            null,
+            2,
+          )}\n`,
+        });
+      }
+
+      return {
+        approval: null,
+        artifactPath: executorArtifactPath,
+        execution: buildExecutionContext(mission.id),
+        mission: reviewedMission,
+        provider: providerId,
+        reviewerVerdict: reviewerStage.output.verdict,
+        session: store.getSession(session.id),
+      };
+    }
 
     const risk = harness.classifyRisk({
       providerId,
@@ -6498,6 +6994,205 @@ function summarizeProviderExecutions(executions) {
       provider: providerId,
       reviewerVerdict: reviewerStage.output.verdict,
       session: store.getSession(session.id),
+    };
+  }
+
+  function ensureExecutionApproval(context) {
+    const existingPendingApproval = context.reviewSession
+      ? getLatestItem(
+          store
+            .listApprovals({ missionId: context.mission.id, sessionId: context.reviewSession.id })
+            .filter((approval) => normalizeText(approval.kind) === 'execution_lease' && approval.status === 'pending'),
+          'createdAt',
+        )
+      : null;
+
+    if (existingPendingApproval) {
+      return existingPendingApproval;
+    }
+
+    if (!context.reviewSession || !context.manifest) {
+      return null;
+    }
+
+    return harness.createApproval({
+      kind: 'execution_lease',
+      metadata: {
+        gitBranch: getCurrentGitBranch(context.workspace.path),
+        manifestHash: context.manifestHash,
+        reviewSessionId: context.reviewSession.id,
+        stepCount: context.manifest.steps.length,
+        workspacePath: context.workspace.path,
+      },
+      missionId: context.mission.id,
+      reason: `One-time execution lease is required before running shell/edit steps against ${context.workspace.path}.`,
+      requestedByRole: 'operator-console',
+      sessionId: context.reviewSession.id,
+      title: `Approve one-time execution lease for ${context.mission.title}`,
+    });
+  }
+
+  function preflightExecution(missionId, { requestApproval = false } = {}) {
+    const context = buildExecutionContext(missionId);
+    const latestApproval = context.latestExecutionApproval;
+    let approval = latestApproval || null;
+
+    if (requestApproval && !context.blockedReasons.length && !context.activeLease && approval?.status !== 'pending') {
+      approval = ensureExecutionApproval(context);
+    }
+
+    return {
+      approval,
+      execution: {
+        blockedReasons: context.blockedReasons,
+        eligibility: context.blockedReasons.length
+          ? 'blocked'
+          : context.activeLease
+            ? 'ready'
+            : approval?.status === 'pending'
+              ? 'pending-approval'
+              : 'approval-required',
+        currentLease: context.activeLease,
+        latestLease: context.latestLease,
+        latestApproval: approval,
+        latestExecutionSession: context.latestExecutionSession,
+        manifest: context.manifest,
+        manifestHash: context.manifestHash,
+        policy: context.policy,
+        reviewSessionId: context.reviewSession?.id || null,
+        supported: context.executionSupported,
+        workspacePath: context.workspace.path,
+      },
+      mission: context.mission,
+      workspace: context.workspace,
+    };
+  }
+
+  function getExecutionStatus(missionId) {
+    const context = buildExecutionContext(missionId);
+    return {
+      currentLease: context.activeLease,
+      execution: {
+        blockedReasons: context.blockedReasons,
+        eligibility: context.blockedReasons.length
+          ? 'blocked'
+          : context.activeLease
+            ? 'ready'
+            : context.latestExecutionApproval?.status === 'pending'
+              ? 'pending-approval'
+              : 'approval-required',
+        latestApproval: context.latestExecutionApproval,
+        latestLease: context.latestLease,
+        latestExecutionSession: context.latestExecutionSession,
+        manifest: context.manifest,
+        manifestHash: context.manifestHash,
+        policy: context.policy,
+        reviewSessionId: context.reviewSession?.id || null,
+        supported: context.executionSupported,
+        workspacePath: context.workspace.path,
+      },
+      mission: context.mission,
+      workspace: context.workspace,
+    };
+  }
+
+  function startExecution(missionId) {
+    const context = buildExecutionContext(missionId);
+    if (context.blockedReasons.length) {
+      throw new Error(`Execution blocked: ${context.blockedReasons.join(' ')}`);
+    }
+    if (!context.activeLease) {
+      throw new Error('No active execution lease is available. Request approval first.');
+    }
+
+    const runningSession = store
+      .listExecutionSessions({ missionId: context.mission.id })
+      .find((session) => session.status === 'running');
+    if (runningSession) {
+      return {
+        execution: runningSession,
+        lease: context.activeLease,
+        mission: context.mission,
+        workspace: context.workspace,
+      };
+    }
+
+    const executionSession = harness.startExecutionSession({
+      approvalId: context.activeLease.approvalId,
+      leaseId: context.activeLease.id,
+      manifest: context.manifest,
+      manifestHash: context.manifestHash,
+      missionId: context.mission.id,
+      provider: context.reviewSession?.provider || 'stub',
+      reviewSessionId: context.reviewSession?.id || null,
+      workspaceId: context.workspace.id,
+      workspacePath: context.workspace.path,
+    });
+
+    harness.touchMission(context.mission.id, 'execution_running');
+    startExecutionRunner(executionSession.id);
+
+    return {
+      execution: store.getExecutionSession(executionSession.id),
+      lease: context.activeLease,
+      mission: getMission(context.mission.id),
+      workspace: context.workspace,
+    };
+  }
+
+  function stopExecution(missionId) {
+    const latestExecutionSession = getLatestExecutionSessionForMission(missionId);
+    if (!latestExecutionSession || latestExecutionSession.status !== 'running') {
+      throw new Error('No running execution session found.');
+    }
+
+    const runtime = activeExecutionRuntimes.get(latestExecutionSession.id);
+    if (!runtime) {
+      throw new Error('Execution runtime handle is not available.');
+    }
+
+    runtime.stopRequested = true;
+    store.updateExecutionSession(latestExecutionSession.id, (session) => ({
+      ...session,
+      stopRequested: true,
+      updatedAt: now(),
+    }));
+
+    if (runtime.currentChild) {
+      runtime.currentChild.kill('SIGTERM');
+    }
+
+    return {
+      execution: store.getExecutionSession(latestExecutionSession.id),
+    };
+  }
+
+  function getExecutionLogs(missionId, filter = {}) {
+    const executionId = normalizeText(filter.executionId);
+    const executionSession = executionId
+      ? store.getExecutionSession(executionId)
+      : getLatestExecutionSessionForMission(missionId);
+
+    if (!executionSession) {
+      return {
+        execution: null,
+        lines: [],
+      };
+    }
+    if (executionSession.missionId !== missionId) {
+      throw new Error(`Execution session ${executionSession.id} does not belong to mission ${missionId}.`);
+    }
+
+    const content =
+      executionSession.logFilePath && fs.existsSync(executionSession.logFilePath)
+        ? fs.readFileSync(executionSession.logFilePath, 'utf8')
+        : '';
+    const lines = content ? content.split(/\r?\n/).filter(Boolean) : [];
+
+    return {
+      execution: executionSession,
+      lines,
+      logFilePath: executionSession.logFilePath || null,
     };
   }
 
@@ -13372,6 +14067,55 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       content: formatApprovalResolution(decision, reason),
     });
 
+    if (normalizeText(approval.kind) === 'execution_lease') {
+      const metadata = ensureObject(approval.metadata);
+      if (decision === 'approve') {
+        const lease = harness.issueExecutionLease({
+          approvalId: resolvedApproval.id,
+          gitBranch: normalizeText(metadata.gitBranch, getCurrentGitBranch(workspace.path)),
+          manifestHash: normalizeText(metadata.manifestHash),
+          missionId: mission.id,
+          provider: session.provider,
+          sessionId: session.id,
+          workspacePath: workspace.path,
+        });
+
+        harness.addMemoryEntry({
+          scope: 'mission',
+          scopeId: mission.id,
+          kind: 'decision',
+          content: formatApprovalDecisionMemory({ mission, decision, reason }),
+        });
+
+        const executionReadyMission = harness.touchMission(mission.id, 'execution_ready');
+
+        return {
+          approval: resolvedApproval,
+          execution: getExecutionStatus(mission.id).execution,
+          lease,
+          mission: executionReadyMission,
+          resolutionArtifactPath: resolutionArtifact.path,
+          session: store.getSession(session.id),
+        };
+      }
+
+      harness.addMemoryEntry({
+        scope: 'mission',
+        scopeId: mission.id,
+        kind: 'decision',
+        content: formatApprovalDecisionMemory({ mission, decision, reason }),
+      });
+
+      const reviewedMission = harness.touchMission(mission.id, 'reviewed');
+      return {
+        approval: resolvedApproval,
+        execution: getExecutionStatus(mission.id).execution,
+        mission: reviewedMission,
+        resolutionArtifactPath: resolutionArtifact.path,
+        session: store.getSession(session.id),
+      };
+    }
+
     if (decision === 'approve') {
       const handoffArtifact = harness.writeArtifact({
         missionId: mission.id,
@@ -13591,6 +14335,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     syncEscalations({ missionId: mission.id });
     const summary = summarizeMission(mission, { providerSince });
     return {
+      execution: getExecutionStatus(mission.id).execution,
       harness: summarizeMissionHarness(mission, summary),
       mission,
       providerHealthDrift,
@@ -13653,6 +14398,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getWorkspaceOverview,
     getWorkspaceTimeline,
     getMissionTimeline,
+    getExecutionLogs,
+    getExecutionStatus,
     listApprovals,
     listMemory,
     listMissions,
@@ -13679,8 +14426,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     remediateProviderAttention,
     remediateSpecialistFollowUp,
     runMission,
+    preflightExecution,
     showMission,
     showSession,
+    startExecution,
+    stopExecution,
     updateDocumentLog,
     updateMemory,
   };

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415153000_f40d18","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Execution CLI Contract Pass
+
+- date: 2026-04-15T00:00:00.000Z
+- added `mission execution preflight/start/stop/status/logs` commands so the one-time execution lease flow and foreground execution session lifecycle can be driven through the CLI as well as the operator console API
+- added `smoke:execution-cli` to prove the end-to-end CLI path: reviewer-passed engineering mission, execution lease approval, foreground execution start, status polling, and log retrieval
+- documented the execution command group in the README next to mission run examples so repo-local execution support and proposal-only fallback are visible without reading service code
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414182000_5b3d11","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 Playwright Session Artifact Hygiene
 

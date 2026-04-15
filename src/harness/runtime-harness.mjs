@@ -134,7 +134,7 @@ export function createRuntimeHarness({ store }) {
     };
   }
 
-  function createApproval({ missionId, sessionId, requestedByRole, kind, title, reason }) {
+  function createApproval({ missionId, sessionId, requestedByRole, kind, title, reason, metadata = {} }) {
     const approval = store.saveApproval({
       id: createId('approval'),
       missionId,
@@ -146,6 +146,7 @@ export function createRuntimeHarness({ store }) {
       reason,
       decision: null,
       decisionReason: '',
+      metadata,
       createdAt: now(),
       resolvedAt: null,
     });
@@ -164,6 +165,87 @@ export function createRuntimeHarness({ store }) {
       decision,
       decisionReason: reason || '',
       resolvedAt: now(),
+    }));
+  }
+
+  function issueExecutionLease({ approvalId, manifestHash, missionId, provider, sessionId, workspacePath, gitBranch }) {
+    return store.saveExecutionLease({
+      id: createId('lease'),
+      approvalId,
+      manifestHash,
+      missionId,
+      provider,
+      sessionId,
+      status: 'active',
+      workspacePath,
+      gitBranch,
+      createdAt: now(),
+      usedAt: null,
+      revokedAt: null,
+    });
+  }
+
+  function updateExecutionLease(leaseId, patch) {
+    return store.updateExecutionLease(leaseId, (lease) => ({
+      ...lease,
+      ...patch,
+      updatedAt: now(),
+    }));
+  }
+
+  function startExecutionSession({
+    approvalId = '',
+    leaseId,
+    manifest,
+    manifestHash,
+    missionId,
+    provider,
+    reviewSessionId,
+    workspaceId,
+    workspacePath,
+  }) {
+    return store.saveExecutionSession({
+      id: createId('execsession'),
+      approvalId,
+      blockedReasons: [],
+      changedFiles: [],
+      commandSummary: [],
+      createdAt: now(),
+      currentStepIndex: -1,
+      endedAt: null,
+      leaseId,
+      logFilePath: null,
+      manifest,
+      manifestHash,
+      missionId,
+      provider,
+      reviewSessionId,
+      startedAt: null,
+      status: 'pending',
+      stopRequested: false,
+      steps: Array.isArray(manifest?.steps)
+        ? manifest.steps.map((step) => ({
+            ...step,
+            endedAt: null,
+            exitCode: null,
+            startedAt: null,
+            status: 'pending',
+          }))
+        : [],
+      verification: {
+        status: 'pending',
+        summary: '',
+      },
+      workspaceId,
+      workspacePath,
+    });
+  }
+
+  function updateExecutionSession(executionSessionId, patch) {
+    return store.updateExecutionSession(executionSessionId, (session) => ({
+      ...session,
+      ...patch,
+      updatedAt: now(),
     }));
   }
 
@@ -187,11 +269,15 @@ export function createRuntimeHarness({ store }) {
     classifyRisk,
     completeAgentRun,
     createApproval,
+    issueExecutionLease,
     listMemoryEntries,
     resolveApproval,
     startAgentRun,
+    startExecutionSession,
     startSession,
     touchMission,
+    updateExecutionLease,
+    updateExecutionSession,
     updateSession,
     writeArtifact,
   };

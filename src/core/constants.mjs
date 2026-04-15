@@ -4,6 +4,8 @@ export const MISSION_STATUSES = [
   'created',
   'planned',
   'executing',
+  'execution_ready',
+  'execution_running',
   'awaiting_approval',
   'reviewed',
   'completed',
@@ -11,6 +13,16 @@ export const MISSION_STATUSES = [
 ];
 
 export const SESSION_STATUSES = ['executing', 'awaiting_approval', 'reviewed', 'completed', 'failed'];
+export const EXECUTION_SESSION_STATUSES = [
+  'pending',
+  'ready',
+  'running',
+  'stopped',
+  'blocked',
+  'failed',
+  'completed',
+];
+export const EXECUTION_LEASE_STATUSES = ['active', 'used', 'revoked'];
 
 export const AGENT_ROLES = ['manager', 'planner', 'executor', 'reviewer', 'specialist'];
 export const AGENT_RUN_STATUSES = ['queued', 'running', 'blocked', 'failed', 'completed', 'merged', 'abandoned'];
@@ -29,6 +41,7 @@ export const PROVIDER_FAILURE_KINDS = [
 export const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
 
 export const APPROVAL_DECISIONS = ['approve', 'reject'];
+export const APPROVAL_KINDS = ['provider_selection', 'workspace_execution', 'execution_lease'];
 
 export const ACTION_CLASSES = [
   'retry-ready',

@@ -266,6 +266,31 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) 
       reason: pack.riskProfile.reason,
     },
     adaptationNotes,
+    executionManifest: {
+      summary: `${mission.title}에 대한 bounded execution manifest`,
+      steps: [
+        {
+          kind: 'inspect',
+          title: '현재 워크트리 상태 확인',
+          reason: '실행 전 현재 리포 변경 상태를 먼저 기록합니다.',
+          cwd: '.',
+          command: 'git status --short',
+          expectedOutputs: ['현재 워크트리 변경 상태'],
+          verificationTarget: '실행 전 상태가 로그에 남아야 합니다.',
+          riskClassification: 'low',
+        },
+        {
+          kind: 'test',
+          title: 'CLI syntax smoke',
+          reason: '현재 리포의 기본 CLI surface가 parse 가능한지 확인합니다.',
+          cwd: '.',
+          command: 'node --check src/cli.mjs',
+          expectedOutputs: ['node --check success'],
+          verificationTarget: 'src/cli.mjs syntax parse must succeed.',
+          riskClassification: 'low',
+        },
+      ],
+    },
     nextAction: pack.riskProfile.requiresApproval
       ? 'Pause for approval before any workspace mutation.'
       : 'Share the draft with the owner and collect follow-up decisions.',

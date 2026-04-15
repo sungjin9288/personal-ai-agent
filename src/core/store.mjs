@@ -5,6 +5,8 @@ const DEFAULT_STATE = {
   workspaces: [],
   missions: [],
   sessions: [],
+  executionSessions: [],
+  executionLeases: [],
   agentRuns: [],
   artifacts: [],
   approvals: [],
@@ -23,6 +25,8 @@ function cloneDefaultState() {
     workspaces: [],
     missions: [],
     sessions: [],
+    executionSessions: [],
+    executionLeases: [],
     agentRuns: [],
     artifacts: [],
     approvals: [],
@@ -80,6 +84,8 @@ export function createStore({ rootDir }) {
       workspaces: Array.isArray(state.workspaces) ? state.workspaces : [],
       missions: Array.isArray(state.missions) ? state.missions : [],
       sessions: Array.isArray(state.sessions) ? state.sessions : [],
+      executionSessions: Array.isArray(state.executionSessions) ? state.executionSessions : [],
+      executionLeases: Array.isArray(state.executionLeases) ? state.executionLeases : [],
       agentRuns: Array.isArray(state.agentRuns) ? state.agentRuns : [],
       artifacts: Array.isArray(state.artifacts) ? state.artifacts : [],
       approvals: Array.isArray(state.approvals) ? state.approvals : [],
@@ -185,6 +191,12 @@ export function createStore({ rootDir }) {
     getMissionDir,
     getSession(sessionId) {
       return getCollectionItem('sessions', sessionId);
+    },
+    getExecutionLease(executionLeaseId) {
+      return getCollectionItem('executionLeases', executionLeaseId);
+    },
+    getExecutionSession(executionSessionId) {
+      return getCollectionItem('executionSessions', executionSessionId);
     },
     getSessionDir,
     getStatePath() {
@@ -385,6 +397,44 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listExecutionLeases(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('executionLeases').filter((lease) => {
+          if (filter.status && lease.status !== filter.status) {
+            return false;
+          }
+          if (filter.missionId && lease.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.sessionId && lease.sessionId !== filter.sessionId) {
+            return false;
+          }
+          if (filter.approvalId && lease.approvalId !== filter.approvalId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
+    listExecutionSessions(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('executionSessions').filter((session) => {
+          if (filter.status && session.status !== filter.status) {
+            return false;
+          }
+          if (filter.missionId && session.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.reviewSessionId && session.reviewSessionId !== filter.reviewSessionId) {
+            return false;
+          }
+          if (filter.leaseId && session.leaseId !== filter.leaseId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listMissions() {
       return sortByCreatedAt(listCollection('missions'));
     },
@@ -429,6 +479,12 @@ export function createStore({ rootDir }) {
     saveMemoryEntry(memoryEntry) {
       return saveCollectionItem('memoryEntries', memoryEntry);
     },
+    saveExecutionLease(executionLease) {
+      return saveCollectionItem('executionLeases', executionLease);
+    },
+    saveExecutionSession(executionSession) {
+      return saveCollectionItem('executionSessions', executionSession);
+    },
     saveMission(mission) {
       return saveCollectionItem('missions', mission);
     },
@@ -458,6 +514,12 @@ export function createStore({ rootDir }) {
     },
     updateMemoryEntry(memoryEntryId, updater) {
       return updateCollectionItem('memoryEntries', memoryEntryId, updater);
+    },
+    updateExecutionLease(executionLeaseId, updater) {
+      return updateCollectionItem('executionLeases', executionLeaseId, updater);
+    },
+    updateExecutionSession(executionSessionId, updater) {
+      return updateCollectionItem('executionSessions', executionSessionId, updater);
     },
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);
