@@ -774,6 +774,31 @@ function getReleaseStatusBadge(status = '') {
   return 'status-pending';
 }
 
+function getReleaseActionLabel(action = '') {
+  const normalized = String(action || '').trim().toLowerCase();
+  return (
+    {
+      'provider-preflight': 'provider preflight',
+      refresh: 'current surface / live refresh',
+      'refresh-preflight': 'refresh preflight',
+      snapshot: 'release snapshot',
+      'snapshot-preflight': 'snapshot preflight',
+    }[normalized] || 'release action'
+  );
+}
+
+function getReleaseActionScopeLabel(scope = '') {
+  const normalized = String(scope || '').trim().toLowerCase();
+  return (
+    {
+      'current-surface': 'current surface',
+      'live-validation': 'live validation',
+      'provider-readiness': 'provider readiness',
+      snapshot: 'snapshot freeze',
+    }[normalized] || 'release flow'
+  );
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -3244,6 +3269,7 @@ function renderReleaseStatus() {
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
+  const releaseActionHistory = release.releaseActionHistory || [];
   const recommendedActions = release.recommendedActions || [];
   const refreshPlan = release.refreshPlan || null;
   const liveRefreshPreflight = state.releaseLiveRefreshPreflight || null;
@@ -3525,6 +3551,42 @@ function renderReleaseStatus() {
             <div class="harness-callout">
               <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
               <p>${escapeHtml(gaps[0] || '남은 gap이 없습니다.')}</p>
+            </div>
+            <div class="mini-head">
+              <div>
+                <p class="section-kicker">Release Action History</p>
+                <h4>최근 preflight, refresh, snapshot, live action</h4>
+              </div>
+            </div>
+            <div class="release-history-list">
+              ${releaseActionHistory.length
+                ? releaseActionHistory
+                  .map(
+                    (item) => `
+                      <article class="release-snapshot-card">
+                        <div class="release-provider-meta">
+                          <div>
+                            <div class="item-title">${escapeHtml(getReleaseActionLabel(item.action))}</div>
+                            <div class="item-meta">${escapeHtml(getReleaseActionScopeLabel(item.scope))}${item.provider ? ` · ${escapeHtml(item.provider)}` : ''}</div>
+                          </div>
+                          <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
+                        </div>
+                        <div class="item-meta">${escapeHtml(item.summary || 'release action summary가 없습니다.')}</div>
+                        <div class="release-meta release-meta-secondary">
+                          <span class="item-meta">${escapeHtml(formatDate(item.createdAt))}</span>
+                          ${item.branch ? `<span class="item-meta">${escapeHtml(item.branch)}</span>` : ''}
+                          ${item.commit ? `<span class="item-meta mono">${escapeHtml(String(item.commit).slice(0, 12))}</span>` : ''}
+                        </div>
+                      </article>
+                    `,
+                  )
+                  .join('')
+                : `
+                    <article class="release-snapshot-card is-empty">
+                      <div class="item-title">최근 release action 기록이 없습니다.</div>
+                      <p class="item-meta">preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.</p>
+                    </article>
+                  `}
             </div>
             <div class="release-provider-grid">
               ${providerReadiness

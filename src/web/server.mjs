@@ -4,6 +4,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { resolveRootDir } from '../core/root.mjs';
 import { createStore } from '../core/store.mjs';
@@ -94,6 +95,13 @@ function runGit(args) {
   return String(result.stdout || '').trim();
 }
 
+function getCurrentGitContext() {
+  return {
+    branch: runGit(['rev-parse', '--abbrev-ref', 'HEAD']),
+    commit: runGit(['rev-parse', 'HEAD']),
+  };
+}
+
 function getTrackedFileStatus(filePaths = []) {
   if (!filePaths.length) {
     return [];
@@ -117,6 +125,29 @@ function getTrackedFileStatus(filePaths = []) {
       path: line.slice(3).trim(),
       status: line.slice(0, 2).trim() || '??',
     }));
+}
+
+function recordReleaseAction({
+  action = '',
+  details = null,
+  outcome = '',
+  provider = '',
+  scope = '',
+  summary = '',
+} = {}) {
+  const gitContext = getCurrentGitContext();
+  return store.saveReleaseAction({
+    action: String(action || '').trim(),
+    branch: gitContext.branch,
+    commit: gitContext.commit,
+    createdAt: new Date().toISOString(),
+    details: details && typeof details === 'object' ? details : null,
+    id: createId('releaseaction'),
+    outcome: String(outcome || '').trim(),
+    provider: String(provider || '').trim(),
+    scope: String(scope || '').trim(),
+    summary: String(summary || '').trim(),
+  });
 }
 
 function isOptionalCloseoutLabel(label) {
@@ -334,6 +365,10 @@ function buildExecutionV1Status() {
   }
 
   const stale = staleReasons.length > 0;
+  const releaseActionHistory = store
+    .listReleaseActions()
+    .slice(-8)
+    .reverse();
   const baselineReady = Boolean(
     snapshot
       && baselineEvidenceMarkdown
@@ -442,6 +477,7 @@ function buildExecutionV1Status() {
     localArtifactNotes,
     notes: currentArtifacts.notes,
     recommendedActions,
+    releaseActionHistory,
     providerReadiness,
     refreshPlan,
     snapshotEligibility: {
@@ -812,7 +848,20 @@ async function handleApi(request, response, url) {
     const preflight = buildExecutionV1RefreshPreflight(args);
     const isLiveValidationRefresh = Boolean(args.length);
     const isCurrentSurfaceRefresh = !args.length;
+    const refreshScope = isLiveValidationRefresh ? 'live-validation' : 'current-surface';
+    const provider = preflight.provider || '';
     if (!preflight.allowed) {
+      recordReleaseAction({
+        action: 'refresh',
+        details: {
+          args,
+          preflight,
+        },
+        outcome: 'blocked',
+        provider,
+        scope: refreshScope,
+        summary: preflight.summary,
+      });
       sendJson(response, 409, {
         error: 'refresh-not-allowed',
         message: preflight.summary,
@@ -822,6 +871,18 @@ async function handleApi(request, response, url) {
       return;
     }
     if (isLiveValidationRefresh && !body.confirmLiveValidation) {
+      recordReleaseAction({
+        action: 'refresh',
+        details: {
+          args,
+          confirmField: 'confirmLiveValidation',
+          preflight,
+        },
+        outcome: 'confirmation-required',
+        provider,
+        scope: refreshScope,
+        summary: `${provider || 'provider'} live validation 실행은 명시적 확인이 필요합니다.`,
+      });
       sendJson(response, 409, {
         error: 'live-validation-confirmation-required',
         message: `${preflight.provider || 'provider'} live validation 실행은 명시적 확인이 필요합니다.`,
@@ -831,6 +892,18 @@ async function handleApi(request, response, url) {
       return;
     }
     if (isCurrentSurfaceRefresh && !body.confirmCurrentSurfaceRewrite) {
+      recordReleaseAction({
+        action: 'refresh',
+        details: {
+          args,
+          confirmField: 'confirmCurrentSurfaceRewrite',
+          preflight,
+        },
+        outcome: 'confirmation-required',
+        provider,
+        scope: refreshScope,
+        summary: 'current surface evidence/closeout 재생성은 명시적 확인이 필요합니다.',
+      });
       sendJson(response, 409, {
         error: 'refresh-confirmation-required',
         message: 'current surface evidence/closeout 재생성은 명시적 확인이 필요합니다.',
@@ -839,14 +912,57 @@ async function handleApi(request, response, url) {
       });
       return;
     }
-    sendJson(response, 200, refreshExecutionV1Artifacts(args));
+    try {
+      const payload = refreshExecutionV1Artifacts(args);
+      recordReleaseAction({
+        action: 'refresh',
+        details: {
+          args,
+          preflight,
+        },
+        outcome: 'completed',
+        provider,
+        scope: refreshScope,
+        summary: isLiveValidationRefresh
+          ? `${provider} live validation과 current surface 재생성을 완료했습니다.`
+          : 'current surface evidence/closeout 재생성을 완료했습니다.',
+      });
+      sendJson(response, 200, payload);
+    } catch (error) {
+      recordReleaseAction({
+        action: 'refresh',
+        details: {
+          args,
+          error: error instanceof Error ? error.message : 'unknown error',
+          preflight,
+        },
+        outcome: 'failed',
+        provider,
+        scope: refreshScope,
+        summary: error instanceof Error ? error.message : 'execution-v1 refresh failed',
+      });
+      throw error;
+    }
     return;
   }
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/refresh/preflight') {
     const body = await readJsonBody(request);
+    const args = buildLiveValidationArgs(body);
+    const preflight = buildExecutionV1RefreshPreflight(args);
+    recordReleaseAction({
+      action: 'refresh-preflight',
+      details: {
+        args,
+        preflight,
+      },
+      outcome: preflight.allowed ? 'allowed' : 'blocked',
+      provider: preflight.provider || '',
+      scope: preflight.provider ? 'live-validation' : 'current-surface',
+      summary: preflight.summary,
+    });
     sendJson(response, 200, {
-      preflight: buildExecutionV1RefreshPreflight(buildLiveValidationArgs(body)),
+      preflight,
       status: buildExecutionV1Status(),
     });
     return;
@@ -854,8 +970,19 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/preflight') {
     const body = await readJsonBody(request);
+    const preflight = runExecutionV1Preflight(body.provider);
+    recordReleaseAction({
+      action: 'provider-preflight',
+      details: {
+        preflight,
+      },
+      outcome: preflight.status || 'unknown',
+      provider: String(body.provider || '').trim(),
+      scope: 'provider-readiness',
+      summary: `${String(body.provider || '').trim() || 'provider'} preflight ${preflight.status || 'unknown'}`,
+    });
     sendJson(response, 200, {
-      preflight: runExecutionV1Preflight(body.provider),
+      preflight,
     });
     return;
   }
@@ -864,6 +991,15 @@ async function handleApi(request, response, url) {
     const body = await readJsonBody(request);
     const preflight = buildExecutionV1SnapshotPreflight();
     if (!preflight.allowed) {
+      recordReleaseAction({
+        action: 'snapshot',
+        details: {
+          preflight,
+        },
+        outcome: 'blocked',
+        scope: 'snapshot',
+        summary: preflight.summary,
+      });
       sendJson(response, 409, {
         error: 'snapshot-not-ready',
         message: preflight.summary,
@@ -873,6 +1009,16 @@ async function handleApi(request, response, url) {
       return;
     }
     if (!body.confirmSnapshotFreeze) {
+      recordReleaseAction({
+        action: 'snapshot',
+        details: {
+          confirmField: 'confirmSnapshotFreeze',
+          preflight,
+        },
+        outcome: 'confirmation-required',
+        scope: 'snapshot',
+        summary: 'release snapshot 고정은 명시적 확인이 필요합니다.',
+      });
       sendJson(response, 409, {
         error: 'snapshot-confirmation-required',
         message: 'release snapshot 고정은 명시적 확인이 필요합니다.',
@@ -882,8 +1028,29 @@ async function handleApi(request, response, url) {
       return;
     }
     try {
-      sendJson(response, 200, archiveExecutionV1Snapshot());
+      const payload = archiveExecutionV1Snapshot();
+      recordReleaseAction({
+        action: 'snapshot',
+        details: {
+          archiveResult: payload.archiveResult || null,
+          preflight,
+        },
+        outcome: 'completed',
+        scope: 'snapshot',
+        summary: `release snapshot을 고정했습니다. (${String(payload.archiveResult?.verifiedCommit || '').slice(0, 7) || 'verified'})`,
+      });
+      sendJson(response, 200, payload);
     } catch (error) {
+      recordReleaseAction({
+        action: 'snapshot',
+        details: {
+          error: error instanceof Error ? error.message : 'unknown error',
+          preflight,
+        },
+        outcome: 'failed',
+        scope: 'snapshot',
+        summary: error instanceof Error ? error.message : 'snapshot을 생성할 수 없습니다.',
+      });
       sendJson(response, 409, {
         error: 'snapshot-not-ready',
         message: error instanceof Error ? error.message : 'snapshot을 생성할 수 없습니다.',
@@ -894,8 +1061,18 @@ async function handleApi(request, response, url) {
   }
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot/preflight') {
+    const preflight = buildExecutionV1SnapshotPreflight();
+    recordReleaseAction({
+      action: 'snapshot-preflight',
+      details: {
+        preflight,
+      },
+      outcome: preflight.allowed ? 'allowed' : 'blocked',
+      scope: 'snapshot',
+      summary: preflight.summary,
+    });
     sendJson(response, 200, {
-      preflight: buildExecutionV1SnapshotPreflight(),
+      preflight,
       status: buildExecutionV1Status(),
     });
     return;

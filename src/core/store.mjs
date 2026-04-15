@@ -7,6 +7,7 @@ const DEFAULT_STATE = {
   sessions: [],
   executionSessions: [],
   executionLeases: [],
+  releaseActions: [],
   agentRuns: [],
   artifacts: [],
   approvals: [],
@@ -27,6 +28,7 @@ function cloneDefaultState() {
     sessions: [],
     executionSessions: [],
     executionLeases: [],
+    releaseActions: [],
     agentRuns: [],
     artifacts: [],
     approvals: [],
@@ -86,6 +88,7 @@ export function createStore({ rootDir }) {
       sessions: Array.isArray(state.sessions) ? state.sessions : [],
       executionSessions: Array.isArray(state.executionSessions) ? state.executionSessions : [],
       executionLeases: Array.isArray(state.executionLeases) ? state.executionLeases : [],
+      releaseActions: Array.isArray(state.releaseActions) ? state.releaseActions : [],
       agentRuns: Array.isArray(state.agentRuns) ? state.agentRuns : [],
       artifacts: Array.isArray(state.artifacts) ? state.artifacts : [],
       approvals: Array.isArray(state.approvals) ? state.approvals : [],
@@ -194,6 +197,9 @@ export function createStore({ rootDir }) {
     },
     getExecutionLease(executionLeaseId) {
       return getCollectionItem('executionLeases', executionLeaseId);
+    },
+    getReleaseAction(releaseActionId) {
+      return getCollectionItem('releaseActions', releaseActionId);
     },
     getExecutionSession(executionSessionId) {
       return getCollectionItem('executionSessions', executionSessionId);
@@ -416,6 +422,25 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listReleaseActions(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('releaseActions').filter((action) => {
+          if (filter.action && action.action !== filter.action) {
+            return false;
+          }
+          if (filter.provider && action.provider !== filter.provider) {
+            return false;
+          }
+          if (filter.scope && action.scope !== filter.scope) {
+            return false;
+          }
+          if (filter.outcome && action.outcome !== filter.outcome) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listExecutionSessions(filter = {}) {
       return sortByCreatedAt(
         listCollection('executionSessions').filter((session) => {
@@ -481,6 +506,9 @@ export function createStore({ rootDir }) {
     },
     saveExecutionLease(executionLease) {
       return saveCollectionItem('executionLeases', executionLease);
+    },
+    saveReleaseAction(releaseAction) {
+      return saveCollectionItem('releaseActions', releaseAction);
     },
     saveExecutionSession(executionSession) {
       return saveCollectionItem('executionSessions', executionSession);

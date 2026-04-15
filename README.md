@@ -542,3 +542,5 @@ release snapshot 고정도 같은 패턴으로 정리했습니다. UI는 먼저 
 provider live validation도 같은 operator contract를 따릅니다. release tab의 provider card는 첫 클릭에서 `/api/execution-v1/refresh/preflight`를 다시 호출해 해당 provider의 live validation + current surface rewrite 가능 상태를 재확인하고, 두 번째 `live 검증 확인` 클릭에서만 실제 refresh를 실행합니다. 서버도 `confirmLiveValidation` 없이는 live refresh를 거부하므로, provider action은 더 이상 one-click mutate가 아닙니다.
 
 release tab은 이제 `권장 다음 액션`도 같이 계산합니다. 이 목록은 stale current surface, snapshot freeze 가능 여부, provider env/preflight 상태를 기반으로 `지금 눌러야 할 버튼`과 `왜 필요한지`를 먼저 보여 줍니다. 따라서 operator는 summary badge를 해석한 뒤 다음 액션을 추론하지 않고, mutable current surface 운영과 optional provider expansion을 바로 분리해서 볼 수 있습니다.
+
+release tab에는 `recent release action history`도 함께 쌓입니다. `/api/execution-v1/refresh(preflight)`, `/api/execution-v1/snapshot(preflight)`, `/api/execution-v1/preflight`에서 발생한 `allowed / blocked / confirmation-required / completed / failed` 결과를 최근 순으로 보여 주므로, operator는 방금 어떤 release action을 눌렀고 왜 막혔는지를 같은 화면에서 다시 확인할 수 있습니다.

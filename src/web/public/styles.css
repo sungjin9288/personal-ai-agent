@@ -2093,6 +2093,7 @@ button:disabled {
 .release-list,
 .release-doc-grid,
 .release-checklist,
+.release-history-list,
 .release-live-list,
 .release-current-status {
   display: flex;
