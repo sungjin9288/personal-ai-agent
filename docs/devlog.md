@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T19:15:00.000Z","id":"doclog_20260415191500_4dd87e","type":"devlog","updatedAt":"2026-04-15T19:15:00.000Z"} -->
+## 2026-04-15 OpenAI Live Helper Timeout Default
+
+- date: 2026-04-15T19:15:00.000Z
+- changed `run-execution-v1-live.mjs` so the OpenAI path now injects `OPENAI_RUN_TIMEOUT_MS=60000` into its child verification env by default, which removes one manual recovery step from the operator rerun flow
+- kept the behavior override-safe: if the operator already exported a timeout value, the helper preserves the explicit env instead of forcing the default
+- fixed the machine-readable `missing-env` hint so it now prints a shell-valid `export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY=\"...\"` command rather than a broken prefix string
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T19:00:00.000Z","id":"doclog_20260415190000_b6d1af","type":"devlog","updatedAt":"2026-04-15T19:00:00.000Z"} -->
 ## 2026-04-15 OpenAI Timeout Envelope Hardening
 
