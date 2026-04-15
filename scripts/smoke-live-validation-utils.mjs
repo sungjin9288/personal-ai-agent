@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { formatLiveValidationFailureLines, parseLiveValidationReason } from './live-validation-utils.mjs';
+import { readLiveValidationTriage } from './live-validation-utils.mjs';
 
 const parsed = parseLiveValidationReason(
   [
@@ -29,12 +33,54 @@ assert.ok(lines.some((line) => line.includes('failure: openai live mission run f
 assert.ok(lines.some((line) => line.includes('rootDir: /tmp/live-root')));
 assert.ok(lines.some((line) => line.includes('reviewerSummary: Deterministic review failed after provider mismatch.')));
 
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'live-validation-utils-'));
+const sessionDir = path.join(tempRoot, 'var', 'missions', 'mission_456', 'sessions', 'session_789');
+fs.mkdirSync(sessionDir, { recursive: true });
+fs.writeFileSync(
+  path.join(sessionDir, 'reviewer-report.md'),
+  [
+    '# Reviewer Report',
+    '',
+    '## Checks',
+    '- fail: engineering-approval-next-action - Next Action must explicitly call for approval before workspace execution.',
+    '',
+    '## Findings',
+    '- Next Action does not explicitly require approval before workspace execution.',
+    '',
+  ].join('\n'),
+);
+fs.writeFileSync(
+  path.join(sessionDir, 'implementation-proposal.md'),
+  [
+    '# Implementation Proposal',
+    '',
+    '## Next Action',
+    'Reviewer/manager: Approve the inspection-and-harness execution manifest so we can proceed.',
+  ].join('\n'),
+);
+
+const triage = readLiveValidationTriage({
+  ...parsed,
+  details: {
+    ...parsed.details,
+    rootDir: tempRoot,
+  },
+});
+
+assert.ok(triage);
+assert.ok(triage.reviewerReportPath?.endsWith('reviewer-report.md'));
+assert.ok(triage.implementationProposalPath?.endsWith('implementation-proposal.md'));
+assert.ok(triage.failedChecks?.includes('engineering-approval-next-action - Next Action must explicitly call for approval before workspace execution.'));
+assert.ok(triage.findings?.includes('Next Action does not explicitly require approval before workspace execution.'));
+assert.match(triage.nextActionSnippet || '', /Approve the inspection-and-harness execution manifest/);
+
 console.log(
   JSON.stringify(
     {
       ok: true,
       parsedReason: parsed,
       renderedLines: lines,
+      triage,
     },
     null,
     2,

@@ -9,6 +9,15 @@
 - expanded the closeout document with a dedicated `Live Failure Triage` section so failed provider validation now points directly at `rootDir`, `missionId`, `sessionId`, `artifact`, and `reviewerSummary` when that data exists
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-15T20:20:00.000Z","id":"doclog_20260415202000_91c4aa","type":"devlog","updatedAt":"2026-04-15T20:20:00.000Z"} -->
+## 2026-04-15 Live Validation Artifact Triage Extraction
+
+- date: 2026-04-15T20:20:00.000Z
+- extended live validation triage so helper and release docs no longer stop at the pipe-delimited failure reason; when the temp root still exists they now read the reviewer report and implementation proposal directly
+- surfaced `reviewerReportPath`, `implementationProposalPath`, `failedChecks`, `findings`, and `nextActionSnippet` in the helper/evidence/closeout path, which turns a failed rerun into an immediately inspectable artifact trail instead of a manual file hunt
+- added a dedicated smoke for the parser plus artifact extraction contract so this triage path stays deterministic even without live provider credentials
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T19:35:00.000Z","id":"doclog_20260415193500_8fbc42","type":"devlog","updatedAt":"2026-04-15T19:35:00.000Z"} -->
 ## 2026-04-15 Engineering Approval Gate Canonicalization
 

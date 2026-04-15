@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { formatLiveValidationFailureLines, parseLiveValidationReason } from './live-validation-utils.mjs';
+import { formatLiveValidationFailureLines, parseLiveValidationReason, readLiveValidationTriage } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
 const verifyScriptPath = path.join(repoDir, 'scripts', 'verify-execution-v1.mjs');
@@ -59,6 +59,8 @@ if (!verification.liveValidation || verification.liveValidation.length === 0) {
       lines.push(`- ${item.provider}: failed (${item.reason || 'unknown'})`);
       const parsedReason = parseLiveValidationReason(item.reason);
       lines.push(...formatLiveValidationFailureLines(parsedReason));
+      const triage = readLiveValidationTriage(parsedReason);
+      lines.push(...formatLiveValidationTriageLines(triage));
       continue;
     }
 
@@ -118,4 +120,32 @@ function runGit(args) {
   }
 
   return String(result.stdout || '').trim();
+}
+
+function formatLiveValidationTriageLines(triage) {
+  if (!triage) {
+    return [];
+  }
+
+  const lines = [];
+  if (triage.reviewerReportPath) {
+    lines.push(`  - reviewerReportPath: ${triage.reviewerReportPath}`);
+  }
+  if (triage.implementationProposalPath) {
+    lines.push(`  - implementationProposalPath: ${triage.implementationProposalPath}`);
+  }
+  for (const check of triage.failedChecks || []) {
+    lines.push(`  - failedCheck: ${check}`);
+  }
+  for (const finding of triage.findings || []) {
+    lines.push(`  - finding: ${finding}`);
+  }
+  if (triage.nextActionSnippet) {
+    lines.push(`  - nextActionSnippet: ${compactSingleLine(triage.nextActionSnippet)}`);
+  }
+  return lines;
+}
+
+function compactSingleLine(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
 }

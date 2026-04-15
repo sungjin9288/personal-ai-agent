@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { parseLiveValidationReason } from './live-validation-utils.mjs';
+import { parseLiveValidationReason, readLiveValidationTriage } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
 const evidenceScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-evidence.mjs');
@@ -175,6 +175,22 @@ function appendLiveFailureTriage(lines, provider, status) {
   if (details.reviewerSummary) {
     lines.push(`  - reviewerSummary: ${details.reviewerSummary}`);
   }
+  const triage = readLiveValidationTriage(status.parsedReason);
+  if (triage?.reviewerReportPath) {
+    lines.push(`  - reviewerReportPath: ${triage.reviewerReportPath}`);
+  }
+  if (triage?.implementationProposalPath) {
+    lines.push(`  - implementationProposalPath: ${triage.implementationProposalPath}`);
+  }
+  for (const check of triage?.failedChecks || []) {
+    lines.push(`  - failedCheck: ${check}`);
+  }
+  for (const finding of triage?.findings || []) {
+    lines.push(`  - finding: ${finding}`);
+  }
+  if (triage?.nextActionSnippet) {
+    lines.push(`  - nextActionSnippet: ${compactSingleLine(triage.nextActionSnippet)}`);
+  }
 }
 
 function runGit(args) {
@@ -189,4 +205,8 @@ function runGit(args) {
   }
 
   return String(result.stdout || '').trim();
+}
+
+function compactSingleLine(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
 }
