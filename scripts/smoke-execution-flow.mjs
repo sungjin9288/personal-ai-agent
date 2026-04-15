@@ -4,8 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
+import { buildFallbackExecutionManifest, normalizeExecutionManifest } from '../src/core/execution-utils.mjs';
 import { createMissionService } from '../src/core/mission-service.mjs';
-import { normalizeExecutionManifest } from '../src/core/execution-utils.mjs';
 import { createStore } from '../src/core/store.mjs';
 import { runCli } from './cli-test-helpers.mjs';
 
@@ -56,6 +56,38 @@ const normalizedProviderManifest = normalizeExecutionManifest(
 assert.ok(normalizedProviderManifest);
 assert.equal(
   normalizedProviderManifest.steps.some(
+    (step) => ['test', 'build'].includes(step.kind) && step.command === 'node --check src/cli.mjs',
+  ),
+  true,
+);
+
+const fallbackManifest = buildFallbackExecutionManifest({
+  mission: {
+    title: 'Hint filtering smoke',
+  },
+  plannerSteps: [],
+  proposalContent: [
+    '`npm run smoke:openai`',
+    '`python -m tests.smoke_openai`',
+    '`git status --short`',
+  ].join('\n'),
+  workspace,
+});
+
+assert.equal(
+  fallbackManifest.steps.some((step) => step.command === 'npm run smoke:openai'),
+  false,
+);
+assert.equal(
+  fallbackManifest.steps.some((step) => step.command === 'python -m tests.smoke_openai'),
+  false,
+);
+assert.equal(
+  fallbackManifest.steps.some((step) => step.command === 'git status --short'),
+  true,
+);
+assert.equal(
+  fallbackManifest.steps.some(
     (step) => ['test', 'build'].includes(step.kind) && step.command === 'node --check src/cli.mjs',
   ),
   true,

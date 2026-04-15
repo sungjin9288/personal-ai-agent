@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
@@ -170,6 +171,67 @@ function buildFallbackCommandHints({ plannerSteps = [], proposalContent = '' }) 
   return [...new Set(commands)];
 }
 
+function readWorkspacePackageScripts(workspacePath) {
+  const packageJsonPath = path.join(workspacePath, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return {};
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    return ensureObject(packageJson.scripts);
+  } catch {
+    return {};
+  }
+}
+
+function hasWorkspaceModule(workspacePath, moduleName) {
+  const modulePath = normalizeText(moduleName).replaceAll('.', '/');
+  if (!modulePath) {
+    return false;
+  }
+
+  return (
+    fs.existsSync(path.join(workspacePath, `${modulePath}.py`)) ||
+    fs.existsSync(path.join(workspacePath, modulePath, '__init__.py'))
+  );
+}
+
+function extractNodeScriptPath(command) {
+  const value = normalizeText(command);
+  const match = value.match(/^node\s+(?:--check\s+)?([^\s]+)(?:\s|$)/);
+  return sanitizeRelativePath(match?.[1] || '');
+}
+
+function isRunnableHintedCommand(command, workspacePath) {
+  const value = normalizeText(command);
+  if (!value) {
+    return false;
+  }
+
+  if (/^(git|rg)\b/.test(value)) {
+    return true;
+  }
+
+  const packageScripts = readWorkspacePackageScripts(workspacePath);
+  const packageScriptMatch = value.match(/^(npm|pnpm|yarn)\s+run\s+([A-Za-z0-9:_-]+)/);
+  if (packageScriptMatch) {
+    return Boolean(packageScripts[packageScriptMatch[2]]);
+  }
+
+  if (/^node\b/.test(value)) {
+    const scriptPath = extractNodeScriptPath(value);
+    return scriptPath ? fs.existsSync(path.join(workspacePath, scriptPath)) : false;
+  }
+
+  const pythonModuleMatch = value.match(/^python(?:3)?\s+-m\s+([A-Za-z0-9_.]+)/);
+  if (pythonModuleMatch) {
+    return hasWorkspaceModule(workspacePath, pythonModuleMatch[1]);
+  }
+
+  return false;
+}
+
 export function getCurrentGitBranch(workspacePath) {
   try {
     return normalizeText(execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: workspacePath, encoding: 'utf8' }));
@@ -229,7 +291,9 @@ export function buildFallbackExecutionManifest({ mission, workspace, plannerStep
   const hintedCommands = buildFallbackCommandHints({
     plannerSteps,
     proposalContent,
-  }).slice(0, 2);
+  })
+    .filter((command) => isRunnableHintedCommand(command, workspace.path))
+    .slice(0, 2);
 
   const steps = [
     {

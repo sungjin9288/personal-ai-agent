@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T21:55:00.000Z","id":"doclog_20260415215500_a1c5bd","type":"devlog","updatedAt":"2026-04-15T21:55:00.000Z"} -->
+## 2026-04-15 Fallback Hint Command Filtering
+
+- date: 2026-04-15T21:55:00.000Z
+- root cause for the latest OpenAI live rerun was not reviewer wording but fallback manifest execution: proposal-derived hints such as `npm run smoke:openai` and `python -m tests.smoke_openai` were accepted even though those entrypoints do not exist in this repo
+- hardened fallback manifest generation to keep only runnable hints: `npm/pnpm/yarn run` now requires an actual package script, `node ...` requires an existing file, and `python -m ...` requires a resolvable module path under the workspace
+- extended `smoke:execution-flow` so invalid hinted commands are explicitly filtered out while `git status --short` and the bounded `node --check src/cli.mjs` verification step remain, keeping the deterministic execution path aligned with the live rerun expectations
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T21:35:00.000Z","id":"doclog_20260415213500_4f8b11","type":"devlog","updatedAt":"2026-04-15T21:35:00.000Z"} -->
 ## 2026-04-15 Release Evidence Freshness Surface
 
