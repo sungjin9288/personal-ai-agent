@@ -16,6 +16,9 @@
 - latest OpenAI live rerun failed because the provider manifest still included literal placeholder test commands such as `TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live ...)` and `<runner> <live-validate-entrypoint> --provider stub ...`, and the execution engine treated those strings as runnable shell commands
 - hardened provider manifest normalization to drop placeholder commands containing `TBD_*`, `after inspection`, `e.g.`, `or equivalent`, or angle-bracket placeholder tokens like `<runner>` / `<model>` before step execution, which prevents foreground sessions from failing on obviously non-runnable planning text
 - extended `smoke:execution-flow` so provider-style manifests with placeholder test commands now prove two things together: the placeholder is removed, and the bounded `node --check src/cli.mjs` verification fallback is still appended to preserve `verification.status=passed/failed`
+- latest rerun still failed one layer earlier because the provider emitted a suspicious inspect command `ls -ლა` plus an edit placeholder `scripts/openai_live_validation.{ext}` / `PLACEHOLDER: ...`, and those values were still making it into the execution session
+- hardened execution manifest normalization again so suspicious non-ASCII shell tokens, placeholder file paths with `{}` / `<>`, and `PLACEHOLDER:` edit content are all dropped before execution
+- expanded `smoke:execution-flow` to lock this exact regression down: provider-style manifests with unicode-confusable shell flags or placeholder edit steps must normalize down to runnable inspect/artifact steps plus the bounded `node --check src/cli.mjs` verification fallback
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-15T21:55:00.000Z","id":"doclog_20260415215500_a1c5bd","type":"devlog","updatedAt":"2026-04-15T21:55:00.000Z"} -->

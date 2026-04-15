@@ -122,6 +122,13 @@ function isPlaceholderCommand(command) {
     return true;
   }
 
+  const tokens = value.split(/\s+/).filter(Boolean);
+  const executableToken = tokens.find((token) => !/^[A-Za-z_][A-Za-z0-9_]*=.*/.test(token)) || '';
+  const hasSuspiciousOptionToken = tokens.some((token) => token.startsWith('-') && /[^\x00-\x7F]/.test(token));
+  if ((executableToken && /[^\x00-\x7F]/.test(executableToken)) || hasSuspiciousOptionToken) {
+    return true;
+  }
+
   return (
     /^TBD(?:_|[\s-])/i.test(value) ||
     /<[A-Za-z][A-Za-z0-9._-]*>/.test(value) ||
@@ -134,6 +141,24 @@ function isPlaceholderCommand(command) {
 function sanitizeExecutableCommand(command) {
   const value = normalizeText(command);
   return isPlaceholderCommand(value) ? '' : value;
+}
+
+function isPlaceholderFilePath(filePath) {
+  const value = normalizeText(filePath);
+  if (!value) {
+    return true;
+  }
+
+  return /^TBD(?:_|[\s-])/i.test(value) || /[{}<>]/.test(value) || /\bplaceholder\b/i.test(value);
+}
+
+function isPlaceholderContent(content) {
+  const value = normalizeText(content);
+  if (!value) {
+    return true;
+  }
+
+  return /^PLACEHOLDER:/i.test(value) || /\bto be authored after inspection\b/i.test(value);
 }
 
 function buildDefaultVerificationStep(index) {
@@ -276,9 +301,10 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
       const kind = inferVerificationKind(normalizeStepKind(step.kind), command);
       const cwd = sanitizeRelativePath(step.cwd || '.');
       const relativeFilePath = sanitizeRelativePath(step.filePath || step.path || '');
+      const content = typeof step.content === 'string' ? step.content : '';
       return {
         command,
-        content: typeof step.content === 'string' ? step.content : '',
+        content,
         cwd,
         expectedOutputs: normalizeStringArray(step.expectedOutputs),
         filePath: relativeFilePath,
@@ -293,7 +319,12 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
         verificationTarget: normalizeText(step.verificationTarget),
       };
     })
-    .filter((step) => step.kind === 'edit' ? step.filePath : step.kind === 'artifact' || Boolean(step.command));
+    .filter((step) => {
+      if (step.kind === 'edit') {
+        return step.filePath && !isPlaceholderFilePath(step.filePath) && !isPlaceholderContent(step.content);
+      }
+      return step.kind === 'artifact' || Boolean(step.command);
+    });
 
   if (!steps.length) {
     return null;

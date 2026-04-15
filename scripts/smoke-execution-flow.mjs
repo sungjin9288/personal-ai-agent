@@ -43,6 +43,11 @@ const normalizedProviderManifest = normalizeExecutionManifest(
         command: 'git status --short',
       },
       {
+        kind: 'inspect',
+        title: 'Suspicious unicode option token',
+        command: 'ls -ლა',
+      },
+      {
         kind: 'artifact',
         title: '제안서 기록',
         command: 'write execution proposal artifact',
@@ -57,6 +62,13 @@ const normalizedProviderManifest = normalizeExecutionManifest(
         title: 'Angle bracket placeholder smoke',
         command: '<runner> <live-validate-entrypoint> --provider stub --fixture <fixture-path> --max-steps 2',
       },
+      {
+        kind: 'edit',
+        title: 'Placeholder edit plan',
+        filePath: 'scripts/openai_live_validation.{ext}',
+        operation: 'write',
+        content: 'PLACEHOLDER: To be authored after inspection to match repo language and existing provider/loop APIs.',
+      },
     ],
     summary: 'Provider supplied manifest without explicit verification steps.',
   },
@@ -69,7 +81,15 @@ assert.equal(
   false,
 );
 assert.equal(
+  normalizedProviderManifest.steps.some((step) => /ls -ლა/.test(step.command || '')),
+  false,
+);
+assert.equal(
   normalizedProviderManifest.steps.some((step) => /<live-validate-entrypoint>/.test(step.command || '')),
+  false,
+);
+assert.equal(
+  normalizedProviderManifest.steps.some((step) => /openai_live_validation\.\{ext\}/.test(step.filePath || '')),
   false,
 );
 assert.equal(
