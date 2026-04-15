@@ -491,9 +491,14 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
 
 provider별 live validation을 한 번에 실행하려면 아래 helper를 사용하면 됩니다.
 
+- `npm run preflight:execution-v1:openai`
+- `npm run preflight:execution-v1:anthropic`
+- `npm run preflight:execution-v1:local`
 - `npm run live:execution-v1:openai`
 - `npm run live:execution-v1:anthropic`
 - `npm run live:execution-v1:local`
+
+preflight helper는 해당 provider rerun 전에 필요한 deterministic smoke를 먼저 돌리고, env 준비 여부까지 JSON으로 요약합니다. 예를 들어 OpenAI preflight는 `smoke:openai-provider`와 `smoke:execution-flow`를 같이 확인한 뒤 `ready-for-live-validation` 또는 `ready-but-missing-env` 상태를 출력합니다.
 
 필수 env가 없으면 helper는 실패 대신 `missing-env` JSON과 필요한 `export` 명령 형식을 먼저 출력합니다.
 live validation 자체가 실패하면 helper는 `status=failed`와 함께 evidence path, closeout path, mission id, session id, temp root 경로를 출력하고 non-zero로 종료합니다.

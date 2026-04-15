@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T20:50:00.000Z","id":"doclog_20260415205000_5fb632","type":"devlog","updatedAt":"2026-04-15T20:50:00.000Z"} -->
+## 2026-04-15 Live Validation Preflight Helper
+
+- date: 2026-04-15T20:50:00.000Z
+- added provider-specific `preflight:execution-v1:*` entrypoints so operators can run the deterministic readiness checks before consuming a live provider call
+- OpenAI preflight now bundles `smoke:openai-provider` and `smoke:execution-flow`, then reports `ready-for-live-validation` vs `ready-but-missing-env` in one JSON payload instead of forcing users to remember which smoke scripts matter
+- documented the intended operator order as `preflight -> live rerun -> evidence/closeout`, which reduces back-and-forth when the remaining gap is credential injection rather than code uncertainty
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T20:35:00.000Z","id":"doclog_20260415203500_34d1af","type":"devlog","updatedAt":"2026-04-15T20:35:00.000Z"} -->
 ## 2026-04-15 Engineering Review Contract Hardening
 
