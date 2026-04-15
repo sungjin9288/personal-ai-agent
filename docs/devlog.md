@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T23:50:00.000Z","id":"doclog_20260415235000_f91b88","type":"devlog","updatedAt":"2026-04-15T23:50:00.000Z"} -->
+## 2026-04-15 Release Reload vs Regenerate Split
+
+- date: 2026-04-15T23:50:00.000Z
+- split the release tab action semantics so `상태 다시 읽기` now performs a read-only `/api/execution-v1/status` reload, while `current surface 재생성` remains the explicit path that mutates evidence/closeout artifacts
+- kept provider-specific live validation on its own buttons, which makes it clear that there are now three distinct operator actions in the same surface: inspect state, rebuild current artifacts, or rerun a provider-backed release check
+- updated release copy to explain the distinction directly inside the UI, reducing the chance that an operator unintentionally regenerates evidence when they only meant to re-read status
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T23:35:00.000Z","id":"doclog_20260415233500_1d4f82","type":"devlog","updatedAt":"2026-04-15T23:35:00.000Z"} -->
 ## 2026-04-15 Provider Preflight Action Surface
 

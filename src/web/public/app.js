@@ -1002,7 +1002,12 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'refresh-release-status') {
-        void refreshReleaseStatus(button.dataset.liveMode || '');
+        void reloadReleaseStatus();
+        return;
+      }
+
+      if (action === 'regenerate-release-surface') {
+        void refreshReleaseStatus();
         return;
       }
 
@@ -3307,7 +3312,8 @@ function renderReleaseStatus() {
             : ''}
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="refresh-release-status">마감 상태 새로고침</button>
+          <button class="primary-button" type="button" data-ui-action="refresh-release-status">상태 다시 읽기</button>
+          <button class="ghost-button" type="button" data-ui-action="regenerate-release-surface">current surface 재생성</button>
           <button class="ghost-button" type="button" data-ui-action="archive-release-snapshot" ${snapshotEligibility.allowed ? '' : 'disabled'}>release snapshot 고정</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
@@ -3490,7 +3496,7 @@ function renderReleaseStatus() {
               : `
                   <article class="release-snapshot-card is-empty">
                     <div class="item-title">Release snapshot이 아직 없습니다.</div>
-                    <p class="item-meta">current surface evidence가 fresh한 상태라면 여기서 바로 snapshot을 고정하거나 \`npm run snapshot:execution-v1\`를 실행하면 됩니다.</p>
+                    <p class="item-meta">상태 다시 읽기는 read-only reload이고, current surface evidence를 다시 만들려면 위의 current surface 재생성 또는 provider별 live validation을 실행하면 됩니다.</p>
                   </article>
                 `}
             <div class="release-live-list">
@@ -4652,14 +4658,31 @@ async function loadReleaseStatus() {
   return payload;
 }
 
+async function reloadReleaseStatus() {
+  try {
+    setUiNotice('v1 마감 상태를 다시 읽는 중입니다.');
+    await loadReleaseStatus();
+    setActiveDetailTab('release', { urlMode: 'push' });
+    setUiNotice('v1 마감 상태를 다시 읽었습니다.');
+  } catch (error) {
+    window.alert(error.message || 'v1 마감 상태를 다시 읽지 못했습니다.');
+  }
+}
+
 async function refreshReleaseStatus(liveMode = '') {
   try {
-    setUiNotice('v1 마감 상태를 갱신 중입니다.');
+    const normalizedLiveMode = String(liveMode || '').trim();
+    const isLiveRun = Boolean(normalizedLiveMode);
+    setUiNotice(
+      isLiveRun
+        ? `${normalizedLiveMode} live validation과 current surface를 갱신 중입니다.`
+        : 'current surface evidence/closeout를 재생성 중입니다.',
+    );
     const payload = await api('/api/execution-v1/refresh', {
       body: JSON.stringify({
-        liveAnthropic: liveMode === 'anthropic',
-        liveLocal: liveMode === 'local',
-        liveOpenAI: liveMode === 'openai',
+        liveAnthropic: normalizedLiveMode === 'anthropic',
+        liveLocal: normalizedLiveMode === 'local',
+        liveOpenAI: normalizedLiveMode === 'openai',
       }),
       method: 'POST',
     });
@@ -4668,9 +4691,18 @@ async function refreshReleaseStatus(liveMode = '') {
     renderDetailTabLabels();
     renderDetailContextbar();
     setActiveDetailTab('release', { urlMode: 'push' });
-    setUiNotice('v1 마감 상태를 새로고침했습니다.');
+    setUiNotice(
+      isLiveRun
+        ? `${normalizedLiveMode} live validation 결과로 current surface를 갱신했습니다.`
+        : 'current surface evidence/closeout를 재생성했습니다.',
+    );
   } catch (error) {
-    window.alert(error.message || 'v1 마감 상태 갱신에 실패했습니다.');
+    window.alert(
+      error.message
+      || (isLiveRun
+        ? 'provider live validation 기반 current surface 갱신에 실패했습니다.'
+        : 'current surface 재생성에 실패했습니다.'),
+    );
   }
 }
 
