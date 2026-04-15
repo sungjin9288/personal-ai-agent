@@ -250,16 +250,47 @@ function extractDeterministicItems(markdown) {
   });
 }
 
-function buildExecutionV1Status() {
-  const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
-  const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
-  const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
-  const currentCommit = runGit(['rev-parse', 'HEAD']);
+function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown = '') {
   const checklist = extractChecklistItems(closeoutMarkdown);
   const deterministic = extractDeterministicItems(evidenceMarkdown);
   const liveValidation = extractLiveValidationItems(evidenceMarkdown);
   const gaps = extractSectionBullets(evidenceMarkdown, 'Remaining Gaps');
   const notes = extractSectionBullets(closeoutMarkdown, 'Notes');
+  const values = extractStatusMap(closeoutMarkdown);
+  const requiredChecklistOpen = checklist.filter((item) => !item.done && !isOptionalCloseoutLabel(item.label)).length;
+  const optionalChecklistOpen = checklist.filter((item) => !item.done && isOptionalCloseoutLabel(item.label)).length;
+  const blockedItems = Object.entries(values).filter(
+    ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && !isOptionalCloseoutLabel(label),
+  ).length;
+  const optionalBlockedItems = Object.entries(values).filter(
+    ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && isOptionalCloseoutLabel(label),
+  ).length;
+
+  return {
+    blockedItems,
+    branch: extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch'),
+    checklist,
+    closeoutGeneratedAt: extractBulletValue(closeoutMarkdown, 'generatedAt'),
+    commit: extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit'),
+    deterministic,
+    deterministicPassed: deterministic.filter((item) => item.status === 'passed').length,
+    evidenceGeneratedAt: extractBulletValue(evidenceMarkdown, 'generatedAt'),
+    gaps,
+    liveValidation,
+    notes,
+    optionalBlockedItems,
+    optionalChecklistOpen,
+    requiredChecklistOpen,
+    values,
+  };
+}
+
+function buildExecutionV1Status() {
+  const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
+  const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
+  const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
+  const currentCommit = runGit(['rev-parse', 'HEAD']);
+  const currentArtifacts = buildExecutionV1ArtifactSummary(evidenceMarkdown, closeoutMarkdown);
   const providerReadiness = liveValidationProviders.map((item) => ({
     command: item.command,
     envKey: item.envKey,
@@ -268,10 +299,12 @@ function buildExecutionV1Status() {
     ready: Boolean(process.env[item.envKey]),
     status: process.env[item.envKey] ? 'ready' : 'missing-env',
   }));
-  const statusMap = extractStatusMap(closeoutMarkdown);
-  const generatedCommit = extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit');
-  const generatedBranch = extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch');
+  const generatedCommit = currentArtifacts.commit;
+  const generatedBranch = currentArtifacts.branch;
   const snapshot = readExecutionV1Snapshot(generatedCommit, currentCommit);
+  const baselineEvidenceMarkdown = snapshot ? readMarkdownFile(snapshot.evidencePath) : '';
+  const baselineCloseoutMarkdown = snapshot ? readMarkdownFile(snapshot.closeoutPath) : '';
+  const baselineArtifacts = buildExecutionV1ArtifactSummary(baselineEvidenceMarkdown, baselineCloseoutMarkdown);
   const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
   const staleReasons = [];
   const localArtifactNotes = [];
@@ -293,66 +326,89 @@ function buildExecutionV1Status() {
   }
 
   const stale = staleReasons.length > 0;
-  const requiredChecklistOpen = checklist.filter((item) => !item.done && !isOptionalCloseoutLabel(item.label)).length;
-  const optionalChecklistOpen = checklist.filter((item) => !item.done && isOptionalCloseoutLabel(item.label)).length;
-  const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
+  const baselineReady = Boolean(
+    snapshot
+      && baselineEvidenceMarkdown
+      && baselineCloseoutMarkdown
+      && baselineArtifacts.requiredChecklistOpen === 0
+      && baselineArtifacts.blockedItems === 0,
+  );
   const artifactState = !evidenceMarkdown || !closeoutMarkdown
     ? 'missing'
     : stale
       ? 'stale'
       : hasLocalArtifactChanges
-        ? 'local-current'
-        : 'current';
+      ? 'local-current'
+      : 'current';
 
   return {
     artifactState,
     artifactsMatchCurrentHead,
     branch: generatedBranch,
-    checklist,
+    checklist: currentArtifacts.checklist,
     closeout: {
-      generatedAt: extractBulletValue(closeoutMarkdown, 'generatedAt'),
+      generatedAt: currentArtifacts.closeoutGeneratedAt,
       markdown: closeoutMarkdown,
       path: closeoutDocPath,
     },
     commit: generatedCommit,
     currentBranch,
     currentCommit,
-    deterministic,
+    deterministic: currentArtifacts.deterministic,
     docStatuses,
     evidence: {
-      generatedAt: extractBulletValue(evidenceMarkdown, 'generatedAt'),
+      generatedAt: currentArtifacts.evidenceGeneratedAt,
       markdown: evidenceMarkdown,
       path: evidenceDocPath,
     },
-    gaps,
-    liveValidation,
+    gaps: currentArtifacts.gaps,
+    liveValidation: currentArtifacts.liveValidation,
     localArtifactNotes,
-    notes,
+    notes: currentArtifacts.notes,
     providerReadiness,
+    baseline: snapshot
+      ? {
+          archivedAt: snapshot.archivedAt,
+          blockedItems: baselineArtifacts.blockedItems,
+          branch: baselineArtifacts.branch,
+          checklistOpen: baselineArtifacts.requiredChecklistOpen,
+          checklistTotal: baselineArtifacts.checklist.length,
+          commit: snapshot.verifiedCommit || baselineArtifacts.commit,
+          deterministicPassed: baselineArtifacts.deterministicPassed,
+          deterministicTotal: baselineArtifacts.deterministic.length,
+          exists: true,
+          generatedAt:
+            baselineArtifacts.closeoutGeneratedAt || baselineArtifacts.evidenceGeneratedAt || snapshot.archivedAt,
+          optionalBlockedItems: baselineArtifacts.optionalBlockedItems,
+          optionalChecklistOpen: baselineArtifacts.optionalChecklistOpen,
+          ready: baselineReady,
+        }
+      : null,
     snapshot,
     stale,
     staleReasons,
     summary: {
-      blockedItems: Object.entries(statusMap).filter(
-        ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && !isOptionalCloseoutLabel(label),
-      ).length,
-      checklistOpen: requiredChecklistOpen,
-      checklistTotal: checklist.length,
-      deterministicPassed,
-      deterministicTotal: deterministic.length,
-      optionalBlockedItems: Object.entries(statusMap).filter(
-        ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && isOptionalCloseoutLabel(label),
-      ).length,
-      optionalChecklistOpen,
-      ready: requiredChecklistOpen === 0 && !stale,
+      baselineBlockedItems: baselineArtifacts.blockedItems,
+      baselineChecklistOpen: baselineArtifacts.requiredChecklistOpen,
+      baselineDeterministicPassed: baselineArtifacts.deterministicPassed,
+      baselineDeterministicTotal: baselineArtifacts.deterministic.length,
+      baselineReady,
+      blockedItems: currentArtifacts.blockedItems,
+      checklistOpen: currentArtifacts.requiredChecklistOpen,
+      checklistTotal: currentArtifacts.checklist.length,
+      deterministicPassed: currentArtifacts.deterministicPassed,
+      deterministicTotal: currentArtifacts.deterministic.length,
+      optionalBlockedItems: currentArtifacts.optionalBlockedItems,
+      optionalChecklistOpen: currentArtifacts.optionalChecklistOpen,
+      ready: currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0 && !stale,
       stale,
       staleReasonCount: staleReasons.length,
     },
     updatedAt:
-      extractBulletValue(closeoutMarkdown, 'generatedAt') ||
-      extractBulletValue(evidenceMarkdown, 'generatedAt') ||
+      currentArtifacts.closeoutGeneratedAt ||
+      currentArtifacts.evidenceGeneratedAt ||
       new Date().toISOString(),
-    values: statusMap,
+    values: currentArtifacts.values,
   };
 }
 

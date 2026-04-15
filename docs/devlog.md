@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T23:05:00.000Z","id":"doclog_20260415230500_8cb221","type":"devlog","updatedAt":"2026-04-15T23:05:00.000Z"} -->
+## 2026-04-15 Verified Baseline Release Surface
+
+- date: 2026-04-15T23:05:00.000Z
+- split execution-v1 release status into two explicit layers: `current surface ready` still means the mutable evidence/closeout markdown matches the current HEAD, while `verified baseline ready` means the last archived snapshot already closed all required OpenAI gates
+- extended `/api/execution-v1/status` with baseline summary fields derived from the immutable snapshot so operators can see whether they are blocked by real closeout gaps or only by stale current-surface markdown
+- updated the `v1 마감 상태` tab to render `baseline ready · current surface refresh needed` instead of treating every stale current surface as a full release failure, which keeps the OpenAI-passed baseline visible even after follow-up code changes move HEAD forward
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T22:25:00.000Z","id":"doclog_20260415222500_5c2d72","type":"devlog","updatedAt":"2026-04-15T22:25:00.000Z"} -->
 ## 2026-04-15 Live Closeout Evidence Reuse
 

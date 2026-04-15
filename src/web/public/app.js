@@ -2530,14 +2530,19 @@ function renderOutputCloseout() {
   ];
 
   if (isExecutionMissionSelected() && state.releaseStatus) {
+    const releaseSummary = state.releaseStatus.summary || {};
     closeoutItems.push({
       actionLabel: 'v1 마감 상태 보기',
       actionValue: 'release',
-      detail: state.releaseStatus.summary?.checklistOpen
-        ? `열린 체크리스트 ${state.releaseStatus.summary.checklistOpen}건 · 환경 gap ${state.releaseStatus.summary.blockedItems || 0}건`
-        : 'execution v1 closeout checklist가 현재 기준으로 닫혀 있습니다.',
+      detail: releaseSummary.ready
+        ? 'execution v1 closeout checklist가 현재 HEAD 기준으로 닫혀 있습니다.'
+        : releaseSummary.baselineReady
+          ? 'verified snapshot 기준 필수 closeout은 닫혀 있고, current surface evidence만 새 HEAD 기준으로 다시 맞추면 됩니다.'
+          : releaseSummary.checklistOpen
+            ? `열린 체크리스트 ${releaseSummary.checklistOpen}건 · 환경 gap ${releaseSummary.blockedItems || 0}건`
+            : 'execution v1 closeout 상태를 다시 확인해야 합니다.',
       label: '실행형 에이전트 v1 준비 상태',
-      ready: Boolean(state.releaseStatus.summary?.ready),
+      ready: Boolean(releaseSummary.ready || releaseSummary.baselineReady),
     });
   }
 
@@ -3193,6 +3198,7 @@ function renderReleaseStatus() {
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const snapshot = release.snapshot || null;
+  const baseline = release.baseline || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
     release.artifactState === 'local-current'
@@ -3200,20 +3206,33 @@ function renderReleaseStatus() {
       : release.stale
         ? '갱신 필요'
         : '최신';
-  const releaseHeadline = release.stale
-    ? 'execution v1 evidence 갱신 필요'
-    : release.artifactState === 'local-current'
+  const baselineStateLabel = baseline?.ready
+    ? 'verified snapshot ready'
+    : snapshot
+      ? 'snapshot archived'
+      : 'snapshot 없음';
+  const releaseHeadline = summary.ready
+    ? (release.artifactState === 'local-current'
       ? 'execution v1 closeout ready (local evidence)'
-    : summary.ready
-      ? 'execution v1 closeout ready'
-      : 'execution v1 closeout 미완료';
-  const releaseCopy = release.stale
-    ? '현재 HEAD와 evidence/closeout 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
-    : release.artifactState === 'local-current'
+      : 'execution v1 closeout ready')
+    : baseline?.ready && release.stale
+      ? 'execution v1 baseline ready · current surface refresh needed'
+      : baseline?.ready
+        ? 'execution v1 baseline ready'
+        : release.stale
+          ? 'execution v1 evidence 갱신 필요'
+          : 'execution v1 closeout 미완료';
+  const releaseCopy = summary.ready
+    ? (release.artifactState === 'local-current'
       ? '현재 HEAD 기준 evidence/closeout가 로컬에서 갱신되었습니다. 커밋되지 않았지만 근거 문서는 최신입니다.'
-    : summary.ready
-      ? 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.'
-      : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.';
+      : 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.')
+    : baseline?.ready && release.stale
+      ? '마지막 verified snapshot 기준 필수 closeout은 이미 닫혔습니다. 현재 화면의 evidence/closeout는 최신 HEAD와 어긋나 있어 current surface만 다시 생성하면 됩니다.'
+      : baseline?.ready
+        ? 'verified snapshot 기준 release baseline은 준비되어 있습니다. current surface evidence를 다시 만들면 현재 HEAD 기준 closeout 상태도 맞출 수 있습니다.'
+        : release.stale
+          ? '현재 HEAD와 evidence/closeout 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
+          : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.';
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
@@ -3229,6 +3248,10 @@ function renderReleaseStatus() {
         <div class="summary-chip">
           <span>필수 gap</span>
           <strong>${escapeHtml(String(summary.blockedItems || 0))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>verified baseline</span>
+          <strong>${escapeHtml(baselineStateLabel)}</strong>
         </div>
         <div class="summary-chip">
           <span>optional provider gap</span>
@@ -3264,6 +3287,14 @@ function renderReleaseStatus() {
                   ${localArtifactNotes
                     .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
                     .join('')}
+                </div>
+              `
+            : ''}
+          ${baseline?.ready
+            ? `
+                <div class="release-stale-note">
+                  <div class="release-stale-line">verified snapshot 기준 필수 closeout ${escapeHtml(String(baseline.checklistOpen || 0))}건 · 필수 gap ${escapeHtml(String(baseline.blockedItems || 0))}건입니다.</div>
+                  <div class="release-stale-line">snapshot commit ${escapeHtml(baseline.commit || '-')} · archived ${escapeHtml(formatDate(baseline.archivedAt || baseline.generatedAt || ''))}</div>
                 </div>
               `
             : ''}
@@ -3398,6 +3429,9 @@ function renderReleaseStatus() {
                       <span class="item-meta">${escapeHtml(formatDate(snapshot.archivedAt))}</span>
                     </div>
                     <div class="release-meta release-meta-secondary">
+                      <span class="mini-badge ${baseline?.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(
+                        baseline?.ready ? 'baseline ready' : 'baseline 검토 필요',
+                      )}</span>
                       <span class="mini-badge ${snapshot.matchesCurrentHead ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesCurrentHead ? 'current head와 일치' : '이전 verified snapshot')}</span>
                       <span class="mini-badge ${snapshot.matchesGeneratedCommit ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesGeneratedCommit ? '현재 evidence와 연결됨' : '현재 evidence와 분리됨')}</span>
                     </div>
