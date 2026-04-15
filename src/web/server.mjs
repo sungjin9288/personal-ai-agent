@@ -17,6 +17,7 @@ const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evi
 const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
+const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const liveValidationProviders = [
   {
     command: 'npm run evidence:execution-v1 -- --live-openai',
@@ -114,6 +115,51 @@ function getTrackedFileStatus(filePaths = []) {
       path: line.slice(3).trim(),
       status: line.slice(0, 2).trim() || '??',
     }));
+}
+
+function isOptionalCloseoutLabel(label) {
+  return /Anthropic live validation|Local provider live validation|local live validation/i.test(String(label || ''));
+}
+
+function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
+  if (!fs.existsSync(executionV1SnapshotsRoot)) {
+    return null;
+  }
+
+  const snapshotEntries = fs.readdirSync(executionV1SnapshotsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const snapshotDir = path.join(executionV1SnapshotsRoot, entry.name);
+      const manifestPath = path.join(snapshotDir, 'snapshot.json');
+      if (!fs.existsSync(manifestPath)) {
+        return null;
+      }
+      try {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        const evidencePath = path.join(snapshotDir, 'execution-v1-evidence.md');
+        const closeoutPath = path.join(snapshotDir, 'execution-v1-closeout.md');
+        return {
+          archivedAt: manifest.archivedAt || '',
+          closeoutPath,
+          evidencePath,
+          exists: true,
+          matchesCurrentHead: Boolean(currentCommit && manifest.verifiedCommit === currentCommit),
+          matchesGeneratedCommit: Boolean(preferredCommit && manifest.verifiedCommit === preferredCommit),
+          snapshotDir,
+          verifiedCommit: manifest.verifiedCommit || entry.name,
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean)
+    .sort((left, right) => String(right.archivedAt || '').localeCompare(String(left.archivedAt || '')));
+
+  if (!snapshotEntries.length) {
+    return null;
+  }
+
+  return snapshotEntries.find((entry) => entry.matchesGeneratedCommit) || snapshotEntries[0];
 }
 
 function extractBulletValue(markdown, label) {
@@ -225,6 +271,7 @@ function buildExecutionV1Status() {
   const statusMap = extractStatusMap(closeoutMarkdown);
   const generatedCommit = extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit');
   const generatedBranch = extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch');
+  const snapshot = readExecutionV1Snapshot(generatedCommit, currentCommit);
   const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
   const staleReasons = [];
   const localArtifactNotes = [];
@@ -246,7 +293,8 @@ function buildExecutionV1Status() {
   }
 
   const stale = staleReasons.length > 0;
-  const checklistOpen = checklist.filter((item) => !item.done).length;
+  const requiredChecklistOpen = checklist.filter((item) => !item.done && !isOptionalCloseoutLabel(item.label)).length;
+  const optionalChecklistOpen = checklist.filter((item) => !item.done && isOptionalCloseoutLabel(item.label)).length;
   const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
   const artifactState = !evidenceMarkdown || !closeoutMarkdown
     ? 'missing'
@@ -281,15 +329,22 @@ function buildExecutionV1Status() {
     localArtifactNotes,
     notes,
     providerReadiness,
+    snapshot,
     stale,
     staleReasons,
     summary: {
-      blockedItems: Object.values(statusMap).filter((value) => /blocked|missing-env/i.test(String(value || ''))).length,
-      checklistOpen,
+      blockedItems: Object.entries(statusMap).filter(
+        ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && !isOptionalCloseoutLabel(label),
+      ).length,
+      checklistOpen: requiredChecklistOpen,
       checklistTotal: checklist.length,
       deterministicPassed,
       deterministicTotal: deterministic.length,
-      ready: checklistOpen === 0 && !stale,
+      optionalBlockedItems: Object.entries(statusMap).filter(
+        ([label, value]) => /blocked|missing-env/i.test(String(value || '')) && isOptionalCloseoutLabel(label),
+      ).length,
+      optionalChecklistOpen,
+      ready: requiredChecklistOpen === 0 && !stale,
       stale,
       staleReasonCount: staleReasons.length,
     },

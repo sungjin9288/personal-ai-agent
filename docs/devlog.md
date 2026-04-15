@@ -23,6 +23,8 @@
 - updated execution v1 status building/rendering so `dirty docs + matching commit` becomes `로컬 갱신됨(local-current)` instead of `갱신 필요`, which keeps the operator console honest about “latest local evidence” versus true stale/mismatched evidence
 - added `snapshot:execution-v1` so the successful local evidence/closeout pair can be archived under `docs/releases/execution-v1/<verified-commit>/` as an immutable, commit-friendly release artifact
 - snapshot flow keeps `docs/execution-v1-*.md` as the mutable current surface while giving release/handoff work a stable artifact that does not become stale just because HEAD moves after the evidence was generated
+- wired release snapshot metadata into `/api/execution-v1/status` and the `v1 마감 상태` tab, so operators can see the last archived verified artifact even when the current surface is stale or only locally refreshed
+- split optional provider expansion (Anthropic/local) from required closeout readiness in the release summary, so OpenAI-passed execution v1 no longer looks incomplete just because optional providers are still `missing-env`
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-15T21:55:00.000Z","id":"doclog_20260415215500_a1c5bd","type":"devlog","updatedAt":"2026-04-15T21:55:00.000Z"} -->

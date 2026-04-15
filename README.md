@@ -520,3 +520,5 @@ provider-supplied execution manifest에도 같은 정리가 적용됩니다. `TB
 `결과와 기록 > v1 마감 상태`의 evidence 표시는 `stale`와 `로컬 갱신됨(local-current)`을 구분합니다. evidence/closeout 문서가 현재 HEAD 기준으로 다시 생성되었지만 아직 커밋되지 않은 경우에는 stale로 보지 않고, 로컬에서 최신 근거 문서가 준비된 상태로 표시합니다. 즉, OpenAI live rerun 직후 evidence markdown이 dirty여도 현재 commit과 일치하면 release surface는 “근거 문서는 최신, 아직 미커밋”으로 보여야 합니다.
 
 성공한 local evidence를 실제 release artifact로 남기려면 `npm run snapshot:execution-v1`를 실행합니다. 이 스크립트는 현재 [execution-v1-evidence.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-evidence.md)와 [execution-v1-closeout.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md)를 읽어 `docs/releases/execution-v1/<verified-commit>/` 아래에 immutable snapshot을 만듭니다. current surface는 계속 dirty/local-current 상태로 유지하면서도, verified commit 기준 근거 문서는 별도 snapshot으로 커밋할 수 있습니다.
+
+`결과와 기록 > v1 마감 상태`는 이제 이 snapshot도 함께 보여 줍니다. 즉, current evidence가 현재 HEAD와 어긋나 stale하더라도 마지막으로 고정된 verified snapshot의 commit, archivedAt, evidence/closeout 경로를 같은 화면에서 바로 확인할 수 있습니다. 또한 Anthropic/local live validation은 optional provider expansion으로 분리되어, OpenAI 기준 v1 closeout readiness를 가리는 필수 gap처럼 집계되지 않습니다.

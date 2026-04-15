@@ -3192,6 +3192,7 @@ function renderReleaseStatus() {
   const providerReadiness = release.providerReadiness || [];
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
+  const snapshot = release.snapshot || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
     release.artifactState === 'local-current'
@@ -3226,8 +3227,12 @@ function renderReleaseStatus() {
           <strong>${escapeHtml(String(summary.checklistOpen || 0))}건</strong>
         </div>
         <div class="summary-chip">
-          <span>환경 gap</span>
+          <span>필수 gap</span>
           <strong>${escapeHtml(String(summary.blockedItems || 0))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>optional provider gap</span>
+          <strong>${escapeHtml(String(summary.optionalBlockedItems || 0))}건</strong>
         </div>
         <div class="summary-chip">
           <span>evidence 상태</span>
@@ -3379,6 +3384,45 @@ function renderReleaseStatus() {
                 )
                 .join('')}
             </div>
+            ${snapshot
+              ? `
+                  <article class="release-snapshot-card">
+                    <div class="mini-head">
+                      <div>
+                        <p class="section-kicker">Release Snapshot</p>
+                        <h4>마지막으로 고정한 verified artifact</h4>
+                      </div>
+                    </div>
+                    <div class="release-meta">
+                      <span class="item-meta">verified ${escapeHtml(snapshot.verifiedCommit || '-')}</span>
+                      <span class="item-meta">${escapeHtml(formatDate(snapshot.archivedAt))}</span>
+                    </div>
+                    <div class="release-meta release-meta-secondary">
+                      <span class="mini-badge ${snapshot.matchesCurrentHead ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesCurrentHead ? 'current head와 일치' : '이전 verified snapshot')}</span>
+                      <span class="mini-badge ${snapshot.matchesGeneratedCommit ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesGeneratedCommit ? '현재 evidence와 연결됨' : '현재 evidence와 분리됨')}</span>
+                    </div>
+                    <div class="release-doc-status-list">
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">snapshot evidence</div>
+                          <div class="item-meta mono">${escapeHtml(snapshot.evidencePath || '-')}</div>
+                        </div>
+                      </div>
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">snapshot closeout</div>
+                          <div class="item-meta mono">${escapeHtml(snapshot.closeoutPath || '-')}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                `
+              : `
+                  <article class="release-snapshot-card is-empty">
+                    <div class="item-title">Release snapshot이 아직 없습니다.</div>
+                    <p class="item-meta">성공한 evidence/closeout를 handoff artifact로 남기려면 \`npm run snapshot:execution-v1\`를 실행하면 됩니다.</p>
+                  </article>
+                `}
             <div class="release-live-list">
               ${(liveValidation.length ? liveValidation : [{ provider: 'live validation', status: 'not requested' }])
                 .map(
