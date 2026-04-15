@@ -47,6 +47,11 @@ const normalizedProviderManifest = normalizeExecutionManifest(
         title: '제안서 기록',
         command: 'write execution proposal artifact',
       },
+      {
+        kind: 'test',
+        title: 'Placeholder live smoke',
+        command: 'TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live)',
+      },
     ],
     summary: 'Provider supplied manifest without explicit verification steps.',
   },
@@ -54,6 +59,10 @@ const normalizedProviderManifest = normalizeExecutionManifest(
 );
 
 assert.ok(normalizedProviderManifest);
+assert.equal(
+  normalizedProviderManifest.steps.some((step) => /TBD_AFTER_INSPECTION/.test(step.command || '')),
+  false,
+);
 assert.equal(
   normalizedProviderManifest.steps.some(
     (step) => ['test', 'build'].includes(step.kind) && step.command === 'node --check src/cli.mjs',

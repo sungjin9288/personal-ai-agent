@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T22:10:00.000Z","id":"doclog_20260415221000_2f2f7c","type":"devlog","updatedAt":"2026-04-15T22:10:00.000Z"} -->
+## 2026-04-15 Provider Manifest Placeholder Command Guard
+
+- date: 2026-04-15T22:10:00.000Z
+- latest OpenAI live rerun failed because the provider manifest included a literal placeholder test command: `TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live ...)`, and the execution engine treated that string as a runnable shell command
+- hardened provider manifest normalization to drop placeholder commands containing `TBD_*`, `after inspection`, `e.g.`, or `or equivalent` before step execution, which prevents foreground sessions from failing on obviously non-runnable planning text
+- extended `smoke:execution-flow` so provider-style manifests with placeholder test commands now prove two things together: the placeholder is removed, and the bounded `node --check src/cli.mjs` verification fallback is still appended to preserve `verification.status=passed/failed`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T21:55:00.000Z","id":"doclog_20260415215500_a1c5bd","type":"devlog","updatedAt":"2026-04-15T21:55:00.000Z"} -->
 ## 2026-04-15 Fallback Hint Command Filtering
 

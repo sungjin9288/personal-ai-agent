@@ -116,6 +116,25 @@ function inferVerificationKind(kind, command) {
   return kind;
 }
 
+function isPlaceholderCommand(command) {
+  const value = normalizeText(command);
+  if (!value) {
+    return true;
+  }
+
+  return (
+    /^TBD(?:_|[\s-])/i.test(value) ||
+    /\bafter inspection\b/i.test(value) ||
+    /\be\.g\./i.test(value) ||
+    /\bor equivalent\b/i.test(value)
+  );
+}
+
+function sanitizeExecutableCommand(command) {
+  const value = normalizeText(command);
+  return isPlaceholderCommand(value) ? '' : value;
+}
+
 function buildDefaultVerificationStep(index) {
   return {
     command: 'node --check src/cli.mjs',
@@ -252,7 +271,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
   const steps = rawSteps
     .map((item, index) => {
       const step = ensureObject(item);
-      const command = normalizeText(step.command);
+      const command = sanitizeExecutableCommand(step.command);
       const kind = inferVerificationKind(normalizeStepKind(step.kind), command);
       const cwd = sanitizeRelativePath(step.cwd || '.');
       const relativeFilePath = sanitizeRelativePath(step.filePath || step.path || '');
