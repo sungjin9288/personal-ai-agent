@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415164500_0c5f7c","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Execution v1 Evidence Artifact
+
+- date: 2026-04-15T00:00:00.000Z
+- added `evidence:execution-v1` so the deterministic execution verification summary is written into a repo-tracked Markdown artifact instead of only appearing in terminal JSON output
+- the generated evidence file records branch, commit, deterministic smoke results, optional live validation results, and the remaining known gaps, which makes execution-v1 closeout reproducible for reviewers without re-reading devlog history
+- kept the implementation layered on top of `verify:execution-v1`, so the evidence script reuses the same verification entry point rather than drifting into a second smoke contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415161000_284b52","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Execution v1 Verification Entry Point
 
