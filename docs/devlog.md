@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T21:10:00.000Z","id":"doclog_20260415211000_7d3a4e","type":"devlog","updatedAt":"2026-04-15T21:10:00.000Z"} -->
+## 2026-04-15 Execution Manifest Verification Fallback
+
+- date: 2026-04-15T21:10:00.000Z
+- hardened execution manifest normalization so provider-supplied engineering manifests can no longer finish with `verification.status=not-run` just because they only contained `inspect` and `artifact` steps
+- upgraded command-kind inference to treat `test/check/verify/smoke/lint/typecheck` as `test` and `build/compile` as `build`, then append a bounded `node --check src/cli.mjs` fallback when no verification step exists at all
+- extended `smoke:execution-flow` with a provider-like manifest assertion so the `verification fallback` contract stays covered by the same deterministic readiness path used before OpenAI live reruns
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T20:50:00.000Z","id":"doclog_20260415205000_5fb632","type":"devlog","updatedAt":"2026-04-15T20:50:00.000Z"} -->
 ## 2026-04-15 Live Validation Preflight Helper
 

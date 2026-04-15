@@ -96,6 +96,50 @@ function createStepId(index) {
   return `step-${String(index + 1).padStart(2, '0')}`;
 }
 
+function inferVerificationKind(kind, command) {
+  if (kind !== 'command') {
+    return kind;
+  }
+
+  const value = normalizeText(command).toLowerCase();
+  if (!value) {
+    return kind;
+  }
+
+  if (/\b(build|compile)\b/.test(value)) {
+    return 'build';
+  }
+  if (/\b(test|check|verify|smoke|lint|typecheck)\b/.test(value)) {
+    return 'test';
+  }
+  return kind;
+}
+
+function buildDefaultVerificationStep(index) {
+  return {
+    command: 'node --check src/cli.mjs',
+    cwd: '.',
+    expectedOutputs: ['CLI syntax check passes'],
+    filePath: '',
+    findText: '',
+    id: createStepId(index),
+    kind: 'test',
+    operation: 'replace',
+    reason: 'provider manifest에 검증 step이 없을 때 최소 syntax smoke를 강제로 추가합니다.',
+    replaceText: '',
+    riskClassification: 'low',
+    title: 'CLI syntax smoke',
+    verificationTarget: 'src/cli.mjs syntax parse must succeed.',
+  };
+}
+
+function ensureVerificationSteps(steps) {
+  if (steps.some((step) => ['test', 'build'].includes(step.kind))) {
+    return steps;
+  }
+  return [...steps, buildDefaultVerificationStep(steps.length)];
+}
+
 function buildFallbackCommandHints({ plannerSteps = [], proposalContent = '' }) {
   const sources = [...plannerSteps, proposalContent];
   const commands = [];
@@ -146,11 +190,12 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
   const steps = rawSteps
     .map((item, index) => {
       const step = ensureObject(item);
-      const kind = normalizeStepKind(step.kind);
+      const command = normalizeText(step.command);
+      const kind = inferVerificationKind(normalizeStepKind(step.kind), command);
       const cwd = sanitizeRelativePath(step.cwd || '.');
       const relativeFilePath = sanitizeRelativePath(step.filePath || step.path || '');
       return {
-        command: normalizeText(step.command),
+        command,
         content: typeof step.content === 'string' ? step.content : '',
         cwd,
         expectedOutputs: normalizeStringArray(step.expectedOutputs),
@@ -175,7 +220,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
   return {
     source: normalizeText(manifest.source, 'derived'),
     summary,
-    steps,
+    steps: ensureVerificationSteps(steps),
     workspacePath,
   };
 }
@@ -212,17 +257,9 @@ export function buildFallbackExecutionManifest({ mission, workspace, plannerStep
   ];
 
   if (!hintedCommands.some((command) => /node\s+--check\s+src\/cli\.mjs/.test(command))) {
-    steps.push({
-      command: 'node --check src/cli.mjs',
-      cwd: '.',
-      expectedOutputs: ['CLI syntax check passes'],
-      id: `step-${String(steps.length + 1).padStart(2, '0')}`,
-      kind: 'test',
-      reason: '최소 syntax smoke를 실행해 현재 리포의 기본 실행면을 검증합니다.',
-      riskClassification: 'low',
-      title: 'CLI syntax smoke',
-      verificationTarget: 'src/cli.mjs syntax parse must succeed.',
-    });
+    const verificationStep = buildDefaultVerificationStep(steps.length);
+    verificationStep.reason = '최소 syntax smoke를 실행해 현재 리포의 기본 실행면을 검증합니다.';
+    steps.push(verificationStep);
   }
 
   return {

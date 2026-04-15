@@ -5,6 +5,7 @@ import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { createMissionService } from '../src/core/mission-service.mjs';
+import { normalizeExecutionManifest } from '../src/core/execution-utils.mjs';
 import { createStore } from '../src/core/store.mjs';
 import { runCli } from './cli-test-helpers.mjs';
 
@@ -31,6 +32,34 @@ const mission = runCli({
     'Verify the one-time approval lease and execution session lifecycle.',
   ],
 });
+
+const normalizedProviderManifest = normalizeExecutionManifest(
+  {
+    source: 'provider',
+    steps: [
+      {
+        kind: 'inspect',
+        title: '워크트리 상태 확인',
+        command: 'git status --short',
+      },
+      {
+        kind: 'artifact',
+        title: '제안서 기록',
+        command: 'write execution proposal artifact',
+      },
+    ],
+    summary: 'Provider supplied manifest without explicit verification steps.',
+  },
+  { workspacePath: repoDir },
+);
+
+assert.ok(normalizedProviderManifest);
+assert.equal(
+  normalizedProviderManifest.steps.some(
+    (step) => ['test', 'build'].includes(step.kind) && step.command === 'node --check src/cli.mjs',
+  ),
+  true,
+);
 
 const runResult = runCli({
   rootDir: tempRoot,
