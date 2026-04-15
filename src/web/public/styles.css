@@ -2105,6 +2105,33 @@ button:disabled {
   gap: 12px;
 }
 
+.release-recommendation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.release-recommendation-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.release-recommendation-required {
+  border-color: rgba(214, 102, 44, 0.24);
+  background: rgba(214, 102, 44, 0.06);
+}
+
+.release-recommendation-release {
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.release-recommendation-optional {
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
 .release-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));

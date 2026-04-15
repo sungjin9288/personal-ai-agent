@@ -3244,6 +3244,7 @@ function renderReleaseStatus() {
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
+  const recommendedActions = release.recommendedActions || [];
   const refreshPlan = release.refreshPlan || null;
   const liveRefreshPreflight = state.releaseLiveRefreshPreflight || null;
   const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
@@ -3483,6 +3484,44 @@ function renderReleaseStatus() {
             </div>
           </div>
           <div class="release-list">
+            <div class="release-recommendation-list">
+              ${(recommendedActions.length
+                ? recommendedActions
+                  .map(
+                    (item) => `
+                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')}">
+                        <div>
+                          <div class="item-title">${escapeHtml(item.label || '권장 액션')}</div>
+                          <div class="item-meta">${escapeHtml(item.description || '')}</div>
+                        </div>
+                        <div class="release-provider-meta">
+                          <span class="mini-badge ${getReleaseStatusBadge(item.category === 'required' ? 'blocked' : item.category === 'release' ? 'ready' : 'not-run')}">${escapeHtml(item.category || 'info')}</span>
+                          ${item.action
+                            ? `
+                                <button
+                                  class="ghost-button"
+                                  type="button"
+                                  data-ui-action="${escapeHtml(item.action)}"
+                                  ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
+                                >실행</button>
+                              `
+                            : item.envKey
+                              ? `<span class="item-meta mono">${escapeHtml(item.envKey)}</span>`
+                              : ''}
+                        </div>
+                      </article>
+                    `,
+                  )
+                  .join('')
+                : `
+                    <article class="release-recommendation-card release-recommendation-release">
+                      <div>
+                        <div class="item-title">필수 다음 액션 없음</div>
+                        <div class="item-meta">verified baseline 기준 필수 closeout은 닫혀 있고, 남은 것은 optional provider expansion 또는 mutable current surface 운영뿐입니다.</div>
+                      </div>
+                    </article>
+                  `)}
+            </div>
             <div class="harness-callout">
               <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
               <p>${escapeHtml(gaps[0] || '남은 gap이 없습니다.')}</p>

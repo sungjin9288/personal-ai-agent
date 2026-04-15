@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T02:00:00.000Z","id":"doclog_20260416020000_18f3ab","type":"devlog","updatedAt":"2026-04-16T02:00:00.000Z"} -->
+## 2026-04-16 Release Recommended Actions
+
+- date: 2026-04-16T02:00:00.000Z
+- added `recommendedActions` to the execution-v1 status payload so release readiness is not just a collection of badges but an ordered operator queue
+- prioritized stale current surface regeneration, eligible snapshot freeze, and provider-specific preflight/env preparation into a single list with explicit action ids that reuse existing release tab commands
+- kept the change storage-free by deriving the queue entirely from current evidence/closeout summary, snapshot eligibility, and provider readiness instead of introducing new persisted release state
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T01:15:00.000Z","id":"doclog_20260416011500_b2df83","type":"devlog","updatedAt":"2026-04-16T01:15:00.000Z"} -->
 ## 2026-04-16 Live Validation Confirm Guard
 

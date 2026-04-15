@@ -287,6 +287,12 @@ function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown
   };
 }
 
+function getLiveValidationValue(values, provider) {
+  const target = `${String(provider || '').trim().toLowerCase()} live validation`;
+  const entry = Object.entries(values || {}).find(([label]) => String(label || '').trim().toLowerCase() === target);
+  return String(entry?.[1] || '').trim().toLowerCase();
+}
+
 function buildExecutionV1Status() {
   const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
   const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
@@ -362,6 +368,54 @@ function buildExecutionV1Status() {
         : '현재 HEAD 기준으로 다시 계산해도 같은 readiness를 유지해야 합니다.',
     ],
   };
+  const recommendedActions = [];
+
+  if (stale) {
+    recommendedActions.push({
+      action: 'regenerate-release-surface',
+      category: 'required',
+      description: '현재 HEAD와 current surface evidence/closeout가 어긋나 있어 release tab의 mutable artifact를 다시 맞춰야 합니다.',
+      label: 'current surface 재생성',
+      priority: 1,
+    });
+  }
+
+  if (!stale && snapshot?.verifiedCommit !== currentCommit && evidenceMarkdown && closeoutMarkdown && currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0) {
+    recommendedActions.push({
+      action: 'archive-release-snapshot',
+      category: 'release',
+      description: '현재 HEAD 기준 current surface가 fresh하므로 verified baseline을 새 commit으로 고정할 수 있습니다.',
+      label: 'release snapshot 고정',
+      priority: 2,
+    });
+  }
+
+  providerReadiness.forEach((item) => {
+    const providerStatus = getLiveValidationValue(currentArtifacts.values, item.provider);
+    if (providerStatus === 'passed') {
+      return;
+    }
+    if (item.ready) {
+      recommendedActions.push({
+        action: 'run-release-preflight',
+        actionProvider: item.provider,
+        category: isOptionalCloseoutLabel(`${item.provider} live validation`) ? 'optional' : 'required',
+        description: `${item.label} provider env가 준비되어 있습니다. live validation 전 deterministic preflight를 다시 확인할 수 있습니다.`,
+        label: `${item.label} preflight 실행`,
+        priority: item.provider === 'openai' ? 3 : 4,
+      });
+      return;
+    }
+    recommendedActions.push({
+      category: isOptionalCloseoutLabel(`${item.provider} live validation`) ? 'optional' : 'required',
+      description: `${item.label} live validation은 ${item.envKey}가 있어야 실행할 수 있습니다.`,
+      envKey: item.envKey,
+      label: `${item.label} env 준비`,
+      priority: item.provider === 'openai' ? 3 : 5,
+    });
+  });
+
+  recommendedActions.sort((left, right) => Number(left.priority || 99) - Number(right.priority || 99));
 
   return {
     artifactState,
@@ -387,6 +441,7 @@ function buildExecutionV1Status() {
     liveValidation: currentArtifacts.liveValidation,
     localArtifactNotes,
     notes: currentArtifacts.notes,
+    recommendedActions,
     providerReadiness,
     refreshPlan,
     snapshotEligibility: {
