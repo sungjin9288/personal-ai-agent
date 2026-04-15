@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { formatLiveValidationFailureLines, parseLiveValidationReason } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
 const verifyScriptPath = path.join(repoDir, 'scripts', 'verify-execution-v1.mjs');
@@ -56,6 +57,8 @@ if (!verification.liveValidation || verification.liveValidation.length === 0) {
 
     if (item.status === 'failed') {
       lines.push(`- ${item.provider}: failed (${item.reason || 'unknown'})`);
+      const parsedReason = parseLiveValidationReason(item.reason);
+      lines.push(...formatLiveValidationFailureLines(parsedReason));
       continue;
     }
 

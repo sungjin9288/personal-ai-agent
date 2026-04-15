@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { parseLiveValidationReason } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
 const evidenceScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-evidence.mjs');
@@ -81,6 +82,16 @@ if (!browserE2EPassed) {
 
 lines.push(
   '',
+  '## Live Failure Triage',
+  '',
+);
+
+appendLiveFailureTriage(lines, 'openai', liveOpenAIStatus);
+appendLiveFailureTriage(lines, 'anthropic', liveAnthropicStatus);
+appendLiveFailureTriage(lines, 'local', liveLocalStatus);
+
+lines.push(
+  '',
   '## Notes',
   '',
   '- 이 문서는 `build-execution-v1-evidence.mjs` 결과를 기반으로 다시 생성된다.',
@@ -117,6 +128,7 @@ function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
   if (failedMatch) {
     return {
       checked: false,
+      parsedReason: parseLiveValidationReason(failedMatch[1] || ''),
       label: failedMatch[1] ? `failed (${failedMatch[1]})` : 'failed',
     };
   }
@@ -130,6 +142,39 @@ function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
   }
 
   return { checked: false, label: 'requested-but-not-passed' };
+}
+
+function appendLiveFailureTriage(lines, provider, status) {
+  if (status?.checked) {
+    lines.push(`- ${provider}: no active blocker`);
+    return;
+  }
+
+  if (!status?.parsedReason) {
+    lines.push(`- ${provider}: ${status?.label || 'no structured failure detail'}`);
+    return;
+  }
+
+  lines.push(`- ${provider}: ${status.parsedReason.message}`);
+  const details = status.parsedReason.details || {};
+  if (details.rootDir) {
+    lines.push(`  - rootDir: ${details.rootDir}`);
+  }
+  if (details.workspaceId) {
+    lines.push(`  - workspaceId: ${details.workspaceId}`);
+  }
+  if (details.missionId) {
+    lines.push(`  - missionId: ${details.missionId}`);
+  }
+  if (details.sessionId) {
+    lines.push(`  - sessionId: ${details.sessionId}`);
+  }
+  if (details.artifact) {
+    lines.push(`  - artifact: ${details.artifact}`);
+  }
+  if (details.reviewerSummary) {
+    lines.push(`  - reviewerSummary: ${details.reviewerSummary}`);
+  }
 }
 
 function runGit(args) {

@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { parseLiveValidationReason } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
 const evidenceScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-evidence.mjs');
@@ -62,11 +63,14 @@ const liveResult = Array.isArray(evidenceResult.liveValidation)
   : null;
 
 if (!liveResult || liveResult.status !== 'passed') {
+  const parsedReason = parseLiveValidationReason(liveResult?.reason || '');
   console.error(
     JSON.stringify(
       {
         checklistPath: closeoutResult.checklistPath || null,
         evidencePath: evidenceResult.outputPath || null,
+        failure: parsedReason?.message || null,
+        liveFailureDetails: parsedReason?.details || null,
         ok: false,
         provider,
         reason: liveResult?.reason || `No ${provider} live validation result recorded`,

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T20:05:00.000Z","id":"doclog_20260415200500_b5238d","type":"devlog","updatedAt":"2026-04-15T20:05:00.000Z"} -->
+## 2026-04-15 Live Validation Triage Structuring
+
+- date: 2026-04-15T20:05:00.000Z
+- added a shared parser for `provider live mission run failed | key=value` failure strings so the helper, evidence markdown, and closeout markdown now surface the same structured triage fields instead of leaving operators to manually re-split a long pipe-delimited message
+- updated the live helper failure JSON to emit `failure` plus `liveFailureDetails`, which makes the rerun path easier to automate or inspect without opening the markdown artifacts first
+- expanded the closeout document with a dedicated `Live Failure Triage` section so failed provider validation now points directly at `rootDir`, `missionId`, `sessionId`, `artifact`, and `reviewerSummary` when that data exists
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T19:35:00.000Z","id":"doclog_20260415193500_8fbc42","type":"devlog","updatedAt":"2026-04-15T19:35:00.000Z"} -->
 ## 2026-04-15 Engineering Approval Gate Canonicalization
 
