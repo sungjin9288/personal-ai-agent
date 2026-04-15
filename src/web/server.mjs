@@ -17,6 +17,26 @@ const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evi
 const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
+const liveValidationProviders = [
+  {
+    command: 'npm run evidence:execution-v1 -- --live-openai',
+    envKey: 'OPENAI_API_KEY',
+    label: 'OpenAI',
+    provider: 'openai',
+  },
+  {
+    command: 'npm run evidence:execution-v1 -- --live-anthropic',
+    envKey: 'ANTHROPIC_API_KEY',
+    label: 'Anthropic',
+    provider: 'anthropic',
+  },
+  {
+    command: 'npm run evidence:execution-v1 -- --live-local',
+    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    label: 'Local provider',
+    provider: 'local',
+  },
+];
 const host = String(process.env.PERSONAL_AI_AGENT_UI_HOST || '127.0.0.1').trim() || '127.0.0.1';
 const port = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
 
@@ -153,6 +173,14 @@ function buildExecutionV1Status() {
   const liveValidation = extractLiveValidationItems(evidenceMarkdown);
   const gaps = extractSectionBullets(evidenceMarkdown, 'Remaining Gaps');
   const notes = extractSectionBullets(closeoutMarkdown, 'Notes');
+  const providerReadiness = liveValidationProviders.map((item) => ({
+    command: item.command,
+    envKey: item.envKey,
+    label: item.label,
+    provider: item.provider,
+    ready: Boolean(process.env[item.envKey]),
+    status: process.env[item.envKey] ? 'ready' : 'missing-env',
+  }));
   const statusMap = extractStatusMap(closeoutMarkdown);
   const checklistOpen = checklist.filter((item) => !item.done).length;
   const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
@@ -175,6 +203,7 @@ function buildExecutionV1Status() {
     gaps,
     liveValidation,
     notes,
+    providerReadiness,
     summary: {
       blockedItems: Object.values(statusMap).filter((value) => /blocked|missing-env/i.test(String(value || ''))).length,
       checklistOpen,

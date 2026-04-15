@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T16:10:00.000Z","id":"doclog_20260415161000_f3d702","type":"devlog","updatedAt":"2026-04-15T16:10:00.000Z"} -->
+## 2026-04-15 Live Validation Readiness Surface
+
+- date: 2026-04-15T16:10:00.000Z
+- surfaced provider readiness directly inside the `v1 마감 상태` tab so the remaining execution-v1 gap is no longer just a markdown note; operators can now see per-provider env readiness, expected command, and whether live validation can be fired immediately
+- extended the execution-v1 status payload with `providerReadiness` instead of forcing the UI to infer env state from closeout prose, which keeps server and operator surface aligned on the same release contract
+- added direct live validation action buttons for ready providers so the final closeout path is one click from the release surface when credentials exist
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T15:20:00.000Z","id":"doclog_20260415152000_a1f3b9","type":"devlog","updatedAt":"2026-04-15T15:20:00.000Z"} -->
 ## 2026-04-15 Browser E2E Closeout Alignment
 

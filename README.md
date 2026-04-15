@@ -72,6 +72,7 @@ npm run ui
 - `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
 - `결과와 기록`에 `하네스` 탭을 추가해 문서 source-of-record, 미션/워크스페이스 메모리, 유지보수·검토·provider 상태를 한 번에 확인
 - `결과와 기록`의 `v1 마감 상태` 탭에서 deterministic smoke 4종, browser interaction readiness, live validation 상태, execution closeout checklist, evidence 문서를 같은 화면에서 확인하고 새로고침할 수 있음
+- `v1 마감 상태` 탭은 provider별 `env 준비 여부 / 실행 명령 / live validation 실행 버튼`을 함께 보여 주므로, 남은 closeout gap이 코드 문제인지 credential 미주입인지 화면에서 바로 구분 가능
 - `미션 정하기` 단계와 상단 `지금 해야 할 일`에도 하네스 권장 조치를 끌어올려, review/action/maintenance 압력이 있으면 바로 관련 단계나 탭으로 이동
 - `하네스 > 메모리 레이어`에서 fact / decision / preference 메모를 바로 추가할 수 있어, 미션 실행 문맥을 UI에서 직접 누적
 - `하네스 > 메모리 레이어`는 미션 메모뿐 아니라 워크스페이스 메모도 같은 화면에서 저장할 수 있어, 장기 운영 규칙과 현재 실행 문맥을 분리해 누적

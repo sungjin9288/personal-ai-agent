@@ -2577,7 +2577,7 @@ function renderDetailContextbar() {
       <div class="detail-context-main">
         <span class="detail-context-label">현재 세부 보기</span>
         <strong>execution v1 마감 상태 확인 중</strong>
-        <p>검증 근거, closeout checklist, 남은 환경 gap을 같은 작업면에서 확인합니다.</p>
+        <p>검증 근거, closeout checklist, provider readiness를 같은 작업면에서 확인합니다.</p>
       </div>
       <div class="detail-context-stats">
         <div class="detail-context-pill">
@@ -3189,6 +3189,7 @@ function renderReleaseStatus() {
   const checklist = release.checklist || [];
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
+  const providerReadiness = release.providerReadiness || [];
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
@@ -3272,13 +3273,38 @@ function renderReleaseStatus() {
           <div class="mini-head">
             <div>
               <p class="section-kicker">Release Evidence</p>
-              <h4>남은 gap과 증거 문서</h4>
+              <h4>남은 gap, provider readiness, 증거 문서</h4>
             </div>
           </div>
           <div class="release-list">
             <div class="harness-callout">
               <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
               <p>${escapeHtml(gaps[0] || '남은 gap이 없습니다.')}</p>
+            </div>
+            <div class="release-provider-grid">
+              ${providerReadiness
+                .map(
+                  (item) => `
+                    <article class="release-provider-card ${item.ready ? 'is-ready' : 'is-blocked'}">
+                      <div>
+                        <div class="item-title">${escapeHtml(item.label)}</div>
+                        <div class="item-meta mono">${escapeHtml(item.envKey)}</div>
+                      </div>
+                      <div class="release-provider-meta">
+                        <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="refresh-release-status-live"
+                          data-ui-provider="${escapeHtml(item.provider)}"
+                          ${item.ready ? '' : 'disabled'}
+                        >${escapeHtml(item.ready ? 'live 검증 실행' : 'env 필요')}</button>
+                      </div>
+                      <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다.`)}</p>
+                    </article>
+                  `,
+                )
+                .join('')}
             </div>
             <div class="release-live-list">
               ${(liveValidation.length ? liveValidation : [{ provider: 'live validation', status: 'not requested' }])
@@ -3318,6 +3344,15 @@ function renderReleaseStatus() {
     </div>
   `;
   wireQuickActions(elements.releaseStatus);
+  elements.releaseStatus.querySelectorAll('[data-ui-action="refresh-release-status-live"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const provider = String(button.dataset.uiProvider || '').trim();
+      if (!provider) {
+        return;
+      }
+      await refreshReleaseStatus(provider);
+    });
+  });
 }
 
 function wireDocumentRowActions() {
