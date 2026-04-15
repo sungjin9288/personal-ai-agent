@@ -13,8 +13,8 @@
 ## 2026-04-15 Provider Manifest Placeholder Command Guard
 
 - date: 2026-04-15T22:10:00.000Z
-- latest OpenAI live rerun failed because the provider manifest included a literal placeholder test command: `TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live ...)`, and the execution engine treated that string as a runnable shell command
-- hardened provider manifest normalization to drop placeholder commands containing `TBD_*`, `after inspection`, `e.g.`, or `or equivalent` before step execution, which prevents foreground sessions from failing on obviously non-runnable planning text
+- latest OpenAI live rerun failed because the provider manifest still included literal placeholder test commands such as `TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live ...)` and `<runner> <live-validate-entrypoint> --provider stub ...`, and the execution engine treated those strings as runnable shell commands
+- hardened provider manifest normalization to drop placeholder commands containing `TBD_*`, `after inspection`, `e.g.`, `or equivalent`, or angle-bracket placeholder tokens like `<runner>` / `<model>` before step execution, which prevents foreground sessions from failing on obviously non-runnable planning text
 - extended `smoke:execution-flow` so provider-style manifests with placeholder test commands now prove two things together: the placeholder is removed, and the bounded `node --check src/cli.mjs` verification fallback is still appended to preserve `verification.status=passed/failed`
 <!-- document-log:end -->
 

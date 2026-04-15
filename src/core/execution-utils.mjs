@@ -124,6 +124,7 @@ function isPlaceholderCommand(command) {
 
   return (
     /^TBD(?:_|[\s-])/i.test(value) ||
+    /<[A-Za-z][A-Za-z0-9._-]*>/.test(value) ||
     /\bafter inspection\b/i.test(value) ||
     /\be\.g\./i.test(value) ||
     /\bor equivalent\b/i.test(value)

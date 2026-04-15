@@ -52,6 +52,11 @@ const normalizedProviderManifest = normalizeExecutionManifest(
         title: 'Placeholder live smoke',
         command: 'TBD_AFTER_INSPECTION (e.g., npm run smoke:openai:live)',
       },
+      {
+        kind: 'test',
+        title: 'Angle bracket placeholder smoke',
+        command: '<runner> <live-validate-entrypoint> --provider stub --fixture <fixture-path> --max-steps 2',
+      },
     ],
     summary: 'Provider supplied manifest without explicit verification steps.',
   },
@@ -61,6 +66,10 @@ const normalizedProviderManifest = normalizeExecutionManifest(
 assert.ok(normalizedProviderManifest);
 assert.equal(
   normalizedProviderManifest.steps.some((step) => /TBD_AFTER_INSPECTION/.test(step.command || '')),
+  false,
+);
+assert.equal(
+  normalizedProviderManifest.steps.some((step) => /<live-validate-entrypoint>/.test(step.command || '')),
   false,
 );
 assert.equal(
