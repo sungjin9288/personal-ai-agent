@@ -28,6 +28,8 @@ const state = {
   releaseRegenerationConfirmArmed: false,
   releaseRefreshPreflight: null,
   releasePreflightResults: {},
+  releaseSnapshotConfirmArmed: false,
+  releaseSnapshotPreflight: null,
   releaseStatus: null,
   selectedPlaybookId: 'team-pipeline',
   selectedArtifactId: null,
@@ -1026,7 +1028,19 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'archive-release-snapshot') {
-        void archiveReleaseSnapshot();
+        if (!state.releaseSnapshotConfirmArmed) {
+          void armReleaseSnapshotConfirm();
+          return;
+        }
+        void archiveReleaseSnapshot({ confirmSnapshotFreeze: true });
+        return;
+      }
+
+      if (action === 'cancel-archive-release-snapshot') {
+        state.releaseSnapshotConfirmArmed = false;
+        state.releaseSnapshotPreflight = null;
+        renderReleaseStatus();
+        setUiNotice('release snapshot 고정 확인을 취소했습니다.');
         return;
       }
 
@@ -3222,9 +3236,11 @@ function renderReleaseStatus() {
   const providerReadiness = release.providerReadiness || [];
   const refreshPlan = release.refreshPlan || null;
   const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
+  const releaseSnapshotPreflight = state.releaseSnapshotPreflight || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
+  const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
   const snapshotEligibility = release.snapshotEligibility || { allowed: false, reason: 'snapshot 상태를 확인할 수 없습니다.' };
   const baseline = release.baseline || null;
@@ -3348,6 +3364,17 @@ function renderReleaseStatus() {
                 </div>
               `
             : ''}
+          ${snapshotConfirmArmed
+            ? `
+                <div class="release-stale-note">
+                  <div class="release-stale-line">${escapeHtml(releaseSnapshotPreflight?.summary || 'release snapshot 고정 확인이 활성화되었습니다.')}</div>
+                  <div class="release-stale-line">실행하려면 아래의 snapshot 고정 확인을 누르고, 취소하려면 현재 snapshot 고정 취소를 선택하세요.</div>
+                  ${(releaseSnapshotPreflight?.notes || [])
+                    .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
+                    .join('')}
+                </div>
+              `
+            : ''}
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status">상태 다시 읽기</button>
@@ -3355,7 +3382,10 @@ function renderReleaseStatus() {
           ${regenerationConfirmArmed
             ? '<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface">현재 재생성 취소</button>'
             : ''}
-          <button class="ghost-button" type="button" data-ui-action="archive-release-snapshot" ${snapshotEligibility.allowed ? '' : 'disabled'}>release snapshot 고정</button>
+          <button class="${snapshotConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="archive-release-snapshot" ${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'disabled' : ''}>${snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정'}</button>
+          ${snapshotConfirmArmed
+            ? '<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot">현재 snapshot 고정 취소</button>'
+            : ''}
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
         </div>
@@ -4734,6 +4764,8 @@ async function loadReleaseStatus() {
   state.releaseStatus = payload;
   state.releaseRegenerationConfirmArmed = false;
   state.releaseRefreshPreflight = null;
+  state.releaseSnapshotConfirmArmed = false;
+  state.releaseSnapshotPreflight = null;
   renderReleaseStatus();
   renderDetailTabLabels();
   renderDetailContextbar();
@@ -4788,6 +4820,8 @@ async function refreshReleaseStatusWithOptions(liveMode = '', { confirmCurrentSu
     const isLiveRun = Boolean(normalizedLiveMode);
     state.releaseRegenerationConfirmArmed = false;
     state.releaseRefreshPreflight = null;
+    state.releaseSnapshotConfirmArmed = false;
+    state.releaseSnapshotPreflight = null;
     setUiNotice(
       isLiveRun
         ? `${normalizedLiveMode} live validation과 current surface를 갱신 중입니다.`
@@ -4848,10 +4882,39 @@ async function runReleasePreflight(provider = '') {
   }
 }
 
-async function archiveReleaseSnapshot() {
+async function armReleaseSnapshotConfirm() {
   try {
+    setUiNotice('release snapshot 고정 preflight를 확인 중입니다.');
+    const payload = await api('/api/execution-v1/snapshot/preflight', {
+      method: 'POST',
+    });
+    if (!payload.preflight?.allowed) {
+      window.alert(payload.preflight?.summary || 'release snapshot 고정 preflight가 차단되었습니다.');
+      return;
+    }
+    state.releaseStatus = payload.status || state.releaseStatus;
+    state.releaseSnapshotPreflight = payload.preflight;
+    state.releaseSnapshotConfirmArmed = true;
+    renderReleaseStatus();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    setUiNotice('release snapshot 고정 확인이 준비되었습니다. impact를 확인한 뒤 snapshot 고정 확인을 눌러 주세요.');
+  } catch (error) {
+    window.alert(error.message || 'release snapshot 고정 preflight 확인에 실패했습니다.');
+  }
+}
+
+async function archiveReleaseSnapshot({ confirmSnapshotFreeze = false } = {}) {
+  try {
+    state.releaseRegenerationConfirmArmed = false;
+    state.releaseRefreshPreflight = null;
+    state.releaseSnapshotConfirmArmed = false;
+    state.releaseSnapshotPreflight = null;
     setUiNotice('release snapshot을 고정 중입니다.');
     const payload = await api('/api/execution-v1/snapshot', {
+      body: JSON.stringify({
+        confirmSnapshotFreeze,
+      }),
       method: 'POST',
     });
     state.releaseStatus = payload.status;

@@ -514,6 +514,31 @@ function buildExecutionV1RefreshPreflight(args = []) {
   };
 }
 
+function buildExecutionV1SnapshotPreflight() {
+  const status = buildExecutionV1Status();
+  const eligibility = status.snapshotEligibility || {};
+  const allowed = Boolean(eligibility.allowed);
+  return {
+    action: 'snapshot',
+    allowed,
+    checkedAt: new Date().toISOString(),
+    confirmRequired: true,
+    notes: [
+      allowed
+        ? '현재 HEAD 기준 current surface evidence와 closeout가 fresh한 상태입니다.'
+        : eligibility.reason || '현재 상태에서는 release snapshot을 고정할 수 없습니다.',
+      'snapshot 고정은 current surface를 다시 쓰지 않고 immutable release artifact만 생성합니다.',
+      status.snapshot?.exists
+        ? '이미 archived snapshot이 있더라도 현재 조건이 맞으면 새 verified commit 기준 snapshot을 다시 고정할 수 있습니다.'
+        : '아직 archived snapshot이 없으면 이번 고정이 첫 immutable release artifact가 됩니다.',
+    ],
+    snapshotEligibility: eligibility,
+    summary: allowed
+      ? '현재 상태로 release snapshot을 고정할 수 있습니다.'
+      : '현재 상태에서는 release snapshot을 고정할 수 없습니다.',
+  };
+}
+
 function refreshExecutionV1Artifacts(args = []) {
   const preflight = buildExecutionV1RefreshPreflight(args);
   if (!preflight.allowed) {
@@ -538,14 +563,9 @@ function refreshExecutionV1Artifacts(args = []) {
 }
 
 function archiveExecutionV1Snapshot() {
-  const currentStatus = buildExecutionV1Status();
-  const canArchive = Boolean(currentStatus.summary?.ready);
-
-  if (!canArchive) {
-    const reason = currentStatus.stale
-      ? 'current evidence/closeout가 stale 상태라 snapshot을 생성할 수 없습니다.'
-      : '필수 closeout checklist 또는 blocked item이 남아 있어 snapshot을 생성할 수 없습니다.';
-    throw new Error(reason);
+  const preflight = buildExecutionV1SnapshotPreflight();
+  if (!preflight.allowed) {
+    throw new Error(preflight.snapshotEligibility?.reason || '현재 상태에서는 release snapshot을 고정할 수 없습니다.');
   }
 
   const result = spawnSync(process.execPath, [snapshotScriptPath], {
@@ -776,6 +796,26 @@ async function handleApi(request, response, url) {
   }
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot') {
+    const body = await readJsonBody(request);
+    const preflight = buildExecutionV1SnapshotPreflight();
+    if (!preflight.allowed) {
+      sendJson(response, 409, {
+        error: 'snapshot-not-ready',
+        message: preflight.summary,
+        preflight,
+        status: buildExecutionV1Status(),
+      });
+      return;
+    }
+    if (!body.confirmSnapshotFreeze) {
+      sendJson(response, 409, {
+        error: 'snapshot-confirmation-required',
+        message: 'release snapshot 고정은 명시적 확인이 필요합니다.',
+        preflight,
+        status: buildExecutionV1Status(),
+      });
+      return;
+    }
     try {
       sendJson(response, 200, archiveExecutionV1Snapshot());
     } catch (error) {
@@ -785,6 +825,14 @@ async function handleApi(request, response, url) {
         status: buildExecutionV1Status(),
       });
     }
+    return;
+  }
+
+  if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot/preflight') {
+    sendJson(response, 200, {
+      preflight: buildExecutionV1SnapshotPreflight(),
+      status: buildExecutionV1Status(),
+    });
     return;
   }
 

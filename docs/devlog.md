@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:45:00.000Z","id":"doclog_20260416004500_7ab31d","type":"devlog","updatedAt":"2026-04-16T00:45:00.000Z"} -->
+## 2026-04-16 Snapshot Freeze Preflight Guard
+
+- date: 2026-04-16T00:45:00.000Z
+- added `/api/execution-v1/snapshot/preflight` so release snapshot freeze is re-evaluated by the server immediately before the operator arms the action, rather than trusting a stale eligibility badge rendered earlier
+- changed `/api/execution-v1/snapshot` to require `confirmSnapshotFreeze`, which means snapshot freeze now follows the same two-step server-guarded contract as current surface regeneration
+- mirrored the preflight result back into the release tab so the operator sees why snapshot freeze is allowed or blocked at the exact point of confirmation
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:30:00.000Z","id":"doclog_20260416003000_184a62","type":"devlog","updatedAt":"2026-04-16T00:30:00.000Z"} -->
 ## 2026-04-16 Server-Side Regeneration Preflight
 

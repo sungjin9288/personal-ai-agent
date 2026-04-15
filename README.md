@@ -536,3 +536,5 @@ release tab은 이제 `current surface 재생성`의 영향도 함께 보여 줍
 `current surface 재생성`은 이제 release tab 안에서 두 단계로 동작합니다. 첫 클릭은 confirm state만 활성화하고 영향 요약을 다시 강조하며, 두 번째 `재생성 확인` 클릭에서만 실제 rewrite가 실행됩니다. 즉, read-only reload와 mutating regeneration이 분리된 것에 더해, regeneration 자체도 한 번 더 의도적으로 확인해야 실행됩니다.
 
 이 confirm 단계는 client-side 토글만이 아니라 server-side preflight를 먼저 통과해야 armed 됩니다. UI는 먼저 `/api/execution-v1/refresh/preflight`로 현재 regenerate 가능 상태와 overwrite 영향 범위를 다시 확인하고, 실제 `/api/execution-v1/refresh` 호출에는 `confirmCurrentSurfaceRewrite` 플래그가 있어야만 current surface rewrite를 허용합니다. 그래서 실수로 버튼을 두 번 누른다고 바로 rewrite가 일어나는 구조가 아니라, API도 명시적 확인을 같이 요구합니다.
+
+release snapshot 고정도 같은 패턴으로 정리했습니다. UI는 먼저 `/api/execution-v1/snapshot/preflight`로 snapshot freeze 가능 상태를 다시 확인하고, 실제 `/api/execution-v1/snapshot` 호출에는 `confirmSnapshotFreeze`가 있어야만 immutable snapshot을 생성합니다. 따라서 regenerate와 snapshot freeze 모두 UI confirm과 API guard가 같은 의미를 갖습니다.
