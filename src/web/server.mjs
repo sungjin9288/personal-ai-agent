@@ -227,6 +227,7 @@ function buildExecutionV1Status() {
   const generatedBranch = extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch');
   const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
   const staleReasons = [];
+  const localArtifactNotes = [];
 
   if (!evidenceMarkdown || !closeoutMarkdown) {
     staleReasons.push('evidence 또는 closeout 문서가 아직 생성되지 않았습니다.');
@@ -234,15 +235,30 @@ function buildExecutionV1Status() {
   if (generatedCommit && currentCommit && generatedCommit !== currentCommit) {
     staleReasons.push('현재 HEAD와 evidence/closeout이 가리키는 commit이 다릅니다.');
   }
-  if (docStatuses.length) {
-    staleReasons.push('evidence 또는 closeout 문서가 워크트리에서 수정된 상태입니다.');
+  const artifactsMatchCurrentHead = Boolean(generatedCommit && currentCommit && generatedCommit === currentCommit);
+  const hasLocalArtifactChanges = docStatuses.length > 0;
+  if (hasLocalArtifactChanges) {
+    if (artifactsMatchCurrentHead) {
+      localArtifactNotes.push('evidence/closeout 문서가 현재 HEAD 기준으로 로컬에서 갱신되었지만 아직 커밋되지는 않았습니다.');
+    } else {
+      staleReasons.push('evidence 또는 closeout 문서가 워크트리에서 수정된 상태입니다.');
+    }
   }
 
   const stale = staleReasons.length > 0;
   const checklistOpen = checklist.filter((item) => !item.done).length;
   const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
+  const artifactState = !evidenceMarkdown || !closeoutMarkdown
+    ? 'missing'
+    : stale
+      ? 'stale'
+      : hasLocalArtifactChanges
+        ? 'local-current'
+        : 'current';
 
   return {
+    artifactState,
+    artifactsMatchCurrentHead,
     branch: generatedBranch,
     checklist,
     closeout: {
@@ -262,6 +278,7 @@ function buildExecutionV1Status() {
     },
     gaps,
     liveValidation,
+    localArtifactNotes,
     notes,
     providerReadiness,
     stale,

@@ -3191,15 +3191,25 @@ function renderReleaseStatus() {
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const staleReasons = release.staleReasons || [];
+  const localArtifactNotes = release.localArtifactNotes || [];
   const docStatuses = release.docStatuses || [];
-  const staleStateLabel = release.stale ? '갱신 필요' : '최신';
+  const artifactStateLabel =
+    release.artifactState === 'local-current'
+      ? '로컬 갱신됨'
+      : release.stale
+        ? '갱신 필요'
+        : '최신';
   const releaseHeadline = release.stale
     ? 'execution v1 evidence 갱신 필요'
+    : release.artifactState === 'local-current'
+      ? 'execution v1 closeout ready (local evidence)'
     : summary.ready
       ? 'execution v1 closeout ready'
       : 'execution v1 closeout 미완료';
   const releaseCopy = release.stale
     ? '현재 HEAD와 evidence/closeout 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
+    : release.artifactState === 'local-current'
+      ? '현재 HEAD 기준 evidence/closeout가 로컬에서 갱신되었습니다. 커밋되지 않았지만 근거 문서는 최신입니다.'
     : summary.ready
       ? 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.'
       : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.';
@@ -3221,7 +3231,7 @@ function renderReleaseStatus() {
         </div>
         <div class="summary-chip">
           <span>evidence 상태</span>
-          <strong>${escapeHtml(staleStateLabel)}</strong>
+          <strong>${escapeHtml(artifactStateLabel)}</strong>
         </div>
         <div class="summary-chip">
           <span>최종 갱신</span>
@@ -3238,6 +3248,15 @@ function renderReleaseStatus() {
             ? `
                 <div class="release-stale-note">
                   ${staleReasons
+                    .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
+                    .join('')}
+                </div>
+              `
+            : ''}
+          ${!release.stale && localArtifactNotes.length
+            ? `
+                <div class="release-stale-note">
+                  ${localArtifactNotes
                     .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
                     .join('')}
                 </div>

@@ -19,6 +19,8 @@
 - latest rerun still failed one layer earlier because the provider emitted a suspicious inspect command `ls -ლა` plus an edit placeholder `scripts/openai_live_validation.{ext}` / `PLACEHOLDER: ...`, and those values were still making it into the execution session
 - hardened execution manifest normalization again so suspicious non-ASCII shell tokens, placeholder file paths with `{}` / `<>`, and `PLACEHOLDER:` edit content are all dropped before execution
 - expanded `smoke:execution-flow` to lock this exact regression down: provider-style manifests with unicode-confusable shell flags or placeholder edit steps must normalize down to runnable inspect/artifact steps plus the bounded `node --check src/cli.mjs` verification fallback
+- after OpenAI live validation finally passed, the next UX gap was release-state semantics rather than execution logic: evidence/closeout markdowns are intentionally regenerated in the working tree, so the UI must not mark that state as stale when the recorded commit still matches HEAD
+- updated execution v1 status building/rendering so `dirty docs + matching commit` becomes `로컬 갱신됨(local-current)` instead of `갱신 필요`, which keeps the operator console honest about “latest local evidence” versus true stale/mismatched evidence
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-15T21:55:00.000Z","id":"doclog_20260415215500_a1c5bd","type":"devlog","updatedAt":"2026-04-15T21:55:00.000Z"} -->
