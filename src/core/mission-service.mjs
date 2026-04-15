@@ -7074,6 +7074,7 @@ function summarizeProviderExecutions(executions) {
       currentLease: context.activeLease,
       execution: {
         blockedReasons: context.blockedReasons,
+        currentLease: context.activeLease,
         eligibility: context.blockedReasons.length
           ? 'blocked'
           : context.activeLease

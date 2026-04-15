@@ -71,7 +71,7 @@ npm run ui
 - `검토하기` 단계에서 review readiness, action queue, approval inbox를 묶어서 처리
 - `결과 보기` 단계에서 최종 결과 요약을 먼저 보고, 아래 `결과와 기록` 작업 영역에서 현재 세부 보기 맥락과 함께 결과물·실행 기록·검토 이력·입력값과 설정을 분리해서 확인
 - `결과와 기록`에 `하네스` 탭을 추가해 문서 source-of-record, 미션/워크스페이스 메모리, 유지보수·검토·provider 상태를 한 번에 확인
-- `결과와 기록`의 `v1 마감 상태` 탭에서 deterministic smoke, live validation gap, execution closeout checklist, evidence 문서를 같은 화면에서 확인하고 새로고침할 수 있음
+- `결과와 기록`의 `v1 마감 상태` 탭에서 deterministic smoke 4종, browser interaction readiness, live validation 상태, execution closeout checklist, evidence 문서를 같은 화면에서 확인하고 새로고침할 수 있음
 - `미션 정하기` 단계와 상단 `지금 해야 할 일`에도 하네스 권장 조치를 끌어올려, review/action/maintenance 압력이 있으면 바로 관련 단계나 탭으로 이동
 - `하네스 > 메모리 레이어`에서 fact / decision / preference 메모를 바로 추가할 수 있어, 미션 실행 문맥을 UI에서 직접 누적
 - `하네스 > 메모리 레이어`는 미션 메모뿐 아니라 워크스페이스 메모도 같은 화면에서 저장할 수 있어, 장기 운영 규칙과 현재 실행 문맥을 분리해 누적
@@ -479,10 +479,10 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
 
 `npm run evidence:execution-v1`는 위 검증 결과를 [execution-v1-evidence.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-evidence.md)에 Markdown evidence로 저장합니다.
 
-- 기본 실행: deterministic smoke 3개 실행 후 evidence 문서 갱신
+- 기본 실행: deterministic smoke 4개 실행 후 evidence 문서 갱신
 - 선택적 live validation 포함:
   - `npm run evidence:execution-v1 -- --live-openai`
   - `npm run evidence:execution-v1 -- --live-anthropic`
   - `npm run evidence:execution-v1 -- --live-local`
 
-`npm run closeout:execution-v1`는 evidence를 다시 생성한 뒤 [execution-v1-closeout.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md)에 v1 마감 체크리스트를 기록합니다. 이 문서는 deterministic smoke 완료 여부, live validation 상태, browser interaction E2E gap을 한눈에 보여 주는 closeout surface입니다.
+`npm run closeout:execution-v1`는 evidence를 다시 생성한 뒤 [execution-v1-closeout.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md)에 v1 마감 체크리스트를 기록합니다. 이 문서는 deterministic smoke 4종, browser interaction readiness, live validation 상태를 한눈에 보여 주는 closeout surface입니다.

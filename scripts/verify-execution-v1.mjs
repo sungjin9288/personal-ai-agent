@@ -30,6 +30,7 @@ const deterministicScripts = [
   'smoke:execution-flow',
   'smoke:execution-cli',
   'smoke:ui-execution-console',
+  'smoke:ui-execution-browser-e2e',
 ];
 
 const requestedLiveProviders = liveProviders.filter((item) => process.argv.includes(item.flag));

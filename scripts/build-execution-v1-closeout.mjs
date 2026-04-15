@@ -25,8 +25,9 @@ const generatedAt = new Date().toISOString();
 
 const deterministicPassed = /smoke:execution-flow: passed/.test(evidenceBody)
   && /smoke:execution-cli: passed/.test(evidenceBody)
-  && /smoke:ui-execution-console: passed/.test(evidenceBody);
-const browserGapOpen = evidenceBody.includes('browser interaction E2E');
+  && /smoke:ui-execution-console: passed/.test(evidenceBody)
+  && /smoke:ui-execution-browser-e2e: passed/.test(evidenceBody);
+const browserE2EPassed = /smoke:ui-execution-browser-e2e: passed/.test(evidenceBody);
 
 const liveOpenAIRequested = process.argv.includes('--live-openai');
 const liveAnthropicRequested = process.argv.includes('--live-anthropic');
@@ -46,7 +47,7 @@ const lines = [
   '',
   '## Closeout Checklist',
   '',
-  `- [${deterministicPassed ? 'x' : ' '}] deterministic execution smoke 3종 통과`,
+  `- [${deterministicPassed ? 'x' : ' '}] deterministic execution smoke 4종 통과`,
   '- [x] engineering reviewer → execution manifest 생성 경로 연결',
   '- [x] execution lease approval → foreground execution session 연결',
   '- [x] operator console preflight/start/stop/log surface 반영',
@@ -54,7 +55,7 @@ const lines = [
   `- [${liveOpenAIStatus.checked ? 'x' : ' '}] OpenAI live validation`,
   `- [${liveAnthropicStatus.checked ? 'x' : ' '}] Anthropic live validation`,
   `- [${liveLocalStatus.checked ? 'x' : ' '}] Local provider live validation`,
-  `- [${browserGapOpen ? ' ' : 'x'}] browser interaction E2E 자동화`,
+  `- [${browserE2EPassed ? 'x' : ' '}] browser interaction E2E 자동화`,
   '',
   '## Current Status',
   '',
@@ -62,14 +63,14 @@ const lines = [
   `- openai live validation: ${liveOpenAIStatus.label}`,
   `- anthropic live validation: ${liveAnthropicStatus.label}`,
   `- local live validation: ${liveLocalStatus.label}`,
-  `- browser interaction e2e: ${browserGapOpen ? 'blocked by Playwright MCP environment' : 'ready'}`,
+  `- browser interaction e2e: ${browserE2EPassed ? 'ready' : 'not verified'}`,
   '',
   '## Recommended Next Action',
   '',
 ];
 
-if (browserGapOpen) {
-  lines.push('- Playwright MCP의 `/.playwright-mcp` mkdir 오류를 먼저 해결한 뒤 browser interaction smoke를 연결할 것');
+if (!browserE2EPassed) {
+  lines.push('- `npm run smoke:ui-execution-browser-e2e`를 먼저 통과시켜 browser interaction evidence를 생성할 것');
 } else if (!liveOpenAIStatus.checked && process.env.OPENAI_API_KEY) {
   lines.push('- `npm run evidence:execution-v1 -- --live-openai`로 OpenAI live validation evidence를 갱신할 것');
 } else if (!liveOpenAIStatus.checked) {
@@ -83,7 +84,8 @@ lines.push(
   '## Notes',
   '',
   '- 이 문서는 `build-execution-v1-evidence.mjs` 결과를 기반으로 다시 생성된다.',
-  '- deterministic smoke는 local-first 경로만 닫고, live validation과 browser E2E는 환경 또는 credential에 따라 별도 상태로 남는다.',
+  '- deterministic smoke는 repo-local execution, CLI contract, operator console, browser interaction까지 포함한 local-first 경로를 닫는다.',
+  '- live validation은 provider credential과 runtime adapter가 준비된 환경에서만 추가 확인 대상으로 남는다.',
   '',
 );
 

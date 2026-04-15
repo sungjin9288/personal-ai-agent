@@ -1,0 +1,586 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import net from 'node:net';
+import os from 'node:os';
+import path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
+import { setTimeout as delay } from 'node:timers/promises';
+
+const repoDir = process.cwd();
+const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
+const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright-cli'];
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
+const screenshotDir = path.join(repoDir, 'output', 'playwright');
+const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
+
+fs.mkdirSync(screenshotDir, { recursive: true });
+fs.rmSync(screenshotPath, { force: true });
+
+const sessionId = `e${Date.now().toString(36).slice(-5)}`;
+const serverOutput = { stderr: '', stdout: '' };
+
+const port = await getFreePort();
+const baseUrl = `http://127.0.0.1:${port}`;
+
+const workspace = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'add', repoDir, '--name', 'browser-e2e-workspace'],
+});
+
+const serverProcess = spawn(process.execPath, [serverEntry], {
+  cwd: repoDir,
+  env: {
+    ...process.env,
+    PERSONAL_AI_AGENT_ROOT: tempRoot,
+    PERSONAL_AI_AGENT_UI_HOST: '127.0.0.1',
+    PERSONAL_AI_AGENT_UI_PORT: String(port),
+  },
+  stdio: ['ignore', 'pipe', 'pipe'],
+});
+
+serverProcess.stdout.on('data', (chunk) => {
+  serverOutput.stdout += String(chunk);
+});
+
+serverProcess.stderr.on('data', (chunk) => {
+  serverOutput.stderr += String(chunk);
+});
+
+try {
+  await waitForServer(baseUrl, serverProcess, serverOutput);
+
+  console.error('[smoke-ui-execution-browser-e2e] open browser');
+  runPw(['open', baseUrl]);
+
+  const missionTitle = `Browser Execution E2E ${Date.now().toString(36)}`;
+
+  console.error('[smoke-ui-execution-browser-e2e] create mission');
+  runPw([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        window.__lastAlert = '';
+        window.alert = (message) => {
+          window.__lastAlert = String(message || '');
+        };
+      });
+      await page.waitForFunction(() => {
+        const select = document.querySelector('#workspace-select');
+        return Boolean(select && select.value && select.options.length > 0);
+      });
+      await page.getByRole('button', { name: '새 미션 시작' }).click();
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-setup');
+      await page.locator('#step-setup').waitFor({ state: 'visible' });
+      await page.locator('#mission-form input[name="title"]').waitFor({ state: 'visible' });
+      return page.url();
+    }`,
+  ]);
+
+  runPw([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.locator('#mission-form select[name="mode"]').selectOption('engineering');
+      await page.locator('#mission-form select[name="deliverableType"]').selectOption('implementation-proposal');
+      await page.locator('#mission-form input[name="title"]').fill(${JSON.stringify(missionTitle)});
+      await page.locator('#mission-form textarea[name="objective"]').fill('Verify browser interaction E2E for the execution v1 operator console.');
+      await page.locator('#mission-form textarea[name="constraints"]').fill('Keep blast radius small');
+      await page.locator('#mission-form button[type="submit"]').click();
+      return { submitted: true, title: ${JSON.stringify(missionTitle)} };
+    }`,
+  ]);
+
+  const creationState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      try {
+        await page.waitForFunction((expectedTitle) => {
+          const heading = document.querySelector('#mission-title');
+          const step = new URL(window.location.href).searchParams.get('step');
+          return heading?.textContent?.includes(expectedTitle) && step === 'step-run';
+        }, ${JSON.stringify(missionTitle)}, { timeout: 15000 });
+      } catch (error) {
+        return {
+          alert: await page.evaluate(() => window.__lastAlert || ''),
+          error: String(error?.message || error),
+          href: page.url(),
+          ok: false,
+          step: await page.evaluate(() => new URL(window.location.href).searchParams.get('step')),
+          title: await page.evaluate(() => document.querySelector('#mission-title')?.textContent || ''),
+        };
+      }
+      return {
+        alert: await page.evaluate(() => window.__lastAlert || ''),
+        href: page.url(),
+        ok: true,
+        step: await page.evaluate(() => new URL(window.location.href).searchParams.get('step')),
+        title: await page.evaluate(() => document.querySelector('#mission-title')?.textContent || ''),
+      };
+    }`,
+  ]);
+
+  assert.equal(creationState.ok, true, JSON.stringify(creationState));
+  assert.match(creationState.title, new RegExp(missionTitle));
+  assert.match(creationState.href, /step=step-run/);
+  const missionId = new URL(creationState.href).searchParams.get('mission');
+  assert.ok(missionId);
+
+  console.error('[smoke-ui-execution-browser-e2e] run mission');
+  const missionRunState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => {
+        const button = document.querySelector('#run-mission-button');
+        return Boolean(button && !button.disabled);
+      });
+      await page.locator('#run-provider-select').selectOption('stub');
+      await page.evaluate(() => {
+        document.querySelector('#run-mission-button')?.click();
+      });
+      try {
+        await page.waitForFunction((expectedTitle) => {
+          const consoleText = document.querySelector('#execution-console')?.innerText || '';
+          const missionTitleNode = document.querySelector('#mission-title');
+          const step = new URL(window.location.href).searchParams.get('step');
+          return (
+            missionTitleNode?.textContent?.includes(expectedTitle) &&
+            !consoleText.includes('검토 세션\\n-') &&
+            (step === 'step-review' || step === 'step-output' || step === 'step-run')
+          );
+        }, ${JSON.stringify(missionTitle)}, { timeout: 20000 });
+      } catch (error) {
+        return {
+          alert: await page.evaluate(() => window.__lastAlert || ''),
+          buttonText: await page.evaluate(() => document.querySelector('#run-mission-button')?.textContent || ''),
+          error: String(error?.message || error),
+          executionConsole: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+          href: page.url(),
+          ok: false,
+          step: await page.evaluate(() => new URL(window.location.href).searchParams.get('step')),
+        };
+      }
+      return {
+        alert: await page.evaluate(() => window.__lastAlert || ''),
+        buttonText: await page.evaluate(() => document.querySelector('#run-mission-button')?.textContent || ''),
+        executionConsole: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+        href: page.url(),
+        ok: true,
+        step: await page.evaluate(() => new URL(window.location.href).searchParams.get('step')),
+      };
+    }`,
+  ]);
+
+  assert.equal(missionRunState.ok, true, JSON.stringify(missionRunState));
+  assert.match(missionRunState.href, new RegExp(`mission=`));
+
+  console.error('[smoke-ui-execution-browser-e2e] request execution approval');
+  runPw([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        document.querySelector('[data-step-target="step-run"]')?.click();
+      });
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-run');
+      await page.waitForFunction(() => !!document.querySelector('[data-ui-action="execution-preflight"][data-ui-value="request-approval"]'));
+      await page.evaluate(() => {
+        document.querySelector('[data-ui-action="execution-preflight"][data-ui-value="request-approval"]')?.click();
+      });
+      await page.waitForFunction(() => {
+        const text = document.querySelector('#execution-console')?.innerText || '';
+        return text.includes('승인 대기') || text.includes('실행 승인 요청을 생성했습니다');
+      });
+      return document.querySelector('#execution-console')?.innerText || '';
+    }`,
+  ]);
+
+  const approvalResolutionState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        document.querySelector('[data-step-target="step-review"]')?.click();
+      });
+      const approvalId = await page.evaluate(async (targetMissionId) => {
+        const response = await fetch('/api/missions/' + encodeURIComponent(targetMissionId) + '/execution');
+        const payload = await response.json();
+        const approval = payload.execution?.latestApproval || null;
+        if (approval?.kind === 'execution_lease' && approval?.status === 'pending') {
+          return approval.id || '';
+        }
+        return '';
+      }, ${JSON.stringify(missionId)});
+      if (!approvalId) {
+        return {
+          error: 'execution lease approval not found',
+          href: page.url(),
+          ok: false,
+          reviewState: await page.evaluate(() => document.querySelector('#review-stage-summary')?.innerText || ''),
+        };
+      }
+      await page.evaluate(async (targetApprovalId) => {
+        const response = await fetch('/api/approvals/' + encodeURIComponent(targetApprovalId) + '/resolve', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            decision: 'approve',
+            reason: 'Browser interaction smoke approves one bounded execution session.',
+          }),
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.message || 'approval resolve failed');
+        }
+      }, approvalId);
+      for (let index = 0; index < 60; index += 1) {
+        const payload = await page.evaluate(async (targetMissionId) => {
+          const response = await fetch('/api/missions/' + encodeURIComponent(targetMissionId) + '/execution');
+          return await response.json();
+        }, ${JSON.stringify(missionId)});
+        if (payload.execution?.currentLease?.status === 'active' || payload.execution?.latestLease?.status === 'active') {
+          return {
+            approvalId,
+            href: page.url(),
+            ok: true,
+            reviewState: await page.evaluate(() => document.querySelector('#review-stage-summary')?.innerText || ''),
+          };
+        }
+        await page.waitForTimeout(250);
+      }
+      return {
+        approvalId,
+        error: 'execution lease did not become active',
+        href: page.url(),
+        ok: false,
+        reviewState: await page.evaluate(() => document.querySelector('#review-stage-summary')?.innerText || ''),
+      };
+    }`,
+  ]);
+  assert.equal(approvalResolutionState.ok, true, JSON.stringify(approvalResolutionState));
+
+  console.error('[smoke-ui-execution-browser-e2e] reload after approval and start execution');
+  const runStageState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => {
+        const select = document.querySelector('#workspace-select');
+        return Boolean(select && select.value);
+      }, { timeout: 15000 });
+      await page.evaluate(() => {
+        document.querySelector('[data-step-target="step-run"]')?.click();
+      });
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-run', { timeout: 10000 });
+      return {
+        href: page.url(),
+        ok: true,
+      };
+    }`,
+  ]);
+  assert.equal(runStageState.ok, true, JSON.stringify(runStageState));
+
+  const startButtonState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      try {
+        await page.waitForFunction(() => {
+          const button = document.querySelector('[data-ui-action="execution-start"]');
+          return Boolean(button && !button.disabled);
+        }, { timeout: 15000 });
+      } catch (error) {
+        return {
+          consoleText: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+          error: String(error?.message || error),
+          href: page.url(),
+          html: await page.evaluate(() => document.querySelector('#execution-console')?.innerHTML || ''),
+          ok: false,
+          runStageSummary: await page.evaluate(() => document.querySelector('#run-stage-summary')?.innerText || ''),
+        };
+      }
+      return {
+        buttonText: await page.evaluate(() => document.querySelector('[data-ui-action="execution-start"]')?.textContent || ''),
+        href: page.url(),
+        ok: true,
+      };
+    }`,
+  ]);
+  assert.equal(startButtonState.ok, true, JSON.stringify(startButtonState));
+
+  const executionStartClickState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => {
+        const button = document.querySelector('[data-ui-action="execution-start"]');
+        return Boolean(button && !button.disabled);
+      }, { timeout: 15000 });
+      await page.evaluate(() => {
+        document.querySelector('[data-ui-action="execution-start"]')?.click();
+      });
+      try {
+        await page.waitForFunction(() => {
+          const note = document.querySelector('.flow-status-note')?.textContent || '';
+          const text = document.querySelector('#execution-console')?.innerText || '';
+          return note.includes('실행 세션을 시작했습니다.') || text.includes('running') || text.includes('실행 중') || text.includes('completed') || text.includes('완료');
+        }, { timeout: 15000 });
+      } catch (error) {
+        return {
+          consoleText: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+          error: String(error?.message || error),
+          href: page.url(),
+          notice: await page.evaluate(() => document.querySelector('.flow-status-note')?.textContent || ''),
+          ok: false,
+        };
+      }
+      return {
+        buttonText: await page.evaluate(() => document.querySelector('[data-ui-action="execution-start"]')?.textContent || ''),
+        consoleText: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+        href: page.url(),
+        notice: await page.evaluate(() => document.querySelector('.flow-status-note')?.textContent || ''),
+        ok: true,
+      };
+    }`,
+  ]);
+  assert.equal(executionStartClickState.ok, true, JSON.stringify(executionStartClickState));
+
+  console.error('[smoke-ui-execution-browser-e2e] poll execution status via CLI');
+  let executionStatus = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'execution', 'status', missionId],
+  });
+
+  for (let index = 0; index < 120; index += 1) {
+    if (executionStatus.execution?.latestExecutionSession?.status !== 'running') {
+      break;
+    }
+    await delay(250);
+    executionStatus = runCli({
+      rootDir: tempRoot,
+      args: ['mission', 'execution', 'status', missionId],
+    });
+  }
+
+  assert.equal(executionStatus.execution?.latestExecutionSession?.status, 'completed');
+  assert.equal(executionStatus.execution?.latestExecutionSession?.verification?.status, 'passed');
+
+  console.error('[smoke-ui-execution-browser-e2e] verify execution console');
+  const startState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      try {
+        await page.waitForFunction(() => {
+          const text = document.querySelector('#execution-console')?.innerText || '';
+          return text.includes('완료') && text.includes('검증');
+        }, { timeout: 10000 });
+      } catch (error) {
+        return {
+          executionConsole: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+          error: String(error?.message || error),
+          href: page.url(),
+          ok: false,
+        };
+      }
+      return {
+        executionConsole: await page.evaluate(() => document.querySelector('#execution-console')?.innerText || ''),
+        href: page.url(),
+        ok: true,
+      };
+    }`,
+  ]);
+
+  assert.equal(startState.ok, true, JSON.stringify(startState));
+  assert.match(startState.executionConsole, /완료/);
+  assert.match(startState.executionConsole, /검증/);
+
+  console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
+  const releaseState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        document.querySelector('[data-step-target="step-output"]')?.click();
+      });
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-output');
+      await page.evaluate(() => {
+        document.querySelector('[data-detail-tab="release"]')?.click();
+      });
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('tab') === 'release');
+      return {
+        href: page.url(),
+        releaseHeading: await page.evaluate(() => document.querySelector('#detail-release h4')?.textContent || ''),
+      };
+    }`,
+  ]);
+
+  assert.match(releaseState.href, /tab=release/);
+  assert.match(releaseState.releaseHeading, /검증, evidence, closeout/);
+
+  runPw(['go-back']);
+  const backState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => !window.location.search.includes('tab=release'));
+      return {
+        href: page.url(),
+      };
+    }`,
+  ]);
+  assert.notEqual(new URL(backState.href).searchParams.get('tab'), 'release');
+
+  runPw(['go-forward']);
+  const forwardState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => window.location.search.includes('tab=release'));
+      return {
+        href: page.url(),
+      };
+    }`,
+  ]);
+  assert.equal(new URL(forwardState.href).searchParams.get('tab'), 'release');
+
+  runPw(['reload']);
+  const reloadState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => window.location.search.includes('tab=release'));
+      return {
+        href: page.url(),
+      };
+    }`,
+  ]);
+  assert.equal(new URL(reloadState.href).searchParams.get('tab'), 'release');
+  assert.equal(new URL(reloadState.href).searchParams.get('step'), 'step-output');
+
+  runPw(['screenshot', screenshotPath]);
+  const screenshotCaptured = fs.existsSync(screenshotPath);
+
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        mode: 'ui-execution-browser-e2e',
+        port,
+        screenshotCaptured,
+        screenshotPath,
+        sessionId,
+        url: reloadState.href,
+        workspaceId: workspace.id,
+      },
+      null,
+      2,
+    ),
+  );
+} finally {
+  try {
+    runPw(['close']);
+  } catch {}
+
+  if (!serverProcess.killed) {
+    serverProcess.kill('SIGTERM');
+  }
+
+  await waitForExit(serverProcess);
+}
+
+function runCli({ rootDir, args }) {
+  const cliPath = path.join(repoDir, 'src', 'cli.mjs');
+  const result = spawnSync(process.execPath, [cliPath, ...args], {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PERSONAL_AI_AGENT_ROOT: rootDir,
+    },
+  });
+
+  if (result.status !== 0) {
+    throw new Error(`CLI failed (${args.join(' ')}): ${result.stderr || result.stdout}`);
+  }
+
+  const stdout = String(result.stdout || '').trim();
+  return stdout ? JSON.parse(stdout) : null;
+}
+
+function runPw(args) {
+  const result = spawnSync('npx', [...playwrightArgsBase, '--session', sessionId, ...args], {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(`playwright-cli failed (${args.join(' ')}): ${result.stderr || result.stdout}`);
+  }
+
+  return String(result.stdout || '').trim();
+}
+
+function runPwJson(args) {
+  const stdout = runPw(args);
+  if (!stdout) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(stdout);
+  } catch (error) {
+    throw new Error(`Failed to parse playwright-cli JSON output for ${args.join(' ')}\n${stdout}`);
+  }
+}
+
+async function getFreePort() {
+  return await new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.on('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      server.close((closeError) => {
+        if (closeError) {
+          reject(closeError);
+          return;
+        }
+        resolve(address.port);
+      });
+    });
+  });
+}
+
+async function waitForServer(baseUrl, child, serverOutput) {
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    if (child.exitCode !== null) {
+      throw new Error(`UI server exited early: ${child.exitCode}`);
+    }
+
+    try {
+      const response = await fetch(baseUrl);
+      if (response.ok) {
+        return;
+      }
+    } catch {}
+
+    await delay(150);
+  }
+
+  throw new Error(`Timed out waiting for UI server. stdout=${serverOutput.stdout} stderr=${serverOutput.stderr}`);
+}
+
+async function waitForExit(child) {
+  if (child.exitCode !== null) {
+    return;
+  }
+
+  await new Promise((resolve) => {
+    child.once('exit', resolve);
+  });
+}

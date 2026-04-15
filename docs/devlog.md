@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T15:20:00.000Z","id":"doclog_20260415152000_a1f3b9","type":"devlog","updatedAt":"2026-04-15T15:20:00.000Z"} -->
+## 2026-04-15 Browser E2E Closeout Alignment
+
+- date: 2026-04-15T15:20:00.000Z
+- closed the remaining browser interaction gap by promoting `smoke:ui-execution-browser-e2e` into the deterministic execution-v1 verification set, so closeout is no longer split between contract smoke and an external manual browser note
+- updated the evidence and closeout generators plus README wording so release artifacts now describe `deterministic smoke 4종 + browser readiness + optional live validation` instead of carrying the older `browser E2E gap` language
+- kept the change generator-first, then regenerated the tracked closeout documents, so release evidence stays reproducible instead of drifting through hand-edited markdown
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415170000_2a89d4","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Execution v1 Closeout Surface
 

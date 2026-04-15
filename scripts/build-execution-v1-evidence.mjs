@@ -22,6 +22,9 @@ const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
 const generatedAt = new Date().toISOString();
 const liveFlags = forwardedArgs.filter((item) => item.startsWith('--live-'));
+const browserE2EPassed = (verification.deterministic || []).some(
+  (item) => item.script === 'smoke:ui-execution-browser-e2e' && item.status === 'passed',
+);
 
 const lines = [
   '# Execution v1 Evidence',
@@ -63,10 +66,11 @@ lines.push(
   '- execution lease approval이 1회 실행 세션에 바인딩되는지',
   '- foreground execution session이 완료되고 verification 결과가 남는지',
   '- CLI, service, UI contract가 같은 execution 상태를 읽는지',
+  '- 실제 browser interaction이 미션 생성 → 실행 승인 요청 → 승인 → 실행 시작 → 결과 확인 → history restore까지 이어지는지',
   '',
-  '## Remaining Gaps',
+  '## Coverage and Remaining Gaps',
   '',
-  '- 실제 browser interaction E2E는 현재 Playwright MCP 환경의 `/.playwright-mcp` mkdir 오류 때문에 자동화되지 않음',
+  `- browser interaction E2E: ${browserE2EPassed ? 'ready (Playwright CLI flow passed)' : 'not verified'}`,
   '- live provider validation은 해당 provider env가 있을 때만 수행되며, 요청되지 않았거나 env가 없으면 skipped 상태로 남음',
   '',
   '## Raw Summary',

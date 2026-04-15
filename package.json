@@ -11,6 +11,7 @@
     "smoke:execution-flow": "node scripts/smoke-execution-flow.mjs",
     "smoke:execution-cli": "node scripts/smoke-execution-cli.mjs",
     "smoke:ui-execution-console": "node scripts/smoke-ui-execution-console.mjs",
+    "smoke:ui-execution-browser-e2e": "node scripts/smoke-ui-execution-browser-e2e.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",
     "closeout:execution-v1": "node scripts/build-execution-v1-closeout.mjs",
