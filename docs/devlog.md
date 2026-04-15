@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T23:35:00.000Z","id":"doclog_20260415233500_1d4f82","type":"devlog","updatedAt":"2026-04-15T23:35:00.000Z"} -->
+## 2026-04-15 Provider Preflight Action Surface
+
+- date: 2026-04-15T23:35:00.000Z
+- added a dedicated `/api/execution-v1/preflight` route so the operator console can run provider-specific deterministic readiness checks without leaving the release tab
+- extended each provider card with `preflight 실행` and a persisted preflight status badge, which separates `ready-but-missing-env` from actual `blocked` smoke failures instead of making the operator infer that state from env badges alone
+- kept the live action disabled until env is present, but made preflight always callable, which is the right operational split for optional provider expansion work
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T23:20:00.000Z","id":"doclog_20260415232000_37a92b","type":"devlog","updatedAt":"2026-04-15T23:20:00.000Z"} -->
 ## 2026-04-15 Release Snapshot Action Surface
 

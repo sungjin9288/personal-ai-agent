@@ -25,6 +25,7 @@ const state = {
   missionTimeline: null,
   missions: [],
   providers: [],
+  releasePreflightResults: {},
   releaseStatus: null,
   selectedPlaybookId: 'team-pipeline',
   selectedArtifactId: null,
@@ -3401,6 +3402,19 @@ function renderReleaseStatus() {
               ${providerReadiness
                 .map(
                   (item) => `
+                    ${(() => {
+                      const preflight = state.releasePreflightResults?.[item.provider] || null;
+                      const preflightStatus = preflight?.status || 'not-run';
+                      const preflightSummary = preflight
+                        ? preflight.status === 'ready-for-live-validation'
+                          ? `preflight 통과 · ${preflight.checks?.length || 0}개 smoke passed`
+                          : preflight.status === 'ready-but-missing-env'
+                            ? `preflight 통과 · ${preflight.envKey} 필요`
+                            : preflight.status === 'blocked'
+                              ? `preflight blocked · ${(preflight.checks || []).filter((check) => check.status !== 'passed').length}개 실패`
+                              : `preflight ${preflight.status}`
+                        : 'preflight를 아직 실행하지 않았습니다.';
+                      return `
                     <article class="release-provider-card ${item.ready ? 'is-ready' : 'is-blocked'}">
                       <div>
                         <div class="item-title">${escapeHtml(item.label)}</div>
@@ -3408,6 +3422,15 @@ function renderReleaseStatus() {
                       </div>
                       <div class="release-provider-meta">
                         <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
+                        <span class="mini-badge ${getReleaseStatusBadge(preflightStatus)}">${escapeHtml(preflightStatus)}</span>
+                      </div>
+                      <div class="release-provider-meta">
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="run-release-preflight"
+                          data-ui-provider="${escapeHtml(item.provider)}"
+                        >preflight 실행</button>
                         <button
                           class="ghost-button"
                           type="button"
@@ -3417,7 +3440,10 @@ function renderReleaseStatus() {
                         >${escapeHtml(item.ready ? 'live 검증 실행' : 'env 필요')}</button>
                       </div>
                       <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다.`)}</p>
+                      <p class="item-meta">${escapeHtml(preflightSummary)}</p>
                     </article>
+                  `;
+                    })()}
                   `,
                 )
                 .join('')}
@@ -3505,6 +3531,15 @@ function renderReleaseStatus() {
     </div>
   `;
   wireQuickActions(elements.releaseStatus);
+  elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const provider = String(button.dataset.uiProvider || '').trim();
+      if (!provider) {
+        return;
+      }
+      await runReleasePreflight(provider);
+    });
+  });
   elements.releaseStatus.querySelectorAll('[data-ui-action="refresh-release-status-live"]').forEach((button) => {
     button.addEventListener('click', async () => {
       const provider = String(button.dataset.uiProvider || '').trim();
@@ -4636,6 +4671,32 @@ async function refreshReleaseStatus(liveMode = '') {
     setUiNotice('v1 마감 상태를 새로고침했습니다.');
   } catch (error) {
     window.alert(error.message || 'v1 마감 상태 갱신에 실패했습니다.');
+  }
+}
+
+async function runReleasePreflight(provider = '') {
+  try {
+    const normalizedProvider = String(provider || '').trim();
+    if (!normalizedProvider) {
+      return;
+    }
+    setUiNotice(`${normalizedProvider} preflight를 실행 중입니다.`);
+    const payload = await api('/api/execution-v1/preflight', {
+      body: JSON.stringify({
+        provider: normalizedProvider,
+      }),
+      method: 'POST',
+    });
+    state.releasePreflightResults = {
+      ...state.releasePreflightResults,
+      [normalizedProvider]: payload.preflight,
+    };
+    renderReleaseStatus();
+    renderDetailContextbar();
+    setActiveDetailTab('release', { urlMode: 'push' });
+    setUiNotice(`${normalizedProvider} preflight를 완료했습니다. (${payload.preflight.status})`);
+  } catch (error) {
+    window.alert(error.message || 'release preflight 실행에 실패했습니다.');
   }
 }
 

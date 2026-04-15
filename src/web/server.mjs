@@ -15,6 +15,7 @@ const rootDir = resolveRootDir();
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
+const preflightScriptPath = path.join(rootDir, 'scripts', 'preflight-execution-v1-live.mjs');
 const snapshotScriptPath = path.join(rootDir, 'scripts', 'archive-execution-v1-snapshot.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
@@ -493,6 +494,29 @@ function archiveExecutionV1Snapshot() {
   };
 }
 
+function runExecutionV1Preflight(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    throw new Error('preflight provider가 필요합니다.');
+  }
+
+  const result = spawnSync(process.execPath, [preflightScriptPath, normalizedProvider], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || `execution-v1 preflight failed for ${normalizedProvider}`);
+  }
+
+  try {
+    return JSON.parse(String(result.stdout || '{}'));
+  } catch {
+    throw new Error(`execution-v1 preflight output could not be parsed for ${normalizedProvider}`);
+  }
+}
+
 function decodePathSegment(segment = '') {
   return decodeURIComponent(String(segment || '').trim());
 }
@@ -633,6 +657,14 @@ async function handleApi(request, response, url) {
   if (request.method === 'POST' && pathname === '/api/execution-v1/refresh') {
     const body = await readJsonBody(request);
     sendJson(response, 200, refreshExecutionV1Artifacts(buildLiveValidationArgs(body)));
+    return;
+  }
+
+  if (request.method === 'POST' && pathname === '/api/execution-v1/preflight') {
+    const body = await readJsonBody(request);
+    sendJson(response, 200, {
+      preflight: runExecutionV1Preflight(body.provider),
+    });
     return;
   }
 
