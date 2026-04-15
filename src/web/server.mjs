@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -12,6 +13,10 @@ const __dirname = path.dirname(__filename);
 
 const rootDir = resolveRootDir();
 const publicDir = path.join(__dirname, 'public');
+const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evidence.mjs');
+const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
+const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
+const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const host = String(process.env.PERSONAL_AI_AGENT_UI_HOST || '127.0.0.1').trim() || '127.0.0.1';
 const port = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
 
@@ -46,6 +51,172 @@ function sendError(response, error, statusCode = 500) {
     error: 'request-failed',
     message: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.',
   });
+}
+
+function readMarkdownFile(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function extractBulletValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${label}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function extractSectionBullets(markdown, heading) {
+  const sectionPattern = new RegExp(`## ${heading}\\n([\\s\\S]*?)(?:\\n## |$)`);
+  const sectionMatch = String(markdown || '').match(sectionPattern);
+  if (!sectionMatch) {
+    return [];
+  }
+
+  return String(sectionMatch[1] || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('- '))
+    .map((line) => line.slice(2).trim())
+    .filter(Boolean);
+}
+
+function extractChecklistItems(markdown) {
+  const sectionPattern = /## Closeout Checklist\n([\s\S]*?)(?:\n## |$)/;
+  const sectionMatch = String(markdown || '').match(sectionPattern);
+  if (!sectionMatch) {
+    return [];
+  }
+
+  return String(sectionMatch[1] || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /^- \[[ x]\]/.test(line))
+    .map((line) => ({
+      done: line.startsWith('- [x]'),
+      label: line.replace(/^- \[[ x]\]\s*/, '').trim(),
+    }));
+}
+
+function extractStatusMap(markdown) {
+  return Object.fromEntries(
+    extractSectionBullets(markdown, 'Current Status')
+      .map((line) => {
+        const separatorIndex = line.indexOf(':');
+        if (separatorIndex === -1) {
+          return null;
+        }
+        return [
+          String(line.slice(0, separatorIndex) || '').trim(),
+          String(line.slice(separatorIndex + 1) || '').trim(),
+        ];
+      })
+      .filter(Boolean),
+  );
+}
+
+function extractLiveValidationItems(markdown) {
+  return extractSectionBullets(markdown, 'Live Validation').map((line) => {
+    const separatorIndex = line.indexOf(':');
+    if (separatorIndex === -1) {
+      return {
+        provider: 'summary',
+        status: line,
+      };
+    }
+
+    return {
+      provider: String(line.slice(0, separatorIndex) || '').trim(),
+      status: String(line.slice(separatorIndex + 1) || '').trim(),
+    };
+  });
+}
+
+function extractDeterministicItems(markdown) {
+  return extractSectionBullets(markdown, 'Deterministic Verification').map((line) => {
+    const separatorIndex = line.lastIndexOf(':');
+    if (separatorIndex === -1) {
+      return {
+        script: line,
+        status: 'unknown',
+      };
+    }
+
+    return {
+      script: String(line.slice(0, separatorIndex) || '').trim(),
+      status: String(line.slice(separatorIndex + 1) || '').trim(),
+    };
+  });
+}
+
+function buildExecutionV1Status() {
+  const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
+  const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
+  const checklist = extractChecklistItems(closeoutMarkdown);
+  const deterministic = extractDeterministicItems(evidenceMarkdown);
+  const liveValidation = extractLiveValidationItems(evidenceMarkdown);
+  const gaps = extractSectionBullets(evidenceMarkdown, 'Remaining Gaps');
+  const notes = extractSectionBullets(closeoutMarkdown, 'Notes');
+  const statusMap = extractStatusMap(closeoutMarkdown);
+  const checklistOpen = checklist.filter((item) => !item.done).length;
+  const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
+
+  return {
+    branch: extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch'),
+    checklist,
+    closeout: {
+      generatedAt: extractBulletValue(closeoutMarkdown, 'generatedAt'),
+      markdown: closeoutMarkdown,
+      path: closeoutDocPath,
+    },
+    commit: extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit'),
+    deterministic,
+    evidence: {
+      generatedAt: extractBulletValue(evidenceMarkdown, 'generatedAt'),
+      markdown: evidenceMarkdown,
+      path: evidenceDocPath,
+    },
+    gaps,
+    liveValidation,
+    notes,
+    summary: {
+      blockedItems: Object.values(statusMap).filter((value) => /blocked|missing-env/i.test(String(value || ''))).length,
+      checklistOpen,
+      checklistTotal: checklist.length,
+      deterministicPassed,
+      deterministicTotal: deterministic.length,
+      ready: checklistOpen === 0,
+    },
+    updatedAt:
+      extractBulletValue(closeoutMarkdown, 'generatedAt') ||
+      extractBulletValue(evidenceMarkdown, 'generatedAt') ||
+      new Date().toISOString(),
+    values: statusMap,
+  };
+}
+
+function buildLiveValidationArgs(body = {}) {
+  const args = [];
+  if (body.liveOpenAI) {
+    args.push('--live-openai');
+  }
+  if (body.liveAnthropic) {
+    args.push('--live-anthropic');
+  }
+  if (body.liveLocal) {
+    args.push('--live-local');
+  }
+  return args;
+}
+
+function refreshExecutionV1Artifacts(args = []) {
+  const result = spawnSync(process.execPath, [closeoutScriptPath, ...args], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || 'execution-v1 closeout refresh failed');
+  }
+
+  return buildExecutionV1Status();
 }
 
 function decodePathSegment(segment = '') {
@@ -177,6 +348,17 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && pathname === '/api/providers') {
     sendJson(response, 200, service.listProviders());
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/execution-v1/status') {
+    sendJson(response, 200, buildExecutionV1Status());
+    return;
+  }
+
+  if (request.method === 'POST' && pathname === '/api/execution-v1/refresh') {
+    const body = await readJsonBody(request);
+    sendJson(response, 200, refreshExecutionV1Artifacts(buildLiveValidationArgs(body)));
     return;
   }
 

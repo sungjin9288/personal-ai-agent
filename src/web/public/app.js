@@ -25,6 +25,7 @@ const state = {
   missionTimeline: null,
   missions: [],
   providers: [],
+  releaseStatus: null,
   selectedPlaybookId: 'team-pipeline',
   selectedArtifactId: null,
   selectedMissionId: null,
@@ -172,6 +173,7 @@ const elements = {
   missionSummary: document.getElementById('mission-summary'),
   missionTitle: document.getElementById('mission-title'),
   providerList: document.getElementById('provider-list'),
+  releaseStatus: document.getElementById('release-status'),
   reviewReadiness: document.getElementById('review-readiness'),
   reviewReadinessDetail: document.getElementById('review-readiness-detail'),
   runMissionButton: document.getElementById('run-mission-button'),
@@ -207,7 +209,7 @@ const STEP_META = {
   'step-setup': { label: '1단계 · 미션 정하기', shortLabel: '미션 정하기' },
 };
 
-const DETAIL_TAB_IDS = new Set(['artifacts', 'runs', 'reviews', 'config', 'harness']);
+const DETAIL_TAB_IDS = new Set(['artifacts', 'runs', 'reviews', 'config', 'harness', 'release']);
 const STEP_IDS = new Set(Object.keys(STEP_META));
 
 function getSelectedWorkspaceId() {
@@ -716,6 +718,32 @@ function getHarnessSummaryState() {
   };
 }
 
+function getReleaseStatusSummary() {
+  const release = state.releaseStatus || null;
+  if (!release) {
+    return {
+      blockedItems: 0,
+      checklistOpen: 0,
+      deterministicLabel: '데이터 없음',
+      generatedAt: '',
+      ready: false,
+    };
+  }
+
+  const deterministicPassed = Number(release.summary?.deterministicPassed || 0);
+  const deterministicTotal = Number(release.summary?.deterministicTotal || 0);
+  return {
+    blockedItems: Number(release.summary?.blockedItems || 0),
+    checklistOpen: Number(release.summary?.checklistOpen || 0),
+    deterministicLabel:
+      deterministicTotal > 0
+        ? `${deterministicPassed}/${deterministicTotal} passed`
+        : '데이터 없음',
+    generatedAt: release.updatedAt || release.closeout?.generatedAt || release.evidence?.generatedAt || '',
+    ready: Boolean(release.summary?.ready),
+  };
+}
+
 function getDisplayLabel(value, fallback = '-') {
   if (value === undefined || value === null || value === '') {
     return fallback;
@@ -723,6 +751,20 @@ function getDisplayLabel(value, fallback = '-') {
 
   const raw = String(value).trim();
   return DISPLAY_LABELS[raw] || DISPLAY_LABELS[raw.toLowerCase()] || raw;
+}
+
+function getReleaseStatusBadge(status = '') {
+  const normalized = String(status || '').trim().toLowerCase();
+  if (!normalized) {
+    return 'status-pending';
+  }
+  if (normalized.includes('passed') || normalized.includes('ready')) {
+    return 'status-completed';
+  }
+  if (normalized.includes('blocked') || normalized.includes('missing-env') || normalized.includes('failed')) {
+    return 'status-failed';
+  }
+  return 'status-pending';
 }
 
 function getStepLabel(stepId, { short = false } = {}) {
@@ -740,6 +782,7 @@ function getDetailTabLabel(tabId) {
       artifacts: '결과물',
       config: '입력값과 설정',
       harness: '하네스',
+      release: 'v1 마감 상태',
       reviews: '검토 이력',
       runs: '실행 기록',
     }[tabId] || '세부 보기'
@@ -954,6 +997,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'reset-view') {
         void resetCurrentView();
+        return;
+      }
+
+      if (action === 'refresh-release-status') {
+        void refreshReleaseStatus(button.dataset.liveMode || '');
         return;
       }
 
@@ -1636,6 +1684,7 @@ function renderDetailTabLabels() {
     reviews: reviewsCount,
     config: 0,
     harness: harnessCount,
+    release: state.releaseStatus?.summary?.checklistOpen || 0,
   };
 
   elements.detailTabButtons.forEach((button) => {
@@ -2480,6 +2529,18 @@ function renderOutputCloseout() {
     },
   ];
 
+  if (isExecutionMissionSelected() && state.releaseStatus) {
+    closeoutItems.push({
+      actionLabel: 'v1 마감 상태 보기',
+      actionValue: 'release',
+      detail: state.releaseStatus.summary?.checklistOpen
+        ? `열린 체크리스트 ${state.releaseStatus.summary.checklistOpen}건 · 환경 gap ${state.releaseStatus.summary.blockedItems || 0}건`
+        : 'execution v1 closeout checklist가 현재 기준으로 닫혀 있습니다.',
+      label: '실행형 에이전트 v1 준비 상태',
+      ready: Boolean(state.releaseStatus.summary?.ready),
+    });
+  }
+
   elements.outputCloseout.innerHTML = closeoutItems
     .map(
       (item, index) => `
@@ -2507,6 +2568,36 @@ function renderOutputCloseout() {
 
 function renderDetailContextbar() {
   if (!elements.detailContextbar) {
+    return;
+  }
+
+  if (state.activeDetailTab === 'release' && state.releaseStatus) {
+    const summary = getReleaseStatusSummary();
+    elements.detailContextbar.innerHTML = `
+      <div class="detail-context-main">
+        <span class="detail-context-label">현재 세부 보기</span>
+        <strong>execution v1 마감 상태 확인 중</strong>
+        <p>검증 근거, closeout checklist, 남은 환경 gap을 같은 작업면에서 확인합니다.</p>
+      </div>
+      <div class="detail-context-stats">
+        <div class="detail-context-pill">
+          <span>deterministic</span>
+          <strong>${escapeHtml(summary.deterministicLabel)}</strong>
+        </div>
+        <div class="detail-context-pill">
+          <span>열린 체크리스트</span>
+          <strong>${escapeHtml(String(summary.checklistOpen))}건</strong>
+        </div>
+        <div class="detail-context-pill">
+          <span>환경 gap</span>
+          <strong>${escapeHtml(String(summary.blockedItems))}건</strong>
+        </div>
+        <div class="detail-context-pill">
+          <span>갱신 시각</span>
+          <strong>${escapeHtml(formatDate(summary.generatedAt))}</strong>
+        </div>
+      </div>
+    `;
     return;
   }
 
@@ -3071,6 +3162,162 @@ function renderHarnessPanel() {
   `;
   wireDocumentRowActions();
   wireMemoryRowActions();
+}
+
+function renderReleaseStatus() {
+  if (!elements.releaseStatus) {
+    return;
+  }
+
+  if (!state.releaseStatus) {
+    elements.releaseStatus.innerHTML = emptyStateCard({
+      action: 'refresh-release-status',
+      actionLabel: '마감 상태 불러오기',
+      icon: 'V1',
+      message: 'execution v1 검증 요약, evidence, closeout checklist를 같은 화면에서 확인할 수 있습니다.',
+      title: 'v1 마감 상태가 아직 로드되지 않았습니다',
+    });
+    wireQuickActions(elements.releaseStatus);
+    return;
+  }
+
+  const release = state.releaseStatus;
+  const summary = release.summary || {};
+  const closeout = release.closeout || {};
+  const evidence = release.evidence || {};
+  const values = release.values || {};
+  const checklist = release.checklist || [];
+  const gaps = release.gaps || [];
+  const liveValidation = release.liveValidation || [];
+
+  elements.releaseStatus.innerHTML = `
+    <div class="release-status-shell">
+      <section class="release-summary-grid">
+        <div class="summary-chip">
+          <span>deterministic smoke</span>
+          <strong>${escapeHtml(`${summary.deterministicPassed || 0}/${summary.deterministicTotal || 0} passed`)}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>열린 체크리스트</span>
+          <strong>${escapeHtml(String(summary.checklistOpen || 0))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>환경 gap</span>
+          <strong>${escapeHtml(String(summary.blockedItems || 0))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>최종 갱신</span>
+          <strong>${escapeHtml(formatDate(release.updatedAt))}</strong>
+        </div>
+      </section>
+
+      <section class="release-callout">
+        <div>
+          <p class="section-kicker">릴리스 상태</p>
+          <h4>${escapeHtml(summary.ready ? 'execution v1 closeout ready' : 'execution v1 closeout 미완료')}</h4>
+          <p>${escapeHtml(summary.ready ? 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.' : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.')}</p>
+        </div>
+        <div class="action-row">
+          <button class="primary-button" type="button" data-ui-action="refresh-release-status">마감 상태 새로고침</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
+        </div>
+      </section>
+
+      <div class="detail-grid detail-grid-two release-detail-grid">
+        <section class="surface">
+          <div class="mini-head">
+            <div>
+              <p class="section-kicker">Closeout Checklist</p>
+              <h4>마감 체크리스트와 현재 상태</h4>
+            </div>
+          </div>
+          <div class="release-meta">
+            <span class="item-meta">branch ${escapeHtml(release.branch || '-')}</span>
+            <span class="item-meta mono">${escapeHtml(release.commit || '-')}</span>
+          </div>
+          <div class="release-checklist">
+            ${checklist
+              .map(
+                (item) => `
+                  <div class="release-checklist-item ${item.done ? 'is-ready' : 'is-blocked'}">
+                    <span class="status-badge ${item.done ? 'status-completed' : 'status-failed'}">${escapeHtml(item.done ? '완료' : '남음')}</span>
+                    <div>
+                      <strong>${escapeHtml(item.label)}</strong>
+                    </div>
+                  </div>
+                `,
+              )
+              .join('')}
+          </div>
+          <div class="release-current-status">
+            ${Object.entries(values)
+              .map(
+                ([label, value]) => `
+                  <div class="harness-row">
+                    <div>
+                      <div class="item-title">${escapeHtml(label)}</div>
+                    </div>
+                    <div class="harness-row-meta">
+                      <span class="mini-badge ${getReleaseStatusBadge(value)}">${escapeHtml(value)}</span>
+                    </div>
+                  </div>
+                `,
+              )
+              .join('')}
+          </div>
+        </section>
+
+        <section class="surface">
+          <div class="mini-head">
+            <div>
+              <p class="section-kicker">Release Evidence</p>
+              <h4>남은 gap과 증거 문서</h4>
+            </div>
+          </div>
+          <div class="release-list">
+            <div class="harness-callout">
+              <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
+              <p>${escapeHtml(gaps[0] || '남은 gap이 없습니다.')}</p>
+            </div>
+            <div class="release-live-list">
+              ${(liveValidation.length ? liveValidation : [{ provider: 'live validation', status: 'not requested' }])
+                .map(
+                  (item) => `
+                    <div class="harness-row">
+                      <div>
+                        <div class="item-title">${escapeHtml(item.provider)}</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>
+            <div class="release-doc-grid">
+              <article class="release-doc-surface markdown-surface">
+                <div class="release-doc-head">
+                  <strong>closeout</strong>
+                  <span class="item-meta mono">${escapeHtml(closeout.path || '-')}</span>
+                </div>
+                ${markdownToHtml(closeout.markdown || '문서가 없습니다.')}
+              </article>
+              <article class="release-doc-surface markdown-surface">
+                <div class="release-doc-head">
+                  <strong>evidence</strong>
+                  <span class="item-meta mono">${escapeHtml(evidence.path || '-')}</span>
+                </div>
+                ${markdownToHtml(evidence.markdown || '문서가 없습니다.')}
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+  wireQuickActions(elements.releaseStatus);
 }
 
 function wireDocumentRowActions() {
@@ -4165,6 +4412,37 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
   return payload;
 }
 
+async function loadReleaseStatus() {
+  const payload = await api('/api/execution-v1/status');
+  state.releaseStatus = payload;
+  renderReleaseStatus();
+  renderDetailTabLabels();
+  renderDetailContextbar();
+  return payload;
+}
+
+async function refreshReleaseStatus(liveMode = '') {
+  try {
+    setUiNotice('v1 마감 상태를 갱신 중입니다.');
+    const payload = await api('/api/execution-v1/refresh', {
+      body: JSON.stringify({
+        liveAnthropic: liveMode === 'anthropic',
+        liveLocal: liveMode === 'local',
+        liveOpenAI: liveMode === 'openai',
+      }),
+      method: 'POST',
+    });
+    state.releaseStatus = payload;
+    renderReleaseStatus();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    setActiveDetailTab('release', { urlMode: 'push' });
+    setUiNotice('v1 마감 상태를 새로고침했습니다.');
+  } catch (error) {
+    window.alert(error.message || 'v1 마감 상태 갱신에 실패했습니다.');
+  }
+}
+
 function ensureExecutionPolling() {
   stopExecutionPolling();
   const execution = getExecutionStatusPayload()?.latestExecutionSession;
@@ -4819,7 +5097,7 @@ async function bootstrap() {
   setActiveStep('step-setup', { syncUrl: false });
 
   try {
-    await Promise.all([loadWorkspaces(), loadProviders(), loadApprovals(), loadMissions()]);
+    await Promise.all([loadWorkspaces(), loadProviders(), loadApprovals(), loadMissions(), loadReleaseStatus()]);
     await restoreUiStateFromUrl();
   } catch (error) {
     window.alert(error.message);

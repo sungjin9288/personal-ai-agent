@@ -9,6 +9,15 @@
 - documented the closeout path in the README so execution-v1 can now be closed with `verify -> evidence -> closeout` instead of relying on terminal output and ad-hoc memory
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-15T12:30:00.000Z","id":"doclog_20260415123000_c3c5a1","type":"devlog","updatedAt":"2026-04-15T12:30:00.000Z"} -->
+## 2026-04-15 Execution V1 Release Surface Pass
+
+- date: 2026-04-15T12:30:00.000Z
+- added a dedicated `v1 마감 상태` detail tab that surfaces execution v1 deterministic smoke, open closeout checklist items, live validation gaps, and the generated evidence/closeout markdown without leaving the operator console
+- wired UI bootstrap to load release status alongside workspaces, missions, approvals, and providers so the closeout signal is immediately visible and can also feed output-stage closeout guidance
+- kept the refresh path repo-local by reusing the existing closeout/evidence scripts from the server instead of inventing a second release-summary source, which preserves a single source of truth for v1 readiness
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415164500_0c5f7c","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Execution v1 Evidence Artifact
 
