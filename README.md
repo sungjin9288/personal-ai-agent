@@ -477,6 +477,7 @@ All current smokes are deterministic and require no external API key.
   - `npm run verify:execution-v1 -- --live-local`
 
 live validation flag를 주면 해당 provider env가 있을 때만 실제 `engineering mission run → execution lease approval → foreground execution start → verification passed`까지 검증합니다. env가 없으면 그 provider는 `skipped`로 기록됩니다.
+실행 자체가 실패하더라도 `npm run evidence:execution-v1 -- --live-openai`는 중간에서 종료하지 않고, 실패 원인을 evidence와 closeout에 그대로 기록합니다.
 
 `npm run evidence:execution-v1`는 위 검증 결과를 [execution-v1-evidence.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-evidence.md)에 Markdown evidence로 저장합니다.
 

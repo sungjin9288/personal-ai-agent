@@ -34,6 +34,7 @@ const deterministicScripts = [
 ];
 
 const requestedLiveProviders = liveProviders.filter((item) => process.argv.includes(item.flag));
+const captureLiveFailures = process.argv.includes('--capture-live-failures');
 
 const summary = {
   deterministic: [],
@@ -47,7 +48,20 @@ for (const scriptName of deterministicScripts) {
 }
 
 for (const liveProvider of requestedLiveProviders) {
-  summary.liveValidation.push(await runLiveValidation(liveProvider.provider, liveProvider.envKey));
+  try {
+    summary.liveValidation.push(await runLiveValidation(liveProvider.provider, liveProvider.envKey));
+  } catch (error) {
+    if (!captureLiveFailures) {
+      throw error;
+    }
+
+    summary.ok = false;
+    summary.liveValidation.push({
+      provider: liveProvider.provider,
+      reason: error instanceof Error ? error.message : 'unknown-live-validation-error',
+      status: 'failed',
+    });
+  }
 }
 
 console.log(JSON.stringify(summary, null, 2));
@@ -125,7 +139,25 @@ async function runLiveValidation(provider, envKey) {
     args: ['mission', 'run', mission.id, '--provider', provider],
   });
 
-  assert.notEqual(runResult.status, 'failed');
+  if (runResult.status === 'failed') {
+    const missionDetail = runCli({
+      rootDir: tempRoot,
+      args: ['mission', 'show', mission.id],
+    });
+    const latestSession = Array.isArray(missionDetail.sessions) ? missionDetail.sessions.at(-1) : null;
+    throw new Error(
+      [
+        `${provider} live mission run failed`,
+        latestSession?.reviewerSummary ? `reviewerSummary=${latestSession.reviewerSummary}` : null,
+        latestSession?.latestArtifactFileName ? `artifact=${latestSession.latestArtifactFileName}` : null,
+        latestSession?.id ? `sessionId=${latestSession.id}` : null,
+        missionDetail?.mission?.status ? `missionStatus=${missionDetail.mission.status}` : null,
+      ]
+        .filter(Boolean)
+        .join(' | '),
+    );
+  }
+
   assert.equal(runResult.status, 'reviewed');
 
   const preflight = runCli({

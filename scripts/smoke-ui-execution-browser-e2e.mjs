@@ -52,6 +52,38 @@ try {
   console.error('[smoke-ui-execution-browser-e2e] open browser');
   runPw(['open', baseUrl]);
 
+  console.error('[smoke-ui-execution-browser-e2e] install dialog guards');
+  runPw([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      const installGuards = () => {
+        window.__lastAlert = '';
+        window.__lastConfirm = '';
+        window.__lastPrompt = '';
+        window.alert = (message) => {
+          window.__lastAlert = String(message || '');
+        };
+        window.confirm = (message) => {
+          window.__lastConfirm = String(message || '');
+          return true;
+        };
+        window.prompt = (message, defaultValue = '') => {
+          window.__lastPrompt = JSON.stringify({
+            defaultValue: String(defaultValue ?? ''),
+            message: String(message || ''),
+          });
+          return typeof defaultValue === 'string' ? defaultValue : '';
+        };
+      };
+      await page.addInitScript(installGuards);
+      await page.evaluate(installGuards);
+      return {
+        ok: true,
+      };
+    }`,
+  ]);
+
   const missionTitle = `Browser Execution E2E ${Date.now().toString(36)}`;
 
   console.error('[smoke-ui-execution-browser-e2e] create mission');
@@ -59,12 +91,6 @@ try {
     '--raw',
     'run-code',
     `async (page) => {
-      await page.evaluate(() => {
-        window.__lastAlert = '';
-        window.alert = (message) => {
-          window.__lastAlert = String(message || '');
-        };
-      });
       await page.waitForFunction(() => {
         const select = document.querySelector('#workspace-select');
         return Boolean(select && select.value && select.options.length > 0);

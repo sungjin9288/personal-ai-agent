@@ -7,7 +7,7 @@ const verifyScriptPath = path.join(repoDir, 'scripts', 'verify-execution-v1.mjs'
 const outputPath = path.join(repoDir, 'docs', 'execution-v1-evidence.md');
 const forwardedArgs = process.argv.slice(2);
 
-const verifyResult = spawnSync(process.execPath, [verifyScriptPath, ...forwardedArgs], {
+const verifyResult = spawnSync(process.execPath, [verifyScriptPath, '--capture-live-failures', ...forwardedArgs], {
   cwd: repoDir,
   encoding: 'utf8',
   env: process.env,
@@ -51,6 +51,11 @@ if (!verification.liveValidation || verification.liveValidation.length === 0) {
   for (const item of verification.liveValidation) {
     if (item.status === 'passed') {
       lines.push(`- ${item.provider}: passed (missionId=${item.missionId}, executionSessionId=${item.executionSessionId}, verification=${item.verificationStatus})`);
+      continue;
+    }
+
+    if (item.status === 'failed') {
+      lines.push(`- ${item.provider}: failed (${item.reason || 'unknown'})`);
       continue;
     }
 

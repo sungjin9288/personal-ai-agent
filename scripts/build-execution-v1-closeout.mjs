@@ -106,10 +106,19 @@ console.log(
 
 function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
   const passedPattern = new RegExp(`- ${provider}: passed`);
+  const failedPattern = new RegExp(`- ${provider}: failed(?: \\((.+)\\))?`);
   const skippedPattern = new RegExp(`- ${provider}: skipped`);
 
   if (passedPattern.test(evidenceMarkdown)) {
     return { checked: true, label: 'passed' };
+  }
+
+  const failedMatch = evidenceMarkdown.match(failedPattern);
+  if (failedMatch) {
+    return {
+      checked: false,
+      label: failedMatch[1] ? `failed (${failedMatch[1]})` : 'failed',
+    };
   }
 
   if (skippedPattern.test(evidenceMarkdown)) {

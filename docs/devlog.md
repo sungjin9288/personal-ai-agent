@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T17:00:00.000Z","id":"doclog_20260415170000_5d31c8","type":"devlog","updatedAt":"2026-04-15T17:00:00.000Z"} -->
+## 2026-04-15 Live Validation Failure Capture
+
+- date: 2026-04-15T17:00:00.000Z
+- changed `verify-execution-v1` so optional live validation can be captured as a structured failed result instead of aborting evidence generation, which makes `evidence:execution-v1` usable even when provider-backed runs fail after credential injection
+- enriched live failure output with mission status, latest session id, reviewer summary, and artifact file so operator triage can start from the evidence markdown instead of rerunning the whole flow blindly
+- updated closeout parsing to read `provider: failed (...)` records, so release status now distinguishes missing-env, skipped, and actual provider-backed execution failure
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T16:10:00.000Z","id":"doclog_20260415161000_f3d702","type":"devlog","updatedAt":"2026-04-15T16:10:00.000Z"} -->
 ## 2026-04-15 Live Validation Readiness Surface
 
