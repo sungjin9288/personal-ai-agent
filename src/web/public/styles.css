@@ -2232,6 +2232,11 @@ button:disabled {
   background: rgba(255, 255, 255, 0.92);
 }
 
+.release-snapshot-card.is-highlighted {
+  border-color: rgba(37, 99, 235, 0.28);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.14);
+}
+
 .release-snapshot-card.is-empty {
   border-style: dashed;
   background: rgba(248, 250, 252, 0.85);

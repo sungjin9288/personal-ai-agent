@@ -27,6 +27,7 @@ const state = {
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseLiveRefreshPreflight: null,
+  releaseFocusedHistoryId: '',
   releaseRegenerationConfirmArmed: false,
   releaseRefreshPreflight: null,
   releasePreflightResults: {},
@@ -838,6 +839,27 @@ function getLatestReleaseActionForRecommendation(item, releaseActionHistory = []
   );
 }
 
+function focusReleaseHistoryEntry(historyId = '', { scroll = true } = {}) {
+  const normalizedHistoryId = String(historyId || '').trim();
+  if (!normalizedHistoryId) {
+    return;
+  }
+  state.releaseFocusedHistoryId = normalizedHistoryId;
+  renderReleaseStatus();
+  if (!scroll || !elements.releaseStatus) {
+    return;
+  }
+  window.requestAnimationFrame(() => {
+    const target = elements.releaseStatus.querySelector(`[data-release-history-id="${CSS.escape(normalizedHistoryId)}"]`);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  });
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -1115,6 +1137,12 @@ function wireQuickActions(scope = document) {
         state.releaseLiveRefreshPreflight = null;
         renderReleaseStatus();
         setUiNotice('provider live validation 확인을 취소했습니다.');
+        return;
+      }
+
+      if (action === 'focus-release-history') {
+        focusReleaseHistoryEntry(value || '');
+        setUiNotice('최근 release action 기록으로 이동했습니다.');
         return;
       }
 
@@ -3317,6 +3345,7 @@ function renderReleaseStatus() {
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
+  const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -3571,8 +3600,17 @@ function renderReleaseStatus() {
                         </div>
                         <div class="release-provider-meta">
                           <span class="mini-badge ${getReleaseStatusBadge(item.category === 'required' ? 'blocked' : item.category === 'release' ? 'ready' : 'not-run')}">${escapeHtml(item.category || 'info')}</span>
-                          ${item.action
+                          ${latestAction
                             ? `
+                                <button
+                                  class="ghost-button"
+                                  type="button"
+                                  data-ui-action="focus-release-history"
+                                  data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                >최근 기록 보기</button>
+                              `
+                            : item.action
+                              ? `
                                 <button
                                   class="ghost-button"
                                   type="button"
@@ -3580,9 +3618,9 @@ function renderReleaseStatus() {
                                   ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
                                 >실행</button>
                               `
-                            : item.envKey
-                              ? `<span class="item-meta mono">${escapeHtml(item.envKey)}</span>`
-                              : ''}
+                              : item.envKey
+                                ? `<span class="item-meta mono">${escapeHtml(item.envKey)}</span>`
+                                : ''}
                         </div>
                       </article>
                     `;
@@ -3613,7 +3651,7 @@ function renderReleaseStatus() {
                 ? releaseActionHistory
                   .map(
                     (item) => `
-                      <article class="release-snapshot-card">
+                      <article class="release-snapshot-card ${focusedHistoryId && item.id === focusedHistoryId ? 'is-highlighted' : ''}" data-release-history-id="${escapeHtml(item.id || '')}">
                         <div class="release-provider-meta">
                           <div>
                             <div class="item-title">${escapeHtml(getReleaseActionLabel(item.action))}</div>
@@ -4949,6 +4987,9 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
 async function loadReleaseStatus() {
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
+  if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
+    state.releaseFocusedHistoryId = '';
+  }
   state.releaseLiveConfirmProvider = '';
   state.releaseLiveRefreshPreflight = null;
   state.releaseRegenerationConfirmArmed = false;

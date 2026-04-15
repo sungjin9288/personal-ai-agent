@@ -9,6 +9,15 @@
 - kept the change storage-free by deriving the queue entirely from current evidence/closeout summary, snapshot eligibility, and provider readiness instead of introducing new persisted release state
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:45:00.000Z","id":"doclog_20260416004500_93c7a1","type":"devlog","updatedAt":"2026-04-16T00:45:00.000Z"} -->
+## 2026-04-16 Recommendation Jump-To-History Pass
+
+- date: 2026-04-16T00:45:00.000Z
+- added `최근 기록 보기` on recommendation cards so the operator can jump directly from a recommended action to the matching release action history row without scanning the full history list
+- introduced a lightweight focused-history state and inline highlight style rather than a new modal or filter layer, keeping the release tab single-surface and low-friction
+- kept the linkage fully client-side by reusing the persisted history ids already present in `releaseActionHistory`, which avoids expanding the server contract for a purely navigational affordance
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:30:00.000Z","id":"doclog_20260416003000_d1b84c","type":"devlog","updatedAt":"2026-04-16T00:30:00.000Z"} -->
 ## 2026-04-16 Recommendation History Link Pass
 
