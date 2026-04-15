@@ -239,6 +239,66 @@ const executorNormalizedOutput = provider.normalizeOutput(
 assert.match(executorNormalizedOutput.nextAction, /approval/i);
 assert.match(executorNormalizedOutput.artifactContent, /## Next Action[\s\S]*approval/i);
 
+const executorContractHardenedOutput = provider.normalizeOutput(
+  {
+    output: {
+      artifactContent: `# Implementation Proposal
+
+## Next Action
+- Owner: project lead to review the proposal.
+`,
+      executionManifest: {
+        summary: 'bounded live validation manifest',
+        steps: [
+          {
+            kind: 'test',
+            title: 'Run bounded execution smoke',
+            reason: 'confirm live provider path end-to-end',
+            cwd: '.',
+            command: 'npm run smoke:execution-flow',
+            expectedOutputs: ['deterministic smoke passes'],
+            verificationTarget: 'execution flow smoke completed',
+            riskClassification: 'low',
+          },
+        ],
+      },
+      nextAction: 'Owner: project lead to review the proposal.',
+      summaryText: 'Executor produced a partial implementation proposal.',
+    },
+    role: 'executor',
+  },
+  {
+    mission: {
+      objective: 'Validate live execution path.',
+      title: 'OpenAI provider smoke',
+    },
+    pack: {
+      artifactFileName: 'implementation-proposal.md',
+      artifactTitle: 'Implementation Proposal',
+      requiredSections: ['Diagnosis', 'Implementation Plan', 'Verification Plan', 'Next Action', 'Risk Notes'],
+      riskProfile: {
+        actionKind: 'workspace-shell',
+        approvalKind: 'workspace_execution',
+        requiresApproval: true,
+        reason: 'Workspace execution must stay gated.',
+        title: 'Approval required',
+      },
+    },
+    providerRole: 'executor',
+    role: 'executor',
+    workspace: {
+      name: 'Smoke Workspace',
+      path: workspacePath,
+    },
+  },
+);
+
+assert.match(executorContractHardenedOutput.artifactContent, /## Diagnosis/);
+assert.match(executorContractHardenedOutput.artifactContent, /## Implementation Plan/);
+assert.match(executorContractHardenedOutput.artifactContent, /## Verification Plan[\s\S]*?(smoke|test)/i);
+assert.match(executorContractHardenedOutput.artifactContent, /## Risk Notes/);
+assert.match(executorContractHardenedOutput.artifactContent, /## Next Action[\s\S]*approval/i);
+
 const timeoutProvider = createOpenAIProvider({
   rootDir: repoRoot,
   env: {
@@ -300,6 +360,7 @@ console.log(
     {
       ok: true,
       mode: 'openai-provider',
+      validatedEngineeringContractHardening: true,
       requestModel: capturedRequest.body.model,
       validatedEngineeringApprovalNormalization: true,
       validatedEnvTimeoutOverride: true,

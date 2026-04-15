@@ -567,6 +567,97 @@ function upsertMarkdownSection(markdown, sectionName, content) {
   return `${source}\n\n${replacement}`;
 }
 
+function extractMarkdownSection(markdown, sectionName) {
+  const source = normalizeText(markdown);
+  if (!source) {
+    return '';
+  }
+
+  const sectionPattern = new RegExp(`## ${sectionName}\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
+  const match = source.match(sectionPattern);
+  return normalizeText(match?.[1] || '');
+}
+
+function renderExecutionManifestPlanSteps(executionManifest) {
+  const steps = Array.isArray(executionManifest?.steps) ? executionManifest.steps : [];
+  if (!steps.length) {
+    return '- Inspect the repository and identify the smallest safe execution surface.';
+  }
+
+  return steps
+    .map((step, index) => {
+      const title = normalizeText(step?.title, `Execution step ${index + 1}`);
+      const reason = normalizeText(step?.reason);
+      return `- ${title}${reason ? ` — ${reason}` : ''}`;
+    })
+    .join('\n');
+}
+
+function buildEngineeringDiagnosisSection(input, summaryText) {
+  const objective = normalizeText(input?.mission?.objective, summaryText || 'Clarify the bounded engineering objective.');
+  return [
+    `- Objective: ${objective}`,
+    '- Confirm the smallest repo-local surface required to satisfy the mission.',
+    '- Keep direct workspace mutation behind an explicit approval gate.',
+  ].join('\n');
+}
+
+function buildEngineeringVerificationPlan(executionManifest) {
+  const verificationTargets = Array.isArray(executionManifest?.steps)
+    ? executionManifest.steps
+        .map((step) => normalizeText(step?.verificationTarget))
+        .filter(Boolean)
+    : [];
+
+  const lines = [
+    '- Run the narrowest meaningful smoke/test path before requesting workspace execution.',
+    '- Validate that generated artifacts and bounded execution outputs match the expected schema.',
+  ];
+
+  for (const target of verificationTargets.slice(0, 3)) {
+    lines.push(`- Verification target: ${target}`);
+  }
+
+  return lines.join('\n');
+}
+
+function buildEngineeringRiskNotes(input) {
+  const workspacePath = normalizeText(input?.workspace?.path, 'the target workspace');
+  return [
+    '- Direct workspace mutation remains blocked until approval is granted.',
+    `- Any shell execution must stay repo-local to ${workspacePath}.`,
+    '- Keep validation deterministic and bounded before any rerun or escalation.',
+  ].join('\n');
+}
+
+function enforceEngineeringReviewContract({ artifactContent, executionManifest, input, summaryText }) {
+  const requiredSections = Array.isArray(input?.pack?.requiredSections) ? input.pack.requiredSections : [];
+  if (!requiredSections.length) {
+    return artifactContent;
+  }
+
+  let content = artifactContent;
+
+  if (!/## Diagnosis\b/i.test(content) && requiredSections.includes('Diagnosis')) {
+    content = upsertMarkdownSection(content, 'Diagnosis', buildEngineeringDiagnosisSection(input, summaryText));
+  }
+
+  if (!/## Implementation Plan\b/i.test(content) && requiredSections.includes('Implementation Plan')) {
+    content = upsertMarkdownSection(content, 'Implementation Plan', renderExecutionManifestPlanSteps(executionManifest));
+  }
+
+  const verificationSection = extractMarkdownSection(content, 'Verification Plan');
+  if (requiredSections.includes('Verification Plan') && !/(smoke|test)/i.test(verificationSection)) {
+    content = upsertMarkdownSection(content, 'Verification Plan', buildEngineeringVerificationPlan(executionManifest));
+  }
+
+  if (!/## Risk Notes\b/i.test(content) && requiredSections.includes('Risk Notes')) {
+    content = upsertMarkdownSection(content, 'Risk Notes', buildEngineeringRiskNotes(input));
+  }
+
+  return content;
+}
+
 function enforceEngineeringApprovalNextAction({ artifactContent, input, nextAction }) {
   if (!requiresExplicitWorkspaceApproval(input)) {
     return {
@@ -594,6 +685,7 @@ function normalizeExecutorOutput(output, input, providerLabel) {
   let artifactContent = normalizeText(output.artifactContent);
   let nextAction = normalizeText(output.nextAction);
   const summaryText = normalizeText(output.summaryText);
+  const executionManifest = output.executionManifest && typeof output.executionManifest === 'object' ? output.executionManifest : null;
   if (providerLabel === 'Anthropic' && summaryText && (!artifactContent || !nextAction)) {
     artifactContent = artifactContent || buildExecutorFallbackContent({ input, summaryText });
     nextAction = nextAction || 'Owner: project lead to review PRD within 48 hours.';
@@ -606,6 +698,13 @@ function normalizeExecutorOutput(output, input, providerLabel) {
       timedOut: false,
     });
   }
+
+  artifactContent = enforceEngineeringReviewContract({
+    artifactContent,
+    executionManifest,
+    input,
+    summaryText,
+  });
 
   const normalizedApprovalOutput = enforceEngineeringApprovalNextAction({
     artifactContent,
@@ -620,7 +719,7 @@ function normalizeExecutorOutput(output, input, providerLabel) {
     artifactContent,
     artifactFileName: input.pack.artifactFileName,
     artifactTitle: input.pack.artifactTitle,
-    executionManifest: output.executionManifest && typeof output.executionManifest === 'object' ? output.executionManifest : null,
+    executionManifest,
     nextAction,
     proposedAction: {
       kind: input.pack.riskProfile.actionKind,

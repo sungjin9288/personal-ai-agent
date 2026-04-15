@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T20:35:00.000Z","id":"doclog_20260415203500_34d1af","type":"devlog","updatedAt":"2026-04-15T20:35:00.000Z"} -->
+## 2026-04-15 Engineering Review Contract Hardening
+
+- date: 2026-04-15T20:35:00.000Z
+- extended executor normalization for engineering missions so reviewer-facing markdown no longer depends on provider wording for the full contract: missing `Diagnosis`, `Implementation Plan`, `Verification Plan`, or `Risk Notes` sections are now backfilled from mission context and execution manifest
+- tightened `Verification Plan` canonicalization to guarantee an explicit smoke/test path when the provider draft omits it, which aligns the executor artifact with the reviewer rule instead of trusting the raw provider output
+- expanded the deterministic OpenAI provider smoke to cover the partial-draft path, proving that a minimal provider response is upgraded into a reviewer-safe implementation proposal before live validation reruns
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T20:05:00.000Z","id":"doclog_20260415200500_b5238d","type":"devlog","updatedAt":"2026-04-15T20:05:00.000Z"} -->
 ## 2026-04-15 Live Validation Triage Structuring
 
