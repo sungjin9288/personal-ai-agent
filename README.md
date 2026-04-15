@@ -488,3 +488,11 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
   - `npm run evidence:execution-v1 -- --live-local`
 
 `npm run closeout:execution-v1`는 evidence를 다시 생성한 뒤 [execution-v1-closeout.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md)에 v1 마감 체크리스트를 기록합니다. 이 문서는 deterministic smoke 4종, browser interaction readiness, live validation 상태를 한눈에 보여 주는 closeout surface입니다.
+
+provider별 live validation을 한 번에 실행하려면 아래 helper를 사용하면 됩니다.
+
+- `npm run live:execution-v1:openai`
+- `npm run live:execution-v1:anthropic`
+- `npm run live:execution-v1:local`
+
+필수 env가 없으면 helper는 실패 대신 `missing-env` JSON과 필요한 `export` 명령 형식을 먼저 출력합니다.

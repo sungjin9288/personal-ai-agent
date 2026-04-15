@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T18:10:00.000Z","id":"doclog_20260415181000_7a1dc2","type":"devlog","updatedAt":"2026-04-15T18:10:00.000Z"} -->
+## 2026-04-15 Live Validation Helper Entry Points
+
+- date: 2026-04-15T18:10:00.000Z
+- added provider-specific `npm run live:execution-v1:*` entrypoints so the final v1 closeout path is no longer “remember two evidence/closeout commands plus a provider flag”; operators can now inject the credential and run one command per provider
+- introduced `run-execution-v1-live.mjs` to enforce env presence before execution, print a structured missing-env hint when credentials are absent, and then run evidence plus closeout sequentially when credentials exist
+- documented the helper in the README so the remaining execution-v1 gap is an operator action problem, not a script memorization problem
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T17:00:00.000Z","id":"doclog_20260415170000_5d31c8","type":"devlog","updatedAt":"2026-04-15T17:00:00.000Z"} -->
 ## 2026-04-15 Live Validation Failure Capture
 
