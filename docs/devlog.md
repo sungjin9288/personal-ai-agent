@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415161000_284b52","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Execution v1 Verification Entry Point
+
+- date: 2026-04-15T00:00:00.000Z
+- added `verify:execution-v1` as a single verification entry point that runs the deterministic execution smokes together instead of requiring operators to remember the execution-flow, execution-cli, and UI contract scripts separately
+- added optional `--live-openai`, `--live-anthropic`, and `--live-local` flags so the same verification script can extend into provider-backed end-to-end execution evidence when credentials and adapters are available, while still skipping cleanly when env is missing
+- documented the verification entry point in the README as the execution-v1 closeout path, including the distinction between deterministic local smoke and optional live provider validation
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415153000_f40d18","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Execution CLI Contract Pass
 

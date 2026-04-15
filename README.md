@@ -418,6 +418,7 @@ npm run smoke
 npm run smoke:execution-flow
 npm run smoke:execution-cli
 npm run smoke:ui-execution-console
+npm run verify:execution-v1
 npm run smoke:action-inbox
 npm run smoke:escalated-inbox
 npm run smoke:escalation-sync
@@ -461,3 +462,16 @@ npm run smoke:local-provider
 ```
 
 All current smokes are deterministic and require no external API key.
+
+`npm run verify:execution-v1`는 실행형 에이전트 v1 마감용 검증 entrypoint입니다.
+
+- 기본 실행:
+  - `smoke:execution-flow`
+  - `smoke:execution-cli`
+  - `smoke:ui-execution-console`
+- 선택적 live validation:
+  - `npm run verify:execution-v1 -- --live-openai`
+  - `npm run verify:execution-v1 -- --live-anthropic`
+  - `npm run verify:execution-v1 -- --live-local`
+
+live validation flag를 주면 해당 provider env가 있을 때만 실제 `engineering mission run → execution lease approval → foreground execution start → verification passed`까지 검증합니다. env가 없으면 그 provider는 `skipped`로 기록됩니다.
