@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T19:35:00.000Z","id":"doclog_20260415193500_8fbc42","type":"devlog","updatedAt":"2026-04-15T19:35:00.000Z"} -->
+## 2026-04-15 Engineering Approval Gate Canonicalization
+
+- date: 2026-04-15T19:35:00.000Z
+- after OpenAI live validation advanced past timeout, the remaining failure moved to reviewer mismatch because the executor draft omitted the explicit approval gate sentence that the engineering rubric requires
+- aligned the executor normalization path with the reviewer rubric by canonicalizing `Next Action` for engineering missions that require `workspace_execution` approval, so provider wording drift no longer creates a false fail when the rest of the proposal is valid
+- extended the deterministic OpenAI smoke to cover this canonicalization path, asserting that a draft with a vague next action is rewritten to include the required approval-before-execution instruction
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T19:15:00.000Z","id":"doclog_20260415191500_4dd87e","type":"devlog","updatedAt":"2026-04-15T19:15:00.000Z"} -->
 ## 2026-04-15 OpenAI Live Helper Timeout Default
 

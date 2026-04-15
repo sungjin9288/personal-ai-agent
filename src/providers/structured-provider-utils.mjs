@@ -540,6 +540,56 @@ ${sections}
 `;
 }
 
+function requiresExplicitWorkspaceApproval(input) {
+  return Boolean(
+    input?.pack?.riskProfile?.requiresApproval &&
+      normalizeText(input?.pack?.riskProfile?.approvalKind) === 'workspace_execution',
+  );
+}
+
+function buildApprovalNextAction(input) {
+  const workspacePath = normalizeText(input?.workspace?.path, 'the target workspace');
+  return `Request explicit approval before running shell commands or mutating files in ${workspacePath}.`;
+}
+
+function upsertMarkdownSection(markdown, sectionName, content) {
+  const source = normalizeText(markdown);
+  if (!source) {
+    return `## ${sectionName}\n${content}`;
+  }
+
+  const sectionPattern = new RegExp(`## ${sectionName}\\n[\\s\\S]*?(?=\\n## |$)`, 'i');
+  const replacement = `## ${sectionName}\n${content}`;
+  if (sectionPattern.test(source)) {
+    return source.replace(sectionPattern, replacement);
+  }
+
+  return `${source}\n\n${replacement}`;
+}
+
+function enforceEngineeringApprovalNextAction({ artifactContent, input, nextAction }) {
+  if (!requiresExplicitWorkspaceApproval(input)) {
+    return {
+      artifactContent,
+      nextAction,
+    };
+  }
+
+  const approvalRequired = /approval/i.test(nextAction) && /## Next Action[\s\S]*?approval/i.test(artifactContent);
+  if (approvalRequired) {
+    return {
+      artifactContent,
+      nextAction,
+    };
+  }
+
+  const approvalNextAction = buildApprovalNextAction(input);
+  return {
+    artifactContent: upsertMarkdownSection(artifactContent, 'Next Action', approvalNextAction),
+    nextAction: approvalNextAction,
+  };
+}
+
 function normalizeExecutorOutput(output, input, providerLabel) {
   let artifactContent = normalizeText(output.artifactContent);
   let nextAction = normalizeText(output.nextAction);
@@ -556,6 +606,14 @@ function normalizeExecutorOutput(output, input, providerLabel) {
       timedOut: false,
     });
   }
+
+  const normalizedApprovalOutput = enforceEngineeringApprovalNextAction({
+    artifactContent,
+    input,
+    nextAction,
+  });
+  artifactContent = normalizedApprovalOutput.artifactContent;
+  nextAction = normalizedApprovalOutput.nextAction;
 
   return {
     adaptationNotes: normalizeStringArray(output.adaptationNotes),
