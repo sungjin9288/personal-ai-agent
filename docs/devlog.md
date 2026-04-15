@@ -1162,6 +1162,15 @@
 - kept the change intentionally lightweight by reusing existing mission/session helpers instead of adding a new dashboard block, preserving the single-screen flow while improving selection-to-workspace linkage
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415105500_12e44a","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 View Breadcrumb Pass
+
+- date: 2026-04-15T00:00:00.000Z
+- extended the `선택한 미션` bridge strip with `현재 보기 / 세션 포커스 / 결과물 포커스` crumbs so operators can read the exact URL-synced navigation context without inspecting the query string
+- reused existing mission/session/artifact selection state instead of introducing a new inspector block, keeping the single-screen flow intact while making deep-linked state visible
+- kept the addition lightweight and text-first so the breadcrumb clarifies navigation context without competing with the main work surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415102000_24a51b","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Share/Reset View Pass
 

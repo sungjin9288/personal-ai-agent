@@ -706,6 +706,18 @@ function getStepLabel(stepId, { short = false } = {}) {
   return short ? meta.shortLabel : meta.label;
 }
 
+function getDetailTabLabel(tabId) {
+  return (
+    {
+      artifacts: '결과물',
+      config: '입력값과 설정',
+      harness: '하네스',
+      reviews: '검토 이력',
+      runs: '실행 기록',
+    }[tabId] || '세부 보기'
+  );
+}
+
 function summarizeText(value, fallback = '') {
   const normalized = String(value || '')
     .replace(/\s+/g, ' ')
@@ -1813,6 +1825,17 @@ function renderSelectionBridge() {
   const harnessLabel = harnessState.topRecommendation
     ? harnessState.topRecommendation.title
     : `권장 조치 없음 · 메모 ${harnessState.memoryTotalCount}개`;
+  const currentViewArtifacts = state.currentSessionPayload?.artifacts || [];
+  const selectedArtifactLabel =
+    state.selectedArtifactId && state.artifactsById.has(state.selectedArtifactId)
+      ? state.artifactsById.get(state.selectedArtifactId)?.artifact?.title ||
+        state.artifactsById.get(state.selectedArtifactId)?.artifact?.fileName ||
+        state.selectedArtifactId
+      : null;
+  const selectedSessionLabel = latestSession
+    ? `${formatDate(latestSession.startedAt)} · ${getDisplayLabel(latestSession.provider || latestSession.id, latestSession.provider || latestSession.id)}`
+    : '세션 없음';
+  const selectedArtifactFallback = getArtifactLabel(getPrimaryArtifact(currentViewArtifacts)) || '결과물 없음';
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main">
@@ -1845,6 +1868,20 @@ function renderSelectionBridge() {
       <div class="selection-bridge-pill ${harnessState.topRecommendation ? 'is-active' : ''}">
         <span>하네스 상태</span>
         <strong>${escapeHtml(harnessLabel)}</strong>
+      </div>
+    </div>
+    <div class="selection-bridge-view">
+      <div class="selection-bridge-crumb">
+        <span>현재 보기</span>
+        <strong>${escapeHtml(getStepLabel(state.activeStep, { short: true }))} · ${escapeHtml(getDetailTabLabel(state.activeDetailTab))}</strong>
+      </div>
+      <div class="selection-bridge-crumb">
+        <span>세션 포커스</span>
+        <strong>${escapeHtml(selectedSessionLabel)}</strong>
+      </div>
+      <div class="selection-bridge-crumb">
+        <span>결과물 포커스</span>
+        <strong>${escapeHtml(selectedArtifactLabel || selectedArtifactFallback)}</strong>
       </div>
     </div>
   `;
