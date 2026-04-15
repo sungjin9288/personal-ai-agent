@@ -498,18 +498,18 @@ function buildExecutionV1RefreshPreflight(args = []) {
     action: `live-${liveProvider}`,
     allowed,
     checkedAt: new Date().toISOString(),
-    confirmRequired: false,
+    confirmRequired: true,
     notes: [
       providerPreflight.status === 'ready-but-missing-env'
         ? `${providerPreflight.envKey}가 필요합니다.`
         : providerPreflight.status === 'blocked'
           ? 'deterministic readiness가 아직 닫히지 않았습니다.'
-          : 'live validation 실행 가능 상태입니다.',
+          : 'live validation 실행 가능 상태이며, current surface rewrite 전에 명시적 확인이 필요합니다.',
     ],
     provider: liveProvider,
     providerPreflight,
     summary: allowed
-      ? `${liveProvider} live validation과 current surface regeneration을 실행할 수 있습니다.`
+      ? `${liveProvider} live validation과 current surface regeneration을 실행할 수 있습니다. 실행 전 명시적 확인이 필요합니다.`
       : `${liveProvider} live validation은 아직 실행할 수 없습니다.`,
   };
 }
@@ -755,11 +755,21 @@ async function handleApi(request, response, url) {
     const body = await readJsonBody(request);
     const args = buildLiveValidationArgs(body);
     const preflight = buildExecutionV1RefreshPreflight(args);
+    const isLiveValidationRefresh = Boolean(args.length);
     const isCurrentSurfaceRefresh = !args.length;
     if (!preflight.allowed) {
       sendJson(response, 409, {
         error: 'refresh-not-allowed',
         message: preflight.summary,
+        preflight,
+        status: buildExecutionV1Status(),
+      });
+      return;
+    }
+    if (isLiveValidationRefresh && !body.confirmLiveValidation) {
+      sendJson(response, 409, {
+        error: 'live-validation-confirmation-required',
+        message: `${preflight.provider || 'provider'} live validation 실행은 명시적 확인이 필요합니다.`,
         preflight,
         status: buildExecutionV1Status(),
       });

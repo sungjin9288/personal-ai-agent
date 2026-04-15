@@ -25,6 +25,8 @@ const state = {
   missionTimeline: null,
   missions: [],
   providers: [],
+  releaseLiveConfirmProvider: '',
+  releaseLiveRefreshPreflight: null,
   releaseRegenerationConfirmArmed: false,
   releaseRefreshPreflight: null,
   releasePreflightResults: {},
@@ -1041,6 +1043,14 @@ function wireQuickActions(scope = document) {
         state.releaseSnapshotPreflight = null;
         renderReleaseStatus();
         setUiNotice('release snapshot 고정 확인을 취소했습니다.');
+        return;
+      }
+
+      if (action === 'cancel-refresh-release-status-live') {
+        state.releaseLiveConfirmProvider = '';
+        state.releaseLiveRefreshPreflight = null;
+        renderReleaseStatus();
+        setUiNotice('provider live validation 확인을 취소했습니다.');
         return;
       }
 
@@ -3235,10 +3245,12 @@ function renderReleaseStatus() {
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const refreshPlan = release.refreshPlan || null;
+  const liveRefreshPreflight = state.releaseLiveRefreshPreflight || null;
   const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
   const releaseSnapshotPreflight = state.releaseSnapshotPreflight || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
+  const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -3481,6 +3493,7 @@ function renderReleaseStatus() {
                   (item) => `
                     ${(() => {
                       const preflight = state.releasePreflightResults?.[item.provider] || null;
+                      const liveConfirmArmed = liveConfirmProvider === item.provider;
                       const preflightStatus = preflight?.status || 'not-run';
                       const preflightSummary = preflight
                         ? preflight.status === 'ready-for-live-validation'
@@ -3509,15 +3522,34 @@ function renderReleaseStatus() {
                           data-ui-provider="${escapeHtml(item.provider)}"
                         >preflight 실행</button>
                         <button
-                          class="ghost-button"
+                          class="${liveConfirmArmed ? 'primary-button' : 'ghost-button'}"
                           type="button"
                           data-ui-action="refresh-release-status-live"
                           data-ui-provider="${escapeHtml(item.provider)}"
                           ${item.ready ? '' : 'disabled'}
-                        >${escapeHtml(item.ready ? 'live 검증 실행' : 'env 필요')}</button>
+                        >${escapeHtml(item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
+                        ${liveConfirmArmed
+                          ? `
+                              <button
+                                class="ghost-button"
+                                type="button"
+                                data-ui-action="cancel-refresh-release-status-live"
+                              >현재 live 검증 취소</button>
+                            `
+                          : ''}
                       </div>
                       <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다.`)}</p>
                       <p class="item-meta">${escapeHtml(preflightSummary)}</p>
+                      ${liveConfirmArmed && liveRefreshPreflight
+                        ? `
+                            <div class="release-stale-note">
+                              <div class="release-stale-line">${escapeHtml(liveRefreshPreflight.summary || 'live validation 확인이 준비되었습니다.')}</div>
+                              ${(liveRefreshPreflight.notes || [])
+                                .map((note) => `<div class="release-stale-line">${escapeHtml(note)}</div>`)
+                                .join('')}
+                            </div>
+                          `
+                        : ''}
                     </article>
                   `;
                     })()}
@@ -3662,7 +3694,11 @@ function renderReleaseStatus() {
       if (!provider) {
         return;
       }
-      await refreshReleaseStatus(provider);
+      if (state.releaseLiveConfirmProvider === provider) {
+        await refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true });
+        return;
+      }
+      await armReleaseLiveConfirm(provider);
     });
   });
 }
@@ -4762,6 +4798,8 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
 async function loadReleaseStatus() {
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
+  state.releaseLiveConfirmProvider = '';
+  state.releaseLiveRefreshPreflight = null;
   state.releaseRegenerationConfirmArmed = false;
   state.releaseRefreshPreflight = null;
   state.releaseSnapshotConfirmArmed = false;
@@ -4814,10 +4852,18 @@ async function armReleaseRegenerationConfirm() {
   }
 }
 
-async function refreshReleaseStatusWithOptions(liveMode = '', { confirmCurrentSurfaceRewrite = false } = {}) {
+async function refreshReleaseStatusWithOptions(
+  liveMode = '',
+  {
+    confirmCurrentSurfaceRewrite = false,
+    confirmLiveValidation = false,
+  } = {},
+) {
   try {
     const normalizedLiveMode = String(liveMode || '').trim();
     const isLiveRun = Boolean(normalizedLiveMode);
+    state.releaseLiveConfirmProvider = '';
+    state.releaseLiveRefreshPreflight = null;
     state.releaseRegenerationConfirmArmed = false;
     state.releaseRefreshPreflight = null;
     state.releaseSnapshotConfirmArmed = false;
@@ -4830,6 +4876,7 @@ async function refreshReleaseStatusWithOptions(liveMode = '', { confirmCurrentSu
     const payload = await api('/api/execution-v1/refresh', {
       body: JSON.stringify({
         confirmCurrentSurfaceRewrite,
+        confirmLiveValidation,
         liveAnthropic: normalizedLiveMode === 'anthropic',
         liveLocal: normalizedLiveMode === 'local',
         liveOpenAI: normalizedLiveMode === 'openai',
@@ -4879,6 +4926,41 @@ async function runReleasePreflight(provider = '') {
     setUiNotice(`${normalizedProvider} preflight를 완료했습니다. (${payload.preflight.status})`);
   } catch (error) {
     window.alert(error.message || 'release preflight 실행에 실패했습니다.');
+  }
+}
+
+async function armReleaseLiveConfirm(provider = '') {
+  try {
+    const normalizedProvider = String(provider || '').trim();
+    if (!normalizedProvider) {
+      return;
+    }
+    setUiNotice(`${normalizedProvider} live validation preflight를 확인 중입니다.`);
+    const payload = await api('/api/execution-v1/refresh/preflight', {
+      body: JSON.stringify({
+        liveAnthropic: normalizedProvider === 'anthropic',
+        liveLocal: normalizedProvider === 'local',
+        liveOpenAI: normalizedProvider === 'openai',
+      }),
+      method: 'POST',
+    });
+    if (!payload.preflight?.allowed) {
+      window.alert(payload.preflight?.summary || `${normalizedProvider} live validation preflight가 차단되었습니다.`);
+      return;
+    }
+    state.releaseStatus = payload.status || state.releaseStatus;
+    state.releaseLiveConfirmProvider = normalizedProvider;
+    state.releaseLiveRefreshPreflight = payload.preflight;
+    state.releasePreflightResults = {
+      ...state.releasePreflightResults,
+      [normalizedProvider]: payload.preflight.providerPreflight || state.releasePreflightResults?.[normalizedProvider] || null,
+    };
+    renderReleaseStatus();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    setUiNotice(`${normalizedProvider} live validation 확인이 준비되었습니다. impact를 확인한 뒤 live 검증 확인을 눌러 주세요.`);
+  } catch (error) {
+    window.alert(error.message || 'provider live validation preflight 확인에 실패했습니다.');
   }
 }
 

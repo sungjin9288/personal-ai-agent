@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T01:15:00.000Z","id":"doclog_20260416011500_b2df83","type":"devlog","updatedAt":"2026-04-16T01:15:00.000Z"} -->
+## 2026-04-16 Live Validation Confirm Guard
+
+- date: 2026-04-16T01:15:00.000Z
+- added explicit confirmation for provider-backed release refresh so `/api/execution-v1/refresh` no longer runs live validation from a single click
+- reused `/api/execution-v1/refresh/preflight` as the exact readiness check for provider live validation, then armed the UI with a provider-scoped confirm state before the actual refresh call
+- aligned the three mutating release actions under the same operator contract: `current surface 재생성`, `release snapshot 고정`, and `provider live validation` now all follow `preflight -> confirm -> execute`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:45:00.000Z","id":"doclog_20260416004500_7ab31d","type":"devlog","updatedAt":"2026-04-16T00:45:00.000Z"} -->
 ## 2026-04-16 Snapshot Freeze Preflight Guard
 
