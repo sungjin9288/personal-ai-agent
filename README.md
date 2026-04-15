@@ -505,6 +505,7 @@ live validation 자체가 실패하면 helper는 `status=failed`와 함께 evide
 실패 이유가 `provider live mission run failed | rootDir=... | missionId=...` 형식이면 helper와 evidence 문서가 같은 값을 구조화해서 `failure`, `rootDir`, `workspaceId`, `missionId`, `sessionId`, `artifact`, `reviewerSummary`로 다시 보여 줍니다. reviewer report와 implementation proposal이 temp root에 남아 있으면 helper는 `liveFailureTriage` 아래에 `reviewerReportPath`, `implementationProposalPath`, `failedChecks`, `findings`, `nextActionSnippet`까지 같이 출력합니다. rerun 뒤에는 터미널과 [execution-v1-evidence.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-evidence.md)만 보면 바로 triage에 들어갈 수 있습니다.
 OpenAI helper는 live validation rerun에서 planner timeout 재발을 줄이기 위해 `OPENAI_RUN_TIMEOUT_MS=60000`을 기본 child env로 자동 주입합니다. 이미 값을 export한 경우에는 사용자가 지정한 값을 그대로 우선합니다.
 운영 콘솔의 `v1 마감 상태` 탭은 evidence/closeout 문서가 현재 HEAD를 가리키는지도 같이 보여 줍니다. 현재 commit과 문서가 기록한 commit이 다르거나, 두 문서가 워크트리에서 수정된 상태면 `evidence 갱신 필요`로 표시되며 closeout ready 상태로 계산하지 않습니다.
+`npm run live:execution-v1:openai` helper는 이제 live evidence를 한 번만 생성하고, closeout은 그 evidence 파일을 재사용합니다. 즉, 성공한 first live run 뒤에 closeout 단계가 second live run을 다시 실행해 결과를 덮어쓰지 않습니다.
 
 OpenAI live validation은 planner/executor 단계가 provider 응답 시간에 더 민감하므로 기본 `runTimeoutMs`를 45초로 맞췄습니다. 더 긴 응답 시간을 허용해야 하면 아래 env override를 같은 터미널 세션에 추가해서 rerun하면 됩니다.
 

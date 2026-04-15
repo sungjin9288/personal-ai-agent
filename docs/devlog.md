@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T22:25:00.000Z","id":"doclog_20260415222500_5c2d72","type":"devlog","updatedAt":"2026-04-15T22:25:00.000Z"} -->
+## 2026-04-15 Live Closeout Evidence Reuse
+
+- date: 2026-04-15T22:25:00.000Z
+- found a release orchestration bug where `run-execution-v1-live` executed a successful live evidence pass first, then invoked `build-execution-v1-closeout` in a way that re-ran evidence and could overwrite the just-passed result with a second failing live run
+- added `--reuse-existing-evidence` / `--evidence-path` support to the closeout builder so closeout generation can read the already-produced evidence markdown instead of implicitly spawning a second provider validation
+- updated the live helper to pass the freshly written evidence path into closeout generation, which keeps `live:execution-v1:*` aligned with the operator expectation that one rerun should produce one coherent evidence/closeout pair
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T22:10:00.000Z","id":"doclog_20260415221000_2f2f7c","type":"devlog","updatedAt":"2026-04-15T22:10:00.000Z"} -->
 ## 2026-04-15 Provider Manifest Placeholder Command Guard
 

@@ -6,19 +6,50 @@ import { parseLiveValidationReason, readLiveValidationTriage } from './live-vali
 const repoDir = process.cwd();
 const evidenceScriptPath = path.join(repoDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const checklistPath = path.join(repoDir, 'docs', 'execution-v1-closeout.md');
+const evidencePathArgIndex = process.argv.indexOf('--evidence-path');
+const explicitEvidencePath = evidencePathArgIndex >= 0 ? process.argv[evidencePathArgIndex + 1] : '';
+const reuseExistingEvidence = process.argv.includes('--reuse-existing-evidence');
+const forwardedArgs = process.argv
+  .slice(2)
+  .filter((arg, index, values) => {
+    if (arg === '--reuse-existing-evidence') {
+      return false;
+    }
+    if (arg === '--evidence-path') {
+      return false;
+    }
+    if (index > 0 && values[index - 1] === '--evidence-path') {
+      return false;
+    }
+    return true;
+  });
 
-const evidenceRun = spawnSync(process.execPath, [evidenceScriptPath, ...process.argv.slice(2)], {
-  cwd: repoDir,
-  encoding: 'utf8',
-  env: process.env,
-});
+let evidencePath = explicitEvidencePath ? path.resolve(repoDir, explicitEvidencePath) : path.join(repoDir, 'docs', 'execution-v1-evidence.md');
+let evidenceResult = explicitEvidencePath
+  ? {
+      outputPath: evidencePath,
+    }
+  : null;
 
-if (evidenceRun.status !== 0) {
-  throw new Error(`build-execution-v1-evidence failed\n${evidenceRun.stderr || evidenceRun.stdout}`);
+if (!reuseExistingEvidence && !explicitEvidencePath) {
+  const evidenceRun = spawnSync(process.execPath, [evidenceScriptPath, ...forwardedArgs], {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (evidenceRun.status !== 0) {
+    throw new Error(`build-execution-v1-evidence failed\n${evidenceRun.stderr || evidenceRun.stdout}`);
+  }
+
+  evidenceResult = JSON.parse(String(evidenceRun.stdout || '{}'));
+  evidencePath = evidenceResult.outputPath;
 }
 
-const evidenceResult = JSON.parse(String(evidenceRun.stdout || '{}'));
-const evidencePath = evidenceResult.outputPath;
+if (!fs.existsSync(evidencePath)) {
+  throw new Error(`execution-v1 evidence file not found\n${evidencePath}`);
+}
+
 const evidenceBody = fs.readFileSync(evidencePath, 'utf8');
 const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
@@ -108,6 +139,7 @@ console.log(
       ok: true,
       checklistPath,
       evidencePath,
+      reusedEvidence: Boolean(reuseExistingEvidence || explicitEvidencePath),
       generatedAt,
     },
     null,

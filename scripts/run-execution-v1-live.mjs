@@ -57,7 +57,11 @@ if (!process.env[config.envKey]) {
 
 const childEnv = buildChildEnv(config);
 const evidenceResult = runJsonScript(evidenceScriptPath, [config.flag], childEnv);
-const closeoutResult = runJsonScript(closeoutScriptPath, [config.flag], childEnv);
+const closeoutResult = runJsonScript(
+  closeoutScriptPath,
+  ['--reuse-existing-evidence', '--evidence-path', evidenceResult.outputPath, config.flag],
+  childEnv,
+);
 const liveResult = Array.isArray(evidenceResult.liveValidation)
   ? evidenceResult.liveValidation.find((item) => item.provider === provider) || null
   : null;
