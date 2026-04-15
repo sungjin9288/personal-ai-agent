@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:05:00.000Z","id":"doclog_20260416000500_2b8719","type":"devlog","updatedAt":"2026-04-16T00:05:00.000Z"} -->
+## 2026-04-16 Current Surface Regeneration Preview
+
+- date: 2026-04-16T00:05:00.000Z
+- extended execution-v1 status with a refresh plan so the release tab can describe exactly what current surface regeneration will do before the operator triggers it
+- surfaced rewrite targets, deterministic verification rerun behavior, provider live validation default behavior, and snapshot non-mutation in the same release panel, which turns regenerate from a vague button into a concrete operator action
+- kept the contract local-first and read-only by default: the preview is part of status payload, while the actual regenerate path still goes through the explicit current surface 재생성 action
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T23:50:00.000Z","id":"doclog_20260415235000_f91b88","type":"devlog","updatedAt":"2026-04-15T23:50:00.000Z"} -->
 ## 2026-04-15 Release Reload vs Regenerate Split
 

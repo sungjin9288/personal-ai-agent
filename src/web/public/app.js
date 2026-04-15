@@ -3206,6 +3206,7 @@ function renderReleaseStatus() {
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
+  const refreshPlan = release.refreshPlan || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const snapshot = release.snapshot || null;
@@ -3307,6 +3308,16 @@ function renderReleaseStatus() {
                 <div class="release-stale-note">
                   <div class="release-stale-line">verified snapshot 기준 필수 closeout ${escapeHtml(String(baseline.checklistOpen || 0))}건 · 필수 gap ${escapeHtml(String(baseline.blockedItems || 0))}건입니다.</div>
                   <div class="release-stale-line">snapshot commit ${escapeHtml(baseline.commit || '-')} · archived ${escapeHtml(formatDate(baseline.archivedAt || baseline.generatedAt || ''))}</div>
+                </div>
+              `
+            : ''}
+          ${refreshPlan
+            ? `
+                <div class="release-stale-note">
+                  <div class="release-stale-line">${escapeHtml(refreshPlan.summary || 'current surface regeneration preview를 확인할 수 없습니다.')}</div>
+                  ${(refreshPlan.notes || [])
+                    .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
+                    .join('')}
                 </div>
               `
             : ''}
@@ -3454,6 +3465,45 @@ function renderReleaseStatus() {
                 )
                 .join('')}
             </div>
+            ${refreshPlan
+              ? `
+                  <article class="release-snapshot-card">
+                    <div class="item-title">Current Surface 재생성 영향</div>
+                    <div class="release-doc-status-list">
+                      ${(refreshPlan.affectsPaths || [])
+                        .map(
+                          (item) => `
+                            <div class="harness-row">
+                              <div>
+                                <div class="item-title">rewrite target</div>
+                                <div class="item-meta mono">${escapeHtml(item)}</div>
+                              </div>
+                            </div>
+                          `,
+                        )
+                        .join('')}
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">deterministic verification</div>
+                          <div class="item-meta">${escapeHtml(refreshPlan.rerunsDeterministicVerification ? '다시 실행됨' : '다시 실행되지 않음')}</div>
+                        </div>
+                      </div>
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">provider live validation</div>
+                          <div class="item-meta">${escapeHtml(refreshPlan.rerunsLiveValidation ? '재실행됨' : '기본 regenerate에서는 재실행되지 않음')}</div>
+                        </div>
+                      </div>
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">release snapshot</div>
+                          <div class="item-meta">${escapeHtml(refreshPlan.snapshotChanges ? '같이 갱신됨' : '자동으로 변경되지 않음')}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                `
+              : ''}
             <div class="release-stale-note">
               <div class="release-stale-line">${escapeHtml(snapshotEligibility.allowed ? 'current HEAD 기준 evidence/closeout가 fresh해서 snapshot을 바로 고정할 수 있습니다.' : snapshotEligibility.reason || '현재 상태에서는 snapshot을 고정할 수 없습니다.')}</div>
             </div>

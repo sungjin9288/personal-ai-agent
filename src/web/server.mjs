@@ -342,6 +342,26 @@ function buildExecutionV1Status() {
       : hasLocalArtifactChanges
       ? 'local-current'
       : 'current';
+  const refreshPlan = {
+    allowed: true,
+    affectsPaths: [evidenceDocPath, closeoutDocPath],
+    rerunsDeterministicVerification: true,
+    rerunsLiveValidation: false,
+    rewritesCurrentSurface: true,
+    snapshotChanges: false,
+    summary:
+      'current surface 재생성은 deterministic verification을 다시 실행한 뒤 evidence와 closeout markdown을 현재 HEAD 기준으로 다시 씁니다.',
+    notes: [
+      'verified snapshot은 그대로 유지되고, current surface evidence/closeout만 다시 생성됩니다.',
+      'provider live validation은 provider별 live action을 눌렀을 때만 다시 실행됩니다.',
+      hasLocalArtifactChanges
+        ? '현재 로컬에서 수정된 evidence/closeout 문서는 재생성 결과로 덮어써질 수 있습니다.'
+        : '현재 evidence/closeout 문서가 워크트리에서 추가로 수정된 상태는 아닙니다.',
+      stale
+        ? '현재 stale reason이 남아 있어도 재생성은 가능하며, 최신 HEAD 기준 상태를 다시 계산합니다.'
+        : '현재 HEAD 기준으로 다시 계산해도 같은 readiness를 유지해야 합니다.',
+    ],
+  };
 
   return {
     artifactState,
@@ -368,6 +388,7 @@ function buildExecutionV1Status() {
     localArtifactNotes,
     notes: currentArtifacts.notes,
     providerReadiness,
+    refreshPlan,
     snapshotEligibility: {
       allowed: Boolean(
         !stale
