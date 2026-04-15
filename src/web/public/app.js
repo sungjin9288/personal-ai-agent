@@ -3190,6 +3190,19 @@ function renderReleaseStatus() {
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
+  const staleReasons = release.staleReasons || [];
+  const docStatuses = release.docStatuses || [];
+  const staleStateLabel = release.stale ? '갱신 필요' : '최신';
+  const releaseHeadline = release.stale
+    ? 'execution v1 evidence 갱신 필요'
+    : summary.ready
+      ? 'execution v1 closeout ready'
+      : 'execution v1 closeout 미완료';
+  const releaseCopy = release.stale
+    ? '현재 HEAD와 evidence/closeout 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
+    : summary.ready
+      ? 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.'
+      : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.';
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
@@ -3207,6 +3220,10 @@ function renderReleaseStatus() {
           <strong>${escapeHtml(String(summary.blockedItems || 0))}건</strong>
         </div>
         <div class="summary-chip">
+          <span>evidence 상태</span>
+          <strong>${escapeHtml(staleStateLabel)}</strong>
+        </div>
+        <div class="summary-chip">
           <span>최종 갱신</span>
           <strong>${escapeHtml(formatDate(release.updatedAt))}</strong>
         </div>
@@ -3215,8 +3232,17 @@ function renderReleaseStatus() {
       <section class="release-callout">
         <div>
           <p class="section-kicker">릴리스 상태</p>
-          <h4>${escapeHtml(summary.ready ? 'execution v1 closeout ready' : 'execution v1 closeout 미완료')}</h4>
-          <p>${escapeHtml(summary.ready ? 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.' : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.')}</p>
+          <h4>${escapeHtml(releaseHeadline)}</h4>
+          <p>${escapeHtml(releaseCopy)}</p>
+          ${release.stale
+            ? `
+                <div class="release-stale-note">
+                  ${staleReasons
+                    .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
+                    .join('')}
+                </div>
+              `
+            : ''}
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status">마감 상태 새로고침</button>
@@ -3237,6 +3263,14 @@ function renderReleaseStatus() {
             <span class="item-meta">branch ${escapeHtml(release.branch || '-')}</span>
             <span class="item-meta mono">${escapeHtml(release.commit || '-')}</span>
           </div>
+          ${(release.currentCommit || release.currentBranch)
+            ? `
+                <div class="release-meta release-meta-secondary">
+                  <span class="item-meta">current ${escapeHtml(release.currentBranch || '-')}</span>
+                  <span class="item-meta mono">${escapeHtml(release.currentCommit || '-')}</span>
+                </div>
+              `
+            : ''}
           <div class="release-checklist">
             ${checklist
               .map(
@@ -3267,6 +3301,26 @@ function renderReleaseStatus() {
               )
               .join('')}
           </div>
+          ${docStatuses.length
+            ? `
+                <div class="release-doc-status-list">
+                  ${docStatuses
+                    .map(
+                      (item) => `
+                        <div class="harness-row">
+                          <div>
+                            <div class="item-title">${escapeHtml(item.path)}</div>
+                          </div>
+                          <div class="harness-row-meta">
+                            <span class="mini-badge status-failed">${escapeHtml(item.status)}</span>
+                          </div>
+                        </div>
+                      `,
+                    )
+                    .join('')}
+                </div>
+              `
+            : ''}
         </section>
 
         <section class="surface">

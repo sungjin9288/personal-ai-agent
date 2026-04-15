@@ -2107,7 +2107,7 @@ button:disabled {
 
 .release-summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
 }
 
@@ -2133,6 +2133,18 @@ button:disabled {
   line-height: 1.55;
 }
 
+.release-stale-note {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(214, 102, 44, 0.22);
+  background: rgba(214, 102, 44, 0.08);
+}
+
+.release-stale-line + .release-stale-line {
+  margin-top: 6px;
+}
+
 .release-detail-grid {
   align-items: stretch;
 }
@@ -2141,6 +2153,10 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.release-meta-secondary {
+  margin-top: 8px;
 }
 
 .release-checklist-item {
@@ -2203,6 +2219,12 @@ button:disabled {
   flex-direction: column;
   gap: 4px;
   margin-bottom: 10px;
+}
+
+.release-doc-status-list {
+  margin-top: 14px;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  padding-top: 14px;
 }
 
 .filter-chip strong {

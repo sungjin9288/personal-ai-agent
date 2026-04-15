@@ -77,6 +77,45 @@ function readMarkdownFile(filePath) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
 }
 
+function runGit(args) {
+  const result = spawnSync('git', args, {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    return '';
+  }
+
+  return String(result.stdout || '').trim();
+}
+
+function getTrackedFileStatus(filePaths = []) {
+  if (!filePaths.length) {
+    return [];
+  }
+
+  const result = spawnSync('git', ['status', '--porcelain', '--', ...filePaths], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    return [];
+  }
+
+  return String(result.stdout || '')
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter(Boolean)
+    .map((line) => ({
+      path: line.slice(3).trim(),
+      status: line.slice(0, 2).trim() || '??',
+    }));
+}
+
 function extractBulletValue(markdown, label) {
   const match = String(markdown || '').match(new RegExp(`^- ${label}:\\s+(.+)$`, 'm'));
   return match ? String(match[1] || '').trim() : '';
@@ -168,6 +207,8 @@ function extractDeterministicItems(markdown) {
 function buildExecutionV1Status() {
   const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
   const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
+  const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
+  const currentCommit = runGit(['rev-parse', 'HEAD']);
   const checklist = extractChecklistItems(closeoutMarkdown);
   const deterministic = extractDeterministicItems(evidenceMarkdown);
   const liveValidation = extractLiveValidationItems(evidenceMarkdown);
@@ -182,19 +223,38 @@ function buildExecutionV1Status() {
     status: process.env[item.envKey] ? 'ready' : 'missing-env',
   }));
   const statusMap = extractStatusMap(closeoutMarkdown);
+  const generatedCommit = extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit');
+  const generatedBranch = extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch');
+  const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
+  const staleReasons = [];
+
+  if (!evidenceMarkdown || !closeoutMarkdown) {
+    staleReasons.push('evidence 또는 closeout 문서가 아직 생성되지 않았습니다.');
+  }
+  if (generatedCommit && currentCommit && generatedCommit !== currentCommit) {
+    staleReasons.push('현재 HEAD와 evidence/closeout이 가리키는 commit이 다릅니다.');
+  }
+  if (docStatuses.length) {
+    staleReasons.push('evidence 또는 closeout 문서가 워크트리에서 수정된 상태입니다.');
+  }
+
+  const stale = staleReasons.length > 0;
   const checklistOpen = checklist.filter((item) => !item.done).length;
   const deterministicPassed = deterministic.filter((item) => item.status === 'passed').length;
 
   return {
-    branch: extractBulletValue(closeoutMarkdown, 'branch') || extractBulletValue(evidenceMarkdown, 'branch'),
+    branch: generatedBranch,
     checklist,
     closeout: {
       generatedAt: extractBulletValue(closeoutMarkdown, 'generatedAt'),
       markdown: closeoutMarkdown,
       path: closeoutDocPath,
     },
-    commit: extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit'),
+    commit: generatedCommit,
+    currentBranch,
+    currentCommit,
     deterministic,
+    docStatuses,
     evidence: {
       generatedAt: extractBulletValue(evidenceMarkdown, 'generatedAt'),
       markdown: evidenceMarkdown,
@@ -204,13 +264,17 @@ function buildExecutionV1Status() {
     liveValidation,
     notes,
     providerReadiness,
+    stale,
+    staleReasons,
     summary: {
       blockedItems: Object.values(statusMap).filter((value) => /blocked|missing-env/i.test(String(value || ''))).length,
       checklistOpen,
       checklistTotal: checklist.length,
       deterministicPassed,
       deterministicTotal: deterministic.length,
-      ready: checklistOpen === 0,
+      ready: checklistOpen === 0 && !stale,
+      stale,
+      staleReasonCount: staleReasons.length,
     },
     updatedAt:
       extractBulletValue(closeoutMarkdown, 'generatedAt') ||

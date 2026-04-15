@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T21:35:00.000Z","id":"doclog_20260415213500_4f8b11","type":"devlog","updatedAt":"2026-04-15T21:35:00.000Z"} -->
+## 2026-04-15 Release Evidence Freshness Surface
+
+- date: 2026-04-15T21:35:00.000Z
+- extended `execution-v1/status` so the UI now compares evidence/closeout commit metadata against the current HEAD and also reports whether either markdown file is still modified in the working tree
+- updated the `v1 마감 상태` tab to surface `evidence 상태`, stale reasons, current branch/commit, and dirty doc markers so operators can distinguish “code is still blocked” from “the release documents are simply stale”
+- tightened the release-ready calculation to require both a closed checklist and fresh evidence, which avoids falsely presenting a ready closeout while older failure markdown is still sitting in the workspace
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T21:10:00.000Z","id":"doclog_20260415211000_7d3a4e","type":"devlog","updatedAt":"2026-04-15T21:10:00.000Z"} -->
 ## 2026-04-15 Execution Manifest Verification Fallback
 
