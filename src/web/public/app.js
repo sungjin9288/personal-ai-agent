@@ -25,6 +25,7 @@ const state = {
   missionTimeline: null,
   missions: [],
   providers: [],
+  releaseRegenerationConfirmArmed: false,
   releasePreflightResults: {},
   releaseStatus: null,
   selectedPlaybookId: 'team-pipeline',
@@ -1007,7 +1008,20 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'regenerate-release-surface') {
+        if (!state.releaseRegenerationConfirmArmed) {
+          state.releaseRegenerationConfirmArmed = true;
+          renderReleaseStatus();
+          setUiNotice('current surface 재생성 확인이 필요합니다. 영향 요약을 확인한 뒤 재생성 확인을 눌러 주세요.');
+          return;
+        }
         void refreshReleaseStatus();
+        return;
+      }
+
+      if (action === 'cancel-regenerate-release-surface') {
+        state.releaseRegenerationConfirmArmed = false;
+        renderReleaseStatus();
+        setUiNotice('current surface 재생성 확인을 취소했습니다.');
         return;
       }
 
@@ -3209,6 +3223,7 @@ function renderReleaseStatus() {
   const refreshPlan = release.refreshPlan || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
+  const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshot = release.snapshot || null;
   const snapshotEligibility = release.snapshotEligibility || { allowed: false, reason: 'snapshot 상태를 확인할 수 없습니다.' };
   const baseline = release.baseline || null;
@@ -3321,10 +3336,21 @@ function renderReleaseStatus() {
                 </div>
               `
             : ''}
+          ${regenerationConfirmArmed
+            ? `
+                <div class="release-stale-note">
+                  <div class="release-stale-line">재생성 확인이 활성화되었습니다. 이 작업은 current surface evidence와 closeout를 다시 쓰고, deterministic verification을 다시 실행합니다.</div>
+                  <div class="release-stale-line">실행하려면 아래의 재생성 확인을 누르고, 취소하려면 현재 재생성 취소를 선택하세요.</div>
+                </div>
+              `
+            : ''}
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status">상태 다시 읽기</button>
-          <button class="ghost-button" type="button" data-ui-action="regenerate-release-surface">current surface 재생성</button>
+          <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
+          ${regenerationConfirmArmed
+            ? '<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface">현재 재생성 취소</button>'
+            : ''}
           <button class="ghost-button" type="button" data-ui-action="archive-release-snapshot" ${snapshotEligibility.allowed ? '' : 'disabled'}>release snapshot 고정</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
@@ -4702,6 +4728,7 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
 async function loadReleaseStatus() {
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
+  state.releaseRegenerationConfirmArmed = false;
   renderReleaseStatus();
   renderDetailTabLabels();
   renderDetailContextbar();
@@ -4723,6 +4750,7 @@ async function refreshReleaseStatus(liveMode = '') {
   try {
     const normalizedLiveMode = String(liveMode || '').trim();
     const isLiveRun = Boolean(normalizedLiveMode);
+    state.releaseRegenerationConfirmArmed = false;
     setUiNotice(
       isLiveRun
         ? `${normalizedLiveMode} live validation과 current surface를 갱신 중입니다.`

@@ -532,3 +532,5 @@ provider expansion도 콘솔에서 바로 preflight할 수 있습니다. `v1 마
 release tab의 액션도 read-only와 mutating 동작을 분리했습니다. `상태 다시 읽기`는 `/api/execution-v1/status`만 다시 호출하는 read-only reload이고, evidence/closeout를 현재 HEAD 기준으로 다시 만드는 동작은 별도 `current surface 재생성` 버튼이나 provider별 live validation 경로로만 실행됩니다. 따라서 operator는 단순 상태 확인과 artifact regeneration을 같은 버튼으로 착각하지 않아도 됩니다.
 
 release tab은 이제 `current surface 재생성`의 영향도 함께 보여 줍니다. 이 preview는 evidence/closeout rewrite 대상 경로, deterministic verification 재실행 여부, provider live validation 재실행 여부, snapshot 자동 갱신 여부를 같이 노출합니다. 즉, operator는 regenerate 버튼을 누르기 전에 어떤 artifact가 다시 계산되고 어떤 것은 그대로 유지되는지를 같은 화면에서 확인할 수 있습니다.
+
+`current surface 재생성`은 이제 release tab 안에서 두 단계로 동작합니다. 첫 클릭은 confirm state만 활성화하고 영향 요약을 다시 강조하며, 두 번째 `재생성 확인` 클릭에서만 실제 rewrite가 실행됩니다. 즉, read-only reload와 mutating regeneration이 분리된 것에 더해, regeneration 자체도 한 번 더 의도적으로 확인해야 실행됩니다.

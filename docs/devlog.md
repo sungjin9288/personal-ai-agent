@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:15:00.000Z","id":"doclog_20260416001500_703c11","type":"devlog","updatedAt":"2026-04-16T00:15:00.000Z"} -->
+## 2026-04-16 Release Regeneration Confirm Step
+
+- date: 2026-04-16T00:15:00.000Z
+- added an explicit confirm state for current surface regeneration so the operator has to arm the action first, read the impact summary, and then click 재생성 확인 before evidence/closeout rewrite actually runs
+- kept the flow inside the release tab rather than opening a modal, which preserves the operator context and makes the overwrite risk visible next to the refresh plan itself
+- reset the confirm state whenever release status is reloaded or regeneration/live refresh actually runs, which avoids stale confirmation UI after state changes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:05:00.000Z","id":"doclog_20260416000500_2b8719","type":"devlog","updatedAt":"2026-04-16T00:05:00.000Z"} -->
 ## 2026-04-16 Current Surface Regeneration Preview
 
