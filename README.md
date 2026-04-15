@@ -524,3 +524,5 @@ provider-supplied execution manifest에도 같은 정리가 적용됩니다. `TB
 `결과와 기록 > v1 마감 상태`는 이제 이 snapshot도 함께 보여 줍니다. 즉, current evidence가 현재 HEAD와 어긋나 stale하더라도 마지막으로 고정된 verified snapshot의 commit, archivedAt, evidence/closeout 경로를 같은 화면에서 바로 확인할 수 있습니다. 또한 Anthropic/local live validation은 optional provider expansion으로 분리되어, OpenAI 기준 v1 closeout readiness를 가리는 필수 gap처럼 집계되지 않습니다.
 
 current surface와 verified baseline도 분리해서 읽습니다. `summary.ready`는 현재 HEAD 기준 evidence/closeout가 fresh한지를 의미하고, `verified baseline`은 마지막 immutable snapshot 기준으로 필수 closeout이 이미 닫혔는지를 의미합니다. 그래서 current evidence가 stale하더라도 verified snapshot이 있으면 UI는 `baseline ready · current surface refresh needed`처럼 두 상태를 함께 보여 줍니다.
+
+release snapshot도 이제 콘솔에서 직접 고정할 수 있습니다. `v1 마감 상태` 탭의 `release snapshot 고정` 버튼은 current surface evidence/closeout가 fresh하고 필수 closeout이 모두 닫힌 경우에만 활성화되며, stale current surface에서는 잘못된 artifact를 남기지 않도록 비활성화됩니다. 같은 경로를 계속 터미널에서 쓰고 싶다면 `npm run snapshot:execution-v1`를 그대로 실행해도 됩니다.

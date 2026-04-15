@@ -15,6 +15,7 @@ const rootDir = resolveRootDir();
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
+const snapshotScriptPath = path.join(rootDir, 'scripts', 'archive-execution-v1-snapshot.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
@@ -366,6 +367,24 @@ function buildExecutionV1Status() {
     localArtifactNotes,
     notes: currentArtifacts.notes,
     providerReadiness,
+    snapshotEligibility: {
+      allowed: Boolean(
+        !stale
+          && currentArtifacts.requiredChecklistOpen === 0
+          && currentArtifacts.blockedItems === 0
+          && evidenceMarkdown
+          && closeoutMarkdown,
+      ),
+      reason: !evidenceMarkdown || !closeoutMarkdown
+        ? 'evidence 또는 closeout 문서가 아직 없습니다.'
+        : stale
+          ? 'current evidence/closeout가 최신 HEAD와 어긋나 있습니다.'
+          : currentArtifacts.requiredChecklistOpen > 0
+            ? `필수 closeout checklist ${currentArtifacts.requiredChecklistOpen}건이 남아 있습니다.`
+            : currentArtifacts.blockedItems > 0
+              ? `필수 gap ${currentArtifacts.blockedItems}건이 남아 있습니다.`
+              : 'current HEAD 기준 snapshot 생성 가능',
+    },
     baseline: snapshot
       ? {
           archivedAt: snapshot.archivedAt,
@@ -438,6 +457,40 @@ function refreshExecutionV1Artifacts(args = []) {
   }
 
   return buildExecutionV1Status();
+}
+
+function archiveExecutionV1Snapshot() {
+  const currentStatus = buildExecutionV1Status();
+  const canArchive = Boolean(currentStatus.summary?.ready);
+
+  if (!canArchive) {
+    const reason = currentStatus.stale
+      ? 'current evidence/closeout가 stale 상태라 snapshot을 생성할 수 없습니다.'
+      : '필수 closeout checklist 또는 blocked item이 남아 있어 snapshot을 생성할 수 없습니다.';
+    throw new Error(reason);
+  }
+
+  const result = spawnSync(process.execPath, [snapshotScriptPath], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || 'execution-v1 snapshot archive failed');
+  }
+
+  let archiveResult = {};
+  try {
+    archiveResult = JSON.parse(String(result.stdout || '{}'));
+  } catch {
+    archiveResult = {};
+  }
+
+  return {
+    archiveResult,
+    status: buildExecutionV1Status(),
+  };
 }
 
 function decodePathSegment(segment = '') {
@@ -580,6 +633,19 @@ async function handleApi(request, response, url) {
   if (request.method === 'POST' && pathname === '/api/execution-v1/refresh') {
     const body = await readJsonBody(request);
     sendJson(response, 200, refreshExecutionV1Artifacts(buildLiveValidationArgs(body)));
+    return;
+  }
+
+  if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot') {
+    try {
+      sendJson(response, 200, archiveExecutionV1Snapshot());
+    } catch (error) {
+      sendJson(response, 409, {
+        error: 'snapshot-not-ready',
+        message: error instanceof Error ? error.message : 'snapshot을 생성할 수 없습니다.',
+        status: buildExecutionV1Status(),
+      });
+    }
     return;
   }
 

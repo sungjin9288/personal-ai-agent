@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T23:20:00.000Z","id":"doclog_20260415232000_37a92b","type":"devlog","updatedAt":"2026-04-15T23:20:00.000Z"} -->
+## 2026-04-15 Release Snapshot Action Surface
+
+- date: 2026-04-15T23:20:00.000Z
+- added an explicit `/api/execution-v1/snapshot` path and a matching `release snapshot 고정` operator action so release snapshotting is no longer a terminal-only step once current evidence is fresh
+- gated snapshot creation on the same `summary.ready` contract used by current-surface closeout, which prevents operators from freezing stale evidence into a misleading handoff artifact
+- surfaced snapshot eligibility copy in the `v1 마감 상태` tab so the UI explains whether snapshotting is allowed right now or blocked because the current surface still needs refresh
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T23:05:00.000Z","id":"doclog_20260415230500_8cb221","type":"devlog","updatedAt":"2026-04-15T23:05:00.000Z"} -->
 ## 2026-04-15 Verified Baseline Release Surface
 

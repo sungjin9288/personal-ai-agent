@@ -1005,6 +1005,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'archive-release-snapshot') {
+        void archiveReleaseSnapshot();
+        return;
+      }
+
       if (action === 'execution-preflight') {
         void handleExecutionPreflight(value === 'request-approval');
         return;
@@ -3198,6 +3203,7 @@ function renderReleaseStatus() {
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const snapshot = release.snapshot || null;
+  const snapshotEligibility = release.snapshotEligibility || { allowed: false, reason: 'snapshot 상태를 확인할 수 없습니다.' };
   const baseline = release.baseline || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
@@ -3301,6 +3307,7 @@ function renderReleaseStatus() {
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status">마감 상태 새로고침</button>
+          <button class="ghost-button" type="button" data-ui-action="archive-release-snapshot" ${snapshotEligibility.allowed ? '' : 'disabled'}>release snapshot 고정</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
         </div>
@@ -3415,6 +3422,9 @@ function renderReleaseStatus() {
                 )
                 .join('')}
             </div>
+            <div class="release-stale-note">
+              <div class="release-stale-line">${escapeHtml(snapshotEligibility.allowed ? 'current HEAD 기준 evidence/closeout가 fresh해서 snapshot을 바로 고정할 수 있습니다.' : snapshotEligibility.reason || '현재 상태에서는 snapshot을 고정할 수 없습니다.')}</div>
+            </div>
             ${snapshot
               ? `
                   <article class="release-snapshot-card">
@@ -3454,7 +3464,7 @@ function renderReleaseStatus() {
               : `
                   <article class="release-snapshot-card is-empty">
                     <div class="item-title">Release snapshot이 아직 없습니다.</div>
-                    <p class="item-meta">성공한 evidence/closeout를 handoff artifact로 남기려면 \`npm run snapshot:execution-v1\`를 실행하면 됩니다.</p>
+                    <p class="item-meta">current surface evidence가 fresh한 상태라면 여기서 바로 snapshot을 고정하거나 \`npm run snapshot:execution-v1\`를 실행하면 됩니다.</p>
                   </article>
                 `}
             <div class="release-live-list">
@@ -4626,6 +4636,24 @@ async function refreshReleaseStatus(liveMode = '') {
     setUiNotice('v1 마감 상태를 새로고침했습니다.');
   } catch (error) {
     window.alert(error.message || 'v1 마감 상태 갱신에 실패했습니다.');
+  }
+}
+
+async function archiveReleaseSnapshot() {
+  try {
+    setUiNotice('release snapshot을 고정 중입니다.');
+    const payload = await api('/api/execution-v1/snapshot', {
+      method: 'POST',
+    });
+    state.releaseStatus = payload.status;
+    renderReleaseStatus();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    setActiveDetailTab('release', { urlMode: 'push' });
+    const verifiedCommit = payload.archiveResult?.verifiedCommit || state.releaseStatus?.snapshot?.verifiedCommit || '';
+    setUiNotice(verifiedCommit ? `release snapshot을 고정했습니다. (${verifiedCommit.slice(0, 7)})` : 'release snapshot을 고정했습니다.');
+  } catch (error) {
+    window.alert(error.message || 'release snapshot 고정에 실패했습니다.');
   }
 }
 
