@@ -48,34 +48,67 @@ if (!process.env[config.envKey]) {
   process.exit(1);
 }
 
-runOrExit('npm', ['run', 'evidence:execution-v1', '--', config.flag]);
-runOrExit('npm', ['run', 'closeout:execution-v1', '--', config.flag]);
+const evidenceResult = runJsonScript('npm', ['run', 'evidence:execution-v1', '--', config.flag]);
+const closeoutResult = runJsonScript('npm', ['run', 'closeout:execution-v1', '--', config.flag]);
+const liveResult = Array.isArray(evidenceResult.liveValidation)
+  ? evidenceResult.liveValidation.find((item) => item.provider === provider) || null
+  : null;
+
+if (!liveResult || liveResult.status !== 'passed') {
+  console.error(
+    JSON.stringify(
+      {
+        checklistPath: closeoutResult.checklistPath || null,
+        evidencePath: evidenceResult.outputPath || null,
+        ok: false,
+        provider,
+        reason: liveResult?.reason || `No ${provider} live validation result recorded`,
+        status: liveResult?.status || 'failed',
+      },
+      null,
+      2,
+    ),
+  );
+  process.exit(1);
+}
 
 console.log(
   JSON.stringify(
     {
+      checklistPath: closeoutResult.checklistPath || null,
+      evidencePath: evidenceResult.outputPath || null,
+      executionSessionId: liveResult.executionSessionId || null,
+      missionId: liveResult.missionId || null,
       ok: true,
       provider,
-      scripts: [
-        `npm run evidence:execution-v1 -- ${config.flag}`,
-        `npm run closeout:execution-v1 -- ${config.flag}`,
-      ],
-      status: 'completed',
+      rootDir: liveResult.rootDir || null,
+      status: 'passed',
+      workspaceId: liveResult.workspaceId || null,
     },
     null,
     2,
   ),
 );
 
-function runOrExit(command, args) {
+function runJsonScript(command, args) {
   const result = spawnSync(command, args, {
     cwd: repoDir,
     encoding: 'utf8',
     env: process.env,
-    stdio: 'inherit',
   });
+
+  if (result.stdout) {
+    process.stdout.write(result.stdout);
+  }
+
+  if (result.stderr) {
+    process.stderr.write(result.stderr);
+  }
 
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
+
+  const stdout = String(result.stdout || '').trim();
+  return stdout ? JSON.parse(stdout) : {};
 }

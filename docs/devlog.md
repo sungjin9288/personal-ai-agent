@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T18:25:00.000Z","id":"doclog_20260415182500_a4c91e","type":"devlog","updatedAt":"2026-04-15T18:25:00.000Z"} -->
+## 2026-04-15 Live Validation Failure Triage Surface
+
+- date: 2026-04-15T18:25:00.000Z
+- changed live validation failure output to carry `rootDir`, `workspaceId`, `missionId`, and `sessionId`, so a failed provider-backed run is immediately inspectable without guessing where the temporary state was written
+- updated `run-execution-v1-live.mjs` to treat `failed` as a real failure instead of printing a misleading completed status, and to return evidence/checklist paths plus mission/session context when triage is needed
+- documented the new behavior in the README so the final operator path is now deterministic: missing env, failed provider run, and passed live validation all terminate with clearly different machine-readable outputs
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T18:10:00.000Z","id":"doclog_20260415181000_7a1dc2","type":"devlog","updatedAt":"2026-04-15T18:10:00.000Z"} -->
 ## 2026-04-15 Live Validation Helper Entry Points
 

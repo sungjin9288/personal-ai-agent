@@ -92,6 +92,7 @@ console.log(
   JSON.stringify(
     {
       ok: true,
+      liveValidation: verification.liveValidation || [],
       outputPath,
       commit,
       branch,

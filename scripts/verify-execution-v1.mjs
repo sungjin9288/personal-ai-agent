@@ -148,6 +148,9 @@ async function runLiveValidation(provider, envKey) {
     throw new Error(
       [
         `${provider} live mission run failed`,
+        `rootDir=${tempRoot}`,
+        `workspaceId=${workspace.id}`,
+        `missionId=${mission.id}`,
         latestSession?.reviewerSummary ? `reviewerSummary=${latestSession.reviewerSummary}` : null,
         latestSession?.latestArtifactFileName ? `artifact=${latestSession.latestArtifactFileName}` : null,
         latestSession?.id ? `sessionId=${latestSession.id}` : null,
@@ -212,7 +215,9 @@ async function runLiveValidation(provider, envKey) {
     executionSessionId: executionSession.id,
     missionId: mission.id,
     provider,
+    rootDir: tempRoot,
     status: 'passed',
     verificationStatus: executionSession.verification.status,
+    workspaceId: workspace.id,
   };
 }
