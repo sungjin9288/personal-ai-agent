@@ -13,6 +13,7 @@
     "smoke:ui-execution-console": "node scripts/smoke-ui-execution-console.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",
+    "closeout:execution-v1": "node scripts/build-execution-v1-closeout.mjs",
     "smoke:action-inbox": "node scripts/smoke-action-inbox.mjs",
     "smoke:action-maintenance": "node scripts/smoke-action-maintenance.mjs",
     "smoke:maintenance-history": "node scripts/smoke-maintenance-history.mjs",

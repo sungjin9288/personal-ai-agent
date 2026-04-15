@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415170000_2a89d4","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
+## 2026-04-15 Execution v1 Closeout Surface
+
+- date: 2026-04-15T00:00:00.000Z
+- added `closeout:execution-v1` to generate a repo-tracked closeout checklist that sits one layer above raw evidence, turning deterministic smoke, optional live validation, and known browser E2E gaps into an operator-readable release status document
+- kept the closeout script dependent on the existing evidence generator so branch, commit, smoke summary, and gap wording stay consistent instead of splitting into two parallel truth sources
+- documented the closeout path in the README so execution-v1 can now be closed with `verify -> evidence -> closeout` instead of relying on terminal output and ad-hoc memory
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-15T00:00:00.000Z","id":"doclog_20260415164500_0c5f7c","type":"devlog","updatedAt":"2026-04-15T00:00:00.000Z"} -->
 ## 2026-04-15 Execution v1 Evidence Artifact
 

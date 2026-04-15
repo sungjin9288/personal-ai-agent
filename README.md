@@ -483,3 +483,5 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
   - `npm run evidence:execution-v1 -- --live-openai`
   - `npm run evidence:execution-v1 -- --live-anthropic`
   - `npm run evidence:execution-v1 -- --live-local`
+
+`npm run closeout:execution-v1`는 evidence를 다시 생성한 뒤 [execution-v1-closeout.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md)에 v1 마감 체크리스트를 기록합니다. 이 문서는 deterministic smoke 완료 여부, live validation 상태, browser interaction E2E gap을 한눈에 보여 주는 closeout surface입니다.
