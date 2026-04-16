@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T02:15:00.000Z","id":"doclog_20260416021500_20e38f","type":"devlog","updatedAt":"2026-04-16T02:15:00.000Z"} -->
+## 2026-04-16 Recommendation Active Flow State Pass
+
+- date: 2026-04-16T02:15:00.000Z
+- made recommendation cards reflect the currently applied triage context so the release tab shows when a suggested flow is already active instead of always rendering the same generic action buttons
+- disabled duplicate `같은 flow 보기` and `같은 문제 흐름 보기` actions when the matching focus plus filter state is already applied, which reduces repeated clicks and makes the recommendation list read as current state plus next moves
+- added a lightweight active-flow visual treatment so summary-level release guidance and history-level triage no longer feel like disconnected surfaces
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T02:00:00.000Z","id":"doclog_20260416020000_91a0b7","type":"devlog","updatedAt":"2026-04-16T02:00:00.000Z"} -->
 ## 2026-04-16 Recommendation Attention Filter Pass
 

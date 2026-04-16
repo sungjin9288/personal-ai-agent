@@ -2292,6 +2292,11 @@ button:disabled {
   gap: 8px;
 }
 
+.release-recommendation-card.is-active-flow {
+  border-color: rgba(37, 99, 235, 0.24);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
 .release-doc-surface {
   padding: 14px;
   border-radius: 14px;
