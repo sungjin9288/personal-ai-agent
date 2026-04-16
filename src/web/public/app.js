@@ -3836,6 +3836,16 @@ function renderReleaseStatus() {
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const focusedProvider = String(state.releaseFocusedProvider || '').trim();
+  const focusedProviderEntry = providerReadiness.find((item) => String(item.provider || '').trim() === focusedProvider) || null;
+  const focusedProviderPreflight = focusedProviderEntry
+    ? state.releasePreflightResults?.[focusedProviderEntry.provider] || null
+    : null;
+  const orderedProviderReadiness = focusedProvider
+    ? [
+        ...providerReadiness.filter((item) => String(item.provider || '').trim() === focusedProvider),
+        ...providerReadiness.filter((item) => String(item.provider || '').trim() !== focusedProvider),
+      ]
+    : providerReadiness;
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
   const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
@@ -4118,7 +4128,7 @@ function renderReleaseStatus() {
                         })
                         : { attentionFlowActive: false, sameFlowActive: false };
                       return `
-                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')} ${sameFlowActive || attentionFlowActive ? 'is-active-flow' : ''} ${historyContext.attentionCount ? 'has-attention-flow' : ''}">
+                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')} ${sameFlowActive || attentionFlowActive ? 'is-active-flow' : ''} ${sameProviderFocused ? 'is-active-provider' : ''} ${historyContext.attentionCount ? 'has-attention-flow' : ''}">
                         <div>
                           <div class="item-title">${escapeHtml(item.label || '권장 액션')}</div>
                           <div class="item-meta">${escapeHtml(item.description || '')}</div>
@@ -4147,6 +4157,7 @@ function renderReleaseStatus() {
                                       <div class="release-history-filter-chips">
                                         ${sameFlowActive ? '<span class="mini-badge status-running">현재 flow 적용 중</span>' : ''}
                                         ${attentionFlowActive ? '<span class="mini-badge status-failed">현재 문제 흐름 적용 중</span>' : ''}
+                                        ${sameProviderFocused ? '<span class="mini-badge status-running">현재 provider 적용 중</span>' : ''}
                                       </div>
                                     `
                                   : ''}
@@ -4511,7 +4522,23 @@ function renderReleaseStatus() {
                   <div class="harness-callout release-provider-focus-callout">
                     <strong>현재 포커스된 provider readiness 카드</strong>
                     <p>${escapeHtml(focusedProvider)} provider card를 강조하고 있습니다. preflight/live action이나 command handoff를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
+                    ${focusedProviderEntry
+                      ? `
+                          <div class="release-history-filter-chips">
+                            <span class="mini-badge ${getReleaseStatusBadge(focusedProviderEntry.status)}">${escapeHtml(focusedProviderEntry.status)}</span>
+                            <span class="mini-badge ${getReleaseStatusBadge(focusedProviderPreflight?.status || 'not-run')}">${escapeHtml(focusedProviderPreflight?.status || 'not-run')}</span>
+                          </div>
+                        `
+                      : ''}
                     <div class="release-history-focus-actions">
+                      ${focusedProviderEntry
+                        ? `
+                            <button class="ghost-button" type="button" data-ui-action="run-release-preflight" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}">preflight 실행</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} preflight 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`)}">preflight 명령 복사</button>
+                            <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.ready ? focusedProviderEntry.command : `export ${focusedProviderEntry.envKey}=\"...\" && ${focusedProviderEntry.command}`)}">live 명령 복사</button>
+                          `
+                        : ''}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus">provider 포커스 해제</button>
                       <button class="ghost-button" type="button" data-ui-action="copy-release-provider-link" data-ui-provider="${escapeHtml(focusedProvider)}">provider 링크 복사</button>
                       <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link">현재 triage 링크 복사</button>
@@ -4520,7 +4547,7 @@ function renderReleaseStatus() {
                 `
               : ''}
             <div class="release-provider-grid">
-              ${providerReadiness
+              ${orderedProviderReadiness
                 .map(
                   (item) => `
                     ${(() => {

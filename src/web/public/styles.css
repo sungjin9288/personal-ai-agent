@@ -2310,6 +2310,11 @@ button:disabled {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
+.release-recommendation-card.is-active-provider {
+  border-color: rgba(14, 116, 144, 0.22);
+  box-shadow: 0 0 0 2px rgba(14, 116, 144, 0.08);
+}
+
 .release-recommendation-card.has-attention-flow {
   border-color: rgba(199, 56, 82, 0.18);
   background:

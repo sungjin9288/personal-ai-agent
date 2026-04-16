@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T04:05:00.000Z","id":"doclog_20260416040500_93a2b7","type":"devlog","updatedAt":"2026-04-16T04:05:00.000Z"} -->
+## 2026-04-16 Provider Spotlight Triage Surface Pass
+
+- date: 2026-04-16T04:05:00.000Z
+- promoted focused provider spotlight from simple highlight to an actionable triage surface by pinning the selected provider card to the top of the grid and exposing preflight/live actions directly in the spotlight callout
+- reflected the same provider context back into recommendation cards so provider-related recommendations now show when the current provider spotlight is already active instead of acting like a generic follow-up button
+- kept the change entirely client-side by deriving the focused provider entry from existing provider readiness and preflight state, which avoids expanding the release status API while still tightening the operator workflow
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T03:45:00.000Z","id":"doclog_20260416034500_71a8c4","type":"devlog","updatedAt":"2026-04-16T03:45:00.000Z"} -->
 ## 2026-04-16 Provider Spotlight Link Pass
 
