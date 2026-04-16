@@ -3348,15 +3348,14 @@ function renderSelectionBridge() {
     : `첨부 0 · 메모 ${harnessState.memoryTotalCount}개`;
 
   elements.selectionBridge.innerHTML = `
-    <div class="selection-bridge-main">
-      <div class="selection-bridge-copy">
-        <span class="selection-bridge-kicker">선택한 미션</span>
-        <strong>${escapeHtml(mission.title)}</strong>
-        <p>${escapeHtml(summarizeText(mission.objective, '왼쪽 작업 대기열에서 선택한 미션을 현재 작업면 기준으로 동기화했습니다.'))}</p>
+    <div class="selection-bridge-main selection-bridge-main-compact">
+      <div class="selection-bridge-copy selection-bridge-copy-compact">
+        <span class="selection-bridge-kicker">선택한 미션 컨텍스트</span>
+        <strong>${escapeHtml(`${getDisplayLabel(snapshot.status)} · ${workspaceLabel}`)}</strong>
+        <p>${escapeHtml(`${getStepLabel(state.activeStep, { short: true })} 기준으로 실행, 결과, 하네스가 같은 미션에 맞춰 연결되어 있습니다.`)}</p>
       </div>
       <div class="selection-bridge-actions">
-        <span class="status-badge ${getStatusClass(mission.status)}">${escapeHtml(snapshot.status)}</span>
-        <span class="mini-badge">${escapeHtml(workspaceLabel)}</span>
+        <span class="mini-badge">${escapeHtml(latestExecutionLabel)}</span>
         <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
           ${escapeHtml(getStepLabel(flow.recommendedStep, { short: true }))}
         </button>
