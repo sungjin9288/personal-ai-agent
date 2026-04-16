@@ -90,6 +90,41 @@ assert.equal(
 assert.equal(qualityGateRemediation.result.missionStatus, 'completed');
 assert.equal(qualityGateRemediation.postFollowUp.status, 'clear');
 
+const fullSpectrumGateMission = service.createMission({
+  constraints: ['orchestration-profile:knowledge-full-spectrum', 'parallel-abandon:research'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify full-spectrum quality gate follow-up uses generic research and verification retry wording.',
+  title: 'Specialist full-spectrum quality gate remediation mission',
+  workspaceId: workspace.id,
+});
+
+const fullSpectrumGateFirstRun = await service.runMission(fullSpectrumGateMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(fullSpectrumGateFirstRun.mission.status, 'failed');
+
+const fullSpectrumGateInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--class', 'specialist-follow-up-required', '--mission', fullSpectrumGateMission.id],
+});
+
+assert.equal(fullSpectrumGateInbox.items.length, 1);
+assert.equal(fullSpectrumGateInbox.items[0].specialistKind, 'research');
+assert.equal(fullSpectrumGateInbox.items[0].followUpSource, 'quality-gate');
+assert.equal(fullSpectrumGateInbox.items[0].retryPolicy, 'resume-research-and-verification-fast');
+assert.equal(
+  fullSpectrumGateInbox.items[0].remediationRoute.routeType,
+  'priority-research-verification-remediation',
+);
+assert.equal(fullSpectrumGateInbox.items[0].remediationRoute.routeUrgency, 'fast');
+assert.equal(
+  fullSpectrumGateInbox.items[0].remediationRoute.routeReason,
+  'Fast research-and-verification retry policy requires the research specialist branch to be re-driven before merge can continue.',
+);
+
 const mission = service.createMission({
   constraints: ['parallel-specialists:research,implementation', 'parallel-fail:implementation'],
   deliverableType: 'decision-memo',

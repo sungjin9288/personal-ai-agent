@@ -987,7 +987,7 @@ function resolveSpecialistFollowUpRoute({
   ) {
     return {
       ...route,
-      routeReason: `Fast triad retry policy requires the ${normalizedSpecialistKind} specialist branch to be re-driven before merge can continue.`,
+      routeReason: `Fast research-and-verification retry policy requires the ${normalizedSpecialistKind} specialist branch to be re-driven before merge can continue.`,
       routeType: 'priority-research-verification-remediation',
       routeUrgency: 'fast',
     };

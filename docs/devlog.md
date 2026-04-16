@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T05:55:00.000Z","id":"doclog_20260416055500_54c3b1","type":"devlog","updatedAt":"2026-04-16T05:55:00.000Z"} -->
+## 2026-04-16 Specialist Remediation Copy Generalization Pass
+
+- date: 2026-04-16T05:55:00.000Z
+- replaced the stale `Fast triad retry policy` remediation wording with generic `Fast research-and-verification retry policy` copy so the route reason remains correct for both triad and full-spectrum orchestration profiles
+- extended `smoke-specialist-follow-up-remediation` with a `knowledge-full-spectrum` quality-gate failure case to prove the generic remediation route applies to expanded preset lanes, not only the older triad profiles
+- kept the change narrow to specialist follow-up route messaging and deterministic smoke coverage, leaving mission execution behavior and mutable release artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T05:35:00.000Z","id":"doclog_20260416053500_4dbe81","type":"devlog","updatedAt":"2026-04-16T05:35:00.000Z"} -->
 ## 2026-04-16 Orchestration Profile Smoke Stabilization Pass
 
