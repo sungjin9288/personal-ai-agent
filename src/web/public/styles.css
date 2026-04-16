@@ -625,6 +625,14 @@ button {
   flex-direction: column;
 }
 
+.workspace-shell.is-output-focus.is-output-support-collapsed .step-grid-output {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.workspace-shell.is-output-focus.is-output-support-collapsed .surface-result-side {
+  display: none;
+}
+
 .workspace-shell.is-output-focus #step-output .panel-head p:last-child,
 .workspace-shell.is-output-focus .detail-shell-head,
 .workspace-shell.is-output-focus .detail-contextbar {
@@ -2504,6 +2512,10 @@ button:disabled {
 .result-spotlight-compact-meta strong {
   max-width: 100%;
   color: var(--text);
+}
+
+.result-spotlight-collapsed {
+  gap: 10px;
 }
 
 .closeout-list {

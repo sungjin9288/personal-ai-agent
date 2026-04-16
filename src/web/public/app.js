@@ -26,6 +26,7 @@ const state = {
   missions: [],
   outputMissionSummaryExpanded: false,
   outputRailCollapsed: true,
+  outputSupportExpanded: false,
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
@@ -1741,6 +1742,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-support') {
+        toggleOutputSupportExpanded();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -1961,6 +1967,7 @@ function syncStepViewMode() {
   elements.appShell?.classList.toggle('is-output-rail-collapsed', outputFocus && state.outputRailCollapsed);
   elements.mainStage?.classList.toggle('is-output-focus', outputFocus);
   elements.workspaceShell?.classList.toggle('is-output-focus', outputFocus);
+  elements.workspaceShell?.classList.toggle('is-output-support-collapsed', outputFocus && !state.outputSupportExpanded);
   renderDetailToolbarActions();
 }
 
@@ -1982,6 +1989,17 @@ function toggleOutputMissionSummaryExpanded(forceValue = null) {
   }
   renderMissionSummary();
   renderDetailToolbarActions();
+}
+
+function toggleOutputSupportExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputSupportExpanded = forceValue;
+  } else {
+    state.outputSupportExpanded = !state.outputSupportExpanded;
+  }
+  syncStepViewMode();
+  renderOutputStageSummary();
+  renderOutputCloseout();
 }
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
@@ -2021,12 +2039,19 @@ function renderDetailToolbarActions() {
       <span>미션 요약</span>
       <strong>${escapeHtml(state.outputMissionSummaryExpanded ? '펼침' : '접힘')}</strong>
     </div>
+    <div class="detail-toolbar-pill">
+      <span>지원 패널</span>
+      <strong>${escapeHtml(state.outputSupportExpanded ? '펼침' : '접힘')}</strong>
+    </div>
     <div class="detail-toolbar-actions-row">
       <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
         ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
       </button>
       <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
         ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
+      </button>
+      <button class="ghost-button" type="button" data-ui-action="toggle-output-support">
+        ${escapeHtml(state.outputSupportExpanded ? '지원 패널 접기' : '지원 패널 펼치기')}
       </button>
     </div>
   `;
@@ -3958,11 +3983,38 @@ function renderOutputStageSummary() {
   const artifactPath = latestArtifact?.path || latestArtifact?.fileName || '결과 파일 경로가 아직 없습니다.';
   const resultStateLabel = latestArtifact ? '결과 확정 가능' : '결과 준비 중';
   const resultSummary = latestSession?.reviewerSummary || flow.copy;
+  const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
+  const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const compactMetaItems = [
     `검토 · ${flow.blocker}`,
     latestExecutionSession ? `변경 ${String(latestExecutionSession.changedFiles?.length || 0)}건` : null,
     latestArtifact ? `${getDisplayLabel(latestArtifact.kind, latestArtifact.kind)} 결과` : '결과 준비 중',
   ].filter(Boolean);
+
+  if (isOutputFocus && !state.outputSupportExpanded) {
+    elements.outputStageSummary.innerHTML = `
+      <div class="stage-summary-card result-spotlight result-spotlight-collapsed">
+        <div class="result-spotlight-head">
+          <div class="definition-item">
+            <span>결과 지원 패널</span>
+            <strong>${escapeHtml(artifactLabel || flow.label)}</strong>
+          </div>
+          <span class="status-badge ${latestArtifact ? 'status-completed' : 'status-pending'}">${escapeHtml(resultStateLabel)}</span>
+        </div>
+        <div class="result-spotlight-compact-meta">
+          <span>${escapeHtml(`승인 ${pendingApprovalCount}건`)}</span>
+          <span>${escapeHtml(`후속 ${pendingActionCount}건`)}</span>
+          <span>${escapeHtml(`검토 · ${flow.blocker}`)}</span>
+        </div>
+        <div class="action-row">
+          <button class="primary-button" type="button" data-ui-action="toggle-output-support">지원 패널 펼치기</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
+        </div>
+      </div>
+    `;
+    wireQuickActions(elements.outputStageSummary);
+    return;
+  }
 
   elements.outputStageSummary.innerHTML = `
     <div class="stage-summary-card result-spotlight">
