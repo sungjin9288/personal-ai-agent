@@ -6694,14 +6694,26 @@ function renderArtifact(payload) {
     return;
   }
 
-  elements.artifactMeta.innerHTML = `
-    <span class="detail-context-label">선택된 결과물</span>
-    <strong>${escapeHtml(payload.artifact.title || payload.artifact.fileName || payload.artifact.id)}</strong>
-    <div class="artifact-meta-row">
-      <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-      <div class="item-meta mono">${escapeHtml(payload.path)}</div>
-    </div>
-  `;
+  const outputFocus = state.activeStep === 'step-output';
+  const artifactTitle = payload.artifact.title || payload.artifact.fileName || payload.artifact.id;
+  elements.artifactMeta.innerHTML = outputFocus
+    ? `
+        <div class="artifact-meta-compact">
+          <strong>${escapeHtml(artifactTitle)}</strong>
+          <div class="artifact-meta-row artifact-meta-row-compact">
+            <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
+            <span class="artifact-meta-path mono">${escapeHtml(payload.path)}</span>
+          </div>
+        </div>
+      `
+    : `
+        <span class="detail-context-label">선택된 결과물</span>
+        <strong>${escapeHtml(artifactTitle)}</strong>
+        <div class="artifact-meta-row">
+          <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
+          <div class="item-meta mono">${escapeHtml(payload.path)}</div>
+        </div>
+      `;
   elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
   renderDetailContextbar();
 }
