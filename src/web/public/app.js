@@ -2018,6 +2018,58 @@ function toggleOutputSecondaryTabsExpanded(forceValue = null) {
   renderDetailToolbarActions();
 }
 
+function getDetailTabMeta() {
+  const artifactsCount = state.currentSessionPayload?.artifacts?.length || 0;
+  const runsCount = state.missionDetail?.sessions?.length || 0;
+  const reviewsCount =
+    (state.currentSessionPayload?.approvals?.length || 0) + Number(state.missionActions?.summary?.pendingActionCount || 0);
+  const harnessCount = state.missionDetail?.harness?.recommendations?.length || 0;
+  const counts = {
+    artifacts: artifactsCount,
+    runs: runsCount,
+    reviews: reviewsCount,
+    config: 0,
+    harness: harnessCount,
+    release: state.releaseStatus?.summary?.checklistOpen || 0,
+  };
+  const outputFocus = state.activeStep === 'step-output';
+  const primaryTabs = new Set(['artifacts', 'runs', 'reviews']);
+  const condensedOutputLabels = {
+    config: '입력',
+    harness: '하네스',
+    release: 'v1',
+  };
+
+  const tabs = elements.detailTabButtons.map((button) => {
+    if (!button.dataset.baseLabel) {
+      button.dataset.baseLabel = button.textContent?.trim() || '';
+    }
+    const tabId = button.dataset.detailTab || '';
+    const baseLabel =
+      outputFocus && condensedOutputLabels[tabId]
+        ? condensedOutputLabels[tabId]
+        : button.dataset.baseLabel || '';
+    const count = counts[tabId] || 0;
+    return {
+      baseLabel,
+      button,
+      count,
+      id: tabId,
+      isActive: tabId === state.activeDetailTab,
+      isPrimary: outputFocus && primaryTabs.has(tabId),
+      isSecondary: outputFocus && !primaryTabs.has(tabId),
+      label: count > 0 ? `${baseLabel} ${count}` : baseLabel,
+      outputFocus,
+      shouldCollapse: outputFocus && !primaryTabs.has(tabId) && tabId !== state.activeDetailTab,
+    };
+  });
+
+  return {
+    outputFocus,
+    tabs,
+  };
+}
+
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeDetailTab = tabId;
   if (state.activeStep === 'step-output' && ['config', 'harness', 'release'].includes(tabId)) {
@@ -2048,6 +2100,8 @@ function renderDetailToolbarActions() {
     return;
   }
 
+  const detailTabMeta = getDetailTabMeta();
+  const secondaryTabs = detailTabMeta.tabs.filter((tab) => tab.isSecondary);
   const supportCollapsed = !state.outputSupportExpanded;
   elements.detailToolbarActions.classList.add('is-visible');
   elements.detailToolbarActions.classList.toggle('is-compact', supportCollapsed);
@@ -2105,8 +2159,32 @@ function renderDetailToolbarActions() {
           `
       }
     </div>
+    ${
+      state.outputSecondaryTabsExpanded && secondaryTabs.length
+        ? `
+          <div class="detail-secondary-nav" aria-label="보조 탭">
+            ${secondaryTabs
+              .map(
+                (tab) => `
+                  <button
+                    class="detail-secondary-nav-button${tab.isActive ? ' is-active' : ''}"
+                    type="button"
+                    data-output-secondary-tab="${escapeHtml(tab.id)}"
+                  >
+                    ${escapeHtml(tab.label)}
+                  </button>
+                `,
+              )
+              .join('')}
+          </div>
+        `
+        : ''
+    }
   `;
   wireQuickActions(elements.detailToolbarActions);
+  elements.detailToolbarActions.querySelectorAll('[data-output-secondary-tab]').forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' }));
+  });
 }
 
 function openComposer() {
@@ -3121,46 +3199,14 @@ function renderMissionQueueSummary(missions = filteredMissions()) {
 }
 
 function renderDetailTabLabels() {
-  const artifactsCount = state.currentSessionPayload?.artifacts?.length || 0;
-  const runsCount = state.missionDetail?.sessions?.length || 0;
-  const reviewsCount =
-    (state.currentSessionPayload?.approvals?.length || 0) + Number(state.missionActions?.summary?.pendingActionCount || 0);
-  const harnessCount = state.missionDetail?.harness?.recommendations?.length || 0;
-  const counts = {
-    artifacts: artifactsCount,
-    runs: runsCount,
-    reviews: reviewsCount,
-    config: 0,
-    harness: harnessCount,
-    release: state.releaseStatus?.summary?.checklistOpen || 0,
-  };
-  const outputFocus = state.activeStep === 'step-output';
-  const primaryTabs = new Set(['artifacts', 'runs', 'reviews']);
-  const condensedOutputLabels = {
-    config: '입력',
-    harness: '하네스',
-    release: 'v1',
-  };
-
-  elements.detailTabButtons.forEach((button) => {
-    if (!button.dataset.baseLabel) {
-      button.dataset.baseLabel = button.textContent?.trim() || '';
-    }
-    const tabId = button.dataset.detailTab || '';
-    const baseLabel =
-      outputFocus && condensedOutputLabels[tabId]
-        ? condensedOutputLabels[tabId]
-        : button.dataset.baseLabel || '';
-    const count = counts[tabId] || 0;
-    button.textContent = count > 0 ? `${baseLabel} ${count}` : baseLabel;
-    button.classList.toggle('is-primary', outputFocus && primaryTabs.has(tabId));
-    button.classList.toggle('is-secondary', outputFocus && !primaryTabs.has(tabId));
-    button.classList.toggle(
+  const detailTabMeta = getDetailTabMeta();
+  detailTabMeta.tabs.forEach((tab) => {
+    tab.button.textContent = tab.label;
+    tab.button.classList.toggle('is-primary', tab.isPrimary);
+    tab.button.classList.toggle('is-secondary', tab.isSecondary);
+    tab.button.classList.toggle(
       'is-collapsed',
-      outputFocus &&
-        !primaryTabs.has(tabId) &&
-        !state.outputSecondaryTabsExpanded &&
-        tabId !== state.activeDetailTab,
+      tab.shouldCollapse,
     );
   });
 }
