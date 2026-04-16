@@ -215,7 +215,7 @@ button {
 
 .command-statusbar {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px;
 }
 
@@ -495,6 +495,10 @@ button {
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
 }
 
+.selection-bridge.is-hidden {
+  display: none;
+}
+
 .selection-bridge-main,
 .selection-bridge-track,
 .selection-bridge-actions {
@@ -638,7 +642,7 @@ button {
 }
 
 .step-grid-output {
-  grid-template-columns: minmax(0, 1.34fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .detail-grid-artifacts {
@@ -675,6 +679,70 @@ button {
 
 .surface-result-side {
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.mission-summary-compact-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.96));
+}
+
+.mission-summary-compact-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mission-summary-compact-head h4 {
+  margin: 6px 0 0;
+  font-size: 1rem;
+}
+
+.mission-summary-compact-head .summary-note {
+  margin: 4px 0 0;
+  max-width: 58ch;
+}
+
+.mission-summary-compact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mission-summary-compact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 13px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.mission-summary-compact-card.is-emphasis {
+  border-color: rgba(37, 99, 235, 0.18);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.1), rgba(255, 255, 255, 0.98));
+}
+
+.mission-summary-compact-card.is-wide {
+  grid-column: span 3;
+}
+
+.mission-summary-compact-card span {
+  color: var(--text-3);
+  font-size: 0.69rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mission-summary-compact-card strong {
+  font-size: 0.84rem;
+  line-height: 1.36;
 }
 
 .mini-head,
@@ -3050,6 +3118,18 @@ button:disabled {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .mission-summary-compact-head {
+    flex-direction: column;
+  }
+
+  .mission-summary-compact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-summary-compact-card.is-wide {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 640px) {
@@ -3059,5 +3139,13 @@ button:disabled {
 
   .agent-intent-pill {
     border-radius: 18px;
+  }
+
+  .mission-summary-compact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-summary-compact-card.is-wide {
+    grid-column: span 1;
   }
 }

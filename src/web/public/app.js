@@ -3204,6 +3204,61 @@ function renderMissionSummary() {
   elements.runMissionButton.disabled = false;
   renderSelectionBridge();
 
+  if (state.activeStep === 'step-output') {
+    const latestExecutionLabel = latestSession
+      ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}`
+      : '아직 실행 전';
+    const learningLabel = `첨부 ${summary?.attachmentCounts?.total ?? 0} · 메모 ${summary?.memoryCounts?.total ?? 0}`;
+    const reviewLabel =
+      summary?.approvalCounts?.pending
+        ? `승인 ${summary.approvalCounts.pending}건 대기`
+        : state.missionActions?.summary?.pendingActionCount
+          ? `후속 ${state.missionActions.summary.pendingActionCount}건 남음`
+          : '검토 정리됨';
+    const compactCards = [
+      ['현재 단계', flow.currentStepLabel, 'is-emphasis'],
+      ['최근 실행', latestExecutionLabel, ''],
+      ['AI 구성', aiConfig.specialistKinds.length ? `${aiConfig.profileDisplayName} · +${aiConfig.specialistKinds.length}` : 'Core 4 only', ''],
+      ['읽는 자료', learningLabel, ''],
+      ['검토 상태', reviewLabel, ''],
+      ['다음 액션', flow.label, 'is-wide'],
+    ];
+
+    elements.missionSummary.innerHTML = `
+      <section class="mission-summary-compact-shell">
+        <div class="mission-summary-compact-head">
+          <div>
+            <p class="summary-label">선택한 미션 요약</p>
+            <h4>결과 확인에 필요한 문맥만 유지</h4>
+            <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
+          </div>
+          <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+            입력 다시 보기
+          </button>
+        </div>
+        <div class="mission-summary-compact-grid">
+          ${compactCards
+            .map(
+              ([label, value, modifier]) => `
+                <div class="mission-summary-compact-card ${modifier}">
+                  <span>${escapeHtml(label)}</span>
+                  <strong>${escapeHtml(value)}</strong>
+                </div>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+    `;
+
+    renderHeroMetrics();
+    renderHeroSignals();
+    renderAgentLane();
+    renderFlowState();
+    wireQuickActions(elements.missionSummary);
+    return;
+  }
+
   elements.missionSummary.innerHTML = `
     <section class="summary-section summary-emphasis">
       <p class="summary-label">미션 목표</p>
@@ -3311,6 +3366,14 @@ function renderSelectionBridge() {
   if (!elements.selectionBridge) {
     return;
   }
+
+  if (state.activeStep === 'step-output') {
+    elements.selectionBridge.classList.add('is-hidden');
+    elements.selectionBridge.innerHTML = '';
+    return;
+  }
+
+  elements.selectionBridge.classList.remove('is-hidden');
 
   const selectedRecord = getSelectedMissionRecord();
   if (!selectedRecord) {
