@@ -3840,6 +3840,16 @@ function renderReleaseStatus() {
                                     data-ui-action="focus-release-history"
                                     data-ui-value="${escapeHtml(latestAction.id || '')}"
                                   >최근 기록 보기</button>
+                                  ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="focus-release-history"
+                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
+                                        >최근 문제 보기</button>
+                                      `
+                                    : ''}
                                   <button
                                     class="ghost-button"
                                     type="button"

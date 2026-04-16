@@ -1541,6 +1541,15 @@
 - kept the change client-side and state-local so the release status API contract stays stable while the release tab becomes easier to navigate under repeated preflight/confirm cycles
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T01:18:00.000Z","id":"doclog_20260416011800_2d1dd8","type":"devlog","updatedAt":"2026-04-16T01:18:00.000Z"} -->
+## 2026-04-16 Release Recommendation Attention Jump Pass
+
+- date: 2026-04-16T01:18:00.000Z
+- added a dedicated `최근 문제 보기` action on release recommendation cards so the operator can jump straight to the latest blocked/failed/confirmation-required history row instead of first landing on the latest overall action
+- kept the extra jump conditional on `latestAttentionAction.id !== latestAction.id`, which avoids duplicate buttons when the newest attempt is already the newest problem
+- left the interaction client-side and reused existing history focus state, so the triage path became sharper without adding any new server contract or release status payload field
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z
