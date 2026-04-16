@@ -1577,6 +1577,15 @@
 - kept the change client-side and recommendation-local, so the release status payload and server-side recommendation model remain unchanged while handoff speed improves
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T02:34:00.000Z","id":"doclog_20260416023400_5e32b0","type":"devlog","updatedAt":"2026-04-16T02:34:00.000Z"} -->
+## 2026-04-16 Release History Exact-Link Share Pass
+
+- date: 2026-04-16T02:34:00.000Z
+- added exact-record share actions (`기록 링크 복사`, `문제 기록 링크 복사`, `이 기록 링크 복사`) so operators can hand off one specific release action event instead of an entire scope/provider flow
+- implemented the new path by reusing `copyReleaseTriageLink` with a focused history id and cleared flow filters, which keeps exact-record links semantically separate from flow links without introducing a second URL contract
+- exposed the exact-record share path both on recommendation cards and inside expanded history detail, so operators can start the handoff from either the summary or the raw action row
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

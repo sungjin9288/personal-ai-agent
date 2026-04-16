@@ -1394,6 +1394,17 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-history-link') {
+        void copyReleaseTriageLink({
+          focusedHistoryId: value || '',
+          historyOutcome: '',
+          historyProvider: '',
+          historyScope: '',
+          successNotice: '선택한 release 기록 링크를 복사했습니다.',
+        });
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedHistoryId: value || '',
@@ -4000,6 +4011,12 @@ function renderReleaseStatus() {
                                     data-ui-action="focus-release-history"
                                     data-ui-value="${escapeHtml(latestAction.id || '')}"
                                   >최근 기록 보기</button>
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="copy-release-history-link"
+                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                  >기록 링크 복사</button>
                                   ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
                                     ? `
                                         <button
@@ -4008,6 +4025,12 @@ function renderReleaseStatus() {
                                           data-ui-action="focus-release-history"
                                           data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
                                         >최근 문제 보기</button>
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-history-link"
+                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
+                                        >문제 기록 링크 복사</button>
                                       `
                                     : ''}
                                   <button
@@ -4166,6 +4189,12 @@ function renderReleaseStatus() {
                           ? `
                               <div class="release-history-detail">
                                 <div class="release-history-filter-actions">
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="copy-release-history-link"
+                                    data-ui-value="${escapeHtml(itemId)}"
+                                  >이 기록 링크 복사</button>
                                   <button
                                     class="ghost-button"
                                     type="button"
