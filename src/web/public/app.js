@@ -345,6 +345,7 @@ const elements = {
   detailContextbar: document.getElementById('detail-contextbar'),
   detailPanels: Array.from(document.querySelectorAll('.detail-panel')),
   detailTabButtons: Array.from(document.querySelectorAll('[data-detail-tab]')),
+  detailToolbarActions: document.getElementById('detail-toolbar-actions'),
   documentLogFile: document.getElementById('document-log-file'),
   documentLogFilter: document.getElementById('document-log-filter'),
   documentLogForm: document.getElementById('document-log-form'),
@@ -1960,6 +1961,7 @@ function syncStepViewMode() {
   elements.appShell?.classList.toggle('is-output-rail-collapsed', outputFocus && state.outputRailCollapsed);
   elements.mainStage?.classList.toggle('is-output-focus', outputFocus);
   elements.workspaceShell?.classList.toggle('is-output-focus', outputFocus);
+  renderDetailToolbarActions();
 }
 
 function toggleOutputRailCollapsed(forceValue = null) {
@@ -1979,6 +1981,7 @@ function toggleOutputMissionSummaryExpanded(forceValue = null) {
     state.outputMissionSummaryExpanded = !state.outputMissionSummaryExpanded;
   }
   renderMissionSummary();
+  renderDetailToolbarActions();
 }
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
@@ -1991,9 +1994,43 @@ function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {})
   });
   renderDetailTabLabels();
   renderDetailContextbar();
+  renderDetailToolbarActions();
   if (syncUrl) {
     writeUiStateToUrl({ historyMode: urlMode });
   }
+}
+
+function renderDetailToolbarActions() {
+  if (!elements.detailToolbarActions) {
+    return;
+  }
+
+  if (state.activeStep !== 'step-output') {
+    elements.detailToolbarActions.innerHTML = '';
+    elements.detailToolbarActions.classList.remove('is-visible');
+    return;
+  }
+
+  elements.detailToolbarActions.classList.add('is-visible');
+  elements.detailToolbarActions.innerHTML = `
+    <div class="detail-toolbar-pill">
+      <span>결과 보기 모드</span>
+      <strong>${escapeHtml(state.outputRailCollapsed ? '본문 집중' : '탐색 함께 보기')}</strong>
+    </div>
+    <div class="detail-toolbar-pill">
+      <span>미션 요약</span>
+      <strong>${escapeHtml(state.outputMissionSummaryExpanded ? '펼침' : '접힘')}</strong>
+    </div>
+    <div class="detail-toolbar-actions-row">
+      <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+        ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
+      </button>
+      <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+        ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
+      </button>
+    </div>
+  `;
+  wireQuickActions(elements.detailToolbarActions);
 }
 
 function openComposer() {
@@ -3324,9 +3361,6 @@ function renderMissionSummary() {
               .join('')}
           </div>
           <div class="action-row">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
-              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
-            </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
               요약 펼치기
             </button>
@@ -3354,9 +3388,6 @@ function renderMissionSummary() {
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
           <div class="action-row action-row-compact">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
-              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
-            </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
               요약 접기
             </button>
@@ -7321,6 +7352,7 @@ async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } =
   renderAgentBlueprintBuilder();
   renderDetailTabLabels();
   renderDetailContextbar();
+  renderDetailToolbarActions();
 }
 
 async function handleMissionCreate(event) {

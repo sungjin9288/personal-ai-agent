@@ -72,7 +72,7 @@ button {
 }
 
 .app-shell.is-output-focus.is-output-rail-collapsed {
-  grid-template-columns: 136px minmax(0, 1fr);
+  grid-template-columns: 22px minmax(0, 1fr);
 }
 
 .nav-rail {
@@ -98,8 +98,10 @@ button {
 }
 
 .app-shell.is-output-focus.is-output-rail-collapsed .nav-rail {
-  padding: 4px;
-  gap: 4px;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(11, 20, 36, 0.98), rgba(17, 28, 49, 0.98));
 }
 
 .brand-block {
@@ -134,16 +136,7 @@ button {
   display: none;
 }
 
-.app-shell.is-output-focus.is-output-rail-collapsed .brand-block,
-.app-shell.is-output-focus.is-output-rail-collapsed .rail-controls {
-  display: none;
-}
-
-.app-shell.is-output-focus.is-output-rail-collapsed .rail-queue {
-  padding: 6px;
-}
-
-.app-shell.is-output-focus.is-output-rail-collapsed .rail-queue .mini-head {
+.app-shell.is-output-focus.is-output-rail-collapsed .nav-rail > * {
   display: none;
 }
 
@@ -669,9 +662,55 @@ button {
   backdrop-filter: blur(10px);
 }
 
+.detail-toolbar-actions {
+  display: none;
+}
+
+.detail-toolbar-actions.is-visible {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px 8px;
+}
+
+.detail-toolbar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(248, 250, 252, 0.86);
+}
+
+.detail-toolbar-pill span {
+  color: var(--text-3);
+  font-size: 0.68rem;
+}
+
+.detail-toolbar-pill strong {
+  font-size: 0.76rem;
+}
+
+.detail-toolbar-actions-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .workspace-shell.is-output-focus .detail-tab {
   padding: 6px 10px;
   font-size: 0.74rem;
+}
+
+.workspace-shell.is-output-focus .detail-toolbar-actions.is-visible {
+  position: sticky;
+  top: 40px;
+  z-index: 5;
+  padding: 0 2px 8px;
+  background: linear-gradient(180deg, rgba(244, 247, 252, 0.96), rgba(244, 247, 252, 0.72) 78%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 .workspace-shell.is-output-focus .detail-grid-artifacts {
