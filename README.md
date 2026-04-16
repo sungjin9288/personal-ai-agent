@@ -570,3 +570,5 @@ recommendation 카드 자체도 이제 현재 triage 상태를 반영합니다. 
 release triage 상태도 이제 URL에 실립니다. `release` 탭에서 focused history row나 `주의 상태만 / scope / provider` 필터를 건 상태는 query string으로 같이 동기화되므로, 새로고침이나 링크 공유 뒤에도 같은 triage 문맥으로 바로 복원됩니다.
 
 이 URL state는 release tab 안에서 바로 공유 액션으로도 연결됩니다. focused history가 있을 때는 `현재 triage 링크 복사`로 지금 보고 있는 triage 전체를 복사할 수 있고, 펼친 history row 안에서는 `이 flow 링크 복사`로 특정 scope/provider 흐름만 고정한 deep link를 바로 보낼 수 있습니다.
+
+recommendation 카드에서도 같은 share path를 바로 시작할 수 있습니다. `flow 링크 복사`와 `문제 흐름 링크 복사`는 현재 narrowing을 먼저 적용하지 않고도 같은 flow 또는 attention flow deep link를 곧바로 복사하므로, operator가 추천 액션을 읽는 순간 바로 다른 사람에게 같은 triage 문맥을 넘길 수 있습니다.

@@ -4020,6 +4020,15 @@ function renderReleaseStatus() {
                                     data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
                                     ${sameFlowActive ? 'disabled' : ''}
                                   >${sameFlowActive ? '현재 flow' : '같은 flow 보기'}</button>
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="copy-release-flow-link"
+                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
+                                    data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
+                                    data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                  >flow 링크 복사</button>
                                   ${latestAttentionAction
                                     ? `
                                         <button
@@ -4032,6 +4041,15 @@ function renderReleaseStatus() {
                                           data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
                                           ${attentionFlowActive ? 'disabled' : ''}
                                         >${attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기'}</button>
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-flow-link"
+                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
+                                          data-ui-outcome="attention"
+                                          data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
+                                          data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
+                                        >문제 흐름 링크 복사</button>
                                       `
                                     : ''}
                                 </div>

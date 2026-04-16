@@ -1568,6 +1568,15 @@
 - scoped the generated deep links to `detailTab=release` plus the chosen focus/filter overrides, so operators can hand off the exact investigation slice without re-explaining the narrowing steps
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T02:21:00.000Z","id":"doclog_20260416022100_877183","type":"devlog","updatedAt":"2026-04-16T02:21:00.000Z"} -->
+## 2026-04-16 Recommendation Flow Share Pass
+
+- date: 2026-04-16T02:21:00.000Z
+- added `flow 링크 복사` and `문제 흐름 링크 복사` directly to release recommendation cards so the operator can share the matching triage context without first opening or filtering release action history
+- reused the existing `copy-release-flow-link` action payload, which keeps recommendation-level sharing and history-row sharing aligned on the same deep-link contract
+- kept the change client-side and recommendation-local, so the release status payload and server-side recommendation model remain unchanged while handoff speed improves
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z
