@@ -550,3 +550,5 @@ release tab에는 `recent release action history`도 함께 쌓입니다. `/api/
 같은 카드에서 `최근 기록 보기`를 누르면 해당 release action history row로 바로 이동하고 highlight됩니다. 그래서 operator는 recommendation을 읽은 직후 관련 preflight나 blocked 이유를 같은 탭 안에서 즉시 추적할 수 있습니다.
 
 이제 해당 history row는 `상세 보기`까지 지원합니다. recommendation에서 jump하면 관련 row가 자동으로 펼쳐지고, action id / outcome / scope / provider를 같은 카드 안에서 바로 확인할 수 있어 release triage가 recommendation 섹션과 history 섹션 사이를 왕복하지 않고 닫힙니다.
+
+focused history row는 리스트 상단에 pin됩니다. 즉, recommendation에서 연 기록은 release action history가 길어져도 바로 위에 유지되고, `포커스 해제` 전까지는 현재 triage 대상이라는 문맥이 계속 보입니다.

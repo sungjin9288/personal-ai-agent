@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T01:10:00.000Z","id":"doclog_20260416011000_2f4b67","type":"devlog","updatedAt":"2026-04-16T01:10:00.000Z"} -->
+## 2026-04-16 Release History Focus Pin Pass
+
+- date: 2026-04-16T01:10:00.000Z
+- promoted release history focus from a temporary scroll target into a pinned triage state so the selected action stays at the top of the history list until the operator explicitly clears it
+- added `이 기록 고정` and `포커스 해제` controls directly on history rows, which makes repeated release investigation less dependent on recommendation cards once the operator is already inside the history section
+- kept the behavior client-side and non-destructive, preserving the release status API while making recommendation-driven investigation durable across rerenders and repeated status reloads
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T00:55:00.000Z","id":"doclog_20260416005500_4fd6aa","type":"devlog","updatedAt":"2026-04-16T00:55:00.000Z"} -->
 ## 2026-04-16 Release History Expand Pass
 

@@ -876,6 +876,12 @@ function toggleReleaseHistoryEntry(historyId = '') {
   renderReleaseStatus();
 }
 
+function clearReleaseHistoryFocus() {
+  state.releaseFocusedHistoryId = '';
+  state.releaseExpandedHistoryId = '';
+  renderReleaseStatus();
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -1164,6 +1170,12 @@ function wireQuickActions(scope = document) {
 
       if (action === 'toggle-release-history') {
         toggleReleaseHistoryEntry(value || '');
+        return;
+      }
+
+      if (action === 'clear-release-history-focus') {
+        clearReleaseHistoryFocus();
+        setUiNotice('release action history 포커스를 해제했습니다.');
         return;
       }
 
@@ -3385,6 +3397,12 @@ function renderReleaseStatus() {
     : snapshot
       ? 'snapshot archived'
       : 'snapshot 없음';
+  const orderedReleaseActionHistory = focusedHistoryId
+    ? [
+        ...releaseActionHistory.filter((item) => String(item?.id || '').trim() === focusedHistoryId),
+        ...releaseActionHistory.filter((item) => String(item?.id || '').trim() !== focusedHistoryId),
+      ]
+    : releaseActionHistory;
   const releaseHeadline = summary.ready
     ? (release.artifactState === 'local-current'
       ? 'execution v1 closeout ready (local evidence)'
@@ -3668,9 +3686,18 @@ function renderReleaseStatus() {
                 <h4>최근 preflight, refresh, snapshot, live action</h4>
               </div>
             </div>
+            ${focusedHistoryId
+              ? `
+                  <div class="harness-callout release-history-focus-callout">
+                    <strong>현재 포커스된 release action</strong>
+                    <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
+                    <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
+                  </div>
+                `
+              : ''}
             <div class="release-history-list">
-              ${releaseActionHistory.length
-                ? releaseActionHistory
+              ${orderedReleaseActionHistory.length
+                ? orderedReleaseActionHistory
                   .map(
                     (item) => {
                       const itemId = String(item.id || '').trim();
@@ -3685,6 +3712,22 @@ function renderReleaseStatus() {
                           </div>
                           <div class="release-history-actions">
                             <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
+                            ${isFocused
+                              ? `
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="clear-release-history-focus"
+                                  >포커스 해제</button>
+                                `
+                              : `
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="focus-release-history"
+                                    data-ui-value="${escapeHtml(itemId)}"
+                                  >이 기록 고정</button>
+                                `}
                             <button
                               class="ghost-button"
                               type="button"
