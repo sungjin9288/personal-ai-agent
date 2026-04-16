@@ -88,6 +88,11 @@ button {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.app-shell.is-output-focus .nav-rail {
+  gap: 5px;
+  padding: 6px;
+}
+
 .brand-block {
   display: flex;
   flex-direction: column;
@@ -99,6 +104,10 @@ button {
   font-size: 1.34rem;
   line-height: 1;
   word-break: keep-all;
+}
+
+.app-shell.is-output-focus .brand-block h1 {
+  font-size: 1.18rem;
 }
 
 .brand-copy {
@@ -528,6 +537,24 @@ button {
 
 .workspace-shell.is-output-focus {
   gap: 10px;
+}
+
+.workspace-shell.is-output-focus #step-output .panel-head p:last-child,
+.workspace-shell.is-output-focus .detail-shell-head,
+.workspace-shell.is-output-focus .detail-contextbar {
+  display: none;
+}
+
+.workspace-shell.is-output-focus #step-output .panel-head h3 {
+  font-size: 1rem;
+}
+
+.workspace-shell.is-output-focus .detail-shell {
+  gap: 8px;
+}
+
+.workspace-shell.is-output-focus .detail-tabs {
+  margin-top: -2px;
 }
 
 .selection-bridge {
