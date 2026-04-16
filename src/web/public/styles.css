@@ -192,6 +192,10 @@ button {
   padding-top: 8px;
 }
 
+.main-stage.is-output-focus .command-header {
+  display: none;
+}
+
 .command-header {
   display: grid;
   grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
@@ -655,8 +659,14 @@ button {
 }
 
 .workspace-shell.is-output-focus .detail-tabs {
-  margin-top: -2px;
-  padding-bottom: 4px;
+  position: sticky;
+  top: 6px;
+  z-index: 6;
+  margin-top: 0;
+  padding: 0 0 6px;
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(244, 247, 252, 0.98), rgba(244, 247, 252, 0.74) 78%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .workspace-shell.is-output-focus .detail-tab {

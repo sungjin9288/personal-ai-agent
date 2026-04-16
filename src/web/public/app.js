@@ -3324,6 +3324,9 @@ function renderMissionSummary() {
               .join('')}
           </div>
           <div class="action-row">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
+            </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
               요약 펼치기
             </button>
@@ -3351,6 +3354,9 @@ function renderMissionSummary() {
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
           <div class="action-row action-row-compact">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
+            </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
               요약 접기
             </button>
