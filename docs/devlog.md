@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T06:15:00.000Z","id":"doclog_20260416061500_91af2d","type":"devlog","updatedAt":"2026-04-16T06:15:00.000Z"} -->
+## 2026-04-16 Specialist Follow-Up Coverage Expansion Pass
+
+- date: 2026-04-16T06:15:00.000Z
+- extended `smoke-specialist-follow-up-inbox` with a blocked `design` branch so inbox and generic action summaries now prove post-triad specialist lanes appear in the same follow-up aggregate as the older implementation and verification lanes
+- updated `smoke-specialist-follow-up-reminders` to drive a failed `documentation` branch through the full reminder lifecycle, which keeps reminder persistence and mission or workspace or global summary rollups grounded for a non-triad lane as well
+- kept the scope limited to deterministic follow-up coverage and documentation, leaving mission execution behavior, provider contracts, and mutable release artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T05:55:00.000Z","id":"doclog_20260416055500_54c3b1","type":"devlog","updatedAt":"2026-04-16T05:55:00.000Z"} -->
 ## 2026-04-16 Specialist Remediation Copy Generalization Pass
 

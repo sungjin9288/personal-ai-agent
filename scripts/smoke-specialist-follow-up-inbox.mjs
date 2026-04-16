@@ -38,6 +38,15 @@ const blockedMission = service.createMission({
   workspaceId: workspace.id,
 });
 
+const designMission = service.createMission({
+  constraints: ['parallel-specialists:design,documentation', 'parallel-block:design'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Create one blocked follow-up item on a post-triad specialist lane.',
+  title: 'Specialist design follow-up mission',
+  workspaceId: workspace.id,
+});
+
 const failedRun = await service.runMission(failedMission.id, {
   provider: 'stub',
   providerSpecified: true,
@@ -46,9 +55,14 @@ const blockedRun = await service.runMission(blockedMission.id, {
   provider: 'stub',
   providerSpecified: true,
 });
+const designRun = await service.runMission(designMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
 
 assert.equal(failedRun.mission.status, 'failed');
 assert.equal(blockedRun.mission.status, 'failed');
+assert.equal(designRun.mission.status, 'failed');
 
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
@@ -57,7 +71,8 @@ const overdueTimestamp = '2026-04-01T00:00:00.000Z';
 state.agentRuns = state.agentRuns.map((agentRun) => {
   if (
     (agentRun.missionId === failedMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') ||
-    (agentRun.missionId === blockedMission.id && agentRun.specialistKind === 'verification' && agentRun.status === 'blocked')
+    (agentRun.missionId === blockedMission.id && agentRun.specialistKind === 'verification' && agentRun.status === 'blocked') ||
+    (agentRun.missionId === designMission.id && agentRun.specialistKind === 'design' && agentRun.status === 'blocked')
   ) {
     return {
       ...agentRun,
@@ -76,14 +91,15 @@ const inbox = runCli({
   args: ['action', 'specialist-follow-ups'],
 });
 
-assert.equal(inbox.items.length, 2);
-assert.equal(inbox.summary.total, 2);
-assert.equal(inbox.summary.overdueCount, 2);
-assert.equal(inbox.summary.providerCounts.stub, 2);
+assert.equal(inbox.items.length, 3);
+assert.equal(inbox.summary.total, 3);
+assert.equal(inbox.summary.overdueCount, 3);
+assert.equal(inbox.summary.providerCounts.stub, 3);
 assert.equal(inbox.summary.statusCounts.failed, 1);
-assert.equal(inbox.summary.statusCounts.blocked, 1);
+assert.equal(inbox.summary.statusCounts.blocked, 2);
 assert.equal(inbox.summary.specialistKindCounts.implementation, 1);
 assert.equal(inbox.summary.specialistKindCounts.verification, 1);
+assert.equal(inbox.summary.specialistKindCounts.design, 1);
 
 const failedOnly = runCli({
   rootDir: tempRoot,
@@ -113,13 +129,17 @@ const blockedOnly = runCli({
 });
 
 assert.equal(blockedOnly.filters.status, 'blocked');
-assert.equal(blockedOnly.items.length, 1);
-assert.equal(blockedOnly.items[0].missionId, blockedMission.id);
-assert.equal(blockedOnly.items[0].specialistKind, 'verification');
-assert.ok(blockedOnly.items[0].specialistHandoff);
-assert.ok(blockedOnly.items[0].specialistHandoff.currentState.includes('blocked'));
-assert.ok(blockedOnly.items[0].specialistHandoff.blockers.length >= 1);
-assert.equal(blockedOnly.items[0].specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
+assert.equal(blockedOnly.items.length, 2);
+assert.deepEqual(
+  blockedOnly.items.map((item) => item.specialistKind).sort((left, right) => String(left).localeCompare(String(right))),
+  ['design', 'verification'],
+);
+for (const item of blockedOnly.items) {
+  assert.ok(item.specialistHandoff);
+  assert.ok(item.specialistHandoff.currentState.includes('blocked'));
+  assert.ok(item.specialistHandoff.blockers.length >= 1);
+  assert.equal(item.specialistHandoff.nextHandoff.recommendedOwner, 'workspace-owner');
+}
 
 const overdueOnly = runCli({
   rootDir: tempRoot,
@@ -127,8 +147,8 @@ const overdueOnly = runCli({
 });
 
 assert.equal(overdueOnly.filters.overdueOnly, true);
-assert.equal(overdueOnly.items.length, 2);
-assert.equal(overdueOnly.summary.overdueCount, 2);
+assert.equal(overdueOnly.items.length, 3);
+assert.equal(overdueOnly.summary.overdueCount, 3);
 
 const missionScoped = runCli({
   rootDir: tempRoot,
@@ -145,7 +165,7 @@ const providerScoped = runCli({
 
 assert.equal(providerScoped.filters.providerId, 'stub');
 assert.equal(providerScoped.filters.workspaceId, workspace.id);
-assert.equal(providerScoped.items.length, 2);
+assert.equal(providerScoped.items.length, 3);
 assert.equal(providerScoped.items.every((item) => item.providerId === 'stub'), true);
 
 const genericInbox = runCli({
@@ -153,16 +173,17 @@ const genericInbox = runCli({
   args: ['action', 'inbox', '--class', 'specialist-follow-up-required'],
 });
 
-assert.equal(genericInbox.items.length, 2);
-assert.equal(genericInbox.summary.actionClassCounts.specialistFollowUpRequired, 2);
-assert.equal(genericInbox.summary.specialistFollowUpProviderCounts.stub, 2);
+assert.equal(genericInbox.items.length, 3);
+assert.equal(genericInbox.summary.actionClassCounts.specialistFollowUpRequired, 3);
+assert.equal(genericInbox.summary.specialistFollowUpProviderCounts.stub, 3);
 assert.equal(genericInbox.summary.specialistFollowUpKindCounts.implementation, 1);
 assert.equal(genericInbox.summary.specialistFollowUpKindCounts.verification, 1);
-assert.equal(genericInbox.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 2);
+assert.equal(genericInbox.summary.specialistFollowUpKindCounts.design, 1);
+assert.equal(genericInbox.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 3);
 assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.failed, 1);
-assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.blocked, 1);
-assert.equal(genericInbox.summary.specialistFollowUpOverdueCount, 2);
-assert.equal(genericInbox.summary.specialistFollowUpNeedsReminderCount, 2);
+assert.equal(genericInbox.summary.specialistFollowUpStatusCounts.blocked, 2);
+assert.equal(genericInbox.summary.specialistFollowUpOverdueCount, 3);
+assert.equal(genericInbox.summary.specialistFollowUpNeedsReminderCount, 3);
 assert.equal(genericInbox.summary.specialistFollowUpReminderCountTotal, 0);
 assert.equal(genericInbox.summary.specialistFollowUpLatestReminderAt, null);
 assert.ok(genericInbox.summary.specialistFollowUpNextReminderAt);
@@ -171,6 +192,7 @@ console.log(
   JSON.stringify(
     {
       blockedMissionId: blockedMission.id,
+      designMissionId: designMission.id,
       failedMissionId: failedMission.id,
       mode: 'specialist-follow-up-inbox',
       ok: true,

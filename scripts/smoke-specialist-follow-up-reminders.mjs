@@ -29,9 +29,9 @@ const mission = runCli({
     '--title',
     'Specialist follow-up reminder mission',
     '--objective',
-    'Create one failed specialist branch and verify reminder lifecycle.',
+    'Create one failed post-triad specialist branch and verify reminder lifecycle.',
     '--constraints',
-    'parallel-specialists:research,implementation|parallel-fail:implementation',
+    'parallel-specialists:design,documentation|parallel-fail:documentation',
   ],
 });
 
@@ -55,7 +55,7 @@ function writeState(mutator) {
 
 writeState((state) => {
   state.agentRuns = state.agentRuns.map((agentRun) => {
-    if (agentRun.missionId === mission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+    if (agentRun.missionId === mission.id && agentRun.specialistKind === 'documentation' && agentRun.status === 'failed') {
       return {
         ...agentRun,
         endedAt: failureTimestamp,
@@ -86,7 +86,7 @@ assert.equal(dueFollowUps.summary.needsReminderCount, 1);
 assert.equal(dueFollowUps.summary.overdueCount, 1);
 assert.equal(dueFollowUps.summary.reminderCountTotal, 0);
 assert.equal(dueFollowUps.items[0].providerId, 'stub');
-assert.equal(dueFollowUps.items[0].specialistKind, 'implementation');
+assert.equal(dueFollowUps.items[0].specialistKind, 'documentation');
 assert.equal(dueFollowUps.items[0].status, 'failed');
 assert.equal(dueFollowUps.items[0].needsReminder, true);
 assert.equal(dueFollowUps.items[0].isOverdue, true);
@@ -130,13 +130,13 @@ assert.equal(firstReminder.summary.dueCandidateCount, 1);
 assert.equal(firstReminder.summary.remindedCount, 1);
 assert.equal(firstReminder.summary.overdueReminderCount, 1);
 assert.equal(firstReminder.summary.providerCounts.stub, 1);
-assert.equal(firstReminder.summary.specialistKindCounts.implementation, 1);
+assert.equal(firstReminder.summary.specialistKindCounts.documentation, 1);
 assert.equal(firstReminder.summary.statusCounts.failed, 1);
 assert.equal(firstReminder.summary.retryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(firstReminder.summary.remediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(firstReminder.items.length, 1);
 assert.equal(firstReminder.items[0].providerId, 'stub');
-assert.equal(firstReminder.items[0].specialistKind, 'implementation');
+assert.equal(firstReminder.items[0].specialistKind, 'documentation');
 assert.equal(firstReminder.items[0].remediationRoute.routeType, 'standard-branch-remediation');
 assert.match(firstReminder.items[0].detail, /specialist follow-up reminder/);
 
