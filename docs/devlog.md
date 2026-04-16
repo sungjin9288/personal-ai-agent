@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T06:40:00.000Z","id":"doclog_20260416064000_0bc7f4","type":"devlog","updatedAt":"2026-04-16T06:40:00.000Z"} -->
+## 2026-04-16 Operator Timeline Post-Triad Coverage Pass
+
+- date: 2026-04-16T06:40:00.000Z
+- updated `smoke-operator-timeline` so the specialist reminder branch runs through `documentation` instead of the older `implementation` lane, which proves workspace/global/operator chronology keeps the same specialist follow-up aggregate for a post-triad lane
+- replaced brittle fixed weekly bucket date assertions with payload-consistency assertions against `executionWeeklyBuckets[0].weekStartDate`, so recent provider window smoke stays deterministic across different execution dates
+- kept the change limited to operator timeline regression coverage and documentation, leaving runtime behavior, provider contracts, and mutable release artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:15:00.000Z","id":"doclog_20260416061500_91af2d","type":"devlog","updatedAt":"2026-04-16T06:15:00.000Z"} -->
 ## 2026-04-16 Specialist Follow-Up Coverage Expansion Pass
 

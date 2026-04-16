@@ -107,9 +107,9 @@ const specialistReminderMission = runCli({
     '--title',
     'Specialist reminder timeline mission',
     '--objective',
-    'Create specialist reminder pressure in workspace two.',
+    'Create post-triad specialist reminder pressure in workspace two.',
     '--constraints',
-    'parallel-specialists:research,implementation|parallel-fail:implementation',
+    'parallel-specialists:design,documentation|parallel-fail:documentation',
   ],
 });
 
@@ -192,7 +192,7 @@ state.approvals = state.approvals.map((approval) => {
 state.agentRuns = state.agentRuns.map((agentRun) => {
   if (
     agentRun.missionId === specialistReminderMission.id &&
-    agentRun.specialistKind === 'implementation' &&
+    agentRun.specialistKind === 'documentation' &&
     agentRun.status === 'failed'
   ) {
     return {
@@ -233,7 +233,7 @@ const specialistReminders = runCli({
 assert.equal(specialistReminders.summary.remindedCount, 1);
 assert.equal(specialistReminders.items.length, 1);
 assert.equal(specialistReminders.items[0].missionId, specialistReminderMission.id);
-assert.equal(specialistReminders.items[0].specialistKind, 'implementation');
+assert.equal(specialistReminders.items[0].specialistKind, 'documentation');
 
 const escalationLog = runCli({
   rootDir: tempRoot,
@@ -323,7 +323,7 @@ assert.equal(reviewerWorkspaceTimeline.summary.maintenanceLatestMonthlyBucketSta
 assert.equal(reviewerWorkspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, null);
 assert.equal(reviewerWorkspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.missionId, specialistReminderMission.id);
-assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.specialistKind, 'implementation');
+assert.equal(reviewerWorkspaceTimeline.summary.specialistLatestFollowUp.specialistKind, 'documentation');
 assert.ok(reviewerWorkspaceTimeline.summary.specialistLatestReminderAt);
 assert.ok(reviewerWorkspaceTimeline.summary.specialistNextReminderAt);
 assert.equal(reviewerWorkspaceTimeline.timeline.every((event) => event.workspaceId === workspaceTwo.id), true);
@@ -367,7 +367,10 @@ assert.equal(
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
-assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(
+  recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate,
+  recentReviewerWorkspaceTimeline.providerRecentWindow.executionWeeklyBuckets[0].weekStartDate,
+);
 assert.equal(recentReviewerWorkspaceTimeline.summary.latestRecentProviderEvent.providerId, 'stub');
 assert.equal(recentReviewerWorkspaceTimeline.summary.latestRecentProviderExecution.providerId, 'stub');
 
@@ -403,7 +406,7 @@ assert.equal(globalTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
 assert.equal(globalTimeline.summary.specialistFollowUpOverdueCount, 1);
 assert.equal(globalTimeline.summary.specialistFollowUpReminderCountTotal, 1);
 assert.equal(globalTimeline.summary.specialistLatestFollowUp.missionId, specialistReminderMission.id);
-assert.equal(globalTimeline.summary.specialistLatestFollowUp.specialistKind, 'implementation');
+assert.equal(globalTimeline.summary.specialistLatestFollowUp.specialistKind, 'documentation');
 assert.ok(globalTimeline.summary.specialistLatestReminderAt);
 assert.ok(globalTimeline.summary.specialistNextReminderAt);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
@@ -518,7 +521,10 @@ assert.equal(
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
-assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(
+  recentGlobalTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate,
+  recentGlobalTimeline.providerRecentWindow.executionWeeklyBuckets[0].weekStartDate,
+);
 assert.equal(recentGlobalTimeline.summary.latestRecentProviderEvent.kind, 'provider-attention-resolved');
 assert.equal(recentGlobalTimeline.summary.latestRecentProviderExecution.providerId, 'stub');
 
