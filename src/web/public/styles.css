@@ -141,6 +141,10 @@ button {
   padding: 10px 12px 12px;
 }
 
+.main-stage.is-output-focus {
+  padding-top: 8px;
+}
+
 .command-header {
   display: grid;
   grid-template-columns: 1fr;
@@ -155,6 +159,11 @@ button {
     radial-gradient(circle at top right, rgba(37, 99, 235, 0.09), transparent 20rem),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.96));
   overflow: hidden;
+}
+
+.main-stage.is-output-focus .command-header {
+  gap: 8px;
+  padding: 8px 12px;
 }
 
 .command-overview {
@@ -178,6 +187,11 @@ button {
   color: var(--text-2);
   line-height: 1.32;
   font-size: 0.74rem;
+}
+
+.main-stage.is-output-focus .command-subtitle {
+  max-width: 34ch;
+  font-size: 0.7rem;
 }
 
 .command-control {
@@ -364,6 +378,11 @@ button {
   background: linear-gradient(180deg, rgba(247, 250, 255, 0.18), rgba(241, 245, 251, 0.72));
 }
 
+.main-stage.is-output-focus .flow-shell {
+  margin: 0 -14px -10px;
+  padding: 6px 14px 8px;
+}
+
 .flow-shell-head {
   display: flex;
   align-items: baseline;
@@ -376,6 +395,10 @@ button {
   margin: 0;
   color: var(--text-3);
   font-size: 0.72rem;
+}
+
+.main-stage.is-output-focus .flow-shell-copy {
+  display: none;
 }
 
 .flow-nav {
@@ -475,11 +498,24 @@ button {
   font-size: 0.68rem;
 }
 
+.main-stage.is-output-focus .flow-step {
+  min-height: 46px;
+  padding: 7px 6px;
+}
+
+.main-stage.is-output-focus .flow-step-copy small {
+  display: none;
+}
+
 .workspace-shell {
   display: grid;
   grid-template-rows: auto auto auto;
   gap: 12px;
   min-height: 0;
+}
+
+.workspace-shell.is-output-focus {
+  gap: 10px;
 }
 
 .selection-bridge {
@@ -691,6 +727,11 @@ button {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.96));
 }
 
+.workspace-shell.is-output-focus .mission-summary-compact-shell {
+  gap: 10px;
+  padding: 12px;
+}
+
 .mission-summary-compact-head {
   display: flex;
   align-items: flex-start;
@@ -712,6 +753,10 @@ button {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+.workspace-shell.is-output-focus .mission-summary-compact-grid {
+  gap: 8px;
 }
 
 .mission-summary-compact-card {
@@ -1798,6 +1843,12 @@ button:disabled {
   padding: 14px;
 }
 
+.workspace-shell.is-output-focus .stage-summary-card,
+.workspace-shell.is-output-focus .surface-result-main,
+.workspace-shell.is-output-focus .surface-result-side {
+  padding: 12px;
+}
+
 .review-spotlight {
   gap: 12px;
   border-color: rgba(37, 99, 235, 0.14);
@@ -1858,6 +1909,10 @@ button:disabled {
     linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
 }
 
+.workspace-shell.is-output-focus .result-spotlight {
+  gap: 12px;
+}
+
 .result-spotlight-head {
   display: flex;
   align-items: flex-start;
@@ -1875,6 +1930,12 @@ button:disabled {
   max-width: 72ch;
   font-size: 0.82rem;
   line-height: 1.58;
+}
+
+.workspace-shell.is-output-focus .result-spotlight-note {
+  max-width: 64ch;
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .summary-grid {
@@ -2076,6 +2137,10 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.workspace-shell.is-output-focus .closeout-list {
+  gap: 8px;
 }
 
 .closeout-item {

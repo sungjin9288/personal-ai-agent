@@ -360,6 +360,7 @@ const elements = {
   missionAttachmentInput: document.getElementById('mission-attachment-input'),
   missionForm: document.getElementById('mission-form'),
   missionList: document.getElementById('mission-list'),
+  mainStage: document.querySelector('.main-stage'),
   memoryForm: document.getElementById('memory-form'),
   memoryFormStatus: document.getElementById('memory-form-status'),
   memoryCancelButton: document.getElementById('memory-cancel-button'),
@@ -397,6 +398,7 @@ const elements = {
   workspaceCurrent: document.getElementById('workspace-current'),
   workspacePathInput: document.getElementById('workspace-path-input'),
   workspaceNameInput: document.getElementById('workspace-name-input'),
+  workspaceShell: document.querySelector('.workspace-shell'),
   workspaceSelect: document.getElementById('workspace-select'),
   toggleWorkspaceFormButton: document.getElementById('toggle-workspace-form-button'),
   cancelWorkspaceFormButton: document.getElementById('cancel-workspace-form-button'),
@@ -1921,6 +1923,7 @@ function wireQuickActions(scope = document) {
 
 function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeStep = stepId;
+  syncStepViewMode();
   elements.stepButtons.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.stepTarget === stepId);
   });
@@ -1936,6 +1939,12 @@ function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode =
   if (syncUrl) {
     writeUiStateToUrl({ historyMode: urlMode });
   }
+}
+
+function syncStepViewMode() {
+  const outputFocus = state.activeStep === 'step-output';
+  elements.mainStage?.classList.toggle('is-output-focus', outputFocus);
+  elements.workspaceShell?.classList.toggle('is-output-focus', outputFocus);
 }
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
@@ -2274,6 +2283,7 @@ function renderFlowState() {
   const hasHarnessRecommendation = Boolean(harnessState.topRecommendation);
   const topHarnessAction = harnessState.recommendationAction;
   const hasMissionSelection = Boolean(state.selectedMissionId);
+  const isOutputFocus = state.activeStep === 'step-output';
 
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
@@ -2299,12 +2309,18 @@ function renderFlowState() {
               `
               : ''
           }
-          <button class="ghost-button" type="button" data-ui-action="copy-view-link">
-            현재 링크 복사
-          </button>
-          <button class="ghost-button" type="button" data-ui-action="reset-view">
-            ${hasMissionSelection ? '보기 초기화' : '초기 상태로'}
-          </button>
+          ${
+            isOutputFocus
+              ? ''
+              : `
+                <button class="ghost-button" type="button" data-ui-action="copy-view-link">
+                  현재 링크 복사
+                </button>
+                <button class="ghost-button" type="button" data-ui-action="reset-view">
+                  ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}
+                </button>
+              `
+          }
         </div>
       </div>
       <div class="flow-status-inline">
@@ -2996,11 +3012,25 @@ function renderHeroMetrics() {
   const latestSession = summary.latestSession || {};
   const flow = getFlowState();
   const actionSummary = state.missionActions?.summary || {};
-  const metrics = [
-    ['현재 단계', flow.currentStepLabel],
-    ['검토와 후속', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
-    ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
-  ];
+  const metrics =
+    state.activeStep === 'step-output'
+      ? [
+          ['현재 단계', flow.currentStepLabel],
+          ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
+          [
+            '검토 상태',
+            summary.approvalCounts?.pending
+              ? `승인 ${summary.approvalCounts.pending}건 대기`
+              : actionSummary.pendingActionCount
+                ? `후속 ${actionSummary.pendingActionCount}건 남음`
+                : '정리 완료',
+          ],
+        ]
+      : [
+          ['현재 단계', flow.currentStepLabel],
+          ['검토와 후속', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
+          ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
+        ];
 
   elements.heroMetrics.innerHTML = metrics
     .map(
