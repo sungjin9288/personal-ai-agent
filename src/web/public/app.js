@@ -284,6 +284,53 @@ const AGENT_BLUEPRINTS = {
   ],
 };
 
+const AGENT_INTENT_PRESETS = {
+  engineering: [
+    {
+      blueprintId: 'engineering-default',
+      description: 'manager, planner, executor, reviewer만으로 빠르게 시작',
+      label: '빠르게 초안',
+    },
+    {
+      blueprintId: 'engineering-implementation-verification',
+      description: '구현안과 검증 기준을 함께 확인',
+      label: '구현 + 검증',
+    },
+    {
+      blueprintId: 'engineering-triad',
+      description: '리스크, 구현, 테스트 관점을 같이 정리',
+      label: '리서치 포함',
+    },
+    {
+      blueprintId: 'engineering-full-spectrum',
+      description: 'UX와 문서 handoff까지 한 번에 정리',
+      label: '끝까지 handoff',
+    },
+  ],
+  knowledge: [
+    {
+      blueprintId: 'knowledge-default',
+      description: '짧은 문서 초안이나 메모를 빠르게 생성',
+      label: '빠르게 초안',
+    },
+    {
+      blueprintId: 'knowledge-research-implementation',
+      description: '자료 조사와 구조화된 초안을 함께 생성',
+      label: '조사 + 초안',
+    },
+    {
+      blueprintId: 'knowledge-triad',
+      description: '근거와 검토까지 포함한 high-confidence 결과',
+      label: '검토 포함',
+    },
+    {
+      blueprintId: 'knowledge-full-spectrum',
+      description: '보고용 문서와 handoff까지 한 번에 정리',
+      label: '끝까지 handoff',
+    },
+  ],
+};
+
 const elements = {
   actionList: document.getElementById('action-list'),
   agentLane: document.getElementById('agent-lane'),
@@ -402,6 +449,10 @@ function getSelectedAgentBlueprint(mode = getMissionFormMode()) {
   const catalog = getAgentBlueprintCatalog(mode);
   const selectedId = String(state.selectedAgentBlueprintByMode?.[mode] || '').trim() || getDefaultAgentBlueprintId(mode);
   return catalog.find((item) => item.id === selectedId) || catalog[0] || null;
+}
+
+function getAgentIntentCatalog(mode = getMissionFormMode()) {
+  return AGENT_INTENT_PRESETS[mode] || AGENT_INTENT_PRESETS.knowledge;
 }
 
 function setSelectedAgentBlueprint(blueprintId, mode = getMissionFormMode()) {
@@ -2436,6 +2487,7 @@ function renderAgentBlueprintBuilder() {
 
   const mode = getMissionFormMode();
   const catalog = getAgentBlueprintCatalog(mode);
+  const intentCatalog = getAgentIntentCatalog(mode);
   const selectedBlueprint = getSelectedAgentBlueprint(mode);
   const pendingAttachmentCount = Number(elements.missionAttachmentInput?.files?.length || 0);
   const selectedMissionLearning = state.missionDetail?.mission?.id === state.selectedMissionId ? state.missionDetail : null;
@@ -2476,6 +2528,24 @@ function renderAgentBlueprintBuilder() {
             <p>첨부 파일과 메모가 다음 실행 prompt에 들어가 AI가 같은 맥락으로 이어서 작업합니다.</p>
           </div>
         </div>
+      </div>
+
+      <div class="agent-intent-strip">
+        ${intentCatalog
+          .map((intent) => {
+            const active = intent.blueprintId === selectedBlueprint?.id;
+            return `
+              <button
+                type="button"
+                class="agent-intent-pill ${active ? 'is-active' : ''}"
+                data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"
+              >
+                <strong>${escapeHtml(intent.label)}</strong>
+                <span>${escapeHtml(intent.description)}</span>
+              </button>
+            `;
+          })
+          .join('')}
       </div>
 
       <div class="agent-blueprint-hero">

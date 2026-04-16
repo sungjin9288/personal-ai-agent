@@ -46,6 +46,8 @@ try {
   assert.equal(appJs.includes('AI가 지금 읽는 자료'), true);
   assert.equal(appJs.includes('추천 상황'), true);
   assert.equal(appJs.includes('선택 결과'), true);
+  assert.equal(appJs.includes('빠르게 초안'), true);
+  assert.equal(appJs.includes('끝까지 handoff'), true);
   assert.equal(appJs.includes('prompt grounding + memory recall'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
@@ -53,6 +55,7 @@ try {
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-step'), true);
+  assert.equal(stylesCss.includes('.agent-intent-strip'), true);
   assert.equal(stylesCss.includes('.agent-learning-panel'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 

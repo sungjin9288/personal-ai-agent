@@ -710,6 +710,39 @@ button {
   gap: 10px;
 }
 
+.agent-intent-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.agent-intent-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 13px 14px;
+  text-align: left;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.agent-intent-pill.is-active {
+  border-color: rgba(37, 99, 235, 0.2);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.12), rgba(255, 255, 255, 0.98));
+}
+
+.agent-intent-pill strong {
+  font-size: 0.84rem;
+}
+
+.agent-intent-pill span {
+  color: var(--text-3);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
 .agent-blueprint-step {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
@@ -2983,6 +3016,7 @@ button:disabled {
   .form-grid,
   .agent-lane,
   .agent-blueprint-steps,
+  .agent-intent-strip,
   .agent-blueprint-grid,
   .agent-blueprint-preview-grid,
   .agent-blueprint-hero,
@@ -3008,5 +3042,9 @@ button:disabled {
 @media (max-width: 640px) {
   .agent-blueprint-step {
     grid-template-columns: 1fr;
+  }
+
+  .agent-intent-pill {
+    border-radius: 18px;
   }
 }

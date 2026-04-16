@@ -27,6 +27,15 @@
 - renamed the learning panel to `AI가 지금 읽는 자료` and added a readiness signal that makes current grounding inputs explicit while keeping unsupported learning claims visibly separate
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:00:00.000Z","id":"doclog_20260416154000_agent_intent_strip","type":"devlog","updatedAt":"2026-04-16T00:00:00.000Z"} -->
+## 2026-04-16 AI Intent Strip Pass
+
+- date: 2026-04-16T00:00:00.000Z
+- added a purpose-first intent strip above the blueprint cards so users can choose `빠르게 초안`, `구현 + 검증`, `리서치 포함`, or `끝까지 handoff` before thinking in specialist profile terminology
+- wired the intent pills to the existing blueprint selection state instead of inventing a second config path, so the simpler operator language still produces the same orchestration-profile directive under the hood
+- extended the UI smoke contract to assert the new intent strip copy and styles, keeping the simplified AI selection surface stable as the setup screen evolves
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:49:00.000Z","id":"doclog_20260416064900_workspace_execution_root","type":"devlog","updatedAt":"2026-04-16T06:49:00.000Z"} -->
 ## 2026-04-16 Trusted Workspace Execution Pass
 
