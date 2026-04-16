@@ -552,3 +552,5 @@ release tab에는 `recent release action history`도 함께 쌓입니다. `/api/
 이제 해당 history row는 `상세 보기`까지 지원합니다. recommendation에서 jump하면 관련 row가 자동으로 펼쳐지고, action id / outcome / scope / provider를 같은 카드 안에서 바로 확인할 수 있어 release triage가 recommendation 섹션과 history 섹션 사이를 왕복하지 않고 닫힙니다.
 
 focused history row는 리스트 상단에 pin됩니다. 즉, recommendation에서 연 기록은 release action history가 길어져도 바로 위에 유지되고, `포커스 해제` 전까지는 현재 triage 대상이라는 문맥이 계속 보입니다.
+
+또한 펼쳐진 history row에서 `같은 scope 보기`, `같은 provider 보기`를 바로 적용할 수 있습니다. 그래서 특정 refresh flow나 provider readiness 흐름만 빠르게 좁혀 본 뒤, 필요할 때 `필터 해제`로 전체 history로 복귀할 수 있습니다.

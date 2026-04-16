@@ -27,6 +27,8 @@ const state = {
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
+  releaseHistoryFilterProvider: '',
+  releaseHistoryFilterScope: '',
   releaseLiveRefreshPreflight: null,
   releaseFocusedHistoryId: '',
   releaseRegenerationConfirmArmed: false,
@@ -882,6 +884,18 @@ function clearReleaseHistoryFocus() {
   renderReleaseStatus();
 }
 
+function setReleaseHistoryFilter({ scope = state.releaseHistoryFilterScope, provider = state.releaseHistoryFilterProvider } = {}) {
+  state.releaseHistoryFilterScope = String(scope || '').trim();
+  state.releaseHistoryFilterProvider = String(provider || '').trim();
+  renderReleaseStatus();
+}
+
+function clearReleaseHistoryFilter() {
+  state.releaseHistoryFilterScope = '';
+  state.releaseHistoryFilterProvider = '';
+  renderReleaseStatus();
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -1176,6 +1190,24 @@ function wireQuickActions(scope = document) {
       if (action === 'clear-release-history-focus') {
         clearReleaseHistoryFocus();
         setUiNotice('release action history 포커스를 해제했습니다.');
+        return;
+      }
+
+      if (action === 'filter-release-history-scope') {
+        setReleaseHistoryFilter({ scope: button.dataset.uiScope || '', provider: state.releaseHistoryFilterProvider });
+        setUiNotice('같은 scope 기준으로 release action history를 좁혀 봅니다.');
+        return;
+      }
+
+      if (action === 'filter-release-history-provider') {
+        setReleaseHistoryFilter({ scope: state.releaseHistoryFilterScope, provider: button.dataset.uiProvider || '' });
+        setUiNotice('같은 provider 기준으로 release action history를 좁혀 봅니다.');
+        return;
+      }
+
+      if (action === 'clear-release-history-filter') {
+        clearReleaseHistoryFilter();
+        setUiNotice('release action history 필터를 해제했습니다.');
         return;
       }
 
@@ -3380,6 +3412,8 @@ function renderReleaseStatus() {
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
+  const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
+  const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -3397,12 +3431,23 @@ function renderReleaseStatus() {
     : snapshot
       ? 'snapshot archived'
       : 'snapshot 없음';
+  const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
+    const itemScope = String(item?.scope || '').trim();
+    const itemProvider = String(item?.provider || '').trim();
+    if (historyFilterScope && itemScope !== historyFilterScope) {
+      return false;
+    }
+    if (historyFilterProvider && itemProvider !== historyFilterProvider) {
+      return false;
+    }
+    return true;
+  });
   const orderedReleaseActionHistory = focusedHistoryId
     ? [
-        ...releaseActionHistory.filter((item) => String(item?.id || '').trim() === focusedHistoryId),
-        ...releaseActionHistory.filter((item) => String(item?.id || '').trim() !== focusedHistoryId),
+        ...filteredReleaseActionHistory.filter((item) => String(item?.id || '').trim() === focusedHistoryId),
+        ...filteredReleaseActionHistory.filter((item) => String(item?.id || '').trim() !== focusedHistoryId),
       ]
-    : releaseActionHistory;
+    : filteredReleaseActionHistory;
   const releaseHeadline = summary.ready
     ? (release.artifactState === 'local-current'
       ? 'execution v1 closeout ready (local evidence)'
@@ -3691,7 +3736,20 @@ function renderReleaseStatus() {
                   <div class="harness-callout release-history-focus-callout">
                     <strong>현재 포커스된 release action</strong>
                     <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
-                    <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
+                    <div class="release-history-focus-actions">
+                      <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
+                      ${historyFilterScope || historyFilterProvider
+                        ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
+                        : ''}
+                    </div>
+                    ${(historyFilterScope || historyFilterProvider)
+                      ? `
+                          <div class="release-history-filter-chips">
+                            ${historyFilterScope ? `<span class="mini-badge status-running">scope · ${escapeHtml(getReleaseActionScopeLabel(historyFilterScope))}</span>` : ''}
+                            ${historyFilterProvider ? `<span class="mini-badge status-running">provider · ${escapeHtml(historyFilterProvider)}</span>` : ''}
+                          </div>
+                        `
+                      : ''}
                   </div>
                 `
               : ''}
@@ -3745,6 +3803,27 @@ function renderReleaseStatus() {
                         ${isExpanded
                           ? `
                               <div class="release-history-detail">
+                                <div class="release-history-filter-actions">
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="filter-release-history-scope"
+                                    data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
+                                  >같은 scope 보기</button>
+                                  ${item.provider
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="filter-release-history-provider"
+                                          data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
+                                        >같은 provider 보기</button>
+                                      `
+                                    : ''}
+                                  ${(historyFilterScope || historyFilterProvider)
+                                    ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
+                                    : ''}
+                                </div>
                                 <div class="release-history-detail-grid">
                                   <div>
                                     <span class="section-kicker">Action Id</span>
@@ -3773,8 +3852,8 @@ function renderReleaseStatus() {
                   .join('')
                 : `
                     <article class="release-snapshot-card is-empty">
-                      <div class="item-title">최근 release action 기록이 없습니다.</div>
-                      <p class="item-meta">preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.</p>
+                      <div class="item-title">${historyFilterScope || historyFilterProvider ? '현재 필터와 맞는 release action 기록이 없습니다.' : '최근 release action 기록이 없습니다.'}</div>
+                      <p class="item-meta">${historyFilterScope || historyFilterProvider ? '필터를 해제하면 전체 history를 다시 볼 수 있습니다.' : 'preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.'}</p>
                     </article>
                   `}
             </div>
@@ -5094,6 +5173,18 @@ async function loadReleaseStatus() {
   }
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseExpandedHistoryId)) {
     state.releaseExpandedHistoryId = '';
+  }
+  if (
+    state.releaseHistoryFilterScope &&
+    !payload.releaseActionHistory?.some((item) => String(item.scope || '').trim() === state.releaseHistoryFilterScope)
+  ) {
+    state.releaseHistoryFilterScope = '';
+  }
+  if (
+    state.releaseHistoryFilterProvider &&
+    !payload.releaseActionHistory?.some((item) => String(item.provider || '').trim() === state.releaseHistoryFilterProvider)
+  ) {
+    state.releaseHistoryFilterProvider = '';
   }
   state.releaseLiveConfirmProvider = '';
   state.releaseLiveRefreshPreflight = null;

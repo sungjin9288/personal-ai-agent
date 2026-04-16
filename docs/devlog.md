@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T01:25:00.000Z","id":"doclog_20260416012500_8b18a2","type":"devlog","updatedAt":"2026-04-16T01:25:00.000Z"} -->
+## 2026-04-16 Release History Context Filter Pass
+
+- date: 2026-04-16T01:25:00.000Z
+- added quick context filters for the focused release action so operators can narrow the history list to the same scope or provider without manually re-scanning every release row
+- kept the filtering local to the release tab state and preserved the existing pinned focus flow, which means recommendation-driven triage now supports `jump -> pin -> inspect -> narrow` in one surface
+- added explicit filter-clear controls and empty-state copy for filtered views so narrowing the list does not look like missing history or a data-loading bug
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T01:10:00.000Z","id":"doclog_20260416011000_2f4b67","type":"devlog","updatedAt":"2026-04-16T01:10:00.000Z"} -->
 ## 2026-04-16 Release History Focus Pin Pass
 

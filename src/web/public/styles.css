@@ -2283,6 +2283,14 @@ button:disabled {
   gap: 8px;
 }
 
+.release-history-focus-actions,
+.release-history-filter-actions,
+.release-history-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .release-doc-surface {
   padding: 14px;
   border-radius: 14px;
