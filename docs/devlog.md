@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T07:18:00.000Z","id":"doclog_20260416071800_operator_ui_density","type":"devlog","updatedAt":"2026-04-16T07:18:00.000Z"} -->
+## 2026-04-16 Operator UI Density Reduction Pass
+
+- date: 2026-04-16T07:18:00.000Z
+- added a dedicated `current workspace` rail card so the active repo name, path, and mission count are visible without reading the mission queue or guessing which workspace is currently selected
+- compressed the default mission queue row to a one-line summary and reserved `next action / current step` details for the active mission only, which reduces first-screen height while keeping the selected mission actionable
+- simplified the selected-mission bridge into a compact summary strip with only current step, latest execution, harness signal, and next action so the top of the workbench no longer consumes a full extra breadcrumb row
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:49:00.000Z","id":"doclog_20260416064900_workspace_execution_root","type":"devlog","updatedAt":"2026-04-16T06:49:00.000Z"} -->
 ## 2026-04-16 Trusted Workspace Execution Pass
 

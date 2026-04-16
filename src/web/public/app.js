@@ -208,6 +208,7 @@ const elements = {
   missionQueueSummary: document.getElementById('mission-queue-summary'),
   workspaceForm: document.getElementById('workspace-form'),
   workspaceFormStatus: document.getElementById('workspace-form-status'),
+  workspaceCurrent: document.getElementById('workspace-current'),
   workspacePathInput: document.getElementById('workspace-path-input'),
   workspaceNameInput: document.getElementById('workspace-name-input'),
   workspaceSelect: document.getElementById('workspace-select'),
@@ -236,6 +237,14 @@ const STEP_IDS = new Set(Object.keys(STEP_META));
 
 function getSelectedWorkspaceId() {
   return String(elements.workspaceSelect.value || state.workspaces[0]?.id || '').trim();
+}
+
+function getSelectedWorkspaceRecord() {
+  const workspaceId = getSelectedWorkspaceId();
+  if (!workspaceId) {
+    return state.workspaces[0] || null;
+  }
+  return state.workspaces.find((workspace) => workspace.id === workspaceId) || null;
 }
 
 function normalizeUiParam(value) {
@@ -2066,6 +2075,39 @@ function renderWorkspaceOptions() {
     ? previousValue
     : state.workspaces[0]?.id || '';
   elements.workspaceSelect.value = nextValue;
+  renderWorkspaceCurrent();
+}
+
+function renderWorkspaceCurrent() {
+  if (!elements.workspaceCurrent) {
+    return;
+  }
+
+  const workspace = getSelectedWorkspaceRecord();
+  if (!workspace) {
+    elements.workspaceCurrent.innerHTML = `
+      <div class="workspace-current-empty">등록된 워크스페이스가 없으면 여기에서 현재 경로를 안내합니다.</div>
+    `;
+    return;
+  }
+
+  const workspaceMissions = state.missions.filter(({ mission }) => mission.workspaceId === workspace.id);
+  const visibleMissions = filteredMissions();
+  const selectedMission = getSelectedMissionRecord();
+  const selectedInWorkspace = selectedMission?.mission?.workspaceId === workspace.id;
+
+  elements.workspaceCurrent.innerHTML = `
+    <div class="workspace-current-head">
+      <span class="section-kicker">현재 workspace</span>
+      <span class="mini-badge">${escapeHtml(String(workspaceMissions.length))}개 미션</span>
+    </div>
+    <strong class="workspace-current-title">${escapeHtml(workspace.name || workspace.id)}</strong>
+    <div class="workspace-current-path mono">${escapeHtml(workspace.path || '-')}</div>
+    <div class="workspace-current-meta">
+      <span>현재 필터 ${escapeHtml(String(visibleMissions.length))}개</span>
+      <span>${selectedInWorkspace ? '선택된 미션 있음' : '선택된 미션 없음'}</span>
+    </div>
+  `;
 }
 
 function renderTemplates() {
@@ -2278,6 +2320,7 @@ function renderMissionList() {
   const missions = filteredMissions();
   const selectedFlow =
     state.selectedMissionId && state.missionDetail?.mission?.id === state.selectedMissionId ? getFlowState() : null;
+  renderWorkspaceCurrent();
   renderMissionQueueSummary(missions);
   if (!missions.length) {
     elements.missionList.innerHTML = state.missions.length
@@ -2313,6 +2356,7 @@ function renderMissionList() {
         mission.objective,
         latestSession?.reviewerSummary || snapshot.nextAction.replace(/^다음:\s*/, ''),
       );
+      const showExpandedAction = active;
       return `
         <div class="mission-row ${active}">
           <button type="button" data-mission-id="${escapeHtml(mission.id)}">
@@ -2337,10 +2381,16 @@ function renderMissionList() {
                 }
               </div>
             </div>
-            <div class="mission-next-action">
-              <span class="mission-next-label">다음 액션</span>
-              <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
-            </div>
+            ${
+              showExpandedAction
+                ? `
+                  <div class="mission-next-action">
+                    <span class="mission-next-label">다음 액션</span>
+                    <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
+                  </div>
+                `
+                : ''
+            }
             ${
               active
                 ? `
@@ -2717,17 +2767,6 @@ function renderSelectionBridge() {
   const harnessLabel = harnessState.topRecommendation
     ? harnessState.topRecommendation.title
     : `권장 조치 없음 · 메모 ${harnessState.memoryTotalCount}개`;
-  const currentViewArtifacts = state.currentSessionPayload?.artifacts || [];
-  const selectedArtifactLabel =
-    state.selectedArtifactId && state.artifactsById.has(state.selectedArtifactId)
-      ? state.artifactsById.get(state.selectedArtifactId)?.artifact?.title ||
-        state.artifactsById.get(state.selectedArtifactId)?.artifact?.fileName ||
-        state.selectedArtifactId
-      : null;
-  const selectedSessionLabel = latestSession
-    ? `${formatDate(latestSession.startedAt)} · ${getDisplayLabel(latestSession.provider || latestSession.id, latestSession.provider || latestSession.id)}`
-    : '세션 없음';
-  const selectedArtifactFallback = getArtifactLabel(getPrimaryArtifact(currentViewArtifacts)) || '결과물 없음';
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main">
@@ -2744,36 +2783,22 @@ function renderSelectionBridge() {
         </button>
       </div>
     </div>
-    <div class="selection-bridge-track">
+    <div class="selection-bridge-track selection-bridge-track-compact">
       <div class="selection-bridge-pill is-active">
-        <span>현재 열어둔 단계</span>
-        <strong>${escapeHtml(getStepLabel(state.activeStep))}</strong>
-      </div>
-      <div class="selection-bridge-pill">
-        <span>다음 액션</span>
-        <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
+        <span>현재 단계</span>
+        <strong>${escapeHtml(getStepLabel(state.activeStep, { short: true }))}</strong>
       </div>
       <div class="selection-bridge-pill">
         <span>최근 실행</span>
         <strong>${escapeHtml(latestExecutionLabel)}</strong>
       </div>
       <div class="selection-bridge-pill ${harnessState.topRecommendation ? 'is-active' : ''}">
-        <span>하네스 상태</span>
+        <span>하네스</span>
         <strong>${escapeHtml(harnessLabel)}</strong>
       </div>
-    </div>
-    <div class="selection-bridge-view">
-      <div class="selection-bridge-crumb">
-        <span>현재 보기</span>
-        <strong>${escapeHtml(getStepLabel(state.activeStep, { short: true }))} · ${escapeHtml(getDetailTabLabel(state.activeDetailTab))}</strong>
-      </div>
-      <div class="selection-bridge-crumb">
-        <span>세션 포커스</span>
-        <strong>${escapeHtml(selectedSessionLabel)}</strong>
-      </div>
-      <div class="selection-bridge-crumb">
-        <span>결과물 포커스</span>
-        <strong>${escapeHtml(selectedArtifactLabel || selectedArtifactFallback)}</strong>
+      <div class="selection-bridge-pill">
+        <span>다음 액션</span>
+        <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
       </div>
     </div>
   `;
