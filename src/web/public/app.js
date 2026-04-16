@@ -1497,6 +1497,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-history-link') {
         void copyReleaseTriageLink({
+          focusedProvider: '',
           focusedHistoryId: value || '',
           historyOutcome: '',
           historyProvider: '',
@@ -1517,11 +1518,24 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
+          focusedProvider: '',
           focusedHistoryId: value || '',
           historyOutcome: button.dataset.uiOutcome || '',
           historyProvider: button.dataset.uiProvider || '',
           historyScope: button.dataset.uiScope || '',
           successNotice: '선택한 release flow 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-provider-link') {
+        void copyReleaseTriageLink({
+          focusedProvider: button.dataset.uiProvider || value || '',
+          focusedHistoryId: '',
+          historyOutcome: '',
+          historyProvider: '',
+          historyScope: '',
+          successNotice: '선택한 provider spotlight 링크를 복사했습니다.',
         });
         return;
       }
@@ -1687,6 +1701,7 @@ async function resetCurrentView() {
 }
 
 async function copyReleaseTriageLink({
+  focusedProvider = state.releaseFocusedProvider,
   focusedHistoryId = state.releaseFocusedHistoryId,
   historyOutcome = state.releaseHistoryFilterOutcome,
   historyProvider = state.releaseHistoryFilterProvider,
@@ -1695,6 +1710,7 @@ async function copyReleaseTriageLink({
 } = {}) {
   const triageUrl = `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
+    releaseFocusedProvider: focusedProvider,
     releaseFocusedHistoryId: focusedHistoryId,
     releaseHistoryOutcome: historyOutcome,
     releaseHistoryProvider: historyProvider,
@@ -4232,6 +4248,12 @@ function renderReleaseStatus() {
                                           data-ui-provider="${escapeHtml(recommendationProviderId)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
                                         >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-provider-link"
+                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                        >provider 링크 복사</button>
                                       `
                                     : ''}
                                 </div>
@@ -4265,6 +4287,12 @@ function renderReleaseStatus() {
                                           data-ui-provider="${escapeHtml(recommendationProviderId)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
                                         >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-provider-link"
+                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                        >provider 링크 복사</button>
                                       `
                                     : ''}
                                 </div>
@@ -4293,6 +4321,12 @@ function renderReleaseStatus() {
                                               data-ui-provider="${escapeHtml(recommendationProviderId)}"
                                               ${sameProviderFocused ? 'disabled' : ''}
                                             >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                            <button
+                                              class="ghost-button"
+                                              type="button"
+                                              data-ui-action="copy-release-provider-link"
+                                              data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                            >provider 링크 복사</button>
                                           `
                                         : ''}
                                     </div>
@@ -4479,6 +4513,7 @@ function renderReleaseStatus() {
                     <p>${escapeHtml(focusedProvider)} provider card를 강조하고 있습니다. preflight/live action이나 command handoff를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
                     <div class="release-history-focus-actions">
                       <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus">provider 포커스 해제</button>
+                      <button class="ghost-button" type="button" data-ui-action="copy-release-provider-link" data-ui-provider="${escapeHtml(focusedProvider)}">provider 링크 복사</button>
                       <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link">현재 triage 링크 복사</button>
                     </div>
                   </div>
@@ -4546,6 +4581,12 @@ function renderReleaseStatus() {
                           data-ui-action="${escapeHtml(isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider')}"
                           data-ui-provider="${escapeHtml(item.provider)}"
                         >${escapeHtml(isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기')}</button>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="copy-release-provider-link"
+                          data-ui-provider="${escapeHtml(item.provider)}"
+                        >provider 링크 복사</button>
                         ${liveConfirmArmed
                           ? `
                               <button

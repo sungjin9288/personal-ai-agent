@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T03:45:00.000Z","id":"doclog_20260416034500_71a8c4","type":"devlog","updatedAt":"2026-04-16T03:45:00.000Z"} -->
+## 2026-04-16 Provider Spotlight Link Pass
+
+- date: 2026-04-16T03:45:00.000Z
+- added one-click provider spotlight link copy so recommendation cards and provider readiness cards can hand off the exact provider-focused release surface without requiring the operator to focus first and then copy the generic triage link
+- reused the existing release triage URL builder with a provider-only override, which keeps the new handoff path consistent with the existing release deep-link contract instead of introducing a second share format
+- kept the scope limited to client-side release tab actions and documentation, leaving server payloads and mutable current-surface evidence artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T03:15:00.000Z","id":"doclog_20260416031500_4d9a72","type":"devlog","updatedAt":"2026-04-16T03:15:00.000Z"} -->
 ## 2026-04-16 Recommendation Provider Spotlight Pass
 
