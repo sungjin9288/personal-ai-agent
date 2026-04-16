@@ -243,12 +243,21 @@ function getSanitizedDetailTab(tabId) {
   return normalized && DETAIL_TAB_IDS.has(normalized) ? normalized : null;
 }
 
+function getSanitizedReleaseHistoryOutcome(outcome) {
+  const normalized = normalizeUiParam(outcome);
+  return normalized === 'attention' ? normalized : null;
+}
+
 function parseUiStateFromUrl() {
   const params = new URL(window.location.href).searchParams;
   return {
     artifactId: normalizeUiParam(params.get('artifact')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
+    releaseFocusedHistoryId: normalizeUiParam(params.get('rhistory')),
+    releaseHistoryOutcome: getSanitizedReleaseHistoryOutcome(params.get('routcome')),
+    releaseHistoryProvider: normalizeUiParam(params.get('rprovider')),
+    releaseHistoryScope: normalizeUiParam(params.get('rscope')),
     sessionId: normalizeUiParam(params.get('session')),
     stepId: getSanitizedStepId(params.get('step')),
     workspaceId: normalizeUiParam(params.get('workspace')),
@@ -264,6 +273,10 @@ function buildUiStateUrl() {
   const detailTab = getSanitizedDetailTab(state.activeDetailTab);
   const sessionId = normalizeUiParam(state.selectedSessionId);
   const artifactId = normalizeUiParam(state.selectedArtifactId);
+  const releaseFocusedHistoryId = normalizeUiParam(state.releaseFocusedHistoryId);
+  const releaseHistoryOutcome = getSanitizedReleaseHistoryOutcome(state.releaseHistoryFilterOutcome);
+  const releaseHistoryProvider = normalizeUiParam(state.releaseHistoryFilterProvider);
+  const releaseHistoryScope = normalizeUiParam(state.releaseHistoryFilterScope);
 
   if (workspaceId) {
     params.set('workspace', workspaceId);
@@ -309,6 +322,34 @@ function buildUiStateUrl() {
     } else {
       params.delete('tab');
     }
+  }
+
+  if (detailTab === 'release') {
+    if (releaseFocusedHistoryId) {
+      params.set('rhistory', releaseFocusedHistoryId);
+    } else {
+      params.delete('rhistory');
+    }
+    if (releaseHistoryOutcome) {
+      params.set('routcome', releaseHistoryOutcome);
+    } else {
+      params.delete('routcome');
+    }
+    if (releaseHistoryProvider) {
+      params.set('rprovider', releaseHistoryProvider);
+    } else {
+      params.delete('rprovider');
+    }
+    if (releaseHistoryScope) {
+      params.set('rscope', releaseHistoryScope);
+    } else {
+      params.delete('rscope');
+    }
+  } else {
+    params.delete('rhistory');
+    params.delete('routcome');
+    params.delete('rprovider');
+    params.delete('rscope');
   }
 
   return `${url.pathname}${params.toString() ? `?${params.toString()}` : ''}${url.hash}`;
@@ -888,7 +929,7 @@ function isRecommendationFlowActive({ attentionAction = null, latestAction = nul
   };
 }
 
-function focusReleaseHistoryEntry(historyId = '', { scroll = true } = {}) {
+function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
     return;
@@ -896,6 +937,7 @@ function focusReleaseHistoryEntry(historyId = '', { scroll = true } = {}) {
   state.releaseFocusedHistoryId = normalizedHistoryId;
   state.releaseExpandedHistoryId = normalizedHistoryId;
   renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
   if (!scroll || !elements.releaseStatus) {
     return;
   }
@@ -924,27 +966,60 @@ function toggleReleaseHistoryEntry(historyId = '') {
   renderReleaseStatus();
 }
 
-function clearReleaseHistoryFocus() {
+function clearReleaseHistoryFocus({ historyMode = 'replace' } = {}) {
   state.releaseFocusedHistoryId = '';
   state.releaseExpandedHistoryId = '';
   renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
 }
 
 function setReleaseHistoryFilter({
   outcome = state.releaseHistoryFilterOutcome,
   scope = state.releaseHistoryFilterScope,
   provider = state.releaseHistoryFilterProvider,
+  historyMode = 'replace',
 } = {}) {
   state.releaseHistoryFilterOutcome = String(outcome || '').trim();
   state.releaseHistoryFilterScope = String(scope || '').trim();
   state.releaseHistoryFilterProvider = String(provider || '').trim();
   renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
 }
 
-function clearReleaseHistoryFilter() {
+function clearReleaseHistoryFilter({ historyMode = 'replace' } = {}) {
   state.releaseHistoryFilterOutcome = '';
   state.releaseHistoryFilterScope = '';
   state.releaseHistoryFilterProvider = '';
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
+function applyReleaseHistoryUrlState({
+  focusedHistoryId = '',
+  outcome = '',
+  provider = '',
+  scope = '',
+} = {}) {
+  const history = state.releaseStatus?.releaseActionHistory || [];
+  const normalizedFocusedHistoryId = String(focusedHistoryId || '').trim();
+  const normalizedOutcome = String(outcome || '').trim();
+  const normalizedProvider = String(provider || '').trim();
+  const normalizedScope = String(scope || '').trim();
+
+  state.releaseFocusedHistoryId = history.some((item) => item.id === normalizedFocusedHistoryId)
+    ? normalizedFocusedHistoryId
+    : '';
+  state.releaseExpandedHistoryId = state.releaseFocusedHistoryId;
+  state.releaseHistoryFilterOutcome =
+    normalizedOutcome === 'attention' && history.some((item) => isReleaseAttentionOutcome(item.outcome))
+      ? 'attention'
+      : '';
+  state.releaseHistoryFilterScope = history.some((item) => String(item.scope || '').trim() === normalizedScope)
+    ? normalizedScope
+    : '';
+  state.releaseHistoryFilterProvider = history.some((item) => String(item.provider || '').trim() === normalizedProvider)
+    ? normalizedProvider
+    : '';
   renderReleaseStatus();
 }
 
@@ -953,6 +1028,7 @@ function focusReleaseHistoryFlow({
   outcome = '',
   provider = '',
   scope = '',
+  historyMode = 'replace',
 } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   const normalizedOutcome = String(outcome || '').trim();
@@ -967,10 +1043,11 @@ function focusReleaseHistoryFlow({
   state.releaseHistoryFilterScope = normalizedScope;
   state.releaseHistoryFilterProvider = normalizedProvider;
   if (normalizedHistoryId) {
-    focusReleaseHistoryEntry(normalizedHistoryId);
+    focusReleaseHistoryEntry(normalizedHistoryId, { historyMode });
     return;
   }
   renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
 }
 
 function getStepLabel(stepId, { short = false } = {}) {
@@ -1254,7 +1331,7 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'focus-release-history') {
-        focusReleaseHistoryEntry(value || '');
+        focusReleaseHistoryEntry(value || '', { historyMode: 'push' });
         setUiNotice('최근 release action 기록으로 이동했습니다.');
         return;
       }
@@ -1262,6 +1339,7 @@ function wireQuickActions(scope = document) {
       if (action === 'focus-release-flow') {
         focusReleaseHistoryFlow({
           historyId: value || '',
+          historyMode: 'push',
           outcome: button.dataset.uiOutcome || '',
           provider: button.dataset.uiProvider || '',
           scope: button.dataset.uiScope || '',
@@ -1276,13 +1354,14 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'clear-release-history-focus') {
-        clearReleaseHistoryFocus();
+        clearReleaseHistoryFocus({ historyMode: 'push' });
         setUiNotice('release action history 포커스를 해제했습니다.');
         return;
       }
 
       if (action === 'filter-release-history-scope') {
         setReleaseHistoryFilter({
+          historyMode: 'push',
           outcome: state.releaseHistoryFilterOutcome,
           scope: button.dataset.uiScope || '',
           provider: state.releaseHistoryFilterProvider,
@@ -1293,6 +1372,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'filter-release-history-provider') {
         setReleaseHistoryFilter({
+          historyMode: 'push',
           outcome: state.releaseHistoryFilterOutcome,
           scope: state.releaseHistoryFilterScope,
           provider: button.dataset.uiProvider || '',
@@ -1303,6 +1383,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'filter-release-history-attention') {
         setReleaseHistoryFilter({
+          historyMode: 'push',
           outcome: button.dataset.uiOutcome || 'attention',
           scope: state.releaseHistoryFilterScope,
           provider: state.releaseHistoryFilterProvider,
@@ -1312,7 +1393,7 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'clear-release-history-filter') {
-        clearReleaseHistoryFilter();
+        clearReleaseHistoryFilter({ historyMode: 'push' });
         setUiNotice('release action history 필터를 해제했습니다.');
         return;
       }
@@ -5355,6 +5436,12 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
 }
 
 async function loadReleaseStatus() {
+  const previousReleaseState = {
+    focusedHistoryId: state.releaseFocusedHistoryId,
+    historyFilterOutcome: state.releaseHistoryFilterOutcome,
+    historyFilterProvider: state.releaseHistoryFilterProvider,
+    historyFilterScope: state.releaseHistoryFilterScope,
+  };
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
@@ -5391,6 +5478,14 @@ async function loadReleaseStatus() {
   renderReleaseStatus();
   renderDetailTabLabels();
   renderDetailContextbar();
+  if (
+    previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
+    || previousReleaseState.historyFilterOutcome !== state.releaseHistoryFilterOutcome
+    || previousReleaseState.historyFilterProvider !== state.releaseHistoryFilterProvider
+    || previousReleaseState.historyFilterScope !== state.releaseHistoryFilterScope
+  ) {
+    writeUiStateToUrl();
+  }
   return payload;
 }
 
@@ -5647,6 +5742,17 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
     if (urlState.detailTab) {
       setActiveDetailTab(urlState.detailTab, { syncUrl: false });
     }
+  }
+
+  if (urlState.detailTab === 'release') {
+    applyReleaseHistoryUrlState({
+      focusedHistoryId: urlState.releaseFocusedHistoryId,
+      outcome: urlState.releaseHistoryOutcome,
+      provider: urlState.releaseHistoryProvider,
+      scope: urlState.releaseHistoryScope,
+    });
+  } else {
+    applyReleaseHistoryUrlState();
   }
 
   if (syncUrl) {

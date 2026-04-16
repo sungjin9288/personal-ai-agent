@@ -1550,6 +1550,15 @@
 - left the interaction client-side and reused existing history focus state, so the triage path became sharper without adding any new server contract or release status payload field
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T01:42:00.000Z","id":"doclog_20260416014200_9d6dd3","type":"devlog","updatedAt":"2026-04-16T01:42:00.000Z"} -->
+## 2026-04-16 Release Triage URL Sync Pass
+
+- date: 2026-04-16T01:42:00.000Z
+- extended the existing URL state contract so release-tab triage context now carries `focused history row + attention/scope/provider filters`, which lets recommendation-driven investigation survive refresh and shared links
+- kept the query parameters release-scoped only, meaning `rhistory / routcome / rscope / rprovider` are emitted only while the `release` detail tab is active and are dropped on other tabs to avoid leaking stale triage state
+- wired direct release-history interactions to `pushState` while keeping internal invalidation on `replaceState`, so browser back/forward now steps through triage context changes without polluting unrelated navigation
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z
