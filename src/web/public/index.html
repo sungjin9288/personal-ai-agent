@@ -177,6 +177,18 @@
                 <div id="template-list" class="template-list"></div>
               </section>
 
+              <section class="surface panel-span-full surface-ai-compose">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">AI 구성</p>
+                    <h4>추가할 AI와 역할을 먼저 고르기</h4>
+                  </div>
+                </div>
+                <div id="agent-blueprint-builder" class="agent-blueprint-builder">
+                  작업 모드와 AI 구성을 읽어 오는 중입니다.
+                </div>
+              </section>
+
               <section class="surface panel-span-full">
                 <div class="mini-head">
                   <div>
@@ -231,12 +243,13 @@
                   </label>
 
                   <label class="compact-label">
-                    제약 조건
+                    추가 운영 규칙
                     <textarea
                       name="constraints"
-                      rows="4"
+                      rows="3"
                       placeholder="한 줄에 하나씩 입력&#10;예: 성공 기준을 테스트 가능하게 작성&#10;예: 다음 액션의 담당자와 기한 포함"
                     ></textarea>
+                    <span class="field-hint">AI 구성 카드를 고르면 orchestration directive는 자동으로 포함됩니다. 여기는 추가 운영 규칙만 적으면 됩니다.</span>
                   </label>
 
                   <label class="compact-label">

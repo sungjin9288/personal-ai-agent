@@ -39,6 +39,10 @@ const state = {
   releaseSnapshotConfirmArmed: false,
   releaseSnapshotPreflight: null,
   releaseStatus: null,
+  selectedAgentBlueprintByMode: {
+    engineering: 'engineering-default',
+    knowledge: 'knowledge-default',
+  },
   selectedPlaybookId: 'team-pipeline',
   selectedArtifactId: null,
   selectedMissionId: null,
@@ -146,11 +150,130 @@ const missionPlaybooks = [
   },
 ];
 
+const SPECIALIST_KIND_META = {
+  design: {
+    badge: 'UX',
+    description: '정보 구조, 화면 흐름, 사용자 언어를 다듬습니다.',
+    label: '디자인 AI',
+    shortLabel: '디자인',
+  },
+  documentation: {
+    badge: 'DOC',
+    description: '핸드오프 문서, 체크리스트, 운영 정리를 맡습니다.',
+    label: '문서화 AI',
+    shortLabel: '문서화',
+  },
+  implementation: {
+    badge: 'IMP',
+    description: '구현안과 산출물 초안을 빠르게 만듭니다.',
+    label: '구현 AI',
+    shortLabel: '구현',
+  },
+  research: {
+    badge: 'RES',
+    description: '리스크, 옵션, 근거와 unknown을 먼저 정리합니다.',
+    label: '리서치 AI',
+    shortLabel: '리서치',
+  },
+  verification: {
+    badge: 'VER',
+    description: '검증 기준, 테스트 관점, 완료 신호를 점검합니다.',
+    label: '검증 AI',
+    shortLabel: '검증',
+  },
+};
+
+const AGENT_BLUEPRINTS = {
+  engineering: [
+    {
+      description: 'manager, planner, executor, reviewer만으로 가볍게 시작합니다.',
+      directive: '',
+      emphasis: '기본 4 core agent',
+      id: 'engineering-default',
+      kind: 'core',
+      specialistKinds: [],
+      title: 'Core 4만 사용',
+    },
+    {
+      description: '구현과 검증을 병렬로 붙여 bounded engineering proposal 품질을 올립니다.',
+      directive: 'orchestration-profile:engineering-implementation-verification',
+      emphasis: '추가 AI 2개',
+      id: 'engineering-implementation-verification',
+      kind: 'profile',
+      profileId: 'engineering-implementation-verification',
+      specialistKinds: ['implementation', 'verification'],
+      title: '구현 + 검증',
+    },
+    {
+      description: '리서치, 구현, 검증을 함께 돌려 wider engineering discovery를 만듭니다.',
+      directive: 'orchestration-profile:engineering-triad',
+      emphasis: '추가 AI 3개',
+      id: 'engineering-triad',
+      kind: 'profile',
+      profileId: 'engineering-triad',
+      specialistKinds: ['research', 'implementation', 'verification'],
+      title: '엔지니어링 트라이어드',
+    },
+    {
+      description: '리서치, 구현, 검증, 디자인, 문서화까지 full-spectrum handoff를 엽니다.',
+      directive: 'orchestration-profile:engineering-full-spectrum',
+      emphasis: '추가 AI 5개',
+      id: 'engineering-full-spectrum',
+      kind: 'profile',
+      profileId: 'engineering-full-spectrum',
+      specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
+      title: '엔지니어링 풀 스펙트럼',
+    },
+  ],
+  knowledge: [
+    {
+      description: 'manager, planner, executor, reviewer만으로 빠르게 문서를 닫습니다.',
+      directive: '',
+      emphasis: '기본 4 core agent',
+      id: 'knowledge-default',
+      kind: 'core',
+      specialistKinds: [],
+      title: 'Core 4만 사용',
+    },
+    {
+      description: '리서치와 구현을 병렬로 붙여 synthesis와 handoff를 분리합니다.',
+      directive: 'orchestration-profile:knowledge-research-implementation',
+      emphasis: '추가 AI 2개',
+      id: 'knowledge-research-implementation',
+      kind: 'profile',
+      profileId: 'knowledge-research-implementation',
+      specialistKinds: ['research', 'implementation'],
+      title: '리서치 + 구현',
+    },
+    {
+      description: '리서치, 구현, 검증을 같이 돌려 higher-confidence knowledge mission으로 올립니다.',
+      directive: 'orchestration-profile:knowledge-triad',
+      emphasis: '추가 AI 3개',
+      id: 'knowledge-triad',
+      kind: 'profile',
+      profileId: 'knowledge-triad',
+      specialistKinds: ['research', 'implementation', 'verification'],
+      title: '지식 작업 트라이어드',
+    },
+    {
+      description: '리서치, 구현, 검증, 디자인, 문서화를 함께 붙여 full-spectrum synthesis를 만듭니다.',
+      directive: 'orchestration-profile:knowledge-full-spectrum',
+      emphasis: '추가 AI 5개',
+      id: 'knowledge-full-spectrum',
+      kind: 'profile',
+      profileId: 'knowledge-full-spectrum',
+      specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
+      title: '지식 작업 풀 스펙트럼',
+    },
+  ],
+};
+
 const elements = {
   actionList: document.getElementById('action-list'),
   agentLane: document.getElementById('agent-lane'),
   actionSummary: document.getElementById('action-summary'),
   approvalList: document.getElementById('approval-list'),
+  agentBlueprintBuilder: document.getElementById('agent-blueprint-builder'),
   artifactMeta: document.getElementById('artifact-meta'),
   artifactViewer: document.getElementById('artifact-viewer'),
   detailContextbar: document.getElementById('detail-contextbar'),
@@ -245,6 +368,91 @@ function getSelectedWorkspaceRecord() {
     return state.workspaces[0] || null;
   }
   return state.workspaces.find((workspace) => workspace.id === workspaceId) || null;
+}
+
+function getMissionFormMode() {
+  return String(elements.missionForm?.elements?.mode?.value || 'knowledge').trim() || 'knowledge';
+}
+
+function getAgentBlueprintCatalog(mode = getMissionFormMode()) {
+  return AGENT_BLUEPRINTS[mode] || AGENT_BLUEPRINTS.knowledge;
+}
+
+function getDefaultAgentBlueprintId(mode = getMissionFormMode()) {
+  return `${mode}-default`;
+}
+
+function getSelectedAgentBlueprint(mode = getMissionFormMode()) {
+  const catalog = getAgentBlueprintCatalog(mode);
+  const selectedId = String(state.selectedAgentBlueprintByMode?.[mode] || '').trim() || getDefaultAgentBlueprintId(mode);
+  return catalog.find((item) => item.id === selectedId) || catalog[0] || null;
+}
+
+function setSelectedAgentBlueprint(blueprintId, mode = getMissionFormMode()) {
+  const catalog = getAgentBlueprintCatalog(mode);
+  const exists = catalog.some((item) => item.id === blueprintId);
+  state.selectedAgentBlueprintByMode[mode] = exists ? blueprintId : getDefaultAgentBlueprintId(mode);
+  renderAgentBlueprintBuilder();
+}
+
+function formatSpecialistKindLabel(kind = '') {
+  const meta = SPECIALIST_KIND_META[String(kind || '').trim()];
+  return meta?.label || getDisplayLabel(kind, kind);
+}
+
+function formatSpecialistShortLabel(kind = '') {
+  const meta = SPECIALIST_KIND_META[String(kind || '').trim()];
+  return meta?.shortLabel || getDisplayLabel(kind, kind);
+}
+
+function renderSpecialistTagList(kinds = [], { emptyLabel = '추가 specialist AI 없음' } = {}) {
+  const normalizedKinds = Array.isArray(kinds) ? kinds.filter(Boolean) : [];
+  if (!normalizedKinds.length) {
+    return `<span class="tag tag-muted">${escapeHtml(emptyLabel)}</span>`;
+  }
+
+  return normalizedKinds
+    .map((kind) => `<span class="tag">${escapeHtml(formatSpecialistShortLabel(kind))}</span>`)
+    .join('');
+}
+
+function buildMissionConstraintPayload(rawConstraints = '') {
+  const blueprint = getSelectedAgentBlueprint();
+  const lines = String(rawConstraints || '')
+    .split('\n')
+    .map((item) => String(item || '').trim())
+    .filter(Boolean)
+    .filter((line) => {
+      const normalized = line.toLowerCase();
+      return !normalized.startsWith('orchestration-profile:') && !normalized.startsWith('parallel-specialists:');
+    });
+
+  if (blueprint?.directive) {
+    lines.unshift(blueprint.directive);
+  }
+
+  return lines.join('\n');
+}
+
+function getMissionAiConfiguration(detail = state.missionDetail) {
+  const summary = detail?.summary || {};
+  const specialistKinds = Array.isArray(summary.specialistConfiguredKinds)
+    ? summary.specialistConfiguredKinds.filter(Boolean)
+    : [];
+  const profileDisplayName = String(summary.specialistOrchestrationProfileDisplayName || '').trim();
+  const profileId = String(summary.specialistOrchestrationProfileId || '').trim();
+  const qualityGate = String(summary.specialistQualityGate || '').trim();
+  const requiredKinds = Array.isArray(summary.specialistQualityGateRequiredKinds)
+    ? summary.specialistQualityGateRequiredKinds.filter(Boolean)
+    : [];
+
+  return {
+    profileDisplayName: profileDisplayName || (specialistKinds.length ? 'Custom specialist composition' : 'Core 4 only'),
+    profileId,
+    qualityGate,
+    requiredKinds,
+    specialistKinds,
+  };
 }
 
 function normalizeUiParam(value) {
@@ -2183,6 +2391,7 @@ function renderPlaybooks() {
       elements.missionForm.elements.title.value = playbook.values.title;
       elements.missionForm.elements.objective.value = playbook.values.objective;
       elements.missionForm.elements.constraints.value = playbook.values.constraints;
+      renderAgentBlueprintBuilder();
       openComposer();
     });
   });
@@ -2200,7 +2409,168 @@ function applyTemplate(index) {
   elements.missionForm.elements.title.value = fields.title;
   elements.missionForm.elements.objective.value = fields.objective;
   elements.missionForm.elements.constraints.value = fields.constraints;
+  renderAgentBlueprintBuilder();
   openComposer();
+}
+
+function renderAgentBlueprintBuilder() {
+  if (!elements.agentBlueprintBuilder) {
+    return;
+  }
+
+  const mode = getMissionFormMode();
+  const catalog = getAgentBlueprintCatalog(mode);
+  const selectedBlueprint = getSelectedAgentBlueprint(mode);
+  const pendingAttachmentCount = Number(elements.missionAttachmentInput?.files?.length || 0);
+  const selectedMissionLearning = state.missionDetail?.mission?.id === state.selectedMissionId ? state.missionDetail : null;
+  const learningSummary = selectedMissionLearning?.harness || null;
+  const missionMemoryCount = Number(learningSummary?.memory?.missionCounts?.total || 0);
+  const workspaceMemoryCount = Number(learningSummary?.memory?.workspaceCount || 0);
+  const attachmentCount = selectedMissionLearning
+    ? Number(learningSummary?.attachments?.summary?.total || 0)
+    : pendingAttachmentCount;
+  const qualityGateCopy = selectedBlueprint?.specialistKinds?.includes('verification')
+    ? '검증 AI 신호를 품질 게이트에 반영합니다.'
+    : selectedBlueprint?.specialistKinds?.includes('research')
+      ? '리서치 AI 신호를 실행 전 근거 기준으로 반영합니다.'
+      : '기본 4-agent 흐름으로 manager → planner → executor → reviewer만 사용합니다.';
+
+  elements.agentBlueprintBuilder.innerHTML = `
+    <div class="agent-blueprint-shell">
+      <div class="agent-blueprint-hero">
+        <div class="agent-blueprint-hero-copy">
+          <span class="section-kicker">AI를 어떻게 추가하나</span>
+          <h4>${escapeHtml(mode === 'engineering' ? '엔지니어링 AI 조합 선택' : '지식 작업 AI 조합 선택')}</h4>
+          <p>${escapeHtml('카드를 고르면 specialist AI 구성이 mission constraint에 자동 반영됩니다. 별도 directive를 외울 필요가 없습니다.')}</p>
+        </div>
+        <div class="agent-blueprint-hero-stats">
+          <div class="summary-chip">
+            <span>현재 선택</span>
+            <strong>${escapeHtml(selectedBlueprint?.title || 'Core 4')}</strong>
+          </div>
+          <div class="summary-chip">
+            <span>추가 AI</span>
+            <strong>${escapeHtml(String(selectedBlueprint?.specialistKinds?.length || 0))}개</strong>
+          </div>
+          <div class="summary-chip">
+            <span>학습 입력</span>
+            <strong>${escapeHtml(String(attachmentCount))}개 파일</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-blueprint-grid">
+        ${catalog
+          .map(
+            (blueprint) => `
+              <button
+                type="button"
+                class="agent-blueprint-card ${blueprint.id === selectedBlueprint?.id ? 'is-active' : ''}"
+                data-agent-blueprint-id="${escapeHtml(blueprint.id)}"
+              >
+                <div class="agent-blueprint-card-top">
+                  <span class="mini-badge">${escapeHtml(blueprint.emphasis)}</span>
+                  <span class="agent-blueprint-card-count">${escapeHtml(`+${blueprint.specialistKinds.length}`)}</span>
+                </div>
+                <strong>${escapeHtml(blueprint.title)}</strong>
+                <p>${escapeHtml(blueprint.description)}</p>
+                <div class="tag-list">
+                  ${renderSpecialistTagList(blueprint.specialistKinds)}
+                </div>
+              </button>
+            `,
+          )
+          .join('')}
+      </div>
+
+      <div class="agent-blueprint-preview-grid">
+        <section class="agent-blueprint-preview">
+          <div class="mini-head">
+            <div>
+              <p class="section-kicker">추가된 AI 기능</p>
+              <h4>${escapeHtml(selectedBlueprint?.title || 'Core 4')}</h4>
+            </div>
+          </div>
+          <div class="agent-role-strip">
+            <span class="tag">매니저</span>
+            <span class="tag">플래너</span>
+            <span class="tag">실행</span>
+            <span class="tag">리뷰어</span>
+            ${selectedBlueprint?.specialistKinds?.map((kind) => `<span class="tag tag-accent">${escapeHtml(formatSpecialistShortLabel(kind))}</span>`).join('') || ''}
+          </div>
+          <div class="agent-function-list">
+            ${selectedBlueprint?.specialistKinds?.length
+              ? selectedBlueprint.specialistKinds
+                  .map((kind) => {
+                    const meta = SPECIALIST_KIND_META[kind];
+                    return `
+                      <div class="agent-function-row">
+                        <span class="agent-function-badge">${escapeHtml(meta?.badge || kind.slice(0, 3).toUpperCase())}</span>
+                        <div>
+                          <strong>${escapeHtml(meta?.label || kind)}</strong>
+                          <p>${escapeHtml(meta?.description || getDisplayLabel(kind, kind))}</p>
+                        </div>
+                      </div>
+                    `;
+                  })
+                  .join('')
+              : `<div class="agent-function-row">
+                   <span class="agent-function-badge">CORE</span>
+                   <div>
+                     <strong>기본 4-agent</strong>
+                     <p>추가 specialist 없이 manager → planner → executor → reviewer 흐름으로 실행합니다.</p>
+                   </div>
+                 </div>`}
+          </div>
+          <div class="agent-blueprint-footer">
+            <span class="mini-badge">${escapeHtml(selectedBlueprint?.directive || '추가 directive 없음')}</span>
+            <span class="item-meta">${escapeHtml(qualityGateCopy)}</span>
+          </div>
+        </section>
+
+        <section class="agent-learning-panel">
+          <div class="mini-head">
+            <div>
+              <p class="section-kicker">AI 학습 입력</p>
+              <h4>현재는 운영형 학습만 지원</h4>
+            </div>
+          </div>
+          <div class="agent-learning-summary">
+            <div class="summary-chip">
+              <span>첨부 파일</span>
+              <strong>${escapeHtml(String(attachmentCount))}개</strong>
+            </div>
+            <div class="summary-chip">
+              <span>미션 메모</span>
+              <strong>${escapeHtml(String(missionMemoryCount))}개</strong>
+            </div>
+            <div class="summary-chip">
+              <span>워크스페이스 메모</span>
+              <strong>${escapeHtml(String(workspaceMemoryCount))}개</strong>
+            </div>
+          </div>
+          <div class="agent-learning-note is-supported">
+            <strong>지원됨</strong>
+            <p>텍스트 첨부, 미션 메모, 워크스페이스 메모는 다음 run prompt와 rerun context에 반영됩니다.</p>
+          </div>
+          <div class="agent-learning-note is-limited">
+            <strong>아직 아님</strong>
+            <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다.</p>
+          </div>
+          <div class="agent-learning-note">
+            <strong>입력 방법</strong>
+            <p>미션 생성 시 텍스트 파일을 첨부하고, 실행 후에는 하네스 탭에서 미션/워크스페이스 메모를 누적하면 됩니다.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+
+  elements.agentBlueprintBuilder.querySelectorAll('[data-agent-blueprint-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      setSelectedAgentBlueprint(String(button.dataset.agentBlueprintId || '').trim(), mode);
+    });
+  });
 }
 
 function renderProviders() {
@@ -2544,7 +2914,7 @@ function renderAgentLane() {
       action: 'open-create',
       actionLabel: '미션 작성 열기',
       icon: 'AG',
-      message: '미션이 선택되면 매니저, 플래너, 실행 담당, 리뷰어 흐름을 여기서 바로 볼 수 있습니다.',
+      message: '미션이 선택되면 core agent 4개와 추가 specialist AI 구성을 여기서 바로 볼 수 있습니다.',
       title: '에이전트 진행 흐름이 아직 없습니다',
     });
     wireQuickActions(elements.agentLane);
@@ -2552,6 +2922,7 @@ function renderAgentLane() {
   }
 
   const latestSession = state.missionDetail.summary?.latestSession || {};
+  const aiConfig = getMissionAiConfiguration(state.missionDetail);
   const currentStage = String(latestSession.currentStage || '').toLowerCase();
   const sessionCompleted = latestSession.status === 'completed';
   const stageOrder = ['manager', 'planner', 'executor', 'reviewer'];
@@ -2580,7 +2951,7 @@ function renderAgentLane() {
     failed: '실패',
   };
 
-  elements.agentLane.innerHTML = stageOrder
+  const coreLane = stageOrder
     .map((stage, index) => {
       const currentIndex = stageOrder.indexOf(currentStage);
       let visualState = 'pending';
@@ -2609,6 +2980,55 @@ function renderAgentLane() {
       `;
     })
     .join('');
+
+  const specialistLane = aiConfig.specialistKinds.length
+    ? `
+        <div class="specialist-lane-shell">
+          <div class="specialist-lane-head">
+            <div>
+              <p class="section-kicker">추가 specialist AI</p>
+              <strong>${escapeHtml(aiConfig.profileDisplayName)}</strong>
+            </div>
+            <span class="mini-badge">${escapeHtml(`+${aiConfig.specialistKinds.length} agents`)}</span>
+          </div>
+          <div class="specialist-lane">
+            ${aiConfig.specialistKinds
+              .map((kind) => {
+                const meta = SPECIALIST_KIND_META[kind];
+                const required = aiConfig.requiredKinds.includes(kind);
+                return `
+                  <article class="specialist-stage ${required ? 'is-required' : ''}">
+                    <div class="specialist-stage-head">
+                      <span class="agent-function-badge">${escapeHtml(meta?.badge || kind.slice(0, 3).toUpperCase())}</span>
+                      <span class="mini-badge">${escapeHtml(required ? 'quality gate' : 'specialist')}</span>
+                    </div>
+                    <h3>${escapeHtml(meta?.label || kind)}</h3>
+                    <p>${escapeHtml(meta?.description || getDisplayLabel(kind, kind))}</p>
+                  </article>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `
+    : `
+        <div class="specialist-lane-shell specialist-lane-shell-empty">
+          <div class="specialist-lane-head">
+            <div>
+              <p class="section-kicker">추가 specialist AI</p>
+              <strong>Core 4 only</strong>
+            </div>
+          </div>
+          <p class="summary-note">현재 미션은 추가 specialist 없이 기본 4-agent 흐름으로 실행됩니다. 필요하면 1단계에서 AI 구성 카드를 바꾸면 됩니다.</p>
+        </div>
+      `;
+
+  elements.agentLane.innerHTML = `
+    <div class="agent-lane-core">
+      ${coreLane}
+    </div>
+    ${specialistLane}
+  `;
 }
 
 function renderMissionSummary() {
@@ -2634,6 +3054,7 @@ function renderMissionSummary() {
 
   const { mission, summary } = state.missionDetail;
   const playbook = inferPlaybook(mission);
+  const aiConfig = getMissionAiConfiguration(state.missionDetail);
   if (playbook) {
     state.selectedPlaybookId = playbook.id;
     renderPlaybooks();
@@ -2684,6 +3105,19 @@ function renderMissionSummary() {
             : '<p class="summary-note">선택된 플레이북 없이 사용자 정의 미션으로 실행 중입니다.</p>'
         }
       </section>
+      <section class="summary-section summary-section-ai">
+        <p class="summary-label">AI 구성</p>
+        <div class="definition-list">
+          <div class="definition-item"><span>현재 구성</span><strong>${escapeHtml(aiConfig.profileDisplayName)}</strong></div>
+          <div class="definition-item"><span>추가 AI</span><strong>${escapeHtml(String(aiConfig.specialistKinds.length))}개</strong></div>
+          <div class="definition-item"><span>품질 게이트</span><strong>${escapeHtml(getDisplayLabel(aiConfig.qualityGate, aiConfig.qualityGate || 'none'))}</strong></div>
+          <div class="definition-item"><span>필수 신호</span><strong>${escapeHtml(aiConfig.requiredKinds.length ? aiConfig.requiredKinds.map((kind) => formatSpecialistShortLabel(kind)).join(', ') : '없음')}</strong></div>
+        </div>
+        <div class="tag-list">
+          ${renderSpecialistTagList(aiConfig.specialistKinds)}
+        </div>
+        <p class="summary-note">${escapeHtml(aiConfig.profileId ? `directive · orchestration-profile:${aiConfig.profileId}` : '별도 specialist directive 없이 core 4-agent 흐름으로 실행됩니다.')}</p>
+      </section>
       <section class="summary-section">
         <p class="summary-label">최근 세션</p>
         <div class="definition-list">
@@ -2701,6 +3135,16 @@ function renderMissionSummary() {
           <div class="definition-item"><span>기억 항목</span><strong>${escapeHtml(String(summary?.memoryCounts?.total ?? 0))}</strong></div>
           <div class="definition-item"><span>제공자 상태</span><strong>${escapeHtml(getDisplayLabel(summary?.providerHealthDriftStatus, '안정'))}</strong></div>
         </div>
+      </section>
+      <section class="summary-section summary-section-learning">
+        <p class="summary-label">AI 학습 입력</p>
+        <div class="definition-list">
+          <div class="definition-item"><span>첨부 파일</span><strong>${escapeHtml(String(summary?.attachmentCounts?.total ?? 0))}개</strong></div>
+          <div class="definition-item"><span>미션 메모</span><strong>${escapeHtml(String(summary?.memoryCounts?.total ?? 0))}개</strong></div>
+          <div class="definition-item"><span>누적 chars</span><strong>${escapeHtml(String(summary?.attachmentCounts?.totalChars ?? 0))}</strong></div>
+          <div class="definition-item"><span>학습 방식</span><strong>prompt grounding + memory recall</strong></div>
+        </div>
+        <p class="summary-note">현재는 모델 재학습이 아니라, 텍스트 첨부와 메모리를 다음 실행 문맥으로 다시 넣는 운영형 학습입니다.</p>
       </section>
       <section class="summary-section">
         <p class="summary-label">리뷰어 신호</p>
@@ -2750,6 +3194,7 @@ function renderSelectionBridge() {
     null;
   const workspaceLabel = selectedRecord.workspace?.name || mission.workspaceId;
   const snapshot = getMissionQueueSnapshot(mission, latestSession);
+  const aiConfig = getMissionAiConfiguration(state.missionDetail);
   const flow =
     state.missionDetail?.mission?.id === selectedRecord.mission.id
       ? getFlowState()
@@ -2764,9 +3209,9 @@ function renderSelectionBridge() {
     ? `${getDisplayLabel(latestSession.provider, latestSession.provider)} · ${getDisplayLabel(latestSession.status)}`
     : '아직 실행 전';
   const harnessState = getHarnessSummaryState();
-  const harnessLabel = harnessState.topRecommendation
-    ? harnessState.topRecommendation.title
-    : `권장 조치 없음 · 메모 ${harnessState.memoryTotalCount}개`;
+  const learningLabel = state.missionDetail?.summary
+    ? `첨부 ${state.missionDetail.summary.attachmentCounts?.total || 0} · 메모 ${state.missionDetail.summary.memoryCounts?.total || 0}`
+    : `첨부 0 · 메모 ${harnessState.memoryTotalCount}개`;
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main">
@@ -2789,12 +3234,16 @@ function renderSelectionBridge() {
         <strong>${escapeHtml(getStepLabel(state.activeStep, { short: true }))}</strong>
       </div>
       <div class="selection-bridge-pill">
+        <span>AI 구성</span>
+        <strong>${escapeHtml(aiConfig.specialistKinds.length ? `${aiConfig.profileDisplayName} · +${aiConfig.specialistKinds.length}` : 'Core 4 only')}</strong>
+      </div>
+      <div class="selection-bridge-pill">
         <span>최근 실행</span>
         <strong>${escapeHtml(latestExecutionLabel)}</strong>
       </div>
       <div class="selection-bridge-pill ${harnessState.topRecommendation ? 'is-active' : ''}">
-        <span>하네스</span>
-        <strong>${escapeHtml(harnessLabel)}</strong>
+        <span>학습 입력</span>
+        <strong>${escapeHtml(learningLabel)}</strong>
       </div>
       <div class="selection-bridge-pill">
         <span>다음 액션</span>
@@ -5947,6 +6396,7 @@ function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
   renderSessionDetail(null);
   renderArtifact(null);
   renderFlowState();
+  renderAgentBlueprintBuilder();
   renderDetailTabLabels();
   renderDetailContextbar();
   setActiveStep('step-setup', { syncDetailTab: false, syncUrl: false });
@@ -6524,6 +6974,7 @@ async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } =
   renderSessionList();
   renderFlowState();
   renderHeroMetrics();
+  renderAgentBlueprintBuilder();
   renderDetailTabLabels();
   renderDetailContextbar();
 }
@@ -6534,7 +6985,7 @@ async function handleMissionCreate(event) {
   const attachments = await readMissionAttachmentFiles(elements.missionAttachmentInput?.files || []);
   const payload = {
     attachments,
-    constraints: String(formData.get('constraints') || ''),
+    constraints: buildMissionConstraintPayload(String(formData.get('constraints') || '')),
     deliverableType: String(formData.get('deliverableType') || ''),
     mode: String(formData.get('mode') || ''),
     objective: String(formData.get('objective') || ''),
@@ -6548,6 +6999,7 @@ async function handleMissionCreate(event) {
   });
 
   elements.missionForm.reset();
+  renderAgentBlueprintBuilder();
   await loadMissions();
   await selectMission(result.mission.id, {
     preferredDetailTab: 'runs',
@@ -7039,6 +7491,12 @@ function attachEvents() {
       window.alert(error.message);
     }
   });
+  elements.missionForm.elements.mode?.addEventListener('change', () => {
+    renderAgentBlueprintBuilder();
+  });
+  elements.missionAttachmentInput?.addEventListener('change', () => {
+    renderAgentBlueprintBuilder();
+  });
   elements.memoryForm?.addEventListener('submit', async (event) => {
     try {
       await handleMemoryCreate(event);
@@ -7121,6 +7579,7 @@ async function bootstrap() {
   attachEvents();
   renderPlaybooks();
   renderTemplates();
+  renderAgentBlueprintBuilder();
   setActiveStep('step-setup', { syncUrl: false });
 
   try {

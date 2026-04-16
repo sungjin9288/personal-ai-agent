@@ -93,7 +93,10 @@ npm run ui
 - `하네스 > 소스 오브 레코드`는 예전 append-only `devlog` 섹션을 `기존 개발 로그 전환` 한 번으로 tracked entry로 감싸므로, 과거 로그도 같은 화면에서 수정/삭제 가능한 기록으로 정리할 수 있음
 - `하네스 > 소스 오브 레코드`는 tracked 문서 기록 전체를 `제목 / 본문 / 경로` 검색과 `reference/devlog/incident` 필터로 바로 좁혀 볼 수 있어, 누적된 기록이 많아져도 최근 6건만 보는 대신 전체 source log를 같은 화면에서 탐색할 수 있음
 - `하네스 > 미션 첨부 입력`은 Markdown/txt/json/log/source code 같은 텍스트 기반 파일을 미션 입력으로 저장하고, 다음 multi-agent run prompt에 요약과 발췌본을 같이 주입하므로 요구사항/로그/참고 메모를 agent-readable context로 누적할 수 있음
+- `미션 정하기 > AI 구성` 카드는 `Core 4`, `구현+검증`, `트라이어드`, `풀 스펙트럼` 같은 composition을 직접 고르게 해 주고, 선택한 카드에 맞는 `orchestration-profile:*` directive를 자동으로 constraint에 반영함
+- 같은 화면의 `AI 학습 입력` 패널은 현재 학습이 `prompt grounding + mission/workspace memory recall` 범위라는 점을 명시하고, fine-tuning·OCR·binary understanding·vector retrieval index는 아직 지원하지 않는다고 분리해서 보여 줌
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
+- `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, 학습 입력 패널, specialist lane style contract가 모두 살아 있는지 검증함
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
 - `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, MemPalace식 layered memory recall, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인

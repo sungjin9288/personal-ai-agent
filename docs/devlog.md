@@ -9,6 +9,15 @@
 - simplified the selected-mission bridge into a compact summary strip with only current step, latest execution, harness signal, and next action so the top of the workbench no longer consumes a full extra breadcrumb row
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:00:00.000Z","id":"doclog_20260416143000_agent_blueprints","type":"devlog","updatedAt":"2026-04-16T00:00:00.000Z"} -->
+## 2026-04-16 AI Composition Setup Pass
+
+- date: 2026-04-16T00:00:00.000Z
+- added a dedicated `AI 구성` surface to mission setup so operators can choose `Core 4`, targeted specialist bundles, or full-spectrum profiles without hand-authoring orchestration directives
+- surfaced specialist capability previews and an explicit `AI 학습 입력` panel that distinguishes currently supported grounding paths (text attachments plus mission/workspace memory recall) from unsupported learning claims such as fine-tuning, OCR, binary understanding, and vector retrieval
+- added `smoke:ui-agent-blueprints` to lock the served UI asset contract for the new setup surface, including composition cards, learning copy, and specialist-lane styling
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:49:00.000Z","id":"doclog_20260416064900_workspace_execution_root","type":"devlog","updatedAt":"2026-04-16T06:49:00.000Z"} -->
 ## 2026-04-16 Trusted Workspace Execution Pass
 
