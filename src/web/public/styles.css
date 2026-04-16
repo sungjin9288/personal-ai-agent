@@ -68,7 +68,7 @@ button {
 }
 
 .app-shell.is-output-focus {
-  grid-template-columns: 214px minmax(0, 1fr);
+  grid-template-columns: 186px minmax(0, 1fr);
 }
 
 .nav-rail {
@@ -89,8 +89,8 @@ button {
 }
 
 .app-shell.is-output-focus .nav-rail {
-  gap: 5px;
-  padding: 6px;
+  gap: 4px;
+  padding: 5px;
 }
 
 .brand-block {
@@ -118,6 +118,10 @@ button {
 }
 
 .app-shell.is-output-focus .brand-copy {
+  display: none;
+}
+
+.app-shell.is-output-focus .workspace-current {
   display: none;
 }
 
@@ -458,11 +462,6 @@ button {
 }
 
 .main-stage.is-output-focus .flow-shell {
-  margin: 0 -14px -10px;
-  padding: 6px 14px 8px;
-}
-
-.main-stage.is-output-focus .flow-shell-head .section-kicker {
   display: none;
 }
 
@@ -617,6 +616,10 @@ button {
   font-size: 1rem;
 }
 
+.workspace-shell.is-output-focus #step-output .panel-head {
+  display: none;
+}
+
 .workspace-shell.is-output-focus .detail-shell {
   order: 1;
 }
@@ -657,6 +660,11 @@ button {
 
 .workspace-shell.is-output-focus .timeline-list {
   max-height: 220px;
+}
+
+.workspace-shell.is-output-focus .step-grid-output {
+  grid-template-columns: minmax(0, 1.26fr) minmax(260px, 0.74fr);
+  gap: 10px;
 }
 
 .selection-bridge {
@@ -1747,6 +1755,20 @@ button:disabled {
 
 .app-shell.is-output-focus .mission-row-summary {
   display: none;
+}
+
+.app-shell.is-output-focus .mission-row-updated,
+.app-shell.is-output-focus .mission-row-foot,
+.app-shell.is-output-focus .mission-next-action {
+  display: none;
+}
+
+.app-shell.is-output-focus .mission-row-topline {
+  margin-bottom: 2px;
+}
+
+.app-shell.is-output-focus .mission-row {
+  gap: 6px;
 }
 
 .mission-row-state {
@@ -3269,6 +3291,10 @@ button:disabled {
   }
 
   .main-stage.is-output-focus .flow-status-main {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-shell.is-output-focus .step-grid-output {
     grid-template-columns: 1fr;
   }
 
