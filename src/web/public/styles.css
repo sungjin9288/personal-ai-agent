@@ -168,11 +168,11 @@ button {
 
 .command-header {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
   grid-template-areas:
-    "overview"
-    "control"
+    "overview control"
     "flow flow";
+  align-items: start;
   gap: 10px;
   border-radius: var(--radius-xl);
   padding: 10px 12px;
@@ -183,6 +183,11 @@ button {
 }
 
 .main-stage.is-output-focus .command-header {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "overview"
+    "control"
+    "flow";
   gap: 8px;
   padding: 8px 12px;
 }
@@ -203,6 +208,10 @@ button {
 .main-stage.is-output-focus .command-overview h2 {
   font-size: 1.18rem;
   max-width: none;
+}
+
+.main-stage.is-output-focus .command-control {
+  padding-left: 0;
 }
 
 .command-overview {
@@ -342,6 +351,22 @@ button {
   gap: 12px;
 }
 
+.main-stage.is-output-focus .flow-status {
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.main-stage.is-output-focus .flow-status-label {
+  font-size: 0.66rem;
+}
+
+.main-stage.is-output-focus .flow-status-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+
 .flow-status-copyblock {
   display: flex;
   flex-direction: column;
@@ -355,6 +380,15 @@ button {
   color: var(--text-2);
   line-height: 1.42;
   font-size: 0.8rem;
+}
+
+.main-stage.is-output-focus .flow-status-copy {
+  display: none;
+}
+
+.main-stage.is-output-focus .flow-status-value {
+  font-size: 0.98rem;
+  line-height: 1.28;
 }
 
 .flow-status-inline {
@@ -399,6 +433,12 @@ button {
   padding-top: 2px;
 }
 
+.main-stage.is-output-focus .flow-status-actions {
+  justify-content: flex-end;
+  align-self: start;
+  padding-top: 0;
+}
+
 .flow-status-note {
   margin: -1px 0 0;
   color: var(--accent);
@@ -420,6 +460,10 @@ button {
 .main-stage.is-output-focus .flow-shell {
   margin: 0 -14px -10px;
   padding: 6px 14px 8px;
+}
+
+.main-stage.is-output-focus .flow-shell-head .section-kicker {
+  display: none;
 }
 
 .flow-shell-head {
@@ -540,6 +584,10 @@ button {
 .main-stage.is-output-focus .flow-step {
   min-height: 46px;
   padding: 7px 6px;
+}
+
+.main-stage.is-output-focus .flow-step-copy strong {
+  font-size: 0.76rem;
 }
 
 .main-stage.is-output-focus .flow-step-copy small {
@@ -3218,6 +3266,10 @@ button:disabled {
 
   .flow-status-main {
     flex-direction: column;
+  }
+
+  .main-stage.is-output-focus .flow-status-main {
+    grid-template-columns: 1fr;
   }
 
   .flow-status-actions {
