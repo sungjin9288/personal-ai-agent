@@ -3846,6 +3846,17 @@ function renderReleaseStatus() {
   const focusedProviderLatestAction = focusedProviderHistory[0] || null;
   const focusedProviderAttentionHistory = focusedProviderHistory.filter((item) => isReleaseAttentionOutcome(item?.outcome));
   const focusedProviderLatestAttentionAction = focusedProviderAttentionHistory[0] || null;
+  const { attentionFlowActive: focusedProviderAttentionFlowActive, sameFlowActive: focusedProviderFlowActive } = focusedProviderLatestAction
+    ? isRecommendationFlowActive({
+        attentionAction: focusedProviderLatestAttentionAction,
+        latestAction: focusedProviderLatestAction,
+      }, {
+        focusedHistoryId,
+        historyFilterOutcome,
+        historyFilterProvider,
+        historyFilterScope,
+      })
+    : { attentionFlowActive: false, sameFlowActive: false };
   const orderedProviderReadiness = focusedProvider
     ? [
         ...providerReadiness.filter((item) => String(item.provider || '').trim() === focusedProvider),
@@ -4547,6 +4558,12 @@ function renderReleaseStatus() {
                             ${focusedProviderAttentionHistory.length
                               ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(focusedProviderAttentionHistory.length))}건</span>`
                               : ''}
+                            ${focusedProviderFlowActive
+                              ? '<span class="mini-badge status-running">현재 provider flow 적용 중</span>'
+                              : ''}
+                            ${focusedProviderAttentionFlowActive
+                              ? '<span class="mini-badge status-failed">현재 provider 문제 흐름 적용 중</span>'
+                              : ''}
                           </div>
                           ${focusedProviderLatestAttentionAction
                             ? `
@@ -4573,12 +4590,16 @@ function renderReleaseStatus() {
                         ? `
                             <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}">최근 provider 기록 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="filter-release-history-provider" data-ui-provider="${escapeHtml(focusedProvider)}">같은 provider 기록만 보기</button>
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-flow" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}" data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}" ${focusedProviderFlowActive ? 'disabled' : ''}>${focusedProviderFlowActive ? '현재 provider flow' : '같은 provider flow 보기'}</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-flow-link" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}" data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}">provider flow 링크 복사</button>
                           `
                         : ''}
                       ${focusedProviderLatestAttentionAction
                         ? `
                             <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}">최근 provider 문제 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="filter-release-history-attention" data-ui-outcome="attention">주의 상태만</button>
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-flow" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}" data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}" ${focusedProviderAttentionFlowActive ? 'disabled' : ''}>${focusedProviderAttentionFlowActive ? '현재 provider 문제 흐름' : '같은 provider 문제 흐름 보기'}</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-flow-link" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}" data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}">provider 문제 흐름 링크 복사</button>
                           `
                         : ''}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus">provider 포커스 해제</button>

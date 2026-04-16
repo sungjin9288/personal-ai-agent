@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T04:35:00.000Z","id":"doclog_20260416043500_7d2c91","type":"devlog","updatedAt":"2026-04-16T04:35:00.000Z"} -->
+## 2026-04-16 Provider Spotlight Flow Handoff Pass
+
+- date: 2026-04-16T04:35:00.000Z
+- extended the focused provider spotlight so the operator can jump directly into the latest provider flow or latest provider attention flow without dropping back into generic history controls first
+- added provider-scoped `focus-release-flow` and `copy-release-flow-link` actions in the spotlight callout, which lets the same surface handle both investigation narrowing and deep-link handoff for provider-specific incidents
+- reused the existing release flow activation logic so the spotlight can also show when the current provider flow or provider attention flow is already active, keeping the new actions consistent with the existing release triage state machine
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T04:20:00.000Z","id":"doclog_20260416042000_4f7d01","type":"devlog","updatedAt":"2026-04-16T04:20:00.000Z"} -->
 ## 2026-04-16 Provider Spotlight History Triage Pass
 

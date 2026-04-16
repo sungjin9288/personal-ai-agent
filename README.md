@@ -585,4 +585,6 @@ provider spotlight가 활성화되면 그 provider card는 grid 상단으로 올
 
 provider spotlight는 이제 원인 추적 surface도 같이 포함합니다. focused provider에 연결된 release action history가 있으면 spotlight callout 안에서 `최근 provider 시도`, `최근 provider 문제`, `같은 provider N건`, `문제 흐름 N건`을 바로 보여 주고, 같은 위치에서 `최근 provider 기록 보기`, `최근 provider 문제 보기`, `같은 provider 기록만 보기`, `주의 상태만`으로 release history triage를 바로 시작할 수 있습니다.
 
+여기서 더 나아가 provider spotlight는 같은 provider flow 자체를 바로 좁히고 공유할 수도 있습니다. focused provider의 최신 시도와 최신 문제를 기준으로 `같은 provider flow 보기`, `provider flow 링크 복사`, `같은 provider 문제 흐름 보기`, `provider 문제 흐름 링크 복사`를 제공하므로, operator는 provider card를 본 상태에서 history filter와 deep-link handoff까지 한 번에 이어갈 수 있습니다.
+
 같은 위치에서 `기록 링크 복사`와 `문제 기록 링크 복사`도 사용할 수 있습니다. 이 링크들은 flow 전체가 아니라 exact release action row 하나만 고정하므로, 특정 blocked/failed event를 그대로 지정해서 넘기고 싶을 때 더 적합합니다. expanded history row의 `이 기록 링크 복사`도 같은 규칙을 따릅니다.
