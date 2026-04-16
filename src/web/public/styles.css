@@ -187,6 +187,11 @@ button {
   padding: 8px 12px;
 }
 
+.main-stage.is-output-focus .command-statusbar,
+.main-stage.is-output-focus .flow-status-inline {
+  display: none;
+}
+
 .command-overview {
   grid-area: overview;
   display: flex;
@@ -537,6 +542,8 @@ button {
 
 .workspace-shell.is-output-focus {
   gap: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .workspace-shell.is-output-focus #step-output .panel-head p:last-child,
@@ -550,11 +557,25 @@ button {
 }
 
 .workspace-shell.is-output-focus .detail-shell {
+  order: 1;
+}
+
+.workspace-shell.is-output-focus .stage-shell {
+  order: 2;
+}
+
+.workspace-shell.is-output-focus .detail-shell {
   gap: 8px;
 }
 
 .workspace-shell.is-output-focus .detail-tabs {
   margin-top: -2px;
+  padding-bottom: 4px;
+}
+
+.workspace-shell.is-output-focus .detail-tab {
+  padding: 6px 10px;
+  font-size: 0.74rem;
 }
 
 .selection-bridge {
