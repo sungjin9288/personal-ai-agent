@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T05:35:00.000Z","id":"doclog_20260416053500_4dbe81","type":"devlog","updatedAt":"2026-04-16T05:35:00.000Z"} -->
+## 2026-04-16 Orchestration Profile Smoke Stabilization Pass
+
+- date: 2026-04-16T05:35:00.000Z
+- updated `smoke:orchestration-profiles` so the overview assertions track the expanded six-profile catalog instead of the previous four-profile assumption
+- corrected summary, adoption drift, usage trend, workspace usage trend, and latest-unused expectations so the new `knowledge-full-spectrum` and `engineering-full-spectrum` presets are treated as intentionally unused profiles rather than invisible catalog entries
+- added explicit unused-profile checks for both full-spectrum presets and re-ran `smoke:orchestration-profiles` plus `smoke:parallel-specialists` to keep the widened multi-agent surface grounded in deterministic evidence
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T05:10:00.000Z","id":"doclog_20260416051000_18cf42","type":"devlog","updatedAt":"2026-04-16T05:10:00.000Z"} -->
 ## 2026-04-16 Parallel Specialist Capacity Expansion Pass
 

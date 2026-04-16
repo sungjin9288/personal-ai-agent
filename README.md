@@ -481,6 +481,8 @@ npm run smoke:local-provider
 
 All current smokes are deterministic and require no external API key.
 
+`npm run smoke:orchestration-profiles`는 현재 six-profile orchestration catalog 전체를 검증합니다. 특히 `knowledge-full-spectrum`와 `engineering-full-spectrum`이 unused preset으로 summary/adoption/workspace trend에 정확히 반영되는지까지 같이 확인합니다.
+
 `npm run verify:execution-v1`는 실행형 에이전트 v1 마감용 검증 entrypoint입니다.
 
 - 기본 실행:
