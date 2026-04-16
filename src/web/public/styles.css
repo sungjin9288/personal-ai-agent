@@ -67,6 +67,10 @@ button {
   align-items: start;
 }
 
+.app-shell.is-output-focus {
+  grid-template-columns: 214px minmax(0, 1fr);
+}
+
 .nav-rail {
   display: flex;
   flex-direction: column;
@@ -104,6 +108,10 @@ button {
   line-height: 1.28;
 }
 
+.app-shell.is-output-focus .brand-copy {
+  display: none;
+}
+
 .rail-card,
 .surface,
 .command-header,
@@ -124,6 +132,10 @@ button {
   backdrop-filter: blur(12px);
   box-shadow: none;
   border-color: rgba(255, 255, 255, 0.06);
+}
+
+.app-shell.is-output-focus .rail-card {
+  padding: 8px;
 }
 
 .rail-queue {
@@ -1198,6 +1210,10 @@ button {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.app-shell.is-output-focus .workspace-current {
+  gap: 5px;
+}
+
 .workspace-current-empty {
   color: var(--rail-muted);
   font-size: 0.71rem;
@@ -1369,6 +1385,11 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
+}
+
+.app-shell.is-output-focus .queue-summary,
+.app-shell.is-output-focus .mission-filter {
+  display: none;
 }
 
 .queue-pill {
@@ -1593,6 +1614,10 @@ button:disabled {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
+}
+
+.app-shell.is-output-focus .mission-row-summary {
+  display: none;
 }
 
 .mission-row-state {

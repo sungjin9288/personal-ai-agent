@@ -337,6 +337,7 @@ const elements = {
   actionSummary: document.getElementById('action-summary'),
   approvalList: document.getElementById('approval-list'),
   agentBlueprintBuilder: document.getElementById('agent-blueprint-builder'),
+  appShell: document.querySelector('.app-shell'),
   artifactMeta: document.getElementById('artifact-meta'),
   artifactViewer: document.getElementById('artifact-viewer'),
   detailContextbar: document.getElementById('detail-contextbar'),
@@ -1943,6 +1944,7 @@ function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode =
 
 function syncStepViewMode() {
   const outputFocus = state.activeStep === 'step-output';
+  elements.appShell?.classList.toggle('is-output-focus', outputFocus);
   elements.mainStage?.classList.toggle('is-output-focus', outputFocus);
   elements.workspaceShell?.classList.toggle('is-output-focus', outputFocus);
 }
