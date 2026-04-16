@@ -3840,6 +3840,12 @@ function renderReleaseStatus() {
   const focusedProviderPreflight = focusedProviderEntry
     ? state.releasePreflightResults?.[focusedProviderEntry.provider] || null
     : null;
+  const focusedProviderHistory = focusedProvider
+    ? releaseActionHistory.filter((item) => String(item.provider || '').trim() === focusedProvider)
+    : [];
+  const focusedProviderLatestAction = focusedProviderHistory[0] || null;
+  const focusedProviderAttentionHistory = focusedProviderHistory.filter((item) => isReleaseAttentionOutcome(item?.outcome));
+  const focusedProviderLatestAttentionAction = focusedProviderAttentionHistory[0] || null;
   const orderedProviderReadiness = focusedProvider
     ? [
         ...providerReadiness.filter((item) => String(item.provider || '').trim() === focusedProvider),
@@ -4530,6 +4536,30 @@ function renderReleaseStatus() {
                           </div>
                         `
                       : ''}
+                    ${focusedProviderLatestAction
+                      ? `
+                          <div class="item-meta">
+                            최근 provider 시도 · ${escapeHtml(getReleaseActionLabel(focusedProviderLatestAction.action))} · ${escapeHtml(focusedProviderLatestAction.outcome || 'unknown')} · ${escapeHtml(formatDate(focusedProviderLatestAction.createdAt))}
+                          </div>
+                          <div class="item-meta">${escapeHtml(focusedProviderLatestAction.summary || '최근 provider action summary가 없습니다.')}</div>
+                          <div class="release-history-filter-chips">
+                            <span class="mini-badge status-running">같은 provider ${escapeHtml(String(focusedProviderHistory.length))}건</span>
+                            ${focusedProviderAttentionHistory.length
+                              ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(focusedProviderAttentionHistory.length))}건</span>`
+                              : ''}
+                          </div>
+                          ${focusedProviderLatestAttentionAction
+                            ? `
+                                <div class="item-meta">
+                                  최근 provider 문제 · ${escapeHtml(getReleaseActionLabel(focusedProviderLatestAttentionAction.action))} · ${escapeHtml(formatDate(focusedProviderLatestAttentionAction.createdAt))}
+                                </div>
+                                <div class="item-meta">${escapeHtml(focusedProviderLatestAttentionAction.summary || '최근 provider 문제 summary가 없습니다.')}</div>
+                              `
+                            : ''}
+                        `
+                      : `
+                          <div class="item-meta">이 provider에 연결된 release action history가 아직 없습니다.</div>
+                        `}
                     <div class="release-history-focus-actions">
                       ${focusedProviderEntry
                         ? `
@@ -4537,6 +4567,18 @@ function renderReleaseStatus() {
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} preflight 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`)}">preflight 명령 복사</button>
                             <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.ready ? focusedProviderEntry.command : `export ${focusedProviderEntry.envKey}=\"...\" && ${focusedProviderEntry.command}`)}">live 명령 복사</button>
+                          `
+                        : ''}
+                      ${focusedProviderLatestAction
+                        ? `
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}">최근 provider 기록 보기</button>
+                            <button class="ghost-button" type="button" data-ui-action="filter-release-history-provider" data-ui-provider="${escapeHtml(focusedProvider)}">같은 provider 기록만 보기</button>
+                          `
+                        : ''}
+                      ${focusedProviderLatestAttentionAction
+                        ? `
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}">최근 provider 문제 보기</button>
+                            <button class="ghost-button" type="button" data-ui-action="filter-release-history-attention" data-ui-outcome="attention">주의 상태만</button>
                           `
                         : ''}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus">provider 포커스 해제</button>

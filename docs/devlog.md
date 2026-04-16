@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T04:20:00.000Z","id":"doclog_20260416042000_4f7d01","type":"devlog","updatedAt":"2026-04-16T04:20:00.000Z"} -->
+## 2026-04-16 Provider Spotlight History Triage Pass
+
+- date: 2026-04-16T04:20:00.000Z
+- extended the focused provider spotlight so it now summarizes the latest provider-scoped release action and latest provider attention event directly inside the callout instead of forcing the operator to drop back into the full history list first
+- added quick actions from the provider spotlight into release history triage, including jump-to-latest-provider-record, jump-to-latest-provider-problem, same-provider filtering, and attention-only filtering
+- kept the implementation client-side by deriving provider history from the existing `releaseActionHistory` payload, which tightened the release investigation loop without expanding the server contract or touching mutable evidence artifacts
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T04:05:00.000Z","id":"doclog_20260416040500_93a2b7","type":"devlog","updatedAt":"2026-04-16T04:05:00.000Z"} -->
 ## 2026-04-16 Provider Spotlight Triage Surface Pass
 
