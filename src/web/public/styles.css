@@ -632,6 +632,10 @@ button {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.workspace-shell.is-output-focus.is-output-support-collapsed .stage-shell {
+  display: none;
+}
+
 .workspace-shell.is-output-focus.is-output-support-collapsed .surface-result-side {
   display: none;
 }
