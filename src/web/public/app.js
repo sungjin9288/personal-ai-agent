@@ -930,6 +930,41 @@ function getRecommendationHistoryContext(item, releaseActionHistory = [], provid
   };
 }
 
+function getRecommendationCommandContext(item, providerReadiness = []) {
+  const action = String(item?.action || '').trim();
+  const actionProvider = String(item?.actionProvider || '').trim();
+  const envKey = String(item?.envKey || '').trim();
+  const providerEntry = providerReadiness.find((entry) => {
+    const entryProvider = String(entry?.provider || '').trim();
+    const entryEnvKey = String(entry?.envKey || '').trim();
+    return (actionProvider && entryProvider === actionProvider) || (envKey && entryEnvKey === envKey);
+  });
+
+  if (!providerEntry) {
+    return null;
+  }
+
+  if (action === 'run-release-preflight') {
+    return {
+      command: String(providerEntry.preflightCommand || '').trim(),
+      label: `${providerEntry.label} preflight 명령`,
+      buttonLabel: 'preflight 명령 복사',
+    };
+  }
+
+  if (envKey) {
+    return {
+      command: providerEntry.ready
+        ? String(providerEntry.command || '').trim()
+        : `export ${providerEntry.envKey}="..." && ${providerEntry.command}`,
+      label: `${providerEntry.label} live 명령`,
+      buttonLabel: 'live 명령 복사',
+    };
+  }
+
+  return null;
+}
+
 function isRecommendationFlowActive({ attentionAction = null, latestAction = null }, {
   focusedHistoryId = '',
   historyFilterOutcome = '',
@@ -3982,6 +4017,7 @@ function renderReleaseStatus() {
                   .map(
                     (item) => {
                       const historyContext = getRecommendationHistoryContext(item, releaseActionHistory, providerReadiness);
+                      const recommendationCommand = getRecommendationCommandContext(item, providerReadiness);
                       const latestAction = historyContext.latestAction;
                       const latestAttentionAction = historyContext.latestAttentionAction;
                       const { sameFlowActive, attentionFlowActive } = latestAction
@@ -4106,19 +4142,58 @@ function renderReleaseStatus() {
                                         >문제 흐름 링크 복사</button>
                                       `
                                     : ''}
+                                  ${recommendationCommand
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-command"
+                                          data-ui-label="${escapeHtml(recommendationCommand.label)}"
+                                          data-ui-value="${escapeHtml(recommendationCommand.command)}"
+                                        >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                      `
+                                    : ''}
                                 </div>
                               `
                             : item.action
                               ? `
-                                <button
-                                  class="ghost-button"
-                                  type="button"
-                                  data-ui-action="${escapeHtml(item.action)}"
-                                  ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
-                                >실행</button>
+                                <div class="release-recommendation-actions">
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="${escapeHtml(item.action)}"
+                                    ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
+                                  >실행</button>
+                                  ${recommendationCommand
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="copy-release-command"
+                                          data-ui-label="${escapeHtml(recommendationCommand.label)}"
+                                          data-ui-value="${escapeHtml(recommendationCommand.command)}"
+                                        >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                      `
+                                    : ''}
+                                </div>
                               `
                               : item.envKey
-                                ? `<span class="item-meta mono">${escapeHtml(item.envKey)}</span>`
+                                ? `
+                                    <div class="release-recommendation-actions">
+                                      <span class="item-meta mono">${escapeHtml(item.envKey)}</span>
+                                      ${recommendationCommand
+                                        ? `
+                                            <button
+                                              class="ghost-button"
+                                              type="button"
+                                              data-ui-action="copy-release-command"
+                                              data-ui-label="${escapeHtml(recommendationCommand.label)}"
+                                              data-ui-value="${escapeHtml(recommendationCommand.command)}"
+                                            >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                          `
+                                        : ''}
+                                    </div>
+                                  `
                                 : ''}
                         </div>
                       </article>

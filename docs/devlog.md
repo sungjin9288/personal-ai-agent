@@ -1595,6 +1595,15 @@
 - generated env-missing live commands as `export ENV_KEY=\"...\" && ...` skeletons so optional provider expansion can move from UI observation to shell execution without referring back to docs
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T03:05:00.000Z","id":"doclog_20260416030500_75b0cb","type":"devlog","updatedAt":"2026-04-16T03:05:00.000Z"} -->
+## 2026-04-16 Recommendation Command Copy Pass
+
+- date: 2026-04-16T03:05:00.000Z
+- extended provider-related recommendation cards with direct `preflight 명령 복사` / `live 명령 복사` actions so shell handoff can start from the top-level recommendation list instead of requiring a second scan of provider readiness cards
+- derived the recommendation command payload client-side from existing `actionProvider/envKey` and `providerReadiness`, which keeps the server recommendation model unchanged while preserving the same command strings shown in provider cards
+- applied the copy path consistently whether the recommendation already has recent history or is still in the no-history state, so command handoff is available throughout the recommendation lifecycle
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

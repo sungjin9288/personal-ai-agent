@@ -531,6 +531,8 @@ provider expansion도 콘솔에서 바로 preflight할 수 있습니다. `v1 마
 
 같은 provider card에서 `preflight 명령 복사`와 `live 명령 복사`도 바로 사용할 수 있습니다. env가 없는 provider는 `export ENV_KEY=\"...\" && ...` 형태의 skeleton을 복사하므로, UI에서 readiness를 확인한 직후 터미널 handoff까지 같은 화면에서 이어집니다.
 
+이 command-copy 경로는 `권장 다음 액션` 카드에서도 바로 시작할 수 있습니다. provider 관련 recommendation은 카드 안에서 곧바로 `preflight 명령 복사`나 `live 명령 복사`를 제공하므로, 상단 recommendation만 보고도 shell handoff까지 이어지고 provider card를 다시 찾을 필요가 없습니다.
+
 release tab의 액션도 read-only와 mutating 동작을 분리했습니다. `상태 다시 읽기`는 `/api/execution-v1/status`만 다시 호출하는 read-only reload이고, evidence/closeout를 현재 HEAD 기준으로 다시 만드는 동작은 별도 `current surface 재생성` 버튼이나 provider별 live validation 경로로만 실행됩니다. 따라서 operator는 단순 상태 확인과 artifact regeneration을 같은 버튼으로 착각하지 않아도 됩니다.
 
 release tab은 이제 `current surface 재생성`의 영향도 함께 보여 줍니다. 이 preview는 evidence/closeout rewrite 대상 경로, deterministic verification 재실행 여부, provider live validation 재실행 여부, snapshot 자동 갱신 여부를 같이 노출합니다. 즉, operator는 regenerate 버튼을 누르기 전에 어떤 artifact가 다시 계산되고 어떤 것은 그대로 유지되는지를 같은 화면에서 확인할 수 있습니다.
