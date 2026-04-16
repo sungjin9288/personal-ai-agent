@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T00:55:00.000Z","id":"doclog_20260416005500_4fd6aa","type":"devlog","updatedAt":"2026-04-16T00:55:00.000Z"} -->
+## 2026-04-16 Release History Expand Pass
+
+- date: 2026-04-16T00:55:00.000Z
+- extended release action history rows with `상세 보기/닫기` so operators can inspect action id, outcome, scope, and provider without leaving the `v1 마감 상태` tab
+- wired recommendation-driven `최근 기록 보기` to open the matching history row automatically, turning the existing jump/highlight behavior into a direct triage flow instead of a purely visual cue
+- kept the change client-side and state-local so the release status API contract stays stable while the release tab becomes easier to navigate under repeated preflight/confirm cycles
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

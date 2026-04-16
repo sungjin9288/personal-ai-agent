@@ -26,6 +26,7 @@ const state = {
   missions: [],
   providers: [],
   releaseLiveConfirmProvider: '',
+  releaseExpandedHistoryId: '',
   releaseLiveRefreshPreflight: null,
   releaseFocusedHistoryId: '',
   releaseRegenerationConfirmArmed: false,
@@ -845,6 +846,7 @@ function focusReleaseHistoryEntry(historyId = '', { scroll = true } = {}) {
     return;
   }
   state.releaseFocusedHistoryId = normalizedHistoryId;
+  state.releaseExpandedHistoryId = normalizedHistoryId;
   renderReleaseStatus();
   if (!scroll || !elements.releaseStatus) {
     return;
@@ -858,6 +860,20 @@ function focusReleaseHistoryEntry(historyId = '', { scroll = true } = {}) {
       });
     }
   });
+}
+
+function toggleReleaseHistoryEntry(historyId = '') {
+  const normalizedHistoryId = String(historyId || '').trim();
+  if (!normalizedHistoryId) {
+    return;
+  }
+  const nextExpandedId =
+    state.releaseExpandedHistoryId === normalizedHistoryId ? '' : normalizedHistoryId;
+  state.releaseExpandedHistoryId = nextExpandedId;
+  if (nextExpandedId) {
+    state.releaseFocusedHistoryId = normalizedHistoryId;
+  }
+  renderReleaseStatus();
 }
 
 function getStepLabel(stepId, { short = false } = {}) {
@@ -1143,6 +1159,11 @@ function wireQuickActions(scope = document) {
       if (action === 'focus-release-history') {
         focusReleaseHistoryEntry(value || '');
         setUiNotice('최근 release action 기록으로 이동했습니다.');
+        return;
+      }
+
+      if (action === 'toggle-release-history') {
+        toggleReleaseHistoryEntry(value || '');
         return;
       }
 
@@ -3346,6 +3367,7 @@ function renderReleaseStatus() {
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
+  const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -3650,14 +3672,26 @@ function renderReleaseStatus() {
               ${releaseActionHistory.length
                 ? releaseActionHistory
                   .map(
-                    (item) => `
-                      <article class="release-snapshot-card ${focusedHistoryId && item.id === focusedHistoryId ? 'is-highlighted' : ''}" data-release-history-id="${escapeHtml(item.id || '')}">
+                    (item) => {
+                      const itemId = String(item.id || '').trim();
+                      const isFocused = Boolean(focusedHistoryId && itemId === focusedHistoryId);
+                      const isExpanded = Boolean(expandedHistoryId && itemId === expandedHistoryId);
+                      return `
+                      <article class="release-snapshot-card ${isFocused ? 'is-highlighted' : ''} ${isExpanded ? 'is-expanded' : ''}" data-release-history-id="${escapeHtml(itemId)}">
                         <div class="release-provider-meta">
                           <div>
                             <div class="item-title">${escapeHtml(getReleaseActionLabel(item.action))}</div>
                             <div class="item-meta">${escapeHtml(getReleaseActionScopeLabel(item.scope))}${item.provider ? ` · ${escapeHtml(item.provider)}` : ''}</div>
                           </div>
-                          <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
+                          <div class="release-history-actions">
+                            <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
+                            <button
+                              class="ghost-button"
+                              type="button"
+                              data-ui-action="toggle-release-history"
+                              data-ui-value="${escapeHtml(itemId)}"
+                            >${isExpanded ? '상세 닫기' : '상세 보기'}</button>
+                          </div>
                         </div>
                         <div class="item-meta">${escapeHtml(item.summary || 'release action summary가 없습니다.')}</div>
                         <div class="release-meta release-meta-secondary">
@@ -3665,8 +3699,33 @@ function renderReleaseStatus() {
                           ${item.branch ? `<span class="item-meta">${escapeHtml(item.branch)}</span>` : ''}
                           ${item.commit ? `<span class="item-meta mono">${escapeHtml(String(item.commit).slice(0, 12))}</span>` : ''}
                         </div>
+                        ${isExpanded
+                          ? `
+                              <div class="release-history-detail">
+                                <div class="release-history-detail-grid">
+                                  <div>
+                                    <span class="section-kicker">Action Id</span>
+                                    <div class="item-meta mono">${escapeHtml(itemId || 'id 없음')}</div>
+                                  </div>
+                                  <div>
+                                    <span class="section-kicker">Outcome</span>
+                                    <div class="item-meta">${escapeHtml(item.outcome || 'unknown')}</div>
+                                  </div>
+                                  <div>
+                                    <span class="section-kicker">Scope</span>
+                                    <div class="item-meta">${escapeHtml(getReleaseActionScopeLabel(item.scope))}</div>
+                                  </div>
+                                  <div>
+                                    <span class="section-kicker">Provider</span>
+                                    <div class="item-meta">${escapeHtml(item.provider || '없음')}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            `
+                          : ''}
                       </article>
-                    `,
+                    `;
+                    },
                   )
                   .join('')
                 : `
@@ -4989,6 +5048,9 @@ async function loadReleaseStatus() {
   state.releaseStatus = payload;
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
     state.releaseFocusedHistoryId = '';
+  }
+  if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseExpandedHistoryId)) {
+    state.releaseExpandedHistoryId = '';
   }
   state.releaseLiveConfirmProvider = '';
   state.releaseLiveRefreshPreflight = null;
