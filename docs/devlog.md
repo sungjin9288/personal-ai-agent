@@ -1586,6 +1586,15 @@
 - exposed the exact-record share path both on recommendation cards and inside expanded history detail, so operators can start the handoff from either the summary or the raw action row
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T02:49:00.000Z","id":"doclog_20260416024900_83f1b5","type":"devlog","updatedAt":"2026-04-16T02:49:00.000Z"} -->
+## 2026-04-16 Provider Command Copy Pass
+
+- date: 2026-04-16T02:49:00.000Z
+- extended provider readiness cards with `preflight 명령 복사` and `live 명령 복사` so release operators can hand off terminal-ready commands directly from the same surface that shows readiness and env status
+- added `preflightCommand` to the provider readiness payload and reused a generic clipboard/prompt copy helper in the client, which avoids special-casing provider command sharing in a second path
+- generated env-missing live commands as `export ENV_KEY=\"...\" && ...` skeletons so optional provider expansion can move from UI observation to shell execution without referring back to docs
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

@@ -1405,6 +1405,15 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-command') {
+        void copyPlainTextValue(value || '', {
+          promptMessage: `${button.dataset.uiLabel || 'release command'}를 복사하세요.`,
+          shownNotice: `${button.dataset.uiLabel || 'release command'}를 표시했습니다.`,
+          successNotice: `${button.dataset.uiLabel || 'release command'}를 복사했습니다.`,
+        });
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedHistoryId: value || '',
@@ -1533,6 +1542,28 @@ async function copyUiLink(url, {
     setUiNotice(successNotice);
   } catch {
     window.prompt(promptMessage, url);
+    setUiNotice(shownNotice);
+  }
+}
+
+async function copyPlainTextValue(value, {
+  promptMessage = '값을 복사하세요.',
+  shownNotice = '값을 표시했습니다.',
+  successNotice = '값을 복사했습니다.',
+} = {}) {
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) {
+    setUiNotice('복사할 값이 없습니다.');
+    return;
+  }
+  try {
+    if (!navigator.clipboard?.writeText) {
+      throw new Error('clipboard-unavailable');
+    }
+    await navigator.clipboard.writeText(normalizedValue);
+    setUiNotice(successNotice);
+  } catch {
+    window.prompt(promptMessage, normalizedValue);
     setUiNotice(shownNotice);
   }
 }
@@ -4298,12 +4329,26 @@ function renderReleaseStatus() {
                           data-ui-provider="${escapeHtml(item.provider)}"
                         >preflight 실행</button>
                         <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="copy-release-command"
+                          data-ui-label="${escapeHtml(`${item.label} preflight 명령`)}"
+                          data-ui-value="${escapeHtml(item.preflightCommand || `npm run preflight:execution-v1:${item.provider}`)}"
+                        >preflight 명령 복사</button>
+                        <button
                           class="${liveConfirmArmed ? 'primary-button' : 'ghost-button'}"
                           type="button"
                           data-ui-action="refresh-release-status-live"
                           data-ui-provider="${escapeHtml(item.provider)}"
                           ${item.ready ? '' : 'disabled'}
                         >${escapeHtml(item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="copy-release-command"
+                          data-ui-label="${escapeHtml(`${item.label} live 명령`)}"
+                          data-ui-value="${escapeHtml(item.ready ? item.command : `export ${item.envKey}=\"...\" && ${item.command}`)}"
+                        >live 명령 복사</button>
                         ${liveConfirmArmed
                           ? `
                               <button

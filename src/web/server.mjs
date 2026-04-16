@@ -334,6 +334,7 @@ function buildExecutionV1Status() {
     command: item.command,
     envKey: item.envKey,
     label: item.label,
+    preflightCommand: `npm run preflight:execution-v1:${item.provider}`,
     provider: item.provider,
     ready: Boolean(process.env[item.envKey]),
     status: process.env[item.envKey] ? 'ready' : 'missing-env',
