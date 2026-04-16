@@ -3109,14 +3109,27 @@ function renderDetailTabLabels() {
     harness: harnessCount,
     release: state.releaseStatus?.summary?.checklistOpen || 0,
   };
+  const outputFocus = state.activeStep === 'step-output';
+  const primaryTabs = new Set(['artifacts', 'runs', 'reviews']);
+  const condensedOutputLabels = {
+    config: '입력',
+    harness: '하네스',
+    release: 'v1',
+  };
 
   elements.detailTabButtons.forEach((button) => {
     if (!button.dataset.baseLabel) {
       button.dataset.baseLabel = button.textContent?.trim() || '';
     }
-    const baseLabel = button.dataset.baseLabel || '';
-    const count = counts[button.dataset.detailTab] || 0;
+    const tabId = button.dataset.detailTab || '';
+    const baseLabel =
+      outputFocus && condensedOutputLabels[tabId]
+        ? condensedOutputLabels[tabId]
+        : button.dataset.baseLabel || '';
+    const count = counts[tabId] || 0;
     button.textContent = count > 0 ? `${baseLabel} ${count}` : baseLabel;
+    button.classList.toggle('is-primary', outputFocus && primaryTabs.has(tabId));
+    button.classList.toggle('is-secondary', outputFocus && !primaryTabs.has(tabId));
   });
 }
 
