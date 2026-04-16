@@ -657,6 +657,21 @@ button {
 
 .workspace-shell.is-output-focus .detail-shell {
   gap: 8px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.workspace-shell.is-output-focus .stage-shell {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.workspace-shell.is-output-focus .detail-panel,
+.workspace-shell.is-output-focus #step-output {
+  padding: 0;
 }
 
 .workspace-shell.is-output-focus .detail-tabs {
@@ -723,18 +738,21 @@ button {
 
 .workspace-shell.is-output-focus .detail-grid-artifacts {
   grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .workspace-shell.is-output-focus .artifact-meta {
-  padding-bottom: 2px;
+  padding: 0 0 2px;
 }
 
 .workspace-shell.is-output-focus .artifact-viewer {
   min-height: 420px;
+  padding: 8px 0 0;
+  font-size: 1rem;
 }
 
 .workspace-shell.is-output-focus .surface-result-side {
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.7), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.68), rgba(255, 255, 255, 0.94));
 }
 
 .workspace-shell.is-output-focus .timeline-list {
@@ -2181,6 +2199,13 @@ button:disabled {
 .workspace-shell.is-output-focus .surface-result-main,
 .workspace-shell.is-output-focus .surface-result-side {
   padding: 12px;
+}
+
+.workspace-shell.is-output-focus .surface-result-main {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .review-spotlight {
