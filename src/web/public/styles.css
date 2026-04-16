@@ -764,6 +764,10 @@ button {
   background: rgba(37, 99, 235, 0.1);
 }
 
+.workspace-shell.is-output-focus .detail-tab.is-secondary.is-collapsed {
+  display: none;
+}
+
 .workspace-shell.is-output-focus .detail-toolbar-actions.is-visible {
   position: sticky;
   top: 38px;

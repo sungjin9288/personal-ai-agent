@@ -26,6 +26,7 @@ const state = {
   missions: [],
   outputMissionSummaryExpanded: false,
   outputRailCollapsed: true,
+  outputSecondaryTabsExpanded: false,
   outputSupportExpanded: false,
   providers: [],
   releaseLiveConfirmProvider: '',
@@ -1747,6 +1748,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-secondary-tabs') {
+        toggleOutputSecondaryTabsExpanded();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -2002,8 +2008,21 @@ function toggleOutputSupportExpanded(forceValue = null) {
   renderOutputCloseout();
 }
 
+function toggleOutputSecondaryTabsExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputSecondaryTabsExpanded = forceValue;
+  } else {
+    state.outputSecondaryTabsExpanded = !state.outputSecondaryTabsExpanded;
+  }
+  renderDetailTabLabels();
+  renderDetailToolbarActions();
+}
+
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeDetailTab = tabId;
+  if (state.activeStep === 'step-output' && ['config', 'harness', 'release'].includes(tabId)) {
+    state.outputSecondaryTabsExpanded = true;
+  }
   elements.detailTabButtons.forEach((button) => {
     button.classList.toggle('is-active', button.dataset.detailTab === tabId);
   });
@@ -2063,6 +2082,9 @@ function renderDetailToolbarActions() {
             <button class="primary-button" type="button" data-ui-action="toggle-output-support">
               지원 패널 펼치기
             </button>
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
+              ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
+            </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
               ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
             </button>
@@ -2073,6 +2095,9 @@ function renderDetailToolbarActions() {
             </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
               ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
+            </button>
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
+              ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
             </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-support">
               지원 패널 접기
@@ -3130,6 +3155,13 @@ function renderDetailTabLabels() {
     button.textContent = count > 0 ? `${baseLabel} ${count}` : baseLabel;
     button.classList.toggle('is-primary', outputFocus && primaryTabs.has(tabId));
     button.classList.toggle('is-secondary', outputFocus && !primaryTabs.has(tabId));
+    button.classList.toggle(
+      'is-collapsed',
+      outputFocus &&
+        !primaryTabs.has(tabId) &&
+        !state.outputSecondaryTabsExpanded &&
+        tabId !== state.activeDetailTab,
+    );
   });
 }
 
