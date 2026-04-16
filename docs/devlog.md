@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T07:10:00.000Z","id":"doclog_20260416071000_4a80fe","type":"devlog","updatedAt":"2026-04-16T07:10:00.000Z"} -->
+## 2026-04-16 Overdue Incident Post-Triad Coverage Pass
+
+- date: 2026-04-16T07:10:00.000Z
+- updated `smoke-action-overdue-log` so the specialist overdue follow-up origin runs through the `documentation` lane instead of the older `implementation` example, which proves overdue incident markdown and summary aggregate the same specialist pressure for a post-triad lane
+- kept the existing overdue item count, provider drift summary, reminder route, and fallback command assertions intact, so the change expands lane coverage without weakening the incident trail contract
+- limited the scope to deterministic overdue-log regression coverage and documentation, leaving runtime behavior, provider contracts, and mutable release artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:55:00.000Z","id":"doclog_20260416065500_7fe52a","type":"devlog","updatedAt":"2026-04-16T06:55:00.000Z"} -->
 ## 2026-04-16 Maintenance Post-Triad Coverage Pass
 

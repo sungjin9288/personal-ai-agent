@@ -142,9 +142,9 @@ const specialistMission = runCli({
     '--title',
     'Specialist overdue follow-up',
     '--objective',
-    'Create a failed specialist branch that will be logged as overdue.',
+    'Create a failed post-triad specialist branch that will be logged as overdue.',
     '--constraints',
-    'parallel-specialists:research,implementation|parallel-fail:implementation',
+    'parallel-specialists:design,documentation|parallel-fail:documentation',
   ],
 });
 
@@ -217,7 +217,7 @@ state.agentRuns = state.agentRuns.map((agentRun) => {
     };
   }
 
-  if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+  if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'documentation' && agentRun.status === 'failed') {
     return {
       ...agentRun,
       endedAt: overdueTimestamp,
@@ -244,7 +244,7 @@ assert.equal(incidentLog.summary.specialistFollowUpOverdueCount, 1);
 assert.equal(incidentLog.summary.specialistFollowUpNeedsReminderCount, 1);
 assert.equal(incidentLog.summary.specialistFollowUpReminderCountTotal, 0);
 assert.equal(incidentLog.summary.specialistFollowUpProviderCounts.stub, 1);
-assert.equal(incidentLog.summary.specialistFollowUpKindCounts.implementation, 1);
+assert.equal(incidentLog.summary.specialistFollowUpKindCounts.documentation, 1);
 assert.equal(incidentLog.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(incidentLog.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(incidentLog.summary.specialistFollowUpStatusCounts.failed, 1);
@@ -269,7 +269,7 @@ assert.match(incidentsContent, /specialist follow-up remediation routes: standar
 assert.match(incidentsContent, /route: type=standard-branch-remediation urgency=standard reason=/);
 assert.match(incidentsContent, /fallback: node src\/cli\.mjs mission run/);
 assert.match(incidentsContent, /specialist follow-up providers: stub=1/);
-assert.match(incidentsContent, /specialist follow-up kinds: implementation=1/);
+assert.match(incidentsContent, /specialist follow-up kinds: documentation=1/);
 assert.match(incidentsContent, /specialist follow-up next reminder at: 2026-03-02T00:00:00.000Z/);
 assert.match(incidentsContent, /provider health drift overdue count: 1/);
 assert.match(incidentsContent, /provider health drift providers: stub=1/);
@@ -282,7 +282,7 @@ assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Maintenance sweep required for workspace-two/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
 assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
-assert.match(incidentsContent, /Specialist follow-up required for Specialist overdue follow-up \(implementation\)/);
+assert.match(incidentsContent, /Specialist follow-up required for Specialist overdue follow-up \(documentation\)/);
 assert.match(incidentsContent, /approval resolve/);
 assert.match(incidentsContent, /action maintenance/);
 assert.match(incidentsContent, /mission show/);
@@ -341,7 +341,7 @@ assert.equal(specialistOnlyLog.count, 1);
 assert.equal(specialistOnlyLog.summary.specialistFollowUpOverdueCount, 1);
 assert.equal(specialistOnlyLog.summary.specialistFollowUpNeedsReminderCount, 1);
 assert.equal(specialistOnlyLog.summary.specialistFollowUpProviderCounts.stub, 1);
-assert.equal(specialistOnlyLog.summary.specialistFollowUpKindCounts.implementation, 1);
+assert.equal(specialistOnlyLog.summary.specialistFollowUpKindCounts.documentation, 1);
 assert.equal(specialistOnlyLog.summary.specialistFollowUpStatusCounts.failed, 1);
 
 const specialistProviderLog = runCli({
