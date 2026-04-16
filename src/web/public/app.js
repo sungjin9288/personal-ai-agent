@@ -3811,6 +3811,7 @@ function renderOutputStageSummary() {
   const execution = getExecutionStatusPayload();
   const latestExecutionSession = execution?.latestExecutionSession || null;
   const flow = getFlowState();
+  const isOutputFocus = state.activeStep === 'step-output';
 
   if (!state.missionDetail) {
     elements.outputStageSummary.innerHTML = emptyStateCard({
@@ -3828,6 +3829,12 @@ function renderOutputStageSummary() {
   const artifactLabel = getArtifactLabel(latestArtifact);
   const artifactPath = latestArtifact?.path || latestArtifact?.fileName || '결과 파일 경로가 아직 없습니다.';
   const resultStateLabel = latestArtifact ? '결과 확정 가능' : '결과 준비 중';
+  const resultSummary = latestSession?.reviewerSummary || flow.copy;
+  const compactMetaItems = [
+    `검토 · ${flow.blocker}`,
+    latestExecutionSession ? `변경 ${String(latestExecutionSession.changedFiles?.length || 0)}건` : null,
+    latestArtifact ? `${getDisplayLabel(latestArtifact.kind, latestArtifact.kind)} 결과` : '결과 준비 중',
+  ].filter(Boolean);
 
   elements.outputStageSummary.innerHTML = `
     <div class="stage-summary-card result-spotlight">
@@ -3838,7 +3845,7 @@ function renderOutputStageSummary() {
         </div>
         <span class="status-badge ${latestArtifact ? 'status-completed' : 'status-pending'}">${escapeHtml(resultStateLabel)}</span>
       </div>
-      <p class="summary-note result-spotlight-note">${escapeHtml(latestSession?.reviewerSummary || flow.copy)}</p>
+      <p class="summary-note result-spotlight-note">${escapeHtml(resultSummary)}</p>
       <div class="summary-inline">
         <div class="summary-chip">
           <span>최근 세션</span>
@@ -3863,26 +3870,37 @@ function renderOutputStageSummary() {
           <strong>${escapeHtml(latestArtifact ? getDisplayLabel(latestArtifact.kind, latestArtifact.kind) : '준비 중')}</strong>
         </div>
       </div>
-      <div class="definition-list result-definition-list">
-        <div class="definition-item">
-          <span>결과 파일</span>
-          <strong class="mono">${escapeHtml(artifactPath)}</strong>
-        </div>
-        <div class="definition-item">
-          <span>검토 상태</span>
-          <strong>${escapeHtml(flow.blocker)}</strong>
-        </div>
-        ${
-          latestExecutionSession
-            ? `
+      ${
+        isOutputFocus
+          ? `
+            <div class="result-spotlight-compact-meta">
+              <strong class="mono">${escapeHtml(artifactPath)}</strong>
+              ${compactMetaItems.map((item) => `<span>${escapeHtml(item)}</span>`).join('')}
+            </div>
+          `
+          : `
+            <div class="definition-list result-definition-list">
               <div class="definition-item">
-                <span>변경 파일</span>
-                <strong>${escapeHtml(String(latestExecutionSession.changedFiles?.length || 0))}건</strong>
+                <span>결과 파일</span>
+                <strong class="mono">${escapeHtml(artifactPath)}</strong>
               </div>
-            `
-            : ''
-        }
-      </div>
+              <div class="definition-item">
+                <span>검토 상태</span>
+                <strong>${escapeHtml(flow.blocker)}</strong>
+              </div>
+              ${
+                latestExecutionSession
+                  ? `
+                    <div class="definition-item">
+                      <span>변경 파일</span>
+                      <strong>${escapeHtml(String(latestExecutionSession.changedFiles?.length || 0))}건</strong>
+                    </div>
+                  `
+                  : ''
+              }
+            </div>
+          `
+      }
       <div class="action-row">
         <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
         <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
@@ -3915,6 +3933,7 @@ function renderOutputCloseout() {
   const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
   const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
+  const isOutputFocus = state.activeStep === 'step-output';
   const closeoutItems = [
     {
       actionLabel: '결과물 열기',
@@ -3973,12 +3992,12 @@ function renderOutputCloseout() {
   elements.outputCloseout.innerHTML = closeoutItems
     .map(
       (item, index) => `
-        <div class="closeout-item ${item.ready ? 'is-ready' : 'is-blocked'}">
+        <div class="closeout-item ${item.ready ? 'is-ready' : 'is-blocked'} ${isOutputFocus ? 'is-output-compact' : ''}">
           <div class="closeout-item-head">
             <span class="closeout-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
             <div class="closeout-item-body">
               <span class="closeout-label">${escapeHtml(item.label)}</span>
-              <strong>${escapeHtml(item.ready ? '확인 완료 또는 바로 확인 가능' : '아직 확인 필요')}</strong>
+              <strong>${escapeHtml(item.ready ? '바로 확인 가능' : '확인 필요')}</strong>
               <p class="closeout-copy">${escapeHtml(item.detail)}</p>
             </div>
             <span class="status-badge ${item.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(item.ready ? '준비됨' : '확인 필요')}</span>
