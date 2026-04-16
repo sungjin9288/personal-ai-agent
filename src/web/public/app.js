@@ -27,6 +27,7 @@ const state = {
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
+  releaseHistoryFilterOutcome: '',
   releaseHistoryFilterProvider: '',
   releaseHistoryFilterScope: '',
   releaseLiveRefreshPreflight: null,
@@ -803,6 +804,11 @@ function getReleaseActionScopeLabel(scope = '') {
   );
 }
 
+function isReleaseAttentionOutcome(outcome = '') {
+  const normalized = String(outcome || '').trim().toLowerCase();
+  return normalized === 'blocked' || normalized === 'failed' || normalized === 'confirmation-required';
+}
+
 function getLatestReleaseActionForRecommendation(item, releaseActionHistory = [], providerReadiness = []) {
   const action = String(item?.action || '').trim();
   const actionProvider = String(item?.actionProvider || '').trim();
@@ -884,13 +890,19 @@ function clearReleaseHistoryFocus() {
   renderReleaseStatus();
 }
 
-function setReleaseHistoryFilter({ scope = state.releaseHistoryFilterScope, provider = state.releaseHistoryFilterProvider } = {}) {
+function setReleaseHistoryFilter({
+  outcome = state.releaseHistoryFilterOutcome,
+  scope = state.releaseHistoryFilterScope,
+  provider = state.releaseHistoryFilterProvider,
+} = {}) {
+  state.releaseHistoryFilterOutcome = String(outcome || '').trim();
   state.releaseHistoryFilterScope = String(scope || '').trim();
   state.releaseHistoryFilterProvider = String(provider || '').trim();
   renderReleaseStatus();
 }
 
 function clearReleaseHistoryFilter() {
+  state.releaseHistoryFilterOutcome = '';
   state.releaseHistoryFilterScope = '';
   state.releaseHistoryFilterProvider = '';
   renderReleaseStatus();
@@ -898,17 +910,20 @@ function clearReleaseHistoryFilter() {
 
 function focusReleaseHistoryFlow({
   historyId = '',
+  outcome = '',
   provider = '',
   scope = '',
 } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
+  const normalizedOutcome = String(outcome || '').trim();
   const normalizedScope = String(scope || '').trim();
   const normalizedProvider = String(provider || '').trim();
 
-  if (!normalizedHistoryId && !normalizedScope && !normalizedProvider) {
+  if (!normalizedHistoryId && !normalizedOutcome && !normalizedScope && !normalizedProvider) {
     return;
   }
 
+  state.releaseHistoryFilterOutcome = normalizedOutcome;
   state.releaseHistoryFilterScope = normalizedScope;
   state.releaseHistoryFilterProvider = normalizedProvider;
   if (normalizedHistoryId) {
@@ -1207,6 +1222,7 @@ function wireQuickActions(scope = document) {
       if (action === 'focus-release-flow') {
         focusReleaseHistoryFlow({
           historyId: value || '',
+          outcome: button.dataset.uiOutcome || '',
           provider: button.dataset.uiProvider || '',
           scope: button.dataset.uiScope || '',
         });
@@ -1226,14 +1242,32 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'filter-release-history-scope') {
-        setReleaseHistoryFilter({ scope: button.dataset.uiScope || '', provider: state.releaseHistoryFilterProvider });
+        setReleaseHistoryFilter({
+          outcome: state.releaseHistoryFilterOutcome,
+          scope: button.dataset.uiScope || '',
+          provider: state.releaseHistoryFilterProvider,
+        });
         setUiNotice('같은 scope 기준으로 release action history를 좁혀 봅니다.');
         return;
       }
 
       if (action === 'filter-release-history-provider') {
-        setReleaseHistoryFilter({ scope: state.releaseHistoryFilterScope, provider: button.dataset.uiProvider || '' });
+        setReleaseHistoryFilter({
+          outcome: state.releaseHistoryFilterOutcome,
+          scope: state.releaseHistoryFilterScope,
+          provider: button.dataset.uiProvider || '',
+        });
         setUiNotice('같은 provider 기준으로 release action history를 좁혀 봅니다.');
+        return;
+      }
+
+      if (action === 'filter-release-history-attention') {
+        setReleaseHistoryFilter({
+          outcome: button.dataset.uiOutcome || 'attention',
+          scope: state.releaseHistoryFilterScope,
+          provider: state.releaseHistoryFilterProvider,
+        });
+        setUiNotice('주의 상태만 남기도록 release action history를 좁혀 봅니다.');
         return;
       }
 
@@ -3444,6 +3478,7 @@ function renderReleaseStatus() {
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
+  const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
   const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
   const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
@@ -3464,8 +3499,12 @@ function renderReleaseStatus() {
       ? 'snapshot archived'
       : 'snapshot 없음';
   const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
+    const itemOutcome = String(item?.outcome || '').trim().toLowerCase();
     const itemScope = String(item?.scope || '').trim();
     const itemProvider = String(item?.provider || '').trim();
+    if (historyFilterOutcome === 'attention' && !isReleaseAttentionOutcome(itemOutcome)) {
+      return false;
+    }
     if (historyFilterScope && itemScope !== historyFilterScope) {
       return false;
     }
@@ -3731,9 +3770,23 @@ function renderReleaseStatus() {
                                     type="button"
                                     data-ui-action="focus-release-flow"
                                     data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
                                     data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
                                     data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
                                   >같은 flow 보기</button>
+                                  ${isReleaseAttentionOutcome(latestAction.outcome)
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="focus-release-flow"
+                                          data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                          data-ui-outcome="attention"
+                                          data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
+                                          data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                        >같은 문제 흐름 보기</button>
+                                      `
+                                    : ''}
                                 </div>
                               `
                             : item.action
@@ -3780,13 +3833,14 @@ function renderReleaseStatus() {
                     <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
                     <div class="release-history-focus-actions">
                       <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
-                      ${historyFilterScope || historyFilterProvider
+                      ${historyFilterOutcome || historyFilterScope || historyFilterProvider
                         ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
                         : ''}
                     </div>
-                    ${(historyFilterScope || historyFilterProvider)
+                    ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
                       ? `
                           <div class="release-history-filter-chips">
+                            ${historyFilterOutcome === 'attention' ? '<span class="mini-badge status-failed">outcome · 주의 상태만</span>' : ''}
                             ${historyFilterScope ? `<span class="mini-badge status-running">scope · ${escapeHtml(getReleaseActionScopeLabel(historyFilterScope))}</span>` : ''}
                             ${historyFilterProvider ? `<span class="mini-badge status-running">provider · ${escapeHtml(historyFilterProvider)}</span>` : ''}
                           </div>
@@ -3849,6 +3903,12 @@ function renderReleaseStatus() {
                                   <button
                                     class="ghost-button"
                                     type="button"
+                                    data-ui-action="filter-release-history-attention"
+                                    data-ui-outcome="attention"
+                                  >주의 상태만</button>
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
                                     data-ui-action="filter-release-history-scope"
                                     data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
                                   >같은 scope 보기</button>
@@ -3862,7 +3922,7 @@ function renderReleaseStatus() {
                                         >같은 provider 보기</button>
                                       `
                                     : ''}
-                                  ${(historyFilterScope || historyFilterProvider)
+                                  ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
                                     ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
                                     : ''}
                                 </div>
@@ -3894,8 +3954,8 @@ function renderReleaseStatus() {
                   .join('')
                 : `
                     <article class="release-snapshot-card is-empty">
-                      <div class="item-title">${historyFilterScope || historyFilterProvider ? '현재 필터와 맞는 release action 기록이 없습니다.' : '최근 release action 기록이 없습니다.'}</div>
-                      <p class="item-meta">${historyFilterScope || historyFilterProvider ? '필터를 해제하면 전체 history를 다시 볼 수 있습니다.' : 'preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.'}</p>
+                      <div class="item-title">${historyFilterOutcome || historyFilterScope || historyFilterProvider ? '현재 필터와 맞는 release action 기록이 없습니다.' : '최근 release action 기록이 없습니다.'}</div>
+                      <p class="item-meta">${historyFilterOutcome || historyFilterScope || historyFilterProvider ? '필터를 해제하면 전체 history를 다시 볼 수 있습니다.' : 'preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.'}</p>
                     </article>
                   `}
             </div>
@@ -5215,6 +5275,13 @@ async function loadReleaseStatus() {
   }
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseExpandedHistoryId)) {
     state.releaseExpandedHistoryId = '';
+  }
+  if (
+    state.releaseHistoryFilterOutcome &&
+    state.releaseHistoryFilterOutcome === 'attention' &&
+    !payload.releaseActionHistory?.some((item) => isReleaseAttentionOutcome(item.outcome))
+  ) {
+    state.releaseHistoryFilterOutcome = '';
   }
   if (
     state.releaseHistoryFilterScope &&

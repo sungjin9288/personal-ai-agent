@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T02:00:00.000Z","id":"doclog_20260416020000_91a0b7","type":"devlog","updatedAt":"2026-04-16T02:00:00.000Z"} -->
+## 2026-04-16 Recommendation Attention Filter Pass
+
+- date: 2026-04-16T02:00:00.000Z
+- added an `attention-only` release history filter so the operator can strip out successful actions and look only at blocked, failed, or confirmation-required events
+- extended recommendation cards with `같은 문제 흐름 보기`, which applies the same scope/provider context plus the attention filter in one action and turns a generic suggestion into an immediate triage queue
+- updated filtered empty-state handling so narrowing to attention outcomes does not look like the history feed disappeared or failed to load
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T01:40:00.000Z","id":"doclog_20260416014000_f30e39","type":"devlog","updatedAt":"2026-04-16T01:40:00.000Z"} -->
 ## 2026-04-16 Recommendation Flow Focus Pass
 
