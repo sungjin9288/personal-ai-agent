@@ -2101,6 +2101,7 @@ function renderDetailToolbarActions() {
   }
 
   const detailTabMeta = getDetailTabMeta();
+  const primaryTabs = detailTabMeta.tabs.filter((tab) => tab.isPrimary);
   const secondaryTabs = detailTabMeta.tabs.filter((tab) => tab.isSecondary);
   const supportCollapsed = !state.outputSupportExpanded;
   elements.detailToolbarActions.classList.add('is-visible');
@@ -2129,6 +2130,21 @@ function renderDetailToolbarActions() {
           </div>
         `
     }
+    <div class="detail-primary-nav" aria-label="주 탭">
+      ${primaryTabs
+        .map(
+          (tab) => `
+            <button
+              class="detail-primary-nav-button${tab.isActive ? ' is-active' : ''}"
+              type="button"
+              data-output-primary-tab="${escapeHtml(tab.id)}"
+            >
+              ${escapeHtml(tab.label)}
+            </button>
+          `,
+        )
+        .join('')}
+    </div>
     <div class="detail-toolbar-actions-row">
       ${
         supportCollapsed
@@ -2182,6 +2198,9 @@ function renderDetailToolbarActions() {
     }
   `;
   wireQuickActions(elements.detailToolbarActions);
+  elements.detailToolbarActions.querySelectorAll('[data-output-primary-tab]').forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputPrimaryTab, { urlMode: 'push' }));
+  });
   elements.detailToolbarActions.querySelectorAll('[data-output-secondary-tab]').forEach((button) => {
     button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' }));
   });
