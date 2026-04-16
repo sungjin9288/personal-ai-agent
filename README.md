@@ -577,4 +577,6 @@ release triage 상태도 이제 URL에 실립니다. `release` 탭에서 focused
 
 recommendation 카드에서도 같은 share path를 바로 시작할 수 있습니다. `flow 링크 복사`와 `문제 흐름 링크 복사`는 현재 narrowing을 먼저 적용하지 않고도 같은 flow 또는 attention flow deep link를 곧바로 복사하므로, operator가 추천 액션을 읽는 순간 바로 다른 사람에게 같은 triage 문맥을 넘길 수 있습니다.
 
+provider 관련 recommendation은 이제 `provider 카드 보기`로도 바로 이어집니다. 이 액션은 release tab의 해당 provider readiness 카드를 highlight하고 스크롤까지 맞추며, 현재 triage URL에도 `rcard` 상태를 같이 싣습니다. 그래서 recommendation에서 바로 provider readiness surface로 내려간 뒤 새로고침하거나 링크를 공유해도 같은 provider spotlight가 유지됩니다.
+
 같은 위치에서 `기록 링크 복사`와 `문제 기록 링크 복사`도 사용할 수 있습니다. 이 링크들은 flow 전체가 아니라 exact release action row 하나만 고정하므로, 특정 blocked/failed event를 그대로 지정해서 넘기고 싶을 때 더 적합합니다. expanded history row의 `이 기록 링크 복사`도 같은 규칙을 따릅니다.

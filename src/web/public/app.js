@@ -27,6 +27,7 @@ const state = {
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
+  releaseFocusedProvider: '',
   releaseHistoryFilterOutcome: '',
   releaseHistoryFilterProvider: '',
   releaseHistoryFilterScope: '',
@@ -254,6 +255,7 @@ function parseUiStateFromUrl() {
     artifactId: normalizeUiParam(params.get('artifact')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
+    releaseFocusedProvider: normalizeUiParam(params.get('rcard')),
     releaseFocusedHistoryId: normalizeUiParam(params.get('rhistory')),
     releaseHistoryOutcome: getSanitizedReleaseHistoryOutcome(params.get('routcome')),
     releaseHistoryProvider: normalizeUiParam(params.get('rprovider')),
@@ -291,6 +293,10 @@ function buildUiStateUrl(overrides = {}) {
     overrides.artifactId !== undefined
       ? normalizeUiParam(overrides.artifactId)
       : normalizeUiParam(state.selectedArtifactId);
+  const releaseFocusedProvider =
+    overrides.releaseFocusedProvider !== undefined
+      ? normalizeUiParam(overrides.releaseFocusedProvider)
+      : normalizeUiParam(state.releaseFocusedProvider);
   const releaseFocusedHistoryId =
     overrides.releaseFocusedHistoryId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedHistoryId)
@@ -355,6 +361,11 @@ function buildUiStateUrl(overrides = {}) {
   }
 
   if (detailTab === 'release') {
+    if (releaseFocusedProvider) {
+      params.set('rcard', releaseFocusedProvider);
+    } else {
+      params.delete('rcard');
+    }
     if (releaseFocusedHistoryId) {
       params.set('rhistory', releaseFocusedHistoryId);
     } else {
@@ -376,6 +387,7 @@ function buildUiStateUrl(overrides = {}) {
       params.delete('rscope');
     }
   } else {
+    params.delete('rcard');
     params.delete('rhistory');
     params.delete('routcome');
     params.delete('rprovider');
@@ -930,15 +942,20 @@ function getRecommendationHistoryContext(item, releaseActionHistory = [], provid
   };
 }
 
-function getRecommendationCommandContext(item, providerReadiness = []) {
-  const action = String(item?.action || '').trim();
+function getRecommendationProviderEntry(item, providerReadiness = []) {
   const actionProvider = String(item?.actionProvider || '').trim();
   const envKey = String(item?.envKey || '').trim();
-  const providerEntry = providerReadiness.find((entry) => {
+  return providerReadiness.find((entry) => {
     const entryProvider = String(entry?.provider || '').trim();
     const entryEnvKey = String(entry?.envKey || '').trim();
     return (actionProvider && entryProvider === actionProvider) || (envKey && entryEnvKey === envKey);
   });
+}
+
+function getRecommendationCommandContext(item, providerReadiness = []) {
+  const action = String(item?.action || '').trim();
+  const envKey = String(item?.envKey || '').trim();
+  const providerEntry = getRecommendationProviderEntry(item, providerReadiness);
 
   if (!providerEntry) {
     return null;
@@ -1017,6 +1034,28 @@ function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scr
   });
 }
 
+function focusReleaseProvider(provider = '', { historyMode = 'replace', scroll = true } = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return;
+  }
+  state.releaseFocusedProvider = normalizedProvider;
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+  if (!scroll || !elements.releaseStatus) {
+    return;
+  }
+  window.requestAnimationFrame(() => {
+    const target = elements.releaseStatus.querySelector(`[data-release-provider="${CSS.escape(normalizedProvider)}"]`);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  });
+}
+
 function toggleReleaseHistoryEntry(historyId = '') {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -1034,6 +1073,12 @@ function toggleReleaseHistoryEntry(historyId = '') {
 function clearReleaseHistoryFocus({ historyMode = 'replace' } = {}) {
   state.releaseFocusedHistoryId = '';
   state.releaseExpandedHistoryId = '';
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
+function clearReleaseProviderFocus({ historyMode = 'replace' } = {}) {
+  state.releaseFocusedProvider = '';
   renderReleaseStatus();
   writeUiStateToUrl({ historyMode });
 }
@@ -1083,6 +1128,15 @@ function applyReleaseHistoryUrlState({
     ? normalizedScope
     : '';
   state.releaseHistoryFilterProvider = history.some((item) => String(item.provider || '').trim() === normalizedProvider)
+    ? normalizedProvider
+    : '';
+  renderReleaseStatus();
+}
+
+function applyReleaseProviderUrlState(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerReadiness = state.releaseStatus?.providerReadiness || [];
+  state.releaseFocusedProvider = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
     ? normalizedProvider
     : '';
   renderReleaseStatus();
@@ -1401,6 +1455,12 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'focus-release-provider') {
+        focusReleaseProvider(button.dataset.uiProvider || value || '', { historyMode: 'push' });
+        setUiNotice('연결된 provider readiness 카드로 이동했습니다.');
+        return;
+      }
+
       if (action === 'focus-release-flow') {
         focusReleaseHistoryFlow({
           historyId: value || '',
@@ -1421,6 +1481,12 @@ function wireQuickActions(scope = document) {
       if (action === 'clear-release-history-focus') {
         clearReleaseHistoryFocus({ historyMode: 'push' });
         setUiNotice('release action history 포커스를 해제했습니다.');
+        return;
+      }
+
+      if (action === 'clear-release-provider-focus') {
+        clearReleaseProviderFocus({ historyMode: 'push' });
+        setUiNotice('provider readiness 카드 포커스를 해제했습니다.');
         return;
       }
 
@@ -3753,6 +3819,7 @@ function renderReleaseStatus() {
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
+  const focusedProvider = String(state.releaseFocusedProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
   const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
@@ -4018,8 +4085,11 @@ function renderReleaseStatus() {
                     (item) => {
                       const historyContext = getRecommendationHistoryContext(item, releaseActionHistory, providerReadiness);
                       const recommendationCommand = getRecommendationCommandContext(item, providerReadiness);
+                      const recommendationProvider = getRecommendationProviderEntry(item, providerReadiness);
                       const latestAction = historyContext.latestAction;
                       const latestAttentionAction = historyContext.latestAttentionAction;
+                      const recommendationProviderId = String(recommendationProvider?.provider || '').trim();
+                      const sameProviderFocused = Boolean(recommendationProviderId && recommendationProviderId === focusedProvider);
                       const { sameFlowActive, attentionFlowActive } = latestAction
                         ? isRecommendationFlowActive({
                           attentionAction: latestAttentionAction,
@@ -4153,6 +4223,17 @@ function renderReleaseStatus() {
                                         >${escapeHtml(recommendationCommand.buttonLabel)}</button>
                                       `
                                     : ''}
+                                  ${recommendationProviderId
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="focus-release-provider"
+                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                          ${sameProviderFocused ? 'disabled' : ''}
+                                        >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                      `
+                                    : ''}
                                 </div>
                               `
                             : item.action
@@ -4175,6 +4256,17 @@ function renderReleaseStatus() {
                                         >${escapeHtml(recommendationCommand.buttonLabel)}</button>
                                       `
                                     : ''}
+                                  ${recommendationProviderId
+                                    ? `
+                                        <button
+                                          class="ghost-button"
+                                          type="button"
+                                          data-ui-action="focus-release-provider"
+                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                          ${sameProviderFocused ? 'disabled' : ''}
+                                        >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                      `
+                                    : ''}
                                 </div>
                               `
                               : item.envKey
@@ -4190,6 +4282,17 @@ function renderReleaseStatus() {
                                               data-ui-label="${escapeHtml(recommendationCommand.label)}"
                                               data-ui-value="${escapeHtml(recommendationCommand.command)}"
                                             >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                      `
+                                        : ''}
+                                      ${recommendationProviderId
+                                        ? `
+                                            <button
+                                              class="ghost-button"
+                                              type="button"
+                                              data-ui-action="focus-release-provider"
+                                              data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                              ${sameProviderFocused ? 'disabled' : ''}
+                                            >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
                                           `
                                         : ''}
                                     </div>
@@ -4369,6 +4472,18 @@ function renderReleaseStatus() {
                     </article>
                   `}
             </div>
+            ${focusedProvider
+              ? `
+                  <div class="harness-callout release-provider-focus-callout">
+                    <strong>현재 포커스된 provider readiness 카드</strong>
+                    <p>${escapeHtml(focusedProvider)} provider card를 강조하고 있습니다. preflight/live action이나 command handoff를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
+                    <div class="release-history-focus-actions">
+                      <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus">provider 포커스 해제</button>
+                      <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link">현재 triage 링크 복사</button>
+                    </div>
+                  </div>
+                `
+              : ''}
             <div class="release-provider-grid">
               ${providerReadiness
                 .map(
@@ -4376,6 +4491,7 @@ function renderReleaseStatus() {
                     ${(() => {
                       const preflight = state.releasePreflightResults?.[item.provider] || null;
                       const liveConfirmArmed = liveConfirmProvider === item.provider;
+                      const isFocusedProvider = focusedProvider === item.provider;
                       const preflightStatus = preflight?.status || 'not-run';
                       const preflightSummary = preflight
                         ? preflight.status === 'ready-for-live-validation'
@@ -4387,7 +4503,7 @@ function renderReleaseStatus() {
                               : `preflight ${preflight.status}`
                         : 'preflight를 아직 실행하지 않았습니다.';
                       return `
-                    <article class="release-provider-card ${item.ready ? 'is-ready' : 'is-blocked'}">
+                    <article class="release-provider-card ${item.ready ? 'is-ready' : 'is-blocked'} ${isFocusedProvider ? 'is-highlighted' : ''}" data-release-provider="${escapeHtml(item.provider)}">
                       <div>
                         <div class="item-title">${escapeHtml(item.label)}</div>
                         <div class="item-meta mono">${escapeHtml(item.envKey)}</div>
@@ -4424,6 +4540,12 @@ function renderReleaseStatus() {
                           data-ui-label="${escapeHtml(`${item.label} live 명령`)}"
                           data-ui-value="${escapeHtml(item.ready ? item.command : `export ${item.envKey}=\"...\" && ${item.command}`)}"
                         >live 명령 복사</button>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-ui-action="${escapeHtml(isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider')}"
+                          data-ui-provider="${escapeHtml(item.provider)}"
+                        >${escapeHtml(isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기')}</button>
                         ${liveConfirmArmed
                           ? `
                               <button
@@ -5693,6 +5815,7 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
 
 async function loadReleaseStatus() {
   const previousReleaseState = {
+    focusedProvider: state.releaseFocusedProvider,
     focusedHistoryId: state.releaseFocusedHistoryId,
     historyFilterOutcome: state.releaseHistoryFilterOutcome,
     historyFilterProvider: state.releaseHistoryFilterProvider,
@@ -5700,6 +5823,9 @@ async function loadReleaseStatus() {
   };
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
+  if (!payload.providerReadiness?.some((item) => String(item.provider || '').trim() === state.releaseFocusedProvider)) {
+    state.releaseFocusedProvider = '';
+  }
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
     state.releaseFocusedHistoryId = '';
   }
@@ -5735,7 +5861,8 @@ async function loadReleaseStatus() {
   renderDetailTabLabels();
   renderDetailContextbar();
   if (
-    previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
+    previousReleaseState.focusedProvider !== state.releaseFocusedProvider
+    || previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
     || previousReleaseState.historyFilterOutcome !== state.releaseHistoryFilterOutcome
     || previousReleaseState.historyFilterProvider !== state.releaseHistoryFilterProvider
     || previousReleaseState.historyFilterScope !== state.releaseHistoryFilterScope
@@ -6007,8 +6134,10 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
       provider: urlState.releaseHistoryProvider,
       scope: urlState.releaseHistoryScope,
     });
+    applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
   } else {
     applyReleaseHistoryUrlState();
+    applyReleaseProviderUrlState();
   }
 
   if (syncUrl) {
