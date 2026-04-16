@@ -71,6 +71,7 @@ function buildPromptContext({
   mission,
   workspace,
   pack,
+  attachments,
   memoryEntries,
   previousOutputs,
   parallelGroupId,
@@ -82,6 +83,17 @@ function buildPromptContext({
   const memorySummary = memoryEntries.length
     ? memoryEntries.map((entry) => `- [${entry.scope}/${entry.kind}] ${entry.content}`).join('\n')
     : '- no memory entries loaded';
+  const attachmentSummary = Array.isArray(attachments) && attachments.length
+    ? attachments
+        .map(
+          (attachment) =>
+            `### ${attachment.fileName}\n- mime: ${attachment.mimeType || 'text/plain'}\n- chars: ${attachment.charCount || attachment.storedCharCount || attachment.promptContent.length}\n- excerpt: ${attachment.excerpt || 'n/a'}\n- content:\n${String(attachment.promptContent || '')
+              .split('\n')
+              .map((line) => `    ${line}`)
+              .join('\n')}`,
+        )
+        .join('\n\n')
+    : '- no mission attachments loaded';
 
   const previousOutputSummary = Object.entries(previousOutputs || {})
     .filter(([key]) => key !== 'specialists')
@@ -139,6 +151,9 @@ ${joinBullets(
 ## Memory
 ${memorySummary}
 
+## Mission Attachments
+${attachmentSummary}
+
 ## Parallel Specialists
 ${specialistSummary}
 
@@ -164,10 +179,13 @@ function inputSpecialistContext({ parallelGroupId, parallelRequiredKinds, resume
     .join('\n\n');
 }
 
-function buildManagerOutput({ mission, workspace, pack, memoryEntries }) {
+function buildManagerOutput({ mission, workspace, pack, memoryEntries, attachments = [] }) {
   const memorySummary = memoryEntries.length
     ? memoryEntries.map((entry) => `- ${entry.scope}/${entry.kind}: ${entry.content}`).join('\n')
     : '- no relevant memory found';
+  const attachmentSummary = attachments.length
+    ? attachments.map((attachment) => `- ${attachment.fileName}: ${attachment.excerpt || 'attached input'}`).join('\n')
+    : '- no attached inputs';
 
   return {
     type: 'manager',
@@ -187,6 +205,9 @@ ${mission.objective}
 
 ## Relevant Memory
 ${memorySummary}
+
+## Attached Inputs
+${attachmentSummary}
 
 ## Governance
 - approval likely: ${pack.riskProfile.requiresApproval ? 'yes' : 'no'}
@@ -228,7 +249,7 @@ ${joinBullets(adaptation.adaptationNotes, 'No prior mission memory influenced th
   };
 }
 
-function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) {
+function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries, attachments = [] }) {
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
   const forceRubricFail = mission.constraints.includes('force-rubric-fail');
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
@@ -248,6 +269,12 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries }) 
         (item) =>
           `- ${item.specialistKind}: ${item.handoff?.currentState || item.summaryText || 'no summary available'} | next=${item.handoff?.nextHandoff?.request || 'none'}`,
       )
+      .join('\n')}\n`;
+  }
+
+  if (attachments.length) {
+    artifactContent = `${artifactContent.trim()}\n\n## Attached Inputs Reviewed\n${attachments
+      .map((attachment) => `- ${attachment.fileName}: ${attachment.excerpt || 'attached input'}`)
       .join('\n')}\n`;
   }
 

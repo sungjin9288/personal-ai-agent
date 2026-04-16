@@ -96,6 +96,127 @@ function normalizeStringList(items) {
   return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
 }
 
+const MISSION_ATTACHMENT_MAX_CONTENT_CHARS = 12_000;
+const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
+const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
+const MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE = 3_000;
+const MISSION_ATTACHMENT_PREVIEW_CHARS = 280;
+const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
+  '.c',
+  '.cc',
+  '.cpp',
+  '.css',
+  '.csv',
+  '.go',
+  '.html',
+  '.java',
+  '.js',
+  '.json',
+  '.jsx',
+  '.log',
+  '.md',
+  '.mjs',
+  '.py',
+  '.rb',
+  '.rs',
+  '.sql',
+  '.text',
+  '.ts',
+  '.tsx',
+  '.txt',
+  '.xml',
+  '.yaml',
+  '.yml',
+]);
+const MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES = ['application/', 'text/'];
+const MISSION_ATTACHMENT_ALLOWED_MIME_TYPES = new Set([
+  'application/json',
+  'application/ld+json',
+  'application/sql',
+  'application/xml',
+]);
+
+function summarizeAttachmentText(content, fallback = '내용 없음') {
+  const normalized = String(content || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized) {
+    return fallback;
+  }
+
+  return normalized.length > MISSION_ATTACHMENT_PREVIEW_CHARS
+    ? `${normalized.slice(0, MISSION_ATTACHMENT_PREVIEW_CHARS - 1)}…`
+    : normalized;
+}
+
+function normalizeMissionAttachmentFileName(fileName) {
+  const normalized = path.basename(normalizeText(fileName));
+  if (!normalized) {
+    throw new Error('Attachment fileName is required.');
+  }
+
+  return normalized.replace(/[^\w.\- ]+/g, '_');
+}
+
+function inferMissionAttachmentMimeType(fileName) {
+  const extension = path.extname(normalizeMissionAttachmentFileName(fileName)).toLowerCase();
+
+  switch (extension) {
+    case '.json':
+      return 'application/json';
+    case '.xml':
+      return 'application/xml';
+    case '.yaml':
+    case '.yml':
+      return 'application/yaml';
+    case '.csv':
+      return 'text/csv';
+    case '.html':
+      return 'text/html';
+    case '.css':
+      return 'text/css';
+    case '.js':
+    case '.mjs':
+      return 'text/javascript';
+    case '.ts':
+    case '.tsx':
+    case '.jsx':
+      return 'text/plain';
+    case '.sql':
+      return 'application/sql';
+    default:
+      return 'text/plain';
+  }
+}
+
+function isSupportedMissionAttachment({ fileName, mimeType, content }) {
+  const extension = path.extname(normalizeMissionAttachmentFileName(fileName)).toLowerCase();
+  const normalizedMimeType = normalizeText(mimeType).toLowerCase();
+
+  if (MISSION_ATTACHMENT_ALLOWED_EXTENSIONS.has(extension)) {
+    return true;
+  }
+
+  if (
+    normalizedMimeType &&
+    (MISSION_ATTACHMENT_ALLOWED_MIME_TYPES.has(normalizedMimeType) ||
+      MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES.some((prefix) => normalizedMimeType.startsWith(prefix)))
+  ) {
+    return true;
+  }
+
+  return !String(content || '').includes('\u0000');
+}
+
+function sanitizeMissionAttachmentContent(content) {
+  const normalized = String(content || '').replace(/\r\n/g, '\n');
+  if (!normalizeText(normalized)) {
+    throw new Error('Attachment content is required.');
+  }
+
+  return normalized;
+}
+
 function joinBullets(items, fallback) {
   const list = ensureArray(items).filter(Boolean);
   if (!list.length) {
@@ -3760,8 +3881,83 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
 
     resolveMissionParallelPlan(mission);
+    const savedMission = store.saveMission(mission);
 
-    return store.saveMission(mission);
+    for (const attachment of ensureArray(input.attachments)) {
+      addMissionAttachment({
+        content: attachment.content,
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
+        missionId: savedMission.id,
+        source: normalizeText(attachment.source, 'mission-create'),
+      });
+    }
+
+    return savedMission;
+  }
+
+  function buildMissionAttachmentRecord({ content, fileName, mimeType, missionId, source = 'mission-upload' }) {
+    const mission = getMission(missionId);
+    const normalizedFileName = normalizeMissionAttachmentFileName(fileName);
+    const normalizedMimeType = normalizeText(mimeType, inferMissionAttachmentMimeType(normalizedFileName));
+    const normalizedContent = sanitizeMissionAttachmentContent(content);
+
+    if (
+      !isSupportedMissionAttachment({
+        content: normalizedContent,
+        fileName: normalizedFileName,
+        mimeType: normalizedMimeType,
+      })
+    ) {
+      throw new Error(
+        `Unsupported attachment type for ${normalizedFileName}. Attach text-oriented files such as Markdown, text, JSON, CSV, logs, or source code.`,
+      );
+    }
+
+    const createdAt = now();
+    const originalCharCount = normalizedContent.length;
+    const storedContent = normalizedContent.slice(0, MISSION_ATTACHMENT_MAX_CONTENT_CHARS);
+    const truncated = originalCharCount > storedContent.length;
+    const attachmentId = createId('missionattachment');
+    const storedFileName = `${attachmentId}-${normalizedFileName}`;
+    const attachmentPath = store.writeArtifactContent({
+      missionId: mission.id,
+      fileName: path.join('attachments', storedFileName),
+      content: storedContent,
+    });
+
+    return {
+      charCount: originalCharCount,
+      createdAt,
+      excerpt: summarizeAttachmentText(storedContent),
+      fileName: normalizedFileName,
+      id: attachmentId,
+      lineCount: storedContent.split('\n').length,
+      mimeType: normalizedMimeType,
+      missionId: mission.id,
+      path: attachmentPath,
+      source: normalizeText(source, 'mission-upload'),
+      storedCharCount: storedContent.length,
+      truncated,
+      updatedAt: createdAt,
+    };
+  }
+
+  function addMissionAttachment({ content, fileName, mimeType, missionId, source = 'mission-upload' }) {
+    const record = buildMissionAttachmentRecord({
+      content,
+      fileName,
+      mimeType,
+      missionId,
+      source,
+    });
+
+    return store.saveMissionAttachment(record);
+  }
+
+  function listMissionAttachments(missionId) {
+    getMission(missionId);
+    return store.listMissionAttachments({ missionId });
   }
 
   function listMissions() {
@@ -6112,6 +6308,38 @@ function summarizeProviderExecutions(executions) {
     ]);
   }
 
+  function collectMissionAttachmentContext(missionId) {
+    const attachments = store.listMissionAttachments({ missionId }).slice(-MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS);
+    let remainingChars = MISSION_ATTACHMENT_MAX_PROMPT_CHARS;
+
+    return attachments
+      .map((attachment) => {
+        if (!remainingChars) {
+          return null;
+        }
+
+        let content = '';
+        try {
+          content = fs.readFileSync(attachment.path, 'utf8');
+        } catch {
+          content = '';
+        }
+
+        const promptContent = String(content || '').slice(
+          0,
+          Math.min(MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE, remainingChars),
+        );
+
+        remainingChars = Math.max(remainingChars - promptContent.length, 0);
+
+        return {
+          ...attachment,
+          promptContent,
+        };
+      })
+      .filter((attachment) => attachment && normalizeText(attachment.promptContent));
+  }
+
   function getParallelSpecialistKinds(mission) {
     return resolveMissionParallelPlan(mission).effectiveKinds;
   }
@@ -6365,6 +6593,7 @@ function summarizeProviderExecutions(executions) {
     provider,
     providerId,
     pack,
+    attachments,
     memoryEntries,
     previousOutputs,
     runMetadata = {},
@@ -6373,6 +6602,7 @@ function summarizeProviderExecutions(executions) {
     promptFileName = null,
   }) {
     const providerInput = {
+      attachments,
       role,
       providerRole,
       mission,
@@ -6553,6 +6783,7 @@ function summarizeProviderExecutions(executions) {
     ensureNoPendingApproval(missionId);
 
     const pack = getMissionPack({ mission, workspace });
+    const attachments = collectMissionAttachmentContext(mission.id);
     const memoryEntries = collectRelevantMemoryEntries({ mission, workspace });
     const parallelPlan = resolveMissionParallelPlan(mission);
     const parallelSpecialistKinds = parallelPlan.effectiveKinds;
@@ -6573,6 +6804,7 @@ function summarizeProviderExecutions(executions) {
       provider,
       providerId,
       pack,
+      attachments,
       memoryEntries,
       previousOutputs,
     });
@@ -6599,6 +6831,7 @@ function summarizeProviderExecutions(executions) {
       provider,
       providerId,
       pack,
+      attachments,
       memoryEntries,
       previousOutputs,
     });
@@ -6655,6 +6888,7 @@ function summarizeProviderExecutions(executions) {
           provider,
           providerId,
           pack,
+          attachments,
           memoryEntries,
           previousOutputs,
           promptFileName: `specialist-${specialistKind}-prompt.md`,
@@ -6723,6 +6957,7 @@ function summarizeProviderExecutions(executions) {
         provider,
         providerId,
         pack,
+        attachments,
         memoryEntries,
         previousOutputs,
         runMetadata: {
@@ -6770,6 +7005,7 @@ function summarizeProviderExecutions(executions) {
         provider,
         providerId,
         pack,
+        attachments,
         memoryEntries,
         previousOutputs,
       });
@@ -6802,6 +7038,7 @@ function summarizeProviderExecutions(executions) {
       provider,
       providerId,
       pack,
+      attachments,
       memoryEntries,
       previousOutputs,
     });
@@ -7243,6 +7480,7 @@ function summarizeProviderExecutions(executions) {
     const relatedMaintenanceRuns = listRelatedMaintenanceRunsForMission(mission.id);
     const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
+    const missionAttachments = store.listMissionAttachments({ missionId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
     const missionQualityGate = parallelActivity.latestParallelGroup?.qualityGate || {
@@ -7334,6 +7572,11 @@ function summarizeProviderExecutions(executions) {
         fact: memoryEntries.filter((entry) => entry.kind === 'fact').length,
         preference: memoryEntries.filter((entry) => entry.kind === 'preference').length,
         total: memoryEntries.length,
+      },
+      attachmentCounts: {
+        total: missionAttachments.length,
+        truncated: missionAttachments.filter((attachment) => attachment.truncated).length,
+        totalChars: missionAttachments.reduce((sum, attachment) => sum + Number(attachment.charCount || 0), 0),
       },
       latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
       latestProviderAttentionRecovery: providerActivity.latestAttentionRecovery,
@@ -7775,6 +8018,9 @@ function summarizeProviderExecutions(executions) {
     const missionMemoryEntries = store
       .listMemoryEntries({ scope: 'mission', scopeId: mission.id })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const missionAttachments = store
+      .listMissionAttachments({ missionId: mission.id })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
     const workspaceMemoryEntries = store
       .listMemoryEntries({ scope: 'workspace', scopeId: mission.workspaceId })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -7856,6 +8102,26 @@ function summarizeProviderExecutions(executions) {
               updatedAt: latestArtifact.createdAt || null,
             }
           : null,
+      },
+      attachments: {
+        recentEntries: missionAttachments.slice(-5).reverse().map((attachment) => ({
+          charCount: attachment.charCount,
+          createdAt: attachment.createdAt,
+          excerpt: attachment.excerpt,
+          fileName: attachment.fileName,
+          id: attachment.id,
+          lineCount: attachment.lineCount,
+          mimeType: attachment.mimeType,
+          source: attachment.source,
+          truncated: attachment.truncated,
+          updatedAt: attachment.updatedAt || null,
+        })),
+        summary: {
+          latestCreatedAt: missionAttachments.at(-1)?.createdAt || null,
+          total: missionAttachments.length,
+          totalChars: missionAttachments.reduce((sum, attachment) => sum + Number(attachment.charCount || 0), 0),
+          truncatedCount: missionAttachments.filter((attachment) => attachment.truncated).length,
+        },
       },
       loops: {
         maintenance: {
@@ -14374,6 +14640,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
   return {
     addMemory,
+    addMissionAttachment,
     addWorkspace,
     acknowledgeProviderAttention,
     browseMissionHarnessDocuments,
@@ -14406,6 +14673,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     listApprovals,
     listMemory,
     listMissions,
+    listMissionAttachments,
     listProviderProbeHistory,
     listProviders,
     listSessions,

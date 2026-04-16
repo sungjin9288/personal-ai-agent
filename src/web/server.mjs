@@ -721,6 +721,21 @@ function parseConstraints(value) {
     .filter(Boolean);
 }
 
+function parseMissionAttachments(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => ({
+      content: String(item?.content || ''),
+      fileName: String(item?.fileName || '').trim(),
+      mimeType: String(item?.mimeType || '').trim(),
+      source: String(item?.source || 'ui').trim() || 'ui',
+    }))
+    .filter((item) => item.fileName && item.content);
+}
+
 async function readJsonBody(request) {
   const chunks = [];
   for await (const chunk of request) {
@@ -1113,6 +1128,7 @@ async function handleApi(request, response, url) {
   if (request.method === 'POST' && pathname === '/api/missions') {
     const body = await readJsonBody(request);
     const mission = service.createMission({
+      attachments: parseMissionAttachments(body.attachments),
       constraints: parseConstraints(body.constraints),
       deliverableType: String(body.deliverableType || '').trim(),
       mode: String(body.mode || '').trim(),
@@ -1123,6 +1139,32 @@ async function handleApi(request, response, url) {
 
     sendJson(response, 201, {
       mission,
+    });
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'attachments'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const body = await readJsonBody(request);
+    const attachments = parseMissionAttachments(body.attachments);
+    const created = attachments.map((attachment) =>
+      service.addMissionAttachment({
+        content: attachment.content,
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
+        missionId,
+        source: attachment.source || 'ui-upload',
+      }),
+    );
+
+    sendJson(response, 201, {
+      attachments: created,
     });
     return;
   }

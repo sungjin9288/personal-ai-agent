@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { GLOBAL_USER_SCOPE_ID } from './core/constants.mjs';
 import { createMissionService } from './core/mission-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
@@ -15,6 +18,22 @@ function readOption(args, name, fallback = '') {
 
 function hasOption(args, name) {
   return args.includes(name);
+}
+
+function readOptions(args, name) {
+  const values = [];
+
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== name) {
+      continue;
+    }
+    const value = args[index + 1];
+    if (value) {
+      values.push(value);
+    }
+  }
+
+  return values;
 }
 
 function parseBooleanOption(args, name) {
@@ -66,7 +85,7 @@ Commands:
   workspace overview <workspaceId> [--provider-since <iso-timestamp>]
   workspace timeline <workspaceId> [--provider-since <iso-timestamp>]
 
-  mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>]
+  mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>] [--attachment <path>]
   mission list
   mission run <missionId> [--provider <stub|openai|anthropic|local>]
   mission show <missionId> [--provider-since <iso-timestamp>]
@@ -333,8 +352,14 @@ async function main() {
   }
 
   if (group === 'mission' && command === 'create') {
+    const attachmentPaths = readOptions(rest, '--attachment');
     printJson(
       service.createMission({
+        attachments: attachmentPaths.map((attachmentPath) => ({
+          content: fs.readFileSync(attachmentPath, 'utf8'),
+          fileName: path.basename(attachmentPath),
+          source: 'cli',
+        })),
         workspaceId: readOption(rest, '--workspace'),
         mode: readOption(rest, '--mode', 'knowledge'),
         title: readOption(rest, '--title', 'Untitled mission'),

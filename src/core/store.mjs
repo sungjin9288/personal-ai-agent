@@ -4,6 +4,7 @@ import path from 'node:path';
 const DEFAULT_STATE = {
   workspaces: [],
   missions: [],
+  missionAttachments: [],
   sessions: [],
   executionSessions: [],
   executionLeases: [],
@@ -25,6 +26,7 @@ function cloneDefaultState() {
   return {
     workspaces: [],
     missions: [],
+    missionAttachments: [],
     sessions: [],
     executionSessions: [],
     executionLeases: [],
@@ -85,6 +87,7 @@ export function createStore({ rootDir }) {
     return {
       workspaces: Array.isArray(state.workspaces) ? state.workspaces : [],
       missions: Array.isArray(state.missions) ? state.missions : [],
+      missionAttachments: Array.isArray(state.missionAttachments) ? state.missionAttachments : [],
       sessions: Array.isArray(state.sessions) ? state.sessions : [],
       executionSessions: Array.isArray(state.executionSessions) ? state.executionSessions : [],
       executionLeases: Array.isArray(state.executionLeases) ? state.executionLeases : [],
@@ -168,6 +171,7 @@ export function createStore({ rootDir }) {
     const targetDir = sessionId ? getSessionDir(missionId, sessionId) : path.join(getMissionDir(missionId), 'shared');
     ensureDirectory(targetDir);
     const artifactPath = path.join(targetDir, fileName);
+    ensureDirectory(path.dirname(artifactPath));
     fs.writeFileSync(artifactPath, content, 'utf8');
     return artifactPath;
   }
@@ -187,6 +191,9 @@ export function createStore({ rootDir }) {
     },
     getMission(missionId) {
       return getCollectionItem('missions', missionId);
+    },
+    getMissionAttachment(missionAttachmentId) {
+      return getCollectionItem('missionAttachments', missionAttachmentId);
     },
     getReviewerFollowUp(followUpId) {
       return getCollectionItem('reviewerFollowUps', followUpId);
@@ -390,6 +397,16 @@ export function createStore({ rootDir }) {
     listArtifactsBySession(sessionId) {
       return sortByCreatedAt(listCollection('artifacts').filter((artifact) => artifact.sessionId === sessionId));
     },
+    listMissionAttachments(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('missionAttachments').filter((attachment) => {
+          if (filter.missionId && attachment.missionId !== filter.missionId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listMemoryEntries(filter = {}) {
       return sortByCreatedAt(
         listCollection('memoryEntries').filter((entry) => {
@@ -516,6 +533,9 @@ export function createStore({ rootDir }) {
     saveMission(mission) {
       return saveCollectionItem('missions', mission);
     },
+    saveMissionAttachment(missionAttachment) {
+      return saveCollectionItem('missionAttachments', missionAttachment);
+    },
     saveSession(session) {
       return saveCollectionItem('sessions', session);
     },
@@ -552,11 +572,17 @@ export function createStore({ rootDir }) {
     updateMission(missionId, updater) {
       return updateCollectionItem('missions', missionId, updater);
     },
+    updateMissionAttachment(missionAttachmentId, updater) {
+      return updateCollectionItem('missionAttachments', missionAttachmentId, updater);
+    },
     updateSession(sessionId, updater) {
       return updateCollectionItem('sessions', sessionId, updater);
     },
     deleteMemoryEntry(memoryEntryId) {
       return deleteCollectionItem('memoryEntries', memoryEntryId);
+    },
+    deleteMissionAttachment(missionAttachmentId) {
+      return deleteCollectionItem('missionAttachments', missionAttachmentId);
     },
     varDir,
     writeArtifactContent,

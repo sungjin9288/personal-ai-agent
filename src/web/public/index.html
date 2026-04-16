@@ -203,6 +203,18 @@
                     ></textarea>
                   </label>
 
+                  <label class="compact-label">
+                    첨부 파일
+                    <input
+                      id="mission-attachment-input"
+                      type="file"
+                      name="attachments"
+                      multiple
+                      accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
+                    />
+                    <span class="field-hint">텍스트 기반 파일만 지원합니다. 업로드된 내용은 미션 입력으로 저장되고 다음 실행 prompt에 반영됩니다.</span>
+                  </label>
+
                   <div class="action-row">
                     <button type="submit" class="primary-button">미션 생성</button>
                     <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="config">입력값 요약 보기</button>

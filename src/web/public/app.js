@@ -171,6 +171,7 @@ const elements = {
   heroMetrics: document.getElementById('hero-metrics'),
   heroSignals: document.getElementById('hero-signals'),
   missionFilter: document.getElementById('mission-filter'),
+  missionAttachmentInput: document.getElementById('mission-attachment-input'),
   missionForm: document.getElementById('mission-form'),
   missionList: document.getElementById('mission-list'),
   memoryForm: document.getElementById('memory-form'),
@@ -3345,6 +3346,8 @@ function renderHarnessPanel() {
       visibleCount: harnessSummary.documents?.recentEntries?.length || 0,
     },
   };
+  const attachmentSummary = harnessSummary.attachments?.summary || {};
+  const attachmentEntries = harnessSummary.attachments?.recentEntries || [];
   const memoryBrowse = state.harnessMemoryResult || {
     entries: [],
     filters: {
@@ -3475,6 +3478,7 @@ function renderHarnessPanel() {
     <div class="harness-overview-grid">
       <div class="summary-chip"><span>문서</span><strong>${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}</strong></div>
       <div class="summary-chip"><span>ADR</span><strong>${escapeHtml(String(documentSummary.adrCount || 0))}개</strong></div>
+      <div class="summary-chip"><span>첨부</span><strong>${escapeHtml(String(attachmentSummary.total || 0))}개</strong></div>
       <div class="summary-chip"><span>최근 갱신</span><strong>${escapeHtml(formatDate(documentSummary.latestUpdatedAt))}</strong></div>
     </div>
     ${
@@ -3497,6 +3501,56 @@ function renderHarnessPanel() {
           </div>`
         : ''
     }
+    <div class="harness-subsection">
+      <div class="harness-filter-row">
+        <p class="summary-label">미션 첨부 입력</p>
+        <div class="item-meta">총 ${escapeHtml(String(attachmentSummary.total || 0))}건 · 누적 ${escapeHtml(String(attachmentSummary.totalChars || 0))} chars${Number(attachmentSummary.truncatedCount || 0) ? ` · truncated ${escapeHtml(String(attachmentSummary.truncatedCount || 0))}건` : ''}</div>
+      </div>
+      <div class="harness-callout">
+        <strong>첨부 파일은 다음 multi-agent 실행 prompt에 포함됩니다.</strong>
+        <p>텍스트 기반 파일만 지원합니다. 긴 파일은 저장 시 잘리고, runtime에는 요약과 발췌본만 전달됩니다.</p>
+      </div>
+      <form id="mission-harness-attachment-form" class="mission-form">
+        <label class="compact-label">
+          파일 추가
+          <input
+            id="mission-harness-attachment-input"
+            type="file"
+            multiple
+            accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
+          />
+        </label>
+        <div class="action-row">
+          <button class="ghost-button" type="submit">첨부 업로드</button>
+        </div>
+      </form>
+      ${
+        attachmentEntries.length
+          ? `<div class="harness-list">
+              ${attachmentEntries
+                .map(
+                  (entry) => `
+                    <div class="harness-row">
+                      <div>
+                        <div class="item-title">${escapeHtml(entry.fileName)}</div>
+                        <div class="item-meta">${escapeHtml(entry.excerpt || '본문 미리보기가 없습니다.')}</div>
+                        <div class="item-meta mono">${escapeHtml(entry.mimeType || 'text/plain')} · ${escapeHtml(String(entry.charCount || 0))} chars · ${escapeHtml(String(entry.lineCount || 0))} lines</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="mini-badge ${entry.truncated ? 'status-pending' : 'status-completed'}">${escapeHtml(entry.truncated ? 'truncated' : 'stored')}</span>
+                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>`
+          : `<div class="harness-empty-inline">
+              <strong>아직 첨부된 파일이 없습니다.</strong>
+              <p>요구사항, 로그, 참고 문서를 붙이면 다음 에이전트 run에서 함께 읽습니다.</p>
+            </div>`
+      }
+    </div>
     <div class="harness-list">
       ${documentItems
         .map(
@@ -3797,6 +3851,7 @@ function renderHarnessPanel() {
     </div>
   `;
   wireDocumentRowActions();
+  wireMissionAttachmentActions();
   wireMemoryRowActions();
 }
 
@@ -6360,7 +6415,9 @@ async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } =
 async function handleMissionCreate(event) {
   event.preventDefault();
   const formData = new FormData(elements.missionForm);
+  const attachments = await readMissionAttachmentFiles(elements.missionAttachmentInput?.files || []);
   const payload = {
+    attachments,
     constraints: String(formData.get('constraints') || ''),
     deliverableType: String(formData.get('deliverableType') || ''),
     mode: String(formData.get('mode') || ''),
@@ -6744,6 +6801,23 @@ async function readTextFile(file) {
   });
 }
 
+async function readMissionAttachmentFiles(fileList) {
+  const files = Array.from(fileList || []);
+  const attachments = [];
+
+  for (const file of files) {
+    const content = await readTextFile(file);
+    attachments.push({
+      content,
+      fileName: file.name,
+      mimeType: file.type || 'text/plain',
+      source: 'ui',
+    });
+  }
+
+  return attachments;
+}
+
 async function handleDocumentLogFilePick(event) {
   const file = event.target?.files?.[0];
   if (!file || !elements.documentLogForm) {
@@ -6761,6 +6835,55 @@ async function handleDocumentLogFilePick(event) {
   if (contentField) {
     contentField.value = content;
   }
+}
+
+async function handleMissionAttachmentUpload(event) {
+  event.preventDefault();
+  if (!state.selectedMissionId || !elements.harnessSource) {
+    return;
+  }
+
+  const attachmentInput = elements.harnessSource.querySelector('#mission-harness-attachment-input');
+  const files = attachmentInput?.files || [];
+  if (!files.length) {
+    window.alert('업로드할 첨부 파일을 선택해 주세요.');
+    return;
+  }
+
+  const currentStep = state.activeStep;
+  const attachments = await readMissionAttachmentFiles(files);
+  await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/attachments`, {
+    body: JSON.stringify({ attachments }),
+    method: 'POST',
+  });
+
+  if (attachmentInput) {
+    attachmentInput.value = '';
+  }
+
+  await Promise.all([loadMissions(), loadApprovals()]);
+  await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  setActiveStep(currentStep, { syncDetailTab: false });
+  setActiveDetailTab('harness');
+  setUiNotice(`${attachments.length}개의 첨부 파일을 미션 입력으로 추가했습니다.`);
+}
+
+function wireMissionAttachmentActions() {
+  if (!elements.harnessSource) {
+    return;
+  }
+
+  elements.harnessSource.querySelector('#mission-harness-attachment-form')?.addEventListener('submit', async (event) => {
+    try {
+      await handleMissionAttachmentUpload(event);
+    } catch (error) {
+      window.alert(error.message);
+      const attachmentInput = elements.harnessSource.querySelector('#mission-harness-attachment-input');
+      if (attachmentInput) {
+        attachmentInput.value = '';
+      }
+    }
+  });
 }
 
 function attachEvents() {

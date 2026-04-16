@@ -92,6 +92,7 @@ npm run ui
 - `하네스 > 소스 오브 레코드`에서 저장된 tracked Markdown entry를 `불러오기 → 수정 저장 / 삭제`까지 처리할 수 있어, source log도 add-only가 아니라 실제 운영용 기록면으로 다룰 수 있음
 - `하네스 > 소스 오브 레코드`는 예전 append-only `devlog` 섹션을 `기존 개발 로그 전환` 한 번으로 tracked entry로 감싸므로, 과거 로그도 같은 화면에서 수정/삭제 가능한 기록으로 정리할 수 있음
 - `하네스 > 소스 오브 레코드`는 tracked 문서 기록 전체를 `제목 / 본문 / 경로` 검색과 `reference/devlog/incident` 필터로 바로 좁혀 볼 수 있어, 누적된 기록이 많아져도 최근 6건만 보는 대신 전체 source log를 같은 화면에서 탐색할 수 있음
+- `하네스 > 미션 첨부 입력`은 Markdown/txt/json/log/source code 같은 텍스트 기반 파일을 미션 입력으로 저장하고, 다음 multi-agent run prompt에 요약과 발췌본을 같이 주입하므로 요구사항/로그/참고 메모를 agent-readable context로 누적할 수 있음
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
 - `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, MemPalace식 layered memory recall, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인
@@ -158,7 +159,8 @@ node src/cli.mjs mission create \
   --mode engineering \
   --title "Stabilize release smoke" \
   --objective "Produce a bounded implementation proposal" \
-  --constraints "Keep blast radius small|Preserve release evidence flow"
+  --constraints "Keep blast radius small|Preserve release evidence flow" \
+  --attachment docs/reference-repos.md
 
 node src/cli.mjs mission create \
   --workspace workspace_xxx \
@@ -466,6 +468,7 @@ npm run smoke:reviewer-fail
 npm run smoke:approval
 npm run smoke:approval-reject
 npm run smoke:memory-rerun
+npm run smoke:mission-attachments
 npm run smoke:session-history
 npm run smoke:mission-timeline
 npm run smoke:workspace-overview

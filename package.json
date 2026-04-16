@@ -43,6 +43,7 @@
     "smoke:approval": "node scripts/smoke-awaiting-approval.mjs",
     "smoke:approval-reject": "node scripts/smoke-approval-reject.mjs",
     "smoke:memory-rerun": "node scripts/smoke-mission-memory-rerun.mjs",
+    "smoke:mission-attachments": "node scripts/smoke-mission-attachments.mjs",
     "smoke:session-history": "node scripts/smoke-session-history.mjs",
     "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
     "smoke:workspace-overview": "node scripts/smoke-workspace-overview.mjs",

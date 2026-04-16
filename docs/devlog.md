@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T08:20:00.000Z","id":"doclog_20260416082000_b2a61d","type":"devlog","updatedAt":"2026-04-16T08:20:00.000Z"} -->
+## 2026-04-16 Mission Attachment Intake Pass
+
+- date: 2026-04-16T08:20:00.000Z
+- added mission-scoped attachment intake so text-based files can be captured at mission creation time or from the harness panel, stored under mission shared state, and injected into the next multi-agent prompt as bounded excerpts instead of unbounded raw files
+- wired the harness attachment upload form to the existing mission detail surface and added `smoke:mission-attachments` to prove storage, harness summary exposure, and manager prompt/context injection stay deterministic
+- kept the scope intentionally narrow to text-oriented attachments and prompt-context grounding, leaving binary parsing, OCR, and mutable release artifacts untouched
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T07:10:00.000Z","id":"doclog_20260416071000_4a80fe","type":"devlog","updatedAt":"2026-04-16T07:10:00.000Z"} -->
 ## 2026-04-16 Overdue Incident Post-Triad Coverage Pass
 
