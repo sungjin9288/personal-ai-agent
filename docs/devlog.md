@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T08:45:00.000Z","id":"doclog_20260416084500_8f3372","type":"devlog","updatedAt":"2026-04-16T08:45:00.000Z"} -->
+## 2026-04-16 Mission Attachment Public Contract Smoke Pass
+
+- date: 2026-04-16T08:45:00.000Z
+- added `smoke:ui-mission-attachments` so the public attachment surface is covered end-to-end: served UI assets expose the mission attachment inputs, `POST /api/missions` accepts initial attachments, and `POST /api/missions/:id/attachments` updates the same harness summary contract
+- kept the smoke focused on API/UI contract stability instead of runtime prompt content, because `smoke:mission-attachments` already covers manager prompt and context grounding
+- left mutable release artifacts and placeholder files untouched, limiting this step to public-surface regression coverage for the new attachment feature
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T08:20:00.000Z","id":"doclog_20260416082000_b2a61d","type":"devlog","updatedAt":"2026-04-16T08:20:00.000Z"} -->
 ## 2026-04-16 Mission Attachment Intake Pass
 
