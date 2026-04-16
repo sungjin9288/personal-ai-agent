@@ -3828,12 +3828,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function addWorkspace({ workspacePath, name }) {
     const normalizedPath = normalizeText(workspacePath);
     if (!normalizedPath) {
-      throw new Error('workspacePath is required.');
+      throw new Error('워크스페이스 경로를 입력하세요.');
+    }
+
+    const resolvedPath = path.resolve(normalizedPath);
+    if (!fs.existsSync(resolvedPath)) {
+      throw new Error(`워크스페이스 경로를 찾을 수 없습니다: ${resolvedPath}`);
+    }
+
+    if (!fs.statSync(resolvedPath).isDirectory()) {
+      throw new Error(`워크스페이스 경로는 디렉터리여야 합니다: ${resolvedPath}`);
     }
 
     const existingWorkspace = store
       .listWorkspaces()
-      .find((workspace) => workspace.path === normalizedPath);
+      .find((workspace) => path.resolve(String(workspace.path || '')) === resolvedPath);
 
     if (existingWorkspace) {
       return existingWorkspace;
@@ -3841,8 +3850,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return store.saveWorkspace({
       id: createId('workspace'),
-      name: normalizeText(name, path.basename(normalizedPath) || 'workspace'),
-      path: normalizedPath,
+      name: normalizeText(name, path.basename(resolvedPath) || 'workspace'),
+      path: resolvedPath,
       createdAt: now(),
     });
   }

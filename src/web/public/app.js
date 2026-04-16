@@ -206,8 +206,16 @@ const elements = {
   outputStageSummary: document.getElementById('output-stage-summary'),
   outputCloseout: document.getElementById('output-closeout'),
   missionQueueSummary: document.getElementById('mission-queue-summary'),
+  workspaceForm: document.getElementById('workspace-form'),
+  workspaceFormStatus: document.getElementById('workspace-form-status'),
+  workspacePathInput: document.getElementById('workspace-path-input'),
+  workspaceNameInput: document.getElementById('workspace-name-input'),
   workspaceSelect: document.getElementById('workspace-select'),
+  toggleWorkspaceFormButton: document.getElementById('toggle-workspace-form-button'),
+  cancelWorkspaceFormButton: document.getElementById('cancel-workspace-form-button'),
 };
+
+const WORKSPACE_FORM_DEFAULT_STATUS = '새 repo 경로를 추가하면 바로 이 화면에서 선택할 수 있습니다.';
 
 const STEP_TO_DETAIL_TAB = {
   'step-setup': 'config',
@@ -425,6 +433,36 @@ function setUiNotice(message = '') {
       state.uiNoticeTimer = null;
       renderFlowState();
     }, 2400);
+  }
+}
+
+function setWorkspaceFormStatus(message = '') {
+  if (!elements.workspaceFormStatus) {
+    return;
+  }
+
+  elements.workspaceFormStatus.textContent = String(message || '').trim() || WORKSPACE_FORM_DEFAULT_STATUS;
+}
+
+function setWorkspaceFormOpen(isOpen, { focus = false } = {}) {
+  if (!elements.workspaceForm || !elements.toggleWorkspaceFormButton) {
+    return;
+  }
+
+  const open = Boolean(isOpen);
+  elements.workspaceForm.hidden = !open;
+  elements.toggleWorkspaceFormButton.textContent = open ? '추가 닫기' : '워크스페이스 추가';
+
+  if (!open) {
+    elements.workspaceForm.reset();
+    setWorkspaceFormStatus();
+    return;
+  }
+
+  if (focus) {
+    window.requestAnimationFrame(() => {
+      elements.workspacePathInput?.focus();
+    });
   }
 }
 
@@ -1634,6 +1672,58 @@ function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {})
 function openComposer() {
   setActiveStep('step-setup', { urlMode: 'push' });
   elements.missionForm.elements.title?.focus();
+}
+
+async function handleWorkspaceCreate(event) {
+  event.preventDefault();
+
+  if (!elements.workspaceForm) {
+    return;
+  }
+
+  const formData = new FormData(elements.workspaceForm);
+  const workspacePath = String(formData.get('workspacePath') || '').trim();
+  const name = String(formData.get('name') || '').trim();
+  const submitButton = elements.workspaceForm.querySelector('button[type="submit"]');
+  const originalLabel = submitButton?.textContent || '추가';
+
+  if (!workspacePath) {
+    throw new Error('워크스페이스 경로를 입력하세요.');
+  }
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = '추가 중...';
+  }
+  setWorkspaceFormStatus('워크스페이스를 추가하고 있습니다.');
+
+  try {
+    const payload = await api('/api/workspaces', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        workspacePath,
+      }),
+    });
+
+    await loadWorkspaces();
+    const workspace = payload.workspace || null;
+    if (workspace?.id) {
+      elements.workspaceSelect.value = workspace.id;
+    }
+
+    clearMissionSelection({ syncUrl: false });
+    renderMissionList();
+    openComposer();
+    writeUiStateToUrl({ historyMode: 'push' });
+    setWorkspaceFormOpen(false);
+    setUiNotice(payload.created ? '새 워크스페이스를 추가했습니다.' : '기존 워크스페이스를 선택했습니다.');
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = originalLabel;
+    }
+  }
 }
 
 async function copyCurrentViewLink() {
@@ -5945,6 +6035,7 @@ async function loadWorkspaces() {
   const payload = await api('/api/workspaces');
   state.workspaces = payload.workspaces || [];
   renderWorkspaceOptions();
+  setWorkspaceFormStatus();
 }
 
 async function loadProviders() {
@@ -6888,12 +6979,18 @@ function wireMissionAttachmentActions() {
 
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
+  elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
+    const nextOpen = Boolean(elements.workspaceForm?.hidden);
+    setWorkspaceFormOpen(nextOpen, { focus: nextOpen });
+  });
+  elements.cancelWorkspaceFormButton?.addEventListener('click', () => setWorkspaceFormOpen(false));
   elements.missionFilter.addEventListener('input', renderMissionList);
   elements.workspaceSelect.addEventListener('change', async () => {
     renderMissionList();
     const visibleMission = filteredMissions();
     if (!visibleMission.length) {
-      clearMissionSelection();
+      clearMissionSelection({ urlMode: 'push' });
+      openComposer();
       return;
     }
     if (!visibleMission.some(({ mission }) => mission.id === state.selectedMissionId)) {
@@ -6901,6 +6998,14 @@ function attachEvents() {
       return;
     }
     writeUiStateToUrl({ historyMode: 'push' });
+  });
+  elements.workspaceForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleWorkspaceCreate(event);
+    } catch (error) {
+      setWorkspaceFormStatus(error.message || '워크스페이스를 추가하지 못했습니다.');
+      window.alert(error.message);
+    }
   });
   elements.missionForm.addEventListener('submit', async (event) => {
     try {

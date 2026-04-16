@@ -848,6 +848,34 @@ async function handleApi(request, response, url) {
     return;
   }
 
+  if (request.method === 'POST' && pathname === '/api/workspaces') {
+    const body = await readJsonBody(request);
+    const rawWorkspacePath = String(body.workspacePath || '').trim();
+    const normalizedPath = rawWorkspacePath ? path.resolve(rawWorkspacePath) : '';
+    const existingWorkspace = store
+      .listWorkspaces()
+      .find((workspace) => path.resolve(String(workspace.path || '')) === normalizedPath);
+
+    if (existingWorkspace) {
+      sendJson(response, 200, {
+        created: false,
+        workspace: existingWorkspace,
+      });
+      return;
+    }
+
+    const workspace = service.addWorkspace({
+      name: String(body.name || '').trim(),
+      workspacePath: normalizedPath,
+    });
+
+    sendJson(response, 201, {
+      created: true,
+      workspace,
+    });
+    return;
+  }
+
   if (request.method === 'GET' && pathname === '/api/providers') {
     sendJson(response, 200, service.listProviders());
     return;

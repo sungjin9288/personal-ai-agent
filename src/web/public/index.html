@@ -20,11 +20,44 @@
         </div>
 
         <section class="rail-card rail-controls">
-          <label class="compact-label">
-            워크스페이스
-            <select name="workspaceId" id="workspace-select"></select>
-          </label>
-          <button id="toggle-create-button" class="primary-button" type="button">새 미션 시작</button>
+          <div class="rail-control-stack">
+            <label class="compact-label compact-label-tight">
+              워크스페이스
+              <select name="workspaceId" id="workspace-select"></select>
+            </label>
+            <div class="rail-inline-actions">
+              <button id="toggle-workspace-form-button" class="secondary-button" type="button">워크스페이스 추가</button>
+              <button id="toggle-create-button" class="primary-button" type="button">새 미션 시작</button>
+            </div>
+          </div>
+          <form id="workspace-form" class="workspace-form" hidden>
+            <label class="compact-label compact-label-tight">
+              경로
+              <input
+                id="workspace-path-input"
+                type="text"
+                name="workspacePath"
+                placeholder="/Users/sungjin/dev/personal/another-repo"
+                required
+              />
+            </label>
+            <label class="compact-label compact-label-tight">
+              이름
+              <input
+                id="workspace-name-input"
+                type="text"
+                name="name"
+                placeholder="표시 이름 (선택)"
+              />
+            </label>
+            <div class="action-row action-row-compact">
+              <button class="secondary-button" type="submit">추가</button>
+              <button id="cancel-workspace-form-button" class="ghost-button" type="button">취소</button>
+            </div>
+            <p id="workspace-form-status" class="field-hint field-hint-rail">
+              새 repo 경로를 추가하면 바로 이 화면에서 선택할 수 있습니다.
+            </p>
+          </form>
         </section>
 
         <section class="rail-card rail-queue">
