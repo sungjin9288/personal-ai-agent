@@ -2297,6 +2297,12 @@ button:disabled {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
+.release-recommendation-card.has-attention-flow {
+  border-color: rgba(199, 56, 82, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 249, 0.96));
+}
+
 .release-doc-surface {
   padding: 14px;
   border-radius: 14px;

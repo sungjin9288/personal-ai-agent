@@ -562,3 +562,5 @@ recommendation 카드에서도 이 흐름을 직접 시작할 수 있습니다. 
 recommendation 카드 자체도 이제 현재 triage 상태를 반영합니다. 같은 flow나 같은 문제 흐름이 이미 적용 중이면 카드가 강조되고 버튼이 `현재 flow` 또는 `현재 문제 흐름`으로 바뀌므로, operator가 같은 narrowing action을 중복으로 다시 누르지 않게 했습니다.
 
 각 recommendation 카드는 이제 같은 flow의 총 history 수와 `문제 흐름` 건수도 같이 보여 줍니다. 그래서 operator는 버튼을 누르기 전부터 이 recommendation이 단순한 follow-up인지, 실제로 여러 번 막힌 흐름인지 바로 구분할 수 있습니다.
+
+문제 흐름이 있는 recommendation은 `최근 문제` 시각과 summary도 같이 보여 줍니다. 즉, 카드만 봐도 이 흐름이 최근에 왜 막혔는지, 지금 다시 열어야 할 수준의 문제인지 바로 판단할 수 있습니다.

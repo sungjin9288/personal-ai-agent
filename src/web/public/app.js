@@ -3794,7 +3794,7 @@ function renderReleaseStatus() {
                         })
                         : { attentionFlowActive: false, sameFlowActive: false };
                       return `
-                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')} ${sameFlowActive || attentionFlowActive ? 'is-active-flow' : ''}">
+                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')} ${sameFlowActive || attentionFlowActive ? 'is-active-flow' : ''} ${historyContext.attentionCount ? 'has-attention-flow' : ''}">
                         <div>
                           <div class="item-title">${escapeHtml(item.label || '권장 액션')}</div>
                           <div class="item-meta">${escapeHtml(item.description || '')}</div>
@@ -3810,6 +3810,14 @@ function renderReleaseStatus() {
                                     ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(historyContext.attentionCount))}건</span>`
                                     : ''}
                                 </div>
+                                ${latestAttentionAction
+                                  ? `
+                                      <div class="item-meta">
+                                        최근 문제 · ${escapeHtml(getReleaseActionLabel(latestAttentionAction.action))} · ${escapeHtml(formatDate(latestAttentionAction.createdAt))}
+                                      </div>
+                                      <div class="item-meta">${escapeHtml(latestAttentionAction.summary || '최근 문제 summary가 없습니다.')}</div>
+                                    `
+                                  : ''}
                                 ${(sameFlowActive || attentionFlowActive)
                                   ? `
                                       <div class="release-history-filter-chips">

@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T02:45:00.000Z","id":"doclog_20260416024500_5e6cb0","type":"devlog","updatedAt":"2026-04-16T02:45:00.000Z"} -->
+## 2026-04-16 Recommendation Attention Recency Pass
+
+- date: 2026-04-16T02:45:00.000Z
+- surfaced the most recent attention event directly on recommendation cards so operators can read the last blocked/failed/confirmation-required summary without opening release history first
+- added a distinct attention-flow visual treatment to recommendation cards, which helps separate genuinely problematic flows from simple follow-up actions even before any filter is applied
+- kept the data source local to the existing release status payload by reusing the derived latestAttentionAction instead of introducing any new server contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T02:30:00.000Z","id":"doclog_20260416023000_c32aa8","type":"devlog","updatedAt":"2026-04-16T02:30:00.000Z"} -->
 ## 2026-04-16 Recommendation Flow Count Pass
 
