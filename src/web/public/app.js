@@ -24,6 +24,7 @@ const state = {
   missionDetail: null,
   missionTimeline: null,
   missions: [],
+  outputRailCollapsed: true,
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
@@ -1728,6 +1729,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-rail') {
+        toggleOutputRailCollapsed();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -1945,8 +1951,19 @@ function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode =
 function syncStepViewMode() {
   const outputFocus = state.activeStep === 'step-output';
   elements.appShell?.classList.toggle('is-output-focus', outputFocus);
+  elements.appShell?.classList.toggle('is-output-rail-collapsed', outputFocus && state.outputRailCollapsed);
   elements.mainStage?.classList.toggle('is-output-focus', outputFocus);
   elements.workspaceShell?.classList.toggle('is-output-focus', outputFocus);
+}
+
+function toggleOutputRailCollapsed(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputRailCollapsed = forceValue;
+  } else {
+    state.outputRailCollapsed = !state.outputRailCollapsed;
+  }
+  syncStepViewMode();
+  renderFlowState();
 }
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
@@ -2322,6 +2339,15 @@ function renderFlowState() {
                   ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}
                 </button>
               `
+          }
+          ${
+            isOutputFocus
+              ? `
+                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+                  ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
+                </button>
+              `
+              : ''
           }
         </div>
       </div>

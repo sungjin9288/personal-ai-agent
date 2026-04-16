@@ -71,6 +71,10 @@ button {
   grid-template-columns: 186px minmax(0, 1fr);
 }
 
+.app-shell.is-output-focus.is-output-rail-collapsed {
+  grid-template-columns: 136px minmax(0, 1fr);
+}
+
 .nav-rail {
   display: flex;
   flex-direction: column;
@@ -91,6 +95,11 @@ button {
 .app-shell.is-output-focus .nav-rail {
   gap: 4px;
   padding: 5px;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .nav-rail {
+  padding: 4px;
+  gap: 4px;
 }
 
 .brand-block {
@@ -122,6 +131,19 @@ button {
 }
 
 .app-shell.is-output-focus .workspace-current {
+  display: none;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .brand-block,
+.app-shell.is-output-focus.is-output-rail-collapsed .rail-controls {
+  display: none;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .rail-queue {
+  padding: 6px;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .rail-queue .mini-head {
   display: none;
 }
 
@@ -1769,6 +1791,23 @@ button:disabled {
 
 .app-shell.is-output-focus .mission-row {
   gap: 6px;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .mission-row {
+  padding: 8px 7px;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .mission-row-topline {
+  margin-bottom: 0;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .mission-row-stage {
+  font-size: 0.58rem;
+}
+
+.app-shell.is-output-focus.is-output-rail-collapsed .mission-row-main .item-title {
+  font-size: 0.78rem;
+  line-height: 1.28;
 }
 
 .mission-row-state {
