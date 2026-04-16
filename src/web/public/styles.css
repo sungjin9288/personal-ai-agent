@@ -764,12 +764,18 @@ button {
 
 .workspace-shell.is-output-focus .artifact-meta {
   padding: 0 0 2px;
+  max-width: 860px;
+  width: 100%;
+  margin-right: auto;
 }
 
 .workspace-shell.is-output-focus .artifact-viewer {
   min-height: 420px;
   padding: 8px 0 0;
   font-size: 1rem;
+  max-width: 860px;
+  width: 100%;
+  margin-right: auto;
 }
 
 .workspace-shell.is-output-focus .surface-result-side {
@@ -2227,6 +2233,28 @@ button:disabled {
   border: 0;
   box-shadow: none;
   background: transparent;
+}
+
+.workspace-shell.is-output-focus .artifact-viewer .markdown-surface,
+.workspace-shell.is-output-focus .artifact-viewer.markdown-surface {
+  font-size: 1rem;
+}
+
+.workspace-shell.is-output-focus .artifact-viewer .markdown-surface p,
+.workspace-shell.is-output-focus .artifact-viewer .markdown-surface li,
+.workspace-shell.is-output-focus .artifact-viewer.markdown-surface p,
+.workspace-shell.is-output-focus .artifact-viewer.markdown-surface li {
+  line-height: 1.82;
+}
+
+.workspace-shell.is-output-focus .artifact-viewer .markdown-surface h1,
+.workspace-shell.is-output-focus .artifact-viewer.markdown-surface h1 {
+  font-size: 1.56rem;
+}
+
+.workspace-shell.is-output-focus .artifact-viewer .markdown-surface h2,
+.workspace-shell.is-output-focus .artifact-viewer.markdown-surface h2 {
+  font-size: 1.18rem;
 }
 
 .review-spotlight {
