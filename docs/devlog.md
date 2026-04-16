@@ -18,6 +18,15 @@
 - added `smoke:ui-agent-blueprints` to lock the served UI asset contract for the new setup surface, including composition cards, learning copy, and specialist-lane styling
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T00:00:00.000Z","id":"doclog_20260416150500_agent_blueprints_onboarding","type":"devlog","updatedAt":"2026-04-16T00:00:00.000Z"} -->
+## 2026-04-16 AI Composition Onboarding Pass
+
+- date: 2026-04-16T00:00:00.000Z
+- reworked the setup surface into a clearer `mode → AI card → readable context` flow so users can understand how to add AI without parsing orchestration jargon
+- added `추천 상황` and `선택 결과` copy to each blueprint card, plus a stronger selected-state hero, so the cost and benefit of each AI composition can be read at a glance
+- renamed the learning panel to `AI가 지금 읽는 자료` and added a readiness signal that makes current grounding inputs explicit while keeping unsupported learning claims visibly separate
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:49:00.000Z","id":"doclog_20260416064900_workspace_execution_root","type":"devlog","updatedAt":"2026-04-16T06:49:00.000Z"} -->
 ## 2026-04-16 Trusted Workspace Execution Pass
 

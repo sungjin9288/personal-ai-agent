@@ -186,40 +186,48 @@ const SPECIALIST_KIND_META = {
 const AGENT_BLUEPRINTS = {
   engineering: [
     {
+      bestFor: '문제 범위가 작고, 바로 실행 초안을 보고 싶을 때',
       description: 'manager, planner, executor, reviewer만으로 가볍게 시작합니다.',
       directive: '',
       emphasis: '기본 4 core agent',
       id: 'engineering-default',
       kind: 'core',
+      outcome: '기본 실행 제안과 reviewer 판단만 빠르게 받습니다.',
       specialistKinds: [],
       title: 'Core 4만 사용',
     },
     {
+      bestFor: '코드를 바로 만지되, 검증 기준까지 같이 보고 싶을 때',
       description: '구현과 검증을 병렬로 붙여 bounded engineering proposal 품질을 올립니다.',
       directive: 'orchestration-profile:engineering-implementation-verification',
       emphasis: '추가 AI 2개',
       id: 'engineering-implementation-verification',
       kind: 'profile',
+      outcome: '구현 초안과 verification signal을 함께 받습니다.',
       profileId: 'engineering-implementation-verification',
       specialistKinds: ['implementation', 'verification'],
       title: '구현 + 검증',
     },
     {
+      bestFor: '리스크, 구현, 테스트 관점을 같이 보고 결정해야 할 때',
       description: '리서치, 구현, 검증을 함께 돌려 wider engineering discovery를 만듭니다.',
       directive: 'orchestration-profile:engineering-triad',
       emphasis: '추가 AI 3개',
       id: 'engineering-triad',
       kind: 'profile',
+      outcome: '근거 조사, 구현 초안, 검증 기준을 한 번에 묶습니다.',
       profileId: 'engineering-triad',
       specialistKinds: ['research', 'implementation', 'verification'],
       title: '엔지니어링 트라이어드',
     },
     {
+      bestFor: '기능 구현과 함께 UX, 문서, handoff까지 한 번에 정리할 때',
       description: '리서치, 구현, 검증, 디자인, 문서화까지 full-spectrum handoff를 엽니다.',
       directive: 'orchestration-profile:engineering-full-spectrum',
       emphasis: '추가 AI 5개',
       id: 'engineering-full-spectrum',
       kind: 'profile',
+      outcome: '코드, 검증, UX, 문서 handoff까지 같이 닫습니다.',
       profileId: 'engineering-full-spectrum',
       specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
       title: '엔지니어링 풀 스펙트럼',
@@ -227,40 +235,48 @@ const AGENT_BLUEPRINTS = {
   ],
   knowledge: [
     {
+      bestFor: '짧은 메모나 문서 초안을 빠르게 닫고 싶을 때',
       description: 'manager, planner, executor, reviewer만으로 빠르게 문서를 닫습니다.',
       directive: '',
       emphasis: '기본 4 core agent',
       id: 'knowledge-default',
       kind: 'core',
+      outcome: '기본 요약과 reviewer 판단만 빠르게 받습니다.',
       specialistKinds: [],
       title: 'Core 4만 사용',
     },
     {
+      bestFor: '자료 조사와 문서 구조화를 같이 돌리고 싶을 때',
       description: '리서치와 구현을 병렬로 붙여 synthesis와 handoff를 분리합니다.',
       directive: 'orchestration-profile:knowledge-research-implementation',
       emphasis: '추가 AI 2개',
       id: 'knowledge-research-implementation',
       kind: 'profile',
+      outcome: '조사 요약과 실행 가능한 문서 초안을 함께 받습니다.',
       profileId: 'knowledge-research-implementation',
       specialistKinds: ['research', 'implementation'],
       title: '리서치 + 구현',
     },
     {
+      bestFor: '근거 검증까지 포함한 high-confidence 문서가 필요할 때',
       description: '리서치, 구현, 검증을 같이 돌려 higher-confidence knowledge mission으로 올립니다.',
       directive: 'orchestration-profile:knowledge-triad',
       emphasis: '추가 AI 3개',
       id: 'knowledge-triad',
       kind: 'profile',
+      outcome: '근거, 초안, 검증 신호를 같이 묶은 결과를 받습니다.',
       profileId: 'knowledge-triad',
       specialistKinds: ['research', 'implementation', 'verification'],
       title: '지식 작업 트라이어드',
     },
     {
+      bestFor: '조사, 검토, 시각화, 문서 handoff를 한 번에 정리할 때',
       description: '리서치, 구현, 검증, 디자인, 문서화를 함께 붙여 full-spectrum synthesis를 만듭니다.',
       directive: 'orchestration-profile:knowledge-full-spectrum',
       emphasis: '추가 AI 5개',
       id: 'knowledge-full-spectrum',
       kind: 'profile',
+      outcome: '보고용 문서, 검증 신호, 디자인/문서 handoff까지 같이 닫습니다.',
       profileId: 'knowledge-full-spectrum',
       specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
       title: '지식 작업 풀 스펙트럼',
@@ -2434,17 +2450,47 @@ function renderAgentBlueprintBuilder() {
     : selectedBlueprint?.specialistKinds?.includes('research')
       ? '리서치 AI 신호를 실행 전 근거 기준으로 반영합니다.'
       : '기본 4-agent 흐름으로 manager → planner → executor → reviewer만 사용합니다.';
+  const learningReadiness = attachmentCount + missionMemoryCount + workspaceMemoryCount;
 
   elements.agentBlueprintBuilder.innerHTML = `
     <div class="agent-blueprint-shell">
+      <div class="agent-blueprint-steps">
+        <div class="agent-blueprint-step">
+          <span class="agent-blueprint-step-index">01</span>
+          <div>
+            <strong>작업 모드 선택</strong>
+            <p>${escapeHtml(mode === 'engineering' ? '엔지니어링 작업 기준으로 AI 구성을 추천합니다.' : '지식 작업 기준으로 AI 구성을 추천합니다.')}</p>
+          </div>
+        </div>
+        <div class="agent-blueprint-step">
+          <span class="agent-blueprint-step-index">02</span>
+          <div>
+            <strong>AI 카드 고르기</strong>
+            <p>카드를 누르면 필요한 specialist와 orchestration directive가 자동으로 연결됩니다.</p>
+          </div>
+        </div>
+        <div class="agent-blueprint-step">
+          <span class="agent-blueprint-step-index">03</span>
+          <div>
+            <strong>읽힐 자료 넣기</strong>
+            <p>첨부 파일과 메모가 다음 실행 prompt에 들어가 AI가 같은 맥락으로 이어서 작업합니다.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="agent-blueprint-hero">
         <div class="agent-blueprint-hero-copy">
           <span class="section-kicker">AI를 어떻게 추가하나</span>
           <h4>${escapeHtml(mode === 'engineering' ? '엔지니어링 AI 조합 선택' : '지식 작업 AI 조합 선택')}</h4>
           <p>${escapeHtml('카드를 고르면 specialist AI 구성이 mission constraint에 자동 반영됩니다. 별도 directive를 외울 필요가 없습니다.')}</p>
+          <div class="agent-blueprint-current">
+            <span class="mini-badge">${escapeHtml(selectedBlueprint?.emphasis || '기본 구성')}</span>
+            <strong>${escapeHtml(selectedBlueprint?.title || 'Core 4')}</strong>
+            <p>${escapeHtml(selectedBlueprint?.bestFor || '기본 4-agent 흐름으로 빠르게 시작합니다.')}</p>
+          </div>
         </div>
         <div class="agent-blueprint-hero-stats">
-          <div class="summary-chip">
+          <div class="summary-chip summary-chip-strong">
             <span>현재 선택</span>
             <strong>${escapeHtml(selectedBlueprint?.title || 'Core 4')}</strong>
           </div>
@@ -2453,8 +2499,12 @@ function renderAgentBlueprintBuilder() {
             <strong>${escapeHtml(String(selectedBlueprint?.specialistKinds?.length || 0))}개</strong>
           </div>
           <div class="summary-chip">
-            <span>학습 입력</span>
+            <span>AI가 읽는 자료</span>
             <strong>${escapeHtml(String(attachmentCount))}개 파일</strong>
+          </div>
+          <div class="summary-chip summary-chip-soft">
+            <span>선택 결과</span>
+            <strong>${escapeHtml(selectedBlueprint?.outcome || '기본 실행 제안을 받습니다.')}</strong>
           </div>
         </div>
       </div>
@@ -2474,6 +2524,14 @@ function renderAgentBlueprintBuilder() {
                 </div>
                 <strong>${escapeHtml(blueprint.title)}</strong>
                 <p>${escapeHtml(blueprint.description)}</p>
+                <div class="agent-blueprint-card-detail">
+                  <span>추천 상황</span>
+                  <strong>${escapeHtml(blueprint.bestFor || '가볍게 시작할 때')}</strong>
+                </div>
+                <div class="agent-blueprint-card-detail">
+                  <span>결과</span>
+                  <strong>${escapeHtml(blueprint.outcome || '기본 실행 제안')}</strong>
+                </div>
                 <div class="tag-list">
                   ${renderSpecialistTagList(blueprint.specialistKinds)}
                 </div>
@@ -2487,7 +2545,7 @@ function renderAgentBlueprintBuilder() {
         <section class="agent-blueprint-preview">
           <div class="mini-head">
             <div>
-              <p class="section-kicker">추가된 AI 기능</p>
+              <p class="section-kicker">선택하면 추가되는 AI</p>
               <h4>${escapeHtml(selectedBlueprint?.title || 'Core 4')}</h4>
             </div>
           </div>
@@ -2531,7 +2589,7 @@ function renderAgentBlueprintBuilder() {
         <section class="agent-learning-panel">
           <div class="mini-head">
             <div>
-              <p class="section-kicker">AI 학습 입력</p>
+              <p class="section-kicker">AI가 지금 읽는 자료</p>
               <h4>현재는 운영형 학습만 지원</h4>
             </div>
           </div>
@@ -2548,18 +2606,24 @@ function renderAgentBlueprintBuilder() {
               <span>워크스페이스 메모</span>
               <strong>${escapeHtml(String(workspaceMemoryCount))}개</strong>
             </div>
+            <div class="summary-chip ${learningReadiness ? 'summary-chip-strong' : 'summary-chip-soft'}">
+              <span>readiness</span>
+              <strong>${escapeHtml(learningReadiness ? 'AI가 읽을 자료 준비됨' : '아직 읽을 자료 없음')}</strong>
+            </div>
           </div>
-          <div class="agent-learning-note is-supported">
-            <strong>지원됨</strong>
-            <p>텍스트 첨부, 미션 메모, 워크스페이스 메모는 다음 run prompt와 rerun context에 반영됩니다.</p>
-          </div>
-          <div class="agent-learning-note is-limited">
-            <strong>아직 아님</strong>
-            <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다.</p>
-          </div>
-          <div class="agent-learning-note">
-            <strong>입력 방법</strong>
-            <p>미션 생성 시 텍스트 파일을 첨부하고, 실행 후에는 하네스 탭에서 미션/워크스페이스 메모를 누적하면 됩니다.</p>
+          <div class="agent-learning-capability-list">
+            <div class="agent-learning-capability is-ready">
+              <strong>지금 되는 것</strong>
+              <p>텍스트 첨부, 미션 메모, 워크스페이스 메모는 다음 run prompt와 rerun context에 반영됩니다.</p>
+            </div>
+            <div class="agent-learning-capability is-ready">
+              <strong>입력 방법</strong>
+              <p>미션 생성 시 텍스트 파일을 첨부하고, 실행 후에는 하네스 탭에서 미션/워크스페이스 메모를 누적하면 됩니다.</p>
+            </div>
+            <div class="agent-learning-capability is-blocked">
+              <strong>아직 없는 것</strong>
+              <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다.</p>
+            </div>
           </div>
         </section>
       </div>
@@ -3137,7 +3201,7 @@ function renderMissionSummary() {
         </div>
       </section>
       <section class="summary-section summary-section-learning">
-        <p class="summary-label">AI 학습 입력</p>
+        <p class="summary-label">AI가 읽는 자료</p>
         <div class="definition-list">
           <div class="definition-item"><span>첨부 파일</span><strong>${escapeHtml(String(summary?.attachmentCounts?.total ?? 0))}개</strong></div>
           <div class="definition-item"><span>미션 메모</span><strong>${escapeHtml(String(summary?.memoryCounts?.total ?? 0))}개</strong></div>
@@ -3242,7 +3306,7 @@ function renderSelectionBridge() {
         <strong>${escapeHtml(latestExecutionLabel)}</strong>
       </div>
       <div class="selection-bridge-pill ${harnessState.topRecommendation ? 'is-active' : ''}">
-        <span>학습 입력</span>
+        <span>읽는 자료</span>
         <strong>${escapeHtml(learningLabel)}</strong>
       </div>
       <div class="selection-bridge-pill">

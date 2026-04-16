@@ -94,7 +94,8 @@ npm run ui
 - `하네스 > 소스 오브 레코드`는 tracked 문서 기록 전체를 `제목 / 본문 / 경로` 검색과 `reference/devlog/incident` 필터로 바로 좁혀 볼 수 있어, 누적된 기록이 많아져도 최근 6건만 보는 대신 전체 source log를 같은 화면에서 탐색할 수 있음
 - `하네스 > 미션 첨부 입력`은 Markdown/txt/json/log/source code 같은 텍스트 기반 파일을 미션 입력으로 저장하고, 다음 multi-agent run prompt에 요약과 발췌본을 같이 주입하므로 요구사항/로그/참고 메모를 agent-readable context로 누적할 수 있음
 - `미션 정하기 > AI 구성` 카드는 `Core 4`, `구현+검증`, `트라이어드`, `풀 스펙트럼` 같은 composition을 직접 고르게 해 주고, 선택한 카드에 맞는 `orchestration-profile:*` directive를 자동으로 constraint에 반영함
-- 같은 화면의 `AI 학습 입력` 패널은 현재 학습이 `prompt grounding + mission/workspace memory recall` 범위라는 점을 명시하고, fine-tuning·OCR·binary understanding·vector retrieval index는 아직 지원하지 않는다고 분리해서 보여 줌
+- 같은 화면은 `작업 모드 선택 → AI 카드 선택 → 읽힐 자료 넣기` 3-step onboarding으로 구성되어, operator가 AI를 어떻게 추가하는지와 무엇을 먼저 준비해야 하는지 카드 설명을 길게 읽지 않아도 파악할 수 있음
+- `AI가 지금 읽는 자료` 패널은 현재 학습이 `prompt grounding + mission/workspace memory recall` 범위라는 점을 명시하고, fine-tuning·OCR·binary understanding·vector retrieval index는 아직 지원하지 않는다고 분리해서 보여 줌
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
 - `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, 학습 입력 패널, specialist lane style contract가 모두 살아 있는지 검증함
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치

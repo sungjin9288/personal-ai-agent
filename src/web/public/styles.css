@@ -704,6 +704,49 @@ button {
   gap: 14px;
 }
 
+.agent-blueprint-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.agent-blueprint-step {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 10px;
+  padding: 13px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.agent-blueprint-step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border-radius: 999px;
+  color: var(--accent-strong);
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.agent-blueprint-step strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.86rem;
+}
+
+.agent-blueprint-step p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.77rem;
+  line-height: 1.45;
+}
+
 .agent-blueprint-hero,
 .agent-blueprint-preview,
 .agent-learning-panel {
@@ -743,8 +786,23 @@ button {
 .agent-blueprint-hero-stats,
 .agent-learning-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
+}
+
+.agent-blueprint-current {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 12px 13px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.agent-blueprint-current strong {
+  font-size: 1rem;
 }
 
 .agent-blueprint-grid {
@@ -788,6 +846,25 @@ button {
   color: var(--text-3);
   font-size: 0.78rem;
   line-height: 1.48;
+}
+
+.agent-blueprint-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 2px;
+}
+
+.agent-blueprint-card-detail span {
+  color: var(--text-3);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.agent-blueprint-card-detail strong {
+  font-size: 0.8rem;
+  line-height: 1.45;
 }
 
 .agent-blueprint-card-count {
@@ -879,11 +956,37 @@ button {
   border: 1px solid rgba(15, 23, 42, 0.07);
 }
 
-.agent-learning-note.is-supported {
+.agent-learning-capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-learning-capability {
+  padding: 12px 13px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.agent-learning-capability strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+}
+
+.agent-learning-capability p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.8rem;
+  line-height: 1.52;
+}
+
+.agent-learning-capability.is-ready {
   background: linear-gradient(180deg, #ffffff 0%, #effaf4 100%);
 }
 
-.agent-learning-note.is-limited {
+.agent-learning-capability.is-blocked {
   background: linear-gradient(180deg, #ffffff 0%, #fff8ef 100%);
 }
 
@@ -1833,6 +1936,15 @@ button:disabled {
 
 .summary-chip {
   padding: 10px 12px;
+}
+
+.summary-chip.summary-chip-strong {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.12), rgba(255, 255, 255, 0.98));
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.summary-chip.summary-chip-soft {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.03), rgba(255, 255, 255, 0.98));
 }
 
 .summary-chip span {
@@ -2870,6 +2982,11 @@ button:disabled {
   .readiness-grid,
   .form-grid,
   .agent-lane,
+  .agent-blueprint-steps,
+  .agent-blueprint-grid,
+  .agent-blueprint-preview-grid,
+  .agent-blueprint-hero,
+  .agent-learning-summary,
   .queue-summary,
   .memory-form-grid,
   .release-summary-grid,
@@ -2885,5 +3002,11 @@ button:disabled {
   .selection-bridge-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .agent-blueprint-step {
+    grid-template-columns: 1fr;
   }
 }

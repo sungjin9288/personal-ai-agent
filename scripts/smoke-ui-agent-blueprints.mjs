@@ -43,13 +43,16 @@ try {
   assert.equal(rootHtml.includes('AI 구성 카드를 고르면 orchestration directive는 자동으로 포함됩니다.'), true);
 
   assert.equal(appJs.includes('buildMissionConstraintPayload'), true);
-  assert.equal(appJs.includes('AI 학습 입력'), true);
+  assert.equal(appJs.includes('AI가 지금 읽는 자료'), true);
+  assert.equal(appJs.includes('추천 상황'), true);
+  assert.equal(appJs.includes('선택 결과'), true);
   assert.equal(appJs.includes('prompt grounding + memory recall'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
 
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
+  assert.equal(stylesCss.includes('.agent-blueprint-step'), true);
   assert.equal(stylesCss.includes('.agent-learning-panel'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 
