@@ -24,6 +24,7 @@ const state = {
   missionDetail: null,
   missionTimeline: null,
   missions: [],
+  outputMissionSummaryExpanded: false,
   outputRailCollapsed: true,
   providers: [],
   releaseLiveConfirmProvider: '',
@@ -1734,6 +1735,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-mission-summary') {
+        toggleOutputMissionSummaryExpanded();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -1964,6 +1970,15 @@ function toggleOutputRailCollapsed(forceValue = null) {
   }
   syncStepViewMode();
   renderFlowState();
+}
+
+function toggleOutputMissionSummaryExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputMissionSummaryExpanded = forceValue;
+  } else {
+    state.outputMissionSummaryExpanded = !state.outputMissionSummaryExpanded;
+  }
+  renderMissionSummary();
 }
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
@@ -3282,6 +3297,51 @@ function renderMissionSummary() {
       ['다음 액션', flow.label, 'is-wide'],
     ];
 
+    if (!state.outputMissionSummaryExpanded) {
+      const compactRibbonCards = [
+        ['현재 단계', flow.currentStepLabel],
+        ['최근 실행', latestExecutionLabel],
+        ['검토 상태', reviewLabel],
+      ];
+
+      elements.missionSummary.innerHTML = `
+        <section class="mission-summary-output-ribbon">
+          <div class="mission-summary-output-ribbon-copy">
+            <p class="summary-label">선택한 미션 요약</p>
+            <strong>${escapeHtml(mission.title)}</strong>
+            <p class="summary-note">결과 확인에 필요한 상태만 남겼습니다. 입력/구성 상세는 필요할 때만 펼칩니다.</p>
+          </div>
+          <div class="mission-summary-output-ribbon-grid">
+            ${compactRibbonCards
+              .map(
+                ([label, value]) => `
+                  <div class="mission-summary-output-ribbon-card">
+                    <span>${escapeHtml(label)}</span>
+                    <strong>${escapeHtml(value)}</strong>
+                  </div>
+                `,
+              )
+              .join('')}
+          </div>
+          <div class="action-row">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+              요약 펼치기
+            </button>
+            <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+              입력 다시 보기
+            </button>
+          </div>
+        </section>
+      `;
+
+      renderHeroMetrics();
+      renderHeroSignals();
+      renderAgentLane();
+      renderFlowState();
+      wireQuickActions(elements.missionSummary);
+      return;
+    }
+
     elements.missionSummary.innerHTML = `
       <section class="mission-summary-compact-shell">
         <div class="mission-summary-compact-head">
@@ -3290,9 +3350,14 @@ function renderMissionSummary() {
             <h4>결과 확인에 필요한 문맥만 유지</h4>
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
-          <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
-            입력 다시 보기
-          </button>
+          <div class="action-row action-row-compact">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+              요약 접기
+            </button>
+            <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+              입력 다시 보기
+            </button>
+          </div>
         </div>
         <div class="mission-summary-compact-grid">
           ${compactCards
