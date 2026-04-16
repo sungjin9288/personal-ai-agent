@@ -2109,12 +2109,7 @@ function renderDetailToolbarActions() {
   elements.detailToolbarActions.innerHTML = `
     ${
       supportCollapsed
-        ? `
-          <div class="detail-toolbar-pill detail-toolbar-pill-primary">
-            <span>결과 보기</span>
-            <strong>본문 중심 모드</strong>
-          </div>
-        `
+        ? ``
         : `
           <div class="detail-toolbar-pill">
             <span>결과 보기 모드</span>
@@ -2150,13 +2145,13 @@ function renderDetailToolbarActions() {
         supportCollapsed
           ? `
             <button class="primary-button" type="button" data-ui-action="toggle-output-support">
-              지원 패널 펼치기
+              패널
             </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
-              ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
+              보조 탭
             </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
-              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
+              사이드바
             </button>
           `
           : `

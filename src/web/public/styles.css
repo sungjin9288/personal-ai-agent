@@ -698,8 +698,9 @@ button {
 }
 
 .detail-toolbar-actions.is-visible.is-compact {
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 6px;
+  padding-bottom: 6px;
 }
 
 .detail-toolbar-pill {
@@ -767,7 +768,19 @@ button {
 }
 
 .detail-toolbar-actions.is-visible.is-compact .detail-toolbar-actions-row {
-  justify-content: flex-end;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .detail-primary-nav {
+  width: 100%;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .primary-button,
+.detail-toolbar-actions.is-visible.is-compact .ghost-button {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
 }
 
 .workspace-shell.is-output-focus .detail-tab {
