@@ -896,6 +896,28 @@ function clearReleaseHistoryFilter() {
   renderReleaseStatus();
 }
 
+function focusReleaseHistoryFlow({
+  historyId = '',
+  provider = '',
+  scope = '',
+} = {}) {
+  const normalizedHistoryId = String(historyId || '').trim();
+  const normalizedScope = String(scope || '').trim();
+  const normalizedProvider = String(provider || '').trim();
+
+  if (!normalizedHistoryId && !normalizedScope && !normalizedProvider) {
+    return;
+  }
+
+  state.releaseHistoryFilterScope = normalizedScope;
+  state.releaseHistoryFilterProvider = normalizedProvider;
+  if (normalizedHistoryId) {
+    focusReleaseHistoryEntry(normalizedHistoryId);
+    return;
+  }
+  renderReleaseStatus();
+}
+
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -1179,6 +1201,16 @@ function wireQuickActions(scope = document) {
       if (action === 'focus-release-history') {
         focusReleaseHistoryEntry(value || '');
         setUiNotice('최근 release action 기록으로 이동했습니다.');
+        return;
+      }
+
+      if (action === 'focus-release-flow') {
+        focusReleaseHistoryFlow({
+          historyId: value || '',
+          provider: button.dataset.uiProvider || '',
+          scope: button.dataset.uiScope || '',
+        });
+        setUiNotice('같은 release flow 기준으로 history를 좁혀 봅니다.');
         return;
       }
 
@@ -3687,12 +3719,22 @@ function renderReleaseStatus() {
                           <span class="mini-badge ${getReleaseStatusBadge(item.category === 'required' ? 'blocked' : item.category === 'release' ? 'ready' : 'not-run')}">${escapeHtml(item.category || 'info')}</span>
                           ${latestAction
                             ? `
-                                <button
-                                  class="ghost-button"
-                                  type="button"
-                                  data-ui-action="focus-release-history"
-                                  data-ui-value="${escapeHtml(latestAction.id || '')}"
-                                >최근 기록 보기</button>
+                                <div class="release-recommendation-actions">
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="focus-release-history"
+                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                  >최근 기록 보기</button>
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="focus-release-flow"
+                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                    data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
+                                    data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                  >같은 flow 보기</button>
+                                </div>
                               `
                             : item.action
                               ? `

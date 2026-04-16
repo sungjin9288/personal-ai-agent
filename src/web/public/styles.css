@@ -2285,7 +2285,8 @@ button:disabled {
 
 .release-history-focus-actions,
 .release-history-filter-actions,
-.release-history-filter-chips {
+.release-history-filter-chips,
+.release-recommendation-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

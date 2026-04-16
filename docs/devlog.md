@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T01:40:00.000Z","id":"doclog_20260416014000_f30e39","type":"devlog","updatedAt":"2026-04-16T01:40:00.000Z"} -->
+## 2026-04-16 Recommendation Flow Focus Pass
+
+- date: 2026-04-16T01:40:00.000Z
+- extended recommendation cards with `같은 flow 보기` so the operator can move directly from a suggested next action into the matching release-history triage context without first opening the raw history list
+- made the action apply both focus and context filter at once, which turns the release tab flow into `recommendation -> pinned history -> narrowed scope/provider` instead of three separate manual steps
+- kept the change client-side and state-local, preserving the release status API while shortening the operator path from summary badge to actionable forensic context
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T01:25:00.000Z","id":"doclog_20260416012500_8b18a2","type":"devlog","updatedAt":"2026-04-16T01:25:00.000Z"} -->
 ## 2026-04-16 Release History Context Filter Pass
 
