@@ -1559,6 +1559,15 @@
 - wired direct release-history interactions to `pushState` while keeping internal invalidation on `replaceState`, so browser back/forward now steps through triage context changes without polluting unrelated navigation
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-16T02:05:00.000Z","id":"doclog_20260416020500_57cf62","type":"devlog","updatedAt":"2026-04-16T02:05:00.000Z"} -->
+## 2026-04-16 Release Triage Share Link Pass
+
+- date: 2026-04-16T02:05:00.000Z
+- connected the new release triage URL state to explicit operator actions by adding `현재 triage 링크 복사` for the focused investigation context and `이 flow 링크 복사` inside expanded history rows
+- reused the existing clipboard/prompt fallback path and `buildUiStateUrl` contract instead of inventing a second share-link serializer, which keeps normal view copy and release triage copy consistent
+- scoped the generated deep links to `detailTab=release` plus the chosen focus/filter overrides, so operators can hand off the exact investigation slice without re-explaining the narrowing steps
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

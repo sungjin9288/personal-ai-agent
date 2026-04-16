@@ -264,19 +264,49 @@ function parseUiStateFromUrl() {
   };
 }
 
-function buildUiStateUrl() {
+function buildUiStateUrl(overrides = {}) {
   const url = new URL(window.location.href);
   const params = url.searchParams;
-  const workspaceId = getSelectedWorkspaceId();
-  const missionId = normalizeUiParam(state.selectedMissionId);
-  const stepId = getSanitizedStepId(state.activeStep);
-  const detailTab = getSanitizedDetailTab(state.activeDetailTab);
-  const sessionId = normalizeUiParam(state.selectedSessionId);
-  const artifactId = normalizeUiParam(state.selectedArtifactId);
-  const releaseFocusedHistoryId = normalizeUiParam(state.releaseFocusedHistoryId);
-  const releaseHistoryOutcome = getSanitizedReleaseHistoryOutcome(state.releaseHistoryFilterOutcome);
-  const releaseHistoryProvider = normalizeUiParam(state.releaseHistoryFilterProvider);
-  const releaseHistoryScope = normalizeUiParam(state.releaseHistoryFilterScope);
+  const workspaceId =
+    overrides.workspaceId !== undefined
+      ? normalizeUiParam(overrides.workspaceId)
+      : getSelectedWorkspaceId();
+  const missionId =
+    overrides.missionId !== undefined
+      ? normalizeUiParam(overrides.missionId)
+      : normalizeUiParam(state.selectedMissionId);
+  const stepId =
+    overrides.stepId !== undefined
+      ? getSanitizedStepId(overrides.stepId)
+      : getSanitizedStepId(state.activeStep);
+  const detailTab =
+    overrides.detailTab !== undefined
+      ? getSanitizedDetailTab(overrides.detailTab)
+      : getSanitizedDetailTab(state.activeDetailTab);
+  const sessionId =
+    overrides.sessionId !== undefined
+      ? normalizeUiParam(overrides.sessionId)
+      : normalizeUiParam(state.selectedSessionId);
+  const artifactId =
+    overrides.artifactId !== undefined
+      ? normalizeUiParam(overrides.artifactId)
+      : normalizeUiParam(state.selectedArtifactId);
+  const releaseFocusedHistoryId =
+    overrides.releaseFocusedHistoryId !== undefined
+      ? normalizeUiParam(overrides.releaseFocusedHistoryId)
+      : normalizeUiParam(state.releaseFocusedHistoryId);
+  const releaseHistoryOutcome =
+    overrides.releaseHistoryOutcome !== undefined
+      ? getSanitizedReleaseHistoryOutcome(overrides.releaseHistoryOutcome)
+      : getSanitizedReleaseHistoryOutcome(state.releaseHistoryFilterOutcome);
+  const releaseHistoryProvider =
+    overrides.releaseHistoryProvider !== undefined
+      ? normalizeUiParam(overrides.releaseHistoryProvider)
+      : normalizeUiParam(state.releaseHistoryFilterProvider);
+  const releaseHistoryScope =
+    overrides.releaseHistoryScope !== undefined
+      ? normalizeUiParam(overrides.releaseHistoryScope)
+      : normalizeUiParam(state.releaseHistoryFilterScope);
 
   if (workspaceId) {
     params.set('workspace', workspaceId);
@@ -1359,6 +1389,22 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-triage-link') {
+        void copyReleaseTriageLink();
+        return;
+      }
+
+      if (action === 'copy-release-flow-link') {
+        void copyReleaseTriageLink({
+          focusedHistoryId: value || '',
+          historyOutcome: button.dataset.uiOutcome || '',
+          historyProvider: button.dataset.uiProvider || '',
+          historyScope: button.dataset.uiScope || '',
+          successNotice: '선택한 release flow 링크를 복사했습니다.',
+        });
+        return;
+      }
+
       if (action === 'filter-release-history-scope') {
         setReleaseHistoryFilter({
           historyMode: 'push',
@@ -1456,15 +1502,27 @@ function openComposer() {
 
 async function copyCurrentViewLink() {
   const currentUrl = `${window.location.origin}${buildUiStateUrl()}`;
+  await copyUiLink(currentUrl, {
+    promptMessage: '현재 작업면 링크를 복사하세요.',
+    shownNotice: '현재 작업면 링크를 표시했습니다.',
+    successNotice: '현재 작업면 링크를 복사했습니다.',
+  });
+}
+
+async function copyUiLink(url, {
+  promptMessage = '링크를 복사하세요.',
+  shownNotice = '링크를 표시했습니다.',
+  successNotice = '링크를 복사했습니다.',
+} = {}) {
   try {
     if (!navigator.clipboard?.writeText) {
       throw new Error('clipboard-unavailable');
     }
-    await navigator.clipboard.writeText(currentUrl);
-    setUiNotice('현재 작업면 링크를 복사했습니다.');
+    await navigator.clipboard.writeText(url);
+    setUiNotice(successNotice);
   } catch {
-    window.prompt('현재 작업면 링크를 복사하세요.', currentUrl);
-    setUiNotice('현재 작업면 링크를 표시했습니다.');
+    window.prompt(promptMessage, url);
+    setUiNotice(shownNotice);
   }
 }
 
@@ -1483,6 +1541,27 @@ async function resetCurrentView() {
 
   clearMissionSelection({ urlMode: 'push' });
   setUiNotice('현재 보기를 초기 상태로 정리했습니다.');
+}
+
+async function copyReleaseTriageLink({
+  focusedHistoryId = state.releaseFocusedHistoryId,
+  historyOutcome = state.releaseHistoryFilterOutcome,
+  historyProvider = state.releaseHistoryFilterProvider,
+  historyScope = state.releaseHistoryFilterScope,
+  successNotice = '현재 release triage 링크를 복사했습니다.',
+} = {}) {
+  const triageUrl = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseFocusedHistoryId: focusedHistoryId,
+    releaseHistoryOutcome: historyOutcome,
+    releaseHistoryProvider: historyProvider,
+    releaseHistoryScope: historyScope,
+  })}`;
+  await copyUiLink(triageUrl, {
+    promptMessage: '현재 release triage 링크를 복사하세요.',
+    shownNotice: '현재 release triage 링크를 표시했습니다.',
+    successNotice,
+  });
 }
 
 function getFlowState() {
@@ -4001,6 +4080,7 @@ function renderReleaseStatus() {
                     <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
                     <div class="release-history-focus-actions">
                       <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
+                      <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link">현재 triage 링크 복사</button>
                       ${historyFilterOutcome || historyFilterScope || historyFilterProvider
                         ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
                         : ''}
@@ -4068,6 +4148,15 @@ function renderReleaseStatus() {
                           ? `
                               <div class="release-history-detail">
                                 <div class="release-history-filter-actions">
+                                  <button
+                                    class="ghost-button"
+                                    type="button"
+                                    data-ui-action="copy-release-flow-link"
+                                    data-ui-value="${escapeHtml(itemId)}"
+                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}"
+                                    data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
+                                    data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
+                                  >이 flow 링크 복사</button>
                                   <button
                                     class="ghost-button"
                                     type="button"

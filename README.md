@@ -568,3 +568,5 @@ recommendation 카드 자체도 이제 현재 triage 상태를 반영합니다. 
 문제 흐름이 있는 recommendation은 `최근 문제` 시각과 summary도 같이 보여 줍니다. 즉, 카드만 봐도 이 흐름이 최근에 왜 막혔는지, 지금 다시 열어야 할 수준의 문제인지 바로 판단할 수 있습니다.
 
 release triage 상태도 이제 URL에 실립니다. `release` 탭에서 focused history row나 `주의 상태만 / scope / provider` 필터를 건 상태는 query string으로 같이 동기화되므로, 새로고침이나 링크 공유 뒤에도 같은 triage 문맥으로 바로 복원됩니다.
+
+이 URL state는 release tab 안에서 바로 공유 액션으로도 연결됩니다. focused history가 있을 때는 `현재 triage 링크 복사`로 지금 보고 있는 triage 전체를 복사할 수 있고, 펼친 history row 안에서는 `이 flow 링크 복사`로 특정 scope/provider 흐름만 고정한 deep link를 바로 보낼 수 있습니다.
