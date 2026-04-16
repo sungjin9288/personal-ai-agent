@@ -560,3 +560,5 @@ recommendation 카드에서도 이 흐름을 직접 시작할 수 있습니다. 
 문제가 있는 흐름만 보고 싶을 때는 `같은 문제 흐름 보기`와 `주의 상태만` 필터를 사용할 수 있습니다. 이 경로는 `blocked / failed / confirmation-required`만 남기므로, 성공한 action noise를 걷어낸 채 실제 triage 대상만 볼 수 있습니다.
 
 recommendation 카드 자체도 이제 현재 triage 상태를 반영합니다. 같은 flow나 같은 문제 흐름이 이미 적용 중이면 카드가 강조되고 버튼이 `현재 flow` 또는 `현재 문제 흐름`으로 바뀌므로, operator가 같은 narrowing action을 중복으로 다시 누르지 않게 했습니다.
+
+각 recommendation 카드는 이제 같은 flow의 총 history 수와 `문제 흐름` 건수도 같이 보여 줍니다. 그래서 operator는 버튼을 누르기 전부터 이 recommendation이 단순한 follow-up인지, 실제로 여러 번 막힌 흐름인지 바로 구분할 수 있습니다.

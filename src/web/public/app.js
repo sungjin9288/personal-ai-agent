@@ -809,46 +809,57 @@ function isReleaseAttentionOutcome(outcome = '') {
   return normalized === 'blocked' || normalized === 'failed' || normalized === 'confirmation-required';
 }
 
-function getLatestReleaseActionForRecommendation(item, releaseActionHistory = [], providerReadiness = []) {
+function matchesReleaseActionRecommendation(item, historyItem, providerReadiness = []) {
   const action = String(item?.action || '').trim();
   const actionProvider = String(item?.actionProvider || '').trim();
   const providerFromEnv = String(
     providerReadiness.find((entry) => String(entry.envKey || '').trim() === String(item?.envKey || '').trim())?.provider || '',
   ).trim();
   const provider = actionProvider || providerFromEnv;
+  const historyAction = String(historyItem?.action || '').trim();
+  const historyScope = String(historyItem?.scope || '').trim();
+  const historyProvider = String(historyItem?.provider || '').trim();
 
-  if (!Array.isArray(releaseActionHistory) || !releaseActionHistory.length) {
-    return null;
+  if (action === 'regenerate-release-surface') {
+    return historyScope === 'current-surface' && (historyAction === 'refresh' || historyAction === 'refresh-preflight');
   }
 
-  return (
-    releaseActionHistory.find((historyItem) => {
-      const historyAction = String(historyItem?.action || '').trim();
-      const historyScope = String(historyItem?.scope || '').trim();
-      const historyProvider = String(historyItem?.provider || '').trim();
+  if (action === 'archive-release-snapshot') {
+    return historyScope === 'snapshot' && (historyAction === 'snapshot' || historyAction === 'snapshot-preflight');
+  }
 
-      if (action === 'regenerate-release-surface') {
-        return historyScope === 'current-surface' && (historyAction === 'refresh' || historyAction === 'refresh-preflight');
-      }
+  if (action === 'run-release-preflight' && provider) {
+    return historyAction === 'provider-preflight' && historyProvider === provider;
+  }
 
-      if (action === 'archive-release-snapshot') {
-        return historyScope === 'snapshot' && (historyAction === 'snapshot' || historyAction === 'snapshot-preflight');
-      }
+  if (!action && provider) {
+    return historyProvider === provider;
+  }
 
-      if (action === 'run-release-preflight' && provider) {
-        return historyAction === 'provider-preflight' && historyProvider === provider;
-      }
-
-      if (!action && provider) {
-        return historyProvider === provider;
-      }
-
-      return false;
-    }) || null
-  );
+  return false;
 }
 
-function isRecommendationFlowActive(latestAction, {
+function getRecommendationHistoryContext(item, releaseActionHistory = [], providerReadiness = []) {
+  if (!Array.isArray(releaseActionHistory) || !releaseActionHistory.length) {
+    return {
+      attentionCount: 0,
+      latestAction: null,
+      latestAttentionAction: null,
+      matchCount: 0,
+    };
+  }
+
+  const matches = releaseActionHistory.filter((historyItem) => matchesReleaseActionRecommendation(item, historyItem, providerReadiness));
+  const attentionMatches = matches.filter((historyItem) => isReleaseAttentionOutcome(historyItem?.outcome));
+  return {
+    attentionCount: attentionMatches.length,
+    latestAction: matches[0] || null,
+    latestAttentionAction: attentionMatches[0] || null,
+    matchCount: matches.length,
+  };
+}
+
+function isRecommendationFlowActive({ attentionAction = null, latestAction = null }, {
   focusedHistoryId = '',
   historyFilterOutcome = '',
   historyFilterProvider = '',
@@ -857,23 +868,20 @@ function isRecommendationFlowActive(latestAction, {
   const historyId = String(latestAction?.id || '').trim();
   const scope = String(latestAction?.scope || '').trim();
   const provider = String(latestAction?.provider || '').trim();
-  const outcome = isReleaseAttentionOutcome(latestAction?.outcome) ? 'attention' : '';
-
-  if (!historyId) {
-    return {
-      attentionFlowActive: false,
-      sameFlowActive: false,
-    };
-  }
+  const attentionHistoryId = String(attentionAction?.id || '').trim();
+  const attentionScope = String(attentionAction?.scope || '').trim() || scope;
+  const attentionProvider = String(attentionAction?.provider || '').trim() || provider;
 
   return {
     attentionFlowActive:
-      focusedHistoryId === historyId
+      Boolean(attentionHistoryId)
+      && focusedHistoryId === attentionHistoryId
       && historyFilterOutcome === 'attention'
-      && historyFilterScope === scope
-      && historyFilterProvider === provider,
+      && historyFilterScope === attentionScope
+      && historyFilterProvider === attentionProvider,
     sameFlowActive:
-      focusedHistoryId === historyId
+      Boolean(historyId)
+      && focusedHistoryId === historyId
       && historyFilterOutcome === ''
       && historyFilterScope === scope
       && historyFilterProvider === provider,
@@ -3771,9 +3779,14 @@ function renderReleaseStatus() {
                 ? recommendedActions
                   .map(
                     (item) => {
-                      const latestAction = getLatestReleaseActionForRecommendation(item, releaseActionHistory, providerReadiness);
+                      const historyContext = getRecommendationHistoryContext(item, releaseActionHistory, providerReadiness);
+                      const latestAction = historyContext.latestAction;
+                      const latestAttentionAction = historyContext.latestAttentionAction;
                       const { sameFlowActive, attentionFlowActive } = latestAction
-                        ? isRecommendationFlowActive(latestAction, {
+                        ? isRecommendationFlowActive({
+                          attentionAction: latestAttentionAction,
+                          latestAction,
+                        }, {
                           focusedHistoryId,
                           historyFilterOutcome,
                           historyFilterProvider,
@@ -3791,6 +3804,12 @@ function renderReleaseStatus() {
                                   최근 시도 · ${escapeHtml(getReleaseActionLabel(latestAction.action))} · ${escapeHtml(latestAction.outcome || 'unknown')} · ${escapeHtml(formatDate(latestAction.createdAt))}
                                 </div>
                                 <div class="item-meta">${escapeHtml(latestAction.summary || '최근 action summary가 없습니다.')}</div>
+                                <div class="release-history-filter-chips">
+                                  <span class="mini-badge status-running">같은 flow ${escapeHtml(String(historyContext.matchCount || 0))}건</span>
+                                  ${historyContext.attentionCount
+                                    ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(historyContext.attentionCount))}건</span>`
+                                    : ''}
+                                </div>
                                 ${(sameFlowActive || attentionFlowActive)
                                   ? `
                                       <div class="release-history-filter-chips">
@@ -3823,16 +3842,16 @@ function renderReleaseStatus() {
                                     data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
                                     ${sameFlowActive ? 'disabled' : ''}
                                   >${sameFlowActive ? '현재 flow' : '같은 flow 보기'}</button>
-                                  ${isReleaseAttentionOutcome(latestAction.outcome)
+                                  ${latestAttentionAction
                                     ? `
                                         <button
                                           class="ghost-button"
                                           type="button"
                                           data-ui-action="focus-release-flow"
-                                          data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
                                           data-ui-outcome="attention"
-                                          data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
-                                          data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                          data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
+                                          data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
                                           ${attentionFlowActive ? 'disabled' : ''}
                                         >${attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기'}</button>
                                       `

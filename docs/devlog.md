@@ -1469,6 +1469,15 @@
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-10T00:00:00.000Z","id":"doclog_20260413210753_2ebc4a","type":"devlog","updatedAt":"2026-04-10T00:00:00.000Z"} -->
+<!-- document-log:start {"createdAt":"2026-04-16T02:30:00.000Z","id":"doclog_20260416023000_c32aa8","type":"devlog","updatedAt":"2026-04-16T02:30:00.000Z"} -->
+## 2026-04-16 Recommendation Flow Count Pass
+
+- date: 2026-04-16T02:30:00.000Z
+- upgraded recommendation cards from single latest-attempt snippets to flow-aware summaries that show both total matching history count and attention-event count
+- surfaced `같은 문제 흐름 보기` whenever the flow has at least one blocked/failed/confirmation-required event, even if the very latest attempt itself is not an attention outcome
+- kept the change client-side by deriving recommendation history context from the existing status payload, which improves triage density without expanding the server contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T02:15:00.000Z","id":"doclog_20260416021500_20e38f","type":"devlog","updatedAt":"2026-04-16T02:15:00.000Z"} -->
 ## 2026-04-16 Recommendation Active Flow State Pass
 
