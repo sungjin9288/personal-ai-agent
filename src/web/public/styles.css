@@ -704,6 +704,11 @@ button {
   padding: 0 2px 8px;
 }
 
+.detail-toolbar-actions.is-visible.is-compact {
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .detail-toolbar-pill {
   display: inline-flex;
   align-items: center;
@@ -712,6 +717,11 @@ button {
   border-radius: 999px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(248, 250, 252, 0.86);
+}
+
+.detail-toolbar-pill-primary {
+  border-color: rgba(37, 99, 235, 0.12);
+  background: rgba(37, 99, 235, 0.08);
 }
 
 .detail-toolbar-pill span {
@@ -727,6 +737,10 @@ button {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .detail-toolbar-actions-row {
+  justify-content: flex-end;
 }
 
 .workspace-shell.is-output-focus .detail-tab {
