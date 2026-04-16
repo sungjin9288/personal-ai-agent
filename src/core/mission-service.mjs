@@ -25,6 +25,7 @@ import {
   MISSION_STATUSES,
   OWNER_HANDOFF_ACK_SLA_HOURS,
   OWNER_HANDOFF_REMINDER_CADENCE_HOURS,
+  MAX_PARALLEL_SPECIALISTS,
   PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_STATUSES,
   PROVIDER_FAILURE_KINDS,
@@ -611,7 +612,7 @@ function getLatestOrchestrationProfileMetadata(items, getTimestamp) {
 
 function resolveMissionParallelPlan(mission) {
   const directives = parseMissionConstraintDirectives(mission);
-  const explicitKinds = [...new Set(directives.parallelSpecialists)].slice(0, 3);
+  const explicitKinds = [...new Set(directives.parallelSpecialists)].slice(0, MAX_PARALLEL_SPECIALISTS);
   const profile = directives.orchestrationProfileId
     ? resolveOrchestrationProfile({
         deliverableType: mission?.deliverableType,
@@ -619,7 +620,8 @@ function resolveMissionParallelPlan(mission) {
         profileId: directives.orchestrationProfileId,
       })
     : null;
-  const effectiveKinds = [...new Set(explicitKinds.length ? explicitKinds : profile?.parallelSpecialistKinds || [])].slice(0, 3);
+  const effectiveKinds = [...new Set(explicitKinds.length ? explicitKinds : profile?.parallelSpecialistKinds || [])]
+    .slice(0, MAX_PARALLEL_SPECIALISTS);
   const source = explicitKinds.length
     ? profile
       ? 'profile-with-explicit-specialists'

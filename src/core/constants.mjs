@@ -26,7 +26,8 @@ export const EXECUTION_LEASE_STATUSES = ['active', 'used', 'revoked'];
 
 export const AGENT_ROLES = ['manager', 'planner', 'executor', 'reviewer', 'specialist'];
 export const AGENT_RUN_STATUSES = ['queued', 'running', 'blocked', 'failed', 'completed', 'merged', 'abandoned'];
-export const SPECIALIST_KINDS = ['research', 'implementation', 'verification'];
+export const MAX_PARALLEL_SPECIALISTS = 5;
+export const SPECIALIST_KINDS = ['research', 'implementation', 'verification', 'design', 'documentation'];
 export const PROVIDER_FAILURE_KINDS = [
   'config',
   'transport',

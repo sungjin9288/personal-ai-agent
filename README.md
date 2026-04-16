@@ -17,10 +17,12 @@ The runtime stays intentionally narrow in v1:
 - CLI-first
 - OpenAI as the operational default when `OPENAI_API_KEY` is configured; stub remains the offline fallback and bootstrap default
 - Anthropic remains available as an explicit comparison or fallback provider behind provider-specific configuration
-- optional manager-controlled parallel specialist fan-out across `research`, `implementation`, and `verification`
+- optional manager-controlled parallel specialist fan-out across `research`, `implementation`, `verification`, `design`, and `documentation`
 - explicit approval gates before risky actions
 - runtime state under `var/`
 - repo-tracked strategy and incident docs under `docs/`
+
+현재 runtime 상한은 `core 4 roles + parallel specialist 5 lanes = 총 9 agent surfaces`입니다. specialist fan-out은 `parallel-specialists:<kinds>` 또는 `orchestration-profile:<id>`로 선택하며, quality gate는 여전히 `research`와 `verification` 신호만 특별 취급합니다.
 
 ## Reference Direction
 
@@ -171,6 +173,20 @@ node src/cli.mjs mission create \
   --title "Profile-driven specialist dry run" \
   --objective "Validate orchestration profile preset selection" \
   --constraints "orchestration-profile:knowledge-triad|Keep blast radius small"
+
+node src/cli.mjs mission create \
+  --workspace workspace_xxx \
+  --mode engineering \
+  --title "Full-spectrum specialist dry run" \
+  --objective "Validate five-lane specialist fan-out and merge" \
+  --constraints "parallel-specialists:research,implementation,verification,design,documentation|Keep blast radius small"
+
+node src/cli.mjs mission create \
+  --workspace workspace_xxx \
+  --mode engineering \
+  --title "Full-spectrum profile dry run" \
+  --objective "Validate engineering full-spectrum orchestration profile" \
+  --constraints "orchestration-profile:engineering-full-spectrum|Keep blast radius small"
 ```
 
 Run and inspect missions:
@@ -308,7 +324,7 @@ node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started mana
 
 1. `manager` builds session context and loads memory
 2. `planner` produces a bounded plan and adapts it with prior mission memory when available
-3. if the mission constraints include `parallel-specialists:<kinds>` or `orchestration-profile:<profileId>`, the manager opens up to three specialist child branches across `research`, `implementation`, and `verification`
+3. if the mission constraints include `parallel-specialists:<kinds>` or `orchestration-profile:<profileId>`, the manager opens up to five specialist child branches across `research`, `implementation`, `verification`, `design`, and `documentation`
 4. unresolved specialist branches surface as `specialist-follow-up-required`, and profile quality gate violations can also open the same follow-up item even when the latest branch is only `abandoned` or missing
 5. manager merge runs only after the active profile quality gate passes; when it does not, the mission stops at `specialist` with `specialist-quality-gate-blocked` evidence
 6. `action remediate-specialist-follow-up <actionId>` reruns the same mission and provider, so only unresolved or quality-gate-required specialist branches resume inside the same `parallelGroupId` lineage

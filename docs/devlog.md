@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T05:10:00.000Z","id":"doclog_20260416051000_18cf42","type":"devlog","updatedAt":"2026-04-16T05:10:00.000Z"} -->
+## 2026-04-16 Parallel Specialist Capacity Expansion Pass
+
+- date: 2026-04-16T05:10:00.000Z
+- raised the bounded parallel specialist cap from three to five by moving the fan-out limit into a shared constant instead of duplicating literal `slice(0, 3)` limits in mission planning
+- expanded supported specialist lanes to `research`, `implementation`, `verification`, `design`, and `documentation`, and added full-spectrum knowledge and engineering orchestration profiles so the wider fan-out can be selected either explicitly or through preset profiles
+- extended `smoke:parallel-specialists` to prove both an explicit five-lane run and a `knowledge-full-spectrum` profile run complete successfully, which keeps the new capacity grounded in deterministic runtime evidence
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T04:35:00.000Z","id":"doclog_20260416043500_7d2c91","type":"devlog","updatedAt":"2026-04-16T04:35:00.000Z"} -->
 ## 2026-04-16 Provider Spotlight Flow Handoff Pass
 

@@ -153,7 +153,7 @@
 - provider attention reminder events now appear on mission, workspace, and provider-focused timelines so aging failure follow-up is auditable after the initial failure
 - workspace overview now includes workspace-bound provider execution and provider attention summary fields so provider failure pressure is visible without opening provider-only surfaces
 - mission summary and mission timeline now include mission-scoped provider execution and provider attention evidence so provider failure audit can be completed without leaving mission-level surfaces
-- manager-controlled parallel specialist roles now support bounded fan-out across `research`, `implementation`, and `verification`, resumable failed or blocked branches, specialist follow-up action items, and manager merge back into the standard reviewer path
+- manager-controlled parallel specialist roles now support bounded fan-out across `research`, `implementation`, `verification`, `design`, and `documentation`, resumable failed or blocked branches, specialist follow-up action items, and manager merge back into the standard reviewer path
 - mission/workspace/global summaries and timelines now carry specialist branch, merge, and follow-up pressure so parallel work remains inspectable without breaking the sequential mission contract
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals

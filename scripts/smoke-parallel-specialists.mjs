@@ -135,6 +135,78 @@ assert.equal(profileTimeline.summary.specialistOrchestrationProfileId, 'knowledg
 assert.equal(profileTimeline.summary.specialistLatestParallelGroup?.orchestrationProfile?.id, 'knowledge-triad');
 assert.equal(profileTimeline.timeline.filter((event) => event.kind === 'specialist-branch-completed').length, 3);
 
+const fullSpectrumMission = service.createMission({
+  constraints: ['parallel-specialists:research,implementation,verification,design,documentation'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify five-lane specialist fan-out and merge.',
+  title: 'Parallel specialist full spectrum mission',
+  workspaceId: workspace.id,
+});
+
+const fullSpectrumRun = await service.runMission(fullSpectrumMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(fullSpectrumRun.mission.status, 'completed');
+
+const fullSpectrumSummary = service.showMission(fullSpectrumMission.id).summary;
+assert.equal(fullSpectrumSummary.specialistRunCount, 5);
+assert.equal(fullSpectrumSummary.specialistMergeRunCount, 1);
+assert.deepEqual(
+  fullSpectrumSummary.specialistConfiguredKinds,
+  ['research', 'implementation', 'verification', 'design', 'documentation'],
+);
+assert.deepEqual(
+  fullSpectrumSummary.specialistTouchedKinds,
+  ['design', 'documentation', 'implementation', 'research', 'verification'],
+);
+
+const fullSpectrumGroup = getLatestParallelGroupRuns(store, fullSpectrumMission.id);
+assert.ok(fullSpectrumGroup.parallelGroupId);
+assert.equal(fullSpectrumGroup.runs.filter((run) => run.role === 'specialist').length, 5);
+assert.equal(fullSpectrumGroup.runs.filter((run) => run.stageKind === 'parallel-merge').length, 1);
+assert.equal(
+  fullSpectrumGroup.runs
+    .filter((run) => run.role === 'specialist')
+    .every((run) => run.status === 'completed' && run.mergeStatus === 'merged'),
+  true,
+);
+
+const fullSpectrumKinds = fullSpectrumGroup.runs
+  .filter((run) => run.role === 'specialist')
+  .map((run) => run.specialistKind)
+  .sort();
+assert.deepEqual(fullSpectrumKinds, ['design', 'documentation', 'implementation', 'research', 'verification']);
+
+const fullSpectrumProfileMission = service.createMission({
+  constraints: ['orchestration-profile:knowledge-full-spectrum'],
+  deliverableType: 'decision-memo',
+  mode: 'knowledge',
+  objective: 'Verify knowledge full-spectrum orchestration profile selection.',
+  title: 'Parallel specialist full-spectrum profile mission',
+  workspaceId: workspace.id,
+});
+
+const fullSpectrumProfileRun = await service.runMission(fullSpectrumProfileMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(fullSpectrumProfileRun.mission.status, 'completed');
+
+const fullSpectrumProfileSummary = service.showMission(fullSpectrumProfileMission.id).summary;
+assert.equal(fullSpectrumProfileSummary.specialistRunCount, 5);
+assert.equal(fullSpectrumProfileSummary.specialistOrchestrationProfileId, 'knowledge-full-spectrum');
+assert.equal(fullSpectrumProfileSummary.specialistOrchestrationProfileDisplayName, 'Knowledge Full Spectrum');
+assert.equal(fullSpectrumProfileSummary.specialistOrchestrationProfileQualityGate, 'research-and-verification-signal-required');
+assert.equal(fullSpectrumProfileSummary.specialistOrchestrationProfileRetryPolicy, 'resume-research-and-verification-fast');
+assert.deepEqual(
+  fullSpectrumProfileSummary.specialistConfiguredKinds,
+  ['research', 'implementation', 'verification', 'design', 'documentation'],
+);
+
 const qualityGateMission = service.createMission({
   constraints: ['orchestration-profile:knowledge-triad', 'parallel-abandon:verification'],
   deliverableType: 'decision-memo',
