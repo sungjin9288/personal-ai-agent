@@ -1228,7 +1228,7 @@ function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliv
 
 ## Handoff
 - the bounded proposal has been reviewed and explicitly approved
-- the next execution owner should validate repo-local commands inside ${workspace.path}
+- the next execution owner should validate workspace-local commands inside ${workspace.path}
 - keep verification scoped to the proposal and capture exact evidence before any broader mutation
 
 ## Next Action
@@ -3382,6 +3382,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   const harness = createRuntimeHarness({ store });
   const activeExecutionRuntimes = new Map();
   const executionRepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const executionWorkspaceRoot = path.resolve(executionRepoRoot, '..');
+
+  function isPathInsideRoot(rootDir, candidatePath) {
+    const relativePath = path.relative(rootDir, candidatePath);
+    return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+  }
 
   docService.ensureDocs();
 
@@ -3396,7 +3402,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function isExecutionCapableWorkspace(workspace) {
-    return path.resolve(workspace.path) === executionRepoRoot;
+    return isPathInsideRoot(executionWorkspaceRoot, path.resolve(workspace.path));
   }
 
   function isExecutionCapableMission(mission, workspace) {
@@ -3500,7 +3506,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (mission.mode !== 'engineering') {
       blockedReasons.push('knowledge 모드는 문서/메모 중심이며 직접 실행을 지원하지 않습니다.');
     } else if (!executionSupported) {
-      blockedReasons.push(`현재 리포(${executionRepoRoot})만 실행 대상으로 지원합니다.`);
+      blockedReasons.push(`현재 personal workspace 루트(${executionWorkspaceRoot}) 아래 경로만 실행 대상으로 지원합니다.`);
     }
 
     if (!reviewSession) {
@@ -3518,7 +3524,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const policy = manifest
       ? evaluateExecutionPolicy({
           manifest,
-          rootDir: executionRepoRoot,
+          rootDir: path.resolve(workspace.path),
           workspacePath: path.resolve(workspace.path),
         })
       : {
@@ -3643,9 +3649,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function applyEditStep(step, workspacePath) {
+    const workspaceRoot = path.resolve(workspacePath);
     const targetPath = path.resolve(workspacePath, step.filePath || '');
-    if (!targetPath.startsWith(executionRepoRoot)) {
-      throw new Error(`Edit path escapes current repo: ${targetPath}`);
+    if (!isPathInsideRoot(workspaceRoot, targetPath)) {
+      throw new Error(`Edit path escapes selected workspace: ${targetPath}`);
     }
 
     const existingContent = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, 'utf8') : '';

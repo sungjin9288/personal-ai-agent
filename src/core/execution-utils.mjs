@@ -77,7 +77,7 @@ function classifyCommandRisk(command) {
     warningReasons.push('파일 이동 명령이 포함되어 있습니다.');
   }
   if (/\.\./.test(value)) {
-    warningReasons.push('상위 경로 참조(..)가 포함되어 있어 현재 리포 범위를 다시 확인해야 합니다.');
+    warningReasons.push('상위 경로 참조(..)가 포함되어 있어 현재 워크스페이스 범위를 다시 확인해야 합니다.');
   }
 
   return { blockedReasons, warningReasons };
@@ -161,29 +161,22 @@ function isPlaceholderContent(content) {
   return /^PLACEHOLDER:/i.test(value) || /\bto be authored after inspection\b/i.test(value);
 }
 
-function buildDefaultVerificationStep(index) {
+function buildShellVerificationStep(index, command, title, verificationTarget, expectedOutputs, reason) {
   return {
-    command: 'node --check src/cli.mjs',
+    command,
     cwd: '.',
-    expectedOutputs: ['CLI syntax check passes'],
+    expectedOutputs,
     filePath: '',
     findText: '',
     id: createStepId(index),
     kind: 'test',
     operation: 'replace',
-    reason: 'provider manifest에 검증 step이 없을 때 최소 syntax smoke를 강제로 추가합니다.',
+    reason,
     replaceText: '',
     riskClassification: 'low',
-    title: 'CLI syntax smoke',
-    verificationTarget: 'src/cli.mjs syntax parse must succeed.',
+    title,
+    verificationTarget,
   };
-}
-
-function ensureVerificationSteps(steps) {
-  if (steps.some((step) => ['test', 'build'].includes(step.kind))) {
-    return steps;
-  }
-  return [...steps, buildDefaultVerificationStep(steps.length)];
 }
 
 function buildFallbackCommandHints({ plannerSteps = [], proposalContent = '' }) {
@@ -248,6 +241,92 @@ function extractNodeScriptPath(command) {
   return sanitizeRelativePath(match?.[1] || '');
 }
 
+function findWorkspaceNodeCheckTarget(workspacePath) {
+  const candidates = [
+    'src/cli.mjs',
+    'src/cli.js',
+    'src/index.mjs',
+    'src/index.js',
+    'index.mjs',
+    'index.js',
+    'main.mjs',
+    'main.js',
+    'app.mjs',
+    'app.js',
+  ];
+
+  return candidates.find((candidate) => fs.existsSync(path.join(workspacePath, candidate))) || '';
+}
+
+function findWorkspacePackageVerificationScript(workspacePath) {
+  const packageScripts = readWorkspacePackageScripts(workspacePath);
+  return ['check', 'typecheck', 'lint', 'test', 'build'].find((scriptName) => Boolean(packageScripts[scriptName])) || '';
+}
+
+export function buildWorkspaceInspectStep(workspacePath, index = 0) {
+  const hasGitMetadata = fs.existsSync(path.join(workspacePath, '.git'));
+
+  return {
+    command: hasGitMetadata ? 'git status --short' : 'ls',
+    cwd: '.',
+    expectedOutputs: [hasGitMetadata ? '현재 워크트리 변경 상태' : '현재 워크스페이스 파일 목록'],
+    id: createStepId(index),
+    kind: 'inspect',
+    reason: hasGitMetadata
+      ? '실행 전에 현재 워크스페이스 변경 상태를 확인합니다.'
+      : 'git metadata가 없어 현재 워크스페이스 파일 목록으로 baseline을 확인합니다.',
+    riskClassification: 'low',
+    title: hasGitMetadata ? '현재 워크트리 상태 확인' : '현재 워크스페이스 baseline 확인',
+    verificationTarget: hasGitMetadata
+      ? '실행 전 변경 범위를 기록합니다.'
+      : '선택된 워크스페이스 baseline이 로그에 남아야 합니다.',
+  };
+}
+
+export function buildWorkspaceVerificationStep(workspacePath, index = 0) {
+  const nodeCheckTarget = findWorkspaceNodeCheckTarget(workspacePath);
+  if (nodeCheckTarget) {
+    return buildShellVerificationStep(
+      index,
+      `node --check ${nodeCheckTarget}`,
+      'Workspace syntax smoke',
+      `${nodeCheckTarget} syntax parse must succeed.`,
+      ['node --check success'],
+      '최소 syntax smoke를 실행해 현재 워크스페이스의 기본 실행면을 검증합니다.',
+    );
+  }
+
+  const packageVerificationScript = findWorkspacePackageVerificationScript(workspacePath);
+  if (packageVerificationScript) {
+    return buildShellVerificationStep(
+      index,
+      `npm run ${packageVerificationScript}`,
+      `Workspace ${packageVerificationScript} smoke`,
+      `package.json script ${packageVerificationScript} must succeed in the selected workspace.`,
+      [`npm run ${packageVerificationScript} success`],
+      '현재 워크스페이스 package script를 실행해 bounded verification을 수행합니다.',
+    );
+  }
+
+  const inspectStep = buildWorkspaceInspectStep(workspacePath, index);
+  return {
+    ...inspectStep,
+    expectedOutputs: ['workspace-local baseline command success'],
+    kind: 'test',
+    reason: '검증용 node/package surface가 없어 현재 워크스페이스 baseline command로 bounded smoke를 수행합니다.',
+    title: 'Workspace baseline smoke',
+    verificationTarget: '현재 워크스페이스에서 최소 inspect command가 성공해야 합니다.',
+  };
+}
+
+function ensureVerificationSteps(steps, workspacePath) {
+  if (steps.some((step) => ['test', 'build'].includes(step.kind))) {
+    return steps;
+  }
+
+  return [...steps, buildWorkspaceVerificationStep(workspacePath, steps.length)];
+}
+
 function isRunnableHintedCommand(command, workspacePath) {
   const value = normalizeText(command);
   if (!value) {
@@ -279,7 +358,28 @@ function isRunnableHintedCommand(command, workspacePath) {
 
 export function getCurrentGitBranch(workspacePath) {
   try {
-    return normalizeText(execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: workspacePath, encoding: 'utf8' }));
+    const symbolicBranch = normalizeText(
+      execFileSync('git', ['symbolic-ref', '--quiet', '--short', 'HEAD'], {
+        cwd: workspacePath,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }),
+    );
+    if (symbolicBranch) {
+      return symbolicBranch;
+    }
+  } catch {
+    // Fall through to the legacy rev-parse path for detached HEAD repos.
+  }
+
+  try {
+    return normalizeText(
+      execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+        cwd: workspacePath,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }),
+    );
   } catch {
     return 'unknown';
   }
@@ -333,7 +433,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
   return {
     source: normalizeText(manifest.source, 'derived'),
     summary,
-    steps: ensureVerificationSteps(steps),
+    steps: ensureVerificationSteps(steps, workspacePath),
     workspacePath,
   };
 }
@@ -347,34 +447,22 @@ export function buildFallbackExecutionManifest({ mission, workspace, plannerStep
     .slice(0, 2);
 
   const steps = [
-    {
-      command: 'git status --short',
-      cwd: '.',
-      expectedOutputs: ['현재 워크트리 변경 상태'],
-      id: 'step-01',
-      kind: 'inspect',
-      reason: '실행 전에 현재 리포 변경 상태를 확인합니다.',
-      riskClassification: 'low',
-      title: '현재 워크트리 상태 확인',
-      verificationTarget: '실행 전 변경 범위를 기록합니다.',
-    },
+    buildWorkspaceInspectStep(workspace.path, 0),
     ...hintedCommands.map((command, index) => ({
       command,
       cwd: '.',
       expectedOutputs: ['provider 또는 planner가 제안한 bounded command'],
       id: `step-${String(index + 2).padStart(2, '0')}`,
       kind: /(test|check|verify|smoke)/i.test(command) ? 'test' : 'command',
-      reason: 'planner/executor가 제안한 repo-local command를 검증용으로 실행합니다.',
+      reason: 'planner/executor가 제안한 workspace-local command를 검증용으로 실행합니다.',
       riskClassification: 'medium',
       title: `제안된 명령 실행 ${index + 1}`,
-      verificationTarget: 'bounded command가 현재 리포 범위에서 성공하는지 확인합니다.',
+      verificationTarget: 'bounded command가 현재 워크스페이스 범위에서 성공하는지 확인합니다.',
     })),
   ];
 
-  if (!hintedCommands.some((command) => /node\s+--check\s+src\/cli\.mjs/.test(command))) {
-    const verificationStep = buildDefaultVerificationStep(steps.length);
-    verificationStep.reason = '최소 syntax smoke를 실행해 현재 리포의 기본 실행면을 검증합니다.';
-    steps.push(verificationStep);
+  if (!steps.some((step) => ['test', 'build'].includes(step.kind))) {
+    steps.push(buildWorkspaceVerificationStep(workspace.path, steps.length));
   }
 
   return {
@@ -395,14 +483,14 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
     const resolvedCwd = path.resolve(workspacePath, step.cwd || '.');
 
     if (!isInsideRoot(rootDir, resolvedCwd)) {
-      blockedItems.push(`${stepLabel}: cwd가 현재 리포 밖을 가리킵니다 (${resolvedCwd}).`);
+      blockedItems.push(`${stepLabel}: cwd가 현재 워크스페이스 밖을 가리킵니다 (${resolvedCwd}).`);
       continue;
     }
 
     if (step.kind === 'edit') {
       const targetPath = path.resolve(workspacePath, step.filePath || '');
       if (!isInsideRoot(rootDir, targetPath)) {
-        blockedItems.push(`${stepLabel}: 수정 대상 파일이 현재 리포 밖에 있습니다 (${targetPath}).`);
+        blockedItems.push(`${stepLabel}: 수정 대상 파일이 현재 워크스페이스 밖에 있습니다 (${targetPath}).`);
         continue;
       }
       if (!step.filePath) {

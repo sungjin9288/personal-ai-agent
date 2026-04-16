@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -11,6 +12,11 @@ import { runCli } from './cli-test-helpers.mjs';
 
 const repoDir = process.cwd();
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-execution-flow-'));
+const siblingWorkspaceDir = fs.mkdtempSync(path.join(path.dirname(repoDir), 'personal-ai-agent-external-workspace-'));
+
+fs.mkdirSync(path.join(siblingWorkspaceDir, 'src'), { recursive: true });
+fs.writeFileSync(path.join(siblingWorkspaceDir, 'src', 'cli.mjs'), "console.log('external workspace smoke');\n", 'utf8');
+execFileSync('git', ['init'], { cwd: siblingWorkspaceDir, stdio: 'ignore' });
 
 const workspace = runCli({
   rootDir: tempRoot,
@@ -30,6 +36,27 @@ const mission = runCli({
     'Execution Flow Smoke',
     '--objective',
     'Verify the one-time approval lease and execution session lifecycle.',
+  ],
+});
+
+const siblingWorkspace = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'add', siblingWorkspaceDir, '--name', 'external-execution-flow-workspace'],
+});
+
+const siblingMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    siblingWorkspace.id,
+    '--mode',
+    'engineering',
+    '--title',
+    'External Execution Flow Smoke',
+    '--objective',
+    'Verify bounded execution lifecycle for a sibling workspace under the trusted root.',
   ],
 });
 
@@ -131,6 +158,26 @@ assert.equal(
   true,
 );
 
+const siblingFallbackManifest = buildFallbackExecutionManifest({
+  mission: {
+    title: 'Sibling workspace hint filtering smoke',
+  },
+  plannerSteps: [],
+  proposalContent: '`git status --short`',
+  workspace: siblingWorkspace,
+});
+
+assert.equal(
+  siblingFallbackManifest.steps.some((step) => step.command === 'git status --short'),
+  true,
+);
+assert.equal(
+  siblingFallbackManifest.steps.some(
+    (step) => ['test', 'build'].includes(step.kind) && step.command === 'node --check src/cli.mjs',
+  ),
+  true,
+);
+
 const runResult = runCli({
   rootDir: tempRoot,
   args: ['mission', 'run', mission.id, '--provider', 'stub'],
@@ -187,6 +234,43 @@ const executionLogs = service.getExecutionLogs(mission.id, { executionId: execut
 assert.equal(Array.isArray(executionLogs.lines), true);
 assert.match(executionLogs.lines.join('\n'), /execution completed/);
 
+const siblingRunResult = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', siblingMission.id, '--provider', 'stub'],
+});
+
+assert.equal(siblingRunResult.status, 'reviewed');
+
+const siblingPreflight = service.preflightExecution(siblingMission.id, { requestApproval: true });
+assert.equal(siblingPreflight.execution.supported, true);
+assert.equal(siblingPreflight.execution.eligibility, 'pending-approval');
+assert.equal(siblingPreflight.approval.kind, 'execution_lease');
+
+service.resolveApproval(siblingPreflight.approval.id, {
+  decision: 'approve',
+  reason: 'Sibling workspace execution flow smoke approves one bounded execution session.',
+});
+
+const siblingStartResult = service.startExecution(siblingMission.id);
+assert.equal(siblingStartResult.execution.status, 'running');
+
+let siblingFinalStatus = service.getExecutionStatus(siblingMission.id);
+for (let index = 0; index < 40; index += 1) {
+  if (siblingFinalStatus.execution.latestExecutionSession?.status !== 'running') {
+    break;
+  }
+  await delay(200);
+  siblingFinalStatus = service.getExecutionStatus(siblingMission.id);
+}
+
+const siblingExecutionSession = siblingFinalStatus.execution.latestExecutionSession;
+assert.ok(siblingExecutionSession);
+assert.equal(siblingExecutionSession.status, 'completed');
+assert.equal(siblingExecutionSession.verification.status, 'passed');
+assert.equal(siblingFinalStatus.mission.status, 'completed');
+
+fs.rmSync(siblingWorkspaceDir, { recursive: true, force: true });
+
 console.log(
   JSON.stringify(
     {
@@ -195,6 +279,7 @@ console.log(
       missionId: mission.id,
       approvalId: preflight.approval.id,
       executionSessionId: executionSession.id,
+      siblingExecutionSessionId: siblingExecutionSession.id,
       verificationStatus: executionSession.verification.status,
       changedFileCount: executionSession.changedFiles.length,
     },

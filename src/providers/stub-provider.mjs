@@ -1,4 +1,5 @@
 import { loadAgentTemplate } from '../agents/loader.mjs';
+import { buildWorkspaceInspectStep, buildWorkspaceVerificationStep } from '../core/execution-utils.mjs';
 
 function joinBullets(items, fallback) {
   const list = Array.isArray(items) ? items.filter(Boolean) : [];
@@ -249,7 +250,7 @@ ${joinBullets(adaptation.adaptationNotes, 'No prior mission memory influenced th
   };
 }
 
-function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries, attachments = [] }) {
+function buildExecutorOutput({ mission, workspace, pack, previousOutputs, memoryEntries, attachments = [] }) {
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
   const forceRubricFail = mission.constraints.includes('force-rubric-fail');
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
@@ -295,28 +296,7 @@ function buildExecutorOutput({ mission, pack, previousOutputs, memoryEntries, at
     adaptationNotes,
     executionManifest: {
       summary: `${mission.title}에 대한 bounded execution manifest`,
-      steps: [
-        {
-          kind: 'inspect',
-          title: '현재 워크트리 상태 확인',
-          reason: '실행 전 현재 리포 변경 상태를 먼저 기록합니다.',
-          cwd: '.',
-          command: 'git status --short',
-          expectedOutputs: ['현재 워크트리 변경 상태'],
-          verificationTarget: '실행 전 상태가 로그에 남아야 합니다.',
-          riskClassification: 'low',
-        },
-        {
-          kind: 'test',
-          title: 'CLI syntax smoke',
-          reason: '현재 리포의 기본 CLI surface가 parse 가능한지 확인합니다.',
-          cwd: '.',
-          command: 'node --check src/cli.mjs',
-          expectedOutputs: ['node --check success'],
-          verificationTarget: 'src/cli.mjs syntax parse must succeed.',
-          riskClassification: 'low',
-        },
-      ],
+      steps: [buildWorkspaceInspectStep(workspace.path, 0), buildWorkspaceVerificationStep(workspace.path, 1)],
     },
     nextAction: pack.riskProfile.requiresApproval
       ? 'Pause for approval before any workspace mutation.'

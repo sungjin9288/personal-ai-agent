@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T06:49:00.000Z","id":"doclog_20260416064900_workspace_execution_root","type":"devlog","updatedAt":"2026-04-16T06:49:00.000Z"} -->
+## 2026-04-16 Trusted Workspace Execution Pass
+
+- date: 2026-04-16T06:49:00.000Z
+- widened the execution-capable gate from the single `personal-ai-agent` repo to the trusted personal workspace root so sibling repos under `/Users/sungjin/dev/personal` can now use the same `preflight -> approval lease -> execution session` flow
+- moved execution policy and edit-path validation to the selected workspace root, and made fallback/stub execution manifests workspace-aware so non-default repos no longer assume `src/cli.mjs` from the current project
+- added sibling-workspace coverage to `smoke:execution-flow` and removed the empty-repo `git HEAD` warning by switching branch detection to `git symbolic-ref --short HEAD` before falling back to `rev-parse`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T08:45:00.000Z","id":"doclog_20260416084500_8f3372","type":"devlog","updatedAt":"2026-04-16T08:45:00.000Z"} -->
 ## 2026-04-16 Mission Attachment Public Contract Smoke Pass
 

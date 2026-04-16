@@ -366,7 +366,7 @@ Artifact rules:
         "title": "what this step does",
         "reason": "why this step is needed",
         "cwd": ".",
-        "command": "repo-local shell command for inspect/command/test/build steps",
+        "command": "workspace-local shell command for inspect/command/test/build steps",
         "filePath": "relative/path for edit steps",
         "operation": "append | replace | write",
         "findText": "required when operation is replace",
@@ -385,7 +385,7 @@ Artifact rules:
 - include all required sections exactly once
 - required sections: ${pack.requiredSections.join(', ')}
 - Next Action must name the next owner or the next review step
-- executionManifest is required for engineering mode and must stay repo-local
+- executionManifest is required for engineering mode and must stay workspace-local
 - do not include sudo, destructive git reset/checkout, repo-external paths, or background daemon commands`;
   }
 
@@ -597,7 +597,7 @@ function buildEngineeringDiagnosisSection(input, summaryText) {
   const objective = normalizeText(input?.mission?.objective, summaryText || 'Clarify the bounded engineering objective.');
   return [
     `- Objective: ${objective}`,
-    '- Confirm the smallest repo-local surface required to satisfy the mission.',
+    '- Confirm the smallest workspace-local surface required to satisfy the mission.',
     '- Keep direct workspace mutation behind an explicit approval gate.',
   ].join('\n');
 }
@@ -625,7 +625,7 @@ function buildEngineeringRiskNotes(input) {
   const workspacePath = normalizeText(input?.workspace?.path, 'the target workspace');
   return [
     '- Direct workspace mutation remains blocked until approval is granted.',
-    `- Any shell execution must stay repo-local to ${workspacePath}.`,
+    `- Any shell execution must stay workspace-local to ${workspacePath}.`,
     '- Keep validation deterministic and bounded before any rerun or escalation.',
   ].join('\n');
 }
