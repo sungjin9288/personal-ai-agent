@@ -91,9 +91,9 @@ const specialistMission = runCli({
     '--title',
     'Maintenance history specialist follow-up reminder',
     '--objective',
-    'Create one failed specialist branch that becomes due before maintenance history runs.',
+    'Create one failed post-triad specialist branch that becomes due before maintenance history runs.',
     '--constraints',
-    'parallel-specialists:research,implementation|parallel-fail:implementation',
+    'parallel-specialists:design,documentation|parallel-fail:documentation',
   ],
 });
 
@@ -135,7 +135,7 @@ writeState((state) => {
     return escalation;
   });
   state.agentRuns = state.agentRuns.map((agentRun) => {
-    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'documentation' && agentRun.status === 'failed') {
       return {
         ...agentRun,
         endedAt: overdueTimestamp,

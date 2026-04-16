@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-16T06:55:00.000Z","id":"doclog_20260416065500_7fe52a","type":"devlog","updatedAt":"2026-04-16T06:55:00.000Z"} -->
+## 2026-04-16 Maintenance Post-Triad Coverage Pass
+
+- date: 2026-04-16T06:55:00.000Z
+- updated `smoke-action-maintenance` and `smoke-maintenance-history` so the specialist reminder origin runs through the `documentation` lane instead of the older `implementation` example, which proves maintenance sweep and maintenance history aggregate the same follow-up pressure for a post-triad specialist lane
+- kept the assertions focused on existing reminder, remediation route, and affected mission breadth contracts so the change validates coverage breadth without changing maintenance runtime behavior
+- left provider/runtime logic and mutable release artifacts untouched, limiting the change to deterministic maintenance regression coverage and operator-facing documentation
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T06:40:00.000Z","id":"doclog_20260416064000_0bc7f4","type":"devlog","updatedAt":"2026-04-16T06:40:00.000Z"} -->
 ## 2026-04-16 Operator Timeline Post-Triad Coverage Pass
 

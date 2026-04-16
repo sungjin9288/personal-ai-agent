@@ -91,9 +91,9 @@ const specialistMission = runCli({
     '--title',
     'Maintenance specialist follow-up reminder',
     '--objective',
-    'Create one failed specialist branch that becomes due for maintenance reminder sweep.',
+    'Create one failed post-triad specialist branch that becomes due for maintenance reminder sweep.',
     '--constraints',
-    'parallel-specialists:research,implementation|parallel-fail:implementation',
+    'parallel-specialists:design,documentation|parallel-fail:documentation',
   ],
 });
 
@@ -132,7 +132,7 @@ writeState((state) => {
     return escalation;
   });
   state.agentRuns = state.agentRuns.map((agentRun) => {
-    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'implementation' && agentRun.status === 'failed') {
+    if (agentRun.missionId === specialistMission.id && agentRun.specialistKind === 'documentation' && agentRun.status === 'failed') {
       return {
         ...agentRun,
         endedAt: overdueTimestamp,
@@ -240,7 +240,7 @@ assert.equal(maintenance.specialistFollowUpReminders.summary.remindedCount, 1);
 assert.equal(maintenance.specialistFollowUpReminders.summary.retryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(maintenance.specialistFollowUpReminders.summary.remediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenance.specialistFollowUpReminders.items[0].missionId, specialistMission.id);
-assert.equal(maintenance.specialistFollowUpReminders.items[0].specialistKind, 'implementation');
+assert.equal(maintenance.specialistFollowUpReminders.items[0].specialistKind, 'documentation');
 assert.equal(maintenance.summary.dueCandidateCountTotal, 3);
 assert.equal(maintenance.summary.escalationRemindedCount, 1);
 assert.equal(maintenance.summary.ownerHandoffRemindedCount, 1);
