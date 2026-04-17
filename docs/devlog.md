@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T05:50:00.000Z","id":"doclog_20260417055000_handoff_result_summary","type":"devlog","updatedAt":"2026-04-17T05:50:00.000Z"} -->
+## 2026-04-17 Handoff Result Summary Pass
+
+- date: 2026-04-17T05:50:00.000Z
+- promoted fresh handoff verification from assertion-only coverage into surfaced smoke output by collecting per-session result summaries for copy, direct-fallback, and focused-fallback reopen paths
+- final browser E2E JSON now includes source type, source label, fallback/copy session label, and per-session console/page error counts, so the smoke artifact itself shows which handoff sessions were verified
+- updated the README smoke note so handoff session summary output is part of the documented verification contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T05:35:00.000Z","id":"doclog_20260417053500_handoff_session_error_guard","type":"devlog","updatedAt":"2026-04-17T05:35:00.000Z"} -->
 ## 2026-04-17 Handoff Session Error Guard Pass
 

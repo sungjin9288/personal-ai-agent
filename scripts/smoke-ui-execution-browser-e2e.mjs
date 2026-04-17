@@ -18,6 +18,7 @@ fs.rmSync(screenshotPath, { force: true });
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
+const handoffSessionResults = [];
 const serverOutput = { stderr: '', stdout: '' };
 const browserGuardScript = `async (page) => {
   page.__codexConsoleErrors = page.__codexConsoleErrors || [];
@@ -799,6 +800,17 @@ try {
     if (retrievalFocusState.sourceType === 'attachment') {
       assert.equal(handoffState.attachmentFocused, true, JSON.stringify(handoffState));
     }
+
+    const handoffSummary = {
+      attachmentFocused: handoffState.attachmentFocused,
+      consoleErrors: handoffState.consoleErrors.length,
+      pageErrors: handoffState.pageErrors.length,
+      sessionLabel,
+      sourceLabel: retrievalFocusState.sourceLabel,
+      sourceType: retrievalFocusState.sourceType,
+    };
+    handoffSessionResults.push(handoffSummary);
+    return handoffSummary;
   };
 
   verifyFreshHandoffSession({
@@ -918,6 +930,7 @@ try {
       {
         browserConsoleErrors: browserErrorState.consoleErrors.length,
         browserPageErrors: browserErrorState.pageErrors.length,
+        handoffSessionResults,
         ok: true,
         mode: 'ui-execution-browser-e2e',
         port,
