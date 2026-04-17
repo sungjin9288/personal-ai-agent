@@ -17,6 +17,7 @@ fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(screenshotPath, { force: true });
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
+const handoffSessionId = `h${Date.now().toString(36).slice(-5)}`;
 const serverOutput = { stderr: '', stdout: '' };
 
 const port = await getFreePort();
@@ -558,7 +559,31 @@ try {
   assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
   assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
   assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
-  assert.equal(retrievalFocusState.copiedLink || retrievalFocusState.promptedLink, retrievalFocusState.reopenedHref);
+  const copiedRetrievalUrl = retrievalFocusState.copiedLink || retrievalFocusState.promptedLink;
+  assert.equal(copiedRetrievalUrl, retrievalFocusState.reopenedHref);
+
+  console.error('[smoke-ui-execution-browser-e2e] verify retrieval source handoff session');
+  runPw(['open', copiedRetrievalUrl], { session: handoffSessionId });
+  const handoffState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => {
+        const params = new URL(window.location.href).searchParams;
+        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+      }, null, { timeout: 15000 });
+      return {
+        activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+        focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+        href: page.url(),
+      };
+    }`,
+  ], { session: handoffSessionId });
+  assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
+  assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+  assert.equal(handoffState.href, copiedRetrievalUrl);
+  assert.match(handoffState.focusBanner, /현재 retrieval source focus/);
+  assert.match(handoffState.activeChip, /현재 ·/);
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([
@@ -657,6 +682,9 @@ try {
   try {
     runPw(['close']);
   } catch {}
+  try {
+    runPw(['close'], { session: handoffSessionId });
+  } catch {}
 
   if (!serverProcess.killed) {
     serverProcess.kill('SIGTERM');
@@ -684,8 +712,8 @@ function runCli({ rootDir, args }) {
   return stdout ? JSON.parse(stdout) : null;
 }
 
-function runPw(args) {
-  const result = spawnSync('npx', [...playwrightArgsBase, '--session', sessionId, ...args], {
+function runPw(args, { session = sessionId } = {}) {
+  const result = spawnSync('npx', [...playwrightArgsBase, '--session', session, ...args], {
     cwd: repoDir,
     encoding: 'utf8',
     env: process.env,
@@ -698,8 +726,8 @@ function runPw(args) {
   return String(result.stdout || '').trim();
 }
 
-function runPwJson(args) {
-  const stdout = runPw(args);
+function runPwJson(args, { session = sessionId } = {}) {
+  const stdout = runPw(args, { session });
   if (!stdout) {
     return null;
   }

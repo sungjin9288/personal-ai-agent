@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T03:05:00.000Z","id":"doclog_20260417030500_retrieval_focus_fresh_browser_handoff","type":"devlog","updatedAt":"2026-04-17T03:05:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Fresh Browser Handoff Pass
+
+- date: 2026-04-17T03:05:00.000Z
+- tightened the retrieval handoff browser contract so the copied source link is no longer validated only inside the original page session; the smoke now opens the copied URL in a second browser session and expects the same active chip plus harness focus banner to restore there as well
+- kept the stronger verification inside the existing execution browser smoke so shared retrieval links are proven across page reload, deep-link reopen, and fresh browser entry without creating a parallel suite
+- updated the README smoke note to reflect that fresh browser handoff is now part of the end-to-end browser coverage
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T02:50:00.000Z","id":"doclog_20260417025000_retrieval_focus_copy_handoff","type":"devlog","updatedAt":"2026-04-17T02:50:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Copy Handoff Pass
 
