@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T04:50:00.000Z","id":"doclog_20260417045000_retrieval_memory_fallback_parity","type":"devlog","updatedAt":"2026-04-17T04:50:00.000Z"} -->
+## 2026-04-17 Retrieval Memory Fallback Parity Pass
+
+- date: 2026-04-17T04:50:00.000Z
+- removed the attachment-only assumption from retrieval prompt fallback smoke so both memory and attachment sources now exercise direct-chip fallback and focused-copy fallback under the same browser contract
+- extended the fresh browser handoff reopen checks to the memory fallback URLs as well, keeping source parity between lexical memory evidence and attachment evidence
+- updated the README smoke note so fallback verification is documented as a shared retrieval-source contract rather than an attachment-specific exception
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T04:35:00.000Z","id":"doclog_20260417043500_retrieval_fallback_handoff_reopen","type":"devlog","updatedAt":"2026-04-17T04:35:00.000Z"} -->
 ## 2026-04-17 Retrieval Fallback Handoff Reopen Pass
 
