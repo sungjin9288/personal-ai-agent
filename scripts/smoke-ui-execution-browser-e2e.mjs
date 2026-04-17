@@ -924,13 +924,56 @@ try {
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
   assert.deepEqual(browserErrorState.pageErrors, [], JSON.stringify(browserErrorState));
+  const normalizedHandoffSessionResults = [...handoffSessionResults].sort((left, right) => {
+    const leftKey = `${left.sourceType}:${left.sessionLabel}`;
+    const rightKey = `${right.sourceType}:${right.sessionLabel}`;
+    return leftKey.localeCompare(rightKey);
+  });
+  const expectedSessionLabels = ['copy', 'direct-fallback', 'focused-fallback'];
+  const expectedSourceTypes = ['attachment', 'memory'];
+  for (const sourceType of expectedSourceTypes) {
+    for (const sessionLabel of expectedSessionLabels) {
+      assert.equal(
+        normalizedHandoffSessionResults.some(
+          (entry) => entry.sourceType === sourceType && entry.sessionLabel === sessionLabel,
+        ),
+        true,
+        JSON.stringify({ normalizedHandoffSessionResults, sessionLabel, sourceType }),
+      );
+    }
+  }
+  const handoffCoverageSummary = normalizedHandoffSessionResults.reduce(
+    (summary, entry) => {
+      summary.errorFreeSessions += entry.consoleErrors === 0 && entry.pageErrors === 0 ? 1 : 0;
+      summary.bySessionLabel[entry.sessionLabel] = (summary.bySessionLabel[entry.sessionLabel] || 0) + 1;
+      if (!summary.bySourceType[entry.sourceType]) {
+        summary.bySourceType[entry.sourceType] = {
+          attachmentFocusedCount: 0,
+          sessionLabels: [],
+          totalSessions: 0,
+        };
+      }
+      summary.bySourceType[entry.sourceType].attachmentFocusedCount += entry.attachmentFocused ? 1 : 0;
+      summary.bySourceType[entry.sourceType].sessionLabels.push(entry.sessionLabel);
+      summary.bySourceType[entry.sourceType].totalSessions += 1;
+      summary.totalSessions += 1;
+      return summary;
+    },
+    {
+      bySessionLabel: {},
+      bySourceType: {},
+      errorFreeSessions: 0,
+      totalSessions: 0,
+    },
+  );
 
   console.log(
     JSON.stringify(
       {
         browserConsoleErrors: browserErrorState.consoleErrors.length,
         browserPageErrors: browserErrorState.pageErrors.length,
-        handoffSessionResults,
+        handoffCoverageSummary,
+        handoffSessionResults: normalizedHandoffSessionResults,
         ok: true,
         mode: 'ui-execution-browser-e2e',
         port,

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T09:00:00.000Z","id":"doclog_20260418090000_handoff_coverage_summary","type":"devlog","updatedAt":"2026-04-18T09:00:00.000Z"} -->
+## 2026-04-18 Handoff Coverage Summary Pass
+
+- date: 2026-04-18T09:00:00.000Z
+- normalized handoff session output ordering in `smoke-ui-execution-browser-e2e` and added an explicit `handoffCoverageSummary` aggregate so the final JSON no longer requires manual counting to understand which reopen paths were verified
+- added expected matrix assertions for `memory` and `attachment` across `copy`, `direct-fallback`, and `focused-fallback`, turning the surfaced summary into a checked coverage contract instead of a passive log
+- updated the README smoke note so handoff coverage summary is part of the documented browser verification output
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T05:50:00.000Z","id":"doclog_20260417055000_handoff_result_summary","type":"devlog","updatedAt":"2026-04-17T05:50:00.000Z"} -->
 ## 2026-04-17 Handoff Result Summary Pass
 
