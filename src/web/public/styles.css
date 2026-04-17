@@ -780,7 +780,13 @@ button {
 }
 
 .detail-toolbar-actions.is-visible.is-compact .detail-primary-nav {
+  width: auto;
+  flex: 0 1 auto;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .detail-primary-nav.is-expanded {
   width: 100%;
+  flex-basis: 100%;
 }
 
 .detail-toolbar-actions.is-visible.is-compact .primary-button,
@@ -792,6 +798,12 @@ button {
 
 .detail-toolbar-actions.is-visible.is-compact .detail-toolbar-aux {
   order: 3;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .detail-primary-nav-button {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
 }
 
 .workspace-shell.is-output-focus .detail-tab {

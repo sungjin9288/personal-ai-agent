@@ -25,6 +25,7 @@ const state = {
   missionTimeline: null,
   missions: [],
   outputMissionSummaryExpanded: false,
+  outputPrimaryTabsExpanded: false,
   outputRailCollapsed: true,
   outputSecondaryTabsExpanded: false,
   outputSupportExpanded: false,
@@ -1749,6 +1750,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-primary-tabs') {
+        toggleOutputPrimaryTabsExpanded();
+        return;
+      }
+
       if (action === 'toggle-output-secondary-tabs') {
         toggleOutputSecondaryTabsExpanded();
         return;
@@ -2014,6 +2020,15 @@ function toggleOutputSupportExpanded(forceValue = null) {
   renderOutputCloseout();
 }
 
+function toggleOutputPrimaryTabsExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputPrimaryTabsExpanded = forceValue;
+  } else {
+    state.outputPrimaryTabsExpanded = !state.outputPrimaryTabsExpanded;
+  }
+  renderDetailToolbarActions();
+}
+
 function toggleOutputSecondaryTabsExpanded(forceValue = null) {
   if (typeof forceValue === 'boolean') {
     state.outputSecondaryTabsExpanded = forceValue;
@@ -2087,6 +2102,9 @@ function getDetailTabMeta() {
 
 function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeDetailTab = tabId;
+  if (state.activeStep === 'step-output' && ['artifacts', 'runs', 'reviews'].includes(tabId)) {
+    state.outputPrimaryTabsExpanded = false;
+  }
   if (state.activeStep === 'step-output' && ['config', 'harness', 'release'].includes(tabId)) {
     state.outputSecondaryTabsExpanded = true;
   }
@@ -2119,6 +2137,8 @@ function renderDetailToolbarActions() {
   const primaryTabs = detailTabMeta.tabs.filter((tab) => tab.isPrimary);
   const secondaryTabs = detailTabMeta.tabs.filter((tab) => tab.isSecondary);
   const supportCollapsed = !state.outputSupportExpanded;
+  const visiblePrimaryTabs =
+    supportCollapsed && !state.outputPrimaryTabsExpanded ? primaryTabs.filter((tab) => tab.isActive) : primaryTabs;
   elements.detailToolbarActions.classList.add('is-visible');
   elements.detailToolbarActions.classList.toggle('is-compact', supportCollapsed);
   elements.detailToolbarActions.innerHTML = `
@@ -2140,8 +2160,8 @@ function renderDetailToolbarActions() {
           </div>
         `
     }
-    <div class="detail-primary-nav" aria-label="주 탭">
-      ${primaryTabs
+    <div class="detail-primary-nav${supportCollapsed && state.outputPrimaryTabsExpanded ? ' is-expanded' : ''}" aria-label="주 탭">
+      ${visiblePrimaryTabs
         .map(
           (tab) => `
             <button
@@ -2161,6 +2181,9 @@ function renderDetailToolbarActions() {
           ? `
             <button class="primary-button" type="button" data-ui-action="toggle-output-support">
               패널
+            </button>
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs">
+              ${escapeHtml(state.outputPrimaryTabsExpanded ? '탭 닫기' : '탭')}
             </button>
             <button class="ghost-button" type="button" data-ui-action="toggle-output-tools">
               ${escapeHtml(state.outputToolbarToolsExpanded ? '도구 닫기' : '도구')}
