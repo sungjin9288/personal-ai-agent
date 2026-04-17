@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T04:05:00.000Z","id":"doclog_20260417040500_retrieval_copy_prompt_fallback","type":"devlog","updatedAt":"2026-04-17T04:05:00.000Z"} -->
+## 2026-04-17 Retrieval Copy Prompt Fallback Pass
+
+- date: 2026-04-17T04:05:00.000Z
+- hardened the execution browser smoke so retrieval source handoff is now proven even when `navigator.clipboard.writeText` fails and the UI falls back to `window.prompt`
+- used the attachment retrieval chip as the representative fallback case, and verified that the prompt default value still matches the later harness deep-link while the chip label stays at `링크` instead of incorrectly switching to `복사됨`
+- updated the README smoke note so prompt fallback coverage is part of the documented browser verification contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T03:50:00.000Z","id":"doclog_20260417035000_retrieval_copy_feedback","type":"devlog","updatedAt":"2026-04-17T03:50:00.000Z"} -->
 ## 2026-04-17 Retrieval Copy Feedback Pass
 

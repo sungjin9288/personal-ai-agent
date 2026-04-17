@@ -507,6 +507,57 @@ try {
             sourceType: sourceMeta.sourceType,
           };
         }
+        const fallbackState =
+          sourceMeta.sourceType === 'attachment'
+            ? await page.evaluate(async ({ targetSourceLabel, targetSourceType }) => {
+                const setClipboard = (clipboardValue) => {
+                  try {
+                    Object.defineProperty(window.navigator, 'clipboard', {
+                      configurable: true,
+                      value: clipboardValue,
+                    });
+                  } catch {
+                    window.navigator.clipboard = clipboardValue;
+                  }
+                };
+                setClipboard({
+                  writeText: async () => {
+                    throw new Error('clipboard-blocked');
+                  },
+                });
+                window.__lastClipboardText = '';
+                window.__lastPrompt = '';
+                const targetCopyButton = Array.from(document.querySelectorAll('[data-retrieval-source-copy="true"]')).find(
+                  (button) =>
+                    button.getAttribute('data-ui-source-type') === targetSourceType &&
+                    button.getAttribute('data-ui-source-label') === targetSourceLabel,
+                );
+                targetCopyButton?.click();
+                await new Promise((resolve) => setTimeout(resolve, 50));
+                let fallbackPromptedLink = '';
+                try {
+                  fallbackPromptedLink = JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+                } catch {
+                  fallbackPromptedLink = '';
+                }
+                const fallbackCopyLabel = targetCopyButton?.textContent || '';
+                const fallbackClipboardText = window.__lastClipboardText || '';
+                setClipboard({
+                  writeText: async (value) => {
+                    window.__lastClipboardText = String(value || '');
+                  },
+                });
+                return {
+                  fallbackClipboardText,
+                  fallbackCopyLabel,
+                  fallbackPromptedLink,
+                };
+              }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType })
+            : {
+                fallbackClipboardText: '',
+                fallbackCopyLabel: '',
+                fallbackPromptedLink: '',
+              };
         await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
           window.__lastClipboardText = '';
           window.__lastPrompt = '';
@@ -582,6 +633,9 @@ try {
           copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
           directCopiedLink,
           directCopyLabel,
+          fallbackClipboardText: fallbackState.fallbackClipboardText,
+          fallbackCopyLabel: fallbackState.fallbackCopyLabel,
+          fallbackPromptedLink: fallbackState.fallbackPromptedLink,
           focusBanner: reloadedState.focusBanner,
           href: reloadedState.href,
           initialHref: focusedHref,
@@ -629,6 +683,9 @@ try {
     assert.match(retrievalFocusState.reopenedCopyLabel, /복사됨/);
     if (sourceType === 'attachment') {
       assert.equal(retrievalFocusState.attachmentFocused, true, JSON.stringify(retrievalFocusState));
+      assert.equal(retrievalFocusState.fallbackClipboardText, '', JSON.stringify(retrievalFocusState));
+      assert.equal(retrievalFocusState.fallbackPromptedLink, retrievalFocusState.reopenedHref);
+      assert.equal(retrievalFocusState.fallbackCopyLabel.trim(), '링크');
       assert.equal(retrievalFocusState.reopenedAttachmentFocused, true, JSON.stringify(retrievalFocusState));
     }
 
