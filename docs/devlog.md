@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T02:35:00.000Z","id":"doclog_20260417023500_retrieval_focus_handoff_e2e","type":"devlog","updatedAt":"2026-04-17T02:35:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Handoff E2E Pass
+
+- date: 2026-04-17T02:35:00.000Z
+- expanded the execution browser smoke so retrieval focus is no longer verified only across reloads; the same `hstype` and `hsource` deep-link is now reopened from the root URL and must restore the active chip plus the harness focus banner again
+- kept the coverage inside the main browser smoke to prove that shared retrieval links survive a fresh entry path without adding another browser suite or a second verification harness
+- updated the README smoke bullet so the browser contract explicitly includes direct deep-link re-entry in addition to reload restore
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T02:20:00.000Z","id":"doclog_20260417022000_retrieval_focus_browser_e2e","type":"devlog","updatedAt":"2026-04-17T02:20:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Browser E2E Pass
 

@@ -495,11 +495,26 @@ try {
         const params = new URL(window.location.href).searchParams;
         return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
       }, null, { timeout: 15000 });
-      return {
+      const reloadedState = {
         activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
         focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
         href: page.url(),
+      };
+      await page.goto(${JSON.stringify(baseUrl)}, { waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => Boolean(document.querySelector('#workspace-select')), null, { timeout: 15000 });
+      await page.goto(focusedHref, { waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => {
+        const params = new URL(window.location.href).searchParams;
+        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+      }, null, { timeout: 15000 });
+      return {
+        activeChip: reloadedState.activeChip,
+        focusBanner: reloadedState.focusBanner,
+        href: reloadedState.href,
         initialHref: focusedHref,
+        reopenedChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+        reopenedFocusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+        reopenedHref: page.url(),
         sourceLabel: sourceMeta.sourceLabel,
         sourceType: sourceMeta.sourceType,
       };
@@ -512,6 +527,10 @@ try {
   assert.equal(new URL(retrievalFocusState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
   assert.match(retrievalFocusState.focusBanner, /현재 retrieval source focus/);
   assert.match(retrievalFocusState.activeChip, /현재 ·/);
+  assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hstype'), retrievalFocusState.sourceType);
+  assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+  assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
+  assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([
