@@ -59,6 +59,7 @@ try {
     `async (page) => {
       const installGuards = () => {
         window.__lastAlert = '';
+        window.__lastClipboardText = '';
         window.__lastConfirm = '';
         window.__lastPrompt = '';
         window.alert = (message) => {
@@ -75,6 +76,19 @@ try {
           });
           return typeof defaultValue === 'string' ? defaultValue : '';
         };
+        const clipboard = {
+          writeText: async (value) => {
+            window.__lastClipboardText = String(value || '');
+          },
+        };
+        try {
+          Object.defineProperty(window.navigator, 'clipboard', {
+            configurable: true,
+            value: clipboard,
+          });
+        } catch {
+          window.navigator.clipboard = clipboard;
+        }
       };
       await page.addInitScript(installGuards);
       await page.evaluate(installGuards);
@@ -507,11 +521,24 @@ try {
         const params = new URL(window.location.href).searchParams;
         return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
       }, null, { timeout: 15000 });
+      await page.evaluate(() => {
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-ui-action="copy-retrieval-source-link"]')?.click();
+      });
       return {
         activeChip: reloadedState.activeChip,
+        copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
         focusBanner: reloadedState.focusBanner,
         href: reloadedState.href,
         initialHref: focusedHref,
+        promptedLink: await page.evaluate(() => {
+          try {
+            return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+          } catch {
+            return '';
+          }
+        }),
         reopenedChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
         reopenedFocusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
         reopenedHref: page.url(),
@@ -531,6 +558,7 @@ try {
   assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
   assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
   assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
+  assert.equal(retrievalFocusState.copiedLink || retrievalFocusState.promptedLink, retrievalFocusState.reopenedHref);
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([

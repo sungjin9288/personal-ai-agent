@@ -109,7 +109,7 @@ npm run ui
 - `npm run smoke:retrieval-memory`는 relevant memory/attachment snippet만 `Retrieved Context` 섹션으로 승격되고 무관한 문장은 제외되는지 manager prompt와 manager context 기준으로 검증함
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
 - `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, `AI가 지금 읽는 자료` 패널, specialist lane style contract가 모두 살아 있는지 검증함
-- `npm run smoke:ui-execution-browser-e2e`는 실제 브라우저에서 미션 생성, retrieval input seed, compare chip 기반 retrieval focus URL 복원, direct deep-link 재진입, execution approval/start, release tab navigation, browser history 복원, screenshot artifact 저장까지 한 번에 검증함
+- `npm run smoke:ui-execution-browser-e2e`는 실제 브라우저에서 미션 생성, retrieval input seed, compare chip 기반 retrieval focus URL 복원, retrieval source 링크 복사, direct deep-link 재진입, execution approval/start, release tab navigation, browser history 복원, screenshot artifact 저장까지 한 번에 검증함
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
 - `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, text-first retrieval memory, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 주며, `다음 실행 retrieval preview`로 snippet transparency도 함께 보여 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인

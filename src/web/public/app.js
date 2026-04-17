@@ -1742,7 +1742,8 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
               }
               ${
                 activeFocus
-                  ? `<button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">현재 source 해제</button>`
+                  ? `<button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeFocus.type)}" data-ui-source-label="${escapeHtml(activeFocus.label)}">현재 source 링크 복사</button>
+                     <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">현재 source 해제</button>`
                   : ''
               }
             </div>`
@@ -1988,6 +1989,14 @@ function wireQuickActions(scope = document) {
 
       if (action === 'clear-retrieval-source-focus') {
         clearRetrievalSourceFocus({ historyMode: 'push' });
+        return;
+      }
+
+      if (action === 'copy-retrieval-source-link') {
+        void copyRetrievalSourceLink({
+          sourceLabel: button.dataset.uiSourceLabel || '',
+          sourceType: button.dataset.uiSourceType || '',
+        });
         return;
       }
 
@@ -2761,6 +2770,33 @@ async function copyReleaseTriageLink({
   await copyUiLink(triageUrl, {
     promptMessage: '현재 release triage 링크를 복사하세요.',
     shownNotice: '현재 release triage 링크를 표시했습니다.',
+    successNotice,
+  });
+}
+
+async function copyRetrievalSourceLink({
+  sourceType = state.retrievalSourceFocusType,
+  sourceLabel = state.retrievalSourceFocusLabel,
+  successNotice = '현재 retrieval source 링크를 복사했습니다.',
+} = {}) {
+  const normalizedType = getSanitizedRetrievalSourceType(sourceType);
+  const normalizedLabel = normalizeUiParam(sourceLabel);
+
+  if (!state.selectedMissionId || !normalizedType || !normalizedLabel) {
+    setUiNotice('복사할 retrieval source 링크가 없습니다.');
+    return;
+  }
+
+  const retrievalUrl = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'harness',
+    retrievalSourceLabel: normalizedLabel,
+    retrievalSourceType: normalizedType,
+    stepId: 'step-setup',
+  })}`;
+
+  await copyUiLink(retrievalUrl, {
+    promptMessage: '현재 retrieval source 링크를 복사하세요.',
+    shownNotice: '현재 retrieval source 링크를 표시했습니다.',
     successNotice,
   });
 }
@@ -5126,6 +5162,7 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
+              <button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">현재 source 링크 복사</button>
               <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
             </div>
           </div>`
@@ -5294,6 +5331,7 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
+              <button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">현재 source 링크 복사</button>
               <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
             </div>
           </div>`

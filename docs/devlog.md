@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T02:50:00.000Z","id":"doclog_20260417025000_retrieval_focus_copy_handoff","type":"devlog","updatedAt":"2026-04-17T02:50:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Copy Handoff Pass
+
+- date: 2026-04-17T02:50:00.000Z
+- added a dedicated `현재 source 링크 복사` action to retrieval focus callouts so operators can hand off the exact harness-focused retrieval view instead of relying on the generic current-view link
+- extended the execution browser smoke to capture the copied retrieval URL and verify that the UI-generated link matches the reopened deep-link with the same `hstype` and `hsource` state
+- updated the UI contract smoke and README so retrieval source copy remains part of the documented browser verification surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T02:35:00.000Z","id":"doclog_20260417023500_retrieval_focus_handoff_e2e","type":"devlog","updatedAt":"2026-04-17T02:35:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Handoff E2E Pass
 

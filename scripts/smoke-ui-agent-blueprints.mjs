@@ -62,6 +62,8 @@ try {
   assert.equal(appJs.includes('현재 retrieval source focus'), true);
   assert.equal(appJs.includes('clear-retrieval-source-focus'), true);
   assert.equal(appJs.includes('focus 해제'), true);
+  assert.equal(appJs.includes('copy-retrieval-source-link'), true);
+  assert.equal(appJs.includes('현재 source 링크 복사'), true);
   assert.equal(appJs.includes('현재 source 해제'), true);
   assert.equal(appJs.includes('is-active-focus'), true);
   assert.equal(appJs.includes('hstype'), true);
