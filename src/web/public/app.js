@@ -1994,6 +1994,39 @@ function wireQuickActions(scope = document) {
   });
 }
 
+async function openRetrievalArtifact(artifactId, sessionId, { historyMode = 'push' } = {}) {
+  const targetArtifactId = String(artifactId || '').trim();
+  const targetSessionId = String(sessionId || '').trim();
+
+  if (!state.selectedMissionId || !targetArtifactId || !targetSessionId) {
+    return;
+  }
+
+  if (state.selectedSessionId !== targetSessionId) {
+    await selectSession(targetSessionId, {
+      focusRuns: false,
+      preferredArtifactId: targetArtifactId,
+      syncUrl: false,
+    });
+  } else {
+    await loadArtifact(targetArtifactId, { activateTab: false, syncUrl: false });
+  }
+
+  setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
+  setActiveDetailTab('artifacts', { syncUrl: false });
+  writeUiStateToUrl({ historyMode });
+}
+
+function wireRetrievalArtifactButtons(scope = document) {
+  scope.querySelectorAll('[data-retrieval-artifact-open]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const artifactId = String(button.dataset.retrievalArtifactOpen || '').trim();
+      const sessionId = String(button.dataset.retrievalSessionId || '').trim();
+      await openRetrievalArtifact(artifactId, sessionId, { historyMode: 'push' });
+    });
+  });
+}
+
 function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeStep = stepId;
   syncStepViewMode();
@@ -4230,6 +4263,7 @@ function renderOutputStageSummary() {
 
   const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
   const latestSession = state.missionDetail?.summary?.latestSession || null;
+  const latestRetrievalArtifact = state.missionDetail?.harness?.retrieval?.latestArtifact || null;
   const execution = getExecutionStatusPayload();
   const latestExecutionSession = execution?.latestExecutionSession || null;
   const flow = getFlowState();
@@ -4278,9 +4312,15 @@ function renderOutputStageSummary() {
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="toggle-output-support">지원 패널 펼치기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
+          ${
+            latestRetrievalArtifact
+              ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거</button>`
+              : ''
+          }
         </div>
       </div>
     `;
+    wireRetrievalArtifactButtons(elements.outputStageSummary);
     wireQuickActions(elements.outputStageSummary);
     return;
   }
@@ -4350,13 +4390,29 @@ function renderOutputStageSummary() {
             </div>
           `
       }
+      ${
+        latestRetrievalArtifact
+          ? `
+            <div class="harness-callout">
+              <strong>최근 실행 retrieval evidence</strong>
+              <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
+            </div>
+          `
+          : ''
+      }
       <div class="action-row">
         <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
         <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
         <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">검토 상태 보기</button>
+        ${
+          latestRetrievalArtifact
+            ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거 열기</button>`
+            : ''
+        }
       </div>
     </div>
   `;
+  wireRetrievalArtifactButtons(elements.outputStageSummary);
   wireQuickActions(elements.outputStageSummary);
 }
 
@@ -4665,6 +4721,7 @@ function renderHarnessPanel() {
   const loops = harnessSummary.loops || {};
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
+  const latestRetrievalArtifact = retrieval.latestArtifact || null;
   const visibleDocumentEntries = documentBrowse.entries || [];
   const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
   const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
@@ -4922,6 +4979,17 @@ function renderHarnessPanel() {
         <span class="item-meta">snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrieval.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrieval.summary?.attachmentSourceCount || 0))}</span>
       </div>
       ${
+        latestRetrievalArtifact
+          ? `<div class="harness-callout">
+              <strong>최근 실행 retrieval evidence</strong>
+              <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
+              <div class="inline-actions">
+                <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거 열기</button>
+              </div>
+            </div>`
+          : ''
+      }
+      ${
         retrieval.roles?.length
           ? `<div class="tag-list">
               ${retrieval.roles
@@ -5153,6 +5221,7 @@ function renderHarnessPanel() {
   `;
   wireDocumentRowActions();
   wireMissionAttachmentActions();
+  wireRetrievalArtifactButtons(elements.harnessMemory);
   wireMemoryRowActions();
 }
 

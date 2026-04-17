@@ -78,10 +78,12 @@ const missionDetail = service.showMission(mission.id);
 const managerPrompt = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-prompt.md');
 const managerContext = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-context.md');
 const managerRetrieval = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-retrieval.md');
+const latestRetrievalArtifact = latestSession.artifacts.filter((artifact) => artifact.kind === 'retrieval').at(-1);
 
 assert.ok(managerPrompt);
 assert.ok(managerContext);
 assert.ok(managerRetrieval);
+assert.ok(latestRetrievalArtifact);
 
 const managerPromptContent = fs.readFileSync(managerPrompt.path, 'utf8');
 const managerContextContent = fs.readFileSync(managerContext.path, 'utf8');
@@ -114,6 +116,9 @@ assert.match(managerRetrievalContent, /\[attachment\] incident-notes\.md chunk 1
 
 assert.equal(missionDetail.harness?.retrieval?.summary?.ready, true);
 assert.ok((missionDetail.harness?.retrieval?.roles || []).length >= 4);
+assert.equal(missionDetail.harness?.retrieval?.latestArtifact?.id, latestRetrievalArtifact.id);
+assert.equal(missionDetail.harness?.retrieval?.latestArtifact?.sessionId, latestSession.session.id);
+assert.match(String(missionDetail.harness?.retrieval?.latestArtifact?.path || ''), /-retrieval\.md$/);
 assert.equal(
   (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('workspace/fact')),
   true,

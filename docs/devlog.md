@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T00:50:00.000Z","id":"doclog_20260417005000_retrieval_quick_open_surface","type":"devlog","updatedAt":"2026-04-17T00:50:00.000Z"} -->
+## 2026-04-17 Retrieval Quick-Open Surface Pass
+
+- date: 2026-04-17T00:50:00.000Z
+- extended `showMission().harness.retrieval` with `latestArtifact` metadata so the UI can point at the exact retrieval evidence file and owning session without re-deriving that relationship client-side
+- added `retrieval 근거 열기` quick-open controls to both `하네스 > 메모리` and `결과 보기`, reusing the existing session/artifact selection flow so operators can jump from preview state to the concrete `*-retrieval.md` evidence in one action
+- tightened `smoke:retrieval-memory` and `smoke:ui-agent-blueprints` so both the payload contract and served UI wording for the new retrieval quick-open path stay covered
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T00:35:00.000Z","id":"doclog_20260417003500_retrieval_evidence_artifacts","type":"devlog","updatedAt":"2026-04-17T00:35:00.000Z"} -->
 ## 2026-04-17 Retrieval Evidence Artifact Pass
 

@@ -8400,6 +8400,10 @@ function summarizeProviderExecutions(executions) {
     const latestArtifact = missionArtifacts
       .filter((artifact) => ['deliverable', 'execution-handoff', 'approval-resolution', 'reviewer-report'].includes(artifact.kind))
       .at(-1) || null;
+    const latestRetrievalArtifact = missionArtifacts
+      .filter((artifact) => artifact.kind === 'retrieval')
+      .at(-1) || null;
+    const latestRetrievalSession = latestRetrievalArtifact ? store.getSession(latestRetrievalArtifact.sessionId) : null;
     const missionMemoryEntries = store
       .listMemoryEntries({ scope: 'mission', scopeId: mission.id })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -8558,7 +8562,22 @@ function summarizeProviderExecutions(executions) {
         })),
         workspaceCount: workspaceMemoryEntries.length,
       },
-      retrieval: retrievalPreview,
+      retrieval: {
+        ...retrievalPreview,
+        latestArtifact: latestRetrievalArtifact
+          ? {
+              id: latestRetrievalArtifact.id,
+              fileName: latestRetrievalArtifact.fileName,
+              kind: latestRetrievalArtifact.kind,
+              path: latestRetrievalArtifact.path ? path.relative(rootDir, latestRetrievalArtifact.path) : null,
+              role: latestRetrievalArtifact.role || null,
+              sessionId: latestRetrievalArtifact.sessionId,
+              sessionStatus: latestRetrievalSession?.status || null,
+              title: latestRetrievalArtifact.title || latestRetrievalArtifact.fileName || latestRetrievalArtifact.id,
+              updatedAt: latestRetrievalArtifact.createdAt || null,
+            }
+          : null,
+      },
       recommendations,
     };
   }
