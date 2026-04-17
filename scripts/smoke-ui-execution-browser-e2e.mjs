@@ -911,11 +911,11 @@ try {
   );
 } finally {
   try {
-    runPw(['close']);
+    runPw(['close'], { timeoutMs: 5_000 });
   } catch {}
   for (const handoffSessionId of Object.values(handoffSessionIds)) {
     try {
-      runPw(['close'], { session: handoffSessionId });
+      runPw(['close'], { session: handoffSessionId, timeoutMs: 5_000 });
     } catch {}
   }
 
@@ -923,7 +923,7 @@ try {
     serverProcess.kill('SIGTERM');
   }
 
-  await waitForExit(serverProcess);
+  await waitForExit(serverProcess, { timeoutMs: 5_000 });
 }
 
 function runCli({ rootDir, args }) {
@@ -945,12 +945,17 @@ function runCli({ rootDir, args }) {
   return stdout ? JSON.parse(stdout) : null;
 }
 
-function runPw(args, { session = sessionId } = {}) {
+function runPw(args, { session = sessionId, timeoutMs = 60_000 } = {}) {
   const result = spawnSync('npx', [...playwrightArgsBase, '--session', session, ...args], {
     cwd: repoDir,
     encoding: 'utf8',
     env: process.env,
+    timeout: timeoutMs,
   });
+
+  if (result.error?.code === 'ETIMEDOUT') {
+    throw new Error(`playwright-cli timed out (${args.join(' ')}) after ${timeoutMs}ms`);
+  }
 
   if (result.status !== 0) {
     throw new Error(`playwright-cli failed (${args.join(' ')}): ${result.stderr || result.stdout}`);
@@ -1009,12 +1014,27 @@ async function waitForServer(baseUrl, child, serverOutput) {
   throw new Error(`Timed out waiting for UI server. stdout=${serverOutput.stdout} stderr=${serverOutput.stderr}`);
 }
 
-async function waitForExit(child) {
+async function waitForExit(child, { timeoutMs = 5_000 } = {}) {
   if (child.exitCode !== null) {
     return;
   }
 
-  await new Promise((resolve) => {
-    child.once('exit', resolve);
-  });
+  await Promise.race([
+    new Promise((resolve) => {
+      child.once('exit', resolve);
+    }),
+    delay(timeoutMs),
+  ]);
+
+  if (child.exitCode !== null) {
+    return;
+  }
+
+  child.kill('SIGKILL');
+  await Promise.race([
+    new Promise((resolve) => {
+      child.once('exit', resolve);
+    }),
+    delay(1_000),
+  ]);
 }

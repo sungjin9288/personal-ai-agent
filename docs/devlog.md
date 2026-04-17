@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T05:05:00.000Z","id":"doclog_20260417050500_browser_e2e_shutdown_guard","type":"devlog","updatedAt":"2026-04-17T05:05:00.000Z"} -->
+## 2026-04-17 Browser E2E Shutdown Guard Pass
+
+- date: 2026-04-17T05:05:00.000Z
+- added bounded timeout handling to playwright-cli session close and UI server shutdown in `smoke-ui-execution-browser-e2e`, so a successful browser verification run no longer depends on unbounded cleanup waits
+- made `runPw` surface timeout errors explicitly and upgraded `waitForExit` to fall back to `SIGKILL` after a bounded grace period, which keeps the smoke deterministic even when browser teardown stalls
+- kept the retrieval handoff assertions unchanged and focused this pass on post-success termination stability
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T04:50:00.000Z","id":"doclog_20260417045000_retrieval_memory_fallback_parity","type":"devlog","updatedAt":"2026-04-17T04:50:00.000Z"} -->
 ## 2026-04-17 Retrieval Memory Fallback Parity Pass
 
