@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T00:00:00.000Z","id":"doclog_20260417000000_retrieval_memory_and_browser_verification","type":"devlog","updatedAt":"2026-04-17T00:00:00.000Z"} -->
+## 2026-04-17 Retrieval Memory and Browser Verification Pass
+
+- date: 2026-04-17T00:00:00.000Z
+- hardened `smoke:ui-execution-browser-e2e` so the browser verification loop now saves a real screenshot artifact with `page.screenshot(...)` instead of relying on the CLI wrapper path that sometimes skipped capture
+- renamed the setup copy from vague `학습` framing to `지식 주입 + retrieval memory`, and clarified that the current system is text-first lexical retrieval over mission/workspace memory plus text attachments, not fine-tuning, OCR, binary understanding, or vector retrieval
+- added `smoke:retrieval-memory` to prove the runtime now lifts relevant memory and attachment snippets into a dedicated `Retrieved Context` section for manager prompts and manager context artifacts without removing the full memory/attachment sections
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-16T07:18:00.000Z","id":"doclog_20260416071800_operator_ui_density","type":"devlog","updatedAt":"2026-04-16T07:18:00.000Z"} -->
 ## 2026-04-16 Operator UI Density Reduction Pass
 

@@ -101,6 +101,44 @@ const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE = 3_000;
 const MISSION_ATTACHMENT_PREVIEW_CHARS = 280;
+const RETRIEVAL_MAX_ITEMS = 6;
+const RETRIEVAL_MAX_TOTAL_CHARS = 2_400;
+const RETRIEVAL_SNIPPET_MAX_CHARS = 420;
+const RETRIEVAL_ATTACHMENT_CHUNK_CHARS = 900;
+const RETRIEVAL_MIN_TOKEN_LENGTH = 2;
+const RETRIEVAL_STOP_TOKENS = new Set([
+  'about',
+  'after',
+  'again',
+  'and',
+  'before',
+  'context',
+  'deliverable',
+  'execution',
+  'for',
+  'from',
+  'into',
+  'memory',
+  'mission',
+  'mode',
+  'next',
+  'objective',
+  'path',
+  'prompt',
+  'retrieval',
+  'role',
+  'run',
+  'step',
+  'that',
+  'the',
+  'this',
+  'through',
+  'title',
+  'type',
+  'verify',
+  'with',
+  'work',
+]);
 const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
   '.c',
   '.cc',
@@ -128,6 +166,194 @@ const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
   '.yaml',
   '.yml',
 ]);
+
+function normalizeWhitespace(value) {
+  return normalizeText(value).replace(/\s+/g, ' ').trim();
+}
+
+function truncateText(value, maxChars) {
+  const normalized = normalizeWhitespace(value);
+  if (!normalized || normalized.length <= maxChars) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, Math.max(maxChars - 3, 0)).trim()}...`;
+}
+
+function tokenizeRetrievalText(value) {
+  return [...new Set(
+    normalizeText(value)
+      .toLowerCase()
+      .split(/[^0-9a-z\u3131-\u318e\uac00-\ud7a3]+/u)
+      .map((token) => token.trim())
+      .filter((token) => token.length >= RETRIEVAL_MIN_TOKEN_LENGTH && !RETRIEVAL_STOP_TOKENS.has(token)),
+  )];
+}
+
+function splitRetrievalChunks(value, maxChars = RETRIEVAL_ATTACHMENT_CHUNK_CHARS) {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return [];
+  }
+
+  const paragraphs = normalized
+    .split(/\n\s*\n/)
+    .map((paragraph) => normalizeWhitespace(paragraph))
+    .filter(Boolean);
+
+  if (!paragraphs.length) {
+    return [truncateText(normalized, maxChars)].filter(Boolean);
+  }
+
+  const chunks = [];
+  for (const paragraph of paragraphs) {
+    if (paragraph.length <= maxChars) {
+      chunks.push(truncateText(paragraph, maxChars));
+      continue;
+    }
+
+    for (let index = 0; index < paragraph.length; index += maxChars) {
+      chunks.push(truncateText(paragraph.slice(index, index + maxChars), maxChars));
+    }
+  }
+
+  return chunks.filter(Boolean);
+}
+
+function summarizePreviousOutputsForRetrieval(previousOutputs = {}) {
+  const summaries = [];
+
+  for (const [key, value] of Object.entries(previousOutputs)) {
+    if (key === 'specialists') {
+      for (const item of ensureArray(value)) {
+        summaries.push(normalizeText(item?.summaryText));
+        summaries.push(normalizeText(item?.handoff?.currentState));
+      }
+      continue;
+    }
+
+    if (value && typeof value === 'object') {
+      summaries.push(normalizeText(value.summaryText));
+      summaries.push(...normalizeStringList(value.planSteps));
+      summaries.push(...normalizeStringList(value.adaptationNotes));
+      continue;
+    }
+
+    summaries.push(normalizeText(value));
+  }
+
+  return summaries.filter(Boolean).join(' ');
+}
+
+function scoreRetrievalSnippet(snippet, queryTokenSet) {
+  let score = 0;
+
+  for (const token of tokenizeRetrievalText(snippet)) {
+    if (!queryTokenSet.has(token)) {
+      continue;
+    }
+
+    if (token.length >= 8) {
+      score += 4;
+    } else if (token.length >= 5) {
+      score += 3;
+    } else {
+      score += 2;
+    }
+  }
+
+  return score;
+}
+
+function buildRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
+  const queryText = [
+    mission.title,
+    mission.objective,
+    mission.deliverableType,
+    mission.mode,
+    role,
+    providerRole,
+    ensureArray(mission.constraints).join(' '),
+    ensureArray(pack.requiredSections).join(' '),
+    ensureArray(pack.reviewRules)
+      .map((rule) => normalizeText(rule?.description))
+      .join(' '),
+    summarizePreviousOutputsForRetrieval(previousOutputs),
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const queryTokens = tokenizeRetrievalText(queryText);
+  const queryTokenSet = new Set(queryTokens);
+  const candidates = [];
+  let sequence = 0;
+
+  for (const entry of ensureArray(memoryEntries)) {
+    const snippet = truncateText(entry?.content, RETRIEVAL_SNIPPET_MAX_CHARS);
+    if (!snippet) {
+      continue;
+    }
+
+    candidates.push({
+      fileName: null,
+      score: scoreRetrievalSnippet(snippet, queryTokenSet),
+      sequence: sequence += 1,
+      snippet,
+      sourceLabel: `${normalizeText(entry.scope, 'memory')}/${normalizeText(entry.kind, 'note')}`,
+      sourceType: 'memory',
+    });
+  }
+
+  for (const attachment of ensureArray(attachments)) {
+    const fileName = normalizeText(attachment?.fileName, 'attachment');
+    const content = normalizeText(attachment?.promptContent, attachment?.excerpt);
+    const chunks = splitRetrievalChunks(content);
+
+    chunks.forEach((chunk, index) => {
+      candidates.push({
+        chunkIndex: index + 1,
+        fileName,
+        score: scoreRetrievalSnippet(chunk, queryTokenSet),
+        sequence: sequence += 1,
+        snippet: truncateText(chunk, RETRIEVAL_SNIPPET_MAX_CHARS),
+        sourceLabel: fileName,
+        sourceType: 'attachment',
+      });
+    });
+  }
+
+  const rankedCandidates = (candidates.some((candidate) => candidate.score > 0)
+    ? candidates.filter((candidate) => candidate.score > 0)
+    : candidates
+  ).sort((left, right) => right.score - left.score || left.sequence - right.sequence);
+
+  const selected = [];
+  const seenSnippets = new Set();
+  let remainingChars = RETRIEVAL_MAX_TOTAL_CHARS;
+
+  for (const candidate of rankedCandidates) {
+    if (selected.length >= RETRIEVAL_MAX_ITEMS || remainingChars <= 0) {
+      break;
+    }
+
+    const snippet = truncateText(candidate.snippet, Math.min(RETRIEVAL_SNIPPET_MAX_CHARS, remainingChars));
+    if (!snippet || seenSnippets.has(snippet)) {
+      continue;
+    }
+
+    seenSnippets.add(snippet);
+    selected.push({
+      chunkIndex: candidate.chunkIndex || null,
+      fileName: candidate.fileName || null,
+      score: candidate.score,
+      snippet,
+      sourceLabel: candidate.sourceLabel,
+      sourceType: candidate.sourceType,
+    });
+    remainingChars = Math.max(remainingChars - snippet.length, 0);
+  }
+
+  return selected;
+}
 const MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES = ['application/', 'text/'];
 const MISSION_ATTACHMENT_ALLOWED_MIME_TYPES = new Set([
   'application/json',
@@ -6617,6 +6843,15 @@ function summarizeProviderExecutions(executions) {
     outputTitle = null,
     promptFileName = null,
   }) {
+    const retrievalContext = buildRetrievalContext({
+      attachments,
+      memoryEntries,
+      mission,
+      pack,
+      previousOutputs,
+      providerRole,
+      role,
+    });
     const providerInput = {
       attachments,
       role,
@@ -6625,6 +6860,7 @@ function summarizeProviderExecutions(executions) {
       workspace,
       pack,
       memoryEntries,
+      retrievalContext,
       previousOutputs,
       parallelGroupId: normalizeText(runMetadata.parallelGroupId) || null,
       parallelRequiredKinds: ensureArray(runMetadata.parallelRequiredKinds),

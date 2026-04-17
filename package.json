@@ -43,6 +43,7 @@
     "smoke:approval": "node scripts/smoke-awaiting-approval.mjs",
     "smoke:approval-reject": "node scripts/smoke-approval-reject.mjs",
     "smoke:memory-rerun": "node scripts/smoke-mission-memory-rerun.mjs",
+    "smoke:retrieval-memory": "node scripts/smoke-retrieval-memory.mjs",
     "smoke:mission-attachments": "node scripts/smoke-mission-attachments.mjs",
     "smoke:ui-mission-attachments": "node scripts/smoke-ui-mission-attachments.mjs",
     "smoke:ui-agent-blueprints": "node scripts/smoke-ui-agent-blueprints.mjs",

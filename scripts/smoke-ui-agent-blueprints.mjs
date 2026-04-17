@@ -48,7 +48,10 @@ try {
   assert.equal(appJs.includes('선택 결과'), true);
   assert.equal(appJs.includes('빠르게 초안'), true);
   assert.equal(appJs.includes('끝까지 handoff'), true);
-  assert.equal(appJs.includes('prompt grounding + memory recall'), true);
+  assert.equal(appJs.includes('현재는 지식 주입 + retrieval memory'), true);
+  assert.equal(appJs.includes('prompt grounding + retrieval memory'), true);
+  assert.equal(appJs.includes('retrieval-ready'), true);
+  assert.equal(appJs.includes('text-first lexical memory'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
 

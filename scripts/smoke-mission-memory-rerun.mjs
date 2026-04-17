@@ -32,7 +32,7 @@ const mission = runCli({
 
 const firstRun = runCli({
   rootDir: tempRoot,
-  args: ['mission', 'run', mission.id],
+  args: ['mission', 'run', mission.id, '--provider', 'stub'],
 });
 
 assert.equal(firstRun.status, 'awaiting_approval');
@@ -66,7 +66,7 @@ assert.equal(
 
 const rerun = runCli({
   rootDir: tempRoot,
-  args: ['mission', 'run', mission.id],
+  args: ['mission', 'run', mission.id, '--provider', 'stub'],
 });
 
 assert.equal(rerun.status, 'awaiting_approval');

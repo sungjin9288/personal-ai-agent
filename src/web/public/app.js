@@ -2855,7 +2855,7 @@ function renderAgentBlueprintBuilder() {
           <span class="agent-blueprint-step-index">03</span>
           <div>
             <strong>읽힐 자료 넣기</strong>
-            <p>첨부 파일과 메모가 다음 실행 prompt에 들어가 AI가 같은 맥락으로 이어서 작업합니다.</p>
+            <p>첨부 파일과 메모가 다음 실행 prompt와 retrieval context에 들어가 AI가 같은 맥락으로 이어서 작업합니다.</p>
           </div>
         </div>
       </div>
@@ -2990,7 +2990,7 @@ function renderAgentBlueprintBuilder() {
           <div class="mini-head">
             <div>
               <p class="section-kicker">AI가 지금 읽는 자료</p>
-              <h4>현재는 운영형 학습만 지원</h4>
+              <h4>현재는 지식 주입 + retrieval memory</h4>
             </div>
           </div>
           <div class="agent-learning-summary">
@@ -3008,13 +3008,13 @@ function renderAgentBlueprintBuilder() {
             </div>
             <div class="summary-chip ${learningReadiness ? 'summary-chip-strong' : 'summary-chip-soft'}">
               <span>readiness</span>
-              <strong>${escapeHtml(learningReadiness ? 'AI가 읽을 자료 준비됨' : '아직 읽을 자료 없음')}</strong>
+              <strong>${escapeHtml(learningReadiness ? 'retrieval-ready' : '아직 읽을 자료 없음')}</strong>
             </div>
           </div>
           <div class="agent-learning-capability-list">
             <div class="agent-learning-capability is-ready">
               <strong>지금 되는 것</strong>
-              <p>텍스트 첨부, 미션 메모, 워크스페이스 메모는 다음 run prompt와 rerun context에 반영됩니다.</p>
+              <p>텍스트 첨부, 미션 메모, 워크스페이스 메모는 다음 run prompt와 rerun context에 반영되고, retrieval memory가 역할별로 중요한 snippet을 먼저 올립니다.</p>
             </div>
             <div class="agent-learning-capability is-ready">
               <strong>입력 방법</strong>
@@ -3022,7 +3022,7 @@ function renderAgentBlueprintBuilder() {
             </div>
             <div class="agent-learning-capability is-blocked">
               <strong>아직 없는 것</strong>
-              <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다.</p>
+              <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다. 현재 retrieval은 text-first lexical memory입니다.</p>
             </div>
           </div>
         </section>
@@ -3713,9 +3713,9 @@ function renderMissionSummary() {
           <div class="definition-item"><span>첨부 파일</span><strong>${escapeHtml(String(summary?.attachmentCounts?.total ?? 0))}개</strong></div>
           <div class="definition-item"><span>미션 메모</span><strong>${escapeHtml(String(summary?.memoryCounts?.total ?? 0))}개</strong></div>
           <div class="definition-item"><span>누적 chars</span><strong>${escapeHtml(String(summary?.attachmentCounts?.totalChars ?? 0))}</strong></div>
-          <div class="definition-item"><span>학습 방식</span><strong>prompt grounding + memory recall</strong></div>
+          <div class="definition-item"><span>지식 방식</span><strong>prompt grounding + retrieval memory</strong></div>
         </div>
-        <p class="summary-note">현재는 모델 재학습이 아니라, 텍스트 첨부와 메모리를 다음 실행 문맥으로 다시 넣는 운영형 학습입니다.</p>
+        <p class="summary-note">현재는 모델 재학습이 아니라, 텍스트 첨부와 메모리를 저장한 뒤 다음 실행에서 retrieval + grounding으로 다시 읽히는 운영형 지식 루프입니다.</p>
       </section>
       <section class="summary-section">
         <p class="summary-label">리뷰어 신호</p>

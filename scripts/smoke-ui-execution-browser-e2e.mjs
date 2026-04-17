@@ -487,8 +487,19 @@ try {
   assert.equal(new URL(reloadState.href).searchParams.get('tab'), 'release');
   assert.equal(new URL(reloadState.href).searchParams.get('step'), 'step-output');
 
-  runPw(['screenshot', screenshotPath]);
+  runPw([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.screenshot({
+        fullPage: true,
+        path: ${JSON.stringify(screenshotPath)},
+      });
+      return { ok: true };
+    }`,
+  ]);
   const screenshotCaptured = fs.existsSync(screenshotPath);
+  assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
 
   console.log(
     JSON.stringify(

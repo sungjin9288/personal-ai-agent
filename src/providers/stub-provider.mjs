@@ -45,6 +45,20 @@ function formatPreviousOutputSection(role, value) {
   return `## ${role}\n${lines.join('\n') || '- no prior output content available'}`;
 }
 
+function formatRetrievedContext(retrievalContext, fallback = 'No retrieval snippets selected.') {
+  const items = Array.isArray(retrievalContext) ? retrievalContext.filter((entry) => entry?.snippet) : [];
+  if (!items.length) {
+    return `- ${fallback}`;
+  }
+
+  return items
+    .map((entry) => {
+      const location = entry.sourceType === 'attachment' && entry.chunkIndex ? ` chunk ${entry.chunkIndex}` : '';
+      return `- [${entry.sourceType}] ${entry.sourceLabel}${location}: ${entry.snippet}`;
+    })
+    .join('\n');
+}
+
 function deriveMemoryAdaptation(memoryEntries) {
   const relevantEntries = memoryEntries.filter((entry) => entry.scope === 'mission');
   const adaptationNotes = uniqueTexts(relevantEntries.map((entry) => entry.content));
@@ -74,6 +88,7 @@ function buildPromptContext({
   pack,
   attachments,
   memoryEntries,
+  retrievalContext,
   previousOutputs,
   parallelGroupId,
   parallelRequiredKinds,
@@ -155,6 +170,9 @@ ${memorySummary}
 ## Mission Attachments
 ${attachmentSummary}
 
+## Retrieved Context
+${formatRetrievedContext(retrievalContext)}
+
 ## Parallel Specialists
 ${specialistSummary}
 
@@ -180,13 +198,14 @@ function inputSpecialistContext({ parallelGroupId, parallelRequiredKinds, resume
     .join('\n\n');
 }
 
-function buildManagerOutput({ mission, workspace, pack, memoryEntries, attachments = [] }) {
+function buildManagerOutput({ mission, workspace, pack, memoryEntries, attachments = [], retrievalContext = [] }) {
   const memorySummary = memoryEntries.length
     ? memoryEntries.map((entry) => `- ${entry.scope}/${entry.kind}: ${entry.content}`).join('\n')
     : '- no relevant memory found';
   const attachmentSummary = attachments.length
     ? attachments.map((attachment) => `- ${attachment.fileName}: ${attachment.excerpt || 'attached input'}`).join('\n')
     : '- no attached inputs';
+  const retrievalSummary = formatRetrievedContext(retrievalContext);
 
   return {
     type: 'manager',
@@ -209,6 +228,9 @@ ${memorySummary}
 
 ## Attached Inputs
 ${attachmentSummary}
+
+## Retrieved Context
+${retrievalSummary}
 
 ## Governance
 - approval likely: ${pack.riskProfile.requiresApproval ? 'yes' : 'no'}
