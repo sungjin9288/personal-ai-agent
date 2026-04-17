@@ -759,10 +759,9 @@ try {
   const attachmentRetrievalFocusState = verifyRetrievalSourceFlow({ sourceType: 'attachment' });
 
   console.error('[smoke-ui-execution-browser-e2e] verify retrieval source handoff session');
-  const verifyFreshHandoffSession = ({ retrievalFocusState }) => {
-    const copiedRetrievalUrl = retrievalFocusState.copiedLink || retrievalFocusState.promptedLink;
-    assert.equal(copiedRetrievalUrl, retrievalFocusState.reopenedHref);
-    const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${Date.now().toString(36).slice(-6)}`;
+  const verifyFreshHandoffSession = ({ retrievalFocusState, retrievalUrl, sessionLabel = 'copy' }) => {
+    assert.equal(retrievalUrl, retrievalFocusState.reopenedHref);
+    const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(handoffSessionId);
     runPw(['open', baseUrl], { session: handoffSessionId });
     const handoffState = runPwJson([
@@ -771,7 +770,7 @@ try {
       `async (page) => {
         const expectedSourceLabel = ${JSON.stringify(retrievalFocusState.sourceLabel)};
         const expectedSourceType = ${JSON.stringify(retrievalFocusState.sourceType)};
-        await page.goto(${JSON.stringify(copiedRetrievalUrl)}, { waitUntil: 'domcontentloaded' });
+        await page.goto(${JSON.stringify(retrievalUrl)}, { waitUntil: 'domcontentloaded' });
         await page.waitForFunction(({ sourceLabel, sourceType }) => {
           const params = new URL(window.location.href).searchParams;
           return (
@@ -792,7 +791,7 @@ try {
     ], { session: handoffSessionId });
     assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
     assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
-    assert.equal(handoffState.href, copiedRetrievalUrl);
+    assert.equal(handoffState.href, retrievalUrl);
     assert.match(handoffState.focusBanner, /현재 retrieval source focus/);
     assert.match(handoffState.activeChip, /현재 ·/);
     if (retrievalFocusState.sourceType === 'attachment') {
@@ -800,8 +799,26 @@ try {
     }
   };
 
-  verifyFreshHandoffSession({ retrievalFocusState: memoryRetrievalFocusState });
-  verifyFreshHandoffSession({ retrievalFocusState: attachmentRetrievalFocusState });
+  verifyFreshHandoffSession({
+    retrievalFocusState: memoryRetrievalFocusState,
+    retrievalUrl: memoryRetrievalFocusState.copiedLink || memoryRetrievalFocusState.promptedLink,
+    sessionLabel: 'copy',
+  });
+  verifyFreshHandoffSession({
+    retrievalFocusState: attachmentRetrievalFocusState,
+    retrievalUrl: attachmentRetrievalFocusState.copiedLink || attachmentRetrievalFocusState.promptedLink,
+    sessionLabel: 'copy',
+  });
+  verifyFreshHandoffSession({
+    retrievalFocusState: attachmentRetrievalFocusState,
+    retrievalUrl: attachmentRetrievalFocusState.fallbackPromptedLink,
+    sessionLabel: 'direct-fallback',
+  });
+  verifyFreshHandoffSession({
+    retrievalFocusState: attachmentRetrievalFocusState,
+    retrievalUrl: attachmentRetrievalFocusState.focusedFallbackPromptedLink,
+    sessionLabel: 'focused-fallback',
+  });
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([

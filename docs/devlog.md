@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T04:35:00.000Z","id":"doclog_20260417043500_retrieval_fallback_handoff_reopen","type":"devlog","updatedAt":"2026-04-17T04:35:00.000Z"} -->
+## 2026-04-17 Retrieval Fallback Handoff Reopen Pass
+
+- date: 2026-04-17T04:35:00.000Z
+- extended the execution browser smoke so attachment retrieval prompt fallback is no longer verified only inside the original page session; the suite now reopens both the direct-chip fallback URL and the focused-copy fallback URL in fresh browser sessions
+- kept the same retrieval handoff helper and asserted that each fallback deep-link restores the exact `hstype` and `hsource` focus state, active chip, and attachment row highlight
+- updated the README smoke note so fresh browser verification explicitly covers fallback-generated retrieval links in addition to clipboard-generated ones
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T04:20:00.000Z","id":"doclog_20260417042000_retrieval_focused_copy_fallback","type":"devlog","updatedAt":"2026-04-17T04:20:00.000Z"} -->
 ## 2026-04-17 Retrieval Focused Copy Fallback Pass
 
