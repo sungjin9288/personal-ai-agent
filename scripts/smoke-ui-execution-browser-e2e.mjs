@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import net from 'node:net';
 import os from 'node:os';
@@ -922,6 +923,9 @@ try {
   ]);
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
+  const screenshotBuffer = fs.readFileSync(screenshotPath);
+  const screenshotSha256 = createHash('sha256').update(screenshotBuffer).digest('hex');
+  const screenshotStat = fs.statSync(screenshotPath);
 
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
@@ -980,7 +984,15 @@ try {
     port,
     reportPath,
     repoDir,
+    artifactPair: {
+      pairVerified: true,
+      reportReadBackVerified: true,
+      reportPath,
+      screenshotPath,
+    },
     screenshotCaptured,
+    screenshotBytes: screenshotStat.size,
+    screenshotSha256,
     screenshotPath,
     sessionId,
     url: reloadState.href,

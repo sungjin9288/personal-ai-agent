@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T09:45:00.000Z","id":"doclog_20260418094500_browser_artifact_pair_metadata","type":"devlog","updatedAt":"2026-04-18T09:45:00.000Z"} -->
+## 2026-04-18 Browser Artifact Pair Metadata Pass
+
+- date: 2026-04-18T09:45:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so the saved JSON report now carries screenshot byte size and sha256, making the screenshot artifact independently identifiable from the report alone
+- added explicit `artifactPair` summary fields so the persisted browser E2E report now states that screenshot existence and report read-back verification were both part of the smoke contract
+- updated the README smoke note so screenshot artifact pair metadata is documented as part of the browser verification surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T09:30:00.000Z","id":"doclog_20260418093000_browser_report_readback","type":"devlog","updatedAt":"2026-04-18T09:30:00.000Z"} -->
 ## 2026-04-18 Browser Report Readback Pass
 
