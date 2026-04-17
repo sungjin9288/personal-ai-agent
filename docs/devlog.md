@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T09:15:00.000Z","id":"doclog_20260418091500_browser_e2e_report_artifact","type":"devlog","updatedAt":"2026-04-18T09:15:00.000Z"} -->
+## 2026-04-18 Browser E2E Report Artifact Pass
+
+- date: 2026-04-18T09:15:00.000Z
+- wrote the final `smoke-ui-execution-browser-e2e` JSON payload to `output/playwright/execution-v1-browser-e2e.json` instead of leaving it only on stdout, so screenshot evidence and structured session coverage now persist side by side
+- added an existence assertion for the saved report artifact so smoke success now guarantees both the screenshot and the JSON evidence file were produced
+- updated the README smoke note so the saved browser E2E report artifact is part of the documented verification contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T09:00:00.000Z","id":"doclog_20260418090000_handoff_coverage_summary","type":"devlog","updatedAt":"2026-04-18T09:00:00.000Z"} -->
 ## 2026-04-18 Handoff Coverage Summary Pass
 

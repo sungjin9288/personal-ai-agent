@@ -11,9 +11,11 @@ const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright-cli'];
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
+const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
 const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
 
 fs.mkdirSync(screenshotDir, { recursive: true });
+fs.rmSync(reportPath, { force: true });
 fs.rmSync(screenshotPath, { force: true });
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
@@ -966,27 +968,25 @@ try {
       totalSessions: 0,
     },
   );
+  const smokeReport = {
+    browserConsoleErrors: browserErrorState.consoleErrors.length,
+    browserPageErrors: browserErrorState.pageErrors.length,
+    handoffCoverageSummary,
+    handoffSessionResults: normalizedHandoffSessionResults,
+    ok: true,
+    mode: 'ui-execution-browser-e2e',
+    port,
+    reportPath,
+    screenshotCaptured,
+    screenshotPath,
+    sessionId,
+    url: reloadState.href,
+    workspaceId: workspace.id,
+  };
+  fs.writeFileSync(reportPath, `${JSON.stringify(smokeReport, null, 2)}\n`, 'utf8');
+  assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
 
-  console.log(
-    JSON.stringify(
-      {
-        browserConsoleErrors: browserErrorState.consoleErrors.length,
-        browserPageErrors: browserErrorState.pageErrors.length,
-        handoffCoverageSummary,
-        handoffSessionResults: normalizedHandoffSessionResults,
-        ok: true,
-        mode: 'ui-execution-browser-e2e',
-        port,
-        screenshotCaptured,
-        screenshotPath,
-        sessionId,
-        url: reloadState.href,
-        workspaceId: workspace.id,
-      },
-      null,
-      2,
-    ),
-  );
+  console.log(JSON.stringify(smokeReport, null, 2));
 } finally {
   try {
     runPw(['close'], { timeoutMs: 5_000 });
