@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T02:20:00.000Z","id":"doclog_20260417022000_retrieval_focus_browser_e2e","type":"devlog","updatedAt":"2026-04-17T02:20:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Browser E2E Pass
+
+- date: 2026-04-17T02:20:00.000Z
+- extended the real browser smoke to seed retrieval inputs, click a compare chip, and verify that `hstype` and `hsource` survive a full page reload with the active chip and focus banner restored
+- kept the new check inside the existing execution browser smoke instead of adding a second browser suite, so retrieval focus persistence now rides on the same end-to-end path already used for release and browser history verification
+- updated the README smoke bullet to reflect that retrieval focus deep-link restore is now covered by `smoke:ui-execution-browser-e2e`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T02:05:00.000Z","id":"doclog_20260417020500_retrieval_focus_url_sync","type":"devlog","updatedAt":"2026-04-17T02:05:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus URL Sync Pass
 

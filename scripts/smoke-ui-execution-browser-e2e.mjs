@@ -153,6 +153,45 @@ try {
   const missionId = new URL(creationState.href).searchParams.get('mission');
   assert.ok(missionId);
 
+  console.error('[smoke-ui-execution-browser-e2e] seed retrieval inputs');
+  const retrievalSeedState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      const missionId = ${JSON.stringify(missionId)};
+      return await page.evaluate(async (currentMissionId) => {
+        const memoryResponse = await window.fetch('/api/missions/' + encodeURIComponent(currentMissionId) + '/memory', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            content: 'Execution validation rehearsal relies on prompt normalization and provider drift notes.',
+            kind: 'fact',
+          }),
+        });
+        const attachmentResponse = await window.fetch('/api/missions/' + encodeURIComponent(currentMissionId) + '/attachments', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            attachments: [
+              {
+                content: '# Retrieval Seed\\nPrompt normalization resolved provider drift during execution validation rehearsal.',
+                fileName: 'retrieval-seed.md',
+                mimeType: 'text/markdown',
+                source: 'browser-e2e',
+              },
+            ],
+          }),
+        });
+        return {
+          attachmentOk: attachmentResponse.ok,
+          memoryOk: memoryResponse.ok,
+        };
+      }, missionId);
+    }`,
+  ]);
+  assert.equal(retrievalSeedState.memoryOk, true, JSON.stringify(retrievalSeedState));
+  assert.equal(retrievalSeedState.attachmentOk, true, JSON.stringify(retrievalSeedState));
+
   console.error('[smoke-ui-execution-browser-e2e] run mission');
   const missionRunState = runPwJson([
     '--raw',
@@ -423,6 +462,56 @@ try {
   assert.equal(startState.ok, true, JSON.stringify(startState));
   assert.match(startState.executionConsole, /완료/);
   assert.match(startState.executionConsole, /검증/);
+
+  console.error('[smoke-ui-execution-browser-e2e] verify retrieval focus URL restore');
+  const retrievalFocusState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        document.querySelector('[data-step-target="step-setup"]')?.click();
+      });
+      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-setup');
+      await page.waitForFunction(() => document.querySelectorAll('[data-retrieval-source-type]').length > 0, null, {
+        timeout: 15000,
+      });
+      const sourceMeta = await page.evaluate(() => {
+        const firstButton = document.querySelector('[data-retrieval-source-type]');
+        return {
+          sourceLabel: firstButton?.getAttribute('data-retrieval-source-label') || '',
+          sourceType: firstButton?.getAttribute('data-retrieval-source-type') || '',
+        };
+      });
+      await page.evaluate(() => {
+        document.querySelector('[data-retrieval-source-type]')?.click();
+      });
+      await page.waitForFunction(() => {
+        const params = new URL(window.location.href).searchParams;
+        return Boolean(params.get('hstype') && params.get('hsource') && params.get('tab') === 'harness');
+      });
+      const focusedHref = page.url();
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => {
+        const params = new URL(window.location.href).searchParams;
+        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+      }, null, { timeout: 15000 });
+      return {
+        activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+        focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+        href: page.url(),
+        initialHref: focusedHref,
+        sourceLabel: sourceMeta.sourceLabel,
+        sourceType: sourceMeta.sourceType,
+      };
+    }`,
+  ]);
+
+  assert.ok(retrievalFocusState.sourceType);
+  assert.ok(retrievalFocusState.sourceLabel);
+  assert.equal(new URL(retrievalFocusState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
+  assert.equal(new URL(retrievalFocusState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+  assert.match(retrievalFocusState.focusBanner, /현재 retrieval source focus/);
+  assert.match(retrievalFocusState.activeChip, /현재 ·/);
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([
