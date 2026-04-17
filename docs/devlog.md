@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T04:20:00.000Z","id":"doclog_20260417042000_retrieval_focused_copy_fallback","type":"devlog","updatedAt":"2026-04-17T04:20:00.000Z"} -->
+## 2026-04-17 Retrieval Focused Copy Fallback Pass
+
+- date: 2026-04-17T04:20:00.000Z
+- tightened the execution browser smoke so the retrieval focus callout copy button is no longer inferred through a generic selector; the suite now explicitly targets the `현재 source 링크 복사` surface
+- added an attachment-based prompt fallback check for that focused copy button and proved that clipboard failure still yields the same harness deep-link while the button label stays on the non-copied state
+- updated the README smoke note so browser verification now documents prompt fallback on both the direct retrieval chip and the focused retrieval copy action
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T04:05:00.000Z","id":"doclog_20260417040500_retrieval_copy_prompt_fallback","type":"devlog","updatedAt":"2026-04-17T04:05:00.000Z"} -->
 ## 2026-04-17 Retrieval Copy Prompt Fallback Pass
 
