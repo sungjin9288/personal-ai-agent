@@ -556,10 +556,17 @@ function getSanitizedReleaseHistoryOutcome(outcome) {
   return normalized === 'attention' ? normalized : null;
 }
 
+function getSanitizedRetrievalSourceType(sourceType) {
+  const normalized = normalizeUiParam(sourceType);
+  return normalized === 'memory' || normalized === 'attachment' ? normalized : null;
+}
+
 function parseUiStateFromUrl() {
   const params = new URL(window.location.href).searchParams;
   return {
     artifactId: normalizeUiParam(params.get('artifact')),
+    retrievalSourceLabel: normalizeUiParam(params.get('hsource')),
+    retrievalSourceType: getSanitizedRetrievalSourceType(params.get('hstype')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
     releaseFocusedProvider: normalizeUiParam(params.get('rcard')),
@@ -620,6 +627,14 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseHistoryScope !== undefined
       ? normalizeUiParam(overrides.releaseHistoryScope)
       : normalizeUiParam(state.releaseHistoryFilterScope);
+  const retrievalSourceType =
+    overrides.retrievalSourceType !== undefined
+      ? getSanitizedRetrievalSourceType(overrides.retrievalSourceType)
+      : getSanitizedRetrievalSourceType(state.retrievalSourceFocusType);
+  const retrievalSourceLabel =
+    overrides.retrievalSourceLabel !== undefined
+      ? normalizeUiParam(overrides.retrievalSourceLabel)
+      : normalizeUiParam(state.retrievalSourceFocusLabel);
 
   if (workspaceId) {
     params.set('workspace', workspaceId);
@@ -649,10 +664,19 @@ function buildUiStateUrl(overrides = {}) {
     } else {
       params.delete('artifact');
     }
+    if (retrievalSourceType && retrievalSourceLabel) {
+      params.set('hstype', retrievalSourceType);
+      params.set('hsource', retrievalSourceLabel);
+    } else {
+      params.delete('hstype');
+      params.delete('hsource');
+    }
   } else {
     params.delete('mission');
     params.delete('session');
     params.delete('artifact');
+    params.delete('hstype');
+    params.delete('hsource');
 
     if (stepId && stepId !== 'step-setup') {
       params.set('step', stepId);
@@ -1478,6 +1502,37 @@ function applyReleaseProviderUrlState(provider = '') {
     ? normalizedProvider
     : '';
   renderReleaseStatus();
+}
+
+async function applyRetrievalSourceUrlState({
+  sourceLabel = '',
+  sourceType = '',
+} = {}) {
+  const normalizedType = getSanitizedRetrievalSourceType(sourceType);
+  const normalizedLabel = normalizeUiParam(sourceLabel);
+
+  if (!normalizedType || !normalizedLabel || !state.selectedMissionId) {
+    state.retrievalSourceFocusType = '';
+    state.retrievalSourceFocusLabel = '';
+    state.harnessAttachmentFocus = '';
+    return;
+  }
+
+  state.retrievalSourceFocusType = normalizedType;
+  state.retrievalSourceFocusLabel = normalizedLabel;
+
+  if (normalizedType === 'memory') {
+    const [scope = 'all', kind = 'all'] = normalizedLabel.split('/');
+    state.harnessAttachmentFocus = '';
+    state.harnessMemoryFilterScope = ['mission', 'workspace'].includes(scope) ? scope : 'all';
+    state.harnessMemoryFilterKind = ['fact', 'decision', 'preference'].includes(kind) ? kind : 'all';
+    state.harnessMemoryOffset = 0;
+    state.harnessMemoryQuery = '';
+    await loadHarnessMemory();
+    return;
+  }
+
+  state.harnessAttachmentFocus = normalizedLabel;
 }
 
 function focusReleaseHistoryFlow({
@@ -6690,6 +6745,7 @@ function wireMemoryRowActions() {
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
+      writeUiStateToUrl();
     } catch (error) {
       window.alert(error.message);
     }
@@ -6703,6 +6759,7 @@ function wireMemoryRowActions() {
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
+      writeUiStateToUrl();
     } catch (error) {
       window.alert(error.message);
     }
@@ -6716,6 +6773,7 @@ function wireMemoryRowActions() {
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
       renderHarnessPanel();
+      writeUiStateToUrl();
     } catch (error) {
       window.alert(error.message);
     }
@@ -6749,6 +6807,7 @@ function wireMemoryRowActions() {
         resetHarnessMemoryBrowseState();
         await loadHarnessMemory();
         renderHarnessPanel();
+        writeUiStateToUrl();
       } catch (error) {
         window.alert(error.message);
       }
@@ -7984,6 +8043,13 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
       preferredStep: urlState.stepId,
       syncUrl: false,
     });
+    await applyRetrievalSourceUrlState({
+      sourceLabel: urlState.retrievalSourceLabel,
+      sourceType: urlState.retrievalSourceType,
+    });
+    renderAgentBlueprintBuilder();
+    renderHarnessPanel();
+    renderOutputStageSummary();
   } else {
     clearMissionSelection({ syncUrl: false });
     if (urlState.stepId) {

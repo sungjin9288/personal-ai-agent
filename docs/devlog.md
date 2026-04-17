@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T02:05:00.000Z","id":"doclog_20260417020500_retrieval_focus_url_sync","type":"devlog","updatedAt":"2026-04-17T02:05:00.000Z"} -->
+## 2026-04-17 Retrieval Focus URL Sync Pass
+
+- date: 2026-04-17T02:05:00.000Z
+- synchronized retrieval source focus into the main UI URL via `hstype` and `hsource`, so active retrieval narrowing survives refresh, popstate navigation, and shared links
+- restored retrieval focus after mission selection without forcing a step jump, then rerendered setup, harness, and output compare surfaces so active chips and banners come back consistently from URL state
+- updated manual memory filter changes to clear stale retrieval focus params from the URL immediately, preventing the address bar from claiming a source focus that is no longer applied
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T01:50:00.000Z","id":"doclog_20260417015000_retrieval_focus_active_state","type":"devlog","updatedAt":"2026-04-17T01:50:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Active-State Pass
 

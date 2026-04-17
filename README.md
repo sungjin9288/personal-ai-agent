@@ -105,6 +105,7 @@ npm run ui
 - compare callout의 `다음 · …` `이전 · …` source chip을 누르면 `하네스` 탭으로 바로 이동해 메모 source는 scope/kind filter로, 첨부 source는 해당 파일 row highlight로 바로 좁혀 볼 수 있음
 - focus로 이동한 뒤에는 하네스 상단에 `현재 retrieval source focus` 배너와 `focus 해제` 버튼이 같이 보여서, 지금 어떤 source 기준으로 좁혀 본 상태인지와 reset 경로를 바로 확인할 수 있음
 - 같은 source chip이 이미 적용 중이면 compare callout 안에서 `현재 · …` active 상태와 `현재 source 해제` 액션이 같이 보여서, 다시 하네스로 내려가지 않아도 현재 narrowing 상태를 즉시 읽고 풀 수 있음
+- retrieval source focus는 URL의 `hstype` / `hsource`로도 같이 동기화되므로, 새로고침이나 링크 공유 뒤에도 같은 focus 상태와 active chip 문맥이 복원됨
 - `npm run smoke:retrieval-memory`는 relevant memory/attachment snippet만 `Retrieved Context` 섹션으로 승격되고 무관한 문장은 제외되는지 manager prompt와 manager context 기준으로 검증함
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
 - `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, `AI가 지금 읽는 자료` 패널, specialist lane style contract가 모두 살아 있는지 검증함
