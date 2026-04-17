@@ -59,6 +59,9 @@ try {
   assert.equal(appJs.includes('evidence only'), true);
   assert.equal(appJs.includes('focusRetrievalSource'), true);
   assert.equal(appJs.includes('data-retrieval-source-type'), true);
+  assert.equal(appJs.includes('현재 retrieval source focus'), true);
+  assert.equal(appJs.includes('clear-retrieval-source-focus'), true);
+  assert.equal(appJs.includes('focus 해제'), true);
   assert.equal(appJs.includes('retrieval 근거 열기'), true);
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);

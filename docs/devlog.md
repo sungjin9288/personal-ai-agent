@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T01:35:00.000Z","id":"doclog_20260417013500_retrieval_focus_banner","type":"devlog","updatedAt":"2026-04-17T01:35:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Banner Pass
+
+- date: 2026-04-17T01:35:00.000Z
+- added a visible `현재 retrieval source focus` banner in the harness so source drill-down no longer feels like an invisible filter jump
+- kept the clear path explicit with `focus 해제`, and made manual memory filter edits clear the retrieval source focus state so the UI does not overstate that a retrieval-driven narrowing is still active
+- extended the UI contract smoke and docs so the active-focus banner and reset flow stay documented and test-covered
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T01:20:00.000Z","id":"doclog_20260417012000_retrieval_source_focus","type":"devlog","updatedAt":"2026-04-17T01:20:00.000Z"} -->
 ## 2026-04-17 Retrieval Source Focus Pass
 

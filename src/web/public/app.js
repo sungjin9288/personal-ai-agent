@@ -33,6 +33,8 @@ const state = {
   outputSupportExpanded: false,
   outputToolbarToolsExpanded: false,
   providers: [],
+  retrievalSourceFocusLabel: '',
+  retrievalSourceFocusType: '',
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
   releaseFocusedProvider: '',
@@ -1915,6 +1917,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'clear-retrieval-source-focus') {
+        clearRetrievalSourceFocus({ historyMode: 'push' });
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -2142,6 +2149,44 @@ function wireRetrievalArtifactButtons(scope = document) {
   });
 }
 
+function getActiveRetrievalSourceFocus() {
+  const type = String(state.retrievalSourceFocusType || '').trim();
+  const label = String(state.retrievalSourceFocusLabel || '').trim();
+
+  if (!type || !label) {
+    return null;
+  }
+
+  return {
+    detail:
+      type === 'memory'
+        ? '하네스 메모리 필터가 이 source 기준으로 좁혀져 있습니다.'
+        : '하네스 첨부 목록에서 이 source 파일을 강조하고 있습니다.',
+    label,
+    title: formatRetrievalSourceLabel({ sourceLabel: label, sourceType: type }),
+    type,
+  };
+}
+
+function clearRetrievalSourceFocus({ historyMode = 'push' } = {}) {
+  const activeFocus = getActiveRetrievalSourceFocus();
+  if (!activeFocus) {
+    return;
+  }
+
+  state.retrievalSourceFocusType = '';
+  state.retrievalSourceFocusLabel = '';
+  state.harnessAttachmentFocus = '';
+
+  if (activeFocus.type === 'memory') {
+    resetHarnessMemoryBrowseState();
+  }
+
+  renderHarnessPanel();
+  writeUiStateToUrl({ historyMode });
+  setUiNotice('retrieval source focus를 해제했습니다.');
+}
+
 async function focusRetrievalSource(sourceType, sourceLabel, { historyMode = 'push' } = {}) {
   const normalizedType = String(sourceType || '').trim().toLowerCase();
   const normalizedLabel = String(sourceLabel || '').trim();
@@ -2155,6 +2200,8 @@ async function focusRetrievalSource(sourceType, sourceLabel, { historyMode = 'pu
 
   if (normalizedType === 'memory') {
     const [scope = 'all', kind = 'all'] = normalizedLabel.split('/');
+    state.retrievalSourceFocusType = normalizedType;
+    state.retrievalSourceFocusLabel = normalizedLabel;
     state.harnessAttachmentFocus = '';
     state.harnessMemoryFilterScope = ['mission', 'workspace'].includes(scope) ? scope : 'all';
     state.harnessMemoryFilterKind = ['fact', 'decision', 'preference'].includes(kind) ? kind : 'all';
@@ -2173,6 +2220,8 @@ async function focusRetrievalSource(sourceType, sourceLabel, { historyMode = 'pu
     return;
   }
 
+  state.retrievalSourceFocusType = normalizedType;
+  state.retrievalSourceFocusLabel = normalizedLabel;
   state.harnessAttachmentFocus = normalizedLabel;
   renderHarnessPanel();
   writeUiStateToUrl({ historyMode });
@@ -4900,6 +4949,7 @@ function renderHarnessPanel() {
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
   const latestRetrievalArtifact = retrieval.latestArtifact || null;
+  const activeRetrievalSourceFocus = getActiveRetrievalSourceFocus();
   const visibleDocumentEntries = documentBrowse.entries || [];
   const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
   const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
@@ -4994,6 +5044,20 @@ function renderHarnessPanel() {
             <strong>대표 산출물</strong>
             <p>${escapeHtml(latestArtifact.title)}</p>
             <div class="item-meta mono">${escapeHtml(latestArtifact.path || '-')}</div>
+          </div>`
+        : ''
+    }
+    ${
+      activeRetrievalSourceFocus?.type === 'attachment'
+        ? `<div class="harness-callout">
+            <div class="harness-filter-row">
+              <strong>현재 retrieval source focus</strong>
+              <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
+            </div>
+            <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
+            <div class="inline-actions">
+              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
+            </div>
           </div>`
         : ''
     }
@@ -5151,6 +5215,20 @@ function renderHarnessPanel() {
       <strong>레이어드 메모리</strong>
       <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
     </div>
+    ${
+      activeRetrievalSourceFocus?.type === 'memory'
+        ? `<div class="harness-callout">
+            <div class="harness-filter-row">
+              <strong>현재 retrieval source focus</strong>
+              <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
+            </div>
+            <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
+            <div class="inline-actions">
+              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
+            </div>
+          </div>`
+        : ''
+    }
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">다음 실행 retrieval preview</p>
@@ -5398,6 +5476,8 @@ function renderHarnessPanel() {
       </div>
     </div>
   `;
+  wireQuickActions(elements.harnessSource);
+  wireQuickActions(elements.harnessMemory);
   wireDocumentRowActions();
   wireMissionAttachmentActions();
   wireRetrievalArtifactButtons(elements.harnessMemory);
@@ -6589,6 +6669,8 @@ function wireMemoryRowActions() {
 
   elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
     try {
+      state.retrievalSourceFocusType = '';
+      state.retrievalSourceFocusLabel = '';
       state.harnessMemoryQuery = String(event.target.value || '');
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
@@ -6600,6 +6682,8 @@ function wireMemoryRowActions() {
 
   elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', async (event) => {
     try {
+      state.retrievalSourceFocusType = '';
+      state.retrievalSourceFocusLabel = '';
       state.harnessMemoryFilterScope = String(event.target.value || 'all');
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
@@ -6611,6 +6695,8 @@ function wireMemoryRowActions() {
 
   elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', async (event) => {
     try {
+      state.retrievalSourceFocusType = '';
+      state.retrievalSourceFocusLabel = '';
       state.harnessMemoryFilterKind = String(event.target.value || 'all');
       state.harnessMemoryOffset = 0;
       await loadHarnessMemory();
@@ -6684,6 +6770,8 @@ function wireMemoryRowActions() {
 
 function resetHarnessFilterState() {
   state.harnessAttachmentFocus = '';
+  state.retrievalSourceFocusLabel = '';
+  state.retrievalSourceFocusType = '';
   state.harnessDocumentFilter = 'all';
   state.harnessDocumentOffset = 0;
   state.harnessDocumentQuery = '';
@@ -6707,6 +6795,8 @@ function resetHarnessDocumentBrowseState() {
 
 function resetHarnessMemoryBrowseState() {
   state.harnessAttachmentFocus = '';
+  state.retrievalSourceFocusLabel = '';
+  state.retrievalSourceFocusType = '';
   state.harnessMemoryFilterKind = 'all';
   state.harnessMemoryFilterScope = 'all';
   state.harnessMemoryOffset = 0;
