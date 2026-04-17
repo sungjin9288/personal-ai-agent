@@ -969,14 +969,17 @@ try {
     },
   );
   const smokeReport = {
+    artifactVersion: 'execution-v1-browser-e2e/v1',
     browserConsoleErrors: browserErrorState.consoleErrors.length,
     browserPageErrors: browserErrorState.pageErrors.length,
+    generatedAt: new Date().toISOString(),
     handoffCoverageSummary,
     handoffSessionResults: normalizedHandoffSessionResults,
     ok: true,
     mode: 'ui-execution-browser-e2e',
     port,
     reportPath,
+    repoDir,
     screenshotCaptured,
     screenshotPath,
     sessionId,
@@ -985,6 +988,8 @@ try {
   };
   fs.writeFileSync(reportPath, `${JSON.stringify(smokeReport, null, 2)}\n`, 'utf8');
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
+  const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
 
   console.log(JSON.stringify(smokeReport, null, 2));
 } finally {

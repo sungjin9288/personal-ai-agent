@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T09:30:00.000Z","id":"doclog_20260418093000_browser_report_readback","type":"devlog","updatedAt":"2026-04-18T09:30:00.000Z"} -->
+## 2026-04-18 Browser Report Readback Pass
+
+- date: 2026-04-18T09:30:00.000Z
+- added explicit browser E2E report metadata (`artifactVersion`, `generatedAt`, `repoDir`) so the saved JSON artifact is self-describing even when reviewed outside the terminal context
+- after writing `execution-v1-browser-e2e.json`, the smoke now reads the file back and asserts deep equality with the in-memory payload, turning report persistence into a checked contract instead of a best-effort side effect
+- updated the README smoke note so saved report read-back validation is part of the documented browser verification surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T09:15:00.000Z","id":"doclog_20260418091500_browser_e2e_report_artifact","type":"devlog","updatedAt":"2026-04-18T09:15:00.000Z"} -->
 ## 2026-04-18 Browser E2E Report Artifact Pass
 
