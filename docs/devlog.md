@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T03:35:00.000Z","id":"doclog_20260417033500_retrieval_chip_copy_handoff","type":"devlog","updatedAt":"2026-04-17T03:35:00.000Z"} -->
+## 2026-04-17 Retrieval Chip Copy Handoff Pass
+
+- date: 2026-04-17T03:35:00.000Z
+- added direct `링크` copy affordances beside retrieval compare chips so operators can hand off a source-specific deep-link without first activating the focus state
+- extended the execution browser smoke to click the chip-level copy action before focus activation and prove that the copied URL already matches the later focused harness deep-link for both memory and attachment sources
+- updated the UI contract smoke and README so the direct chip-copy handoff remains part of the documented retrieval browser surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T03:20:00.000Z","id":"doclog_20260417032000_retrieval_memory_attachment_handoff","type":"devlog","updatedAt":"2026-04-17T03:20:00.000Z"} -->
 ## 2026-04-17 Retrieval Memory And Attachment Handoff Pass
 

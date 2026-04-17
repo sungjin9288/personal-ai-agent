@@ -17,10 +17,7 @@ fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(screenshotPath, { force: true });
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
-const handoffSessionIds = {
-  attachment: `ha${Date.now().toString(36).slice(-4)}`,
-  memory: `hm${Date.now().toString(36).slice(-4)}`,
-};
+const handoffSessionIds = [];
 const serverOutput = { stderr: '', stdout: '' };
 
 const port = await getFreePort();
@@ -511,6 +508,24 @@ try {
           };
         }
         await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          const targetCopyButton = Array.from(document.querySelectorAll('[data-retrieval-source-copy="true"]')).find(
+            (button) =>
+              button.getAttribute('data-ui-source-type') === targetSourceType &&
+              button.getAttribute('data-ui-source-label') === targetSourceLabel,
+          );
+          targetCopyButton?.click();
+        }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType });
+        const directCopiedLink = await page.evaluate(() => window.__lastClipboardText || '');
+        const directPromptedLink = await page.evaluate(() => {
+          try {
+            return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+          } catch {
+            return '';
+          }
+        });
+        await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
           const targetButton = Array.from(document.querySelectorAll('[data-retrieval-source-type]')).find(
             (button) =>
               button.getAttribute('data-retrieval-source-type') === targetSourceType &&
@@ -543,18 +558,25 @@ try {
           const params = new URL(window.location.href).searchParams;
           return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
         }, null, { timeout: 15000 });
-        await page.evaluate(() => {
+        await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
           window.__lastClipboardText = '';
           window.__lastPrompt = '';
-          document.querySelector('[data-ui-action="copy-retrieval-source-link"]')?.click();
-        });
+          const targetCopyButton = Array.from(document.querySelectorAll('[data-ui-action="copy-retrieval-source-link"]')).find(
+            (button) =>
+              button.getAttribute('data-ui-source-type') === targetSourceType &&
+              button.getAttribute('data-ui-source-label') === targetSourceLabel,
+          );
+          targetCopyButton?.click();
+        }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType });
         return {
           activeChip: reloadedState.activeChip,
           attachmentFocused: reloadedState.attachmentFocused,
           copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
+          directCopiedLink,
           focusBanner: reloadedState.focusBanner,
           href: reloadedState.href,
           initialHref: focusedHref,
+          directPromptedLink,
           promptedLink: await page.evaluate(() => {
             try {
               return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
@@ -585,6 +607,7 @@ try {
     assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
     assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
     assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
+    assert.equal(retrievalFocusState.directCopiedLink || retrievalFocusState.directPromptedLink, retrievalFocusState.reopenedHref);
     if (sourceType === 'attachment') {
       assert.equal(retrievalFocusState.attachmentFocused, true, JSON.stringify(retrievalFocusState));
       assert.equal(retrievalFocusState.reopenedAttachmentFocused, true, JSON.stringify(retrievalFocusState));
@@ -600,25 +623,34 @@ try {
   const verifyFreshHandoffSession = ({ retrievalFocusState }) => {
     const copiedRetrievalUrl = retrievalFocusState.copiedLink || retrievalFocusState.promptedLink;
     assert.equal(copiedRetrievalUrl, retrievalFocusState.reopenedHref);
-    runPw(['open', copiedRetrievalUrl], { session: handoffSessionIds[retrievalFocusState.sourceType] });
+    const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${Date.now().toString(36).slice(-6)}`;
+    handoffSessionIds.push(handoffSessionId);
+    runPw(['open', baseUrl], { session: handoffSessionId });
     const handoffState = runPwJson([
       '--raw',
       'run-code',
       `async (page) => {
-        await page.waitForFunction(() => {
+        const expectedSourceLabel = ${JSON.stringify(retrievalFocusState.sourceLabel)};
+        const expectedSourceType = ${JSON.stringify(retrievalFocusState.sourceType)};
+        await page.goto(${JSON.stringify(copiedRetrievalUrl)}, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(({ sourceLabel, sourceType }) => {
           const params = new URL(window.location.href).searchParams;
-          return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
-        }, null, { timeout: 15000 });
+          return (
+            params.get('hstype') === sourceType &&
+            params.get('hsource') === sourceLabel &&
+            Boolean(document.querySelector('.tag.is-active-focus'))
+          );
+        }, { sourceLabel: expectedSourceLabel, sourceType: expectedSourceType }, { timeout: 15000 });
         return {
           activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
           attachmentFocused: await page.evaluate((targetSourceLabel) => {
             return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
-          }, ${JSON.stringify(retrievalFocusState.sourceLabel)}),
+          }, expectedSourceLabel),
           focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
           href: page.url(),
         };
       }`,
-    ], { session: handoffSessionIds[retrievalFocusState.sourceType] });
+    ], { session: handoffSessionId });
     assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
     assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
     assert.equal(handoffState.href, copiedRetrievalUrl);

@@ -1705,19 +1705,18 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
   ]
     .filter(Boolean)
     .join('');
+  const renderRetrievalSourceChip = (entry, prefixLabel) => {
+    const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
+    return `
+      <span class="retrieval-source-chip">
+        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
+        <button class="tag tag-ghost retrieval-source-copy-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true">링크</button>
+      </span>
+    `;
+  };
   const detailLabels = [
-    ...((compare.previewOnlySources || []).map(
-      (entry) => {
-        const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
-        return `<button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : '다음 · ')}${escapeHtml(entry.label)}</button>`;
-      },
-    )),
-    ...((compare.latestOnlySources || []).map(
-      (entry) => {
-        const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
-        return `<button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : '이전 · ')}${escapeHtml(entry.label)}</button>`;
-      },
-    )),
+    ...((compare.previewOnlySources || []).map((entry) => renderRetrievalSourceChip(entry, '다음 · '))),
+    ...((compare.latestOnlySources || []).map((entry) => renderRetrievalSourceChip(entry, '이전 · '))),
   ]
     .slice(0, 4)
     .join('');
