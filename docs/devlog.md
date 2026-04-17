@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T05:20:00.000Z","id":"doclog_20260417052000_browser_e2e_error_guard","type":"devlog","updatedAt":"2026-04-17T05:20:00.000Z"} -->
+## 2026-04-17 Browser E2E Error Guard Pass
+
+- date: 2026-04-17T05:20:00.000Z
+- extended `smoke-ui-execution-browser-e2e` to capture browser console error events and pageerror events across the whole session instead of treating flow success alone as sufficient
+- asserted at the end of the smoke that both error buckets are empty, so silent UI regressions now fail the same smoke that already covers retrieval handoff and release navigation
+- updated the README smoke note so browser verification explicitly includes the absence of runtime browser errors
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T05:05:00.000Z","id":"doclog_20260417050500_browser_e2e_shutdown_guard","type":"devlog","updatedAt":"2026-04-17T05:05:00.000Z"} -->
 ## 2026-04-17 Browser E2E Shutdown Guard Pass
 

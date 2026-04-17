@@ -58,6 +58,20 @@ try {
     '--raw',
     'run-code',
     `async (page) => {
+      page.__codexConsoleErrors = [];
+      page.__codexPageErrors = [];
+      if (!page.__codexErrorGuardInstalled) {
+        page.on('console', (message) => {
+          if (message.type() !== 'error') {
+            return;
+          }
+          page.__codexConsoleErrors.push(message.text());
+        });
+        page.on('pageerror', (error) => {
+          page.__codexPageErrors.push(String(error?.message || error || ''));
+        });
+        page.__codexErrorGuardInstalled = true;
+      }
       const installGuards = () => {
         window.__lastAlert = '';
         window.__lastClipboardText = '';
@@ -893,9 +907,22 @@ try {
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
 
+  const browserErrorState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => ({
+      consoleErrors: page.__codexConsoleErrors || [],
+      pageErrors: page.__codexPageErrors || [],
+    })`,
+  ]);
+  assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
+  assert.deepEqual(browserErrorState.pageErrors, [], JSON.stringify(browserErrorState));
+
   console.log(
     JSON.stringify(
       {
+        browserConsoleErrors: browserErrorState.consoleErrors.length,
+        browserPageErrors: browserErrorState.pageErrors.length,
         ok: true,
         mode: 'ui-execution-browser-e2e',
         port,
