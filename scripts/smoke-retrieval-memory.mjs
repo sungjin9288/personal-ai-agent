@@ -122,6 +122,8 @@ assert.match(String(missionDetail.harness?.retrieval?.latestArtifact?.path || ''
 assert.equal(missionDetail.harness?.retrieval?.compare?.status, 'partial');
 assert.equal(Number(missionDetail.harness?.retrieval?.compare?.sharedSourceCount || 0) >= 1, true);
 assert.equal(Number(missionDetail.harness?.retrieval?.compare?.latestSnippetCount || 0) >= 1, true);
+assert.equal(Array.isArray(missionDetail.harness?.retrieval?.compare?.previewOnlySources), true);
+assert.equal(Array.isArray(missionDetail.harness?.retrieval?.compare?.latestOnlySources), true);
 assert.equal(
   (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('workspace/fact')),
   true,

@@ -57,6 +57,8 @@ try {
   assert.equal(appJs.includes('preview vs 최근 retrieval evidence'), true);
   assert.equal(appJs.includes('preview only'), true);
   assert.equal(appJs.includes('evidence only'), true);
+  assert.equal(appJs.includes('focusRetrievalSource'), true);
+  assert.equal(appJs.includes('data-retrieval-source-type'), true);
   assert.equal(appJs.includes('retrieval 근거 열기'), true);
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
@@ -69,6 +71,7 @@ try {
   assert.equal(stylesCss.includes('.agent-learning-panel'), true);
   assert.equal(stylesCss.includes('.agent-retrieval-list'), true);
   assert.equal(stylesCss.includes('.agent-retrieval-row'), true);
+  assert.equal(stylesCss.includes('.harness-row.is-focused-source'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 
   console.log(

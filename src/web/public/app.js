@@ -20,6 +20,7 @@ const state = {
   harnessMemoryQuery: '',
   harnessMemorySort: 'latest',
   harnessMemoryVisibleCount: 12,
+  harnessAttachmentFocus: '',
   missionActions: null,
   missionDetail: null,
   missionTimeline: null,
@@ -1647,11 +1648,16 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
     .filter(Boolean)
     .join('');
   const detailLabels = [
-    ...(compare.previewOnlyLabels || []).map((label) => `다음 · ${label}`),
-    ...(compare.latestOnlyLabels || []).map((label) => `이전 · ${label}`),
+    ...((compare.previewOnlySources || []).map(
+      (entry) =>
+        `<button class="tag tag-muted" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">다음 · ${escapeHtml(entry.label)}</button>`,
+    )),
+    ...((compare.latestOnlySources || []).map(
+      (entry) =>
+        `<button class="tag tag-muted" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">이전 · ${escapeHtml(entry.label)}</button>`,
+    )),
   ]
     .slice(0, 4)
-    .map((label) => `<span class="tag tag-muted">${escapeHtml(label)}</span>`)
     .join('');
 
   return `
@@ -2132,6 +2138,64 @@ function wireRetrievalArtifactButtons(scope = document) {
       const artifactId = String(button.dataset.retrievalArtifactOpen || '').trim();
       const sessionId = String(button.dataset.retrievalSessionId || '').trim();
       await openRetrievalArtifact(artifactId, sessionId, { historyMode: 'push' });
+    });
+  });
+}
+
+async function focusRetrievalSource(sourceType, sourceLabel, { historyMode = 'push' } = {}) {
+  const normalizedType = String(sourceType || '').trim().toLowerCase();
+  const normalizedLabel = String(sourceLabel || '').trim();
+
+  if (!state.selectedMissionId || !normalizedType || !normalizedLabel) {
+    return;
+  }
+
+  setActiveStep('step-setup', { syncDetailTab: false, syncUrl: false });
+  setActiveDetailTab('harness', { syncUrl: false });
+
+  if (normalizedType === 'memory') {
+    const [scope = 'all', kind = 'all'] = normalizedLabel.split('/');
+    state.harnessAttachmentFocus = '';
+    state.harnessMemoryFilterScope = ['mission', 'workspace'].includes(scope) ? scope : 'all';
+    state.harnessMemoryFilterKind = ['fact', 'decision', 'preference'].includes(kind) ? kind : 'all';
+    state.harnessMemoryOffset = 0;
+    state.harnessMemoryQuery = '';
+    await loadHarnessMemory();
+    renderHarnessPanel();
+    writeUiStateToUrl({ historyMode });
+    window.requestAnimationFrame(() => {
+      elements.harnessMemory?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    });
+    setUiNotice(`메모 source ${formatRetrievalSourceLabel({ sourceLabel: normalizedLabel, sourceType: normalizedType })} 기준으로 하네스를 좁혀 봅니다.`);
+    return;
+  }
+
+  state.harnessAttachmentFocus = normalizedLabel;
+  renderHarnessPanel();
+  writeUiStateToUrl({ historyMode });
+  window.requestAnimationFrame(() => {
+    const target = elements.harnessSource?.querySelector(
+      `[data-harness-attachment-file="${CSS.escape(normalizedLabel)}"]`,
+    );
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  });
+  setUiNotice(`첨부 source ${normalizedLabel} 위치로 이동했습니다.`);
+}
+
+function wireRetrievalSourceButtons(scope = document) {
+  scope.querySelectorAll('[data-retrieval-source-type]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const sourceType = String(button.dataset.retrievalSourceType || '').trim();
+      const sourceLabel = String(button.dataset.retrievalSourceLabel || '').trim();
+      await focusRetrievalSource(sourceType, sourceLabel, { historyMode: 'push' });
     });
   });
 }
@@ -3244,6 +3308,7 @@ function renderAgentBlueprintBuilder() {
       </div>
     </div>
   `;
+  wireRetrievalSourceButtons(elements.agentBlueprintBuilder);
 
   elements.agentBlueprintBuilder.querySelectorAll('[data-agent-blueprint-id]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -4525,6 +4590,7 @@ function renderOutputStageSummary() {
     </div>
   `;
   wireRetrievalArtifactButtons(elements.outputStageSummary);
+  wireRetrievalSourceButtons(elements.outputStageSummary);
   wireQuickActions(elements.outputStageSummary);
 }
 
@@ -4960,7 +5026,7 @@ function renderHarnessPanel() {
               ${attachmentEntries
                 .map(
                   (entry) => `
-                    <div class="harness-row">
+                    <div class="harness-row ${state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''}" data-harness-attachment-file="${escapeHtml(entry.fileName)}">
                       <div>
                         <div class="item-title">${escapeHtml(entry.fileName)}</div>
                         <div class="item-meta">${escapeHtml(entry.excerpt || '본문 미리보기가 없습니다.')}</div>
@@ -5335,6 +5401,7 @@ function renderHarnessPanel() {
   wireDocumentRowActions();
   wireMissionAttachmentActions();
   wireRetrievalArtifactButtons(elements.harnessMemory);
+  wireRetrievalSourceButtons(elements.harnessMemory);
   wireMemoryRowActions();
 }
 
@@ -6616,6 +6683,7 @@ function wireMemoryRowActions() {
 }
 
 function resetHarnessFilterState() {
+  state.harnessAttachmentFocus = '';
   state.harnessDocumentFilter = 'all';
   state.harnessDocumentOffset = 0;
   state.harnessDocumentQuery = '';
@@ -6638,6 +6706,7 @@ function resetHarnessDocumentBrowseState() {
 }
 
 function resetHarnessMemoryBrowseState() {
+  state.harnessAttachmentFocus = '';
   state.harnessMemoryFilterKind = 'all';
   state.harnessMemoryFilterScope = 'all';
   state.harnessMemoryOffset = 0;

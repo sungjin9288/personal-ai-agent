@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T01:20:00.000Z","id":"doclog_20260417012000_retrieval_source_focus","type":"devlog","updatedAt":"2026-04-17T01:20:00.000Z"} -->
+## 2026-04-17 Retrieval Source Focus Pass
+
+- date: 2026-04-17T01:20:00.000Z
+- turned the retrieval compare callout from a passive summary into an operator drill-down surface by making preview-only and evidence-only source chips clickable
+- wired memory sources to the existing harness memory scope/kind filters and attachment sources to attachment-row highlight plus scroll, so operators can trace grounding drift back to curated inputs without adding a new browse API
+- extended retrieval and UI contract smokes to assert the new source-focus payload fields and client-side focus wiring remain present
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T01:05:00.000Z","id":"doclog_20260417010500_retrieval_compare_surface","type":"devlog","updatedAt":"2026-04-17T01:05:00.000Z"} -->
 ## 2026-04-17 Retrieval Compare Surface Pass
 

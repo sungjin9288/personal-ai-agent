@@ -506,6 +506,7 @@ function compareRetrievalPreviewWithLatestArtifact(previewItems = [], latestSumm
       latestSnippetCount: 0,
       latestSourceCount: 0,
       previewOnlyCount: previewEntries.length,
+      previewOnlySources: previewEntries.slice(0, 4),
       previewOnlyLabels: previewEntries.map((entry) => entry.label).slice(0, 3),
       previewSnippetCount: previewItems.length,
       previewSourceCount: previewEntries.length,
@@ -532,10 +533,12 @@ function compareRetrievalPreviewWithLatestArtifact(previewItems = [], latestSumm
 
   return {
     latestOnlyCount: latestOnlyEntries.length,
+    latestOnlySources: latestOnlyEntries.slice(0, 4),
     latestOnlyLabels: latestOnlyEntries.map((entry) => entry.label).slice(0, 3),
     latestSnippetCount: latestSummary.snippetCount || 0,
     latestSourceCount: latestEntries.length,
     previewOnlyCount: previewOnlyEntries.length,
+    previewOnlySources: previewOnlyEntries.slice(0, 4),
     previewOnlyLabels: previewOnlyEntries.map((entry) => entry.label).slice(0, 3),
     previewSnippetCount: previewItems.length,
     previewSourceCount: previewEntries.length,
