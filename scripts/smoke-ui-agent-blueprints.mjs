@@ -54,6 +54,9 @@ try {
   assert.equal(appJs.includes('text-first lexical memory'), true);
   assert.equal(appJs.includes('다음 실행 retrieval preview'), true);
   assert.equal(appJs.includes('최근 실행 retrieval evidence'), true);
+  assert.equal(appJs.includes('preview vs 최근 retrieval evidence'), true);
+  assert.equal(appJs.includes('preview only'), true);
+  assert.equal(appJs.includes('evidence only'), true);
   assert.equal(appJs.includes('retrieval 근거 열기'), true);
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);

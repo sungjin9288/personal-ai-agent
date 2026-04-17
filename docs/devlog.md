@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T01:05:00.000Z","id":"doclog_20260417010500_retrieval_compare_surface","type":"devlog","updatedAt":"2026-04-17T01:05:00.000Z"} -->
+## 2026-04-17 Retrieval Compare Surface Pass
+
+- date: 2026-04-17T01:05:00.000Z
+- extended mission harness retrieval payload with latest retrieval artifact summary plus preview-vs-evidence compare counts so the UI can show source drift without rereading or diffing the raw markdown client-side
+- surfaced `preview vs 최근 retrieval evidence` callouts in mission setup, harness memory, and output summary so operators can see whether the next run keeps the same grounding sources or is about to shift to new memory/attachment inputs
+- expanded `smoke:retrieval-memory` and `smoke:ui-agent-blueprints` to lock both the compare payload contract and the served wording for the new drift-reading surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T00:50:00.000Z","id":"doclog_20260417005000_retrieval_quick_open_surface","type":"devlog","updatedAt":"2026-04-17T00:50:00.000Z"} -->
 ## 2026-04-17 Retrieval Quick-Open Surface Pass
 

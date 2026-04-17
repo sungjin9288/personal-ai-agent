@@ -1566,6 +1566,115 @@ function summarizeRetrievalSnippet(value, fallback = '-') {
   return normalized.length > 140 ? `${normalized.slice(0, 140).trim()}…` : normalized;
 }
 
+function getRetrievalCompareStatusLabel(compare = {}) {
+  const status = String(compare.status || '').trim();
+
+  if (status === 'aligned') {
+    return 'preview와 evidence 정렬됨';
+  }
+  if (status === 'partial') {
+    return '일부 source만 유지됨';
+  }
+  if (status === 'shifted') {
+    return 'source 흐름이 바뀜';
+  }
+  if (status === 'empty') {
+    return '비교할 retrieval 없음';
+  }
+  if (status === 'no-evidence') {
+    return '최근 evidence 없음';
+  }
+
+  return 'retrieval 비교';
+}
+
+function getRetrievalCompareStatusClass(compare = {}) {
+  const status = String(compare.status || '').trim();
+
+  if (status === 'aligned') {
+    return 'status-completed';
+  }
+  if (status === 'partial' || status === 'no-evidence' || status === 'empty') {
+    return 'status-pending';
+  }
+
+  return 'status-failed';
+}
+
+function summarizeRetrievalCompare(compare = {}) {
+  const shared = Number(compare.sharedSourceCount || 0);
+  const previewOnly = Number(compare.previewOnlyCount || 0);
+  const latestOnly = Number(compare.latestOnlyCount || 0);
+
+  if (compare.status === 'aligned') {
+    return `다음 preview와 최근 evidence가 같은 source ${shared}개를 공유합니다.`;
+  }
+  if (compare.status === 'partial') {
+    return `같은 source ${shared}개를 유지했고 preview only ${previewOnly}개, evidence only ${latestOnly}개가 있습니다.`;
+  }
+  if (compare.status === 'shifted') {
+    return '다음 preview가 최근 evidence와 source를 공유하지 않습니다.';
+  }
+  if (compare.status === 'empty') {
+    return 'preview와 최근 evidence 모두 retrieval source가 비어 있습니다.';
+  }
+  if (compare.status === 'no-evidence') {
+    return `다음 preview source ${Number(compare.previewSourceCount || 0)}개는 준비됐지만 비교할 최근 evidence가 없습니다.`;
+  }
+
+  return 'retrieval source 비교 정보를 계산했습니다.';
+}
+
+function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false } = {}) {
+  const compare = retrieval?.compare || null;
+  const latestArtifact = retrieval?.latestArtifact || null;
+
+  if (!compare || !latestArtifact) {
+    return '';
+  }
+
+  const changeChips = [
+    compare.previewOnlyCount
+      ? `<span class="tag tag-muted">preview only ${escapeHtml(String(compare.previewOnlyCount))}</span>`
+      : '',
+    compare.latestOnlyCount
+      ? `<span class="tag tag-muted">evidence only ${escapeHtml(String(compare.latestOnlyCount))}</span>`
+      : '',
+    compare.sharedSourceCount
+      ? `<span class="tag tag-muted">shared ${escapeHtml(String(compare.sharedSourceCount))}</span>`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('');
+  const detailLabels = [
+    ...(compare.previewOnlyLabels || []).map((label) => `다음 · ${label}`),
+    ...(compare.latestOnlyLabels || []).map((label) => `이전 · ${label}`),
+  ]
+    .slice(0, 4)
+    .map((label) => `<span class="tag tag-muted">${escapeHtml(label)}</span>`)
+    .join('');
+
+  return `
+    <div class="harness-callout">
+      <div class="harness-filter-row">
+        <strong>preview vs 최근 retrieval evidence</strong>
+        <span class="status-badge ${getRetrievalCompareStatusClass(compare)}">${escapeHtml(getRetrievalCompareStatusLabel(compare))}</span>
+      </div>
+      <p>${escapeHtml(summarizeRetrievalCompare(compare))}</p>
+      <div class="item-meta">다음 snippet ${escapeHtml(String(compare.previewSnippetCount || 0))}개 · 최근 evidence snippet ${escapeHtml(String(compare.latestSnippetCount || 0))}개</div>
+      ${changeChips ? `<div class="tag-list">${changeChips}</div>` : ''}
+      ${detailLabels ? `<div class="tag-list">${detailLabels}</div>` : ''}
+      ${
+        includeAction
+          ? `<div class="inline-actions">
+              <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}">retrieval 근거 열기</button>
+            </div>`
+          : ''
+      }
+    </div>
+  `;
+}
+
 function getTimelineKindLabel(value) {
   const raw = String(value || '').trim();
   if (!raw) {
@@ -3107,6 +3216,7 @@ function renderAgentBlueprintBuilder() {
                   </div>`
                 : ''
             }
+            ${renderRetrievalCompareCallout(retrievalPreview)}
             ${
               retrievalPreviewItems.length
                 ? `<div class="agent-retrieval-list">
@@ -4263,7 +4373,8 @@ function renderOutputStageSummary() {
 
   const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
   const latestSession = state.missionDetail?.summary?.latestSession || null;
-  const latestRetrievalArtifact = state.missionDetail?.harness?.retrieval?.latestArtifact || null;
+  const retrieval = state.missionDetail?.harness?.retrieval || null;
+  const latestRetrievalArtifact = retrieval?.latestArtifact || null;
   const execution = getExecutionStatusPayload();
   const latestExecutionSession = execution?.latestExecutionSession || null;
   const flow = getFlowState();
@@ -4400,6 +4511,7 @@ function renderOutputStageSummary() {
           `
           : ''
       }
+      ${renderRetrievalCompareCallout(retrieval, { includeAction: false })}
       <div class="action-row">
         <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
         <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
@@ -4989,6 +5101,7 @@ function renderHarnessPanel() {
             </div>`
           : ''
       }
+      ${renderRetrievalCompareCallout(retrieval)}
       ${
         retrieval.roles?.length
           ? `<div class="tag-list">

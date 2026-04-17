@@ -436,6 +436,114 @@ function summarizeMissionRetrievalPreview({ attachments, memoryEntries, mission,
   };
 }
 
+function getRetrievalSourceCompareKey(sourceType, sourceLabel) {
+  return `${normalizeText(sourceType)}:${normalizeText(sourceLabel)}`;
+}
+
+function formatRetrievalSourceSummaryLabel(sourceType, sourceLabel) {
+  return `${sourceType === 'memory' ? '메모' : '첨부'} · ${sourceLabel}`;
+}
+
+function summarizeStoredRetrievalArtifact(artifact) {
+  if (!artifact?.path || !fs.existsSync(artifact.path)) {
+    return null;
+  }
+
+  const content = fs.readFileSync(artifact.path, 'utf8');
+  const roleMatch = content.match(/^- role:\s+(.+)$/m);
+  const snippetEntries = [...content.matchAll(/^- \[(memory|attachment)\]\s+(.+)$/gm)]
+    .map((match) => {
+      const sourceType = normalizeText(match[1]);
+      const sourceLabel = String(match[2] || '')
+        .replace(/\s+chunk\s+\d+$/i, '')
+        .trim();
+      return {
+        key: getRetrievalSourceCompareKey(sourceType, sourceLabel),
+        label: formatRetrievalSourceSummaryLabel(sourceType, sourceLabel),
+        sourceLabel,
+        sourceType,
+      };
+    })
+    .filter((entry) => entry.sourceLabel);
+
+  const uniqueEntries = [...new Map(snippetEntries.map((entry) => [entry.key, entry])).values()];
+
+  return {
+    attachmentSourceCount: uniqueEntries.filter((entry) => entry.sourceType === 'attachment').length,
+    memorySourceCount: uniqueEntries.filter((entry) => entry.sourceType === 'memory').length,
+    role: roleMatch?.[1] || artifact.role || null,
+    snippetCount: snippetEntries.length,
+    sourceEntries: uniqueEntries,
+    sourceLabels: uniqueEntries.map((entry) => entry.label),
+    sourceKeys: uniqueEntries.map((entry) => entry.key),
+  };
+}
+
+function compareRetrievalPreviewWithLatestArtifact(previewItems = [], latestSummary = null) {
+  const previewEntries = [...new Map(
+    previewItems
+      .map((item) => {
+        const sourceType = normalizeText(item.sourceType);
+        const sourceLabel = normalizeText(item.sourceLabel);
+        if (!sourceType || !sourceLabel) {
+          return null;
+        }
+        return [
+          getRetrievalSourceCompareKey(sourceType, sourceLabel),
+          {
+            key: getRetrievalSourceCompareKey(sourceType, sourceLabel),
+            label: formatRetrievalSourceSummaryLabel(sourceType, sourceLabel),
+            sourceLabel,
+            sourceType,
+          },
+        ];
+      })
+      .filter(Boolean),
+  ).values()];
+
+  if (!latestSummary) {
+    return {
+      latestSnippetCount: 0,
+      latestSourceCount: 0,
+      previewOnlyCount: previewEntries.length,
+      previewOnlyLabels: previewEntries.map((entry) => entry.label).slice(0, 3),
+      previewSnippetCount: previewItems.length,
+      previewSourceCount: previewEntries.length,
+      sharedSourceCount: 0,
+      status: 'no-evidence',
+    };
+  }
+
+  const latestEntries = latestSummary.sourceEntries || [];
+  const latestKeys = new Set(latestEntries.map((entry) => entry.key));
+  const previewKeys = new Set(previewEntries.map((entry) => entry.key));
+  const sharedSourceCount = previewEntries.filter((entry) => latestKeys.has(entry.key)).length;
+  const previewOnlyEntries = previewEntries.filter((entry) => !latestKeys.has(entry.key));
+  const latestOnlyEntries = latestEntries.filter((entry) => !previewKeys.has(entry.key));
+  let status = 'aligned';
+
+  if (!previewEntries.length && !latestEntries.length) {
+    status = 'empty';
+  } else if (!sharedSourceCount && (previewEntries.length || latestEntries.length)) {
+    status = 'shifted';
+  } else if (previewOnlyEntries.length || latestOnlyEntries.length) {
+    status = 'partial';
+  }
+
+  return {
+    latestOnlyCount: latestOnlyEntries.length,
+    latestOnlyLabels: latestOnlyEntries.map((entry) => entry.label).slice(0, 3),
+    latestSnippetCount: latestSummary.snippetCount || 0,
+    latestSourceCount: latestEntries.length,
+    previewOnlyCount: previewOnlyEntries.length,
+    previewOnlyLabels: previewOnlyEntries.map((entry) => entry.label).slice(0, 3),
+    previewSnippetCount: previewItems.length,
+    previewSourceCount: previewEntries.length,
+    sharedSourceCount,
+    status,
+  };
+}
+
 function getRunArtifactFilePrefix({ role, specialistKind }) {
   const normalizedSpecialistKind = normalizeText(specialistKind);
   if (role === 'specialist' && normalizedSpecialistKind) {
@@ -8423,6 +8531,11 @@ function summarizeProviderExecutions(executions) {
       pack: getMissionPack({ mission, workspace }),
       specialistKinds: getParallelSpecialistKinds(mission),
     });
+    const latestRetrievalSummary = summarizeStoredRetrievalArtifact(latestRetrievalArtifact);
+    const retrievalCompare = compareRetrievalPreviewWithLatestArtifact(
+      retrievalPreview.previewItems,
+      latestRetrievalSummary,
+    );
     const recommendations = [];
 
     if (!latestArtifact) {
@@ -8564,6 +8677,7 @@ function summarizeProviderExecutions(executions) {
       },
       retrieval: {
         ...retrievalPreview,
+        compare: retrievalCompare,
         latestArtifact: latestRetrievalArtifact
           ? {
               id: latestRetrievalArtifact.id,
@@ -8573,6 +8687,15 @@ function summarizeProviderExecutions(executions) {
               role: latestRetrievalArtifact.role || null,
               sessionId: latestRetrievalArtifact.sessionId,
               sessionStatus: latestRetrievalSession?.status || null,
+              summary: latestRetrievalSummary
+                ? {
+                    attachmentSourceCount: latestRetrievalSummary.attachmentSourceCount,
+                    memorySourceCount: latestRetrievalSummary.memorySourceCount,
+                    role: latestRetrievalSummary.role,
+                    snippetCount: latestRetrievalSummary.snippetCount,
+                    sourceLabels: latestRetrievalSummary.sourceLabels.slice(0, 4),
+                  }
+                : null,
               title: latestRetrievalArtifact.title || latestRetrievalArtifact.fileName || latestRetrievalArtifact.id,
               updatedAt: latestRetrievalArtifact.createdAt || null,
             }

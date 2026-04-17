@@ -119,6 +119,9 @@ assert.ok((missionDetail.harness?.retrieval?.roles || []).length >= 4);
 assert.equal(missionDetail.harness?.retrieval?.latestArtifact?.id, latestRetrievalArtifact.id);
 assert.equal(missionDetail.harness?.retrieval?.latestArtifact?.sessionId, latestSession.session.id);
 assert.match(String(missionDetail.harness?.retrieval?.latestArtifact?.path || ''), /-retrieval\.md$/);
+assert.equal(missionDetail.harness?.retrieval?.compare?.status, 'partial');
+assert.equal(Number(missionDetail.harness?.retrieval?.compare?.sharedSourceCount || 0) >= 1, true);
+assert.equal(Number(missionDetail.harness?.retrieval?.compare?.latestSnippetCount || 0) >= 1, true);
 assert.equal(
   (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('workspace/fact')),
   true,

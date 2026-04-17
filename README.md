@@ -101,6 +101,7 @@ npm run ui
 - runtime은 미션/워크스페이스 메모와 텍스트 첨부에서 lexical overlap 기반 `retrieved context`를 뽑아 manager/planner/executor/reviewer prompt 앞단에 올리므로, 같은 자료를 통째로 다시 읽기 전에 역할별 핵심 snippet부터 보게 됨
 - 각 agent run은 `*-retrieval.md` artifact를 같이 남기므로, 결과 탭의 세션 산출물 목록에서 이번 실행에 실제로 주입된 retrieval 근거를 run evidence로 다시 열어볼 수 있음
 - `하네스 > 메모리`와 `결과 보기`는 가장 최근 실행의 retrieval artifact를 `retrieval 근거 열기`로 바로 열 수 있어, preview로 본 snippet이 실제 어떤 run evidence로 남았는지 세션 전환과 artifact 포커스까지 한 번에 따라갈 수 있음
+- 같은 surface에는 `preview vs 최근 retrieval evidence` compare callout도 함께 보여서, 다음 run에서 새로 들어올 source와 직전 run에서만 쓰였던 source를 빠르게 구분할 수 있음
 - `npm run smoke:retrieval-memory`는 relevant memory/attachment snippet만 `Retrieved Context` 섹션으로 승격되고 무관한 문장은 제외되는지 manager prompt와 manager context 기준으로 검증함
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
 - `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, `AI가 지금 읽는 자료` 패널, specialist lane style contract가 모두 살아 있는지 검증함
