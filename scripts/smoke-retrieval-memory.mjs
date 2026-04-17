@@ -74,6 +74,7 @@ const run = await service.runMission(mission.id, {
 assert.equal(run.mission.status, 'completed');
 
 const latestSession = service.showSession(mission.id);
+const missionDetail = service.showMission(mission.id);
 const managerPrompt = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-prompt.md');
 const managerContext = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-context.md');
 
@@ -102,6 +103,17 @@ assert.match(retrievedContextSection, /\[memory\] workspace\/fact:/);
 assert.match(retrievedContextSection, /\[attachment\] incident-notes\.md chunk 1:/);
 assert.doesNotMatch(retrievedContextSection, /banjo paprika nebula quartz xylophone/i);
 assert.doesNotMatch(retrievedContextSection, /weekend hiking route/i);
+
+assert.equal(missionDetail.harness?.retrieval?.summary?.ready, true);
+assert.ok((missionDetail.harness?.retrieval?.roles || []).length >= 4);
+assert.equal(
+  (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('workspace/fact')),
+  true,
+);
+assert.equal(
+  (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('incident-notes.md')),
+  true,
+);
 
 console.log(
   JSON.stringify(

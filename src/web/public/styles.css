@@ -1599,6 +1599,49 @@ button {
   background: linear-gradient(180deg, #ffffff 0%, #fff8ef 100%);
 }
 
+.agent-learning-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-retrieval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-retrieval-row {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: rgba(248, 250, 252, 0.82);
+}
+
+.agent-retrieval-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.agent-retrieval-meta strong {
+  font-size: 0.8rem;
+}
+
+.agent-retrieval-meta span {
+  color: var(--text-3);
+  font-size: 0.72rem;
+}
+
+.agent-retrieval-row p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 .rail-control-stack,
 .workspace-form {
   display: flex;

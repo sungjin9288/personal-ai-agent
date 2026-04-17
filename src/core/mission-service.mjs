@@ -354,6 +354,87 @@ function buildRetrievalContext({ attachments, memoryEntries, mission, pack, prev
 
   return selected;
 }
+
+function getRetrievalPreviewRoles(specialistKinds = []) {
+  const roles = [
+    { label: '매니저', providerRole: 'manager', role: 'manager' },
+    { label: '플래너', providerRole: 'planner', role: 'planner' },
+    { label: '실행', providerRole: 'executor', role: 'executor' },
+    { label: '리뷰어', providerRole: 'reviewer', role: 'reviewer' },
+  ];
+
+  for (const specialistKind of ensureArray(specialistKinds)) {
+    roles.push({
+      label: `${specialistKind} specialist`,
+      providerRole: 'specialist',
+      role: 'specialist',
+      specialistKind,
+    });
+  }
+
+  return roles;
+}
+
+function summarizeMissionRetrievalPreview({ attachments, memoryEntries, mission, pack, specialistKinds = [] }) {
+  const rolePreviews = getRetrievalPreviewRoles(specialistKinds).map((roleConfig) => ({
+    itemCount: 0,
+    items: buildRetrievalContext({
+      attachments,
+      memoryEntries,
+      mission,
+      pack,
+      previousOutputs: {},
+      providerRole: roleConfig.providerRole,
+      role: roleConfig.role,
+    }),
+    label: roleConfig.label,
+    providerRole: roleConfig.providerRole,
+    role: roleConfig.role,
+    specialistKind: roleConfig.specialistKind || null,
+  }));
+
+  const previewItemMap = new Map();
+
+  for (const preview of rolePreviews) {
+    preview.itemCount = preview.items.length;
+
+    for (const item of preview.items) {
+      const key = [item.sourceType, item.sourceLabel, item.fileName || '', item.chunkIndex || '', item.snippet].join('|');
+      if (!previewItemMap.has(key)) {
+        previewItemMap.set(key, {
+          ...item,
+          roles: [preview.label],
+        });
+        continue;
+      }
+
+      const current = previewItemMap.get(key);
+      current.roles = [...new Set([...current.roles, preview.label])];
+    }
+  }
+
+  const previewItems = [...previewItemMap.values()]
+    .sort((left, right) => Number(right.score || 0) - Number(left.score || 0))
+    .slice(0, RETRIEVAL_MAX_ITEMS);
+
+  return {
+    previewItems,
+    roles: rolePreviews.map((preview) => ({
+      itemCount: preview.itemCount,
+      label: preview.label,
+      providerRole: preview.providerRole,
+      role: preview.role,
+      specialistKind: preview.specialistKind,
+    })),
+    summary: {
+      attachmentSourceCount: new Set(previewItems.filter((item) => item.sourceType === 'attachment').map((item) => item.sourceLabel)).size,
+      memorySourceCount: new Set(previewItems.filter((item) => item.sourceType === 'memory').map((item) => item.sourceLabel)).size,
+      ready: previewItems.length > 0,
+      roleCount: rolePreviews.length,
+      snippetCount: previewItems.length,
+    },
+  };
+}
 const MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES = ['application/', 'text/'];
 const MISSION_ATTACHMENT_ALLOWED_MIME_TYPES = new Set([
   'application/json',
@@ -8278,6 +8359,14 @@ function summarizeProviderExecutions(executions) {
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
     const documentRegistry = buildHarnessDocumentRegistry();
     const actionInbox = getActionInbox({ missionId: mission.id });
+    const workspace = getWorkspace(mission.workspaceId);
+    const retrievalPreview = summarizeMissionRetrievalPreview({
+      attachments: collectMissionAttachmentContext(mission.id),
+      memoryEntries: collectRelevantMemoryEntries({ mission, workspace }),
+      mission,
+      pack: getMissionPack({ mission, workspace }),
+      specialistKinds: getParallelSpecialistKinds(mission),
+    });
     const recommendations = [];
 
     if (!latestArtifact) {
@@ -8417,6 +8506,7 @@ function summarizeProviderExecutions(executions) {
         })),
         workspaceCount: workspaceMemoryEntries.length,
       },
+      retrieval: retrievalPreview,
       recommendations,
     };
   }

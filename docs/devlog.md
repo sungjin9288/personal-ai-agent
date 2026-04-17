@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T00:20:00.000Z","id":"doclog_20260417002000_retrieval_preview_surface","type":"devlog","updatedAt":"2026-04-17T00:20:00.000Z"} -->
+## 2026-04-17 Retrieval Preview Surface Pass
+
+- date: 2026-04-17T00:20:00.000Z
+- surfaced `다음 실행 retrieval preview` in both mission setup and harness memory views so operators can see which memory and attachment snippets will be lifted into the next run before the agents execute
+- added mission-level retrieval summary payload to `showMission().harness`, including role coverage, preview snippet count, and source split between memory and attachments, without changing the existing prompt grounding contract
+- extended `smoke:retrieval-memory` and `smoke:ui-agent-blueprints` to lock both the API payload and the served UI wording/style contract for the new retrieval transparency surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T00:00:00.000Z","id":"doclog_20260417000000_retrieval_memory_and_browser_verification","type":"devlog","updatedAt":"2026-04-17T00:00:00.000Z"} -->
 ## 2026-04-17 Retrieval Memory and Browser Verification Pass
 

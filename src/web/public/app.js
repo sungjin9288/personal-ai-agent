@@ -1537,6 +1537,34 @@ function summarizeText(value, fallback = '') {
   return normalized.length > 92 ? `${normalized.slice(0, 92).trim()}…` : normalized;
 }
 
+function formatRetrievalSourceLabel(item = {}) {
+  const sourceType = String(item.sourceType || '').trim();
+  const sourceLabel = String(item.sourceLabel || item.fileName || '').trim();
+
+  if (!sourceLabel) {
+    return sourceType === 'attachment' ? '첨부' : '메모';
+  }
+
+  if (sourceType === 'memory') {
+    const [scope = 'memory', kind = 'note'] = sourceLabel.split('/');
+    return `${getDisplayLabel(scope, scope)} · ${getDisplayLabel(kind, kind)}`;
+  }
+
+  return sourceLabel;
+}
+
+function summarizeRetrievalSnippet(value, fallback = '-') {
+  const normalized = String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalized) {
+    return fallback;
+  }
+
+  return normalized.length > 140 ? `${normalized.slice(0, 140).trim()}…` : normalized;
+}
+
 function getTimelineKindLabel(value) {
   const raw = String(value || '').trim();
   if (!raw) {
@@ -2822,6 +2850,9 @@ function renderAgentBlueprintBuilder() {
   const pendingAttachmentCount = Number(elements.missionAttachmentInput?.files?.length || 0);
   const selectedMissionLearning = state.missionDetail?.mission?.id === state.selectedMissionId ? state.missionDetail : null;
   const learningSummary = selectedMissionLearning?.harness || null;
+  const retrievalPreview = learningSummary?.retrieval || null;
+  const retrievalPreviewItems = retrievalPreview?.previewItems || [];
+  const retrievalRolePreview = retrievalPreview?.roles || [];
   const missionMemoryCount = Number(learningSummary?.memory?.missionCounts?.total || 0);
   const workspaceMemoryCount = Number(learningSummary?.memory?.workspaceCount || 0);
   const attachmentCount = selectedMissionLearning
@@ -3024,6 +3055,46 @@ function renderAgentBlueprintBuilder() {
               <strong>아직 없는 것</strong>
               <p>모델 fine-tuning, OCR, binary 파일 이해, vector retrieval index는 아직 붙어 있지 않습니다. 현재 retrieval은 text-first lexical memory입니다.</p>
             </div>
+          </div>
+          <div class="agent-learning-preview">
+            <div class="harness-filter-row">
+              <p class="summary-label">다음 실행 retrieval preview</p>
+              <span class="item-meta">snippet ${escapeHtml(String(retrievalPreview?.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrievalPreview?.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrievalPreview?.summary?.attachmentSourceCount || 0))}</span>
+            </div>
+            ${
+              retrievalRolePreview.length
+                ? `<div class="tag-list">
+                    ${retrievalRolePreview
+                      .map(
+                        (entry) =>
+                          `<span class="tag tag-muted">${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}</span>`,
+                      )
+                      .join('')}
+                  </div>`
+                : ''
+            }
+            ${
+              retrievalPreviewItems.length
+                ? `<div class="agent-retrieval-list">
+                    ${retrievalPreviewItems
+                      .map(
+                        (item) => `
+                          <div class="agent-retrieval-row">
+                            <div class="agent-retrieval-meta">
+                              <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
+                              <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
+                            </div>
+                            <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
+                          </div>
+                        `,
+                      )
+                      .join('')}
+                  </div>`
+                : `<div class="agent-learning-capability">
+                    <strong>retrieval preview 비어 있음</strong>
+                    <p>미션 첨부나 메모를 추가하면 다음 실행 전에 어떤 snippet이 먼저 올라가는지 여기서 바로 확인할 수 있습니다.</p>
+                  </div>`
+            }
           </div>
         </section>
       </div>
@@ -4589,6 +4660,7 @@ function renderHarnessPanel() {
     workspaceEntries: harnessSummary.memory?.recentWorkspaceEntries || [],
   };
   const memory = harnessSummary.memory || {};
+  const retrieval = harnessSummary.retrieval || { previewItems: [], roles: [], summary: {} };
   const loops = harnessSummary.loops || {};
   const recommendations = harnessSummary.recommendations || [];
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
@@ -4842,6 +4914,46 @@ function renderHarnessPanel() {
     <div class="harness-callout">
       <strong>레이어드 메모리</strong>
       <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
+    </div>
+    <div class="harness-subsection">
+      <div class="harness-filter-row">
+        <p class="summary-label">다음 실행 retrieval preview</p>
+        <span class="item-meta">snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrieval.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrieval.summary?.attachmentSourceCount || 0))}</span>
+      </div>
+      ${
+        retrieval.roles?.length
+          ? `<div class="tag-list">
+              ${retrieval.roles
+                .map(
+                  (entry) =>
+                    `<span class="tag tag-muted">${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}</span>`,
+                )
+                .join('')}
+            </div>`
+          : ''
+      }
+      ${
+        retrieval.previewItems?.length
+          ? `<div class="agent-retrieval-list">
+              ${retrieval.previewItems
+                .map(
+                  (item) => `
+                    <div class="agent-retrieval-row">
+                      <div class="agent-retrieval-meta">
+                        <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
+                        <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
+                      </div>
+                      <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>`
+          : `<div class="harness-empty-inline">
+              <strong>retrieval preview가 아직 비어 있습니다.</strong>
+              <p>첨부나 메모를 누적하면 다음 실행 전에 어떤 snippet이 우선 주입되는지 여기서 바로 확인할 수 있습니다.</p>
+            </div>`
+      }
     </div>
     <div class="harness-searchbar">
       <label class="compact-label">

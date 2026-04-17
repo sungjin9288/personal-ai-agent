@@ -97,13 +97,14 @@ npm run ui
 - 같은 화면은 `작업 모드 선택 → AI 카드 선택 → 읽힐 자료 넣기` 3-step onboarding으로 구성되어, operator가 AI를 어떻게 추가하는지와 무엇을 먼저 준비해야 하는지 카드 설명을 길게 읽지 않아도 파악할 수 있음
 - 같은 surface 상단의 intent pill은 `빠르게 초안`, `구현 + 검증`, `리서치 포함`, `끝까지 handoff`처럼 목적 중심으로 AI 구성을 먼저 고르게 해 주고, 실제 specialist profile 선택은 그 intent에 맞춰 바로 따라오게 구성됨
 - `AI가 지금 읽는 자료` 패널은 현재 지식 루프가 `prompt grounding + retrieval memory` 범위라는 점을 명시하고, fine-tuning·OCR·binary understanding·vector retrieval index는 아직 지원하지 않는다고 분리해서 보여 줌
+- 같은 패널에는 `다음 실행 retrieval preview`가 함께 보여서, 첨부/메모를 넣었을 때 실제로 어떤 snippet이 다음 run 앞단에 먼저 올라가는지 source label과 역할별 coverage 기준으로 바로 확인 가능
 - runtime은 미션/워크스페이스 메모와 텍스트 첨부에서 lexical overlap 기반 `retrieved context`를 뽑아 manager/planner/executor/reviewer prompt 앞단에 올리므로, 같은 자료를 통째로 다시 읽기 전에 역할별 핵심 snippet부터 보게 됨
 - `npm run smoke:retrieval-memory`는 relevant memory/attachment snippet만 `Retrieved Context` 섹션으로 승격되고 무관한 문장은 제외되는지 manager prompt와 manager context 기준으로 검증함
 - `npm run smoke:ui-mission-attachments`는 served UI asset에 mission attachment form/harness upload wiring이 살아 있는지, 그리고 public mission API와 harness attachment route가 같은 attachment summary contract를 반환하는지 함께 검증함
 - `npm run smoke:ui-agent-blueprints`는 served UI asset 기준으로 AI composition 카드, `AI가 지금 읽는 자료` 패널, specialist lane style contract가 모두 살아 있는지 검증함
 - `npm run smoke:ui-execution-browser-e2e`는 실제 브라우저에서 미션 생성, execution approval/start, release tab navigation, browser history 복원, screenshot artifact 저장까지 한 번에 검증함
 - `결과와 기록` 상단에는 현재 detail mode, 최근 세션, 결과물 수, 검토 상태를 먼저 보여 주는 context strip을 배치
-- `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, text-first retrieval memory, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 줌
+- `하네스` 탭은 MarkItDown식 Markdown source-of-record 원칙, text-first retrieval memory, Hermes/OpenAI식 session-first 운영 루프를 현재 런타임 데이터 위에서 읽기 좋은 형태로 묶어 주며, `다음 실행 retrieval preview`로 snippet transparency도 함께 보여 줌
 - 세션 목록과 provider 상태는 항상 열어 두는 inspector 대신, 하단 세부 탭 안에서 필요할 때만 확인
 - `결과와 기록` workbench는 결과 본문이 더 넓고 또렷하게 읽히도록 비율과 타이포를 조정했고, 실행/승인/산출물 목록은 더 얇은 검사 패널처럼 분리
 - `검토하기` 단계와 검토 탭은 `승인 대기 → 후속 작업 → 준비 상태` 순서로 재배치해, 사람이 먼저 결정해야 하는 항목이 가장 먼저 보이도록 정리

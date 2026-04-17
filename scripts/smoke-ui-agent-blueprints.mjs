@@ -52,6 +52,8 @@ try {
   assert.equal(appJs.includes('prompt grounding + retrieval memory'), true);
   assert.equal(appJs.includes('retrieval-ready'), true);
   assert.equal(appJs.includes('text-first lexical memory'), true);
+  assert.equal(appJs.includes('다음 실행 retrieval preview'), true);
+  assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
 
@@ -60,6 +62,8 @@ try {
   assert.equal(stylesCss.includes('.agent-blueprint-step'), true);
   assert.equal(stylesCss.includes('.agent-intent-strip'), true);
   assert.equal(stylesCss.includes('.agent-learning-panel'), true);
+  assert.equal(stylesCss.includes('.agent-retrieval-list'), true);
+  assert.equal(stylesCss.includes('.agent-retrieval-row'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 
   console.log(
