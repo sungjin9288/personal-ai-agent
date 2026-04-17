@@ -3101,6 +3101,12 @@ button:disabled {
   gap: 6px;
 }
 
+.artifact-meta-toggle {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+}
+
 .artifact-meta-path {
   display: inline-flex;
   align-items: center;

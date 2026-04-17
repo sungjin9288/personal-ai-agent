@@ -24,6 +24,7 @@ const state = {
   missionDetail: null,
   missionTimeline: null,
   missions: [],
+  outputArtifactMetaExpanded: false,
   outputMissionSummaryExpanded: false,
   outputPrimaryTabsExpanded: false,
   outputRailCollapsed: true,
@@ -1765,6 +1766,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-artifact-meta') {
+        toggleOutputArtifactMetaExpanded();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -2007,6 +2013,17 @@ function toggleOutputMissionSummaryExpanded(forceValue = null) {
   }
   renderMissionSummary();
   renderDetailToolbarActions();
+}
+
+function toggleOutputArtifactMetaExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputArtifactMetaExpanded = forceValue;
+  } else {
+    state.outputArtifactMetaExpanded = !state.outputArtifactMetaExpanded;
+  }
+  if (state.selectedArtifactId && state.artifactsById.has(state.selectedArtifactId)) {
+    renderArtifact(state.artifactsById.get(state.selectedArtifactId));
+  }
 }
 
 function toggleOutputSupportExpanded(forceValue = null) {
@@ -6843,8 +6860,15 @@ function renderArtifact(payload) {
           <strong>${escapeHtml(artifactTitle)}</strong>
           <div class="artifact-meta-row artifact-meta-row-compact">
             <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-            <span class="artifact-meta-path mono">${escapeHtml(payload.path)}</span>
+            <button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta">
+              ${escapeHtml(state.outputArtifactMetaExpanded ? '경로 닫기' : '경로')}
+            </button>
           </div>
+          ${
+            state.outputArtifactMetaExpanded
+              ? `<span class="artifact-meta-path mono">${escapeHtml(payload.path)}</span>`
+              : ''
+          }
         </div>
       `
     : `
@@ -6855,6 +6879,7 @@ function renderArtifact(payload) {
           <div class="item-meta mono">${escapeHtml(payload.path)}</div>
         </div>
       `;
+  wireQuickActions(elements.artifactMeta);
   elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
   renderDetailContextbar();
 }
@@ -6866,6 +6891,7 @@ async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, ur
 
   if (state.artifactsById.has(artifactId)) {
     state.selectedArtifactId = artifactId;
+    state.outputArtifactMetaExpanded = false;
     renderArtifact(state.artifactsById.get(artifactId));
     renderSessionDetail(state.currentSessionPayload);
     if (activateTab) {
@@ -6881,6 +6907,7 @@ async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, ur
   const payload = await api(`/api/artifacts/${encodeURIComponent(artifactId)}`);
   state.artifactsById.set(artifactId, payload);
   state.selectedArtifactId = artifactId;
+  state.outputArtifactMetaExpanded = false;
   renderArtifact(payload);
   renderSessionDetail(state.currentSessionPayload);
   if (activateTab) {
