@@ -77,12 +77,15 @@ const latestSession = service.showSession(mission.id);
 const missionDetail = service.showMission(mission.id);
 const managerPrompt = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-prompt.md');
 const managerContext = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-context.md');
+const managerRetrieval = latestSession.artifacts.find((artifact) => artifact.fileName === 'manager-retrieval.md');
 
 assert.ok(managerPrompt);
 assert.ok(managerContext);
+assert.ok(managerRetrieval);
 
 const managerPromptContent = fs.readFileSync(managerPrompt.path, 'utf8');
 const managerContextContent = fs.readFileSync(managerContext.path, 'utf8');
+const managerRetrievalContent = fs.readFileSync(managerRetrieval.path, 'utf8');
 
 const retrievedPromptSection =
   managerPromptContent.match(/## Retrieved Context\n([\s\S]*?)\n\n## Parallel Specialists/)?.[1] || '';
@@ -103,6 +106,11 @@ assert.match(retrievedContextSection, /\[memory\] workspace\/fact:/);
 assert.match(retrievedContextSection, /\[attachment\] incident-notes\.md chunk 1:/);
 assert.doesNotMatch(retrievedContextSection, /banjo paprika nebula quartz xylophone/i);
 assert.doesNotMatch(retrievedContextSection, /weekend hiking route/i);
+
+assert.match(managerRetrievalContent, /# Retrieved Context/);
+assert.match(managerRetrievalContent, /- role: manager/);
+assert.match(managerRetrievalContent, /\[memory\] workspace\/fact/);
+assert.match(managerRetrievalContent, /\[attachment\] incident-notes\.md chunk 1/);
 
 assert.equal(missionDetail.harness?.retrieval?.summary?.ready, true);
 assert.ok((missionDetail.harness?.retrieval?.roles || []).length >= 4);

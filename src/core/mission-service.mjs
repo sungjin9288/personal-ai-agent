@@ -435,6 +435,36 @@ function summarizeMissionRetrievalPreview({ attachments, memoryEntries, mission,
     },
   };
 }
+
+function getRunArtifactFilePrefix({ role, specialistKind }) {
+  const normalizedSpecialistKind = normalizeText(specialistKind);
+  if (role === 'specialist' && normalizedSpecialistKind) {
+    return `specialist-${normalizedSpecialistKind}`;
+  }
+
+  return normalizeText(role, 'agent');
+}
+
+function formatRetrievalArtifactContent({ providerRole, retrievalContext = [], role, specialistKind = '' }) {
+  const specialistLine = specialistKind ? `- specialist kind: ${specialistKind}\n` : '';
+  return `# Retrieved Context
+
+## Agent
+- role: ${role}
+- provider role: ${providerRole}
+${specialistLine}
+
+## Snippets
+${retrievalContext.length
+  ? retrievalContext
+      .map(
+        (item) =>
+          `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - snippet: ${item.snippet}`,
+      )
+      .join('\n')
+  : '- no retrieval snippets selected'}
+`;
+}
 const MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES = ['application/', 'text/'];
 const MISSION_ATTACHMENT_ALLOWED_MIME_TYPES = new Set([
   'application/json',
@@ -6924,6 +6954,10 @@ function summarizeProviderExecutions(executions) {
     outputTitle = null,
     promptFileName = null,
   }) {
+    const artifactFilePrefix = getRunArtifactFilePrefix({
+      role,
+      specialistKind: runMetadata.specialistKind,
+    });
     const retrievalContext = buildRetrievalContext({
       attachments,
       memoryEntries,
@@ -6968,10 +7002,26 @@ function summarizeProviderExecutions(executions) {
       sessionId: session.id,
       role,
       kind: 'prompt',
-      fileName: promptFileName || `${role}-prompt.md`,
+      fileName: promptFileName || `${artifactFilePrefix}-prompt.md`,
       title: `${role} prompt`,
       content: promptContent,
     });
+    const retrievalArtifact = retrievalContext.length
+      ? harness.writeArtifact({
+          missionId: mission.id,
+          sessionId: session.id,
+          role,
+          kind: 'retrieval',
+          fileName: `${artifactFilePrefix}-retrieval.md`,
+          title: `${role} retrieval context`,
+          content: formatRetrievalArtifactContent({
+            providerRole,
+            retrievalContext,
+            role,
+            specialistKind: normalizeText(runMetadata.specialistKind),
+          }),
+        })
+      : null;
 
     try {
       const providerOutput = await provider.run(providerInput);
@@ -7004,7 +7054,7 @@ function summarizeProviderExecutions(executions) {
       const completedRun = harness.completeAgentRun(agentRun.id, {
         status: normalizedOutput.verdict === 'fail' ? 'failed' : 'completed',
         outputSummary: normalizedOutput.summaryText,
-        artifactIds: [promptArtifact.id, outputArtifact.id],
+        artifactIds: [promptArtifact.id, retrievalArtifact?.id, outputArtifact.id].filter(Boolean),
         metadata: {
           attemptCount: Number(providerOutput?.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(providerOutput?.attemptHistory),
@@ -7034,6 +7084,7 @@ function summarizeProviderExecutions(executions) {
         artifact: outputArtifact,
         error: null,
         promptArtifact,
+        retrievalArtifact,
         run: completedRun,
         output: normalizedOutput,
       };
@@ -7042,7 +7093,7 @@ function summarizeProviderExecutions(executions) {
       const failedRun = harness.completeAgentRun(agentRun.id, {
         status: 'failed',
         outputSummary: failure.message,
-        artifactIds: [promptArtifact.id],
+        artifactIds: [promptArtifact.id, retrievalArtifact?.id].filter(Boolean),
         metadata: {
           attemptCount: Number(failure.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(failure.attemptHistory),
@@ -7081,6 +7132,7 @@ function summarizeProviderExecutions(executions) {
         artifact: null,
         error: isProviderFailureError(error) ? error : error,
         promptArtifact,
+        retrievalArtifact,
         run: failedRun,
         output: null,
       };

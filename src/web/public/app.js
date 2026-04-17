@@ -1066,6 +1066,7 @@ const DISPLAY_LABELS = {
   required: '필요',
   reference: '참고 레포 기록',
   rejected: '반려됨',
+  retrieval: 'retrieval 근거',
   retryReady: '재실행 권장',
   reviewer: '리뷰어',
   running: '실행 중',

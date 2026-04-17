@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T00:35:00.000Z","id":"doclog_20260417003500_retrieval_evidence_artifacts","type":"devlog","updatedAt":"2026-04-17T00:35:00.000Z"} -->
+## 2026-04-17 Retrieval Evidence Artifact Pass
+
+- date: 2026-04-17T00:35:00.000Z
+- each agent run now persists a dedicated `*-retrieval.md` artifact alongside its prompt so operators can inspect the exact snippets that were actually injected into that run instead of inferring them from the full prompt body
+- kept retrieval evidence additive and low-risk by reusing the already computed retrievalContext, then wiring the artifact into both successful and failed run artifact lists so prompt failures still leave behind readable grounding evidence
+- extended `smoke:retrieval-memory` to assert the new retrieval artifact file exists and contains both the selected memory and attachment snippets, while existing mission and UI smokes confirm the broader mission detail payload still serves correctly
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T00:20:00.000Z","id":"doclog_20260417002000_retrieval_preview_surface","type":"devlog","updatedAt":"2026-04-17T00:20:00.000Z"} -->
 ## 2026-04-17 Retrieval Preview Surface Pass
 
