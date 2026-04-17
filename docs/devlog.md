@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T01:50:00.000Z","id":"doclog_20260417015000_retrieval_focus_active_state","type":"devlog","updatedAt":"2026-04-17T01:50:00.000Z"} -->
+## 2026-04-17 Retrieval Focus Active-State Pass
+
+- date: 2026-04-17T01:50:00.000Z
+- made retrieval compare chips reflect the current narrowed source directly, so an already-focused source shows up as `현재 · …` instead of looking identical to inactive chips
+- added inline `현재 source 해제` control inside the compare callout to avoid forcing operators to scroll down to the harness banner just to clear an active retrieval focus
+- extended the UI smoke and styles to lock the new active-focus chip state and inline clear wording
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T01:35:00.000Z","id":"doclog_20260417013500_retrieval_focus_banner","type":"devlog","updatedAt":"2026-04-17T01:35:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Banner Pass
 

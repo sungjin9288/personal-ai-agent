@@ -62,6 +62,8 @@ try {
   assert.equal(appJs.includes('현재 retrieval source focus'), true);
   assert.equal(appJs.includes('clear-retrieval-source-focus'), true);
   assert.equal(appJs.includes('focus 해제'), true);
+  assert.equal(appJs.includes('현재 source 해제'), true);
+  assert.equal(appJs.includes('is-active-focus'), true);
   assert.equal(appJs.includes('retrieval 근거 열기'), true);
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
@@ -75,6 +77,7 @@ try {
   assert.equal(stylesCss.includes('.agent-retrieval-list'), true);
   assert.equal(stylesCss.includes('.agent-retrieval-row'), true);
   assert.equal(stylesCss.includes('.harness-row.is-focused-source'), true);
+  assert.equal(stylesCss.includes('.tag.is-active-focus'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 
   console.log(

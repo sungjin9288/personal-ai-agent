@@ -1631,6 +1631,7 @@ function summarizeRetrievalCompare(compare = {}) {
 function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false } = {}) {
   const compare = retrieval?.compare || null;
   const latestArtifact = retrieval?.latestArtifact || null;
+  const activeFocus = getActiveRetrievalSourceFocus();
 
   if (!compare || !latestArtifact) {
     return '';
@@ -1651,12 +1652,16 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
     .join('');
   const detailLabels = [
     ...((compare.previewOnlySources || []).map(
-      (entry) =>
-        `<button class="tag tag-muted" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">다음 · ${escapeHtml(entry.label)}</button>`,
+      (entry) => {
+        const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
+        return `<button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : '다음 · ')}${escapeHtml(entry.label)}</button>`;
+      },
     )),
     ...((compare.latestOnlySources || []).map(
-      (entry) =>
-        `<button class="tag tag-muted" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">이전 · ${escapeHtml(entry.label)}</button>`,
+      (entry) => {
+        const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
+        return `<button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : '이전 · ')}${escapeHtml(entry.label)}</button>`;
+      },
     )),
   ]
     .slice(0, 4)
@@ -1673,9 +1678,18 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
       ${changeChips ? `<div class="tag-list">${changeChips}</div>` : ''}
       ${detailLabels ? `<div class="tag-list">${detailLabels}</div>` : ''}
       ${
-        includeAction
+        includeAction || activeFocus
           ? `<div class="inline-actions">
-              <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}">retrieval 근거 열기</button>
+              ${
+                includeAction
+                  ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}">retrieval 근거 열기</button>`
+                  : ''
+              }
+              ${
+                activeFocus
+                  ? `<button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">현재 source 해제</button>`
+                  : ''
+              }
             </div>`
           : ''
       }
@@ -3357,6 +3371,7 @@ function renderAgentBlueprintBuilder() {
       </div>
     </div>
   `;
+  wireQuickActions(elements.agentBlueprintBuilder);
   wireRetrievalSourceButtons(elements.agentBlueprintBuilder);
 
   elements.agentBlueprintBuilder.querySelectorAll('[data-agent-blueprint-id]').forEach((button) => {
