@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T05:35:00.000Z","id":"doclog_20260417053500_handoff_session_error_guard","type":"devlog","updatedAt":"2026-04-17T05:35:00.000Z"} -->
+## 2026-04-17 Handoff Session Error Guard Pass
+
+- date: 2026-04-17T05:35:00.000Z
+- extracted the browser guard bootstrap into a reusable helper so fresh handoff sessions now receive the same dialog stubs and runtime error listeners as the main browser session
+- extended fresh handoff assertions to require empty console/page error buckets in those secondary sessions, so retrieval deep-link reopen is verified as both visually restored and runtime-clean
+- updated the README smoke note so the browser verification contract explicitly covers main and handoff sessions together
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T05:20:00.000Z","id":"doclog_20260417052000_browser_e2e_error_guard","type":"devlog","updatedAt":"2026-04-17T05:20:00.000Z"} -->
 ## 2026-04-17 Browser E2E Error Guard Pass
 

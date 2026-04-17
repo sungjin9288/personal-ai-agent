@@ -19,6 +19,60 @@ fs.rmSync(screenshotPath, { force: true });
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
 const serverOutput = { stderr: '', stdout: '' };
+const browserGuardScript = `async (page) => {
+  page.__codexConsoleErrors = page.__codexConsoleErrors || [];
+  page.__codexPageErrors = page.__codexPageErrors || [];
+  if (!page.__codexErrorGuardInstalled) {
+    page.on('console', (message) => {
+      if (message.type() !== 'error') {
+        return;
+      }
+      page.__codexConsoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => {
+      page.__codexPageErrors.push(String(error?.message || error || ''));
+    });
+    page.__codexErrorGuardInstalled = true;
+  }
+  const installGuards = () => {
+    window.__lastAlert = '';
+    window.__lastClipboardText = '';
+    window.__lastConfirm = '';
+    window.__lastPrompt = '';
+    window.alert = (message) => {
+      window.__lastAlert = String(message || '');
+    };
+    window.confirm = (message) => {
+      window.__lastConfirm = String(message || '');
+      return true;
+    };
+    window.prompt = (message, defaultValue = '') => {
+      window.__lastPrompt = JSON.stringify({
+        defaultValue: String(defaultValue ?? ''),
+        message: String(message || ''),
+      });
+      return typeof defaultValue === 'string' ? defaultValue : '';
+    };
+    const clipboard = {
+      writeText: async (value) => {
+        window.__lastClipboardText = String(value || '');
+      },
+    };
+    try {
+      Object.defineProperty(window.navigator, 'clipboard', {
+        configurable: true,
+        value: clipboard,
+      });
+    } catch {
+      window.navigator.clipboard = clipboard;
+    }
+  };
+  await page.addInitScript(installGuards);
+  await page.evaluate(installGuards);
+  return {
+    ok: true,
+  };
+}`;
 
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -54,64 +108,7 @@ try {
   runPw(['open', baseUrl]);
 
   console.error('[smoke-ui-execution-browser-e2e] install dialog guards');
-  runPw([
-    '--raw',
-    'run-code',
-    `async (page) => {
-      page.__codexConsoleErrors = [];
-      page.__codexPageErrors = [];
-      if (!page.__codexErrorGuardInstalled) {
-        page.on('console', (message) => {
-          if (message.type() !== 'error') {
-            return;
-          }
-          page.__codexConsoleErrors.push(message.text());
-        });
-        page.on('pageerror', (error) => {
-          page.__codexPageErrors.push(String(error?.message || error || ''));
-        });
-        page.__codexErrorGuardInstalled = true;
-      }
-      const installGuards = () => {
-        window.__lastAlert = '';
-        window.__lastClipboardText = '';
-        window.__lastConfirm = '';
-        window.__lastPrompt = '';
-        window.alert = (message) => {
-          window.__lastAlert = String(message || '');
-        };
-        window.confirm = (message) => {
-          window.__lastConfirm = String(message || '');
-          return true;
-        };
-        window.prompt = (message, defaultValue = '') => {
-          window.__lastPrompt = JSON.stringify({
-            defaultValue: String(defaultValue ?? ''),
-            message: String(message || ''),
-          });
-          return typeof defaultValue === 'string' ? defaultValue : '';
-        };
-        const clipboard = {
-          writeText: async (value) => {
-            window.__lastClipboardText = String(value || '');
-          },
-        };
-        try {
-          Object.defineProperty(window.navigator, 'clipboard', {
-            configurable: true,
-            value: clipboard,
-          });
-        } catch {
-          window.navigator.clipboard = clipboard;
-        }
-      };
-      await page.addInitScript(installGuards);
-      await page.evaluate(installGuards);
-      return {
-        ok: true,
-      };
-    }`,
-  ]);
+  installBrowserGuards();
 
   const missionTitle = `Browser Execution E2E ${Date.now().toString(36)}`;
 
@@ -764,6 +761,7 @@ try {
     const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(handoffSessionId);
     runPw(['open', baseUrl], { session: handoffSessionId });
+    installBrowserGuards({ session: handoffSessionId });
     const handoffState = runPwJson([
       '--raw',
       'run-code',
@@ -784,16 +782,20 @@ try {
           attachmentFocused: await page.evaluate((targetSourceLabel) => {
             return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
           }, expectedSourceLabel),
+          consoleErrors: page.__codexConsoleErrors || [],
           focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
           href: page.url(),
+          pageErrors: page.__codexPageErrors || [],
         };
       }`,
     ], { session: handoffSessionId });
     assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
     assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
     assert.equal(handoffState.href, retrievalUrl);
+    assert.deepEqual(handoffState.consoleErrors, [], JSON.stringify(handoffState));
     assert.match(handoffState.focusBanner, /현재 retrieval source focus/);
     assert.match(handoffState.activeChip, /현재 ·/);
+    assert.deepEqual(handoffState.pageErrors, [], JSON.stringify(handoffState));
     if (retrievalFocusState.sourceType === 'attachment') {
       assert.equal(handoffState.attachmentFocused, true, JSON.stringify(handoffState));
     }
@@ -907,14 +909,7 @@ try {
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
 
-  const browserErrorState = runPwJson([
-    '--raw',
-    'run-code',
-    `async (page) => ({
-      consoleErrors: page.__codexConsoleErrors || [],
-      pageErrors: page.__codexPageErrors || [],
-    })`,
-  ]);
+  const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
   assert.deepEqual(browserErrorState.pageErrors, [], JSON.stringify(browserErrorState));
 
@@ -970,6 +965,24 @@ function runCli({ rootDir, args }) {
 
   const stdout = String(result.stdout || '').trim();
   return stdout ? JSON.parse(stdout) : null;
+}
+
+function installBrowserGuards({ session = sessionId } = {}) {
+  runPw(['--raw', 'run-code', browserGuardScript], { session });
+}
+
+function getBrowserErrorState({ session = sessionId } = {}) {
+  return runPwJson(
+    [
+      '--raw',
+      'run-code',
+      `async (page) => ({
+        consoleErrors: page.__codexConsoleErrors || [],
+        pageErrors: page.__codexPageErrors || [],
+      })`,
+    ],
+    { session },
+  );
 }
 
 function runPw(args, { session = sessionId, timeoutMs = 60_000 } = {}) {
