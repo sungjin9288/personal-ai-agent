@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T03:20:00.000Z","id":"doclog_20260417032000_retrieval_memory_attachment_handoff","type":"devlog","updatedAt":"2026-04-17T03:20:00.000Z"} -->
+## 2026-04-17 Retrieval Memory And Attachment Handoff Pass
+
+- date: 2026-04-17T03:20:00.000Z
+- expanded the execution browser smoke so retrieval handoff is no longer proven by a single source type; the same suite now validates both memory and attachment retrieval chips through reload, copied deep-link reopen, and fresh browser session entry
+- tightened attachment coverage by checking that the focused attachment row stays highlighted after reopen and fresh handoff, not just that the generic focus banner remains visible
+- updated the README smoke note so browser verification now explicitly covers both retrieval source classes instead of a generic handoff path
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T03:05:00.000Z","id":"doclog_20260417030500_retrieval_focus_fresh_browser_handoff","type":"devlog","updatedAt":"2026-04-17T03:05:00.000Z"} -->
 ## 2026-04-17 Retrieval Focus Fresh Browser Handoff Pass
 

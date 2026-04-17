@@ -17,7 +17,10 @@ fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(screenshotPath, { force: true });
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
-const handoffSessionId = `h${Date.now().toString(36).slice(-5)}`;
+const handoffSessionIds = {
+  attachment: `ha${Date.now().toString(36).slice(-4)}`,
+  memory: `hm${Date.now().toString(36).slice(-4)}`,
+};
 const serverOutput = { stderr: '', stdout: '' };
 
 const port = await getFreePort();
@@ -479,111 +482,155 @@ try {
   assert.match(startState.executionConsole, /검증/);
 
   console.error('[smoke-ui-execution-browser-e2e] verify retrieval focus URL restore');
-  const retrievalFocusState = runPwJson([
-    '--raw',
-    'run-code',
-    `async (page) => {
-      await page.evaluate(() => {
-        document.querySelector('[data-step-target="step-setup"]')?.click();
-      });
-      await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-setup');
-      await page.waitForFunction(() => document.querySelectorAll('[data-retrieval-source-type]').length > 0, null, {
-        timeout: 15000,
-      });
-      const sourceMeta = await page.evaluate(() => {
-        const firstButton = document.querySelector('[data-retrieval-source-type]');
-        return {
-          sourceLabel: firstButton?.getAttribute('data-retrieval-source-label') || '',
-          sourceType: firstButton?.getAttribute('data-retrieval-source-type') || '',
+  const verifyRetrievalSourceFlow = ({ sourceType }) => {
+    const retrievalFocusState = runPwJson([
+      '--raw',
+      'run-code',
+      `async (page) => {
+        await page.evaluate(() => {
+          document.querySelector('[data-step-target="step-setup"]')?.click();
+        });
+        await page.waitForFunction(() => new URL(window.location.href).searchParams.get('step') === 'step-setup');
+        await page.waitForFunction(() => document.querySelectorAll('[data-retrieval-source-type]').length > 0, null, {
+          timeout: 15000,
+        });
+        const sourceMeta = await page.evaluate((targetSourceType) => {
+          const targetButton = Array.from(document.querySelectorAll('[data-retrieval-source-type]')).find(
+            (button) => button.getAttribute('data-retrieval-source-type') === targetSourceType,
+          );
+          return {
+            sourceLabel: targetButton?.getAttribute('data-retrieval-source-label') || '',
+            sourceType: targetButton?.getAttribute('data-retrieval-source-type') || '',
+          };
+        }, ${JSON.stringify(sourceType)});
+        if (!sourceMeta.sourceType || !sourceMeta.sourceLabel) {
+          return {
+            missingSource: true,
+            sourceLabel: sourceMeta.sourceLabel,
+            sourceType: sourceMeta.sourceType,
+          };
+        }
+        await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
+          const targetButton = Array.from(document.querySelectorAll('[data-retrieval-source-type]')).find(
+            (button) =>
+              button.getAttribute('data-retrieval-source-type') === targetSourceType &&
+              button.getAttribute('data-retrieval-source-label') === targetSourceLabel,
+          );
+          targetButton?.click();
+        }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType });
+        await page.waitForFunction(() => {
+          const params = new URL(window.location.href).searchParams;
+          return Boolean(params.get('hstype') && params.get('hsource') && params.get('tab') === 'harness');
+        });
+        const focusedHref = page.url();
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => {
+          const params = new URL(window.location.href).searchParams;
+          return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+        }, null, { timeout: 15000 });
+        const reloadedState = {
+          activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+          attachmentFocused: await page.evaluate((targetSourceLabel) => {
+            return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
+          }, sourceMeta.sourceLabel),
+          focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+          href: page.url(),
         };
-      });
-      await page.evaluate(() => {
-        document.querySelector('[data-retrieval-source-type]')?.click();
-      });
-      await page.waitForFunction(() => {
-        const params = new URL(window.location.href).searchParams;
-        return Boolean(params.get('hstype') && params.get('hsource') && params.get('tab') === 'harness');
-      });
-      const focusedHref = page.url();
-      await page.reload({ waitUntil: 'domcontentloaded' });
-      await page.waitForFunction(() => {
-        const params = new URL(window.location.href).searchParams;
-        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
-      }, null, { timeout: 15000 });
-      const reloadedState = {
-        activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
-        focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
-        href: page.url(),
-      };
-      await page.goto(${JSON.stringify(baseUrl)}, { waitUntil: 'domcontentloaded' });
-      await page.waitForFunction(() => Boolean(document.querySelector('#workspace-select')), null, { timeout: 15000 });
-      await page.goto(focusedHref, { waitUntil: 'domcontentloaded' });
-      await page.waitForFunction(() => {
-        const params = new URL(window.location.href).searchParams;
-        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
-      }, null, { timeout: 15000 });
-      await page.evaluate(() => {
-        window.__lastClipboardText = '';
-        window.__lastPrompt = '';
-        document.querySelector('[data-ui-action="copy-retrieval-source-link"]')?.click();
-      });
-      return {
-        activeChip: reloadedState.activeChip,
-        copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
-        focusBanner: reloadedState.focusBanner,
-        href: reloadedState.href,
-        initialHref: focusedHref,
-        promptedLink: await page.evaluate(() => {
-          try {
-            return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
-          } catch {
-            return '';
-          }
-        }),
-        reopenedChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
-        reopenedFocusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
-        reopenedHref: page.url(),
-        sourceLabel: sourceMeta.sourceLabel,
-        sourceType: sourceMeta.sourceType,
-      };
-    }`,
-  ]);
+        await page.goto(${JSON.stringify(baseUrl)}, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => Boolean(document.querySelector('#workspace-select')), null, { timeout: 15000 });
+        await page.goto(focusedHref, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => {
+          const params = new URL(window.location.href).searchParams;
+          return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+        }, null, { timeout: 15000 });
+        await page.evaluate(() => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-ui-action="copy-retrieval-source-link"]')?.click();
+        });
+        return {
+          activeChip: reloadedState.activeChip,
+          attachmentFocused: reloadedState.attachmentFocused,
+          copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
+          focusBanner: reloadedState.focusBanner,
+          href: reloadedState.href,
+          initialHref: focusedHref,
+          promptedLink: await page.evaluate(() => {
+            try {
+              return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+            } catch {
+              return '';
+            }
+          }),
+          reopenedAttachmentFocused: await page.evaluate((targetSourceLabel) => {
+            return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
+          }, sourceMeta.sourceLabel),
+          reopenedChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+          reopenedFocusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+          reopenedHref: page.url(),
+          sourceLabel: sourceMeta.sourceLabel,
+          sourceType: sourceMeta.sourceType,
+        };
+      }`,
+    ]);
 
-  assert.ok(retrievalFocusState.sourceType);
-  assert.ok(retrievalFocusState.sourceLabel);
-  assert.equal(new URL(retrievalFocusState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
-  assert.equal(new URL(retrievalFocusState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
-  assert.match(retrievalFocusState.focusBanner, /현재 retrieval source focus/);
-  assert.match(retrievalFocusState.activeChip, /현재 ·/);
-  assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hstype'), retrievalFocusState.sourceType);
-  assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
-  assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
-  assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
-  const copiedRetrievalUrl = retrievalFocusState.copiedLink || retrievalFocusState.promptedLink;
-  assert.equal(copiedRetrievalUrl, retrievalFocusState.reopenedHref);
+    assert.equal(retrievalFocusState.missingSource, undefined, JSON.stringify(retrievalFocusState));
+    assert.equal(retrievalFocusState.sourceType, sourceType, JSON.stringify(retrievalFocusState));
+    assert.ok(retrievalFocusState.sourceLabel);
+    assert.equal(new URL(retrievalFocusState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
+    assert.equal(new URL(retrievalFocusState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+    assert.match(retrievalFocusState.focusBanner, /현재 retrieval source focus/);
+    assert.match(retrievalFocusState.activeChip, /현재 ·/);
+    assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hstype'), retrievalFocusState.sourceType);
+    assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+    assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
+    assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
+    if (sourceType === 'attachment') {
+      assert.equal(retrievalFocusState.attachmentFocused, true, JSON.stringify(retrievalFocusState));
+      assert.equal(retrievalFocusState.reopenedAttachmentFocused, true, JSON.stringify(retrievalFocusState));
+    }
+
+    return retrievalFocusState;
+  };
+
+  const memoryRetrievalFocusState = verifyRetrievalSourceFlow({ sourceType: 'memory' });
+  const attachmentRetrievalFocusState = verifyRetrievalSourceFlow({ sourceType: 'attachment' });
 
   console.error('[smoke-ui-execution-browser-e2e] verify retrieval source handoff session');
-  runPw(['open', copiedRetrievalUrl], { session: handoffSessionId });
-  const handoffState = runPwJson([
-    '--raw',
-    'run-code',
-    `async (page) => {
-      await page.waitForFunction(() => {
-        const params = new URL(window.location.href).searchParams;
-        return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
-      }, null, { timeout: 15000 });
-      return {
-        activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
-        focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
-        href: page.url(),
-      };
-    }`,
-  ], { session: handoffSessionId });
-  assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
-  assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
-  assert.equal(handoffState.href, copiedRetrievalUrl);
-  assert.match(handoffState.focusBanner, /현재 retrieval source focus/);
-  assert.match(handoffState.activeChip, /현재 ·/);
+  const verifyFreshHandoffSession = ({ retrievalFocusState }) => {
+    const copiedRetrievalUrl = retrievalFocusState.copiedLink || retrievalFocusState.promptedLink;
+    assert.equal(copiedRetrievalUrl, retrievalFocusState.reopenedHref);
+    runPw(['open', copiedRetrievalUrl], { session: handoffSessionIds[retrievalFocusState.sourceType] });
+    const handoffState = runPwJson([
+      '--raw',
+      'run-code',
+      `async (page) => {
+        await page.waitForFunction(() => {
+          const params = new URL(window.location.href).searchParams;
+          return Boolean(params.get('hstype') && params.get('hsource') && document.querySelector('.tag.is-active-focus'));
+        }, null, { timeout: 15000 });
+        return {
+          activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+          attachmentFocused: await page.evaluate((targetSourceLabel) => {
+            return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
+          }, ${JSON.stringify(retrievalFocusState.sourceLabel)}),
+          focusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
+          href: page.url(),
+        };
+      }`,
+    ], { session: handoffSessionIds[retrievalFocusState.sourceType] });
+    assert.equal(new URL(handoffState.href).searchParams.get('hstype'), retrievalFocusState.sourceType);
+    assert.equal(new URL(handoffState.href).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
+    assert.equal(handoffState.href, copiedRetrievalUrl);
+    assert.match(handoffState.focusBanner, /현재 retrieval source focus/);
+    assert.match(handoffState.activeChip, /현재 ·/);
+    if (retrievalFocusState.sourceType === 'attachment') {
+      assert.equal(handoffState.attachmentFocused, true, JSON.stringify(handoffState));
+    }
+  };
+
+  verifyFreshHandoffSession({ retrievalFocusState: memoryRetrievalFocusState });
+  verifyFreshHandoffSession({ retrievalFocusState: attachmentRetrievalFocusState });
 
   console.error('[smoke-ui-execution-browser-e2e] verify release tab and browser history');
   const releaseState = runPwJson([
@@ -682,9 +729,11 @@ try {
   try {
     runPw(['close']);
   } catch {}
-  try {
-    runPw(['close'], { session: handoffSessionId });
-  } catch {}
+  for (const handoffSessionId of Object.values(handoffSessionIds)) {
+    try {
+      runPw(['close'], { session: handoffSessionId });
+    } catch {}
+  }
 
   if (!serverProcess.killed) {
     serverProcess.kill('SIGTERM');
