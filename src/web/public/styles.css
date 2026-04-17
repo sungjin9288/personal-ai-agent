@@ -733,6 +733,13 @@ button {
   gap: 6px;
 }
 
+.detail-toolbar-aux {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
 .detail-primary-nav {
   display: flex;
   flex-wrap: wrap;
@@ -781,6 +788,10 @@ button {
   min-height: 34px;
   padding: 6px 10px;
   font-size: 0.74rem;
+}
+
+.detail-toolbar-actions.is-visible.is-compact .detail-toolbar-aux {
+  order: 3;
 }
 
 .workspace-shell.is-output-focus .detail-tab {

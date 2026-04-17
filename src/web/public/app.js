@@ -28,6 +28,7 @@ const state = {
   outputRailCollapsed: true,
   outputSecondaryTabsExpanded: false,
   outputSupportExpanded: false,
+  outputToolbarToolsExpanded: false,
   providers: [],
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
@@ -1753,6 +1754,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-output-tools') {
+        toggleOutputToolbarToolsExpanded();
+        return;
+      }
+
       if (action === 'refresh-release-status') {
         void reloadReleaseStatus();
         return;
@@ -2018,6 +2024,15 @@ function toggleOutputSecondaryTabsExpanded(forceValue = null) {
   renderDetailToolbarActions();
 }
 
+function toggleOutputToolbarToolsExpanded(forceValue = null) {
+  if (typeof forceValue === 'boolean') {
+    state.outputToolbarToolsExpanded = forceValue;
+  } else {
+    state.outputToolbarToolsExpanded = !state.outputToolbarToolsExpanded;
+  }
+  renderDetailToolbarActions();
+}
+
 function getDetailTabMeta() {
   const artifactsCount = state.currentSessionPayload?.artifacts?.length || 0;
   const runsCount = state.missionDetail?.sessions?.length || 0;
@@ -2147,11 +2162,8 @@ function renderDetailToolbarActions() {
             <button class="primary-button" type="button" data-ui-action="toggle-output-support">
               패널
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
-              보조 탭
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
-              사이드바
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools">
+              ${escapeHtml(state.outputToolbarToolsExpanded ? '도구 닫기' : '도구')}
             </button>
           `
           : `
@@ -2170,6 +2182,20 @@ function renderDetailToolbarActions() {
           `
       }
     </div>
+    ${
+      supportCollapsed && state.outputToolbarToolsExpanded
+        ? `
+          <div class="detail-toolbar-aux">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
+              보조 탭
+            </button>
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+              사이드바
+            </button>
+          </div>
+        `
+        : ''
+    }
     ${
       state.outputSecondaryTabsExpanded && secondaryTabs.length
         ? `
