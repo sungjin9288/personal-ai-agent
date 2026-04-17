@@ -64,6 +64,8 @@ try {
   assert.equal(appJs.includes('focus 해제'), true);
   assert.equal(appJs.includes('copy-retrieval-source-link'), true);
   assert.equal(appJs.includes('현재 source 링크 복사'), true);
+  assert.equal(appJs.includes('현재 source 링크 복사됨'), true);
+  assert.equal(appJs.includes('retrievalCopiedSourceKey'), true);
   assert.equal(appJs.includes('data-retrieval-source-copy'), true);
   assert.equal(appJs.includes('현재 source 해제'), true);
   assert.equal(appJs.includes('is-active-focus'), true);
@@ -86,6 +88,7 @@ try {
   assert.equal(stylesCss.includes('.tag.is-active-focus'), true);
   assert.equal(stylesCss.includes('.retrieval-source-chip'), true);
   assert.equal(stylesCss.includes('.retrieval-source-copy-button'), true);
+  assert.equal(stylesCss.includes('.ghost-button.is-copied'), true);
   assert.equal(stylesCss.includes('.specialist-lane-shell'), true);
 
   console.log(

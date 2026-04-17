@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-17T03:50:00.000Z","id":"doclog_20260417035000_retrieval_copy_feedback","type":"devlog","updatedAt":"2026-04-17T03:50:00.000Z"} -->
+## 2026-04-17 Retrieval Copy Feedback Pass
+
+- date: 2026-04-17T03:50:00.000Z
+- added source-specific copy feedback so retrieval chip copy buttons and current source copy buttons briefly switch to `복사됨` after a clipboard write, instead of relying only on the global notice bar
+- extended the browser smoke to verify that both the direct chip copy button and the focused source copy button actually render the copied state while still producing the same handoff deep-link for memory and attachment sources
+- updated the UI contract smoke and README so the temporary copied-state surface stays part of the documented retrieval handoff contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-17T03:35:00.000Z","id":"doclog_20260417033500_retrieval_chip_copy_handoff","type":"devlog","updatedAt":"2026-04-17T03:35:00.000Z"} -->
 ## 2026-04-17 Retrieval Chip Copy Handoff Pass
 

@@ -1521,6 +1521,13 @@ button {
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.tag.tag-ghost.is-copied,
+.ghost-button.is-copied {
+  color: var(--success);
+  background: rgba(5, 150, 105, 0.12);
+  border-color: rgba(5, 150, 105, 0.18);
+}
+
 .tag.is-active-focus {
   color: var(--accent-strong);
   background: rgba(37, 99, 235, 0.12);

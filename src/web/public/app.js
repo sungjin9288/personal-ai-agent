@@ -33,6 +33,8 @@ const state = {
   outputSupportExpanded: false,
   outputToolbarToolsExpanded: false,
   providers: [],
+  retrievalCopiedSourceKey: '',
+  retrievalCopiedSourceTimer: null,
   retrievalSourceFocusLabel: '',
   retrievalSourceFocusType: '',
   releaseLiveConfirmProvider: '',
@@ -756,6 +758,44 @@ function setUiNotice(message = '') {
       renderFlowState();
     }, 2400);
   }
+}
+
+function getRetrievalSourceKey(sourceType = '', sourceLabel = '') {
+  const normalizedType = getSanitizedRetrievalSourceType(sourceType);
+  const normalizedLabel = normalizeUiParam(sourceLabel);
+  if (!normalizedType || !normalizedLabel) {
+    return '';
+  }
+  return `${normalizedType}:${normalizedLabel}`;
+}
+
+function isCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
+  return state.retrievalCopiedSourceKey === getRetrievalSourceKey(sourceType, sourceLabel);
+}
+
+function renderRetrievalSourceSurfaces() {
+  renderAgentBlueprintBuilder();
+  renderHarnessPanel();
+  renderOutputStageSummary();
+}
+
+function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
+  const nextKey = getRetrievalSourceKey(sourceType, sourceLabel);
+  if (!nextKey) {
+    return;
+  }
+
+  state.retrievalCopiedSourceKey = nextKey;
+  if (state.retrievalCopiedSourceTimer) {
+    window.clearTimeout(state.retrievalCopiedSourceTimer);
+    state.retrievalCopiedSourceTimer = null;
+  }
+  renderRetrievalSourceSurfaces();
+  state.retrievalCopiedSourceTimer = window.setTimeout(() => {
+    state.retrievalCopiedSourceKey = '';
+    state.retrievalCopiedSourceTimer = null;
+    renderRetrievalSourceSurfaces();
+  }, 1800);
 }
 
 function setWorkspaceFormStatus(message = '') {
@@ -1707,10 +1747,11 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
     .join('');
   const renderRetrievalSourceChip = (entry, prefixLabel) => {
     const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
+    const isCopied = isCopiedRetrievalSource(entry.sourceType, entry.sourceLabel);
     return `
       <span class="retrieval-source-chip">
         <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
-        <button class="tag tag-ghost retrieval-source-copy-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true">링크</button>
+        <button class="tag tag-ghost retrieval-source-copy-button ${isCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true">${escapeHtml(isCopied ? '복사됨' : '링크')}</button>
       </span>
     `;
   };
@@ -1741,7 +1782,7 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
               }
               ${
                 activeFocus
-                  ? `<button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeFocus.type)}" data-ui-source-label="${escapeHtml(activeFocus.label)}">현재 source 링크 복사</button>
+                  ? `<button class="ghost-button ${isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeFocus.type)}" data-ui-source-label="${escapeHtml(activeFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
                      <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">현재 source 해제</button>`
                   : ''
               }
@@ -2705,9 +2746,11 @@ async function copyUiLink(url, {
     }
     await navigator.clipboard.writeText(url);
     setUiNotice(successNotice);
+    return { method: 'clipboard' };
   } catch {
     window.prompt(promptMessage, url);
     setUiNotice(shownNotice);
+    return { method: 'prompt' };
   }
 }
 
@@ -2793,11 +2836,14 @@ async function copyRetrievalSourceLink({
     stepId: 'step-setup',
   })}`;
 
-  await copyUiLink(retrievalUrl, {
+  const copyResult = await copyUiLink(retrievalUrl, {
     promptMessage: '현재 retrieval source 링크를 복사하세요.',
     shownNotice: '현재 retrieval source 링크를 표시했습니다.',
     successNotice,
   });
+  if (copyResult?.method === 'clipboard') {
+    markCopiedRetrievalSource(normalizedType, normalizedLabel);
+  }
 }
 
 function getFlowState() {
@@ -5161,7 +5207,7 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">현재 source 링크 복사</button>
+              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
               <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
             </div>
           </div>`
@@ -5330,7 +5376,7 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">현재 source 링크 복사</button>
+              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
               <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
             </div>
           </div>`

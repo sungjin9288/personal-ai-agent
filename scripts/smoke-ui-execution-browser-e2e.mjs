@@ -525,6 +525,14 @@ try {
             return '';
           }
         });
+        const directCopyLabel = await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
+          const targetCopyButton = Array.from(document.querySelectorAll('[data-retrieval-source-copy="true"]')).find(
+            (button) =>
+              button.getAttribute('data-ui-source-type') === targetSourceType &&
+              button.getAttribute('data-ui-source-label') === targetSourceLabel,
+          );
+          return targetCopyButton?.textContent || '';
+        }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType });
         await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
           const targetButton = Array.from(document.querySelectorAll('[data-retrieval-source-type]')).find(
             (button) =>
@@ -573,6 +581,7 @@ try {
           attachmentFocused: reloadedState.attachmentFocused,
           copiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
           directCopiedLink,
+          directCopyLabel,
           focusBanner: reloadedState.focusBanner,
           href: reloadedState.href,
           initialHref: focusedHref,
@@ -588,6 +597,14 @@ try {
             return document.querySelector('[data-harness-attachment-file="' + CSS.escape(targetSourceLabel) + '"]')?.classList.contains('is-focused-source') || false;
           }, sourceMeta.sourceLabel),
           reopenedChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
+          reopenedCopyLabel: await page.evaluate(({ targetSourceLabel, targetSourceType }) => {
+            const targetCopyButton = Array.from(document.querySelectorAll('[data-ui-action="copy-retrieval-source-link"]')).find(
+              (button) =>
+                button.getAttribute('data-ui-source-type') === targetSourceType &&
+                button.getAttribute('data-ui-source-label') === targetSourceLabel,
+            );
+            return targetCopyButton?.textContent || '';
+          }, { targetSourceLabel: sourceMeta.sourceLabel, targetSourceType: sourceMeta.sourceType }),
           reopenedFocusBanner: await page.evaluate(() => Array.from(document.querySelectorAll('.harness-callout strong')).map((node) => node.textContent || '').find((text) => text.includes('현재 retrieval source focus')) || ''),
           reopenedHref: page.url(),
           sourceLabel: sourceMeta.sourceLabel,
@@ -607,7 +624,9 @@ try {
     assert.equal(new URL(retrievalFocusState.reopenedHref).searchParams.get('hsource'), retrievalFocusState.sourceLabel);
     assert.match(retrievalFocusState.reopenedFocusBanner, /현재 retrieval source focus/);
     assert.match(retrievalFocusState.reopenedChip, /현재 ·/);
+    assert.match(retrievalFocusState.directCopyLabel, /복사됨/);
     assert.equal(retrievalFocusState.directCopiedLink || retrievalFocusState.directPromptedLink, retrievalFocusState.reopenedHref);
+    assert.match(retrievalFocusState.reopenedCopyLabel, /복사됨/);
     if (sourceType === 'attachment') {
       assert.equal(retrievalFocusState.attachmentFocused, true, JSON.stringify(retrievalFocusState));
       assert.equal(retrievalFocusState.reopenedAttachmentFocused, true, JSON.stringify(retrievalFocusState));
