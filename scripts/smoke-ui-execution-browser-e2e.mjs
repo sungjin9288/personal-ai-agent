@@ -1186,6 +1186,10 @@ try {
     [],
     JSON.stringify(screenshotSurfaceSummary.docSurfaceKindMismatches),
   );
+  const expectedDocSurfaceSuffixByKind = {
+    closeout: 'docs/execution-v1-closeout.md',
+    evidence: 'docs/execution-v1-evidence.md',
+  };
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1228,6 +1232,23 @@ try {
     assert.equal(String(docSurface.path || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(docSurface.previewItems.length >= 1, true, JSON.stringify(docSurface));
     assert.equal(String(docSurface.previewItems[0] || '').trim().length > 0, true, JSON.stringify(docSurface));
+    assert.equal(docSurface.rawDocKind, docSurface.docKind, JSON.stringify(docSurface));
+    assert.equal(docSurface.label, docSurface.docKind, JSON.stringify(docSurface));
+    assert.equal(
+      docSurface.path.endsWith(expectedDocSurfaceSuffixByKind[docSurface.docKind]),
+      true,
+      JSON.stringify(docSurface),
+    );
+    assert.equal(
+      docSurface.headHtml.includes(`<strong>${docSurface.docKind}</strong>`),
+      true,
+      JSON.stringify(docSurface),
+    );
+    assert.equal(
+      docSurface.headHtml.includes(expectedDocSurfaceSuffixByKind[docSurface.docKind]),
+      true,
+      JSON.stringify(docSurface),
+    );
     for (const heading of docSurface.headings) {
       assert.equal(String(heading || '').trim().length > 0, true, JSON.stringify(docSurface));
     }
@@ -1326,6 +1347,7 @@ try {
       captureTargetVerified: true,
       fullPageDimensionsVerified: true,
       pairVerified: true,
+      releaseDocHeadVerified: true,
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
       reportPath,
