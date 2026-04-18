@@ -935,6 +935,14 @@ try {
           viewportHeight: window.innerHeight,
           viewportWidth: window.innerWidth,
         },
+        captureSurfaceSummary: {
+          docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
+          providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
+          recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
+          releaseHeadline: document.querySelector('#release-status .release-callout h4')?.textContent || '',
+          summaryChipLabels: Array.from(document.querySelectorAll('#release-status .summary-chip span')).map((node) => node.textContent || ''),
+          surfaceHeadings: Array.from(document.querySelectorAll('#release-status .surface h4')).map((node) => node.textContent || ''),
+        },
         captureTarget: {
           activeDetailTab: document.querySelector('.detail-tab.is-active')?.getAttribute('data-detail-tab') || '',
           activeStep: new URL(window.location.href).searchParams.get('step') || '',
@@ -955,7 +963,11 @@ try {
       return captureState;
     }`,
   ]);
-  const { captureContext: screenshotCaptureContext, captureTarget: screenshotCaptureTarget } = screenshotCaptureState;
+  const {
+    captureContext: screenshotCaptureContext,
+    captureSurfaceSummary: screenshotSurfaceSummary,
+    captureTarget: screenshotCaptureTarget,
+  } = screenshotCaptureState;
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
   const screenshotBuffer = fs.readFileSync(screenshotPath);
@@ -990,6 +1002,21 @@ try {
   assert.equal(screenshotCaptureTarget.workspaceId, workspace.id, JSON.stringify(screenshotCaptureTarget));
   assert.equal(screenshotCaptureTarget.missionId, missionId, JSON.stringify(screenshotCaptureTarget));
   assert.match(screenshotCaptureTarget.releaseHeading, /검증, evidence, closeout/);
+  assert.equal(screenshotSurfaceSummary.summaryChipLabels.length >= 6, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.recommendationCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.providerCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(
+    screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.surfaceHeadings.includes('남은 gap, provider readiness, 증거 문서'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(screenshotSurfaceSummary.releaseHeadline.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
 
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
@@ -1058,6 +1085,7 @@ try {
     },
     expectedFullPageDimensions,
     screenshotCaptureContext,
+    screenshotSurfaceSummary,
     screenshotCaptureTarget,
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
@@ -1088,6 +1116,11 @@ try {
   assert.deepEqual(
     persistedReport.screenshotCaptureTarget,
     screenshotCaptureTarget,
+    JSON.stringify(persistedReport),
+  );
+  assert.deepEqual(
+    persistedReport.screenshotSurfaceSummary,
+    screenshotSurfaceSummary,
     JSON.stringify(persistedReport),
   );
   assert.equal(

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T11:15:00.000Z","id":"doclog_20260418111500_browser_surface_summary_metadata","type":"devlog","updatedAt":"2026-04-18T11:15:00.000Z"} -->
+## 2026-04-18 Browser Surface Summary Metadata Pass
+
+- date: 2026-04-18T11:15:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so the saved report now includes a compact `screenshotSurfaceSummary` for the captured release panel: release headline, surface headings, summary chip labels, recommendation/provider/doc surface counts
+- added assertions that the release screenshot actually contains the expected checklist/evidence headings and a non-empty recommendation/provider/doc layout, so the evidence report now describes rendered content as well as URL and file metadata
+- updated the README smoke note so release surface summary verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T11:00:00.000Z","id":"doclog_20260418110000_browser_capture_target_metadata","type":"devlog","updatedAt":"2026-04-18T11:00:00.000Z"} -->
 ## 2026-04-18 Browser Capture Target Metadata Pass
 
