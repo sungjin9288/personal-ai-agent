@@ -940,6 +940,11 @@ try {
           providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
           recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
           releaseHeadline: document.querySelector('#release-status .release-callout h4')?.textContent || '',
+          releaseCopy: document.querySelector('#release-status .release-callout p:not(.section-kicker)')?.textContent || '',
+          summaryChips: Array.from(document.querySelectorAll('#release-status .summary-chip')).map((node) => ({
+            label: node.querySelector('span')?.textContent || '',
+            value: node.querySelector('strong')?.textContent || '',
+          })),
           summaryChipLabels: Array.from(document.querySelectorAll('#release-status .summary-chip span')).map((node) => node.textContent || ''),
           surfaceHeadings: Array.from(document.querySelectorAll('#release-status .surface h4')).map((node) => node.textContent || ''),
         },
@@ -1003,6 +1008,7 @@ try {
   assert.equal(screenshotCaptureTarget.missionId, missionId, JSON.stringify(screenshotCaptureTarget));
   assert.match(screenshotCaptureTarget.releaseHeading, /검증, evidence, closeout/);
   assert.equal(screenshotSurfaceSummary.summaryChipLabels.length >= 6, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.summaryChips.length >= 6, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.recommendationCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.providerCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
@@ -1017,6 +1023,21 @@ try {
     JSON.stringify(screenshotSurfaceSummary),
   );
   assert.equal(screenshotSurfaceSummary.releaseHeadline.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.releaseCopy.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
+  const requiredSummaryChipLabels = [
+    'deterministic smoke',
+    '열린 체크리스트',
+    '필수 gap',
+    'verified baseline',
+    'optional provider gap',
+    'evidence 상태',
+    '최종 갱신',
+  ];
+  for (const label of requiredSummaryChipLabels) {
+    const summaryChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === label);
+    assert.equal(Boolean(summaryChip), true, JSON.stringify({ label, screenshotSurfaceSummary }));
+    assert.equal(String(summaryChip?.value || '').trim().length > 0, true, JSON.stringify({ label, screenshotSurfaceSummary }));
+  }
 
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));

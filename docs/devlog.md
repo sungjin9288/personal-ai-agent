@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T11:30:00.000Z","id":"doclog_20260418113000_browser_surface_metric_values","type":"devlog","updatedAt":"2026-04-18T11:30:00.000Z"} -->
+## 2026-04-18 Browser Surface Metric Values Pass
+
+- date: 2026-04-18T11:30:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so `screenshotSurfaceSummary` now includes release callout copy and summary chip `label/value` pairs instead of only labels
+- added assertions that every expected release summary chip is present with a non-empty rendered value, so the saved browser report now preserves the actual KPI text seen in the screenshot surface
+- updated the README smoke note so summary chip metric value verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T11:15:00.000Z","id":"doclog_20260418111500_browser_surface_summary_metadata","type":"devlog","updatedAt":"2026-04-18T11:15:00.000Z"} -->
 ## 2026-04-18 Browser Surface Summary Metadata Pass
 
