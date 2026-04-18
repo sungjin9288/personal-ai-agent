@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T15:15:00.000Z","id":"doclog_20260418151500_browser_release_doc_stable_signature","type":"devlog","updatedAt":"2026-04-18T15:15:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Signature
+
+- date: 2026-04-18T15:15:00.000Z
+- extended `releaseDocVerificationSummary` with `stableDigestLines` and `stableDigestSha256`, so the saved browser report now exposes a deterministic one-line-per-doc signature and a compact hash for release doc verification review
+- kept the richer stable digest object intact, but added assertions that each stable line includes the expected doc path suffix, head path suffix, and `failures=none` in the passing path
+- updated the README smoke note so the browser evidence contract now explicitly documents the stable release doc line signature and sha256 summary
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T15:00:00.000Z","id":"doclog_20260418150000_browser_release_doc_stable_digest","type":"devlog","updatedAt":"2026-04-18T15:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Digest
 

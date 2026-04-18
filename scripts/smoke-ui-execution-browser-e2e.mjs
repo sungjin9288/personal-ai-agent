@@ -1310,6 +1310,20 @@ try {
     exactMatch: releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
     failureReasons: releaseDocVerificationSummary.byDocKind[docKind].failureReasons,
   }));
+  releaseDocVerificationSummary.stableDigestLines = releaseDocVerificationSummary.stableDigest.map((entry) =>
+    [
+      entry.docKind,
+      `exact=${entry.exactMatch ? 'true' : 'false'}`,
+      `label=${entry.actualLabel || '<empty>'}`,
+      `path=${entry.actualPathSuffix || '<empty>'}`,
+      `head=${entry.actualHeadLabel || '<empty>'}`,
+      `headPath=${entry.actualHeadPathSuffix || '<empty>'}`,
+      `failures=${entry.failureReasons.length ? entry.failureReasons.join(',') : 'none'}`,
+    ].join('|'),
+  );
+  releaseDocVerificationSummary.stableDigestSha256 = createHash('sha256')
+    .update(releaseDocVerificationSummary.stableDigestLines.join('\n'))
+    .digest('hex');
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1337,6 +1351,16 @@ try {
   assert.equal(
     releaseDocVerificationSummary.stableDigest.length,
     releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestLines.length,
+    releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseDocVerificationSummary.stableDigestSha256),
+    true,
     JSON.stringify(releaseDocVerificationSummary),
   );
   const requiredSummaryChipLabels = [
@@ -1428,6 +1452,23 @@ try {
     assert.equal(
       stableDigestEntry.actualHeadPathSuffix,
       releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    const stableDigestLine = releaseDocVerificationSummary.stableDigestLines.find((line) => line.startsWith(`${docKind}|`));
+    assert.equal(Boolean(stableDigestLine), true, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(
+      stableDigestLine.includes(`path=${releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix}`),
+      true,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestLine.includes(`headPath=${releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix}`),
+      true,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestLine.includes('failures=none'),
+      true,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
   }
@@ -1529,6 +1570,7 @@ try {
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
       releaseDocStableDigestVerified: true,
+      releaseDocStableSignatureVerified: true,
       releaseDocSummaryVerified: true,
       reportPath,
       screenshotPath,
