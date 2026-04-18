@@ -938,7 +938,17 @@ try {
         captureSurfaceSummary: {
           docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
           providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
+          providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
+            envKey: node.querySelector('.item-meta.mono')?.textContent || '',
+            label: node.querySelector('.item-title')?.textContent || '',
+            statusBadges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
+          })),
           recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
+          recommendationCards: Array.from(document.querySelectorAll('#release-status .release-recommendation-card')).map((node) => ({
+            badges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
+            label: node.querySelector('.item-title')?.textContent || '',
+            meta: Array.from(node.querySelectorAll('.item-meta')).slice(0, 2).map((item) => item.textContent || ''),
+          })),
           releaseHeadline: document.querySelector('#release-status .release-callout h4')?.textContent || '',
           releaseCopy: document.querySelector('#release-status .release-callout p:not(.section-kicker)')?.textContent || '',
           summaryChips: Array.from(document.querySelectorAll('#release-status .summary-chip')).map((node) => ({
@@ -1011,6 +1021,16 @@ try {
   assert.equal(screenshotSurfaceSummary.summaryChips.length >= 6, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.recommendationCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.providerCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(
+    screenshotSurfaceSummary.recommendationCards.length,
+    screenshotSurfaceSummary.recommendationCardCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.providerCards.length,
+    screenshotSurfaceSummary.providerCardCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
   assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
@@ -1037,6 +1057,15 @@ try {
     const summaryChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === label);
     assert.equal(Boolean(summaryChip), true, JSON.stringify({ label, screenshotSurfaceSummary }));
     assert.equal(String(summaryChip?.value || '').trim().length > 0, true, JSON.stringify({ label, screenshotSurfaceSummary }));
+  }
+  for (const recommendationCard of screenshotSurfaceSummary.recommendationCards) {
+    assert.equal(String(recommendationCard.label || '').trim().length > 0, true, JSON.stringify(recommendationCard));
+    assert.equal(recommendationCard.badges.length >= 1, true, JSON.stringify(recommendationCard));
+  }
+  for (const providerCard of screenshotSurfaceSummary.providerCards) {
+    assert.equal(String(providerCard.label || '').trim().length > 0, true, JSON.stringify(providerCard));
+    assert.equal(String(providerCard.envKey || '').trim().length > 0, true, JSON.stringify(providerCard));
+    assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
   }
 
   const browserErrorState = getBrowserErrorState();

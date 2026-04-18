@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T11:45:00.000Z","id":"doclog_20260418114500_browser_release_card_summary","type":"devlog","updatedAt":"2026-04-18T11:45:00.000Z"} -->
+## 2026-04-18 Browser Release Card Summary Pass
+
+- date: 2026-04-18T11:45:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so `screenshotSurfaceSummary` now includes structured recommendation card and provider card summaries captured from the rendered release panel
+- added assertions that each visible recommendation card has a non-empty label and at least one badge, and each provider card has a non-empty label, env key, and two status badges, so the saved browser report preserves actionable release UI state instead of only aggregate counts
+- updated the README smoke note so visible recommendation/provider card verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T11:30:00.000Z","id":"doclog_20260418113000_browser_surface_metric_values","type":"devlog","updatedAt":"2026-04-18T11:30:00.000Z"} -->
 ## 2026-04-18 Browser Surface Metric Values Pass
 
