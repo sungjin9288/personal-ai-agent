@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T01:10:00.000Z","id":"doclog_20260419011000_browser_release_doc_index_artifact","type":"devlog","updatedAt":"2026-04-19T01:10:00.000Z"} -->
+## 2026-04-19 Browser Release Doc Index Artifact
+
+- date: 2026-04-19T01:10:00.000Z
+- added `execution-v1-release-doc-index.json` so the browser E2E smoke now exposes one keyed lookup surface for the full release-doc artifact family instead of forcing reviewers to traverse report `artifactPair`, digest siblings, and manifest siblings separately
+- the index records `report/screenshot/digest trio/manifest trio` through grouped artifact order, keyed descriptors, deterministic bundle lines, bundle sha256, and screenshot dimension metadata, then the smoke locks it with write/read-back equality and per-artifact signature consistency assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release-doc index surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T00:20:00.000Z","id":"doclog_20260419002000_browser_release_doc_manifest_markdown","type":"devlog","updatedAt":"2026-04-19T00:20:00.000Z"} -->
 ## 2026-04-19 Browser Release Doc Manifest Markdown Artifact
 
