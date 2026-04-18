@@ -936,7 +936,19 @@ try {
           viewportWidth: window.innerWidth,
         },
         captureSurfaceSummary: {
+          checklistItems: Array.from(document.querySelectorAll('#release-status .release-checklist-item')).map((node) => ({
+            label: node.querySelector('strong')?.textContent || '',
+            status: node.querySelector('.status-badge')?.textContent || '',
+          })),
+          currentStatusRows: Array.from(document.querySelectorAll('#release-status .release-current-status .harness-row')).map((node) => ({
+            label: node.querySelector('.item-title')?.textContent || '',
+            value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
+          })),
           docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
+          docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
+            label: node.querySelector('.item-title')?.textContent || '',
+            value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
+          })),
           providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
           providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
             envKey: node.querySelector('.item-meta.mono')?.textContent || '',
@@ -1066,6 +1078,18 @@ try {
     assert.equal(String(providerCard.label || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(String(providerCard.envKey || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
+  }
+  for (const checklistItem of screenshotSurfaceSummary.checklistItems) {
+    assert.equal(String(checklistItem.label || '').trim().length > 0, true, JSON.stringify(checklistItem));
+    assert.equal(String(checklistItem.status || '').trim().length > 0, true, JSON.stringify(checklistItem));
+  }
+  for (const currentStatusRow of screenshotSurfaceSummary.currentStatusRows) {
+    assert.equal(String(currentStatusRow.label || '').trim().length > 0, true, JSON.stringify(currentStatusRow));
+    assert.equal(String(currentStatusRow.value || '').trim().length > 0, true, JSON.stringify(currentStatusRow));
+  }
+  for (const docStatusRow of screenshotSurfaceSummary.docStatusRows) {
+    assert.equal(String(docStatusRow.label || '').trim().length > 0, true, JSON.stringify(docStatusRow));
+    assert.equal(String(docStatusRow.value || '').trim().length > 0, true, JSON.stringify(docStatusRow));
   }
 
   const browserErrorState = getBrowserErrorState();

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T12:00:00.000Z","id":"doclog_20260418120000_browser_release_left_surface_rows","type":"devlog","updatedAt":"2026-04-18T12:00:00.000Z"} -->
+## 2026-04-18 Browser Release Left Surface Rows Pass
+
+- date: 2026-04-18T12:00:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so `screenshotSurfaceSummary` now includes rendered checklist items, current status rows, and document status rows from the release panel
+- added assertions that each visible checklist/status/doc row carries non-empty label and status text, so the saved browser report now preserves the left-side release surface state instead of only aggregate counts and card summaries
+- updated the README smoke note so checklist/current-status/doc-status capture is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T11:45:00.000Z","id":"doclog_20260418114500_browser_release_card_summary","type":"devlog","updatedAt":"2026-04-18T11:45:00.000Z"} -->
 ## 2026-04-18 Browser Release Card Summary Pass
 
