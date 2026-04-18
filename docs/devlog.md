@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T14:15:00.000Z","id":"doclog_20260418141500_browser_release_doc_stable_path_suffix","type":"devlog","updatedAt":"2026-04-18T14:15:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Path Suffix
+
+- date: 2026-04-18T14:15:00.000Z
+- extended `releaseDocVerificationSummary` with `actualPathSuffix` so the saved browser report keeps a stable, diff-friendly doc path signal instead of relying only on temp-root-specific absolute paths
+- switched the per-kind path assertion to compare the stable suffix directly against `expectedPathSuffix`, which keeps the exact-match contract unchanged while removing run-to-run temp directory noise from the readable summary layer
+- updated the README smoke note so the browser evidence contract now explicitly documents stable release doc path suffix capture
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T14:00:00.000Z","id":"doclog_20260418140000_browser_release_doc_failure_reason_summary","type":"devlog","updatedAt":"2026-04-18T14:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Failure Reason Summary
 

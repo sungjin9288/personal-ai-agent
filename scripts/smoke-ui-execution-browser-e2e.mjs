@@ -1191,13 +1191,24 @@ try {
     evidence: 'docs/execution-v1-evidence.md',
   };
   const expectedReleaseDocKinds = Object.keys(expectedDocSurfaceSuffixByKind);
+  const toStableDocPathSuffix = (value) => {
+    const normalized = String(value || '').replaceAll('\\', '/');
+    const docsMarker = '/docs/';
+    const docsIndex = normalized.lastIndexOf(docsMarker);
+    if (docsIndex >= 0) {
+      return normalized.slice(docsIndex + 1);
+    }
+    return normalized;
+  };
   const releaseDocVerificationSummary = {
     byDocKind: Object.fromEntries(
       expectedReleaseDocKinds.map((docKind) => {
         const docSurface = screenshotSurfaceSummary.docSurfaces.find((item) => item.docKind === docKind) || null;
+        const actualPathSuffix = toStableDocPathSuffix(docSurface?.path || '');
         const summary = {
           actualLabel: docSurface?.label || '',
           actualPath: docSurface?.path || '',
+          actualPathSuffix,
           actualRawDocKind: docSurface?.rawDocKind || '',
           exactMatch: false,
           expectedKind: docKind,
@@ -1217,7 +1228,7 @@ try {
           summary.headHasKindMarker = docSurface.headHtml.includes(`<strong>${docKind}</strong>`);
           summary.headingCount = docSurface.headings.length;
           summary.labelMatchesKind = docSurface.label === docKind;
-          summary.pathMatchesExpectedSuffix = docSurface.path.endsWith(expectedDocSurfaceSuffixByKind[docKind]);
+          summary.pathMatchesExpectedSuffix = actualPathSuffix === expectedDocSurfaceSuffixByKind[docKind];
           summary.previewItemCount = docSurface.previewItems.length;
           summary.rawMatchesKind = docSurface.rawDocKind === docKind;
           summary.exactMatch =
@@ -1324,7 +1335,7 @@ try {
     assert.equal(docSurface.rawDocKind, docSurface.docKind, JSON.stringify(docSurface));
     assert.equal(docSurface.label, docSurface.docKind, JSON.stringify(docSurface));
     assert.equal(
-      docSurface.path.endsWith(expectedDocSurfaceSuffixByKind[docSurface.docKind]),
+      toStableDocPathSuffix(docSurface.path) === expectedDocSurfaceSuffixByKind[docSurface.docKind],
       true,
       JSON.stringify(docSurface),
     );
@@ -1351,6 +1362,11 @@ try {
     assert.deepEqual(
       releaseDocVerificationSummary.byDocKind[docKind].failureReasons,
       [],
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      releaseDocVerificationSummary.byDocKind[docKind].actualPathSuffix,
+      releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
   }
