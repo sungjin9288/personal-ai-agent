@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T10:00:00.000Z","id":"doclog_20260418100000_browser_screenshot_revalidation","type":"devlog","updatedAt":"2026-04-18T10:00:00.000Z"} -->
+## 2026-04-18 Browser Screenshot Revalidation Pass
+
+- date: 2026-04-18T10:00:00.000Z
+- extended the saved browser E2E report with `screenshotModifiedAt`, so the JSON artifact now records when the paired screenshot file was last written in addition to size and sha256
+- after reading `execution-v1-browser-e2e.json` back, the smoke now recomputes screenshot stat and sha256 from disk and asserts they match the persisted report, turning pair metadata into an explicit revalidation contract
+- updated the README smoke note so on-disk screenshot revalidation is documented as part of the browser verification surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T09:45:00.000Z","id":"doclog_20260418094500_browser_artifact_pair_metadata","type":"devlog","updatedAt":"2026-04-18T09:45:00.000Z"} -->
 ## 2026-04-18 Browser Artifact Pair Metadata Pass
 

@@ -992,6 +992,7 @@ try {
     },
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
+    screenshotModifiedAt: screenshotStat.mtime.toISOString(),
     screenshotSha256,
     screenshotPath,
     sessionId,
@@ -1002,6 +1003,18 @@ try {
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
+  const persistedScreenshotBuffer = fs.readFileSync(persistedReport.screenshotPath);
+  const persistedScreenshotStat = fs.statSync(persistedReport.screenshotPath);
+  const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
+  assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.equal(persistedReport.screenshotBytes, persistedScreenshotStat.size, JSON.stringify(persistedReport));
+  assert.equal(
+    persistedReport.screenshotModifiedAt,
+    persistedScreenshotStat.mtime.toISOString(),
+    JSON.stringify(persistedReport),
+  );
+  assert.equal(persistedReport.screenshotSha256, persistedScreenshotSha256, JSON.stringify(persistedReport));
 
   console.log(JSON.stringify(smokeReport, null, 2));
 } finally {
