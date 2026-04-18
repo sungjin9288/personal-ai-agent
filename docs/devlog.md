@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T02:20:00.000Z","id":"doclog_20260419022000_browser_release_doc_index_text_artifact","type":"devlog","updatedAt":"2026-04-19T02:20:00.000Z"} -->
+## 2026-04-19 Browser Release Doc Index Text Artifact
+
+- date: 2026-04-19T02:20:00.000Z
+- added `execution-v1-release-doc-index.txt` so the new release-doc index now has a plain-text handoff surface for reviewers who need the full artifact map without parsing JSON
+- the text artifact records generated timestamp, report path, index path, overall exact-match state, stable digest sha256, screenshot sha256, artifact group order, the index bundle overview line, and every keyed artifact signature line, then the smoke locks it with existence and full read-back equality assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release-doc index text surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T01:10:00.000Z","id":"doclog_20260419011000_browser_release_doc_index_artifact","type":"devlog","updatedAt":"2026-04-19T01:10:00.000Z"} -->
 ## 2026-04-19 Browser Release Doc Index Artifact
 
