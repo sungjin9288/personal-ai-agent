@@ -1190,6 +1190,59 @@ try {
     closeout: 'docs/execution-v1-closeout.md',
     evidence: 'docs/execution-v1-evidence.md',
   };
+  const expectedReleaseDocKinds = Object.keys(expectedDocSurfaceSuffixByKind);
+  const releaseDocVerificationSummary = {
+    byDocKind: Object.fromEntries(
+      expectedReleaseDocKinds.map((docKind) => {
+        const docSurface = screenshotSurfaceSummary.docSurfaces.find((item) => item.docKind === docKind) || null;
+        const summary = {
+          exactMatch: false,
+          headHasExpectedPathSuffix: false,
+          headHasKindMarker: false,
+          headingCount: 0,
+          labelMatchesKind: false,
+          pathMatchesExpectedSuffix: false,
+          present: Boolean(docSurface),
+          previewItemCount: 0,
+          rawMatchesKind: false,
+        };
+        if (docSurface) {
+          summary.headHasExpectedPathSuffix = docSurface.headHtml.includes(expectedDocSurfaceSuffixByKind[docKind]);
+          summary.headHasKindMarker = docSurface.headHtml.includes(`<strong>${docKind}</strong>`);
+          summary.headingCount = docSurface.headings.length;
+          summary.labelMatchesKind = docSurface.label === docKind;
+          summary.pathMatchesExpectedSuffix = docSurface.path.endsWith(expectedDocSurfaceSuffixByKind[docKind]);
+          summary.previewItemCount = docSurface.previewItems.length;
+          summary.rawMatchesKind = docSurface.rawDocKind === docKind;
+          summary.exactMatch =
+            summary.present &&
+            summary.rawMatchesKind &&
+            summary.labelMatchesKind &&
+            summary.pathMatchesExpectedSuffix &&
+            summary.headHasKindMarker &&
+            summary.headHasExpectedPathSuffix;
+        }
+        return [docKind, summary];
+      }),
+    ),
+    exactMatchCount: 0,
+    exactMatchDocKinds: [],
+    mismatchCount: screenshotSurfaceSummary.docSurfaceKindMismatches.length,
+    missingDocKinds: [],
+    overallExactMatch: false,
+    totalExpectedDocKinds: expectedReleaseDocKinds.length,
+  };
+  releaseDocVerificationSummary.exactMatchDocKinds = expectedReleaseDocKinds.filter(
+    (docKind) => releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
+  );
+  releaseDocVerificationSummary.exactMatchCount = releaseDocVerificationSummary.exactMatchDocKinds.length;
+  releaseDocVerificationSummary.missingDocKinds = expectedReleaseDocKinds.filter(
+    (docKind) => !releaseDocVerificationSummary.byDocKind[docKind].present,
+  );
+  releaseDocVerificationSummary.overallExactMatch =
+    releaseDocVerificationSummary.mismatchCount === 0 &&
+    releaseDocVerificationSummary.missingDocKinds.length === 0 &&
+    releaseDocVerificationSummary.exactMatchCount === releaseDocVerificationSummary.totalExpectedDocKinds;
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1202,6 +1255,18 @@ try {
   );
   assert.equal(screenshotSurfaceSummary.releaseHeadline.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.releaseCopy.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.deepEqual(
+    releaseDocVerificationSummary.missingDocKinds,
+    [],
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(releaseDocVerificationSummary.mismatchCount, 0, JSON.stringify(releaseDocVerificationSummary));
+  assert.equal(
+    releaseDocVerificationSummary.exactMatchCount,
+    releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(releaseDocVerificationSummary.overallExactMatch, true, JSON.stringify(releaseDocVerificationSummary));
   const requiredSummaryChipLabels = [
     'deterministic smoke',
     '열린 체크리스트',
@@ -1252,6 +1317,13 @@ try {
     for (const heading of docSurface.headings) {
       assert.equal(String(heading || '').trim().length > 0, true, JSON.stringify(docSurface));
     }
+  }
+  for (const docKind of expectedReleaseDocKinds) {
+    assert.equal(
+      releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
+      true,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
   }
   for (const checklistItem of screenshotSurfaceSummary.checklistItems) {
     assert.equal(String(checklistItem.label || '').trim().length > 0, true, JSON.stringify(checklistItem));
@@ -1350,10 +1422,12 @@ try {
       releaseDocHeadVerified: true,
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
+      releaseDocSummaryVerified: true,
       reportPath,
       screenshotPath,
     },
     expectedFullPageDimensions,
+    releaseDocVerificationSummary,
     screenshotCaptureContext,
     screenshotSurfaceSummary,
     screenshotCaptureTarget,

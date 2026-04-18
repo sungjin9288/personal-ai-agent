@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T13:45:00.000Z","id":"doclog_20260418134500_browser_release_doc_verification_summary","type":"devlog","updatedAt":"2026-04-18T13:45:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Verification Summary
+
+- date: 2026-04-18T13:45:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so the saved browser report now includes `releaseDocVerificationSummary`, which surfaces `closeout/evidence` exact-match state as a human-readable summary instead of forcing downstream readers to reconstruct it from raw doc surfaces
+- added per-kind checks for presence, raw-kind equality, label equality, expected markdown path suffix, and doc head marker/path inclusion, then rolled those into `overallExactMatch`, `exactMatchCount`, and `missingDocKinds`
+- updated the README smoke note so the browser evidence contract now explicitly documents the saved release doc verification summary alongside the underlying raw capture and head HTML checks
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T13:30:00.000Z","id":"doclog_20260418133000_browser_release_doc_capture_contract","type":"devlog","updatedAt":"2026-04-18T13:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Capture Contract
 
