@@ -1288,6 +1288,8 @@ try {
     missingDocKinds: [],
     overallExactMatch: false,
     stableDigest: [],
+    stableDigestLineCount: 0,
+    stableDigestOverviewLine: '',
     totalExpectedDocKinds: expectedReleaseDocKinds.length,
   };
   releaseDocVerificationSummary.exactMatchDocKinds = expectedReleaseDocKinds.filter(
@@ -1324,6 +1326,15 @@ try {
   releaseDocVerificationSummary.stableDigestSha256 = createHash('sha256')
     .update(releaseDocVerificationSummary.stableDigestLines.join('\n'))
     .digest('hex');
+  releaseDocVerificationSummary.stableDigestLineCount = releaseDocVerificationSummary.stableDigestLines.length;
+  releaseDocVerificationSummary.stableDigestOverviewLine = [
+    `overallExactMatch=${releaseDocVerificationSummary.overallExactMatch ? 'true' : 'false'}`,
+    `exactMatchCount=${releaseDocVerificationSummary.exactMatchCount}/${releaseDocVerificationSummary.totalExpectedDocKinds}`,
+    `mismatchCount=${releaseDocVerificationSummary.mismatchCount}`,
+    `missing=${releaseDocVerificationSummary.missingDocKinds.length ? releaseDocVerificationSummary.missingDocKinds.join(',') : 'none'}`,
+    `docKinds=${releaseDocVerificationSummary.stableDigest.map((entry) => entry.docKind).join(',')}`,
+    `sha256=${releaseDocVerificationSummary.stableDigestSha256}`,
+  ].join('|');
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1356,6 +1367,31 @@ try {
   assert.equal(
     releaseDocVerificationSummary.stableDigestLines.length,
     releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestLineCount,
+    releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestOverviewLine.includes('overallExactMatch=true'),
+    true,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestOverviewLine.includes(`exactMatchCount=${releaseDocVerificationSummary.totalExpectedDocKinds}/${releaseDocVerificationSummary.totalExpectedDocKinds}`),
+    true,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestOverviewLine.includes('missing=none'),
+    true,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.equal(
+    releaseDocVerificationSummary.stableDigestOverviewLine.includes(`sha256=${releaseDocVerificationSummary.stableDigestSha256}`),
+    true,
     JSON.stringify(releaseDocVerificationSummary),
   );
   assert.equal(
@@ -1570,6 +1606,7 @@ try {
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
       releaseDocStableDigestVerified: true,
+      releaseDocStableOverviewVerified: true,
       releaseDocStableSignatureVerified: true,
       releaseDocSummaryVerified: true,
       reportPath,

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T15:30:00.000Z","id":"doclog_20260418153000_browser_release_doc_stable_overview","type":"devlog","updatedAt":"2026-04-18T15:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Overview
+
+- date: 2026-04-18T15:30:00.000Z
+- extended `releaseDocVerificationSummary` with `stableDigestOverviewLine` and `stableDigestLineCount`, so the saved browser report now exposes a single-line overall summary above the per-doc stable signature lines
+- the overview line records `overallExactMatch`, `exactMatchCount`, `mismatchCount`, missing doc kinds, doc order, and the stable digest sha256, which gives downstream review a fast compare surface before opening the detailed digest lines
+- updated the README smoke note so the browser evidence contract now explicitly documents the stable release doc overview line
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T15:15:00.000Z","id":"doclog_20260418151500_browser_release_doc_stable_signature","type":"devlog","updatedAt":"2026-04-18T15:15:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Signature
 
