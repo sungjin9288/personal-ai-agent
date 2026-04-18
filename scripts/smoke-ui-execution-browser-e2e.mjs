@@ -13,11 +13,13 @@ const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
 const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
+const releaseDocDigestTextArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.txt');
 const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
 const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
 
 fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(releaseDocDigestArtifactPath, { force: true });
+fs.rmSync(releaseDocDigestTextArtifactPath, { force: true });
 fs.rmSync(reportPath, { force: true });
 fs.rmSync(screenshotPath, { force: true });
 
@@ -1666,6 +1668,8 @@ try {
       releaseDocCaptureVerified: true,
       releaseDocDigestArtifactPath,
       releaseDocDigestArtifactVerified: true,
+      releaseDocDigestTextArtifactPath,
+      releaseDocDigestTextArtifactVerified: true,
       releaseDocStableDigestVerified: true,
       releaseDocStableEntrySignaturesVerified: true,
       releaseDocStableIndexVerified: true,
@@ -1699,6 +1703,7 @@ try {
     missingDocKinds: releaseDocVerificationSummary.missingDocKinds,
     overallExactMatch: releaseDocVerificationSummary.overallExactMatch,
     releaseDocDigestArtifactPath,
+    releaseDocDigestTextArtifactPath,
     releaseDocStableDigestByDocKind: releaseDocVerificationSummary.stableDigestByDocKind,
     releaseDocStableDigestLineCount: releaseDocVerificationSummary.stableDigestLineCount,
     releaseDocStableDigestLines: releaseDocVerificationSummary.stableDigestLines,
@@ -1708,16 +1713,37 @@ try {
     repoDir,
     totalExpectedDocKinds: releaseDocVerificationSummary.totalExpectedDocKinds,
   };
+  const releaseDocDigestTextLines = [
+    'artifactVersion=execution-v1-release-doc-digest-text/v1',
+    `generatedAt=${smokeReport.generatedAt}`,
+    `reportPath=${reportPath}`,
+    `jsonDigestPath=${releaseDocDigestArtifactPath}`,
+    `overallExactMatch=${releaseDocVerificationSummary.overallExactMatch ? 'true' : 'false'}`,
+    `exactMatchCount=${releaseDocVerificationSummary.exactMatchCount}/${releaseDocVerificationSummary.totalExpectedDocKinds}`,
+    `missing=${releaseDocVerificationSummary.missingDocKinds.length ? releaseDocVerificationSummary.missingDocKinds.join(',') : 'none'}`,
+    `stableDigestSha256=${releaseDocVerificationSummary.stableDigestSha256}`,
+    '---',
+    releaseDocVerificationSummary.stableDigestOverviewLine,
+    ...releaseDocVerificationSummary.stableDigestLines,
+  ];
+  const releaseDocDigestTextArtifact = `${releaseDocDigestTextLines.join('\n')}\n`;
   fs.writeFileSync(reportPath, `${JSON.stringify(smokeReport, null, 2)}\n`, 'utf8');
   fs.writeFileSync(releaseDocDigestArtifactPath, `${JSON.stringify(releaseDocDigestArtifact, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(releaseDocDigestTextArtifactPath, releaseDocDigestTextArtifact, 'utf8');
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
   assert.equal(
     fs.existsSync(releaseDocDigestArtifactPath),
     true,
     `expected release doc digest artifact at ${releaseDocDigestArtifactPath}`,
   );
+  assert.equal(
+    fs.existsSync(releaseDocDigestTextArtifactPath),
+    true,
+    `expected release doc digest text artifact at ${releaseDocDigestTextArtifactPath}`,
+  );
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const persistedReleaseDocDigestArtifact = JSON.parse(fs.readFileSync(releaseDocDigestArtifactPath, 'utf8'));
+  const persistedReleaseDocDigestTextArtifact = fs.readFileSync(releaseDocDigestTextArtifactPath, 'utf8');
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
   assert.deepEqual(
     persistedReleaseDocDigestArtifact,
@@ -1732,6 +1758,11 @@ try {
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(
     fs.existsSync(persistedReport.artifactPair.releaseDocDigestArtifactPath),
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    fs.existsSync(persistedReport.artifactPair.releaseDocDigestTextArtifactPath),
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
@@ -1789,6 +1820,11 @@ try {
     releaseDocDigestArtifactPath,
     JSON.stringify(persistedReleaseDocDigestArtifact),
   );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocDigestTextArtifactPath,
+    releaseDocDigestTextArtifactPath,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
   assert.deepEqual(
     persistedReleaseDocDigestArtifact.expectedDocKinds,
     expectedReleaseDocKinds,
@@ -1833,6 +1869,16 @@ try {
     persistedReleaseDocDigestArtifact.releaseDocStableDigestByDocKind,
     releaseDocVerificationSummary.stableDigestByDocKind,
     JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestTextArtifact,
+    releaseDocDigestTextArtifact,
+    JSON.stringify({ persistedReleaseDocDigestTextArtifact, releaseDocDigestTextArtifact }),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestTextArtifact.trimEnd().split('\n'),
+    releaseDocDigestTextLines,
+    JSON.stringify({ persistedReleaseDocDigestTextArtifact, releaseDocDigestTextLines }),
   );
 
   console.log(JSON.stringify(smokeReport, null, 2));

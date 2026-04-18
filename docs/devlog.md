@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T16:30:00.000Z","id":"doclog_20260418163000_browser_release_doc_digest_text_artifact","type":"devlog","updatedAt":"2026-04-18T16:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Digest Text Artifact
+
+- date: 2026-04-18T16:30:00.000Z
+- added a sibling `execution-v1-release-doc-digest.txt` artifact so the browser E2E smoke now emits a plain text release-doc signature surface next to the JSON digest artifact
+- the text artifact records artifact version, generated timestamp, report path, JSON digest path, overall exact-match summary, stable digest sha256, the stable overview line, and the per-doc signature lines, then the smoke locks it with existence and full read-back equality assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release doc text digest artifact
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T16:15:00.000Z","id":"doclog_20260418161500_browser_release_doc_digest_artifact","type":"devlog","updatedAt":"2026-04-18T16:15:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Digest Artifact
 
