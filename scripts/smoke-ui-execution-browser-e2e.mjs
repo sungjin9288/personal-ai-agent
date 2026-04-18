@@ -961,7 +961,7 @@ try {
           viewportWidth: window.innerWidth,
         },
         captureSurfaceSummary: (() => {
-          const compactInline = (value) => String(value || '').replace(/\s+/g, '');
+          const compactInline = (value) => String(value || '').replace(/\\s+/g, '');
           const encodeText = (value) => {
             const bytes = new TextEncoder().encode(String(value || ''));
             let binary = '';
@@ -970,7 +970,7 @@ try {
             }
             return btoa(binary);
           };
-          const normalizeText = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+          const normalizeText = (value) => String(value || '').replace(/\\s+/g, ' ').trim();
           return {
             checklistItems: Array.from(document.querySelectorAll('#release-status .release-checklist-item')).map((node) => ({
               label: node.querySelector('strong')?.textContent || '',
@@ -1003,6 +1003,7 @@ try {
               return {
                 docKindEncoded: encodeText(docKind),
                 fallbackDocKind,
+                headHtmlEncoded: encodeText(node.querySelector('.release-doc-head')?.outerHTML || ''),
                 headingsEncoded: headings.map((heading) => encodeText(heading)),
                 labelEncoded: encodeText(compactInline(node.querySelector('.release-doc-head strong')?.textContent || '')),
                 pathEncoded: encodeText(compactInline(node.querySelector('.release-doc-head .item-meta')?.textContent || '')),
@@ -1010,6 +1011,11 @@ try {
                 rawDocKindEncoded: encodeText(rawDocKind),
               };
             }),
+            literalTransportSanity: {
+              closeoutEncoded: encodeText('closeout'),
+              docsPathEncoded: encodeText('/tmp/personal-ai-agent-browser-e2e/docs/execution-v1-closeout.md'),
+              evidenceEncoded: encodeText('evidence'),
+            },
             docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
               label: node.querySelector('.item-title')?.textContent || '',
               value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
@@ -1077,6 +1083,7 @@ try {
     docSurfaces: (rawScreenshotSurfaceSummary.docSurfaces || []).map((docSurface) => ({
       docKind: decodeBase64Text(docSurface.docKindEncoded),
       fallbackDocKind: docSurface.fallbackDocKind || '',
+      headHtml: decodeBase64Text(docSurface.headHtmlEncoded),
       headings: Array.isArray(docSurface.headingsEncoded)
         ? docSurface.headingsEncoded.map((heading) => decodeBase64Text(heading))
         : [],
@@ -1087,6 +1094,11 @@ try {
         : [],
       rawDocKind: decodeBase64Text(docSurface.rawDocKindEncoded),
     })),
+    literalTransportSanity: {
+      closeout: decodeBase64Text(rawScreenshotSurfaceSummary.literalTransportSanity?.closeoutEncoded),
+      docsPath: decodeBase64Text(rawScreenshotSurfaceSummary.literalTransportSanity?.docsPathEncoded),
+      evidence: decodeBase64Text(rawScreenshotSurfaceSummary.literalTransportSanity?.evidenceEncoded),
+    },
   };
   screenshotSurfaceSummary.docSurfaceKindMismatches = screenshotSurfaceSummary.docSurfaces
     .filter((docSurface) => docSurface.rawDocKind && docSurface.rawDocKind !== docSurface.docKind)
@@ -1094,6 +1106,15 @@ try {
       canonicalDocKind: docSurface.docKind,
       rawDocKind: docSurface.rawDocKind,
     }));
+  assert.deepEqual(
+    screenshotSurfaceSummary.literalTransportSanity,
+    {
+      closeout: 'closeout',
+      docsPath: '/tmp/personal-ai-agent-browser-e2e/docs/execution-v1-closeout.md',
+      evidence: 'evidence',
+    },
+    JSON.stringify(screenshotSurfaceSummary.literalTransportSanity),
+  );
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
   const screenshotBuffer = fs.readFileSync(screenshotPath);
@@ -1197,6 +1218,7 @@ try {
   }
   for (const docSurface of screenshotSurfaceSummary.docSurfaces) {
     assert.equal(String(docSurface.docKind || '').trim().length > 0, true, JSON.stringify(docSurface));
+    assert.equal(String(docSurface.headHtml || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(String(docSurface.label || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(String(docSurface.path || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(docSurface.previewItems.length >= 1, true, JSON.stringify(docSurface));

@@ -1,12 +1,21 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T13:15:00.000Z","id":"doclog_20260418131500_browser_release_doc_regex_escape_fix","type":"devlog","updatedAt":"2026-04-18T13:15:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Regex Escape Fix
+
+- date: 2026-04-18T13:15:00.000Z
+- found the actual root cause of the `cloeout` drift in `smoke-ui-execution-browser-e2e`: the injected browser code lived inside a template string, so `/\s+/g` was interpreted as `/s+/g` and stripped literal `s` characters from doc labels and paths
+- fixed the injected `compactInline` and `normalizeText` helpers by escaping the regex backslash for the browser-evaluated code path, restoring real whitespace normalization instead of accidental `s` removal
+- updated the README smoke note so the browser evidence contract now explicitly covers whitespace normalization inside injected browser code for release doc card capture
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T13:00:00.000Z","id":"doclog_20260418130000_browser_release_doc_base64_transport","type":"devlog","updatedAt":"2026-04-18T13:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Runtime Mismatch Pass
 
 - date: 2026-04-18T13:00:00.000Z
 - hardened `smoke-ui-execution-browser-e2e` so release doc surface strings are encoded in the browser and decoded in Node before assertions, which ruled out Playwright CLI text transport as the cause of the `closeout` drift
-- added `releaseDocAssetSanity` plus `docSurfaceKindMismatches` reporting so the saved browser evidence can distinguish “served app.js contains the correct marker” from “runtime release panel still exposes a mismatched raw doc kind”
-- updated the README smoke note so the browser evidence contract documents base64-backed doc card capture and the server-asset sanity check for closeout/evidence surfaces
+- added `releaseDocAssetSanity`, `literalTransportSanity`, `docSurfaceKindMismatches`, and doc head HTML snapshots so the saved browser evidence can distinguish “served app.js is correct”, “transport preserves literal strings”, and “runtime release panel still exposes a mismatched raw doc kind”
+- updated the README smoke note so the browser evidence contract documents base64-backed doc card capture, literal transport sanity, and the server-asset sanity check for closeout/evidence surfaces
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-18T12:45:00.000Z","id":"doclog_20260418124500_browser_release_doc_kind_marker","type":"devlog","updatedAt":"2026-04-18T12:45:00.000Z"} -->
