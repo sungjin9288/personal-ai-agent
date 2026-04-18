@@ -6645,14 +6645,14 @@ function renderReleaseStatus() {
                 .join('')}
             </div>
             <div class="release-doc-grid">
-              <article class="release-doc-surface markdown-surface">
+              <article class="release-doc-surface markdown-surface" data-release-doc-kind="closeout">
                 <div class="release-doc-head">
                   <strong>closeout</strong>
                   <span class="item-meta mono">${escapeHtml(closeout.path || '-')}</span>
                 </div>
                 ${markdownToHtml(closeout.markdown || '문서가 없습니다.')}
               </article>
-              <article class="release-doc-surface markdown-surface">
+              <article class="release-doc-surface markdown-surface" data-release-doc-kind="evidence">
                 <div class="release-doc-head">
                   <strong>evidence</strong>
                   <span class="item-meta mono">${escapeHtml(evidence.path || '-')}</span>

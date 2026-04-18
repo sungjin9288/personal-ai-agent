@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T12:45:00.000Z","id":"doclog_20260418124500_browser_release_doc_kind_marker","type":"devlog","updatedAt":"2026-04-18T12:45:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Kind Marker Pass
+
+- date: 2026-04-18T12:45:00.000Z
+- added stable `data-release-doc-kind` markers to the rendered release doc cards so browser evidence has an explicit source for release document identity
+- updated `smoke-ui-execution-browser-e2e` to persist `docKind` in `screenshotSurfaceSummary.docSurfaces`, with an ordered fallback when the captured runtime attribute text is distorted, and restored exact presence assertions for the two release document surfaces
+- updated the README smoke note so the browser evidence contract now documents stable doc kind capture alongside doc label/path/preview summary
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T12:30:00.000Z","id":"doclog_20260418123000_browser_release_doc_surface_summary","type":"devlog","updatedAt":"2026-04-18T12:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Surface Summary Pass
 

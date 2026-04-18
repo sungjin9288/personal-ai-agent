@@ -948,12 +948,15 @@ try {
               value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
             })),
             docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
-            docSurfaces: Array.from(document.querySelectorAll('#release-status .release-doc-surface')).map((node) => {
+            docSurfaces: Array.from(document.querySelectorAll('#release-status .release-doc-surface')).map((node, index) => {
               const bodyChildren = Array.from(node.children).filter((child) => !child.classList.contains('release-doc-head'));
               const headings = Array.from(node.querySelectorAll('h1, h2, h3, h4, h5, h6'))
                 .map((child) => normalizeText(child.textContent || ''))
                 .filter(Boolean)
                 .slice(0, 3);
+              const rawDocKind = compactInline(node.getAttribute('data-release-doc-kind') || '');
+              const fallbackDocKind = index === 0 ? 'closeout' : index === 1 ? 'evidence' : '';
+              const docKind = ['closeout', 'evidence'].includes(rawDocKind) ? rawDocKind : fallbackDocKind;
               const previewItems = bodyChildren
                 .flatMap((child) => {
                   if (child.matches('ul, ol')) {
@@ -965,10 +968,13 @@ try {
                 .filter(Boolean)
                 .slice(0, 3);
               return {
+                docKind,
+                fallbackDocKind,
                 headings,
                 label: compactInline(node.querySelector('.release-doc-head strong')?.textContent || ''),
                 path: compactInline(node.querySelector('.release-doc-head .item-meta')?.textContent || ''),
                 previewItems,
+                rawDocKind,
               };
             }),
             docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
@@ -1092,6 +1098,13 @@ try {
     screenshotSurfaceSummary.docSurfaceCount,
     JSON.stringify(screenshotSurfaceSummary),
   );
+  for (const docKind of ['closeout', 'evidence']) {
+    assert.equal(
+      screenshotSurfaceSummary.docSurfaces.some((docSurface) => docSurface.docKind === docKind),
+      true,
+      JSON.stringify({ docKind, screenshotSurfaceSummary }),
+    );
+  }
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1128,6 +1141,7 @@ try {
     assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
   }
   for (const docSurface of screenshotSurfaceSummary.docSurfaces) {
+    assert.equal(String(docSurface.docKind || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(String(docSurface.label || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(String(docSurface.path || '').trim().length > 0, true, JSON.stringify(docSurface));
     assert.equal(docSurface.previewItems.length >= 1, true, JSON.stringify(docSurface));
