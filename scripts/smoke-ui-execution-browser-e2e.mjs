@@ -935,52 +935,79 @@ try {
           viewportHeight: window.innerHeight,
           viewportWidth: window.innerWidth,
         },
-        captureSurfaceSummary: {
-          checklistItems: Array.from(document.querySelectorAll('#release-status .release-checklist-item')).map((node) => ({
-            label: node.querySelector('strong')?.textContent || '',
-            status: node.querySelector('.status-badge')?.textContent || '',
-          })),
-          currentStatusRows: Array.from(document.querySelectorAll('#release-status .release-current-status .harness-row')).map((node) => ({
-            label: node.querySelector('.item-title')?.textContent || '',
-            value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
-          })),
-          docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
-          docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
-            label: node.querySelector('.item-title')?.textContent || '',
-            value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
-          })),
-          historyEmptyState: {
-            detail: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-meta')?.textContent || '',
-            title: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-title')?.textContent || '',
-          },
-          historyRowCount: document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)').length,
-          historyRows: Array.from(document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)')).map((node) => ({
-            action: node.querySelector('.item-title')?.textContent || '',
-            outcome: node.querySelector('.release-history-actions .mini-badge')?.textContent || '',
-            scopeMeta: node.querySelector('.release-provider-meta .item-meta')?.textContent || '',
-            summary: node.querySelector(':scope > .item-meta')?.textContent || '',
-          })),
-          providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
-          providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
-            envKey: node.querySelector('.item-meta.mono')?.textContent || '',
-            label: node.querySelector('.item-title')?.textContent || '',
-            statusBadges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
-          })),
-          recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
-          recommendationCards: Array.from(document.querySelectorAll('#release-status .release-recommendation-card')).map((node) => ({
-            badges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
-            label: node.querySelector('.item-title')?.textContent || '',
-            meta: Array.from(node.querySelectorAll('.item-meta')).slice(0, 2).map((item) => item.textContent || ''),
-          })),
-          releaseHeadline: document.querySelector('#release-status .release-callout h4')?.textContent || '',
-          releaseCopy: document.querySelector('#release-status .release-callout p:not(.section-kicker)')?.textContent || '',
-          summaryChips: Array.from(document.querySelectorAll('#release-status .summary-chip')).map((node) => ({
-            label: node.querySelector('span')?.textContent || '',
-            value: node.querySelector('strong')?.textContent || '',
-          })),
-          summaryChipLabels: Array.from(document.querySelectorAll('#release-status .summary-chip span')).map((node) => node.textContent || ''),
-          surfaceHeadings: Array.from(document.querySelectorAll('#release-status .surface h4')).map((node) => node.textContent || ''),
-        },
+        captureSurfaceSummary: (() => {
+          const compactInline = (value) => String(value || '').replace(/\s+/g, '');
+          const normalizeText = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+          return {
+            checklistItems: Array.from(document.querySelectorAll('#release-status .release-checklist-item')).map((node) => ({
+              label: node.querySelector('strong')?.textContent || '',
+              status: node.querySelector('.status-badge')?.textContent || '',
+            })),
+            currentStatusRows: Array.from(document.querySelectorAll('#release-status .release-current-status .harness-row')).map((node) => ({
+              label: node.querySelector('.item-title')?.textContent || '',
+              value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
+            })),
+            docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
+            docSurfaces: Array.from(document.querySelectorAll('#release-status .release-doc-surface')).map((node) => {
+              const bodyChildren = Array.from(node.children).filter((child) => !child.classList.contains('release-doc-head'));
+              const headings = Array.from(node.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+                .map((child) => normalizeText(child.textContent || ''))
+                .filter(Boolean)
+                .slice(0, 3);
+              const previewItems = bodyChildren
+                .flatMap((child) => {
+                  if (child.matches('ul, ol')) {
+                    return Array.from(child.querySelectorAll(':scope > li')).map((item) => item.textContent || '');
+                  }
+                  return [child.textContent || ''];
+                })
+                .map((value) => normalizeText(value))
+                .filter(Boolean)
+                .slice(0, 3);
+              return {
+                headings,
+                label: compactInline(node.querySelector('.release-doc-head strong')?.textContent || ''),
+                path: compactInline(node.querySelector('.release-doc-head .item-meta')?.textContent || ''),
+                previewItems,
+              };
+            }),
+            docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
+              label: node.querySelector('.item-title')?.textContent || '',
+              value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
+            })),
+            historyEmptyState: {
+              detail: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-meta')?.textContent || '',
+              title: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-title')?.textContent || '',
+            },
+            historyRowCount: document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)').length,
+            historyRows: Array.from(document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)')).map((node) => ({
+              action: node.querySelector('.item-title')?.textContent || '',
+              outcome: node.querySelector('.release-history-actions .mini-badge')?.textContent || '',
+              scopeMeta: node.querySelector('.release-provider-meta .item-meta')?.textContent || '',
+              summary: node.querySelector(':scope > .item-meta')?.textContent || '',
+            })),
+            providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
+            providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
+              envKey: node.querySelector('.item-meta.mono')?.textContent || '',
+              label: node.querySelector('.item-title')?.textContent || '',
+              statusBadges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
+            })),
+            recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
+            recommendationCards: Array.from(document.querySelectorAll('#release-status .release-recommendation-card')).map((node) => ({
+              badges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
+              label: node.querySelector('.item-title')?.textContent || '',
+              meta: Array.from(node.querySelectorAll('.item-meta')).slice(0, 2).map((item) => item.textContent || ''),
+            })),
+            releaseHeadline: document.querySelector('#release-status .release-callout h4')?.textContent || '',
+            releaseCopy: document.querySelector('#release-status .release-callout p:not(.section-kicker)')?.textContent || '',
+            summaryChips: Array.from(document.querySelectorAll('#release-status .summary-chip')).map((node) => ({
+              label: node.querySelector('span')?.textContent || '',
+              value: node.querySelector('strong')?.textContent || '',
+            })),
+            summaryChipLabels: Array.from(document.querySelectorAll('#release-status .summary-chip span')).map((node) => node.textContent || ''),
+            surfaceHeadings: Array.from(document.querySelectorAll('#release-status .surface h4')).map((node) => node.textContent || ''),
+          };
+        })(),
         captureTarget: {
           activeDetailTab: document.querySelector('.detail-tab.is-active')?.getAttribute('data-detail-tab') || '',
           activeStep: new URL(window.location.href).searchParams.get('step') || '',
@@ -1061,6 +1088,11 @@ try {
   );
   assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(
+    screenshotSurfaceSummary.docSurfaces.length,
+    screenshotSurfaceSummary.docSurfaceCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
     JSON.stringify(screenshotSurfaceSummary),
@@ -1094,6 +1126,15 @@ try {
     assert.equal(String(providerCard.label || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(String(providerCard.envKey || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
+  }
+  for (const docSurface of screenshotSurfaceSummary.docSurfaces) {
+    assert.equal(String(docSurface.label || '').trim().length > 0, true, JSON.stringify(docSurface));
+    assert.equal(String(docSurface.path || '').trim().length > 0, true, JSON.stringify(docSurface));
+    assert.equal(docSurface.previewItems.length >= 1, true, JSON.stringify(docSurface));
+    assert.equal(String(docSurface.previewItems[0] || '').trim().length > 0, true, JSON.stringify(docSurface));
+    for (const heading of docSurface.headings) {
+      assert.equal(String(heading || '').trim().length > 0, true, JSON.stringify(docSurface));
+    }
   }
   for (const checklistItem of screenshotSurfaceSummary.checklistItems) {
     assert.equal(String(checklistItem.label || '').trim().length > 0, true, JSON.stringify(checklistItem));

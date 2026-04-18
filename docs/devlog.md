@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T12:30:00.000Z","id":"doclog_20260418123000_browser_release_doc_surface_summary","type":"devlog","updatedAt":"2026-04-18T12:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Surface Summary Pass
+
+- date: 2026-04-18T12:30:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so `screenshotSurfaceSummary` now includes structured closeout/evidence doc card summaries with rendered label, path, headings, and preview items from the release panel
+- added assertions that the two rendered release doc cards are present and that every visible doc surface carries a non-empty label, path, and preview summary, so the saved browser report preserves document surface content instead of only aggregate document counts
+- updated the README smoke note so release document card summary capture is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T12:15:00.000Z","id":"doclog_20260418121500_browser_release_history_summary","type":"devlog","updatedAt":"2026-04-18T12:15:00.000Z"} -->
 ## 2026-04-18 Browser Release History Summary Pass
 
