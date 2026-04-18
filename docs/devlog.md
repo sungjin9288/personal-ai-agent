@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T11:00:00.000Z","id":"doclog_20260418110000_browser_capture_target_metadata","type":"devlog","updatedAt":"2026-04-18T11:00:00.000Z"} -->
+## 2026-04-18 Browser Capture Target Metadata Pass
+
+- date: 2026-04-18T11:00:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so the saved report now includes structured screenshot capture target metadata for the live browser state: active step/tab, active detail tab, workspace/mission/session/artifact ids, page title, release heading, and exact href
+- added explicit assertions that the screenshot was captured from the intended `step-output` plus `release` surface for the current mission/session context instead of only assuming the final URL state before capture
+- updated the README smoke note so capture target verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T10:45:00.000Z","id":"doclog_20260418104500_browser_fullpage_dimension_contract","type":"devlog","updatedAt":"2026-04-18T10:45:00.000Z"} -->
 ## 2026-04-18 Browser Full-Page Dimension Contract Pass
 

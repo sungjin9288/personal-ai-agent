@@ -923,24 +923,39 @@ try {
   assert.equal(new URL(reloadState.href).searchParams.get('tab'), 'release');
   assert.equal(new URL(reloadState.href).searchParams.get('step'), 'step-output');
 
-  const screenshotCaptureContext = runPwJson([
+  const screenshotCaptureState = runPwJson([
     '--raw',
     'run-code',
     `async (page) => {
-      const captureContext = await page.evaluate(() => ({
-        devicePixelRatio: window.devicePixelRatio || 1,
-        pageScrollHeight: document.documentElement.scrollHeight,
-        pageScrollWidth: document.documentElement.scrollWidth,
-        viewportHeight: window.innerHeight,
-        viewportWidth: window.innerWidth,
+      const captureState = await page.evaluate(() => ({
+        captureContext: {
+          devicePixelRatio: window.devicePixelRatio || 1,
+          pageScrollHeight: document.documentElement.scrollHeight,
+          pageScrollWidth: document.documentElement.scrollWidth,
+          viewportHeight: window.innerHeight,
+          viewportWidth: window.innerWidth,
+        },
+        captureTarget: {
+          activeDetailTab: document.querySelector('.detail-tab.is-active')?.getAttribute('data-detail-tab') || '',
+          activeStep: new URL(window.location.href).searchParams.get('step') || '',
+          activeTab: new URL(window.location.href).searchParams.get('tab') || '',
+          artifactId: new URL(window.location.href).searchParams.get('artifact') || '',
+          href: window.location.href,
+          missionId: new URL(window.location.href).searchParams.get('mission') || '',
+          pageTitle: document.title,
+          releaseHeading: document.querySelector('#detail-release h4')?.textContent || '',
+          sessionId: new URL(window.location.href).searchParams.get('session') || '',
+          workspaceId: new URL(window.location.href).searchParams.get('workspace') || '',
+        },
       }));
       await page.screenshot({
         fullPage: true,
         path: ${JSON.stringify(screenshotPath)},
       });
-      return captureContext;
+      return captureState;
     }`,
   ]);
+  const { captureContext: screenshotCaptureContext, captureTarget: screenshotCaptureTarget } = screenshotCaptureState;
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
   const screenshotBuffer = fs.readFileSync(screenshotPath);
@@ -968,6 +983,13 @@ try {
     expectedFullPageDimensions,
     JSON.stringify({ expectedFullPageDimensions, screenshotCaptureContext, screenshotDimensions }),
   );
+  assert.equal(screenshotCaptureTarget.activeStep, 'step-output', JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.activeTab, 'release', JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.activeDetailTab, 'release', JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.href, reloadState.href, JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.workspaceId, workspace.id, JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.missionId, missionId, JSON.stringify(screenshotCaptureTarget));
+  assert.match(screenshotCaptureTarget.releaseHeading, /검증, evidence, closeout/);
 
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
@@ -1027,6 +1049,7 @@ try {
     reportPath,
     repoDir,
     artifactPair: {
+      captureTargetVerified: true,
       fullPageDimensionsVerified: true,
       pairVerified: true,
       reportReadBackVerified: true,
@@ -1035,6 +1058,7 @@ try {
     },
     expectedFullPageDimensions,
     screenshotCaptureContext,
+    screenshotCaptureTarget,
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
     screenshotHeight: screenshotDimensions.height,
@@ -1059,6 +1083,11 @@ try {
   assert.deepEqual(
     persistedReport.expectedFullPageDimensions,
     expectedFullPageDimensions,
+    JSON.stringify(persistedReport),
+  );
+  assert.deepEqual(
+    persistedReport.screenshotCaptureTarget,
+    screenshotCaptureTarget,
     JSON.stringify(persistedReport),
   );
   assert.equal(
