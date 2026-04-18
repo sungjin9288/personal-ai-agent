@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T00:05:00.000Z","id":"doclog_20260419000500_browser_release_doc_manifest_text","type":"devlog","updatedAt":"2026-04-19T00:05:00.000Z"} -->
+## 2026-04-19 Browser Release Doc Manifest Text Artifact
+
+- date: 2026-04-19T00:05:00.000Z
+- added `execution-v1-release-doc-manifest.txt` so the release-doc manifest now has a plain-text handoff surface alongside the JSON manifest
+- the text artifact records generated timestamp, report path, manifest path, overall exact-match state, stable digest sha256, bundle sha256, the bundle overview line, and the per-artifact signature lines in expected order, then the smoke locks it with existence and full read-back equality assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone manifest text surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T17:30:00.000Z","id":"doclog_20260418173000_browser_release_doc_bundle_keyed_signatures","type":"devlog","updatedAt":"2026-04-18T17:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Bundle Keyed Signatures
 
