@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T13:30:00.000Z","id":"doclog_20260418133000_browser_release_doc_capture_contract","type":"devlog","updatedAt":"2026-04-18T13:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Capture Contract
+
+- date: 2026-04-18T13:30:00.000Z
+- tightened `smoke-ui-execution-browser-e2e` so release doc capture is no longer “diagnostic only”: `docSurfaceKindMismatches` must now be empty for the smoke to pass
+- added `artifactPair.releaseDocCaptureVerified` to the saved browser report so downstream readers can tell that release doc label, path, kind, and raw runtime values all matched after the regex escape fix
+- updated the README smoke note so the browser evidence contract explicitly states that closeout/evidence doc kind mismatch count must be zero
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T13:15:00.000Z","id":"doclog_20260418131500_browser_release_doc_regex_escape_fix","type":"devlog","updatedAt":"2026-04-18T13:15:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Regex Escape Fix
 

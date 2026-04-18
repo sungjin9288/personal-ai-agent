@@ -1181,6 +1181,11 @@ try {
       JSON.stringify({ docKind, screenshotSurfaceSummary }),
     );
   }
+  assert.deepEqual(
+    screenshotSurfaceSummary.docSurfaceKindMismatches,
+    [],
+    JSON.stringify(screenshotSurfaceSummary.docSurfaceKindMismatches),
+  );
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1322,6 +1327,7 @@ try {
       fullPageDimensionsVerified: true,
       pairVerified: true,
       reportReadBackVerified: true,
+      releaseDocCaptureVerified: true,
       reportPath,
       screenshotPath,
     },
