@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T10:15:00.000Z","id":"doclog_20260418101500_browser_png_dimension_validation","type":"devlog","updatedAt":"2026-04-18T10:15:00.000Z"} -->
+## 2026-04-18 Browser PNG Dimension Validation Pass
+
+- date: 2026-04-18T10:15:00.000Z
+- added lightweight PNG header parsing to `smoke-ui-execution-browser-e2e`, so the saved screenshot artifact is now validated as a decodable PNG with non-zero width and height instead of only an existing file with matching hash
+- extended the persisted browser E2E report with `screenshotWidth` and `screenshotHeight`, then re-parse the on-disk screenshot after report read-back to assert the stored dimensions still match the actual artifact
+- updated the README smoke note so PNG parse and dimension revalidation are part of the documented browser verification surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T10:00:00.000Z","id":"doclog_20260418100000_browser_screenshot_revalidation","type":"devlog","updatedAt":"2026-04-18T10:00:00.000Z"} -->
 ## 2026-04-18 Browser Screenshot Revalidation Pass
 

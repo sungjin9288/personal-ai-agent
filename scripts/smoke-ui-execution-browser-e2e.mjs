@@ -23,6 +23,7 @@ const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
 const handoffSessionResults = [];
 const serverOutput = { stderr: '', stdout: '' };
+const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const browserGuardScript = `async (page) => {
   page.__codexConsoleErrors = page.__codexConsoleErrors || [];
   page.__codexPageErrors = page.__codexPageErrors || [];
@@ -77,6 +78,18 @@ const browserGuardScript = `async (page) => {
     ok: true,
   };
 }`;
+
+function parsePngDimensions(buffer) {
+  assert.equal(buffer.length >= 24, true, `expected PNG buffer length >= 24, received ${buffer.length}`);
+  assert.equal(buffer.subarray(0, 8).equals(pngSignature), true, 'expected PNG signature');
+  assert.equal(buffer.readUInt32BE(8), 13, 'expected IHDR chunk length 13');
+  assert.equal(buffer.toString('ascii', 12, 16), 'IHDR', 'expected PNG IHDR chunk');
+  const height = buffer.readUInt32BE(20);
+  const width = buffer.readUInt32BE(16);
+  assert.equal(width > 0, true, `expected PNG width > 0, received ${width}`);
+  assert.equal(height > 0, true, `expected PNG height > 0, received ${height}`);
+  return { height, width };
+}
 
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -924,6 +937,7 @@ try {
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
   const screenshotBuffer = fs.readFileSync(screenshotPath);
+  const screenshotDimensions = parsePngDimensions(screenshotBuffer);
   const screenshotSha256 = createHash('sha256').update(screenshotBuffer).digest('hex');
   const screenshotStat = fs.statSync(screenshotPath);
 
@@ -992,8 +1006,10 @@ try {
     },
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
+    screenshotHeight: screenshotDimensions.height,
     screenshotModifiedAt: screenshotStat.mtime.toISOString(),
     screenshotSha256,
+    screenshotWidth: screenshotDimensions.width,
     screenshotPath,
     sessionId,
     url: reloadState.href,
@@ -1004,11 +1020,14 @@ try {
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
   const persistedScreenshotBuffer = fs.readFileSync(persistedReport.screenshotPath);
+  const persistedScreenshotDimensions = parsePngDimensions(persistedScreenshotBuffer);
   const persistedScreenshotStat = fs.statSync(persistedReport.screenshotPath);
   const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
   assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(persistedReport.screenshotBytes, persistedScreenshotStat.size, JSON.stringify(persistedReport));
+  assert.equal(persistedReport.screenshotWidth, persistedScreenshotDimensions.width, JSON.stringify(persistedReport));
+  assert.equal(persistedReport.screenshotHeight, persistedScreenshotDimensions.height, JSON.stringify(persistedReport));
   assert.equal(
     persistedReport.screenshotModifiedAt,
     persistedScreenshotStat.mtime.toISOString(),
