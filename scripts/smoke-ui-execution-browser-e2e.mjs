@@ -947,12 +947,12 @@ try {
   const screenshotDimensions = parsePngDimensions(screenshotBuffer);
   const screenshotSha256 = createHash('sha256').update(screenshotBuffer).digest('hex');
   const screenshotStat = fs.statSync(screenshotPath);
-  const expectedRenderedWidth = Math.round(
-    screenshotCaptureContext.viewportWidth * screenshotCaptureContext.devicePixelRatio,
-  );
-  const minimumRenderedHeight = Math.round(
-    screenshotCaptureContext.viewportHeight * screenshotCaptureContext.devicePixelRatio,
-  );
+  const expectedRenderedWidth = Math.round(screenshotCaptureContext.viewportWidth * screenshotCaptureContext.devicePixelRatio);
+  const minimumRenderedHeight = Math.round(screenshotCaptureContext.viewportHeight * screenshotCaptureContext.devicePixelRatio);
+  const expectedFullPageDimensions = {
+    height: Math.round(screenshotCaptureContext.pageScrollHeight * screenshotCaptureContext.devicePixelRatio),
+    width: Math.round(screenshotCaptureContext.pageScrollWidth * screenshotCaptureContext.devicePixelRatio),
+  };
   assert.equal(
     screenshotDimensions.width,
     expectedRenderedWidth,
@@ -962,6 +962,11 @@ try {
     screenshotDimensions.height >= minimumRenderedHeight,
     true,
     JSON.stringify({ screenshotCaptureContext, screenshotDimensions }),
+  );
+  assert.deepEqual(
+    screenshotDimensions,
+    expectedFullPageDimensions,
+    JSON.stringify({ expectedFullPageDimensions, screenshotCaptureContext, screenshotDimensions }),
   );
 
   const browserErrorState = getBrowserErrorState();
@@ -1022,11 +1027,13 @@ try {
     reportPath,
     repoDir,
     artifactPair: {
+      fullPageDimensionsVerified: true,
       pairVerified: true,
       reportReadBackVerified: true,
       reportPath,
       screenshotPath,
     },
+    expectedFullPageDimensions,
     screenshotCaptureContext,
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
@@ -1049,6 +1056,11 @@ try {
   const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
   assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.deepEqual(
+    persistedReport.expectedFullPageDimensions,
+    expectedFullPageDimensions,
+    JSON.stringify(persistedReport),
+  );
   assert.equal(
     persistedReport.screenshotCaptureContext.viewportWidth,
     screenshotCaptureContext.viewportWidth,
@@ -1067,6 +1079,11 @@ try {
   assert.equal(persistedReport.screenshotBytes, persistedScreenshotStat.size, JSON.stringify(persistedReport));
   assert.equal(persistedReport.screenshotWidth, persistedScreenshotDimensions.width, JSON.stringify(persistedReport));
   assert.equal(persistedReport.screenshotHeight, persistedScreenshotDimensions.height, JSON.stringify(persistedReport));
+  assert.deepEqual(
+    persistedScreenshotDimensions,
+    persistedReport.expectedFullPageDimensions,
+    JSON.stringify(persistedReport),
+  );
   assert.equal(
     persistedReport.screenshotModifiedAt,
     persistedScreenshotStat.mtime.toISOString(),

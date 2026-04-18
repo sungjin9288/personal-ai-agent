@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T10:45:00.000Z","id":"doclog_20260418104500_browser_fullpage_dimension_contract","type":"devlog","updatedAt":"2026-04-18T10:45:00.000Z"} -->
+## 2026-04-18 Browser Full-Page Dimension Contract Pass
+
+- date: 2026-04-18T10:45:00.000Z
+- promoted screenshot dimension validation from a partial width-plus-minimum-height check into an exact full-page contract by recording `expectedFullPageDimensions` from page scroll size and device pixel ratio
+- extended the saved browser E2E report so the persisted JSON now states that full-page dimensions were verified, and the smoke re-checks the decoded PNG dimensions against the stored expected values after report read-back
+- updated the README smoke note so expected full-page dimension verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T10:30:00.000Z","id":"doclog_20260418103000_browser_capture_context_metadata","type":"devlog","updatedAt":"2026-04-18T10:30:00.000Z"} -->
 ## 2026-04-18 Browser Capture Context Metadata Pass
 
