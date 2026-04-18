@@ -923,15 +923,22 @@ try {
   assert.equal(new URL(reloadState.href).searchParams.get('tab'), 'release');
   assert.equal(new URL(reloadState.href).searchParams.get('step'), 'step-output');
 
-  runPw([
+  const screenshotCaptureContext = runPwJson([
     '--raw',
     'run-code',
     `async (page) => {
+      const captureContext = await page.evaluate(() => ({
+        devicePixelRatio: window.devicePixelRatio || 1,
+        pageScrollHeight: document.documentElement.scrollHeight,
+        pageScrollWidth: document.documentElement.scrollWidth,
+        viewportHeight: window.innerHeight,
+        viewportWidth: window.innerWidth,
+      }));
       await page.screenshot({
         fullPage: true,
         path: ${JSON.stringify(screenshotPath)},
       });
-      return { ok: true };
+      return captureContext;
     }`,
   ]);
   const screenshotCaptured = fs.existsSync(screenshotPath);
@@ -940,6 +947,22 @@ try {
   const screenshotDimensions = parsePngDimensions(screenshotBuffer);
   const screenshotSha256 = createHash('sha256').update(screenshotBuffer).digest('hex');
   const screenshotStat = fs.statSync(screenshotPath);
+  const expectedRenderedWidth = Math.round(
+    screenshotCaptureContext.viewportWidth * screenshotCaptureContext.devicePixelRatio,
+  );
+  const minimumRenderedHeight = Math.round(
+    screenshotCaptureContext.viewportHeight * screenshotCaptureContext.devicePixelRatio,
+  );
+  assert.equal(
+    screenshotDimensions.width,
+    expectedRenderedWidth,
+    JSON.stringify({ screenshotCaptureContext, screenshotDimensions }),
+  );
+  assert.equal(
+    screenshotDimensions.height >= minimumRenderedHeight,
+    true,
+    JSON.stringify({ screenshotCaptureContext, screenshotDimensions }),
+  );
 
   const browserErrorState = getBrowserErrorState();
   assert.deepEqual(browserErrorState.consoleErrors, [], JSON.stringify(browserErrorState));
@@ -1004,6 +1027,7 @@ try {
       reportPath,
       screenshotPath,
     },
+    screenshotCaptureContext,
     screenshotCaptured,
     screenshotBytes: screenshotStat.size,
     screenshotHeight: screenshotDimensions.height,
@@ -1025,6 +1049,21 @@ try {
   const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
   assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.equal(
+    persistedReport.screenshotCaptureContext.viewportWidth,
+    screenshotCaptureContext.viewportWidth,
+    JSON.stringify(persistedReport),
+  );
+  assert.equal(
+    persistedReport.screenshotCaptureContext.viewportHeight,
+    screenshotCaptureContext.viewportHeight,
+    JSON.stringify(persistedReport),
+  );
+  assert.equal(
+    persistedReport.screenshotCaptureContext.devicePixelRatio,
+    screenshotCaptureContext.devicePixelRatio,
+    JSON.stringify(persistedReport),
+  );
   assert.equal(persistedReport.screenshotBytes, persistedScreenshotStat.size, JSON.stringify(persistedReport));
   assert.equal(persistedReport.screenshotWidth, persistedScreenshotDimensions.width, JSON.stringify(persistedReport));
   assert.equal(persistedReport.screenshotHeight, persistedScreenshotDimensions.height, JSON.stringify(persistedReport));

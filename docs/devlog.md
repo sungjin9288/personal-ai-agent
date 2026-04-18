@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T10:30:00.000Z","id":"doclog_20260418103000_browser_capture_context_metadata","type":"devlog","updatedAt":"2026-04-18T10:30:00.000Z"} -->
+## 2026-04-18 Browser Capture Context Metadata Pass
+
+- date: 2026-04-18T10:30:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so the saved report now includes screenshot capture context from the live browser session: viewport width/height, device pixel ratio, and page scroll size
+- added explicit width consistency assertions so the decoded PNG width must match the measured viewport render width, and the full-page screenshot height must be at least one rendered viewport tall
+- updated the README smoke note so viewport and DPR grounded screenshot verification is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T10:15:00.000Z","id":"doclog_20260418101500_browser_png_dimension_validation","type":"devlog","updatedAt":"2026-04-18T10:15:00.000Z"} -->
 ## 2026-04-18 Browser PNG Dimension Validation Pass
 
