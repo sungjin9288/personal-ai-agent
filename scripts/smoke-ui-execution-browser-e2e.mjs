@@ -1311,9 +1311,8 @@ try {
     docKind,
     exactMatch: releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
     failureReasons: releaseDocVerificationSummary.byDocKind[docKind].failureReasons,
-  }));
-  releaseDocVerificationSummary.stableDigestLines = releaseDocVerificationSummary.stableDigest.map((entry) =>
-    [
+  })).map((entry) => {
+    const signatureLine = [
       entry.docKind,
       `exact=${entry.exactMatch ? 'true' : 'false'}`,
       `label=${entry.actualLabel || '<empty>'}`,
@@ -1321,7 +1320,15 @@ try {
       `head=${entry.actualHeadLabel || '<empty>'}`,
       `headPath=${entry.actualHeadPathSuffix || '<empty>'}`,
       `failures=${entry.failureReasons.length ? entry.failureReasons.join(',') : 'none'}`,
-    ].join('|'),
+    ].join('|');
+    return {
+      ...entry,
+      signatureLine,
+      signatureSha256: createHash('sha256').update(signatureLine).digest('hex'),
+    };
+  });
+  releaseDocVerificationSummary.stableDigestLines = releaseDocVerificationSummary.stableDigest.map(
+    (entry) => entry.signatureLine,
   );
   releaseDocVerificationSummary.stableDigestSha256 = createHash('sha256')
     .update(releaseDocVerificationSummary.stableDigestLines.join('\n'))
@@ -1490,8 +1497,14 @@ try {
       releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
+    assert.equal(
+      /^[a-f0-9]{64}$/.test(stableDigestEntry.signatureSha256),
+      true,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
     const stableDigestLine = releaseDocVerificationSummary.stableDigestLines.find((line) => line.startsWith(`${docKind}|`));
     assert.equal(Boolean(stableDigestLine), true, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(stableDigestEntry.signatureLine, stableDigestLine, JSON.stringify({ docKind, releaseDocVerificationSummary }));
     assert.equal(
       stableDigestLine.includes(`path=${releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix}`),
       true,
@@ -1606,6 +1619,7 @@ try {
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
       releaseDocStableDigestVerified: true,
+      releaseDocStableEntrySignaturesVerified: true,
       releaseDocStableOverviewVerified: true,
       releaseDocStableSignatureVerified: true,
       releaseDocSummaryVerified: true,

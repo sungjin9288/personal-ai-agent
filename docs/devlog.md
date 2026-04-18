@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T15:45:00.000Z","id":"doclog_20260418154500_browser_release_doc_entry_signatures","type":"devlog","updatedAt":"2026-04-18T15:45:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Entry Signatures
+
+- date: 2026-04-18T15:45:00.000Z
+- extended each `releaseDocVerificationSummary.stableDigest` entry with its own `signatureLine` and `signatureSha256`, so `closeout` and `evidence` can now be compared independently without reopening the full overview or raw evidence payload
+- kept the existing stable digest lines and overall digest hash, but added assertions that every per-doc signature hash is a valid sha256 and that each entry-level signature line matches the exported stable line surface
+- updated the README smoke note so the browser evidence contract now explicitly documents per-doc stable signature lines and hashes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T15:30:00.000Z","id":"doclog_20260418153000_browser_release_doc_stable_overview","type":"devlog","updatedAt":"2026-04-18T15:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Overview
 
