@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T17:30:00.000Z","id":"doclog_20260418173000_browser_release_doc_bundle_keyed_signatures","type":"devlog","updatedAt":"2026-04-18T17:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Bundle Keyed Signatures
+
+- date: 2026-04-18T17:30:00.000Z
+- extended `execution-v1-release-doc-manifest.json` with `artifactBundleByArtifactName` so `jsonDigest`, `markdownDigest`, and `textDigest` can now be inspected through direct keyed signature lookup instead of scanning the ordered bundle line array
+- each keyed entry keeps the sibling artifact `path/bytes/lineCount/sha256` plus its own deterministic `signatureLine` and `signatureSha256`, and the smoke now asserts every keyed entry matches the corresponding artifact descriptor and bundle line exactly
+- updated the README smoke note so the browser evidence contract now explicitly documents the per-artifact keyed bundle signature surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T17:15:00.000Z","id":"doclog_20260418171500_browser_release_doc_bundle_signature","type":"devlog","updatedAt":"2026-04-18T17:15:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Bundle Signature
 

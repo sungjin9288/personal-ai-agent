@@ -1786,6 +1786,22 @@ try {
   const releaseDocDigestBundleLines = releaseDocDigestArtifactOrder.map((name) =>
     buildArtifactBundleLine(name, releaseDocDigestArtifacts[name]),
   );
+  const releaseDocDigestBundleByArtifact = Object.fromEntries(
+    releaseDocDigestArtifactOrder.map((name, index) => {
+      const signatureLine = releaseDocDigestBundleLines[index];
+      return [
+        name,
+        {
+          bytes: releaseDocDigestArtifacts[name].bytes,
+          lineCount: releaseDocDigestArtifacts[name].lineCount,
+          path: releaseDocDigestArtifacts[name].path,
+          sha256: releaseDocDigestArtifacts[name].sha256,
+          signatureLine,
+          signatureSha256: createHash('sha256').update(signatureLine).digest('hex'),
+        },
+      ];
+    }),
+  );
   const releaseDocDigestBundleSha256 = createHash('sha256')
     .update(releaseDocDigestBundleLines.join('\n'))
     .digest('hex');
@@ -1799,6 +1815,7 @@ try {
   const releaseDocDigestManifest = {
     artifactVersion: 'execution-v1-release-doc-manifest/v1',
     artifactBundleLineCount: releaseDocDigestBundleLines.length,
+    artifactBundleByArtifactName: releaseDocDigestBundleByArtifact,
     artifactBundleLines: releaseDocDigestBundleLines,
     artifactBundleOverviewLine: releaseDocDigestBundleOverviewLine,
     artifactBundleSha256: releaseDocDigestBundleSha256,
@@ -2023,6 +2040,11 @@ try {
     releaseDocDigestBundleLines,
     JSON.stringify(persistedReleaseDocDigestManifest),
   );
+  assert.deepEqual(
+    persistedReleaseDocDigestManifest.artifactBundleByArtifactName,
+    releaseDocDigestBundleByArtifact,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
   assert.equal(
     persistedReleaseDocDigestManifest.artifactBundleOverviewLine,
     releaseDocDigestBundleOverviewLine,
@@ -2048,6 +2070,45 @@ try {
     releaseDocDigestMarkdownArtifactPath,
     JSON.stringify(persistedReleaseDocDigestManifest),
   );
+  for (const artifactName of releaseDocDigestArtifactOrder) {
+    const bundleEntry = persistedReleaseDocDigestManifest.artifactBundleByArtifactName[artifactName];
+    assert.equal(Boolean(bundleEntry), true, JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }));
+    assert.equal(
+      bundleEntry.signatureLine,
+      buildArtifactBundleLine(artifactName, persistedReleaseDocDigestManifest.artifacts[artifactName]),
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      bundleEntry.signatureSha256,
+      createHash('sha256').update(bundleEntry.signatureLine).digest('hex'),
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      bundleEntry.path,
+      persistedReleaseDocDigestManifest.artifacts[artifactName].path,
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      bundleEntry.bytes,
+      persistedReleaseDocDigestManifest.artifacts[artifactName].bytes,
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      bundleEntry.lineCount,
+      persistedReleaseDocDigestManifest.artifacts[artifactName].lineCount,
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      bundleEntry.sha256,
+      persistedReleaseDocDigestManifest.artifacts[artifactName].sha256,
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+    assert.equal(
+      /^[a-f0-9]{64}$/.test(bundleEntry.signatureSha256),
+      true,
+      JSON.stringify({ artifactName, persistedReleaseDocDigestManifest }),
+    );
+  }
   assert.equal(
     persistedReleaseDocDigestManifest.artifacts.jsonDigest.lineCount > 1,
     true,
