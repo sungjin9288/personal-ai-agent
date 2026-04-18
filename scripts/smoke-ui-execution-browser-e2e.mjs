@@ -1288,6 +1288,7 @@ try {
     missingDocKinds: [],
     overallExactMatch: false,
     stableDigest: [],
+    stableDigestByDocKind: {},
     stableDigestLineCount: 0,
     stableDigestOverviewLine: '',
     totalExpectedDocKinds: expectedReleaseDocKinds.length,
@@ -1333,6 +1334,21 @@ try {
   releaseDocVerificationSummary.stableDigestSha256 = createHash('sha256')
     .update(releaseDocVerificationSummary.stableDigestLines.join('\n'))
     .digest('hex');
+  releaseDocVerificationSummary.stableDigestByDocKind = Object.fromEntries(
+    releaseDocVerificationSummary.stableDigest.map((entry) => [
+      entry.docKind,
+      {
+        actualHeadLabel: entry.actualHeadLabel,
+        actualHeadPathSuffix: entry.actualHeadPathSuffix,
+        actualLabel: entry.actualLabel,
+        actualPathSuffix: entry.actualPathSuffix,
+        exactMatch: entry.exactMatch,
+        failureReasons: entry.failureReasons,
+        signatureLine: entry.signatureLine,
+        signatureSha256: entry.signatureSha256,
+      },
+    ]),
+  );
   releaseDocVerificationSummary.stableDigestLineCount = releaseDocVerificationSummary.stableDigestLines.length;
   releaseDocVerificationSummary.stableDigestOverviewLine = [
     `overallExactMatch=${releaseDocVerificationSummary.overallExactMatch ? 'true' : 'false'}`,
@@ -1369,6 +1385,11 @@ try {
   assert.equal(
     releaseDocVerificationSummary.stableDigest.length,
     releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
+  assert.deepEqual(
+    Object.keys(releaseDocVerificationSummary.stableDigestByDocKind),
+    expectedReleaseDocKinds,
     JSON.stringify(releaseDocVerificationSummary),
   );
   assert.equal(
@@ -1502,6 +1523,29 @@ try {
       true,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
+    const stableDigestIndexEntry = releaseDocVerificationSummary.stableDigestByDocKind[docKind];
+    assert.equal(Boolean(stableDigestIndexEntry), true, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(stableDigestIndexEntry.actualLabel, stableDigestEntry.actualLabel, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(
+      stableDigestIndexEntry.actualPathSuffix,
+      stableDigestEntry.actualPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestIndexEntry.actualHeadPathSuffix,
+      stableDigestEntry.actualHeadPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestIndexEntry.signatureLine,
+      stableDigestEntry.signatureLine,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestIndexEntry.signatureSha256,
+      stableDigestEntry.signatureSha256,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
     const stableDigestLine = releaseDocVerificationSummary.stableDigestLines.find((line) => line.startsWith(`${docKind}|`));
     assert.equal(Boolean(stableDigestLine), true, JSON.stringify({ docKind, releaseDocVerificationSummary }));
     assert.equal(stableDigestEntry.signatureLine, stableDigestLine, JSON.stringify({ docKind, releaseDocVerificationSummary }));
@@ -1620,6 +1664,7 @@ try {
       releaseDocCaptureVerified: true,
       releaseDocStableDigestVerified: true,
       releaseDocStableEntrySignaturesVerified: true,
+      releaseDocStableIndexVerified: true,
       releaseDocStableOverviewVerified: true,
       releaseDocStableSignatureVerified: true,
       releaseDocSummaryVerified: true,

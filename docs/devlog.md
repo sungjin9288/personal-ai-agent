@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T16:00:00.000Z","id":"doclog_20260418160000_browser_release_doc_stable_index","type":"devlog","updatedAt":"2026-04-18T16:00:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Index
+
+- date: 2026-04-18T16:00:00.000Z
+- added `releaseDocVerificationSummary.stableDigestByDocKind` so the saved browser report now exposes the stable per-doc fingerprint surface through direct `closeout/evidence` keyed lookup as well as ordered arrays
+- kept the ordered digest arrays and overview intact, but added assertions that the keyed index preserves expected doc order and exactly matches each stable digest entry’s label/path/head/signature fields
+- updated the README smoke note so the browser evidence contract now explicitly documents the keyed stable digest index
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T15:45:00.000Z","id":"doclog_20260418154500_browser_release_doc_entry_signatures","type":"devlog","updatedAt":"2026-04-18T15:45:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Entry Signatures
 
