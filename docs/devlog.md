@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T17:15:00.000Z","id":"doclog_20260418171500_browser_release_doc_bundle_signature","type":"devlog","updatedAt":"2026-04-18T17:15:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Bundle Signature
+
+- date: 2026-04-18T17:15:00.000Z
+- extended `execution-v1-release-doc-manifest.json` with deterministic bundle signature fields so the JSON, text, and Markdown digest artifacts can now be compared as one ordered bundle instead of three independent descriptors
+- the manifest now records `artifactOrder`, per-artifact bundle lines, `artifactBundleLineCount`, `artifactBundleOverviewLine`, and `artifactBundleSha256`, and the smoke asserts the expected order, exact line set, overview content, and sha256 validity
+- updated the README smoke note so the browser evidence contract now explicitly documents the release doc bundle signature surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T17:00:00.000Z","id":"doclog_20260418170000_browser_release_doc_manifest","type":"devlog","updatedAt":"2026-04-18T17:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Digest Manifest
 
