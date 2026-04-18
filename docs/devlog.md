@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T17:00:00.000Z","id":"doclog_20260418170000_browser_release_doc_manifest","type":"devlog","updatedAt":"2026-04-18T17:00:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Digest Manifest
+
+- date: 2026-04-18T17:00:00.000Z
+- added `execution-v1-release-doc-manifest.json` so the browser E2E smoke now emits one compact integrity surface that indexes the JSON, text, and Markdown release doc digest artifacts together
+- the manifest records artifact version, generated timestamp, overall exact-match state, stable digest sha256, expected doc kinds, and per-artifact `path/bytes/lineCount/sha256`, then the smoke locks it with write/read-back equality and per-artifact consistency assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release doc manifest artifact
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T16:45:00.000Z","id":"doclog_20260418164500_browser_release_doc_digest_markdown_artifact","type":"devlog","updatedAt":"2026-04-18T16:45:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Digest Markdown Artifact
 

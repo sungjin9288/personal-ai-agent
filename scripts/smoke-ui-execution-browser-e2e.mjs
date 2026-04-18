@@ -13,6 +13,7 @@ const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
 const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
+const releaseDocDigestManifestPath = path.join(screenshotDir, 'execution-v1-release-doc-manifest.json');
 const releaseDocDigestTextArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.txt');
 const releaseDocDigestMarkdownArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.md');
 const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
@@ -20,6 +21,7 @@ const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
 
 fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(releaseDocDigestArtifactPath, { force: true });
+fs.rmSync(releaseDocDigestManifestPath, { force: true });
 fs.rmSync(releaseDocDigestTextArtifactPath, { force: true });
 fs.rmSync(releaseDocDigestMarkdownArtifactPath, { force: true });
 fs.rmSync(reportPath, { force: true });
@@ -102,6 +104,16 @@ function decodeBase64Text(value) {
     return '';
   }
   return Buffer.from(String(value), 'base64').toString('utf8');
+}
+
+function buildTextArtifactDescriptor(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return {
+    bytes: Buffer.byteLength(content, 'utf8'),
+    lineCount: content.trimEnd().split('\n').length,
+    path: filePath,
+    sha256: createHash('sha256').update(content).digest('hex'),
+  };
 }
 
 const port = await getFreePort();
@@ -1670,6 +1682,8 @@ try {
       releaseDocCaptureVerified: true,
       releaseDocDigestArtifactPath,
       releaseDocDigestArtifactVerified: true,
+      releaseDocDigestManifestPath,
+      releaseDocDigestManifestVerified: true,
       releaseDocDigestMarkdownArtifactPath,
       releaseDocDigestMarkdownArtifactVerified: true,
       releaseDocDigestTextArtifactPath,
@@ -1707,6 +1721,7 @@ try {
     missingDocKinds: releaseDocVerificationSummary.missingDocKinds,
     overallExactMatch: releaseDocVerificationSummary.overallExactMatch,
     releaseDocDigestArtifactPath,
+    releaseDocDigestManifestPath,
     releaseDocDigestMarkdownArtifactPath,
     releaseDocDigestTextArtifactPath,
     releaseDocStableDigestByDocKind: releaseDocVerificationSummary.stableDigestByDocKind,
@@ -1757,11 +1772,35 @@ try {
   fs.writeFileSync(releaseDocDigestArtifactPath, `${JSON.stringify(releaseDocDigestArtifact, null, 2)}\n`, 'utf8');
   fs.writeFileSync(releaseDocDigestTextArtifactPath, releaseDocDigestTextArtifact, 'utf8');
   fs.writeFileSync(releaseDocDigestMarkdownArtifactPath, releaseDocDigestMarkdownArtifact, 'utf8');
+  const releaseDocDigestManifest = {
+    artifactVersion: 'execution-v1-release-doc-manifest/v1',
+    artifacts: {
+      jsonDigest: buildTextArtifactDescriptor(releaseDocDigestArtifactPath),
+      markdownDigest: buildTextArtifactDescriptor(releaseDocDigestMarkdownArtifactPath),
+      textDigest: buildTextArtifactDescriptor(releaseDocDigestTextArtifactPath),
+    },
+    docKinds: expectedReleaseDocKinds,
+    generatedAt: smokeReport.generatedAt,
+    overallExactMatch: releaseDocVerificationSummary.overallExactMatch,
+    releaseDocDigestArtifactPath,
+    releaseDocDigestManifestPath,
+    releaseDocDigestMarkdownArtifactPath,
+    releaseDocDigestTextArtifactPath,
+    releaseDocStableDigestSha256: releaseDocVerificationSummary.stableDigestSha256,
+    releaseDocSummaryReportPath: reportPath,
+    repoDir,
+  };
+  fs.writeFileSync(releaseDocDigestManifestPath, `${JSON.stringify(releaseDocDigestManifest, null, 2)}\n`, 'utf8');
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
   assert.equal(
     fs.existsSync(releaseDocDigestArtifactPath),
     true,
     `expected release doc digest artifact at ${releaseDocDigestArtifactPath}`,
+  );
+  assert.equal(
+    fs.existsSync(releaseDocDigestManifestPath),
+    true,
+    `expected release doc digest manifest at ${releaseDocDigestManifestPath}`,
   );
   assert.equal(
     fs.existsSync(releaseDocDigestTextArtifactPath),
@@ -1775,6 +1814,7 @@ try {
   );
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const persistedReleaseDocDigestArtifact = JSON.parse(fs.readFileSync(releaseDocDigestArtifactPath, 'utf8'));
+  const persistedReleaseDocDigestManifest = JSON.parse(fs.readFileSync(releaseDocDigestManifestPath, 'utf8'));
   const persistedReleaseDocDigestTextArtifact = fs.readFileSync(releaseDocDigestTextArtifactPath, 'utf8');
   const persistedReleaseDocDigestMarkdownArtifact = fs.readFileSync(releaseDocDigestMarkdownArtifactPath, 'utf8');
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
@@ -1782,6 +1822,11 @@ try {
     persistedReleaseDocDigestArtifact,
     releaseDocDigestArtifact,
     JSON.stringify({ persistedReleaseDocDigestArtifact, releaseDocDigestArtifact }),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestManifest,
+    releaseDocDigestManifest,
+    JSON.stringify({ persistedReleaseDocDigestManifest, releaseDocDigestManifest }),
   );
   const persistedScreenshotBuffer = fs.readFileSync(persistedReport.screenshotPath);
   const persistedScreenshotDimensions = parsePngDimensions(persistedScreenshotBuffer);
@@ -1791,6 +1836,11 @@ try {
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(
     fs.existsSync(persistedReport.artifactPair.releaseDocDigestArtifactPath),
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    fs.existsSync(persistedReport.artifactPair.releaseDocDigestManifestPath),
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
@@ -1859,6 +1909,11 @@ try {
     JSON.stringify(persistedReleaseDocDigestArtifact),
   );
   assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocDigestManifestPath,
+    releaseDocDigestManifestPath,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
     persistedReleaseDocDigestArtifact.releaseDocDigestTextArtifactPath,
     releaseDocDigestTextArtifactPath,
     JSON.stringify(persistedReleaseDocDigestArtifact),
@@ -1912,6 +1967,66 @@ try {
     persistedReleaseDocDigestArtifact.releaseDocStableDigestByDocKind,
     releaseDocVerificationSummary.stableDigestByDocKind,
     JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.releaseDocSummaryReportPath,
+    reportPath,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestManifest.docKinds,
+    expectedReleaseDocKinds,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.releaseDocStableDigestSha256,
+    releaseDocVerificationSummary.stableDigestSha256,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.jsonDigest.path,
+    releaseDocDigestArtifactPath,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.textDigest.path,
+    releaseDocDigestTextArtifactPath,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.markdownDigest.path,
+    releaseDocDigestMarkdownArtifactPath,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.jsonDigest.lineCount > 1,
+    true,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.textDigest.lineCount,
+    releaseDocDigestTextLines.length,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    persistedReleaseDocDigestManifest.artifacts.markdownDigest.lineCount,
+    releaseDocDigestMarkdownLines.length,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(persistedReleaseDocDigestManifest.artifacts.jsonDigest.sha256),
+    true,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(persistedReleaseDocDigestManifest.artifacts.textDigest.sha256),
+    true,
+    JSON.stringify(persistedReleaseDocDigestManifest),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(persistedReleaseDocDigestManifest.artifacts.markdownDigest.sha256),
+    true,
+    JSON.stringify(persistedReleaseDocDigestManifest),
   );
   assert.equal(
     persistedReleaseDocDigestTextArtifact,
