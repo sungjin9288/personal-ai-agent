@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T14:30:00.000Z","id":"doclog_20260418143000_browser_release_doc_stable_head_summary","type":"devlog","updatedAt":"2026-04-18T14:30:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Head Summary
+
+- date: 2026-04-18T14:30:00.000Z
+- extended `releaseDocVerificationSummary` so each `closeout/evidence` entry now carries stable `actualHeadLabel` and `actualHeadPathSuffix`, extracted from raw `headHtml` and normalized into diff-friendly summary fields
+- strengthened the exact-match contract by requiring the extracted head label and head path suffix to match the expected doc kind and expected markdown suffix in addition to the existing raw head marker/path presence checks
+- updated the README smoke note so the browser evidence contract now explicitly documents stable head summary capture alongside the stable doc path suffix
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T14:15:00.000Z","id":"doclog_20260418141500_browser_release_doc_stable_path_suffix","type":"devlog","updatedAt":"2026-04-18T14:15:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Path Suffix
 

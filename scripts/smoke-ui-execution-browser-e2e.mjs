@@ -1200,12 +1200,22 @@ try {
     }
     return normalized;
   };
+  const extractHeadValue = (value, pattern) => {
+    const match = String(value || '').match(pattern);
+    return match ? String(match[1] || '').trim() : '';
+  };
   const releaseDocVerificationSummary = {
     byDocKind: Object.fromEntries(
       expectedReleaseDocKinds.map((docKind) => {
         const docSurface = screenshotSurfaceSummary.docSurfaces.find((item) => item.docKind === docKind) || null;
         const actualPathSuffix = toStableDocPathSuffix(docSurface?.path || '');
+        const actualHeadLabel = extractHeadValue(docSurface?.headHtml, /<strong>([\s\S]*?)<\/strong>/);
+        const actualHeadPathSuffix = toStableDocPathSuffix(
+          extractHeadValue(docSurface?.headHtml, /<span class="item-meta mono">([\s\S]*?)<\/span>/),
+        );
         const summary = {
+          actualHeadLabel,
+          actualHeadPathSuffix,
           actualLabel: docSurface?.label || '',
           actualPath: docSurface?.path || '',
           actualPathSuffix,
@@ -1216,6 +1226,8 @@ try {
           failureReasons: [],
           headHasExpectedPathSuffix: false,
           headHasKindMarker: false,
+          headLabelMatchesKind: false,
+          headPathMatchesExpectedSuffix: false,
           headingCount: 0,
           labelMatchesKind: false,
           pathMatchesExpectedSuffix: false,
@@ -1226,6 +1238,8 @@ try {
         if (docSurface) {
           summary.headHasExpectedPathSuffix = docSurface.headHtml.includes(expectedDocSurfaceSuffixByKind[docKind]);
           summary.headHasKindMarker = docSurface.headHtml.includes(`<strong>${docKind}</strong>`);
+          summary.headLabelMatchesKind = actualHeadLabel === docKind;
+          summary.headPathMatchesExpectedSuffix = actualHeadPathSuffix === expectedDocSurfaceSuffixByKind[docKind];
           summary.headingCount = docSurface.headings.length;
           summary.labelMatchesKind = docSurface.label === docKind;
           summary.pathMatchesExpectedSuffix = actualPathSuffix === expectedDocSurfaceSuffixByKind[docKind];
@@ -1236,6 +1250,8 @@ try {
             summary.rawMatchesKind &&
             summary.labelMatchesKind &&
             summary.pathMatchesExpectedSuffix &&
+            summary.headLabelMatchesKind &&
+            summary.headPathMatchesExpectedSuffix &&
             summary.headHasKindMarker &&
             summary.headHasExpectedPathSuffix;
         }
@@ -1251,11 +1267,17 @@ try {
         if (!summary.pathMatchesExpectedSuffix) {
           summary.failureReasons.push('path-suffix-mismatch');
         }
+        if (!summary.headLabelMatchesKind) {
+          summary.failureReasons.push('head-label-mismatch');
+        }
+        if (!summary.headPathMatchesExpectedSuffix) {
+          summary.failureReasons.push('head-path-suffix-mismatch');
+        }
         if (!summary.headHasKindMarker) {
           summary.failureReasons.push('head-kind-marker-missing');
         }
         if (!summary.headHasExpectedPathSuffix) {
-          summary.failureReasons.push('head-path-suffix-mismatch');
+          summary.failureReasons.push('head-path-marker-missing');
         }
         return [docKind, summary];
       }),
@@ -1366,6 +1388,16 @@ try {
     );
     assert.equal(
       releaseDocVerificationSummary.byDocKind[docKind].actualPathSuffix,
+      releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      releaseDocVerificationSummary.byDocKind[docKind].actualHeadLabel,
+      releaseDocVerificationSummary.byDocKind[docKind].expectedKind,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      releaseDocVerificationSummary.byDocKind[docKind].actualHeadPathSuffix,
       releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
