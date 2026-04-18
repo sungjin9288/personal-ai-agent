@@ -1196,7 +1196,13 @@ try {
       expectedReleaseDocKinds.map((docKind) => {
         const docSurface = screenshotSurfaceSummary.docSurfaces.find((item) => item.docKind === docKind) || null;
         const summary = {
+          actualLabel: docSurface?.label || '',
+          actualPath: docSurface?.path || '',
+          actualRawDocKind: docSurface?.rawDocKind || '',
           exactMatch: false,
+          expectedKind: docKind,
+          expectedPathSuffix: expectedDocSurfaceSuffixByKind[docKind],
+          failureReasons: [],
           headHasExpectedPathSuffix: false,
           headHasKindMarker: false,
           headingCount: 0,
@@ -1221,6 +1227,24 @@ try {
             summary.pathMatchesExpectedSuffix &&
             summary.headHasKindMarker &&
             summary.headHasExpectedPathSuffix;
+        }
+        if (!summary.present) {
+          summary.failureReasons.push('missing-surface');
+        }
+        if (!summary.rawMatchesKind) {
+          summary.failureReasons.push('raw-kind-mismatch');
+        }
+        if (!summary.labelMatchesKind) {
+          summary.failureReasons.push('label-mismatch');
+        }
+        if (!summary.pathMatchesExpectedSuffix) {
+          summary.failureReasons.push('path-suffix-mismatch');
+        }
+        if (!summary.headHasKindMarker) {
+          summary.failureReasons.push('head-kind-marker-missing');
+        }
+        if (!summary.headHasExpectedPathSuffix) {
+          summary.failureReasons.push('head-path-suffix-mismatch');
         }
         return [docKind, summary];
       }),
@@ -1322,6 +1346,11 @@ try {
     assert.equal(
       releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
       true,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.deepEqual(
+      releaseDocVerificationSummary.byDocKind[docKind].failureReasons,
+      [],
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
   }

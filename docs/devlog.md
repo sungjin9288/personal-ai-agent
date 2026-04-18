@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T14:00:00.000Z","id":"doclog_20260418140000_browser_release_doc_failure_reason_summary","type":"devlog","updatedAt":"2026-04-18T14:00:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Failure Reason Summary
+
+- date: 2026-04-18T14:00:00.000Z
+- extended `releaseDocVerificationSummary` so each `closeout/evidence` entry now carries `expectedPathSuffix`, `actualLabel`, `actualPath`, `actualRawDocKind`, and `failureReasons`, making the persisted browser report diff-friendly without reopening the raw doc surface payload
+- kept the exact-match contract strict by asserting that every expected doc kind still resolves to `failureReasons: []` in the passing smoke path
+- updated the README smoke note so the browser evidence contract now documents expected/actual release doc summary fields and failure reason reporting
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T13:45:00.000Z","id":"doclog_20260418134500_browser_release_doc_verification_summary","type":"devlog","updatedAt":"2026-04-18T13:45:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Verification Summary
 
