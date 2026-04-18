@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T13:00:00.000Z","id":"doclog_20260418130000_browser_release_doc_base64_transport","type":"devlog","updatedAt":"2026-04-18T13:00:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Runtime Mismatch Pass
+
+- date: 2026-04-18T13:00:00.000Z
+- hardened `smoke-ui-execution-browser-e2e` so release doc surface strings are encoded in the browser and decoded in Node before assertions, which ruled out Playwright CLI text transport as the cause of the `closeout` drift
+- added `releaseDocAssetSanity` plus `docSurfaceKindMismatches` reporting so the saved browser evidence can distinguish “served app.js contains the correct marker” from “runtime release panel still exposes a mismatched raw doc kind”
+- updated the README smoke note so the browser evidence contract documents base64-backed doc card capture and the server-asset sanity check for closeout/evidence surfaces
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T12:45:00.000Z","id":"doclog_20260418124500_browser_release_doc_kind_marker","type":"devlog","updatedAt":"2026-04-18T12:45:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Kind Marker Pass
 

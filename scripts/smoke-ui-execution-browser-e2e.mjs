@@ -91,6 +91,13 @@ function parsePngDimensions(buffer) {
   return { height, width };
 }
 
+function decodeBase64Text(value) {
+  if (!value) {
+    return '';
+  }
+  return Buffer.from(String(value), 'base64').toString('utf8');
+}
+
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
 
@@ -120,6 +127,24 @@ serverProcess.stderr.on('data', (chunk) => {
 
 try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
+
+  const servedAppJs = await fetch(`${baseUrl}/app.js`).then((response) => response.text());
+  const releaseDocAssetSanity = {
+    closeoutLabelPresent: servedAppJs.includes('>closeout</strong>'),
+    closeoutMarkerPresent: servedAppJs.includes('data-release-doc-kind="closeout"'),
+    evidenceLabelPresent: servedAppJs.includes('>evidence</strong>'),
+    evidenceMarkerPresent: servedAppJs.includes('data-release-doc-kind="evidence"'),
+  };
+  assert.deepEqual(
+    releaseDocAssetSanity,
+    {
+      closeoutLabelPresent: true,
+      closeoutMarkerPresent: true,
+      evidenceLabelPresent: true,
+      evidenceMarkerPresent: true,
+    },
+    JSON.stringify(releaseDocAssetSanity),
+  );
 
   console.error('[smoke-ui-execution-browser-e2e] open browser');
   runPw(['open', baseUrl]);
@@ -937,6 +962,14 @@ try {
         },
         captureSurfaceSummary: (() => {
           const compactInline = (value) => String(value || '').replace(/\s+/g, '');
+          const encodeText = (value) => {
+            const bytes = new TextEncoder().encode(String(value || ''));
+            let binary = '';
+            for (const byte of bytes) {
+              binary += String.fromCharCode(byte);
+            }
+            return btoa(binary);
+          };
           const normalizeText = (value) => String(value || '').replace(/\s+/g, ' ').trim();
           return {
             checklistItems: Array.from(document.querySelectorAll('#release-status .release-checklist-item')).map((node) => ({
@@ -968,13 +1001,13 @@ try {
                 .filter(Boolean)
                 .slice(0, 3);
               return {
-                docKind,
+                docKindEncoded: encodeText(docKind),
                 fallbackDocKind,
-                headings,
-                label: compactInline(node.querySelector('.release-doc-head strong')?.textContent || ''),
-                path: compactInline(node.querySelector('.release-doc-head .item-meta')?.textContent || ''),
-                previewItems,
-                rawDocKind,
+                headingsEncoded: headings.map((heading) => encodeText(heading)),
+                labelEncoded: encodeText(compactInline(node.querySelector('.release-doc-head strong')?.textContent || '')),
+                pathEncoded: encodeText(compactInline(node.querySelector('.release-doc-head .item-meta')?.textContent || '')),
+                previewItemsEncoded: previewItems.map((item) => encodeText(item)),
+                rawDocKindEncoded: encodeText(rawDocKind),
               };
             }),
             docStatusRows: Array.from(document.querySelectorAll('#release-status .release-doc-status-list .harness-row')).map((node) => ({
@@ -1036,9 +1069,31 @@ try {
   ]);
   const {
     captureContext: screenshotCaptureContext,
-    captureSurfaceSummary: screenshotSurfaceSummary,
+    captureSurfaceSummary: rawScreenshotSurfaceSummary,
     captureTarget: screenshotCaptureTarget,
   } = screenshotCaptureState;
+  const screenshotSurfaceSummary = {
+    ...rawScreenshotSurfaceSummary,
+    docSurfaces: (rawScreenshotSurfaceSummary.docSurfaces || []).map((docSurface) => ({
+      docKind: decodeBase64Text(docSurface.docKindEncoded),
+      fallbackDocKind: docSurface.fallbackDocKind || '',
+      headings: Array.isArray(docSurface.headingsEncoded)
+        ? docSurface.headingsEncoded.map((heading) => decodeBase64Text(heading))
+        : [],
+      label: decodeBase64Text(docSurface.labelEncoded),
+      path: decodeBase64Text(docSurface.pathEncoded),
+      previewItems: Array.isArray(docSurface.previewItemsEncoded)
+        ? docSurface.previewItemsEncoded.map((item) => decodeBase64Text(item))
+        : [],
+      rawDocKind: decodeBase64Text(docSurface.rawDocKindEncoded),
+    })),
+  };
+  screenshotSurfaceSummary.docSurfaceKindMismatches = screenshotSurfaceSummary.docSurfaces
+    .filter((docSurface) => docSurface.rawDocKind && docSurface.rawDocKind !== docSurface.docKind)
+    .map((docSurface) => ({
+      canonicalDocKind: docSurface.docKind,
+      rawDocKind: docSurface.rawDocKind,
+    }));
   const screenshotCaptured = fs.existsSync(screenshotPath);
   assert.equal(screenshotCaptured, true, `expected screenshot at ${screenshotPath}`);
   const screenshotBuffer = fs.readFileSync(screenshotPath);
@@ -1238,6 +1293,7 @@ try {
     mode: 'ui-execution-browser-e2e',
     port,
     reportPath,
+    releaseDocAssetSanity,
     repoDir,
     artifactPair: {
       captureTargetVerified: true,
