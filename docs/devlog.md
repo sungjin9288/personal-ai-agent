@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T16:45:00.000Z","id":"doclog_20260418164500_browser_release_doc_digest_markdown_artifact","type":"devlog","updatedAt":"2026-04-18T16:45:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Digest Markdown Artifact
+
+- date: 2026-04-18T16:45:00.000Z
+- added a sibling `execution-v1-release-doc-digest.md` artifact so the browser E2E smoke now emits a rendered handoff-friendly Markdown summary next to the JSON and plain-text release doc digest artifacts
+- the Markdown artifact records generated timestamp, report/json/text artifact paths, overall exact-match summary, stable digest sha256, the stable overview line, and the per-doc signature lines as a readable checklist-style surface, then the smoke locks it with existence and full read-back equality assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release doc Markdown digest artifact
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T16:30:00.000Z","id":"doclog_20260418163000_browser_release_doc_digest_text_artifact","type":"devlog","updatedAt":"2026-04-18T16:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Digest Text Artifact
 
