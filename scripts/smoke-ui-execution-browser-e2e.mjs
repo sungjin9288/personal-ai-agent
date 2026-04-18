@@ -1287,6 +1287,7 @@ try {
     mismatchCount: screenshotSurfaceSummary.docSurfaceKindMismatches.length,
     missingDocKinds: [],
     overallExactMatch: false,
+    stableDigest: [],
     totalExpectedDocKinds: expectedReleaseDocKinds.length,
   };
   releaseDocVerificationSummary.exactMatchDocKinds = expectedReleaseDocKinds.filter(
@@ -1300,6 +1301,15 @@ try {
     releaseDocVerificationSummary.mismatchCount === 0 &&
     releaseDocVerificationSummary.missingDocKinds.length === 0 &&
     releaseDocVerificationSummary.exactMatchCount === releaseDocVerificationSummary.totalExpectedDocKinds;
+  releaseDocVerificationSummary.stableDigest = expectedReleaseDocKinds.map((docKind) => ({
+    actualHeadLabel: releaseDocVerificationSummary.byDocKind[docKind].actualHeadLabel,
+    actualHeadPathSuffix: releaseDocVerificationSummary.byDocKind[docKind].actualHeadPathSuffix,
+    actualLabel: releaseDocVerificationSummary.byDocKind[docKind].actualLabel,
+    actualPathSuffix: releaseDocVerificationSummary.byDocKind[docKind].actualPathSuffix,
+    docKind,
+    exactMatch: releaseDocVerificationSummary.byDocKind[docKind].exactMatch,
+    failureReasons: releaseDocVerificationSummary.byDocKind[docKind].failureReasons,
+  }));
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
     true,
@@ -1324,6 +1334,11 @@ try {
     JSON.stringify(releaseDocVerificationSummary),
   );
   assert.equal(releaseDocVerificationSummary.overallExactMatch, true, JSON.stringify(releaseDocVerificationSummary));
+  assert.equal(
+    releaseDocVerificationSummary.stableDigest.length,
+    releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(releaseDocVerificationSummary),
+  );
   const requiredSummaryChipLabels = [
     'deterministic smoke',
     '열린 체크리스트',
@@ -1398,6 +1413,20 @@ try {
     );
     assert.equal(
       releaseDocVerificationSummary.byDocKind[docKind].actualHeadPathSuffix,
+      releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    const stableDigestEntry = releaseDocVerificationSummary.stableDigest.find((entry) => entry.docKind === docKind);
+    assert.equal(Boolean(stableDigestEntry), true, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(stableDigestEntry.actualLabel, docKind, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(stableDigestEntry.actualHeadLabel, docKind, JSON.stringify({ docKind, releaseDocVerificationSummary }));
+    assert.equal(
+      stableDigestEntry.actualPathSuffix,
+      releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
+      JSON.stringify({ docKind, releaseDocVerificationSummary }),
+    );
+    assert.equal(
+      stableDigestEntry.actualHeadPathSuffix,
       releaseDocVerificationSummary.byDocKind[docKind].expectedPathSuffix,
       JSON.stringify({ docKind, releaseDocVerificationSummary }),
     );
@@ -1499,6 +1528,7 @@ try {
       releaseDocHeadVerified: true,
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
+      releaseDocStableDigestVerified: true,
       releaseDocSummaryVerified: true,
       reportPath,
       screenshotPath,

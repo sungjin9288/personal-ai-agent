@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T15:00:00.000Z","id":"doclog_20260418150000_browser_release_doc_stable_digest","type":"devlog","updatedAt":"2026-04-18T15:00:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Stable Digest
+
+- date: 2026-04-18T15:00:00.000Z
+- added `releaseDocVerificationSummary.stableDigest` so the saved browser report now exposes a sorted, temp-root-free release doc verification surface for `closeout/evidence`
+- each digest entry keeps only stable comparison fields (`docKind`, exact-match flag, stable label/path suffix pair, stable head label/path suffix pair, failure reasons), so downstream diff review no longer needs to inspect raw absolute paths or raw `headHtml`
+- updated the README smoke note so the browser evidence contract now explicitly documents the stable release doc digest alongside the richer verification summary
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T14:30:00.000Z","id":"doclog_20260418143000_browser_release_doc_stable_head_summary","type":"devlog","updatedAt":"2026-04-18T14:30:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Head Summary
 
