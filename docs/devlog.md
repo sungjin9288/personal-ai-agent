@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T12:15:00.000Z","id":"doclog_20260418121500_browser_release_history_summary","type":"devlog","updatedAt":"2026-04-18T12:15:00.000Z"} -->
+## 2026-04-18 Browser Release History Summary Pass
+
+- date: 2026-04-18T12:15:00.000Z
+- extended `smoke-ui-execution-browser-e2e` so `screenshotSurfaceSummary` now includes visible release action history rows or the empty-state copy when no history rows are rendered
+- added assertions that visible history rows carry non-empty action, outcome, scope, and summary text, while the empty-state path must still expose non-empty title and detail copy
+- updated the README smoke note so release action history capture is documented as part of the browser evidence contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T12:00:00.000Z","id":"doclog_20260418120000_browser_release_left_surface_rows","type":"devlog","updatedAt":"2026-04-18T12:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Left Surface Rows Pass
 

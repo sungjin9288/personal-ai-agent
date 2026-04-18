@@ -949,6 +949,17 @@ try {
             label: node.querySelector('.item-title')?.textContent || '',
             value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
           })),
+          historyEmptyState: {
+            detail: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-meta')?.textContent || '',
+            title: document.querySelector('#release-status .release-history-list .release-snapshot-card.is-empty .item-title')?.textContent || '',
+          },
+          historyRowCount: document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)').length,
+          historyRows: Array.from(document.querySelectorAll('#release-status .release-history-list .release-snapshot-card:not(.is-empty)')).map((node) => ({
+            action: node.querySelector('.item-title')?.textContent || '',
+            outcome: node.querySelector('.release-history-actions .mini-badge')?.textContent || '',
+            scopeMeta: node.querySelector('.release-provider-meta .item-meta')?.textContent || '',
+            summary: node.querySelector(':scope > .item-meta')?.textContent || '',
+          })),
           providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
           providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
             envKey: node.querySelector('.item-meta.mono')?.textContent || '',
@@ -1043,6 +1054,11 @@ try {
     screenshotSurfaceSummary.providerCardCount,
     JSON.stringify(screenshotSurfaceSummary),
   );
+  assert.equal(
+    screenshotSurfaceSummary.historyRows.length,
+    screenshotSurfaceSummary.historyRowCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
   assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('마감 체크리스트와 현재 상태'),
@@ -1090,6 +1106,25 @@ try {
   for (const docStatusRow of screenshotSurfaceSummary.docStatusRows) {
     assert.equal(String(docStatusRow.label || '').trim().length > 0, true, JSON.stringify(docStatusRow));
     assert.equal(String(docStatusRow.value || '').trim().length > 0, true, JSON.stringify(docStatusRow));
+  }
+  if (screenshotSurfaceSummary.historyRows.length) {
+    for (const historyRow of screenshotSurfaceSummary.historyRows) {
+      assert.equal(String(historyRow.action || '').trim().length > 0, true, JSON.stringify(historyRow));
+      assert.equal(String(historyRow.outcome || '').trim().length > 0, true, JSON.stringify(historyRow));
+      assert.equal(String(historyRow.scopeMeta || '').trim().length > 0, true, JSON.stringify(historyRow));
+      assert.equal(String(historyRow.summary || '').trim().length > 0, true, JSON.stringify(historyRow));
+    }
+  } else {
+    assert.equal(
+      String(screenshotSurfaceSummary.historyEmptyState.title || '').trim().length > 0,
+      true,
+      JSON.stringify(screenshotSurfaceSummary),
+    );
+    assert.equal(
+      String(screenshotSurfaceSummary.historyEmptyState.detail || '').trim().length > 0,
+      true,
+      JSON.stringify(screenshotSurfaceSummary),
+    );
   }
 
   const browserErrorState = getBrowserErrorState();
