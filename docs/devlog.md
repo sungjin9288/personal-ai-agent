@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-18T16:15:00.000Z","id":"doclog_20260418161500_browser_release_doc_digest_artifact","type":"devlog","updatedAt":"2026-04-18T16:15:00.000Z"} -->
+## 2026-04-18 Browser Release Doc Digest Artifact
+
+- date: 2026-04-18T16:15:00.000Z
+- added a separate `execution-v1-release-doc-digest.json` artifact so the browser E2E smoke now emits a compact, release-doc-only verification surface alongside the full `execution-v1-browser-e2e.json` report
+- kept the existing full report unchanged, but made the digest artifact self-describing with expected doc kinds, exact-match count, missing doc kinds, stable digest line count, stable digest sha256, keyed per-doc digest lookup, and read-back assertions for file path and summary consistency
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release doc digest artifact
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-18T16:00:00.000Z","id":"doclog_20260418160000_browser_release_doc_stable_index","type":"devlog","updatedAt":"2026-04-18T16:00:00.000Z"} -->
 ## 2026-04-18 Browser Release Doc Stable Index
 

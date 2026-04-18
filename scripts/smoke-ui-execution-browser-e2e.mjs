@@ -12,10 +12,12 @@ const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright-cli'];
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
+const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
 const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
 const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
 
 fs.mkdirSync(screenshotDir, { recursive: true });
+fs.rmSync(releaseDocDigestArtifactPath, { force: true });
 fs.rmSync(reportPath, { force: true });
 fs.rmSync(screenshotPath, { force: true });
 
@@ -1662,6 +1664,8 @@ try {
       releaseDocHeadVerified: true,
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
+      releaseDocDigestArtifactPath,
+      releaseDocDigestArtifactVerified: true,
       releaseDocStableDigestVerified: true,
       releaseDocStableEntrySignaturesVerified: true,
       releaseDocStableIndexVerified: true,
@@ -1687,16 +1691,50 @@ try {
     url: reloadState.href,
     workspaceId: workspace.id,
   };
+  const releaseDocDigestArtifact = {
+    artifactVersion: 'execution-v1-release-doc-digest/v1',
+    exactMatchCount: releaseDocVerificationSummary.exactMatchCount,
+    expectedDocKinds: expectedReleaseDocKinds,
+    generatedAt: smokeReport.generatedAt,
+    missingDocKinds: releaseDocVerificationSummary.missingDocKinds,
+    overallExactMatch: releaseDocVerificationSummary.overallExactMatch,
+    releaseDocDigestArtifactPath,
+    releaseDocStableDigestByDocKind: releaseDocVerificationSummary.stableDigestByDocKind,
+    releaseDocStableDigestLineCount: releaseDocVerificationSummary.stableDigestLineCount,
+    releaseDocStableDigestLines: releaseDocVerificationSummary.stableDigestLines,
+    releaseDocStableDigestOverviewLine: releaseDocVerificationSummary.stableDigestOverviewLine,
+    releaseDocStableDigestSha256: releaseDocVerificationSummary.stableDigestSha256,
+    releaseDocSummaryReportPath: reportPath,
+    repoDir,
+    totalExpectedDocKinds: releaseDocVerificationSummary.totalExpectedDocKinds,
+  };
   fs.writeFileSync(reportPath, `${JSON.stringify(smokeReport, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(releaseDocDigestArtifactPath, `${JSON.stringify(releaseDocDigestArtifact, null, 2)}\n`, 'utf8');
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
+  assert.equal(
+    fs.existsSync(releaseDocDigestArtifactPath),
+    true,
+    `expected release doc digest artifact at ${releaseDocDigestArtifactPath}`,
+  );
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  const persistedReleaseDocDigestArtifact = JSON.parse(fs.readFileSync(releaseDocDigestArtifactPath, 'utf8'));
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
+  assert.deepEqual(
+    persistedReleaseDocDigestArtifact,
+    releaseDocDigestArtifact,
+    JSON.stringify({ persistedReleaseDocDigestArtifact, releaseDocDigestArtifact }),
+  );
   const persistedScreenshotBuffer = fs.readFileSync(persistedReport.screenshotPath);
   const persistedScreenshotDimensions = parsePngDimensions(persistedScreenshotBuffer);
   const persistedScreenshotStat = fs.statSync(persistedReport.screenshotPath);
   const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
   assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.equal(
+    fs.existsSync(persistedReport.artifactPair.releaseDocDigestArtifactPath),
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
   assert.deepEqual(
     persistedReport.expectedFullPageDimensions,
     expectedFullPageDimensions,
@@ -1741,6 +1779,61 @@ try {
     JSON.stringify(persistedReport),
   );
   assert.equal(persistedReport.screenshotSha256, persistedScreenshotSha256, JSON.stringify(persistedReport));
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocSummaryReportPath,
+    reportPath,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocDigestArtifactPath,
+    releaseDocDigestArtifactPath,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestArtifact.expectedDocKinds,
+    expectedReleaseDocKinds,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.totalExpectedDocKinds,
+    releaseDocVerificationSummary.totalExpectedDocKinds,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.exactMatchCount,
+    releaseDocVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestArtifact.missingDocKinds,
+    releaseDocVerificationSummary.missingDocKinds,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocStableDigestLineCount,
+    releaseDocVerificationSummary.stableDigestLineCount,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocStableDigestOverviewLine,
+    releaseDocVerificationSummary.stableDigestOverviewLine,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseDocDigestArtifact.releaseDocStableDigestSha256,
+    releaseDocVerificationSummary.stableDigestSha256,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestArtifact.releaseDocStableDigestLines,
+    releaseDocVerificationSummary.stableDigestLines,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
+  assert.deepEqual(
+    persistedReleaseDocDigestArtifact.releaseDocStableDigestByDocKind,
+    releaseDocVerificationSummary.stableDigestByDocKind,
+    JSON.stringify(persistedReleaseDocDigestArtifact),
+  );
 
   console.log(JSON.stringify(smokeReport, null, 2));
 } finally {
