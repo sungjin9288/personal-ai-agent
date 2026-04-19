@@ -578,6 +578,7 @@ function parseUiStateFromUrl() {
   const params = new URL(window.location.href).searchParams;
   return {
     artifactId: normalizeUiParam(params.get('artifact')),
+    releaseHandoffPreviewId: normalizeUiParam(params.get('rartifact')),
     retrievalSourceLabel: normalizeUiParam(params.get('hsource')),
     retrievalSourceType: getSanitizedRetrievalSourceType(params.get('hstype')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
@@ -628,6 +629,10 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseFocusedHistoryId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedHistoryId)
       : normalizeUiParam(state.releaseFocusedHistoryId);
+  const releaseHandoffPreviewId =
+    overrides.releaseHandoffPreviewId !== undefined
+      ? normalizeUiParam(overrides.releaseHandoffPreviewId)
+      : normalizeUiParam(state.releaseHandoffPreviewId);
   const releaseHistoryOutcome =
     overrides.releaseHistoryOutcome !== undefined
       ? getSanitizedReleaseHistoryOutcome(overrides.releaseHistoryOutcome)
@@ -715,6 +720,11 @@ function buildUiStateUrl(overrides = {}) {
     } else {
       params.delete('rhistory');
     }
+    if (releaseHandoffPreviewId) {
+      params.set('rartifact', releaseHandoffPreviewId);
+    } else {
+      params.delete('rartifact');
+    }
     if (releaseHistoryOutcome) {
       params.set('routcome', releaseHistoryOutcome);
     } else {
@@ -733,6 +743,7 @@ function buildUiStateUrl(overrides = {}) {
   } else {
     params.delete('rcard');
     params.delete('rhistory');
+    params.delete('rartifact');
     params.delete('routcome');
     params.delete('rprovider');
     params.delete('rscope');
@@ -1135,6 +1146,29 @@ function clearReleaseHandoffPreview() {
   state.releaseHandoffPreviewLineCount = 0;
   state.releaseHandoffPreviewStatus = 'idle';
   state.releaseHandoffPreviewTruncated = false;
+}
+
+async function applyReleaseHandoffPreviewUrlState(previewArtifactId = '') {
+  const normalizedPreviewArtifactId = String(previewArtifactId || '').trim();
+  const handoffArtifacts = state.releaseStatus?.handoffArtifacts || [];
+  const previewArtifact = handoffArtifacts.find((item) => String(item.id || '').trim() === normalizedPreviewArtifactId) || null;
+
+  if (!isReleaseHandoffPreviewable(previewArtifact)) {
+    clearReleaseHandoffPreview();
+    renderReleaseStatus();
+    return;
+  }
+
+  if (
+    state.releaseHandoffPreviewId === normalizedPreviewArtifactId
+    && state.releaseHandoffPreviewStatus === 'ready'
+    && state.releaseHandoffPreviewContent
+  ) {
+    renderReleaseStatus();
+    return;
+  }
+
+  await loadReleaseHandoffPreview(normalizedPreviewArtifactId, { syncUrl: false });
 }
 
 function getStatusClass(status = '') {
@@ -2235,6 +2269,7 @@ function wireQuickActions(scope = document) {
           if (state.releaseHandoffPreviewStatus === 'ready') {
             clearReleaseHandoffPreview();
             renderReleaseStatus();
+            writeUiStateToUrl();
             return;
           }
           if (state.releaseHandoffPreviewStatus === 'loading') {
@@ -2248,6 +2283,7 @@ function wireQuickActions(scope = document) {
       if (action === 'clear-release-handoff-preview') {
         clearReleaseHandoffPreview();
         renderReleaseStatus();
+        writeUiStateToUrl();
         return;
       }
 
@@ -2331,7 +2367,7 @@ function wireQuickActions(scope = document) {
   });
 }
 
-async function loadReleaseHandoffPreview(artifactId) {
+async function loadReleaseHandoffPreview(artifactId, { syncUrl = true } = {}) {
   const targetArtifactId = String(artifactId || '').trim();
   if (!targetArtifactId) {
     return;
@@ -2351,6 +2387,9 @@ async function loadReleaseHandoffPreview(artifactId) {
   state.releaseHandoffPreviewLineCount = 0;
   state.releaseHandoffPreviewTruncated = false;
   renderReleaseStatus();
+  if (syncUrl) {
+    writeUiStateToUrl();
+  }
 
   try {
     const payload = await fetchText(artifact.href);
@@ -8128,7 +8167,10 @@ async function loadExecutionStatus(missionId = state.selectedMissionId) {
   return payload;
 }
 
-async function loadReleaseStatus() {
+async function loadReleaseStatus({
+  preserveHandoffPreview = false,
+  previewArtifactId = '',
+} = {}) {
   const previousReleaseState = {
     focusedProvider: state.releaseFocusedProvider,
     focusedHistoryId: state.releaseFocusedHistoryId,
@@ -8136,9 +8178,14 @@ async function loadReleaseStatus() {
     historyFilterProvider: state.releaseHistoryFilterProvider,
     historyFilterScope: state.releaseHistoryFilterScope,
   };
+  const targetPreviewArtifactId = preserveHandoffPreview
+    ? String(previewArtifactId || state.releaseHandoffPreviewId || '').trim()
+    : '';
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
-  clearReleaseHandoffPreview();
+  if (!targetPreviewArtifactId) {
+    clearReleaseHandoffPreview();
+  }
   if (!payload.providerReadiness?.some((item) => String(item.provider || '').trim() === state.releaseFocusedProvider)) {
     state.releaseFocusedProvider = '';
   }
@@ -8176,6 +8223,9 @@ async function loadReleaseStatus() {
   renderReleaseStatus();
   renderDetailTabLabels();
   renderDetailContextbar();
+  if (targetPreviewArtifactId) {
+    await applyReleaseHandoffPreviewUrlState(targetPreviewArtifactId);
+  }
   if (
     previousReleaseState.focusedProvider !== state.releaseFocusedProvider
     || previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
@@ -8191,7 +8241,7 @@ async function loadReleaseStatus() {
 async function reloadReleaseStatus() {
   try {
     setUiNotice('v1 마감 상태를 다시 읽는 중입니다.');
-    await loadReleaseStatus();
+    await loadReleaseStatus({ preserveHandoffPreview: true });
     setActiveDetailTab('release', { urlMode: 'push' });
     setUiNotice('v1 마감 상태를 다시 읽었습니다.');
   } catch (error) {
@@ -8458,9 +8508,12 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
       scope: urlState.releaseHistoryScope,
     });
     applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
+    await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);
   } else {
     applyReleaseHistoryUrlState();
     applyReleaseProviderUrlState();
+    clearReleaseHandoffPreview();
+    renderReleaseStatus();
   }
 
   if (syncUrl) {

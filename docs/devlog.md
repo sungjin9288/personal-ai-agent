@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T05:05:00.000Z","id":"doclog_20260419050500_release_handoff_preview_url_restore","type":"devlog","updatedAt":"2026-04-19T05:05:00.000Z"} -->
+## 2026-04-19 Release Handoff Preview URL Restore
+
+- date: 2026-04-19T05:05:00.000Z
+- synced the active release handoff preview to the `rartifact` query parameter so the release tab can restore the same inline preview after reload instead of dropping back to the empty handoff grid state
+- kept preview URL updates on `replaceState` rather than `pushState`, which preserves shareable/reloadable state without polluting browser back/forward history for every preview click
+- browser smoke now asserts `rartifact=index-markdown` after preview selection and verifies that the `index-markdown` preview panel is restored with non-empty content after reload
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T04:35:00.000Z","id":"doclog_20260419043500_release_handoff_inline_preview","type":"devlog","updatedAt":"2026-04-19T04:35:00.000Z"} -->
 ## 2026-04-19 Release Handoff Inline Preview
 

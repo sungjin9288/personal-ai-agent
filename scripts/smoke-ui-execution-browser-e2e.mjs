@@ -1129,6 +1129,7 @@ try {
             title: panel.querySelector('.item-title')?.textContent || '',
           };
         }),
+        href: page.url(),
         results,
       };
     }`,
@@ -1152,6 +1153,43 @@ try {
   assert.equal(handoffPreviewState.activePreview.format, 'markdown', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.state, 'ready', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
+
+  runPw(['reload']);
+  const reloadedHandoffPreviewState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.waitForFunction(() => {
+        const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+        return panel
+          && panel.getAttribute('data-release-handoff-preview-panel') === 'index-markdown'
+          && panel.getAttribute('data-release-handoff-preview-state') === 'ready';
+      }, { timeout: 15000 });
+      return {
+        href: page.url(),
+        preview: await page.evaluate(() => {
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          if (!panel) {
+            return null;
+          }
+          return {
+            artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
+            body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+            state: panel.getAttribute('data-release-handoff-preview-state') || '',
+            title: panel.querySelector('.item-title')?.textContent || '',
+          };
+        }),
+      };
+    }`,
+  ]);
+  assert.equal(new URL(reloadedHandoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(reloadedHandoffPreviewState));
+  assert.equal(Boolean(reloadedHandoffPreviewState.preview), true, JSON.stringify(reloadedHandoffPreviewState));
+  assert.equal(reloadedHandoffPreviewState.preview.artifactId, 'index-markdown', JSON.stringify(reloadedHandoffPreviewState.preview));
+  assert.equal(reloadedHandoffPreviewState.preview.format, 'markdown', JSON.stringify(reloadedHandoffPreviewState.preview));
+  assert.equal(reloadedHandoffPreviewState.preview.state, 'ready', JSON.stringify(reloadedHandoffPreviewState.preview));
+  assert.equal(String(reloadedHandoffPreviewState.preview.body || '').trim().length > 0, true, JSON.stringify(reloadedHandoffPreviewState.preview));
 
   const screenshotCaptureState = runPwJson([
     '--raw',
@@ -1377,7 +1415,7 @@ try {
   assert.equal(screenshotCaptureTarget.activeStep, 'step-output', JSON.stringify(screenshotCaptureTarget));
   assert.equal(screenshotCaptureTarget.activeTab, 'release', JSON.stringify(screenshotCaptureTarget));
   assert.equal(screenshotCaptureTarget.activeDetailTab, 'release', JSON.stringify(screenshotCaptureTarget));
-  assert.equal(screenshotCaptureTarget.href, reloadState.href, JSON.stringify(screenshotCaptureTarget));
+  assert.equal(screenshotCaptureTarget.href, reloadedHandoffPreviewState.href, JSON.stringify(screenshotCaptureTarget));
   assert.equal(screenshotCaptureTarget.workspaceId, workspace.id, JSON.stringify(screenshotCaptureTarget));
   assert.equal(screenshotCaptureTarget.missionId, missionId, JSON.stringify(screenshotCaptureTarget));
   assert.match(screenshotCaptureTarget.releaseHeading, /검증, evidence, closeout/);
