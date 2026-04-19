@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T05:20:00.000Z","id":"doclog_20260419052000_release_handoff_preview_link_copy","type":"devlog","updatedAt":"2026-04-19T05:20:00.000Z"} -->
+## 2026-04-19 Release Handoff Preview Link Copy
+
+- date: 2026-04-19T05:20:00.000Z
+- added card-level preview deep-link copy for previewable handoff artifacts and `현재 링크 복사` for the active preview panel, so operators can hand off a specific release-doc preview without first copying the whole current view URL
+- kept the copy path read-only by building `detail=release + rartifact=<artifactId>` links from current mission/session context and reusing the existing clipboard/prompt helper instead of introducing new browser state
+- browser smoke now clicks both the card-level preview link copy and the active preview copy button, then asserts that the copied URLs contain the expected `rartifact` and `tab=release` query state
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T05:05:00.000Z","id":"doclog_20260419050500_release_handoff_preview_url_restore","type":"devlog","updatedAt":"2026-04-19T05:05:00.000Z"} -->
 ## 2026-04-19 Release Handoff Preview URL Restore
 

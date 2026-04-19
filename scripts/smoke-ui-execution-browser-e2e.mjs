@@ -1155,6 +1155,60 @@ try {
   assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
 
+  const handoffPreviewLinkState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.evaluate(() => {
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.click();
+      });
+      await page.waitForTimeout(50);
+      const directCardCopiedLink = await page.evaluate(() => window.__lastClipboardText || '');
+      const directCardPromptedLink = await page.evaluate(() => {
+        try {
+          return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+        } catch {
+          return '';
+        }
+      });
+
+      await page.evaluate(() => {
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-release-handoff-current-preview-link-copy]')?.click();
+      });
+      await page.waitForTimeout(50);
+
+      return {
+        activePreviewArtifactId: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-panel]')?.getAttribute('data-release-handoff-preview-panel') || ''),
+        currentPreviewCopiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
+        currentPreviewCopyLabel: await page.evaluate(() => document.querySelector('[data-release-handoff-current-preview-link-copy]')?.textContent || ''),
+        currentPreviewPromptedLink: await page.evaluate(() => {
+          try {
+            return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+          } catch {
+            return '';
+          }
+        }),
+        directCardCopiedLink,
+        directCardCopyLabel: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || ''),
+        directCardPromptedLink,
+        href: page.url(),
+      };
+    }`,
+  ]);
+  assert.equal(handoffPreviewLinkState.activePreviewArtifactId, 'index-markdown', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardCopyLabel, '링크', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.currentPreviewCopyLabel, '현재 링크 복사', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.currentPreviewPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('rartifact'), 'index-json', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
+
   runPw(['reload']);
   const reloadedHandoffPreviewState = runPwJson([
     '--raw',
@@ -1234,6 +1288,7 @@ try {
               linkHref: node.querySelector('[data-release-handoff-open]')?.getAttribute('href') || '',
               meta: Array.from(node.querySelectorAll('.release-handoff-meta .item-meta')).map((item) => item.textContent || ''),
               path: node.querySelector('.release-handoff-path')?.textContent || '',
+              previewLinkLabel: node.querySelector('[data-release-handoff-preview-link-copy]')?.textContent || '',
               previewButtonLabel: node.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
             })),
             handoffPreview: (() => {
@@ -1244,6 +1299,7 @@ try {
               return {
                 artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
                 bodySample: normalizeText(panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '').slice(0, 240),
+                copyLinkLabel: panel.querySelector('[data-release-handoff-current-preview-link-copy]')?.textContent || '',
                 format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
                 note: panel.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
                 state: panel.getAttribute('data-release-handoff-preview-state') || '',
@@ -1749,12 +1805,20 @@ try {
       true,
       JSON.stringify(handoffArtifact),
     );
+    assert.equal(
+      /markdown|text|json/i.test(handoffArtifact.badges.join(' '))
+        ? String(handoffArtifact.previewLinkLabel || '').trim().length > 0
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
   }
   assert.equal(Boolean(screenshotSurfaceSummary.handoffPreview), true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.handoffPreview.artifactId, 'index-markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(screenshotSurfaceSummary.handoffPreview.state, 'ready', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(screenshotSurfaceSummary.handoffPreview.format, 'markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.bodySample || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(String(screenshotSurfaceSummary.handoffPreview.copyLinkLabel || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   const recommendedHandoffTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
     ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md', 'text/markdown'],

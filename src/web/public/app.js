@@ -2287,6 +2287,14 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-handoff-preview-link') {
+        void copyReleaseHandoffPreviewLink({
+          artifactId: value || '',
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedProvider: '',
@@ -2995,6 +3003,32 @@ async function copyReleaseTriageLink({
     promptMessage: '현재 release triage 링크를 복사하세요.',
     shownNotice: '현재 release triage 링크를 표시했습니다.',
     successNotice,
+  });
+}
+
+async function copyReleaseHandoffPreviewLink({
+  artifactId = state.releaseHandoffPreviewId,
+  successNotice = '',
+} = {}) {
+  const normalizedArtifactId = normalizeUiParam(artifactId);
+  const handoffArtifacts = state.releaseStatus?.handoffArtifacts || [];
+  const handoffArtifact = handoffArtifacts.find((item) => String(item.id || '').trim() === normalizedArtifactId) || null;
+
+  if (!isReleaseHandoffPreviewable(handoffArtifact)) {
+    setUiNotice('복사할 handoff preview 링크가 없습니다.');
+    return;
+  }
+
+  const previewUrl = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseHandoffPreviewId: normalizedArtifactId,
+    stepId: 'step-output',
+  })}`;
+
+  await copyUiLink(previewUrl, {
+    promptMessage: `${handoffArtifact.label || 'handoff preview'} 링크를 복사하세요.`,
+    shownNotice: `${handoffArtifact.label || 'handoff preview'} 링크를 표시했습니다.`,
+    successNotice: successNotice || `${handoffArtifact.label || 'handoff preview'} 링크를 복사했습니다.`,
   });
 }
 
@@ -6893,6 +6927,14 @@ function renderReleaseStatus() {
                                         data-ui-value="${escapeHtml(item.id || '')}"
                                         ${previewActive && handoffPreviewStatus === 'loading' ? 'disabled' : ''}
                                       >${escapeHtml(previewButtonLabel)}</button>
+                                      <button
+                                        class="ghost-button"
+                                        type="button"
+                                        data-release-handoff-preview-link-copy="${escapeHtml(item.id || '')}"
+                                        data-ui-action="copy-release-handoff-preview-link"
+                                        data-ui-success-notice="${escapeHtml(`${item.label || 'handoff preview'} 링크를 복사했습니다.`)}"
+                                        data-ui-value="${escapeHtml(item.id || '')}"
+                                      >링크</button>
                                     `
                                   : ''}
                                 ${item.href
@@ -6945,6 +6987,14 @@ function renderReleaseStatus() {
                                       >새 탭 열기</a>
                                     `
                                   : ''}
+                                <button
+                                  class="ghost-button"
+                                  type="button"
+                                  data-release-handoff-current-preview-link-copy="true"
+                                  data-ui-action="copy-release-handoff-preview-link"
+                                  data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff preview'} 링크를 복사했습니다.`)}"
+                                  data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                >현재 링크 복사</button>
                                 <button class="ghost-button" type="button" data-ui-action="clear-release-handoff-preview">미리보기 닫기</button>
                               </div>
                             </div>
