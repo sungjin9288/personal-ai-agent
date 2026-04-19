@@ -1074,6 +1074,20 @@ function formatDate(value) {
   }
 }
 
+function formatByteCount(value) {
+  const bytes = Number(value);
+  if (!Number.isFinite(bytes) || bytes < 0) {
+    return '-';
+  }
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(bytes >= 10 * 1024 ? 0 : 1)} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
+}
+
 function getStatusClass(status = '') {
   return `status-${String(status).trim().replaceAll(' ', '-').replaceAll('/', '-').toLowerCase()}`;
 }
@@ -5664,6 +5678,7 @@ function renderReleaseStatus() {
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
+  const handoffArtifacts = release.handoffArtifacts || [];
   const releaseActionHistory = release.releaseActionHistory || [];
   const recommendedActions = release.recommendedActions || [];
   const refreshPlan = release.refreshPlan || null;
@@ -5723,6 +5738,8 @@ function renderReleaseStatus() {
     : snapshot
       ? 'snapshot archived'
       : 'snapshot 없음';
+  const readyHandoffArtifacts = handoffArtifacts.filter((item) => item.exists);
+  const recommendedHandoffArtifacts = handoffArtifacts.filter((item) => item.recommended);
   const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
     const itemOutcome = String(item?.outcome || '').trim().toLowerCase();
     const itemScope = String(item?.scope || '').trim();
@@ -6644,6 +6661,58 @@ function renderReleaseStatus() {
                 )
                 .join('')}
             </div>
+            ${handoffArtifacts.length
+              ? `
+                  <article class="release-snapshot-card">
+                    <div class="mini-head">
+                      <div>
+                        <p class="section-kicker">Release Handoff</p>
+                        <h4>검토용 artifact 바로가기</h4>
+                      </div>
+                    </div>
+                    <div class="release-meta">
+                      <span class="item-meta">ready ${escapeHtml(String(readyHandoffArtifacts.length))}/${escapeHtml(String(handoffArtifacts.length))}</span>
+                      <span class="item-meta">recommended ${escapeHtml(String(recommendedHandoffArtifacts.length))}개</span>
+                    </div>
+                    <div class="release-handoff-grid">
+                      ${handoffArtifacts
+                        .map(
+                          (item) => `
+                            <article class="release-handoff-card ${item.exists ? 'is-ready' : 'is-missing'} ${item.recommended ? 'is-recommended' : ''}" data-release-handoff-id="${escapeHtml(item.id || '')}">
+                              <div class="release-handoff-head">
+                                <div>
+                                  <div class="item-title">${escapeHtml(item.label || '-')}</div>
+                                  <div class="item-meta">${escapeHtml(item.description || '')}</div>
+                                </div>
+                                <div class="release-provider-meta">
+                                  <span class="mini-badge ${getReleaseStatusBadge(item.exists ? 'ready' : 'blocked')}">${escapeHtml(item.exists ? 'ready' : 'missing')}</span>
+                                  <span class="mini-badge status-running">${escapeHtml(item.kind || 'artifact')}</span>
+                                  <span class="mini-badge">${escapeHtml(item.format || 'file')}</span>
+                                  ${item.recommended ? '<span class="mini-badge status-completed">recommended</span>' : ''}
+                                </div>
+                              </div>
+                              <div class="item-meta mono release-handoff-path">${escapeHtml(item.path || '-')}</div>
+                              <div class="release-handoff-meta">
+                                <span class="item-meta">${escapeHtml(item.exists ? formatByteCount(item.bytes) : '파일 없음')}</span>
+                                <span class="item-meta">${escapeHtml(item.updatedAt ? formatDate(item.updatedAt) : '미생성')}</span>
+                              </div>
+                              <div class="release-provider-meta">
+                                <button
+                                  class="ghost-button"
+                                  type="button"
+                                  data-ui-action="copy-release-command"
+                                  data-ui-label="${escapeHtml(`${item.label || 'artifact'} 경로`)}"
+                                  data-ui-value="${escapeHtml(item.path || '')}"
+                                >경로 복사</button>
+                              </div>
+                            </article>
+                          `,
+                        )
+                        .join('')}
+                    </div>
+                  </article>
+                `
+              : ''}
             <div class="release-doc-grid">
               <article class="release-doc-surface markdown-surface" data-release-doc-kind="closeout">
                 <div class="release-doc-head">

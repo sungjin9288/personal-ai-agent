@@ -1038,6 +1038,14 @@ try {
               label: node.querySelector('.item-title')?.textContent || '',
               value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
             })),
+            handoffArtifactCount: document.querySelectorAll('#release-status .release-handoff-card').length,
+            handoffArtifacts: Array.from(document.querySelectorAll('#release-status .release-handoff-card')).map((node) => ({
+              badges: Array.from(node.querySelectorAll('.mini-badge')).map((badge) => badge.textContent || ''),
+              id: node.getAttribute('data-release-handoff-id') || '',
+              label: node.querySelector('.item-title')?.textContent || '',
+              meta: Array.from(node.querySelectorAll('.release-handoff-meta .item-meta')).map((item) => item.textContent || ''),
+              path: node.querySelector('.release-handoff-path')?.textContent || '',
+            })),
             docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
             docSurfaces: Array.from(document.querySelectorAll('#release-status .release-doc-surface')).map((node, index) => {
               const bodyChildren = Array.from(node.children).filter((child) => !child.classList.contains('release-doc-head'));
@@ -1211,6 +1219,7 @@ try {
   assert.equal(screenshotSurfaceSummary.summaryChips.length >= 6, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.recommendationCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.providerCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.handoffArtifactCount >= 3, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(
     screenshotSurfaceSummary.recommendationCards.length,
     screenshotSurfaceSummary.recommendationCardCount,
@@ -1219,6 +1228,11 @@ try {
   assert.equal(
     screenshotSurfaceSummary.providerCards.length,
     screenshotSurfaceSummary.providerCardCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.handoffArtifacts.length,
+    screenshotSurfaceSummary.handoffArtifactCount,
     JSON.stringify(screenshotSurfaceSummary),
   );
   assert.equal(
@@ -1507,6 +1521,23 @@ try {
     assert.equal(String(providerCard.label || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(String(providerCard.envKey || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
+  }
+  for (const handoffArtifact of screenshotSurfaceSummary.handoffArtifacts) {
+    assert.equal(String(handoffArtifact.id || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
+    assert.equal(String(handoffArtifact.label || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
+    assert.equal(String(handoffArtifact.path || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
+    assert.equal(handoffArtifact.badges.length >= 3, true, JSON.stringify(handoffArtifact));
+    assert.equal(handoffArtifact.meta.length >= 2, true, JSON.stringify(handoffArtifact));
+  }
+  for (const [artifactId, artifactLabel, artifactSuffix] of [
+    ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md'],
+    ['index-text', 'index.txt', 'output/playwright/execution-v1-release-doc-index.txt'],
+    ['index-json', 'index.json', 'output/playwright/execution-v1-release-doc-index.json'],
+  ]) {
+    const handoffArtifact = screenshotSurfaceSummary.handoffArtifacts.find((item) => item.id === artifactId);
+    assert.equal(Boolean(handoffArtifact), true, JSON.stringify({ artifactId, screenshotSurfaceSummary }));
+    assert.equal(handoffArtifact.label, artifactLabel, JSON.stringify(handoffArtifact));
+    assert.equal(String(handoffArtifact.path || '').endsWith(artifactSuffix), true, JSON.stringify(handoffArtifact));
   }
   for (const docSurface of screenshotSurfaceSummary.docSurfaces) {
     assert.equal(String(docSurface.docKind || '').trim().length > 0, true, JSON.stringify(docSurface));

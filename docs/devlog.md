@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T03:20:00.000Z","id":"doclog_20260419032000_release_doc_handoff_ui_surface","type":"devlog","updatedAt":"2026-04-19T03:20:00.000Z"} -->
+## 2026-04-19 Release Doc Handoff UI Surface
+
+- date: 2026-04-19T03:20:00.000Z
+- exposed the browser E2E report/screenshot and release-doc `index/manifest/digest` artifact family directly in the release tab through a compact `검토용 artifact 바로가기` card grid, so reviewers no longer have to inspect `output/playwright` manually for the main handoff surfaces
+- the web server now returns ordered handoff artifact metadata including `kind`, `format`, `recommended`, `path`, `bytes`, and `updatedAt`, while the browser smoke locks the new UI surface with explicit `index.md` / `index.txt` / `index.json` card existence and non-empty path assertions
+- updated the README smoke note so the release tab handoff surface is documented alongside the existing browser evidence bundle contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T02:45:00.000Z","id":"doclog_20260419024500_browser_release_doc_index_markdown_artifact","type":"devlog","updatedAt":"2026-04-19T02:45:00.000Z"} -->
 ## 2026-04-19 Browser Release Doc Index Markdown Artifact
 

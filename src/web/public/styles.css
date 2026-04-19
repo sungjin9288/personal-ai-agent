@@ -3452,6 +3452,7 @@ button.tag:hover {
 .release-status-shell,
 .release-list,
 .release-doc-grid,
+.release-handoff-grid,
 .release-checklist,
 .release-history-list,
 .release-live-list,
@@ -3568,6 +3569,48 @@ button.tag:hover {
 .release-doc-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.release-handoff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.release-handoff-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.release-handoff-card.is-ready {
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.release-handoff-card.is-recommended {
+  background: linear-gradient(180deg, rgba(244, 248, 255, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+.release-handoff-card.is-missing {
+  border-style: dashed;
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.release-handoff-head {
+  display: grid;
+  gap: 10px;
+}
+
+.release-handoff-path {
+  word-break: break-all;
+}
+
+.release-handoff-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .release-provider-card {
@@ -3820,7 +3863,8 @@ button.tag:hover {
   }
 
   .release-summary-grid,
-  .release-doc-grid {
+  .release-doc-grid,
+  .release-handoff-grid {
     grid-template-columns: 1fr;
   }
 
@@ -3896,7 +3940,8 @@ button.tag:hover {
   .queue-summary,
   .memory-form-grid,
   .release-summary-grid,
-  .release-doc-grid {
+  .release-doc-grid,
+  .release-handoff-grid {
     grid-template-columns: 1fr;
   }
 

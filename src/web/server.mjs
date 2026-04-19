@@ -21,6 +21,108 @@ const snapshotScriptPath = path.join(rootDir, 'scripts', 'archive-execution-v1-s
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
+const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
+const executionV1ReleaseHandoffArtifactSpecs = [
+  {
+    description: '브라우저 E2E 메인 report',
+    format: 'json',
+    id: 'browser-report',
+    kind: 'report',
+    label: 'browser-e2e.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-browser-e2e.json'),
+    recommended: false,
+  },
+  {
+    description: '브라우저 E2E screenshot',
+    format: 'png',
+    id: 'browser-screenshot',
+    kind: 'screenshot',
+    label: 'browser-e2e.png',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-browser-e2e.png'),
+    recommended: false,
+  },
+  {
+    description: 'reviewer용 release-doc index',
+    format: 'markdown',
+    id: 'index-markdown',
+    kind: 'index',
+    label: 'index.md',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-index.md'),
+    recommended: true,
+  },
+  {
+    description: 'handoff용 plain-text index',
+    format: 'text',
+    id: 'index-text',
+    kind: 'index',
+    label: 'index.txt',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-index.txt'),
+    recommended: true,
+  },
+  {
+    description: 'tooling용 keyed index',
+    format: 'json',
+    id: 'index-json',
+    kind: 'index',
+    label: 'index.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-index.json'),
+    recommended: true,
+  },
+  {
+    description: 'release-doc manifest rendered view',
+    format: 'markdown',
+    id: 'manifest-markdown',
+    kind: 'manifest',
+    label: 'manifest.md',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-manifest.md'),
+    recommended: false,
+  },
+  {
+    description: 'release-doc manifest plain text',
+    format: 'text',
+    id: 'manifest-text',
+    kind: 'manifest',
+    label: 'manifest.txt',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-manifest.txt'),
+    recommended: false,
+  },
+  {
+    description: 'release-doc manifest JSON',
+    format: 'json',
+    id: 'manifest-json',
+    kind: 'manifest',
+    label: 'manifest.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-manifest.json'),
+    recommended: false,
+  },
+  {
+    description: 'release-doc digest rendered view',
+    format: 'markdown',
+    id: 'digest-markdown',
+    kind: 'digest',
+    label: 'digest.md',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-digest.md'),
+    recommended: false,
+  },
+  {
+    description: 'release-doc digest plain text',
+    format: 'text',
+    id: 'digest-text',
+    kind: 'digest',
+    label: 'digest.txt',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-digest.txt'),
+    recommended: false,
+  },
+  {
+    description: 'release-doc digest JSON',
+    format: 'json',
+    id: 'digest-json',
+    kind: 'digest',
+    label: 'digest.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-doc-digest.json'),
+    recommended: false,
+  },
+];
 const liveValidationProviders = [
   {
     command: 'npm run evidence:execution-v1 -- --live-openai',
@@ -79,6 +181,41 @@ function sendError(response, error, statusCode = 500) {
 
 function readMarkdownFile(filePath) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function readOptionalArtifactMeta(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return {
+      bytes: 0,
+      exists: false,
+      updatedAt: '',
+    };
+  }
+
+  const stat = fs.statSync(filePath);
+  if (stat.isDirectory()) {
+    return {
+      bytes: 0,
+      exists: false,
+      updatedAt: '',
+    };
+  }
+
+  return {
+    bytes: stat.size,
+    exists: true,
+    updatedAt: stat.mtime.toISOString(),
+  };
+}
+
+function buildExecutionV1ReleaseHandoffArtifacts() {
+  return executionV1ReleaseHandoffArtifactSpecs.map((item) => {
+    const meta = readOptionalArtifactMeta(item.path);
+    return {
+      ...item,
+      ...meta,
+    };
+  });
 }
 
 function runGit(args) {
@@ -346,6 +483,7 @@ function buildExecutionV1Status() {
   const baselineCloseoutMarkdown = snapshot ? readMarkdownFile(snapshot.closeoutPath) : '';
   const baselineArtifacts = buildExecutionV1ArtifactSummary(baselineEvidenceMarkdown, baselineCloseoutMarkdown);
   const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
+  const handoffArtifacts = buildExecutionV1ReleaseHandoffArtifacts();
   const staleReasons = [];
   const localArtifactNotes = [];
 
@@ -474,6 +612,7 @@ function buildExecutionV1Status() {
       path: evidenceDocPath,
     },
     gaps: currentArtifacts.gaps,
+    handoffArtifacts,
     liveValidation: currentArtifacts.liveValidation,
     localArtifactNotes,
     notes: currentArtifacts.notes,
