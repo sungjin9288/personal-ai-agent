@@ -2324,6 +2324,81 @@ try {
       totalSessions: 0,
     },
   );
+  const releaseHandoffLinkVerificationSummary = {
+    byArtifactId: {
+      'index-json': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directCardCopyLabelAfterCopy,
+        expectedFormat: 'json',
+        expectedTitle: 'index.json',
+        fallbackCopyLabel: handoffPreviewLinkState.directCardFallbackCopyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackPromptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackPromptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['index-json']?.sessionLabels || [],
+      },
+      'index-markdown': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.currentPreviewCopyLabel,
+        expectedFormat: 'markdown',
+        expectedTitle: 'index.md',
+        fallbackCopyLabel: handoffPreviewLinkState.currentPreviewFallbackCopyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.currentPreviewFallbackPromptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.currentPreviewFallbackPromptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['index-markdown']?.sessionLabels || [],
+      },
+    },
+    errorFreeSessions: releaseHandoffCoverageSummary.errorFreeSessions,
+    totalSessions: releaseHandoffCoverageSummary.totalSessions,
+  };
+  for (const [artifactId, summaryEntry] of Object.entries(releaseHandoffLinkVerificationSummary.byArtifactId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedLinkArtifactId === artifactId &&
+      summaryEntry.fallbackLinkArtifactId === artifactId &&
+      summaryEntry.copiedLinkTab === 'release' &&
+      summaryEntry.fallbackLinkTab === 'release' &&
+      releaseHandoffCoverageSummary.byArtifactId[artifactId]?.previewFormat === summaryEntry.expectedFormat &&
+      releaseHandoffCoverageSummary.byArtifactId[artifactId]?.previewTitle === summaryEntry.expectedTitle &&
+      summaryEntry.sessionLabels.length === 2;
+  }
+  releaseHandoffLinkVerificationSummary.stableLines = Object.entries(releaseHandoffLinkVerificationSummary.byArtifactId)
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([artifactId, summaryEntry]) => [
+      artifactId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `copyArtifact=${summaryEntry.copiedLinkArtifactId}`,
+      `fallbackArtifact=${summaryEntry.fallbackLinkArtifactId}`,
+      `copyTab=${summaryEntry.copiedLinkTab}`,
+      `fallbackTab=${summaryEntry.fallbackLinkTab}`,
+      `sessions=${summaryEntry.sessionLabels.join(',')}`,
+    ].join('|'));
+  releaseHandoffLinkVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffLinkVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffLinkVerificationSummary.overviewLine = [
+    `totalSessions=${releaseHandoffLinkVerificationSummary.totalSessions}`,
+    `errorFreeSessions=${releaseHandoffLinkVerificationSummary.errorFreeSessions}`,
+    `artifacts=${Object.keys(releaseHandoffLinkVerificationSummary.byArtifactId).join(',')}`,
+    `sha256=${releaseHandoffLinkVerificationSummary.stableSha256}`,
+  ].join('|');
+  for (const [artifactId, summaryEntry] of Object.entries(releaseHandoffLinkVerificationSummary.byArtifactId)) {
+    assert.equal(summaryEntry.exactMatch, true, JSON.stringify({ artifactId, releaseHandoffLinkVerificationSummary }));
+    assert.equal(summaryEntry.sessionLabels.length, 2, JSON.stringify({ artifactId, releaseHandoffLinkVerificationSummary }));
+  }
+  assert.equal(
+    releaseHandoffLinkVerificationSummary.errorFreeSessions,
+    releaseHandoffLinkVerificationSummary.totalSessions,
+    JSON.stringify(releaseHandoffLinkVerificationSummary),
+  );
+  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 2, JSON.stringify(releaseHandoffLinkVerificationSummary));
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffLinkVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffLinkVerificationSummary),
+  );
   const smokeReport = {
     artifactVersion: 'execution-v1-browser-e2e/v1',
     browserConsoleErrors: browserErrorState.consoleErrors.length,
@@ -2337,12 +2412,14 @@ try {
     reportPath,
     releaseDocAssetSanity,
     releaseHandoffCoverageSummary,
+    releaseHandoffLinkVerificationSummary,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     repoDir,
     artifactPair: {
       captureTargetVerified: true,
       fullPageDimensionsVerified: true,
       pairVerified: true,
+      releaseHandoffLinkSummaryVerified: true,
       releaseHandoffPreviewLinkSessionsVerified: true,
       releaseDocHeadVerified: true,
       reportReadBackVerified: true,
@@ -2755,6 +2832,23 @@ try {
   const persistedReleaseDocDigestTextArtifact = fs.readFileSync(releaseDocDigestTextArtifactPath, 'utf8');
   const persistedReleaseDocDigestMarkdownArtifact = fs.readFileSync(releaseDocDigestMarkdownArtifactPath, 'utf8');
   assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
+  assert.equal(
+    persistedReport.releaseHandoffLinkVerificationSummary.overviewLine.includes(
+      `errorFreeSessions=${releaseHandoffLinkVerificationSummary.errorFreeSessions}`,
+    ),
+    true,
+    JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffLinkVerificationSummary.stableLines.length,
+    2,
+    JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(persistedReport.releaseHandoffLinkVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
+  );
   assert.deepEqual(
     persistedReleaseDocDigestArtifact,
     releaseDocDigestArtifact,

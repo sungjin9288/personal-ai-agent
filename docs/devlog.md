@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T06:20:00.000Z","id":"doclog_20260419062000_release_handoff_summary_digest","type":"devlog","updatedAt":"2026-04-19T06:20:00.000Z"} -->
+## 2026-04-19 Release Handoff Summary Digest
+
+- date: 2026-04-19T06:20:00.000Z
+- added a stable `releaseHandoffLinkVerificationSummary` to the saved browser report so the `index-json` and `index-markdown` release preview share paths can be reviewed from one keyed surface instead of reconstructing copy/fallback evidence from raw session arrays
+- summarized artifact-level copy label, fallback label, copied/fallback `rartifact` target, and fresh-session labels into deterministic line entries plus a sha256 overview, which makes release handoff verification diff-friendly without changing the runtime UI
+- tightened persisted-report assertions so write/read-back now explicitly checks the new release handoff summary overview line, stable line count, and sha256 format in addition to the existing full-report equality
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T06:05:00.000Z","id":"doclog_20260419060500_release_handoff_fallback_session","type":"devlog","updatedAt":"2026-04-19T06:05:00.000Z"} -->
 ## 2026-04-19 Release Handoff Fallback Session
 
