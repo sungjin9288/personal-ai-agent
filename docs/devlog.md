@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T02:45:00.000Z","id":"doclog_20260419024500_browser_release_doc_index_markdown_artifact","type":"devlog","updatedAt":"2026-04-19T02:45:00.000Z"} -->
+## 2026-04-19 Browser Release Doc Index Markdown Artifact
+
+- date: 2026-04-19T02:45:00.000Z
+- added `execution-v1-release-doc-index.md` so the release-doc index now has a rendered Markdown handoff surface alongside the JSON and plain-text index artifacts
+- the Markdown artifact records generated timestamp, report path, index path, overall exact-match state, stable digest sha256, screenshot sha256, artifact groups, the index bundle overview line, and every keyed artifact signature line in reviewer-friendly list form, then the smoke locks it with existence and full read-back equality assertions
+- updated the README smoke note so the browser evidence contract now explicitly documents the standalone release-doc index Markdown surface
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T02:20:00.000Z","id":"doclog_20260419022000_browser_release_doc_index_text_artifact","type":"devlog","updatedAt":"2026-04-19T02:20:00.000Z"} -->
 ## 2026-04-19 Browser Release Doc Index Text Artifact
 
