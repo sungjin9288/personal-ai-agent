@@ -1160,6 +1160,86 @@ try {
     '--raw',
     'run-code',
     `async (page) => {
+      const directCardFallbackState = await page.evaluate(async () => {
+        const setClipboard = (clipboardValue) => {
+          try {
+            Object.defineProperty(window.navigator, 'clipboard', {
+              configurable: true,
+              value: clipboardValue,
+            });
+          } catch {
+            window.navigator.clipboard = clipboardValue;
+          }
+        };
+        setClipboard({
+          writeText: async () => {
+            throw new Error('clipboard-blocked');
+          },
+        });
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        let promptedLink = '';
+        try {
+          promptedLink = JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+        } catch {
+          promptedLink = '';
+        }
+        const copyLabel = document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '';
+        const clipboardText = window.__lastClipboardText || '';
+        setClipboard({
+          writeText: async (value) => {
+            window.__lastClipboardText = String(value || '');
+          },
+        });
+        return {
+          clipboardText,
+          copyLabel,
+          promptedLink,
+        };
+      });
+
+      const currentPreviewFallbackState = await page.evaluate(async () => {
+        const setClipboard = (clipboardValue) => {
+          try {
+            Object.defineProperty(window.navigator, 'clipboard', {
+              configurable: true,
+              value: clipboardValue,
+            });
+          } catch {
+            window.navigator.clipboard = clipboardValue;
+          }
+        };
+        setClipboard({
+          writeText: async () => {
+            throw new Error('clipboard-blocked');
+          },
+        });
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-release-handoff-current-preview-link-copy]')?.click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        let promptedLink = '';
+        try {
+          promptedLink = JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+        } catch {
+          promptedLink = '';
+        }
+        const copyLabel = document.querySelector('[data-release-handoff-current-preview-link-copy]')?.textContent || '';
+        const clipboardText = window.__lastClipboardText || '';
+        setClipboard({
+          writeText: async (value) => {
+            window.__lastClipboardText = String(value || '');
+          },
+        });
+        return {
+          clipboardText,
+          copyLabel,
+          promptedLink,
+        };
+      });
+
       await page.evaluate(() => {
         window.__lastClipboardText = '';
         window.__lastPrompt = '';
@@ -1187,6 +1267,9 @@ try {
 
       return {
         activePreviewArtifactId: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-panel]')?.getAttribute('data-release-handoff-preview-panel') || ''),
+        currentPreviewFallbackClipboardText: currentPreviewFallbackState.clipboardText,
+        currentPreviewFallbackCopyLabel: currentPreviewFallbackState.copyLabel,
+        currentPreviewFallbackPromptedLink: currentPreviewFallbackState.promptedLink,
         currentPreviewCopiedLink: await page.evaluate(() => window.__lastClipboardText || ''),
         currentPreviewCopyLabel: await page.evaluate(() => document.querySelector('[data-release-handoff-current-preview-link-copy]')?.textContent || ''),
         currentPreviewPromptedLink: await page.evaluate(() => {
@@ -1197,6 +1280,9 @@ try {
           }
         }),
         directCardCopiedLink,
+        directCardFallbackClipboardText: directCardFallbackState.clipboardText,
+        directCardFallbackCopyLabel: directCardFallbackState.copyLabel,
+        directCardFallbackPromptedLink: directCardFallbackState.promptedLink,
         directCardCopyLabelAfterCopy,
         directCardCopyLabelAfterCurrentPreviewCopy: await page.evaluate(() => {
           return document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '';
@@ -1210,6 +1296,14 @@ try {
   assert.equal(handoffPreviewLinkState.directCardCopyLabelAfterCopy, '복사됨', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.directCardCopyLabelAfterCurrentPreviewCopy, '링크', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.currentPreviewCopyLabel, '현재 링크 복사됨', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardFallbackClipboardText, '', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.currentPreviewFallbackClipboardText, '', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardFallbackCopyLabel, '링크', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.currentPreviewFallbackCopyLabel, '현재 링크 복사', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.directCardFallbackPromptedLink).searchParams.get('rartifact'), 'index-json', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.directCardFallbackPromptedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.currentPreviewFallbackPromptedLink).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(new URL(handoffPreviewLinkState.currentPreviewFallbackPromptedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.directCardPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.currentPreviewPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('rartifact'), 'index-json', JSON.stringify(handoffPreviewLinkState));
@@ -1338,11 +1432,25 @@ try {
     sessionLabel: 'card-copy',
   });
   verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-json',
+    expectedFormat: 'json',
+    expectedTitle: 'index.json',
+    previewUrl: handoffPreviewLinkState.directCardFallbackPromptedLink,
+    sessionLabel: 'card-fallback',
+  });
+  verifyFreshReleaseHandoffSession({
     expectedArtifactId: 'index-markdown',
     expectedFormat: 'markdown',
     expectedTitle: 'index.md',
     previewUrl: handoffPreviewLinkState.currentPreviewCopiedLink,
     sessionLabel: 'current-preview-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'index.md',
+    previewUrl: handoffPreviewLinkState.currentPreviewFallbackPromptedLink,
+    sessionLabel: 'current-preview-fallback',
   });
 
   const screenshotCaptureState = runPwJson([
@@ -2177,7 +2285,9 @@ try {
   });
   const expectedReleaseHandoffSessions = [
     { artifactId: 'index-json', sessionLabel: 'card-copy' },
+    { artifactId: 'index-json', sessionLabel: 'card-fallback' },
     { artifactId: 'index-markdown', sessionLabel: 'current-preview-copy' },
+    { artifactId: 'index-markdown', sessionLabel: 'current-preview-fallback' },
   ];
   for (const expectedEntry of expectedReleaseHandoffSessions) {
     assert.equal(
@@ -2193,11 +2303,16 @@ try {
   const releaseHandoffCoverageSummary = normalizedReleaseHandoffSessionResults.reduce(
     (summary, entry) => {
       summary.bySessionLabel[entry.sessionLabel] = (summary.bySessionLabel[entry.sessionLabel] || 0) + 1;
-      summary.byArtifactId[entry.artifactId] = {
-        previewFormat: entry.previewFormat,
-        previewTitle: entry.previewTitle,
-        sessionLabel: entry.sessionLabel,
-      };
+      if (!summary.byArtifactId[entry.artifactId]) {
+        summary.byArtifactId[entry.artifactId] = {
+          previewFormat: entry.previewFormat,
+          previewTitle: entry.previewTitle,
+          sessionLabels: [],
+          totalSessions: 0,
+        };
+      }
+      summary.byArtifactId[entry.artifactId].sessionLabels.push(entry.sessionLabel);
+      summary.byArtifactId[entry.artifactId].totalSessions += 1;
       summary.errorFreeSessions += entry.consoleErrors === 0 && entry.pageErrors === 0 ? 1 : 0;
       summary.totalSessions += 1;
       return summary;

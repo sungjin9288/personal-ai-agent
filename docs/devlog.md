@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T06:05:00.000Z","id":"doclog_20260419060500_release_handoff_fallback_session","type":"devlog","updatedAt":"2026-04-19T06:05:00.000Z"} -->
+## 2026-04-19 Release Handoff Fallback Session
+
+- date: 2026-04-19T06:05:00.000Z
+- extended the release handoff preview copy contract to cover prompt fallback as well, so both the `index-json` card link and the `index-markdown` current preview link now have to emit the expected `rartifact` URL even when clipboard write is blocked
+- kept the fallback assertions explicit by proving that the fallback path leaves button labels in their non-copied state while still yielding a prompt URL that reopens the same release preview surface
+- expanded the saved browser report with fallback-inclusive `releaseHandoffSessionResults` and `releaseHandoffCoverageSummary`, which now show both success and fallback handoff sessions per artifact instead of only the clipboard-success path
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T05:50:00.000Z","id":"doclog_20260419055000_release_handoff_fresh_session","type":"devlog","updatedAt":"2026-04-19T05:50:00.000Z"} -->
 ## 2026-04-19 Release Handoff Fresh Session
 
