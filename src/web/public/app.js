@@ -33,6 +33,8 @@ const state = {
   outputSupportExpanded: false,
   outputToolbarToolsExpanded: false,
   providers: [],
+  releaseHandoffCopiedPreviewLinkId: '',
+  releaseHandoffCopiedPreviewLinkTimer: null,
   retrievalCopiedSourceKey: '',
   retrievalCopiedSourceTimer: null,
   retrievalSourceFocusLabel: '',
@@ -795,6 +797,10 @@ function isCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
   return state.retrievalCopiedSourceKey === getRetrievalSourceKey(sourceType, sourceLabel);
 }
 
+function isCopiedReleaseHandoffPreviewLink(artifactId = '') {
+  return state.releaseHandoffCopiedPreviewLinkId === normalizeUiParam(artifactId);
+}
+
 function renderRetrievalSourceSurfaces() {
   renderAgentBlueprintBuilder();
   renderHarnessPanel();
@@ -817,6 +823,25 @@ function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
     state.retrievalCopiedSourceKey = '';
     state.retrievalCopiedSourceTimer = null;
     renderRetrievalSourceSurfaces();
+  }, 1800);
+}
+
+function markCopiedReleaseHandoffPreviewLink(artifactId = '') {
+  const nextArtifactId = normalizeUiParam(artifactId);
+  if (!nextArtifactId) {
+    return;
+  }
+
+  state.releaseHandoffCopiedPreviewLinkId = nextArtifactId;
+  if (state.releaseHandoffCopiedPreviewLinkTimer) {
+    window.clearTimeout(state.releaseHandoffCopiedPreviewLinkTimer);
+    state.releaseHandoffCopiedPreviewLinkTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseHandoffCopiedPreviewLinkTimer = window.setTimeout(() => {
+    state.releaseHandoffCopiedPreviewLinkId = '';
+    state.releaseHandoffCopiedPreviewLinkTimer = null;
+    renderReleaseStatus();
   }, 1800);
 }
 
@@ -3025,11 +3050,14 @@ async function copyReleaseHandoffPreviewLink({
     stepId: 'step-output',
   })}`;
 
-  await copyUiLink(previewUrl, {
+  const copyResult = await copyUiLink(previewUrl, {
     promptMessage: `${handoffArtifact.label || 'handoff preview'} 링크를 복사하세요.`,
     shownNotice: `${handoffArtifact.label || 'handoff preview'} 링크를 표시했습니다.`,
     successNotice: successNotice || `${handoffArtifact.label || 'handoff preview'} 링크를 복사했습니다.`,
   });
+  if (copyResult?.method === 'clipboard') {
+    markCopiedReleaseHandoffPreviewLink(normalizedArtifactId);
+  }
 }
 
 async function copyRetrievalSourceLink({
@@ -6890,6 +6918,7 @@ function renderReleaseStatus() {
                         .map((item) => {
                           const previewable = isReleaseHandoffPreviewable(item);
                           const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
+                          const previewLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const previewButtonLabel = previewActive
                             ? (handoffPreviewStatus === 'loading'
                               ? '미리보는 중'
@@ -6928,13 +6957,13 @@ function renderReleaseStatus() {
                                         ${previewActive && handoffPreviewStatus === 'loading' ? 'disabled' : ''}
                                       >${escapeHtml(previewButtonLabel)}</button>
                                       <button
-                                        class="ghost-button"
+                                        class="ghost-button ${previewLinkCopied ? 'is-copied' : ''}"
                                         type="button"
                                         data-release-handoff-preview-link-copy="${escapeHtml(item.id || '')}"
                                         data-ui-action="copy-release-handoff-preview-link"
                                         data-ui-success-notice="${escapeHtml(`${item.label || 'handoff preview'} 링크를 복사했습니다.`)}"
                                         data-ui-value="${escapeHtml(item.id || '')}"
-                                      >링크</button>
+                                      >${escapeHtml(previewLinkCopied ? '복사됨' : '링크')}</button>
                                     `
                                   : ''}
                                 ${item.href
@@ -6988,13 +7017,17 @@ function renderReleaseStatus() {
                                     `
                                   : ''}
                                 <button
-                                  class="ghost-button"
+                                  class="ghost-button ${isCopiedReleaseHandoffPreviewLink(handoffPreviewArtifact.id) ? 'is-copied' : ''}"
                                   type="button"
                                   data-release-handoff-current-preview-link-copy="true"
                                   data-ui-action="copy-release-handoff-preview-link"
                                   data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff preview'} 링크를 복사했습니다.`)}"
                                   data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
-                                >현재 링크 복사</button>
+                                >${escapeHtml(
+                                  isCopiedReleaseHandoffPreviewLink(handoffPreviewArtifact.id)
+                                    ? '현재 링크 복사됨'
+                                    : '현재 링크 복사',
+                                )}</button>
                                 <button class="ghost-button" type="button" data-ui-action="clear-release-handoff-preview">미리보기 닫기</button>
                               </div>
                             </div>

@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T05:35:00.000Z","id":"doclog_20260419053500_release_handoff_copy_feedback","type":"devlog","updatedAt":"2026-04-19T05:35:00.000Z"} -->
+## 2026-04-19 Release Handoff Copy Feedback
+
+- date: 2026-04-19T05:35:00.000Z
+- added retrieval-style copied-state feedback to release handoff preview deep-link copy actions, so card-level `링크` and preview-panel `현재 링크 복사` now briefly flip to `복사됨` after clipboard success instead of only relying on the global notice
+- kept the feedback path narrow by keying it to a single copied artifact id and only arming it on real clipboard success, which preserves the existing prompt fallback behavior without falsely signaling a completed copy
+- browser smoke now captures the card-level label immediately after `index-json` copy, then verifies that the active `index-markdown` preview copy shows `현재 링크 복사됨` while the previous card button returns to the default label
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T05:20:00.000Z","id":"doclog_20260419052000_release_handoff_preview_link_copy","type":"devlog","updatedAt":"2026-04-19T05:20:00.000Z"} -->
 ## 2026-04-19 Release Handoff Preview Link Copy
 

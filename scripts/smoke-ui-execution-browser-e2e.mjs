@@ -1166,6 +1166,9 @@ try {
       });
       await page.waitForTimeout(50);
       const directCardCopiedLink = await page.evaluate(() => window.__lastClipboardText || '');
+      const directCardCopyLabelAfterCopy = await page.evaluate(() => {
+        return document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '';
+      });
       const directCardPromptedLink = await page.evaluate(() => {
         try {
           return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
@@ -1193,15 +1196,19 @@ try {
           }
         }),
         directCardCopiedLink,
-        directCardCopyLabel: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || ''),
+        directCardCopyLabelAfterCopy,
+        directCardCopyLabelAfterCurrentPreviewCopy: await page.evaluate(() => {
+          return document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '';
+        }),
         directCardPromptedLink,
         href: page.url(),
       };
     }`,
   ]);
   assert.equal(handoffPreviewLinkState.activePreviewArtifactId, 'index-markdown', JSON.stringify(handoffPreviewLinkState));
-  assert.equal(handoffPreviewLinkState.directCardCopyLabel, '링크', JSON.stringify(handoffPreviewLinkState));
-  assert.equal(handoffPreviewLinkState.currentPreviewCopyLabel, '현재 링크 복사', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardCopyLabelAfterCopy, '복사됨', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.directCardCopyLabelAfterCurrentPreviewCopy, '링크', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(handoffPreviewLinkState.currentPreviewCopyLabel, '현재 링크 복사됨', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.directCardPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(handoffPreviewLinkState.currentPreviewPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.directCardCopiedLink).searchParams.get('rartifact'), 'index-json', JSON.stringify(handoffPreviewLinkState));
