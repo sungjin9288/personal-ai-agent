@@ -1069,6 +1069,90 @@ try {
   assert.equal(new URL(reloadState.href).searchParams.get('tab'), 'release');
   assert.equal(new URL(reloadState.href).searchParams.get('step'), 'step-output');
 
+  const handoffPreviewState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      const previewTargets = [
+        { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
+        { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
+        { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
+      ];
+      const results = [];
+      for (const target of previewTargets) {
+        await page.evaluate((currentTarget) => {
+          document.querySelector('[data-release-handoff-preview-trigger="' + CSS.escape(currentTarget.artifactId) + '"]')?.click();
+        }, target);
+        await page.waitForFunction((currentTarget) => {
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          return panel
+            && panel.getAttribute('data-release-handoff-preview-panel') === currentTarget.artifactId
+            && panel.getAttribute('data-release-handoff-preview-state') === 'ready';
+        }, target, { timeout: 15000 });
+        results.push(await page.evaluate((currentTarget) => {
+          const card = document.querySelector('[data-release-handoff-id="' + CSS.escape(currentTarget.artifactId) + '"]');
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          return {
+            activeCard: card?.classList.contains('is-preview-active') || false,
+            artifactId: currentTarget.artifactId,
+            buttonLabel: card?.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
+            format: panel?.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+            note: panel?.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
+            previewBody: panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            state: panel?.getAttribute('data-release-handoff-preview-state') || '',
+            title: panel?.querySelector('.item-title')?.textContent || '',
+          };
+        }, target));
+      }
+
+      await page.evaluate(() => {
+        document.querySelector('[data-release-handoff-preview-trigger="index-markdown"]')?.click();
+      });
+      await page.waitForFunction(() => {
+        const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+        return panel
+          && panel.getAttribute('data-release-handoff-preview-panel') === 'index-markdown'
+          && panel.getAttribute('data-release-handoff-preview-state') === 'ready';
+      }, { timeout: 15000 });
+
+      return {
+        activePreview: await page.evaluate(() => {
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          if (!panel) {
+            return null;
+          }
+          return {
+            artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
+            body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+            state: panel.getAttribute('data-release-handoff-preview-state') || '',
+            title: panel.querySelector('.item-title')?.textContent || '',
+          };
+        }),
+        results,
+      };
+    }`,
+  ]);
+  assert.equal(handoffPreviewState.results.length, 3, JSON.stringify(handoffPreviewState));
+  for (const target of [
+    { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
+    { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
+    { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
+  ]) {
+    const previewEntry = handoffPreviewState.results.find((item) => item.artifactId === target.artifactId);
+    assert.equal(Boolean(previewEntry), true, JSON.stringify({ handoffPreviewState, target }));
+    assert.equal(previewEntry.activeCard, true, JSON.stringify(previewEntry));
+    assert.equal(previewEntry.state, 'ready', JSON.stringify(previewEntry));
+    assert.equal(previewEntry.title, target.label, JSON.stringify(previewEntry));
+    assert.equal(previewEntry.format, target.expectedFormat, JSON.stringify(previewEntry));
+    assert.equal(String(previewEntry.previewBody || '').trim().length > 0, true, JSON.stringify(previewEntry));
+  }
+  assert.equal(Boolean(handoffPreviewState.activePreview), true, JSON.stringify(handoffPreviewState));
+  assert.equal(handoffPreviewState.activePreview.artifactId, 'index-markdown', JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(handoffPreviewState.activePreview.format, 'markdown', JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(handoffPreviewState.activePreview.state, 'ready', JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
+
   const screenshotCaptureState = runPwJson([
     '--raw',
     'run-code',
@@ -1112,7 +1196,22 @@ try {
               linkHref: node.querySelector('[data-release-handoff-open]')?.getAttribute('href') || '',
               meta: Array.from(node.querySelectorAll('.release-handoff-meta .item-meta')).map((item) => item.textContent || ''),
               path: node.querySelector('.release-handoff-path')?.textContent || '',
+              previewButtonLabel: node.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
             })),
+            handoffPreview: (() => {
+              const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+              if (!panel) {
+                return null;
+              }
+              return {
+                artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
+                bodySample: normalizeText(panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '').slice(0, 240),
+                format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+                note: panel.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
+                state: panel.getAttribute('data-release-handoff-preview-state') || '',
+                title: panel.querySelector('.item-title')?.textContent || '',
+              };
+            })(),
             docSurfaceCount: document.querySelectorAll('#release-status .release-doc-surface').length,
             docSurfaces: Array.from(document.querySelectorAll('#release-status .release-doc-surface')).map((node, index) => {
               const bodyChildren = Array.from(node.children).filter((child) => !child.classList.contains('release-doc-head'));
@@ -1605,7 +1704,19 @@ try {
       true,
       JSON.stringify(handoffArtifact),
     );
+    assert.equal(
+      /markdown|text|json/i.test(handoffArtifact.badges.join(' '))
+        ? String(handoffArtifact.previewButtonLabel || '').trim().length > 0
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
   }
+  assert.equal(Boolean(screenshotSurfaceSummary.handoffPreview), true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(screenshotSurfaceSummary.handoffPreview.artifactId, 'index-markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(screenshotSurfaceSummary.handoffPreview.state, 'ready', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(screenshotSurfaceSummary.handoffPreview.format, 'markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(String(screenshotSurfaceSummary.handoffPreview.bodySample || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   const recommendedHandoffTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
     ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md', 'text/markdown'],

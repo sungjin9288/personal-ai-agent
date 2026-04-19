@@ -37,6 +37,13 @@ const state = {
   retrievalCopiedSourceTimer: null,
   retrievalSourceFocusLabel: '',
   retrievalSourceFocusType: '',
+  releaseHandoffPreviewContent: '',
+  releaseHandoffPreviewError: '',
+  releaseHandoffPreviewId: '',
+  releaseHandoffPreviewLineCount: 0,
+  releaseHandoffPreviewRequestKey: 0,
+  releaseHandoffPreviewStatus: 'idle',
+  releaseHandoffPreviewTruncated: false,
   releaseLiveConfirmProvider: '',
   releaseExpandedHistoryId: '',
   releaseFocusedProvider: '',
@@ -63,6 +70,10 @@ const state = {
   uiNoticeTimer: null,
   workspaces: [],
 };
+
+const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
+const RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS = 20000;
+const RELEASE_HANDOFF_PREVIEW_MAX_LINES = 180;
 
 const missionTemplates = [
   {
@@ -1088,6 +1099,44 @@ function formatByteCount(value) {
   return `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
 }
 
+function isReleaseHandoffPreviewable(item = {}) {
+  const format = String(item.format || '').trim().toLowerCase();
+  return Boolean(item.exists && item.href && RELEASE_HANDOFF_PREVIEWABLE_FORMATS.has(format));
+}
+
+function buildReleaseHandoffPreviewContent(content = '') {
+  const normalizedContent = String(content || '').replace(/\r/g, '');
+  const lines = normalizedContent.split('\n');
+  let previewLines = lines;
+  let truncated = false;
+
+  if (previewLines.length > RELEASE_HANDOFF_PREVIEW_MAX_LINES) {
+    previewLines = previewLines.slice(0, RELEASE_HANDOFF_PREVIEW_MAX_LINES);
+    truncated = true;
+  }
+
+  let previewContent = previewLines.join('\n');
+  if (previewContent.length > RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS) {
+    previewContent = previewContent.slice(0, RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS).trimEnd();
+    truncated = true;
+  }
+
+  return {
+    content: previewContent,
+    lineCount: lines.length,
+    truncated,
+  };
+}
+
+function clearReleaseHandoffPreview() {
+  state.releaseHandoffPreviewContent = '';
+  state.releaseHandoffPreviewError = '';
+  state.releaseHandoffPreviewId = '';
+  state.releaseHandoffPreviewLineCount = 0;
+  state.releaseHandoffPreviewStatus = 'idle';
+  state.releaseHandoffPreviewTruncated = false;
+}
+
 function getStatusClass(status = '') {
   return `status-${String(status).trim().replaceAll(' ', '-').replaceAll('/', '-').toLowerCase()}`;
 }
@@ -1861,6 +1910,15 @@ async function api(path, options = {}) {
   return payload;
 }
 
+async function fetchText(path, options = {}) {
+  const response = await fetch(path, options);
+  const payload = await response.text().catch(() => '');
+  if (!response.ok) {
+    throw new Error(payload || '텍스트 내용을 불러오지 못했습니다.');
+  }
+  return payload;
+}
+
 function markdownToHtml(markdown = '') {
   const lines = String(markdown || '').replace(/\r/g, '').split('\n');
   const html = [];
@@ -2168,6 +2226,31 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'toggle-release-handoff-preview') {
+        const targetArtifactId = String(value || '').trim();
+        if (!targetArtifactId) {
+          return;
+        }
+        if (state.releaseHandoffPreviewId === targetArtifactId) {
+          if (state.releaseHandoffPreviewStatus === 'ready') {
+            clearReleaseHandoffPreview();
+            renderReleaseStatus();
+            return;
+          }
+          if (state.releaseHandoffPreviewStatus === 'loading') {
+            return;
+          }
+        }
+        void loadReleaseHandoffPreview(targetArtifactId);
+        return;
+      }
+
+      if (action === 'clear-release-handoff-preview') {
+        clearReleaseHandoffPreview();
+        renderReleaseStatus();
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedProvider: '',
@@ -2246,6 +2329,52 @@ function wireQuickActions(scope = document) {
       }
     });
   });
+}
+
+async function loadReleaseHandoffPreview(artifactId) {
+  const targetArtifactId = String(artifactId || '').trim();
+  if (!targetArtifactId) {
+    return;
+  }
+
+  const artifact = state.releaseStatus?.handoffArtifacts?.find((item) => String(item.id || '').trim() === targetArtifactId) || null;
+  if (!isReleaseHandoffPreviewable(artifact)) {
+    return;
+  }
+
+  const requestKey = state.releaseHandoffPreviewRequestKey + 1;
+  state.releaseHandoffPreviewRequestKey = requestKey;
+  state.releaseHandoffPreviewId = targetArtifactId;
+  state.releaseHandoffPreviewStatus = 'loading';
+  state.releaseHandoffPreviewContent = '';
+  state.releaseHandoffPreviewError = '';
+  state.releaseHandoffPreviewLineCount = 0;
+  state.releaseHandoffPreviewTruncated = false;
+  renderReleaseStatus();
+
+  try {
+    const payload = await fetchText(artifact.href);
+    if (state.releaseHandoffPreviewRequestKey !== requestKey) {
+      return;
+    }
+    const preview = buildReleaseHandoffPreviewContent(payload);
+    state.releaseHandoffPreviewStatus = 'ready';
+    state.releaseHandoffPreviewContent = preview.content;
+    state.releaseHandoffPreviewError = '';
+    state.releaseHandoffPreviewLineCount = preview.lineCount;
+    state.releaseHandoffPreviewTruncated = preview.truncated;
+  } catch (error) {
+    if (state.releaseHandoffPreviewRequestKey !== requestKey) {
+      return;
+    }
+    state.releaseHandoffPreviewStatus = 'error';
+    state.releaseHandoffPreviewContent = '';
+    state.releaseHandoffPreviewError = error.message || 'artifact preview를 불러오지 못했습니다.';
+    state.releaseHandoffPreviewLineCount = 0;
+    state.releaseHandoffPreviewTruncated = false;
+  }
+
+  renderReleaseStatus();
 }
 
 async function openRetrievalArtifact(artifactId, sessionId, { historyMode = 'push' } = {}) {
@@ -5740,6 +5869,15 @@ function renderReleaseStatus() {
       : 'snapshot 없음';
   const readyHandoffArtifacts = handoffArtifacts.filter((item) => item.exists);
   const recommendedHandoffArtifacts = handoffArtifacts.filter((item) => item.recommended);
+  const handoffPreviewArtifactId = String(state.releaseHandoffPreviewId || '').trim();
+  const handoffPreviewArtifact = handoffArtifacts.find(
+    (item) => String(item.id || '').trim() === handoffPreviewArtifactId && isReleaseHandoffPreviewable(item),
+  ) || null;
+  const handoffPreviewStatus = handoffPreviewArtifact ? String(state.releaseHandoffPreviewStatus || 'idle').trim() : 'idle';
+  const handoffPreviewContent = handoffPreviewArtifact ? String(state.releaseHandoffPreviewContent || '') : '';
+  const handoffPreviewError = handoffPreviewArtifact ? String(state.releaseHandoffPreviewError || '') : '';
+  const handoffPreviewLineCount = handoffPreviewArtifact ? Number(state.releaseHandoffPreviewLineCount || 0) : 0;
+  const handoffPreviewTruncated = Boolean(handoffPreviewArtifact && state.releaseHandoffPreviewTruncated);
   const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
     const itemOutcome = String(item?.outcome || '').trim().toLowerCase();
     const itemScope = String(item?.scope || '').trim();
@@ -6676,9 +6814,18 @@ function renderReleaseStatus() {
                     </div>
                     <div class="release-handoff-grid">
                       ${handoffArtifacts
-                        .map(
-                          (item) => `
-                            <article class="release-handoff-card ${item.exists ? 'is-ready' : 'is-missing'} ${item.recommended ? 'is-recommended' : ''}" data-release-handoff-id="${escapeHtml(item.id || '')}">
+                        .map((item) => {
+                          const previewable = isReleaseHandoffPreviewable(item);
+                          const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
+                          const previewButtonLabel = previewActive
+                            ? (handoffPreviewStatus === 'loading'
+                              ? '미리보는 중'
+                              : handoffPreviewStatus === 'error'
+                                ? '다시 시도'
+                                : '미리보기 닫기')
+                            : '미리보기';
+                          return `
+                            <article class="release-handoff-card ${item.exists ? 'is-ready' : 'is-missing'} ${item.recommended ? 'is-recommended' : ''} ${previewActive ? 'is-preview-active' : ''}" data-release-handoff-id="${escapeHtml(item.id || '')}">
                               <div class="release-handoff-head">
                                 <div>
                                   <div class="item-title">${escapeHtml(item.label || '-')}</div>
@@ -6697,6 +6844,18 @@ function renderReleaseStatus() {
                                 <span class="item-meta">${escapeHtml(item.updatedAt ? formatDate(item.updatedAt) : '미생성')}</span>
                               </div>
                               <div class="release-provider-meta">
+                                ${previewable
+                                  ? `
+                                      <button
+                                        class="ghost-button"
+                                        type="button"
+                                        data-release-handoff-preview-trigger="${escapeHtml(item.id || '')}"
+                                        data-ui-action="toggle-release-handoff-preview"
+                                        data-ui-value="${escapeHtml(item.id || '')}"
+                                        ${previewActive && handoffPreviewStatus === 'loading' ? 'disabled' : ''}
+                                      >${escapeHtml(previewButtonLabel)}</button>
+                                    `
+                                  : ''}
                                 ${item.href
                                   ? `
                                       <a
@@ -6717,10 +6876,77 @@ function renderReleaseStatus() {
                                 >경로 복사</button>
                               </div>
                             </article>
-                          `,
-                        )
+                          `;
+                        })
                         .join('')}
                     </div>
+                    ${handoffPreviewArtifact
+                      ? `
+                          <section
+                            class="release-handoff-preview"
+                            data-release-handoff-preview-panel="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                            data-release-handoff-preview-state="${escapeHtml(handoffPreviewStatus || 'idle')}"
+                          >
+                            <div class="release-handoff-preview-head">
+                              <div>
+                                <p class="section-kicker">Inline Preview</p>
+                                <div class="item-title">${escapeHtml(handoffPreviewArtifact.label || '-')}</div>
+                                <div class="item-meta">${escapeHtml(handoffPreviewArtifact.description || '')}</div>
+                              </div>
+                              <div class="release-provider-meta">
+                                <span class="mini-badge status-running" data-release-handoff-preview-format>${escapeHtml(handoffPreviewArtifact.format || 'file')}</span>
+                                <span class="mini-badge">${escapeHtml(handoffPreviewArtifact.kind || 'artifact')}</span>
+                                ${handoffPreviewArtifact.href
+                                  ? `
+                                      <a
+                                        class="ghost-button"
+                                        href="${escapeHtml(handoffPreviewArtifact.href)}"
+                                        rel="noreferrer"
+                                        target="_blank"
+                                      >새 탭 열기</a>
+                                    `
+                                  : ''}
+                                <button class="ghost-button" type="button" data-ui-action="clear-release-handoff-preview">미리보기 닫기</button>
+                              </div>
+                            </div>
+                            <div class="release-handoff-meta">
+                              <span class="item-meta mono">${escapeHtml(handoffPreviewArtifact.path || '-')}</span>
+                              <span class="item-meta">${escapeHtml(handoffPreviewArtifact.updatedAt ? formatDate(handoffPreviewArtifact.updatedAt) : '미생성')}</span>
+                              ${handoffPreviewLineCount
+                                ? `<span class="item-meta">${escapeHtml(String(handoffPreviewLineCount))}줄</span>`
+                                : ''}
+                            </div>
+                            ${handoffPreviewStatus === 'loading'
+                              ? `
+                                  <div class="release-handoff-preview-body release-handoff-preview-loading" data-release-handoff-preview-body>
+                                    선택한 artifact를 불러오는 중입니다.
+                                  </div>
+                                `
+                              : handoffPreviewStatus === 'error'
+                                ? `
+                                    <div class="release-stale-note">
+                                      <div class="release-stale-line" data-release-handoff-preview-body>${escapeHtml(handoffPreviewError || 'artifact preview를 불러오지 못했습니다.')}</div>
+                                    </div>
+                                  `
+                                : String(handoffPreviewArtifact.format || '').trim().toLowerCase() === 'markdown'
+                                  ? `
+                                      <div class="release-handoff-preview-body markdown-surface" data-release-handoff-preview-body>
+                                        ${markdownToHtml(handoffPreviewContent || '미리볼 내용이 없습니다.')}
+                                      </div>
+                                    `
+                                  : `
+                                      <pre class="release-handoff-preview-code" data-release-handoff-preview-body>${escapeHtml(handoffPreviewContent || '미리볼 내용이 없습니다.')}</pre>
+                                    `}
+                            ${handoffPreviewStatus === 'ready' && handoffPreviewTruncated
+                              ? `
+                                  <div class="item-meta" data-release-handoff-preview-note>
+                                    총 ${escapeHtml(String(handoffPreviewLineCount))}줄 중 앞부분만 표시했습니다. 전체 내용은 열기 링크로 확인하세요.
+                                  </div>
+                                `
+                              : ''}
+                          </section>
+                        `
+                      : ''}
                   </article>
                 `
               : ''}
@@ -7912,6 +8138,7 @@ async function loadReleaseStatus() {
   };
   const payload = await api('/api/execution-v1/status');
   state.releaseStatus = payload;
+  clearReleaseHandoffPreview();
   if (!payload.providerReadiness?.some((item) => String(item.provider || '').trim() === state.releaseFocusedProvider)) {
     state.releaseFocusedProvider = '';
   }

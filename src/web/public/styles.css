@@ -3589,6 +3589,11 @@ button.tag:hover {
   border-color: rgba(37, 99, 235, 0.16);
 }
 
+.release-handoff-card.is-preview-active {
+  border-color: rgba(37, 99, 235, 0.28);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
 .release-handoff-card.is-recommended {
   background: linear-gradient(180deg, rgba(244, 248, 255, 0.96), rgba(255, 255, 255, 0.94));
 }
@@ -3611,6 +3616,46 @@ button.tag:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.release-handoff-preview {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: linear-gradient(180deg, rgba(244, 248, 255, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+.release-handoff-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.release-handoff-preview-body,
+.release-handoff-preview-code {
+  margin: 0;
+  max-height: 420px;
+  overflow: auto;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.release-handoff-preview-loading {
+  color: rgba(51, 65, 85, 0.82);
+}
+
+.release-handoff-preview-code {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .release-provider-card {

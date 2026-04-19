@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T04:35:00.000Z","id":"doclog_20260419043500_release_handoff_inline_preview","type":"devlog","updatedAt":"2026-04-19T04:35:00.000Z"} -->
+## 2026-04-19 Release Handoff Inline Preview
+
+- date: 2026-04-19T04:35:00.000Z
+- added inline preview state for `markdown` / `text` / `json` handoff artifacts directly inside the release tab, so reviewers can inspect the recommended `index` trio and other text artifacts without leaving the current release surface
+- the release handoff card grid now marks the active preview card, exposes `미리보기` / `미리보기 닫기` / `다시 시도` states, and renders a bounded preview panel with format, path, line count, and truncation note while keeping `열기` for the full artifact
+- browser smoke now opens `index.md` / `index.txt` / `index.json` previews in sequence, asserts non-empty inline bodies and final `index-markdown` preview capture, and persists the active preview summary in the saved browser report
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T04:10:00.000Z","id":"doclog_20260419041000_release_handoff_direct_open_route","type":"devlog","updatedAt":"2026-04-19T04:10:00.000Z"} -->
 ## 2026-04-19 Release Handoff Direct Open Route
 
