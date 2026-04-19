@@ -165,6 +165,15 @@ function sendText(response, statusCode, payload, contentType = 'text/plain; char
   response.end(payload);
 }
 
+function sendBuffer(response, statusCode, payload, contentType = 'application/octet-stream', extraHeaders = {}) {
+  response.writeHead(statusCode, {
+    'cache-control': 'no-store',
+    'content-type': contentType,
+    ...extraHeaders,
+  });
+  response.end(payload);
+}
+
 function sendNotFound(response) {
   sendJson(response, 404, {
     error: 'not-found',
@@ -214,8 +223,31 @@ function buildExecutionV1ReleaseHandoffArtifacts() {
     return {
       ...item,
       ...meta,
+      href: meta.exists ? `/api/execution-v1/handoff-artifacts/${encodeURIComponent(item.id)}` : '',
     };
   });
+}
+
+function resolveExecutionV1ReleaseHandoffArtifact(artifactId) {
+  const entry = executionV1ReleaseHandoffArtifactSpecs.find((item) => item.id === artifactId);
+  if (!entry) {
+    return null;
+  }
+
+  const artifactPath = path.resolve(entry.path);
+  const safeRoot = path.resolve(rootDir);
+  if (!artifactPath.startsWith(`${safeRoot}${path.sep}`) && artifactPath !== safeRoot) {
+    return null;
+  }
+
+  if (!fs.existsSync(artifactPath) || fs.statSync(artifactPath).isDirectory()) {
+    return null;
+  }
+
+  return {
+    artifactPath,
+    entry,
+  };
 }
 
 function runGit(args) {
@@ -946,6 +978,12 @@ function getContentType(filePath) {
   if (filePath.endsWith('.json')) {
     return 'application/json; charset=utf-8';
   }
+  if (filePath.endsWith('.md')) {
+    return 'text/markdown; charset=utf-8';
+  }
+  if (filePath.endsWith('.png')) {
+    return 'image/png';
+  }
   return 'text/plain; charset=utf-8';
 }
 
@@ -1022,6 +1060,32 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && pathname === '/api/execution-v1/status') {
     sendJson(response, 200, buildExecutionV1Status());
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'execution-v1' &&
+    pathParts[2] === 'handoff-artifacts' &&
+    pathParts[3]
+  ) {
+    const artifactId = decodePathSegment(pathParts[3]);
+    const artifactRecord = resolveExecutionV1ReleaseHandoffArtifact(artifactId);
+    if (!artifactRecord) {
+      sendNotFound(response);
+      return;
+    }
+
+    sendBuffer(
+      response,
+      200,
+      fs.readFileSync(artifactRecord.artifactPath),
+      getContentType(artifactRecord.artifactPath),
+      {
+        'content-disposition': `inline; filename="${path.basename(artifactRecord.artifactPath)}"`,
+      },
+    );
     return;
   }
 

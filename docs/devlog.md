@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T04:10:00.000Z","id":"doclog_20260419041000_release_handoff_direct_open_route","type":"devlog","updatedAt":"2026-04-19T04:10:00.000Z"} -->
+## 2026-04-19 Release Handoff Direct Open Route
+
+- date: 2026-04-19T04:10:00.000Z
+- added a dedicated `/api/execution-v1/handoff-artifacts/:id` route and wired the release tab handoff cards to expose `열기` links, so reviewers can open seeded or real release-doc artifacts directly from the browser instead of copying file paths out to the shell
+- the release handoff payload now includes `href` only for existing artifacts, and the UI renders the direct-open action without adding any new custom click handler because a plain anchor is sufficient
+- browser smoke now locks the direct-open contract down by checking the recommended `index.md` / `index.txt` / `index.json` cards for `ready` badge, exact href, and `200 + expected content-type` fetch responses
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T03:45:00.000Z","id":"doclog_20260419034500_release_doc_handoff_ready_smoke","type":"devlog","updatedAt":"2026-04-19T03:45:00.000Z"} -->
 ## 2026-04-19 Release Doc Handoff Ready-State Smoke
 

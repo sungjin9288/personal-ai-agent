@@ -6697,6 +6697,17 @@ function renderReleaseStatus() {
                                 <span class="item-meta">${escapeHtml(item.updatedAt ? formatDate(item.updatedAt) : '미생성')}</span>
                               </div>
                               <div class="release-provider-meta">
+                                ${item.href
+                                  ? `
+                                      <a
+                                        class="ghost-button"
+                                        data-release-handoff-open="true"
+                                        href="${escapeHtml(item.href)}"
+                                        rel="noreferrer"
+                                        target="_blank"
+                                      >열기</a>
+                                    `
+                                  : ''}
                                 <button
                                   class="ghost-button"
                                   type="button"

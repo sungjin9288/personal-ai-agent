@@ -1109,6 +1109,7 @@ try {
               badges: Array.from(node.querySelectorAll('.mini-badge')).map((badge) => badge.textContent || ''),
               id: node.getAttribute('data-release-handoff-id') || '',
               label: node.querySelector('.item-title')?.textContent || '',
+              linkHref: node.querySelector('[data-release-handoff-open]')?.getAttribute('href') || '',
               meta: Array.from(node.querySelectorAll('.release-handoff-meta .item-meta')).map((item) => item.textContent || ''),
               path: node.querySelector('.release-handoff-path')?.textContent || '',
             })),
@@ -1599,17 +1600,70 @@ try {
     assert.equal(String(handoffArtifact.path || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
     assert.equal(handoffArtifact.badges.length >= 3, true, JSON.stringify(handoffArtifact));
     assert.equal(handoffArtifact.meta.length >= 2, true, JSON.stringify(handoffArtifact));
+    assert.equal(
+      handoffArtifact.badges.includes('ready') ? String(handoffArtifact.linkHref || '').trim().length > 0 : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
   }
-  for (const [artifactId, artifactLabel, artifactSuffix] of [
-    ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md'],
-    ['index-text', 'index.txt', 'output/playwright/execution-v1-release-doc-index.txt'],
-    ['index-json', 'index.json', 'output/playwright/execution-v1-release-doc-index.json'],
+  const recommendedHandoffTargets = [];
+  for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
+    ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md', 'text/markdown'],
+    ['index-text', 'index.txt', 'output/playwright/execution-v1-release-doc-index.txt', 'text/plain'],
+    ['index-json', 'index.json', 'output/playwright/execution-v1-release-doc-index.json', 'application/json'],
   ]) {
     const handoffArtifact = screenshotSurfaceSummary.handoffArtifacts.find((item) => item.id === artifactId);
     assert.equal(Boolean(handoffArtifact), true, JSON.stringify({ artifactId, screenshotSurfaceSummary }));
     assert.equal(handoffArtifact.label, artifactLabel, JSON.stringify(handoffArtifact));
     assert.equal(handoffArtifact.badges.includes('ready'), true, JSON.stringify(handoffArtifact));
+    assert.equal(
+      handoffArtifact.linkHref,
+      `/api/execution-v1/handoff-artifacts/${artifactId}`,
+      JSON.stringify(handoffArtifact),
+    );
     assert.equal(String(handoffArtifact.path || '').endsWith(artifactSuffix), true, JSON.stringify(handoffArtifact));
+    recommendedHandoffTargets.push({
+      artifactContentType,
+      artifactId,
+      href: handoffArtifact.linkHref,
+    });
+  }
+  const recommendedHandoffFetchResults = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      const targets = ${JSON.stringify(recommendedHandoffTargets)};
+      const results = [];
+      for (const target of targets) {
+        const response = await page.evaluate(async (currentTarget) => {
+          const result = await fetch(currentTarget.href);
+          return {
+            artifactId: currentTarget.artifactId,
+            body: await result.text(),
+            contentType: result.headers.get('content-type') || '',
+            href: currentTarget.href,
+            status: result.status,
+          };
+        }, target);
+        results.push(response);
+      }
+      return results;
+    }`,
+  ]);
+  assert.equal(recommendedHandoffFetchResults.length, recommendedHandoffTargets.length, JSON.stringify({
+    recommendedHandoffFetchResults,
+    recommendedHandoffTargets,
+  }));
+  for (const target of recommendedHandoffTargets) {
+    const handoffResponse = recommendedHandoffFetchResults.find((item) => item.artifactId === target.artifactId);
+    assert.equal(Boolean(handoffResponse), true, JSON.stringify({ recommendedHandoffFetchResults, target }));
+    assert.equal(handoffResponse.status, 200, JSON.stringify(handoffResponse));
+    assert.equal(
+      String(handoffResponse.contentType || '').includes(target.artifactContentType),
+      true,
+      JSON.stringify(handoffResponse),
+    );
+    assert.equal(String(handoffResponse.body || '').trim().length > 0, true, JSON.stringify(handoffResponse));
   }
   for (const docSurface of screenshotSurfaceSummary.docSurfaces) {
     assert.equal(String(docSurface.docKind || '').trim().length > 0, true, JSON.stringify(docSurface));
