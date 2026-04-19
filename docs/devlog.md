@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T05:50:00.000Z","id":"doclog_20260419055000_release_handoff_fresh_session","type":"devlog","updatedAt":"2026-04-19T05:50:00.000Z"} -->
+## 2026-04-19 Release Handoff Fresh Session
+
+- date: 2026-04-19T05:50:00.000Z
+- extended the release handoff preview link contract from same-session copy/reload into fresh browser handoff, so the copied `index-json` card link and `index-markdown` current preview link both have to reopen the release tab with the expected inline preview already restored
+- kept the verification inside the existing browser E2E flow and reused the same browser guard bootstrap, which proves release handoff links are shareable across sessions without adding a separate smoke entrypoint
+- persisted the new proof into the saved browser report as `releaseHandoffSessionResults` and `releaseHandoffCoverageSummary`, so the artifact now carries explicit evidence that release preview deep-links survived real fresh-session entry
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T05:35:00.000Z","id":"doclog_20260419053500_release_handoff_copy_feedback","type":"devlog","updatedAt":"2026-04-19T05:35:00.000Z"} -->
 ## 2026-04-19 Release Handoff Copy Feedback
 

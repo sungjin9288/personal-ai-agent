@@ -47,6 +47,7 @@ seedReleaseHandoffFixtures();
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
 const handoffSessionResults = [];
+const releaseHandoffSessionResults = [];
 const serverOutput = { stderr: '', stdout: '' };
 const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const browserGuardScript = `async (page) => {
@@ -1252,6 +1253,98 @@ try {
   assert.equal(reloadedHandoffPreviewState.preview.state, 'ready', JSON.stringify(reloadedHandoffPreviewState.preview));
   assert.equal(String(reloadedHandoffPreviewState.preview.body || '').trim().length > 0, true, JSON.stringify(reloadedHandoffPreviewState.preview));
 
+  console.error('[smoke-ui-execution-browser-e2e] verify release handoff preview deep-link session');
+  const verifyFreshReleaseHandoffSession = ({
+    expectedArtifactId,
+    expectedFormat,
+    expectedTitle,
+    previewUrl,
+    sessionLabel,
+  }) => {
+    const releaseHandoffSessionId = `r${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
+    handoffSessionIds.push(releaseHandoffSessionId);
+    runPw(['open', baseUrl], { session: releaseHandoffSessionId });
+    installBrowserGuards({ session: releaseHandoffSessionId });
+    const handoffState = runPwJson([
+      '--raw',
+      'run-code',
+      `async (page) => {
+        await page.goto(${JSON.stringify(previewUrl)}, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(({ artifactId }) => {
+          const params = new URL(window.location.href).searchParams;
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          return (
+            params.get('tab') === 'release' &&
+            params.get('rartifact') === artifactId &&
+            panel &&
+            panel.getAttribute('data-release-handoff-preview-panel') === artifactId &&
+            panel.getAttribute('data-release-handoff-preview-state') === 'ready'
+          );
+        }, { artifactId: ${JSON.stringify(expectedArtifactId)} }, { timeout: 15000 });
+        return {
+          activeCard: await page.evaluate((artifactId) => {
+            return document.querySelector('[data-release-handoff-id="' + CSS.escape(artifactId) + '"]')?.classList.contains('is-preview-active') || false;
+          }, ${JSON.stringify(expectedArtifactId)}),
+          consoleErrors: page.__codexConsoleErrors || [],
+          href: page.url(),
+          pageErrors: page.__codexPageErrors || [],
+          preview: await page.evaluate(() => {
+            const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+            if (!panel) {
+              return null;
+            }
+            return {
+              artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
+              body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+              copyLinkLabel: panel.querySelector('[data-release-handoff-current-preview-link-copy]')?.textContent || '',
+              format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+              state: panel.getAttribute('data-release-handoff-preview-state') || '',
+              title: panel.querySelector('.item-title')?.textContent || '',
+            };
+          }),
+        };
+      }`,
+    ], { session: releaseHandoffSessionId });
+    assert.equal(new URL(handoffState.href).searchParams.get('tab'), 'release', JSON.stringify(handoffState));
+    assert.equal(new URL(handoffState.href).searchParams.get('rartifact'), expectedArtifactId, JSON.stringify(handoffState));
+    assert.equal(handoffState.href, previewUrl, JSON.stringify(handoffState));
+    assert.equal(handoffState.activeCard, true, JSON.stringify(handoffState));
+    assert.deepEqual(handoffState.consoleErrors, [], JSON.stringify(handoffState));
+    assert.deepEqual(handoffState.pageErrors, [], JSON.stringify(handoffState));
+    assert.equal(Boolean(handoffState.preview), true, JSON.stringify(handoffState));
+    assert.equal(handoffState.preview.artifactId, expectedArtifactId, JSON.stringify(handoffState));
+    assert.equal(handoffState.preview.format, expectedFormat, JSON.stringify(handoffState));
+    assert.equal(handoffState.preview.state, 'ready', JSON.stringify(handoffState));
+    assert.equal(handoffState.preview.title, expectedTitle, JSON.stringify(handoffState));
+    assert.equal(String(handoffState.preview.body || '').trim().length > 0, true, JSON.stringify(handoffState));
+
+    const handoffSummary = {
+      artifactId: expectedArtifactId,
+      consoleErrors: handoffState.consoleErrors.length,
+      pageErrors: handoffState.pageErrors.length,
+      previewFormat: expectedFormat,
+      previewTitle: expectedTitle,
+      sessionLabel,
+    };
+    releaseHandoffSessionResults.push(handoffSummary);
+    return handoffSummary;
+  };
+
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-json',
+    expectedFormat: 'json',
+    expectedTitle: 'index.json',
+    previewUrl: handoffPreviewLinkState.directCardCopiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'index.md',
+    previewUrl: handoffPreviewLinkState.currentPreviewCopiedLink,
+    sessionLabel: 'current-preview-copy',
+  });
+
   const screenshotCaptureState = runPwJson([
     '--raw',
     'run-code',
@@ -2077,6 +2170,45 @@ try {
       totalSessions: 0,
     },
   );
+  const normalizedReleaseHandoffSessionResults = [...releaseHandoffSessionResults].sort((left, right) => {
+    const leftKey = `${left.sessionLabel}:${left.artifactId}`;
+    const rightKey = `${right.sessionLabel}:${right.artifactId}`;
+    return leftKey.localeCompare(rightKey);
+  });
+  const expectedReleaseHandoffSessions = [
+    { artifactId: 'index-json', sessionLabel: 'card-copy' },
+    { artifactId: 'index-markdown', sessionLabel: 'current-preview-copy' },
+  ];
+  for (const expectedEntry of expectedReleaseHandoffSessions) {
+    assert.equal(
+      normalizedReleaseHandoffSessionResults.some(
+        (entry) =>
+          entry.artifactId === expectedEntry.artifactId &&
+          entry.sessionLabel === expectedEntry.sessionLabel,
+      ),
+      true,
+      JSON.stringify({ expectedEntry, normalizedReleaseHandoffSessionResults }),
+    );
+  }
+  const releaseHandoffCoverageSummary = normalizedReleaseHandoffSessionResults.reduce(
+    (summary, entry) => {
+      summary.bySessionLabel[entry.sessionLabel] = (summary.bySessionLabel[entry.sessionLabel] || 0) + 1;
+      summary.byArtifactId[entry.artifactId] = {
+        previewFormat: entry.previewFormat,
+        previewTitle: entry.previewTitle,
+        sessionLabel: entry.sessionLabel,
+      };
+      summary.errorFreeSessions += entry.consoleErrors === 0 && entry.pageErrors === 0 ? 1 : 0;
+      summary.totalSessions += 1;
+      return summary;
+    },
+    {
+      byArtifactId: {},
+      bySessionLabel: {},
+      errorFreeSessions: 0,
+      totalSessions: 0,
+    },
+  );
   const smokeReport = {
     artifactVersion: 'execution-v1-browser-e2e/v1',
     browserConsoleErrors: browserErrorState.consoleErrors.length,
@@ -2089,11 +2221,14 @@ try {
     port,
     reportPath,
     releaseDocAssetSanity,
+    releaseHandoffCoverageSummary,
+    releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     repoDir,
     artifactPair: {
       captureTargetVerified: true,
       fullPageDimensionsVerified: true,
       pairVerified: true,
+      releaseHandoffPreviewLinkSessionsVerified: true,
       releaseDocHeadVerified: true,
       reportReadBackVerified: true,
       releaseDocCaptureVerified: true,
