@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T00:10:00.000Z","id":"doclog_20260420001000_release_handoff_digest_artifact","type":"devlog","updatedAt":"2026-04-20T00:10:00.000Z"} -->
+## 2026-04-20 Release Handoff Digest Artifact
+
+- date: 2026-04-20T00:10:00.000Z
+- split the browser report’s release handoff verification block into a dedicated `execution-v1-release-handoff-digest.json` artifact so reviewer tooling can consume the handoff contract without parsing the entire browser E2E payload
+- kept the artifact compact by storing the keyed coverage summary, the stable link verification summary, and the normalized session results 그대로 재사용하고, the main browser report now references the new digest path through `artifactPair`
+- extended smoke write/read-back checks so the new handoff digest artifact must exist, round-trip exactly, and remain reachable from the persisted browser report before the suite passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T06:20:00.000Z","id":"doclog_20260419062000_release_handoff_summary_digest","type":"devlog","updatedAt":"2026-04-19T06:20:00.000Z"} -->
 ## 2026-04-19 Release Handoff Summary Digest
 

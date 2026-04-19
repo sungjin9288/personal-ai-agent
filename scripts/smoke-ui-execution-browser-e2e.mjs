@@ -13,6 +13,7 @@ const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
 const tempScreenshotDir = path.join(tempRoot, 'output', 'playwright');
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
+const releaseHandoffDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-handoff-digest.json');
 const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
 const releaseDocIndexPath = path.join(screenshotDir, 'execution-v1-release-doc-index.json');
 const releaseDocIndexMarkdownPath = path.join(screenshotDir, 'execution-v1-release-doc-index.md');
@@ -30,6 +31,7 @@ const transparentPngBuffer = Buffer.from(
 );
 
 fs.mkdirSync(screenshotDir, { recursive: true });
+fs.rmSync(releaseHandoffDigestArtifactPath, { force: true });
 fs.rmSync(releaseDocDigestArtifactPath, { force: true });
 fs.rmSync(releaseDocIndexPath, { force: true });
 fs.rmSync(releaseDocIndexMarkdownPath, { force: true });
@@ -2419,6 +2421,8 @@ try {
       captureTargetVerified: true,
       fullPageDimensionsVerified: true,
       pairVerified: true,
+      releaseHandoffDigestArtifactPath,
+      releaseHandoffDigestArtifactVerified: true,
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffPreviewLinkSessionsVerified: true,
       releaseDocHeadVerified: true,
@@ -2468,6 +2472,17 @@ try {
     url: reloadState.href,
     workspaceId: workspace.id,
   };
+  const releaseHandoffDigestArtifact = {
+    artifactVersion: 'execution-v1-release-handoff-digest/v1',
+    generatedAt: smokeReport.generatedAt,
+    releaseHandoffCoverageSummary,
+    releaseHandoffDigestArtifactPath,
+    releaseHandoffLinkVerificationSummary,
+    releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
+    releaseHandoffSummaryReportPath: reportPath,
+    repoDir,
+  };
+  fs.writeFileSync(releaseHandoffDigestArtifactPath, `${JSON.stringify(releaseHandoffDigestArtifact, null, 2)}\n`, 'utf8');
   const releaseDocDigestArtifact = {
     artifactVersion: 'execution-v1-release-doc-digest/v1',
     exactMatchCount: releaseDocVerificationSummary.exactMatchCount,
@@ -2777,6 +2792,11 @@ try {
   fs.writeFileSync(releaseDocIndexMarkdownPath, releaseDocIndexMarkdownArtifact, 'utf8');
   assert.equal(fs.existsSync(reportPath), true, `expected report at ${reportPath}`);
   assert.equal(
+    fs.existsSync(releaseHandoffDigestArtifactPath),
+    true,
+    `expected release handoff digest artifact at ${releaseHandoffDigestArtifactPath}`,
+  );
+  assert.equal(
     fs.existsSync(releaseDocDigestArtifactPath),
     true,
     `expected release doc digest artifact at ${releaseDocDigestArtifactPath}`,
@@ -2822,6 +2842,7 @@ try {
     `expected release doc digest markdown artifact at ${releaseDocDigestMarkdownArtifactPath}`,
   );
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  const persistedReleaseHandoffDigestArtifact = JSON.parse(fs.readFileSync(releaseHandoffDigestArtifactPath, 'utf8'));
   const persistedReleaseDocDigestArtifact = JSON.parse(fs.readFileSync(releaseDocDigestArtifactPath, 'utf8'));
   const persistedReleaseDocIndexArtifact = JSON.parse(fs.readFileSync(releaseDocIndexPath, 'utf8'));
   const persistedReleaseDocIndexMarkdownArtifact = fs.readFileSync(releaseDocIndexMarkdownPath, 'utf8');
@@ -2850,6 +2871,11 @@ try {
     JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
   );
   assert.deepEqual(
+    persistedReleaseHandoffDigestArtifact,
+    releaseHandoffDigestArtifact,
+    JSON.stringify({ persistedReleaseHandoffDigestArtifact, releaseHandoffDigestArtifact }),
+  );
+  assert.deepEqual(
     persistedReleaseDocDigestArtifact,
     releaseDocDigestArtifact,
     JSON.stringify({ persistedReleaseDocDigestArtifact, releaseDocDigestArtifact }),
@@ -2870,6 +2896,11 @@ try {
   const persistedScreenshotSha256 = createHash('sha256').update(persistedScreenshotBuffer).digest('hex');
   assert.equal(fs.existsSync(persistedReport.artifactPair.reportPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
+  assert.equal(
+    fs.existsSync(persistedReport.artifactPair.releaseHandoffDigestArtifactPath),
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
   assert.equal(
     fs.existsSync(persistedReport.artifactPair.releaseDocDigestArtifactPath),
     true,
