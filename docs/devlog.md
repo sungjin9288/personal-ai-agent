@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T00:25:00.000Z","id":"doclog_20260420002500_release_handoff_surface_exposure","type":"devlog","updatedAt":"2026-04-20T00:25:00.000Z"} -->
+## 2026-04-20 Release Handoff Surface Exposure
+
+- date: 2026-04-20T00:25:00.000Z
+- added `execution-v1-release-handoff-digest.json` to the release handoff artifact spec so the compact verification artifact is now visible from the same `검토용 artifact 바로가기` surface instead of living only as a smoke-side file
+- kept the runtime change minimal by reusing the existing handoff card, open route, and inline preview flow, which means the new JSON digest becomes immediately previewable and deep-linkable without another UI-specific abstraction
+- extended browser E2E assertions so the new `handoff-digest.json` card must render as `ready`, expose the expected path and `/api/execution-v1/handoff-artifacts/:id` link, and return JSON through the same release handoff preview/open contract before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T00:10:00.000Z","id":"doclog_20260420001000_release_handoff_digest_artifact","type":"devlog","updatedAt":"2026-04-20T00:10:00.000Z"} -->
 ## 2026-04-20 Release Handoff Digest Artifact
 

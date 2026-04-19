@@ -42,6 +42,15 @@ const executionV1ReleaseHandoffArtifactSpecs = [
     recommended: false,
   },
   {
+    description: 'release handoff verification JSON',
+    format: 'json',
+    id: 'handoff-digest-json',
+    kind: 'handoff-digest',
+    label: 'handoff-digest.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-handoff-digest.json'),
+    recommended: false,
+  },
+  {
     description: 'reviewer용 release-doc index',
     format: 'markdown',
     id: 'index-markdown',

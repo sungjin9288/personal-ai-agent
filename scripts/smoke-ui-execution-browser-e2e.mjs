@@ -178,6 +178,10 @@ function seedReleaseHandoffFixtures() {
       path: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.png'),
     },
     {
+      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-handoff-digest/seed', generatedAt, kind: 'handoff-digest' }, null, 2)}\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-digest.json'),
+    },
+    {
       content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-doc-index/seed', generatedAt, kind: 'index' }, null, 2)}\n`,
       path: path.join(tempScreenshotDir, 'execution-v1-release-doc-index.json'),
     },
@@ -1077,6 +1081,7 @@ try {
     'run-code',
     `async (page) => {
       const previewTargets = [
+        { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
         { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
         { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
         { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
@@ -1137,8 +1142,9 @@ try {
       };
     }`,
   ]);
-  assert.equal(handoffPreviewState.results.length, 3, JSON.stringify(handoffPreviewState));
+  assert.equal(handoffPreviewState.results.length, 4, JSON.stringify(handoffPreviewState));
   for (const target of [
+    { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
     { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
     { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
     { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
@@ -2029,8 +2035,9 @@ try {
   assert.equal(screenshotSurfaceSummary.handoffPreview.format, 'markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.bodySample || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.copyLinkLabel || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
-  const recommendedHandoffTargets = [];
+  const handoffOpenTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
+    ['handoff-digest-json', 'handoff-digest.json', 'output/playwright/execution-v1-release-handoff-digest.json', 'application/json'],
     ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md', 'text/markdown'],
     ['index-text', 'index.txt', 'output/playwright/execution-v1-release-doc-index.txt', 'text/plain'],
     ['index-json', 'index.json', 'output/playwright/execution-v1-release-doc-index.json', 'application/json'],
@@ -2045,17 +2052,17 @@ try {
       JSON.stringify(handoffArtifact),
     );
     assert.equal(String(handoffArtifact.path || '').endsWith(artifactSuffix), true, JSON.stringify(handoffArtifact));
-    recommendedHandoffTargets.push({
+    handoffOpenTargets.push({
       artifactContentType,
       artifactId,
       href: handoffArtifact.linkHref,
     });
   }
-  const recommendedHandoffFetchResults = runPwJson([
+  const handoffOpenFetchResults = runPwJson([
     '--raw',
-    'run-code',
-    `async (page) => {
-      const targets = ${JSON.stringify(recommendedHandoffTargets)};
+      'run-code',
+      `async (page) => {
+      const targets = ${JSON.stringify(handoffOpenTargets)};
       const results = [];
       for (const target of targets) {
         const response = await page.evaluate(async (currentTarget) => {
@@ -2073,13 +2080,13 @@ try {
       return results;
     }`,
   ]);
-  assert.equal(recommendedHandoffFetchResults.length, recommendedHandoffTargets.length, JSON.stringify({
-    recommendedHandoffFetchResults,
-    recommendedHandoffTargets,
+  assert.equal(handoffOpenFetchResults.length, handoffOpenTargets.length, JSON.stringify({
+    handoffOpenFetchResults,
+    handoffOpenTargets,
   }));
-  for (const target of recommendedHandoffTargets) {
-    const handoffResponse = recommendedHandoffFetchResults.find((item) => item.artifactId === target.artifactId);
-    assert.equal(Boolean(handoffResponse), true, JSON.stringify({ recommendedHandoffFetchResults, target }));
+  for (const target of handoffOpenTargets) {
+    const handoffResponse = handoffOpenFetchResults.find((item) => item.artifactId === target.artifactId);
+    assert.equal(Boolean(handoffResponse), true, JSON.stringify({ handoffOpenFetchResults, target }));
     assert.equal(handoffResponse.status, 200, JSON.stringify(handoffResponse));
     assert.equal(
       String(handoffResponse.contentType || '').includes(target.artifactContentType),
