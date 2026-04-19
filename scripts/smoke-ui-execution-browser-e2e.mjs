@@ -11,6 +11,7 @@ const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const playwrightArgsBase = ['--yes', '--package', '@playwright/cli', 'playwright-cli'];
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browser-e2e-'));
+const tempScreenshotDir = path.join(tempRoot, 'output', 'playwright');
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
 const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
 const releaseDocIndexPath = path.join(screenshotDir, 'execution-v1-release-doc-index.json');
@@ -23,6 +24,10 @@ const releaseDocDigestTextArtifactPath = path.join(screenshotDir, 'execution-v1-
 const releaseDocDigestMarkdownArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.md');
 const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
 const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
+const transparentPngBuffer = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jxX8AAAAASUVORK5CYII=',
+  'base64',
+);
 
 fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(releaseDocDigestArtifactPath, { force: true });
@@ -36,6 +41,8 @@ fs.rmSync(releaseDocDigestTextArtifactPath, { force: true });
 fs.rmSync(releaseDocDigestMarkdownArtifactPath, { force: true });
 fs.rmSync(reportPath, { force: true });
 fs.rmSync(screenshotPath, { force: true });
+
+seedReleaseHandoffFixtures();
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
@@ -154,6 +161,62 @@ function buildReleaseDocIndexBundleLine(name, descriptor) {
   }
   lineSegments.push(`sha256=${descriptor.sha256}`);
   return lineSegments.join('|');
+}
+
+function seedReleaseHandoffFixtures() {
+  const generatedAt = new Date().toISOString();
+  const handoffFixtures = [
+    {
+      content: `${JSON.stringify({ artifactVersion: 'execution-v1-browser-e2e/seed', generatedAt, ok: true }, null, 2)}\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.json'),
+    },
+    {
+      content: transparentPngBuffer,
+      path: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.png'),
+    },
+    {
+      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-doc-index/seed', generatedAt, kind: 'index' }, null, 2)}\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-index.json'),
+    },
+    {
+      content: `artifactVersion=execution-v1-release-doc-index-text/seed\ngeneratedAt=${generatedAt}\nkind=index\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-index.txt'),
+    },
+    {
+      content: `# Release Doc Index Seed\n\ngeneratedAt: ${generatedAt}\n\n- kind: index\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-index.md'),
+    },
+    {
+      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-doc-manifest/seed', generatedAt, kind: 'manifest' }, null, 2)}\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-manifest.json'),
+    },
+    {
+      content: `artifactVersion=execution-v1-release-doc-manifest-text/seed\ngeneratedAt=${generatedAt}\nkind=manifest\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-manifest.txt'),
+    },
+    {
+      content: `# Release Doc Manifest Seed\n\ngeneratedAt: ${generatedAt}\n\n- kind: manifest\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-manifest.md'),
+    },
+    {
+      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-doc-digest/seed', generatedAt, kind: 'digest' }, null, 2)}\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-digest.json'),
+    },
+    {
+      content: `artifactVersion=execution-v1-release-doc-digest-text/seed\ngeneratedAt=${generatedAt}\nkind=digest\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-digest.txt'),
+    },
+    {
+      content: `# Release Doc Digest Seed\n\ngeneratedAt: ${generatedAt}\n\n- kind: digest\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-doc-digest.md'),
+    },
+  ];
+
+  fs.mkdirSync(tempScreenshotDir, { recursive: true });
+  for (const fixture of handoffFixtures) {
+    fs.mkdirSync(path.dirname(fixture.path), { recursive: true });
+    fs.writeFileSync(fixture.path, fixture.content);
+  }
 }
 
 const port = await getFreePort();
@@ -1039,6 +1102,9 @@ try {
               value: node.querySelector('.mini-badge')?.textContent || node.querySelector('.item-meta')?.textContent || '',
             })),
             handoffArtifactCount: document.querySelectorAll('#release-status .release-handoff-card').length,
+            readyHandoffArtifactCount: Array.from(document.querySelectorAll('#release-status .release-handoff-card'))
+              .filter((node) => (node.querySelector('.mini-badge')?.textContent || '') === 'ready')
+              .length,
             handoffArtifacts: Array.from(document.querySelectorAll('#release-status .release-handoff-card')).map((node) => ({
               badges: Array.from(node.querySelectorAll('.mini-badge')).map((badge) => badge.textContent || ''),
               id: node.getAttribute('data-release-handoff-id') || '',
@@ -1220,6 +1286,11 @@ try {
   assert.equal(screenshotSurfaceSummary.recommendationCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.providerCardCount >= 1, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.handoffArtifactCount >= 3, true, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(
+    screenshotSurfaceSummary.readyHandoffArtifactCount,
+    screenshotSurfaceSummary.handoffArtifactCount,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
   assert.equal(
     screenshotSurfaceSummary.recommendationCards.length,
     screenshotSurfaceSummary.recommendationCardCount,
@@ -1537,6 +1608,7 @@ try {
     const handoffArtifact = screenshotSurfaceSummary.handoffArtifacts.find((item) => item.id === artifactId);
     assert.equal(Boolean(handoffArtifact), true, JSON.stringify({ artifactId, screenshotSurfaceSummary }));
     assert.equal(handoffArtifact.label, artifactLabel, JSON.stringify(handoffArtifact));
+    assert.equal(handoffArtifact.badges.includes('ready'), true, JSON.stringify(handoffArtifact));
     assert.equal(String(handoffArtifact.path || '').endsWith(artifactSuffix), true, JSON.stringify(handoffArtifact));
   }
   for (const docSurface of screenshotSurfaceSummary.docSurfaces) {

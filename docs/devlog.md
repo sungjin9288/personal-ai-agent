@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-19T03:45:00.000Z","id":"doclog_20260419034500_release_doc_handoff_ready_smoke","type":"devlog","updatedAt":"2026-04-19T03:45:00.000Z"} -->
+## 2026-04-19 Release Doc Handoff Ready-State Smoke
+
+- date: 2026-04-19T03:45:00.000Z
+- seeded a deterministic `output/playwright` handoff fixture bundle inside the browser E2E temp workspace so the release tab no longer renders all handoff cards as `missing` during smoke runs that start from a clean root
+- expanded the release tab browser contract with `readyHandoffArtifactCount` and explicit `index.md` / `index.txt` / `index.json` `ready` badge assertions, which upgrades the handoff surface from existence-only verification to real ready-state verification
+- updated the README smoke note to clarify that the release handoff UI is now validated against ready fixture artifacts, not only path placeholders
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-19T03:20:00.000Z","id":"doclog_20260419032000_release_doc_handoff_ui_surface","type":"devlog","updatedAt":"2026-04-19T03:20:00.000Z"} -->
 ## 2026-04-19 Release Doc Handoff UI Surface
 
