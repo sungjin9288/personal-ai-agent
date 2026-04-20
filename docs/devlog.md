@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T23:45:00.000Z","id":"doclog_20260420234500_release_handoff_index_trio_link_contract","type":"devlog","updatedAt":"2026-04-20T23:45:00.000Z"} -->
+## 2026-04-20 Release Handoff Index Trio Link Contract
+
+- date: 2026-04-20T23:45:00.000Z
+- extended the release handoff deep-link verification contract so `handoff-index-json` and `handoff-index-text` now participate alongside `handoff-index-markdown`, which closes the remaining gap across the full handoff index trio instead of validating only one sibling
+- kept the implementation narrow by widening the existing card-level copy/fallback helper lists, fresh browser reopen matrix, expected session coverage, and stable summary assertions rather than adding another specialized smoke path
+- updated the saved browser report contract so `releaseHandoffCoverageSummary`, `releaseHandoffLinkVerificationSummary`, stable line count, and overview totals must all reflect the expanded handoff index trio before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T19:25:00.000Z","id":"doclog_20260420192500_release_handoff_index_markdown_link_contract","type":"devlog","updatedAt":"2026-04-20T19:25:00.000Z"} -->
 ## 2026-04-20 Release Handoff Index Markdown Link Contract
 
