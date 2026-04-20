@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T17:50:00.000Z","id":"doclog_20260420175000_release_handoff_manifest_json","type":"devlog","updatedAt":"2026-04-20T17:50:00.000Z"} -->
+## 2026-04-20 Release Handoff Manifest JSON
+
+- date: 2026-04-20T17:50:00.000Z
+- added `execution-v1-release-handoff-manifest.json` as the first bundle-level manifest for the handoff digest trio so reviewer tooling can inspect the digest family through one keyed JSON surface instead of reconstructing sibling files ad hoc
+- kept the scope narrow by bundling only the current handoff digest siblings (`json/text/markdown`) with `path/bytes/lineCount/sha256/signatureLine` metadata and by exposing the manifest through the same release handoff artifact grid without changing the existing deep-link summary contract
+- extended browser E2E generation and persistence checks so the new manifest must be seeded for release-surface preview, generated in the real artifact directory, linked from `artifactPair`, fetchable through `/api/execution-v1/handoff-artifacts/:id`, and round-trip equal after read-back before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T13:20:00.000Z","id":"doclog_20260420132000_release_handoff_digest_markdown_surface","type":"devlog","updatedAt":"2026-04-20T13:20:00.000Z"} -->
 ## 2026-04-20 Release Handoff Digest Markdown Surface
 
