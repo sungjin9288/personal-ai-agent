@@ -96,6 +96,15 @@ const executionV1ReleaseHandoffArtifactSpecs = [
     recommended: false,
   },
   {
+    description: 'keyed release handoff artifact index',
+    format: 'json',
+    id: 'handoff-index-json',
+    kind: 'handoff-index',
+    label: 'handoff-index.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-handoff-index.json'),
+    recommended: false,
+  },
+  {
     description: 'reviewer용 release-doc index',
     format: 'markdown',
     id: 'index-markdown',

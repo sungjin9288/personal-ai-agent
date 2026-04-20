@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T18:40:00.000Z","id":"doclog_20260420184000_release_handoff_index_json","type":"devlog","updatedAt":"2026-04-20T18:40:00.000Z"} -->
+## 2026-04-20 Release Handoff Index JSON
+
+- date: 2026-04-20T18:40:00.000Z
+- added `execution-v1-release-handoff-index.json` so the browser report, screenshot, handoff digest trio, and handoff manifest trio can be inspected through one keyed JSON surface instead of traversing artifact cards and report fields separately
+- kept the scope tight by following the existing release-doc index shape with `artifactGroupOrder`, `artifactGroups`, ordered bundle lines, keyed signature lookup, screenshot/report linkage, and stable `bundleSha256`, without introducing new text or markdown siblings yet
+- extended deterministic browser E2E fixture, release artifact registry, inline preview/open checks, `artifactPair` linkage, and persisted index read-back assertions so the new handoff index must exist end-to-end before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T18:25:00.000Z","id":"doclog_20260420182500_release_handoff_manifest_markdown_surface","type":"devlog","updatedAt":"2026-04-20T18:25:00.000Z"} -->
 ## 2026-04-20 Release Handoff Manifest Markdown Surface
 
