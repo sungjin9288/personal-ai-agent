@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T02:10:00.000Z","id":"doclog_20260420021000_release_handoff_digest_text_surface","type":"devlog","updatedAt":"2026-04-20T02:10:00.000Z"} -->
+## 2026-04-20 Release Handoff Digest Text Surface
+
+- date: 2026-04-20T02:10:00.000Z
+- added `execution-v1-release-handoff-digest.txt` as a human-readable sibling of the compact handoff JSON digest so release reviewers can inspect the same handoff summary without opening raw JSON
+- wired the new text artifact into the shared release handoff artifact spec and deterministic smoke fixture, which means the release tab now exposes the text file through the same ready/open/inline-preview surface as the existing JSON digest and release-doc assets
+- extended smoke write/read-back checks so the new text artifact must be generated, persisted, reachable from `artifactPair`, and directly fetchable through `/api/execution-v1/handoff-artifacts/:id` before the browser E2E suite passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T00:40:00.000Z","id":"doclog_20260420004000_release_handoff_digest_link_contract","type":"devlog","updatedAt":"2026-04-20T00:40:00.000Z"} -->
 ## 2026-04-20 Release Handoff Digest Link Contract
 

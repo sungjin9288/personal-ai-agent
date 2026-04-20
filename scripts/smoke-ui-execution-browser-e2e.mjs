@@ -14,6 +14,7 @@ const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-browse
 const tempScreenshotDir = path.join(tempRoot, 'output', 'playwright');
 const screenshotDir = path.join(repoDir, 'output', 'playwright');
 const releaseHandoffDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-handoff-digest.json');
+const releaseHandoffDigestTextArtifactPath = path.join(screenshotDir, 'execution-v1-release-handoff-digest.txt');
 const releaseDocDigestArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.json');
 const releaseDocIndexPath = path.join(screenshotDir, 'execution-v1-release-doc-index.json');
 const releaseDocIndexMarkdownPath = path.join(screenshotDir, 'execution-v1-release-doc-index.md');
@@ -32,6 +33,7 @@ const transparentPngBuffer = Buffer.from(
 
 fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(releaseHandoffDigestArtifactPath, { force: true });
+fs.rmSync(releaseHandoffDigestTextArtifactPath, { force: true });
 fs.rmSync(releaseDocDigestArtifactPath, { force: true });
 fs.rmSync(releaseDocIndexPath, { force: true });
 fs.rmSync(releaseDocIndexMarkdownPath, { force: true });
@@ -180,6 +182,10 @@ function seedReleaseHandoffFixtures() {
     {
       content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-handoff-digest/seed', generatedAt, kind: 'handoff-digest' }, null, 2)}\n`,
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-digest.json'),
+    },
+    {
+      content: `artifactVersion=execution-v1-release-handoff-digest-text/seed\ngeneratedAt=${generatedAt}\nkind=handoff-digest\n`,
+      path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-digest.txt'),
     },
     {
       content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-doc-index/seed', generatedAt, kind: 'index' }, null, 2)}\n`,
@@ -1082,6 +1088,7 @@ try {
     `async (page) => {
       const previewTargets = [
         { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
+        { artifactId: 'handoff-digest-text', expectedFormat: 'text', label: 'handoff-digest.txt' },
         { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
         { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
         { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
@@ -1142,9 +1149,10 @@ try {
       };
     }`,
   ]);
-  assert.equal(handoffPreviewState.results.length, 4, JSON.stringify(handoffPreviewState));
+  assert.equal(handoffPreviewState.results.length, 5, JSON.stringify(handoffPreviewState));
   for (const target of [
     { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
+    { artifactId: 'handoff-digest-text', expectedFormat: 'text', label: 'handoff-digest.txt' },
     { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
     { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
     { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
@@ -2070,6 +2078,7 @@ try {
   const handoffOpenTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
     ['handoff-digest-json', 'handoff-digest.json', 'output/playwright/execution-v1-release-handoff-digest.json', 'application/json'],
+    ['handoff-digest-text', 'handoff-digest.txt', 'output/playwright/execution-v1-release-handoff-digest.txt', 'text/plain'],
     ['index-markdown', 'index.md', 'output/playwright/execution-v1-release-doc-index.md', 'text/markdown'],
     ['index-text', 'index.txt', 'output/playwright/execution-v1-release-doc-index.txt', 'text/plain'],
     ['index-json', 'index.json', 'output/playwright/execution-v1-release-doc-index.json', 'application/json'],
@@ -2475,6 +2484,8 @@ try {
       pairVerified: true,
       releaseHandoffDigestArtifactPath,
       releaseHandoffDigestArtifactVerified: true,
+      releaseHandoffDigestTextArtifactPath,
+      releaseHandoffDigestTextArtifactVerified: true,
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffPreviewLinkSessionsVerified: true,
       releaseDocHeadVerified: true,
@@ -2535,6 +2546,18 @@ try {
     repoDir,
   };
   fs.writeFileSync(releaseHandoffDigestArtifactPath, `${JSON.stringify(releaseHandoffDigestArtifact, null, 2)}\n`, 'utf8');
+  const releaseHandoffDigestTextArtifact = [
+    'artifactVersion=execution-v1-release-handoff-digest-text/v1',
+    `generatedAt=${smokeReport.generatedAt}`,
+    `reportPath=${reportPath}`,
+    `jsonDigestPath=${releaseHandoffDigestArtifactPath}`,
+    `totalSessions=${releaseHandoffLinkVerificationSummary.totalSessions}`,
+    `errorFreeSessions=${releaseHandoffLinkVerificationSummary.errorFreeSessions}`,
+    `stableSha256=${releaseHandoffLinkVerificationSummary.stableSha256}`,
+    `overviewLine=${releaseHandoffLinkVerificationSummary.overviewLine}`,
+    ...releaseHandoffLinkVerificationSummary.stableLines,
+  ].join('\n').concat('\n');
+  fs.writeFileSync(releaseHandoffDigestTextArtifactPath, releaseHandoffDigestTextArtifact, 'utf8');
   const releaseDocDigestArtifact = {
     artifactVersion: 'execution-v1-release-doc-digest/v1',
     exactMatchCount: releaseDocVerificationSummary.exactMatchCount,
@@ -2849,6 +2872,11 @@ try {
     `expected release handoff digest artifact at ${releaseHandoffDigestArtifactPath}`,
   );
   assert.equal(
+    fs.existsSync(releaseHandoffDigestTextArtifactPath),
+    true,
+    `expected release handoff digest text artifact at ${releaseHandoffDigestTextArtifactPath}`,
+  );
+  assert.equal(
     fs.existsSync(releaseDocDigestArtifactPath),
     true,
     `expected release doc digest artifact at ${releaseDocDigestArtifactPath}`,
@@ -2895,6 +2923,7 @@ try {
   );
   const persistedReport = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const persistedReleaseHandoffDigestArtifact = JSON.parse(fs.readFileSync(releaseHandoffDigestArtifactPath, 'utf8'));
+  const persistedReleaseHandoffDigestTextArtifact = fs.readFileSync(releaseHandoffDigestTextArtifactPath, 'utf8');
   const persistedReleaseDocDigestArtifact = JSON.parse(fs.readFileSync(releaseDocDigestArtifactPath, 'utf8'));
   const persistedReleaseDocIndexArtifact = JSON.parse(fs.readFileSync(releaseDocIndexPath, 'utf8'));
   const persistedReleaseDocIndexMarkdownArtifact = fs.readFileSync(releaseDocIndexMarkdownPath, 'utf8');
@@ -2927,6 +2956,11 @@ try {
     releaseHandoffDigestArtifact,
     JSON.stringify({ persistedReleaseHandoffDigestArtifact, releaseHandoffDigestArtifact }),
   );
+  assert.equal(
+    persistedReleaseHandoffDigestTextArtifact,
+    releaseHandoffDigestTextArtifact,
+    JSON.stringify({ persistedReleaseHandoffDigestTextArtifact, releaseHandoffDigestTextArtifact }),
+  );
   assert.deepEqual(
     persistedReleaseDocDigestArtifact,
     releaseDocDigestArtifact,
@@ -2950,6 +2984,11 @@ try {
   assert.equal(fs.existsSync(persistedReport.artifactPair.screenshotPath), true, JSON.stringify(persistedReport.artifactPair));
   assert.equal(
     fs.existsSync(persistedReport.artifactPair.releaseHandoffDigestArtifactPath),
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    fs.existsSync(persistedReport.artifactPair.releaseHandoffDigestTextArtifactPath),
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
