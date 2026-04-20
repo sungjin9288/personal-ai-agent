@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T18:55:00.000Z","id":"doclog_20260420185500_release_handoff_index_text","type":"devlog","updatedAt":"2026-04-20T18:55:00.000Z"} -->
+## 2026-04-20 Release Handoff Index Text Surface
+
+- date: 2026-04-20T18:55:00.000Z
+- added `execution-v1-release-handoff-index.txt` as the human-readable sibling of the keyed handoff index so reviewers can inspect browser/report/screenshot/digest/manifest bundle metadata without opening raw JSON
+- kept the index contract aligned by reusing the existing handoff index bundle overview line, artifact group list, screenshot sha, and per-artifact signature lines from `execution-v1-release-handoff-index.json`, which means the text surface stays descriptive without introducing another schema
+- extended deterministic browser E2E fixture, release artifact registry, inline preview/open checks, `artifactPair` linkage, and write/read-back equality so the new handoff index text artifact must exist end-to-end before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T18:40:00.000Z","id":"doclog_20260420184000_release_handoff_index_json","type":"devlog","updatedAt":"2026-04-20T18:40:00.000Z"} -->
 ## 2026-04-20 Release Handoff Index JSON
 
