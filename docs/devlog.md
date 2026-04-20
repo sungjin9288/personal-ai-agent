@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T18:10:00.000Z","id":"doclog_20260420181000_release_handoff_manifest_text_surface","type":"devlog","updatedAt":"2026-04-20T18:10:00.000Z"} -->
+## 2026-04-20 Release Handoff Manifest Text Surface
+
+- date: 2026-04-20T18:10:00.000Z
+- added `execution-v1-release-handoff-manifest.txt` as a human-readable sibling of the handoff bundle manifest so reviewers can inspect the digest-trio bundle summary without opening raw JSON
+- kept the manifest semantics unchanged by reusing the existing bundle overview line and per-artifact signature lines from `execution-v1-release-handoff-manifest.json`, which means the new text surface adds readability without redefining the manifest contract
+- extended deterministic browser E2E fixture, release artifact registry, inline preview/open checks, `artifactPair` linkage, and write/read-back equality so the new text manifest must exist end-to-end before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T17:50:00.000Z","id":"doclog_20260420175000_release_handoff_manifest_json","type":"devlog","updatedAt":"2026-04-20T17:50:00.000Z"} -->
 ## 2026-04-20 Release Handoff Manifest JSON
 

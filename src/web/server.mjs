@@ -78,6 +78,15 @@ const executionV1ReleaseHandoffArtifactSpecs = [
     recommended: false,
   },
   {
+    description: 'release handoff artifact bundle manifest plain text',
+    format: 'text',
+    id: 'handoff-manifest-text',
+    kind: 'handoff-manifest',
+    label: 'handoff-manifest.txt',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-release-handoff-manifest.txt'),
+    recommended: false,
+  },
+  {
     description: 'reviewer용 release-doc index',
     format: 'markdown',
     id: 'index-markdown',
