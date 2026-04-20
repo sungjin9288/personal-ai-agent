@@ -1335,11 +1335,11 @@ try {
       };
 
       const directCardFallbackStates = {};
-      for (const artifactId of ['handoff-digest-json', 'index-json']) {
+      for (const artifactId of ['handoff-digest-json', 'handoff-index-markdown', 'index-json']) {
         directCardFallbackStates[artifactId] = await runDirectCardFallback(artifactId);
       }
       const directCardCopyStates = {};
-      for (const artifactId of ['handoff-digest-json', 'index-json']) {
+      for (const artifactId of ['handoff-digest-json', 'handoff-index-markdown', 'index-json']) {
         directCardCopyStates[artifactId] = await runDirectCardCopy(artifactId);
       }
 
@@ -1369,6 +1369,7 @@ try {
         directCardLabelsAfterCurrentPreviewCopy: await page.evaluate(() => {
           return {
             'handoff-digest-json': document.querySelector('[data-release-handoff-preview-link-copy="handoff-digest-json"]')?.textContent || '',
+            'handoff-index-markdown': document.querySelector('[data-release-handoff-preview-link-copy="handoff-index-markdown"]')?.textContent || '',
             'index-json': document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '',
           };
         }),
@@ -1385,7 +1386,7 @@ try {
   assert.equal(handoffPreviewLinkState.currentPreviewPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
-  for (const artifactId of ['handoff-digest-json', 'index-json']) {
+  for (const artifactId of ['handoff-digest-json', 'handoff-index-markdown', 'index-json']) {
     const directCardCopyState = handoffPreviewLinkState.directCardCopyStates?.[artifactId];
     const directCardFallbackState = handoffPreviewLinkState.directCardFallbackStates?.[artifactId];
     assert.equal(Boolean(directCardCopyState), true, JSON.stringify({ artifactId, handoffPreviewLinkState }));
@@ -1526,6 +1527,20 @@ try {
     expectedFormat: 'json',
     expectedTitle: 'handoff-digest.json',
     previewUrl: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink,
+    sessionLabel: 'card-fallback',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-index-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'handoff-index.md',
+    previewUrl: handoffPreviewLinkState.directCardCopyStates['handoff-index-markdown'].copiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-index-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'handoff-index.md',
+    previewUrl: handoffPreviewLinkState.directCardFallbackStates['handoff-index-markdown'].promptedLink,
     sessionLabel: 'card-fallback',
   });
   verifyFreshReleaseHandoffSession({
@@ -2399,6 +2414,8 @@ try {
   const expectedReleaseHandoffSessions = [
     { artifactId: 'handoff-digest-json', sessionLabel: 'card-copy' },
     { artifactId: 'handoff-digest-json', sessionLabel: 'card-fallback' },
+    { artifactId: 'handoff-index-markdown', sessionLabel: 'card-copy' },
+    { artifactId: 'handoff-index-markdown', sessionLabel: 'card-fallback' },
     { artifactId: 'index-json', sessionLabel: 'card-copy' },
     { artifactId: 'index-json', sessionLabel: 'card-fallback' },
     { artifactId: 'index-markdown', sessionLabel: 'current-preview-copy' },
@@ -2451,6 +2468,17 @@ try {
         fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink).searchParams.get('rartifact') || '',
         fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink).searchParams.get('tab') || '',
         sessionLabels: releaseHandoffCoverageSummary.byArtifactId['handoff-digest-json']?.sessionLabels || [],
+      },
+      'handoff-index-markdown': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-index-markdown'].copiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-index-markdown'].copiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directCardCopyStates['handoff-index-markdown'].copyLabelAfterCopy,
+        expectedFormat: 'markdown',
+        expectedTitle: 'handoff-index.md',
+        fallbackCopyLabel: handoffPreviewLinkState.directCardFallbackStates['handoff-index-markdown'].copyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-index-markdown'].promptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-index-markdown'].promptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['handoff-index-markdown']?.sessionLabels || [],
       },
       'index-json': {
         copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['index-json'].copiedLink).searchParams.get('rartifact') || '',
@@ -2519,7 +2547,7 @@ try {
     releaseHandoffLinkVerificationSummary.totalSessions,
     JSON.stringify(releaseHandoffLinkVerificationSummary),
   );
-  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 3, JSON.stringify(releaseHandoffLinkVerificationSummary));
+  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 4, JSON.stringify(releaseHandoffLinkVerificationSummary));
   assert.equal(
     /^[a-f0-9]{64}$/.test(releaseHandoffLinkVerificationSummary.stableSha256),
     true,
@@ -3317,7 +3345,7 @@ try {
   );
   assert.equal(
     persistedReport.releaseHandoffLinkVerificationSummary.stableLines.length,
-    3,
+    4,
     JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
   );
   assert.equal(

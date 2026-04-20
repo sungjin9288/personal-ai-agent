@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T19:25:00.000Z","id":"doclog_20260420192500_release_handoff_index_markdown_link_contract","type":"devlog","updatedAt":"2026-04-20T19:25:00.000Z"} -->
+## 2026-04-20 Release Handoff Index Markdown Link Contract
+
+- date: 2026-04-20T19:25:00.000Z
+- extended the release handoff deep-link verification contract so `handoff-index-markdown` now participates in the same direct copy, prompt fallback, and fresh browser reopen checks as the existing `handoff-digest-json` and `index-json`/`index-markdown` flows
+- kept the scope narrow by reusing the existing card-level copy state and fresh-session verification helpers instead of introducing another preview-specific path, which means the new markdown handoff card is covered without changing the release UI contract
+- updated the stable release handoff link summary and coverage assertions so the saved browser report must include the new `handoff-index-markdown` entry, expanded stable line set, and higher session counts before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T19:10:00.000Z","id":"doclog_20260420191000_release_handoff_index_markdown","type":"devlog","updatedAt":"2026-04-20T19:10:00.000Z"} -->
 ## 2026-04-20 Release Handoff Index Markdown Surface
 
