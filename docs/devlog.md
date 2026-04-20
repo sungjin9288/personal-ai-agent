@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T13:20:00.000Z","id":"doclog_20260420132000_release_handoff_digest_markdown_surface","type":"devlog","updatedAt":"2026-04-20T13:20:00.000Z"} -->
+## 2026-04-20 Release Handoff Digest Markdown Surface
+
+- date: 2026-04-20T13:20:00.000Z
+- added `execution-v1-release-handoff-digest.md` as the rendered Markdown sibling of the release handoff digest so reviewers can open the same compact verification summary in a doc-like format instead of only JSON or plain text
+- wired the new Markdown artifact into the shared release handoff artifact registry and deterministic smoke fixture, which makes the release tab expose `handoff-digest.md` through the same ready/open/inline-preview surface as the existing JSON/text handoff digest artifacts
+- extended browser E2E artifact checks so the new Markdown sibling must be generated, reachable from `artifactPair`, fetchable via `/api/execution-v1/handoff-artifacts/:id`, and round-trip equal after write/read-back before the suite passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T02:10:00.000Z","id":"doclog_20260420021000_release_handoff_digest_text_surface","type":"devlog","updatedAt":"2026-04-20T02:10:00.000Z"} -->
 ## 2026-04-20 Release Handoff Digest Text Surface
 
