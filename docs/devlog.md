@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T00:40:00.000Z","id":"doclog_20260420004000_release_handoff_digest_link_contract","type":"devlog","updatedAt":"2026-04-20T00:40:00.000Z"} -->
+## 2026-04-20 Release Handoff Digest Link Contract
+
+- date: 2026-04-20T00:40:00.000Z
+- extended the release handoff preview-link contract so the newly exposed `handoff-digest.json` card now participates in the same clipboard success, prompt fallback, fresh browser reopen, and stable summary flow as the existing `index-json` / `index-markdown` surfaces
+- kept the implementation inside the existing browser E2E path by reusing the same direct-card copy/fallback helpers and by widening `releaseHandoffCoverageSummary` plus `releaseHandoffLinkVerificationSummary` to include the third artifact rather than inventing a separate smoke track
+- tightened the persisted-report contract so the saved browser report and compact handoff digest now carry a three-artifact stable line set and sha256, which makes regressions in `handoff-digest.json` shareability visible without reading raw session logs
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T00:25:00.000Z","id":"doclog_20260420002500_release_handoff_surface_exposure","type":"devlog","updatedAt":"2026-04-20T00:25:00.000Z"} -->
 ## 2026-04-20 Release Handoff Surface Exposure
 
