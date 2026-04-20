@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T00:05:00.000Z","id":"doclog_20260421000500_release_handoff_manifest_trio_link_contract","type":"devlog","updatedAt":"2026-04-21T00:05:00.000Z"} -->
+## 2026-04-21 Release Handoff Manifest Trio Link Contract
+
+- date: 2026-04-21T00:05:00.000Z
+- extended the release handoff deep-link verification contract so `handoff-manifest-json`, `handoff-manifest-text`, and `handoff-manifest-markdown` now participate in the same direct copy, prompt fallback, and fresh browser reopen checks as the existing digest and index artifact families
+- kept the implementation narrow by widening the existing card-level helper lists, expected session matrix, and stable summary assertions rather than creating a separate manifest-specific smoke path
+- updated the saved browser report contract so `releaseHandoffCoverageSummary`, `releaseHandoffLinkVerificationSummary`, stable line count, and overview totals must all reflect the expanded handoff manifest trio before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T23:45:00.000Z","id":"doclog_20260420234500_release_handoff_index_trio_link_contract","type":"devlog","updatedAt":"2026-04-20T23:45:00.000Z"} -->
 ## 2026-04-20 Release Handoff Index Trio Link Contract
 
