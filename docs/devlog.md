@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-20T18:25:00.000Z","id":"doclog_20260420182500_release_handoff_manifest_markdown_surface","type":"devlog","updatedAt":"2026-04-20T18:25:00.000Z"} -->
+## 2026-04-20 Release Handoff Manifest Markdown Surface
+
+- date: 2026-04-20T18:25:00.000Z
+- added `execution-v1-release-handoff-manifest.md` as the rendered Markdown sibling of the handoff bundle manifest so reviewers can inspect the digest-trio bundle summary in a document-style surface instead of only JSON or plain text
+- kept the artifact contract aligned by reusing the existing bundle overview line, stable digest sha, and per-artifact signature lines from the JSON/text manifest pair, which means the Markdown sibling stays descriptive without introducing another manifest schema
+- extended deterministic browser E2E fixture, release artifact registry, inline preview/open checks, `artifactPair` linkage, and write/read-back equality so the new Markdown manifest must exist end-to-end before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-20T18:10:00.000Z","id":"doclog_20260420181000_release_handoff_manifest_text_surface","type":"devlog","updatedAt":"2026-04-20T18:10:00.000Z"} -->
 ## 2026-04-20 Release Handoff Manifest Text Surface
 
