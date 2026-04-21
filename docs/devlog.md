@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T20:25:00.000Z","id":"doclog_20260421202500_handoff_index_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:25:00.000Z"} -->
+## 2026-04-21 Handoff Index Structured Preview/Open Summary
+
+- date: 2026-04-21T20:25:00.000Z
+- extended `execution-v1-release-handoff-index.json` so the compact handoff index now carries preview/open stable sha, overview line, and session totals as structured fields instead of exposing only the two digest sha values
+- kept the sibling artifacts aligned by adding the same preview/open overview lines and totals to `execution-v1-release-handoff-index.txt` and `execution-v1-release-handoff-index.md`, which lets downstream handoff inspection stay on the index surface without reopening digest or manifest artifacts
+- updated the persisted smoke contract so index read-back equality plus explicit preview/open field assertions all have to match the generated verification summaries before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T20:10:00.000Z","id":"doclog_20260421201000_handoff_manifest_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:10:00.000Z"} -->
 ## 2026-04-21 Handoff Manifest Structured Preview/Open Summary
 
