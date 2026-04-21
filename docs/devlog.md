@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T11:25:00.000Z","id":"doclog_20260421112500_release_doc_digest_trio_link_contract","type":"devlog","updatedAt":"2026-04-21T11:25:00.000Z"} -->
+## 2026-04-21 Release Doc Digest Trio Link Contract
+
+- date: 2026-04-21T11:25:00.000Z
+- extended the release handoff deep-link verification contract so `digest-json`, `digest-text`, and `digest-markdown` now participate alongside the existing handoff and recommended index artifacts, which closes the next reviewer-facing gap in the release-doc artifact family
+- kept the implementation narrow by widening the existing card-level helper lists, expected fresh-session matrix, and stable summary assertions instead of introducing another release-doc-specific smoke path
+- updated the saved browser report contract so `releaseHandoffCoverageSummary`, `releaseHandoffLinkVerificationSummary`, stable line count, and overview totals must all reflect the added digest trio before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T06:55:00.000Z","id":"doclog_20260421065500_release_doc_index_trio_link_contract","type":"devlog","updatedAt":"2026-04-21T06:55:00.000Z"} -->
 ## 2026-04-21 Release Doc Index Trio Link Contract
 
