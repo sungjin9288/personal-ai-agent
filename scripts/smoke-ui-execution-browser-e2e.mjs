@@ -1337,6 +1337,8 @@ try {
       const directCardFallbackStates = {};
       for (const artifactId of [
         'handoff-digest-json',
+        'handoff-digest-text',
+        'handoff-digest-markdown',
         'handoff-manifest-json',
         'handoff-manifest-text',
         'handoff-manifest-markdown',
@@ -1350,6 +1352,8 @@ try {
       const directCardCopyStates = {};
       for (const artifactId of [
         'handoff-digest-json',
+        'handoff-digest-text',
+        'handoff-digest-markdown',
         'handoff-manifest-json',
         'handoff-manifest-text',
         'handoff-manifest-markdown',
@@ -1387,6 +1391,8 @@ try {
         directCardLabelsAfterCurrentPreviewCopy: await page.evaluate(() => {
           return {
             'handoff-digest-json': document.querySelector('[data-release-handoff-preview-link-copy="handoff-digest-json"]')?.textContent || '',
+            'handoff-digest-text': document.querySelector('[data-release-handoff-preview-link-copy="handoff-digest-text"]')?.textContent || '',
+            'handoff-digest-markdown': document.querySelector('[data-release-handoff-preview-link-copy="handoff-digest-markdown"]')?.textContent || '',
             'handoff-manifest-json': document.querySelector('[data-release-handoff-preview-link-copy="handoff-manifest-json"]')?.textContent || '',
             'handoff-manifest-text': document.querySelector('[data-release-handoff-preview-link-copy="handoff-manifest-text"]')?.textContent || '',
             'handoff-manifest-markdown': document.querySelector('[data-release-handoff-preview-link-copy="handoff-manifest-markdown"]')?.textContent || '',
@@ -1411,6 +1417,8 @@ try {
   assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
   for (const artifactId of [
     'handoff-digest-json',
+    'handoff-digest-text',
+    'handoff-digest-markdown',
     'handoff-manifest-json',
     'handoff-manifest-text',
     'handoff-manifest-markdown',
@@ -1559,6 +1567,34 @@ try {
     expectedFormat: 'json',
     expectedTitle: 'handoff-digest.json',
     previewUrl: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink,
+    sessionLabel: 'card-fallback',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-digest-text',
+    expectedFormat: 'text',
+    expectedTitle: 'handoff-digest.txt',
+    previewUrl: handoffPreviewLinkState.directCardCopyStates['handoff-digest-text'].copiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-digest-text',
+    expectedFormat: 'text',
+    expectedTitle: 'handoff-digest.txt',
+    previewUrl: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-text'].promptedLink,
+    sessionLabel: 'card-fallback',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-digest-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'handoff-digest.md',
+    previewUrl: handoffPreviewLinkState.directCardCopyStates['handoff-digest-markdown'].copiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'handoff-digest-markdown',
+    expectedFormat: 'markdown',
+    expectedTitle: 'handoff-digest.md',
+    previewUrl: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-markdown'].promptedLink,
     sessionLabel: 'card-fallback',
   });
   verifyFreshReleaseHandoffSession({
@@ -2516,6 +2552,10 @@ try {
   const expectedReleaseHandoffSessions = [
     { artifactId: 'handoff-digest-json', sessionLabel: 'card-copy' },
     { artifactId: 'handoff-digest-json', sessionLabel: 'card-fallback' },
+    { artifactId: 'handoff-digest-text', sessionLabel: 'card-copy' },
+    { artifactId: 'handoff-digest-text', sessionLabel: 'card-fallback' },
+    { artifactId: 'handoff-digest-markdown', sessionLabel: 'card-copy' },
+    { artifactId: 'handoff-digest-markdown', sessionLabel: 'card-fallback' },
     { artifactId: 'handoff-manifest-json', sessionLabel: 'card-copy' },
     { artifactId: 'handoff-manifest-json', sessionLabel: 'card-fallback' },
     { artifactId: 'handoff-manifest-text', sessionLabel: 'card-copy' },
@@ -2580,6 +2620,28 @@ try {
         fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink).searchParams.get('rartifact') || '',
         fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-json'].promptedLink).searchParams.get('tab') || '',
         sessionLabels: releaseHandoffCoverageSummary.byArtifactId['handoff-digest-json']?.sessionLabels || [],
+      },
+      'handoff-digest-text': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-digest-text'].copiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-digest-text'].copiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directCardCopyStates['handoff-digest-text'].copyLabelAfterCopy,
+        expectedFormat: 'text',
+        expectedTitle: 'handoff-digest.txt',
+        fallbackCopyLabel: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-text'].copyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-text'].promptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-text'].promptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['handoff-digest-text']?.sessionLabels || [],
+      },
+      'handoff-digest-markdown': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-digest-markdown'].copiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-digest-markdown'].copiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directCardCopyStates['handoff-digest-markdown'].copyLabelAfterCopy,
+        expectedFormat: 'markdown',
+        expectedTitle: 'handoff-digest.md',
+        fallbackCopyLabel: handoffPreviewLinkState.directCardFallbackStates['handoff-digest-markdown'].copyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-markdown'].promptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['handoff-digest-markdown'].promptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['handoff-digest-markdown']?.sessionLabels || [],
       },
       'handoff-manifest-json': {
         copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['handoff-manifest-json'].copiedLink).searchParams.get('rartifact') || '',
@@ -2714,7 +2776,7 @@ try {
     releaseHandoffLinkVerificationSummary.totalSessions,
     JSON.stringify(releaseHandoffLinkVerificationSummary),
   );
-  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 9, JSON.stringify(releaseHandoffLinkVerificationSummary));
+  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 11, JSON.stringify(releaseHandoffLinkVerificationSummary));
   assert.equal(
     /^[a-f0-9]{64}$/.test(releaseHandoffLinkVerificationSummary.stableSha256),
     true,
@@ -3512,7 +3574,7 @@ try {
   );
   assert.equal(
     persistedReport.releaseHandoffLinkVerificationSummary.stableLines.length,
-    9,
+    11,
     JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
   );
   assert.equal(
