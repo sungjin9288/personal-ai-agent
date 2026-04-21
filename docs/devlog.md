@@ -2702,6 +2702,15 @@
 - applied the copy path consistently whether the recommendation already has recent history or is still in the no-history state, so command handoff is available throughout the recommendation lifecycle
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-21T00:00:00.000Z","id":"doclog_20260421000000_release_handoff_summary_copy","type":"devlog","updatedAt":"2026-04-21T00:00:00.000Z"} -->
+## 2026-04-21 Release Handoff Summary Copy Pass
+
+- date: 2026-04-21T00:00:00.000Z
+- added `overview 복사` on `handoff-*` artifact cards and `현재 요약 복사` inside the matching inline preview panel, so operators can hand off the compact structured summary line without opening JSON or rebuilding the string manually
+- reused the existing clipboard or prompt fallback path plus artifact-scoped copied state, which keeps the new summary-copy behavior consistent with the existing release handoff link-copy contract and avoids a second feedback model
+- extended the browser E2E contract to prove handoff summary copy success and fallback for card-level and preview-level actions, plus copied-state handoff between artifacts, while keeping the final control preview on `index-markdown`
+<!-- document-log:end -->
+
 ## 2026-04-10 Review Decision Priority Pass
 
 - date: 2026-04-10T00:00:00.000Z

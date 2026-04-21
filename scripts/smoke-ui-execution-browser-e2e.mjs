@@ -1233,6 +1233,10 @@ try {
             format: panel?.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
             note: panel?.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
             previewBody: panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            previewStructuredSummaryCopyLabel:
+              panel?.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
+            structuredSummaryCopyLabel:
+              card?.querySelector('[data-release-handoff-structured-summary-copy]')?.textContent || '',
             structuredSummaryRows: Array.from(panel?.querySelectorAll('.release-handoff-summary .harness-row') || []).map((row) => ({
               label: row.querySelector('.item-title')?.textContent || '',
               value: row.querySelector('.item-meta')?.textContent || '',
@@ -1265,6 +1269,8 @@ try {
             artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
             body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
             format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+            previewStructuredSummaryCopyLabel:
+              panel.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
             structuredSummaryRows: Array.from(panel.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
               label: row.querySelector('.item-title')?.textContent || '',
               value: row.querySelector('.item-meta')?.textContent || '',
@@ -1337,16 +1343,259 @@ try {
       true,
       JSON.stringify(previewEntry),
     );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? String(previewEntry.structuredSummaryCopyLabel || '').trim().length > 0
+        : String(previewEntry.structuredSummaryCopyLabel || '').trim().length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? String(previewEntry.previewStructuredSummaryCopyLabel || '').trim().length > 0
+        : String(previewEntry.previewStructuredSummaryCopyLabel || '').trim().length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
   }
   assert.equal(Boolean(handoffPreviewState.activePreview), true, JSON.stringify(handoffPreviewState));
   assert.equal(handoffPreviewState.activePreview.artifactId, 'index-markdown', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.format, 'markdown', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.state, 'ready', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(String(handoffPreviewState.activePreview.previewStructuredSummaryCopyLabel || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.structuredSummaryRows.length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.structuredSummaryOverview || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
+
+  const handoffStructuredSummaryCopyState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      const waitForPreview = async (artifactId) => {
+        await page.waitForFunction((currentArtifactId) => {
+          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          return panel
+            && panel.getAttribute('data-release-handoff-preview-panel') === currentArtifactId
+            && panel.getAttribute('data-release-handoff-preview-state') === 'ready';
+        }, artifactId, { timeout: 15000 });
+      };
+      const clickPreview = async (artifactId) => {
+        await page.evaluate((currentArtifactId) => {
+          document.querySelector('[data-release-handoff-preview-trigger="' + CSS.escape(currentArtifactId) + '"]')?.click();
+        }, artifactId);
+        await waitForPreview(artifactId);
+      };
+      const setClipboard = async (mode = 'success') => {
+        await page.evaluate((currentMode) => {
+          const clipboardValue = currentMode === 'failure'
+            ? {
+                writeText: async () => {
+                  throw new Error('clipboard-blocked');
+                },
+              }
+            : {
+                writeText: async (value) => {
+                  window.__lastClipboardText = String(value || '');
+                },
+              };
+          try {
+            Object.defineProperty(window.navigator, 'clipboard', {
+              configurable: true,
+              value: clipboardValue,
+            });
+          } catch {
+            window.navigator.clipboard = clipboardValue;
+          }
+        }, mode);
+      };
+      const readPromptValue = async () => page.evaluate(() => {
+        try {
+          return JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+        } catch {
+          return '';
+        }
+      });
+      const runCardFallback = async (artifactId) => {
+        await setClipboard('failure');
+        await page.evaluate((currentArtifactId) => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-release-handoff-structured-summary-copy="' + CSS.escape(currentArtifactId) + '"]')?.click();
+        }, artifactId);
+        await page.waitForTimeout(50);
+        const result = await page.evaluate((currentArtifactId) => ({
+          clipboardText: window.__lastClipboardText || '',
+          copyLabel: document.querySelector('[data-release-handoff-structured-summary-copy="' + CSS.escape(currentArtifactId) + '"]')?.textContent || '',
+        }), artifactId);
+        result.promptedValue = await readPromptValue();
+        await setClipboard('success');
+        return result;
+      };
+      const runCardCopy = async (artifactId) => {
+        await setClipboard('success');
+        await page.evaluate((currentArtifactId) => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-release-handoff-structured-summary-copy="' + CSS.escape(currentArtifactId) + '"]')?.click();
+        }, artifactId);
+        await page.waitForTimeout(50);
+        const result = await page.evaluate((currentArtifactId) => ({
+          copiedText: window.__lastClipboardText || '',
+          copyLabelAfterCopy: document.querySelector('[data-release-handoff-structured-summary-copy="' + CSS.escape(currentArtifactId) + '"]')?.textContent || '',
+          overviewLine: document.querySelector('[data-release-handoff-structured-summary-overview="' + CSS.escape(currentArtifactId) + '"]')?.textContent?.trim() || '',
+        }), artifactId);
+        result.promptedValue = await readPromptValue();
+        return result;
+      };
+      const runPreviewFallback = async () => {
+        await setClipboard('failure');
+        await page.evaluate(() => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.click();
+        });
+        await page.waitForTimeout(50);
+        const result = await page.evaluate(() => ({
+          clipboardText: window.__lastClipboardText || '',
+          copyLabel: document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
+          overviewLine: document.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent?.trim() || '',
+        }));
+        result.promptedValue = await readPromptValue();
+        await setClipboard('success');
+        return result;
+      };
+      const runPreviewCopy = async () => {
+        await setClipboard('success');
+        await page.evaluate(() => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.click();
+        });
+        await page.waitForTimeout(50);
+        const result = await page.evaluate(() => ({
+          copiedText: window.__lastClipboardText || '',
+          copyLabelAfterCopy: document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
+          overviewLine: document.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent?.trim() || '',
+          previewArtifactId: document.querySelector('[data-release-handoff-preview-panel]')?.getAttribute('data-release-handoff-preview-panel') || '',
+        }));
+        result.promptedValue = await readPromptValue();
+        return result;
+      };
+
+      await clickPreview('handoff-digest-json');
+      const directCardFallback = await runCardFallback('handoff-digest-json');
+      const directCardCopy = await runCardCopy('handoff-digest-json');
+
+      await clickPreview('handoff-index-markdown');
+      const currentPreviewFallback = await runPreviewFallback();
+      const currentPreviewCopy = await runPreviewCopy();
+
+      const labelsAfterCurrentPreviewCopy = await page.evaluate(() => ({
+        digestJsonCard: document.querySelector('[data-release-handoff-structured-summary-copy="handoff-digest-json"]')?.textContent || '',
+        currentPreview: document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
+      }));
+
+      await page.waitForTimeout(1900);
+      await clickPreview('index-markdown');
+
+      return {
+        activePreviewArtifactId: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-panel]')?.getAttribute('data-release-handoff-preview-panel') || ''),
+        currentPreviewCopy,
+        currentPreviewFallback,
+        directCardCopy,
+        directCardFallback,
+        href: page.url(),
+        labelsAfterCurrentPreviewCopy,
+      };
+    }`,
+  ]);
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.directCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardFallback.copyLabel,
+    'overview 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.directCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardFallback.promptedValue,
+    handoffStructuredSummaryCopyState.directCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardCopy.copiedText,
+    handoffStructuredSummaryCopyState.directCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.directCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardCopy.copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.directCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.directCardCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.directCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewFallback.copyLabel,
+    '현재 요약 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewFallback.promptedValue,
+    handoffStructuredSummaryCopyState.currentPreviewCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewCopy.previewArtifactId,
+    'handoff-index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewCopy.copiedText,
+    handoffStructuredSummaryCopyState.currentPreviewCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewCopy.copyLabelAfterCopy,
+    '현재 요약 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCard,
+    'overview 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreview,
+    '현재 요약 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.activePreviewArtifactId,
+    'index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    new URL(handoffStructuredSummaryCopyState.href).searchParams.get('rartifact'),
+    'index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
 
   const handoffPreviewLinkState = runPwJson([
     '--raw',
@@ -2202,6 +2451,7 @@ try {
               path: node.querySelector('.release-handoff-path')?.textContent || '',
               previewLinkLabel: node.querySelector('[data-release-handoff-preview-link-copy]')?.textContent || '',
               previewButtonLabel: node.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
+              structuredSummaryCopyLabel: node.querySelector('[data-release-handoff-structured-summary-copy]')?.textContent || '',
               structuredSummaryRows: Array.from(node.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
                 label: row.querySelector('.item-title')?.textContent || '',
                 value: row.querySelector('.item-meta')?.textContent || '',
@@ -2221,6 +2471,8 @@ try {
                 format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
                 note: panel.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
                 state: panel.getAttribute('data-release-handoff-preview-state') || '',
+                structuredSummaryCopyLabel:
+                  panel.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
                 structuredSummaryRows: Array.from(panel.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
                   label: row.querySelector('.item-title')?.textContent || '',
                   value: row.querySelector('.item-meta')?.textContent || '',
@@ -2778,6 +3030,13 @@ try {
       true,
       JSON.stringify(handoffArtifact),
     );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? String(handoffArtifact.structuredSummaryCopyLabel || '').trim().length > 0
+        : String(handoffArtifact.structuredSummaryCopyLabel || '').trim().length === 0,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
   }
   assert.equal(Boolean(screenshotSurfaceSummary.handoffPreview), true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.handoffPreview.artifactId, 'index-markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
@@ -2788,6 +3047,7 @@ try {
   assert.equal(screenshotSurfaceSummary.handoffPreview.structuredSummaryRows.length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummaryOverview || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummaryCopyLabel || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   const handoffOpenTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
     ['handoff-digest-json', 'handoff-digest.json', 'output/playwright/execution-v1-release-handoff-digest.json', 'application/json'],
