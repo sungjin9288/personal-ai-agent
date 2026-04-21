@@ -1233,6 +1233,11 @@ try {
             format: panel?.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
             note: panel?.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
             previewBody: panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            structuredSummaryRows: Array.from(panel?.querySelectorAll('.release-handoff-summary .harness-row') || []).map((row) => ({
+              label: row.querySelector('.item-title')?.textContent || '',
+              value: row.querySelector('.item-meta')?.textContent || '',
+            })),
+            structuredSummarySha: panel?.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
             state: panel?.getAttribute('data-release-handoff-preview-state') || '',
             title: panel?.querySelector('.item-title')?.textContent || '',
           };
@@ -1259,6 +1264,11 @@ try {
             artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
             body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
             format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
+            structuredSummaryRows: Array.from(panel.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
+              label: row.querySelector('.item-title')?.textContent || '',
+              value: row.querySelector('.item-meta')?.textContent || '',
+            })),
+            structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
             state: panel.getAttribute('data-release-handoff-preview-state') || '',
             title: panel.querySelector('.item-title')?.textContent || '',
           };
@@ -1290,12 +1300,42 @@ try {
     assert.equal(previewEntry.title, target.label, JSON.stringify(previewEntry));
     assert.equal(previewEntry.format, target.expectedFormat, JSON.stringify(previewEntry));
     assert.equal(String(previewEntry.previewBody || '').trim().length > 0, true, JSON.stringify(previewEntry));
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryRows.length >= 2
+        : previewEntry.structuredSummaryRows.length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'preview')
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'open')
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? /sha\s+[a-f0-9]{12,}/i.test(String(previewEntry.structuredSummarySha || ''))
+        : String(previewEntry.structuredSummarySha || '').trim().length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
   }
   assert.equal(Boolean(handoffPreviewState.activePreview), true, JSON.stringify(handoffPreviewState));
   assert.equal(handoffPreviewState.activePreview.artifactId, 'index-markdown', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.format, 'markdown', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.state, 'ready', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(handoffPreviewState.activePreview.structuredSummaryRows.length, 0, JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(String(handoffPreviewState.activePreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
 
   const handoffPreviewLinkState = runPwJson([
@@ -2170,6 +2210,11 @@ try {
                 format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
                 note: panel.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
                 state: panel.getAttribute('data-release-handoff-preview-state') || '',
+                structuredSummaryRows: Array.from(panel.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
+                  label: row.querySelector('.item-title')?.textContent || '',
+                  value: row.querySelector('.item-meta')?.textContent || '',
+                })),
+                structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
                 title: panel.querySelector('.item-title')?.textContent || '',
               };
             })(),
@@ -2721,6 +2766,8 @@ try {
   assert.equal(screenshotSurfaceSummary.handoffPreview.format, 'markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.bodySample || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.copyLinkLabel || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(screenshotSurfaceSummary.handoffPreview.structuredSummaryRows.length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   const handoffOpenTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
     ['handoff-digest-json', 'handoff-digest.json', 'output/playwright/execution-v1-release-handoff-digest.json', 'application/json'],

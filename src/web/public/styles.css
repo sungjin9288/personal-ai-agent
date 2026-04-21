@@ -3637,6 +3637,10 @@ button.tag:hover {
   word-break: break-all;
 }
 
+.release-handoff-preview-summary {
+  background: rgba(255, 255, 255, 0.96);
+}
+
 .release-handoff-preview {
   display: grid;
   gap: 12px;

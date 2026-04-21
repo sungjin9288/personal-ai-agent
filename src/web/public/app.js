@@ -6032,6 +6032,12 @@ function renderReleaseStatus() {
   const handoffPreviewError = handoffPreviewArtifact ? String(state.releaseHandoffPreviewError || '') : '';
   const handoffPreviewLineCount = handoffPreviewArtifact ? Number(state.releaseHandoffPreviewLineCount || 0) : 0;
   const handoffPreviewTruncated = Boolean(handoffPreviewArtifact && state.releaseHandoffPreviewTruncated);
+  const handoffPreviewStructuredSummaryRows = handoffPreviewArtifact
+    ? getReleaseHandoffStructuredSummaryRows(handoffPreviewArtifact)
+    : [];
+  const handoffPreviewStructuredSummarySha = handoffPreviewArtifact
+    ? getReleaseHandoffStructuredSummarySha(handoffPreviewArtifact)
+    : '';
   const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
     const itemOutcome = String(item?.outcome || '').trim().toLowerCase();
     const itemScope = String(item?.scope || '').trim();
@@ -7129,6 +7135,29 @@ function renderReleaseStatus() {
                                 ? `<span class="item-meta">${escapeHtml(String(handoffPreviewLineCount))}줄</span>`
                                 : ''}
                             </div>
+                            ${handoffPreviewStructuredSummaryRows.length
+                              ? `
+                                  <div class="release-handoff-summary release-handoff-preview-summary">
+                                    ${handoffPreviewStructuredSummaryRows
+                                      .map(
+                                        (row) => `
+                                          <div class="harness-row">
+                                            <div class="item-title">${escapeHtml(row.label)}</div>
+                                            <div class="item-meta">${escapeHtml(row.value)}</div>
+                                          </div>
+                                        `,
+                                      )
+                                      .join('')}
+                                    ${handoffPreviewStructuredSummarySha
+                                      ? `
+                                          <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-preview-structured-summary-sha="true">
+                                            sha ${escapeHtml(handoffPreviewStructuredSummarySha)}
+                                          </div>
+                                        `
+                                      : ''}
+                                  </div>
+                                `
+                              : ''}
                             ${handoffPreviewStatus === 'loading'
                               ? `
                                   <div class="release-handoff-preview-body release-handoff-preview-loading" data-release-handoff-preview-body>

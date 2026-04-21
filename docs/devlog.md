@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T22:05:00.000Z","id":"doclog_20260421220500_handoff_preview_summary_surface","type":"devlog","updatedAt":"2026-04-21T22:05:00.000Z"} -->
+## 2026-04-21 Handoff Preview Summary Surface
+
+- date: 2026-04-21T22:05:00.000Z
+- extended the inline release handoff preview panel so `handoff-*` artifacts now show the same `preview/open` error-free summary rows and structured summary sha that already appear on their cards
+- kept the surface conditional so release-doc `index/manifest/digest` previews remain uncluttered while handoff-family previews expose the integrity summary exactly where the reviewer is reading the artifact body
+- updated the browser E2E preview-cycle contract and final screenshot capture so handoff preview panels must render those summary rows and sha, while `index-markdown` remains summary-free as a control case
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T21:40:00.000Z","id":"doclog_20260421214000_handoff_card_structured_summary_surface","type":"devlog","updatedAt":"2026-04-21T21:40:00.000Z"} -->
 ## 2026-04-21 Handoff Card Structured Summary Surface
 
