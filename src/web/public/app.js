@@ -1161,6 +1161,10 @@ function getReleaseHandoffStructuredSummarySha(item = {}) {
   return String(item?.structuredSummary?.sha256 || '').trim();
 }
 
+function getReleaseHandoffStructuredSummaryOverviewLine(item = {}) {
+  return String(item?.structuredSummary?.overviewLine || '').trim();
+}
+
 function buildReleaseHandoffPreviewContent(content = '') {
   const normalizedContent = String(content || '').replace(/\r/g, '');
   const lines = normalizedContent.split('\n');
@@ -6035,6 +6039,9 @@ function renderReleaseStatus() {
   const handoffPreviewStructuredSummaryRows = handoffPreviewArtifact
     ? getReleaseHandoffStructuredSummaryRows(handoffPreviewArtifact)
     : [];
+  const handoffPreviewStructuredSummaryOverviewLine = handoffPreviewArtifact
+    ? getReleaseHandoffStructuredSummaryOverviewLine(handoffPreviewArtifact)
+    : '';
   const handoffPreviewStructuredSummarySha = handoffPreviewArtifact
     ? getReleaseHandoffStructuredSummarySha(handoffPreviewArtifact)
     : '';
@@ -6980,6 +6987,7 @@ function renderReleaseStatus() {
                           const previewLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const openLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const structuredSummaryRows = getReleaseHandoffStructuredSummaryRows(item);
+                          const structuredSummaryOverviewLine = getReleaseHandoffStructuredSummaryOverviewLine(item);
                           const structuredSummarySha = getReleaseHandoffStructuredSummarySha(item);
                           const previewButtonLabel = previewActive
                             ? (handoffPreviewStatus === 'loading'
@@ -7020,6 +7028,13 @@ function renderReleaseStatus() {
                                           `,
                                         )
                                         .join('')}
+                                      ${structuredSummaryOverviewLine
+                                        ? `
+                                            <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-structured-summary-overview="${escapeHtml(item.id || '')}">
+                                              ${escapeHtml(structuredSummaryOverviewLine)}
+                                            </div>
+                                          `
+                                        : ''}
                                       ${structuredSummarySha
                                         ? `
                                             <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-structured-summary-sha="${escapeHtml(item.id || '')}">
@@ -7148,6 +7163,13 @@ function renderReleaseStatus() {
                                         `,
                                       )
                                       .join('')}
+                                    ${handoffPreviewStructuredSummaryOverviewLine
+                                      ? `
+                                          <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-preview-structured-summary-overview="true">
+                                            ${escapeHtml(handoffPreviewStructuredSummaryOverviewLine)}
+                                          </div>
+                                        `
+                                      : ''}
                                     ${handoffPreviewStructuredSummarySha
                                       ? `
                                           <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-preview-structured-summary-sha="true">

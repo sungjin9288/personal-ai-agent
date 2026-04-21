@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T22:20:00.000Z","id":"doclog_20260421222000_handoff_overview_line_surface","type":"devlog","updatedAt":"2026-04-21T22:20:00.000Z"} -->
+## 2026-04-21 Handoff Overview Line Surface
+
+- date: 2026-04-21T22:20:00.000Z
+- extended the release handoff summary surface so `handoff-*` cards and their inline preview panels now render the structured summary overview line in addition to the `preview/open` counts and sha
+- kept the overview line restricted to handoff-family artifacts because that line is the compact, diff-friendly fingerprint for the combined preview/open summary and does not apply to release-doc artifacts
+- updated the browser E2E card capture, preview-cycle assertions, and final screenshot capture so handoff surfaces must show the `entries=open,preview|sha256=...` line while the `index-markdown` control preview remains summary-free
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T22:05:00.000Z","id":"doclog_20260421220500_handoff_preview_summary_surface","type":"devlog","updatedAt":"2026-04-21T22:05:00.000Z"} -->
 ## 2026-04-21 Handoff Preview Summary Surface
 

@@ -1237,6 +1237,7 @@ try {
               label: row.querySelector('.item-title')?.textContent || '',
               value: row.querySelector('.item-meta')?.textContent || '',
             })),
+            structuredSummaryOverview: panel?.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
             structuredSummarySha: panel?.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
             state: panel?.getAttribute('data-release-handoff-preview-state') || '',
             title: panel?.querySelector('.item-title')?.textContent || '',
@@ -1268,6 +1269,7 @@ try {
               label: row.querySelector('.item-title')?.textContent || '',
               value: row.querySelector('.item-meta')?.textContent || '',
             })),
+            structuredSummaryOverview: panel.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
             structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
             state: panel.getAttribute('data-release-handoff-preview-state') || '',
             title: panel.querySelector('.item-title')?.textContent || '',
@@ -1328,6 +1330,13 @@ try {
       true,
       JSON.stringify(previewEntry),
     );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? /entries=open,preview\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
+        : String(previewEntry.structuredSummaryOverview || '').trim().length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
   }
   assert.equal(Boolean(handoffPreviewState.activePreview), true, JSON.stringify(handoffPreviewState));
   assert.equal(handoffPreviewState.activePreview.artifactId, 'index-markdown', JSON.stringify(handoffPreviewState.activePreview));
@@ -1335,6 +1344,7 @@ try {
   assert.equal(handoffPreviewState.activePreview.state, 'ready', JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.body || '').trim().length > 0, true, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(handoffPreviewState.activePreview.structuredSummaryRows.length, 0, JSON.stringify(handoffPreviewState.activePreview));
+  assert.equal(String(handoffPreviewState.activePreview.structuredSummaryOverview || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
 
@@ -2196,6 +2206,7 @@ try {
                 label: row.querySelector('.item-title')?.textContent || '',
                 value: row.querySelector('.item-meta')?.textContent || '',
               })),
+              structuredSummaryOverview: node.querySelector('.release-handoff-summary-overview')?.textContent || '',
               structuredSummarySha: node.querySelector('.release-handoff-summary-sha')?.textContent || '',
             })),
             handoffPreview: (() => {
@@ -2214,6 +2225,7 @@ try {
                   label: row.querySelector('.item-title')?.textContent || '',
                   value: row.querySelector('.item-meta')?.textContent || '',
                 })),
+                structuredSummaryOverview: panel.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
                 structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
                 title: panel.querySelector('.item-title')?.textContent || '',
               };
@@ -2759,6 +2771,13 @@ try {
       true,
       JSON.stringify(handoffArtifact),
     );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? /entries=open,preview\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
+        : String(handoffArtifact.structuredSummaryOverview || '').trim().length === 0,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
   }
   assert.equal(Boolean(screenshotSurfaceSummary.handoffPreview), true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.handoffPreview.artifactId, 'index-markdown', JSON.stringify(screenshotSurfaceSummary.handoffPreview));
@@ -2767,6 +2786,7 @@ try {
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.bodySample || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.copyLinkLabel || '').trim().length > 0, true, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(screenshotSurfaceSummary.handoffPreview.structuredSummaryRows.length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
+  assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummaryOverview || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   assert.equal(String(screenshotSurfaceSummary.handoffPreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(screenshotSurfaceSummary.handoffPreview));
   const handoffOpenTargets = [];
   for (const [artifactId, artifactLabel, artifactSuffix, artifactContentType] of [
