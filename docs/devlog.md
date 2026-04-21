@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T18:20:00.000Z","id":"doclog_20260421182000_browser_report_link_contract","type":"devlog","updatedAt":"2026-04-21T18:20:00.000Z"} -->
+## 2026-04-21 Browser Report Link Contract
+
+- date: 2026-04-21T18:20:00.000Z
+- extended the release handoff deep-link verification contract so `browser-report` now participates alongside the release-doc and handoff artifact families, which closes the remaining previewable report gap while leaving non-previewable `browser-screenshot` out of scope
+- kept the implementation narrow by widening the existing card-level helper lists, expected fresh-session matrix, and stable summary assertions instead of introducing a screenshot-specific path or UI contract change
+- updated the saved browser report contract so `releaseHandoffCoverageSummary`, `releaseHandoffLinkVerificationSummary`, stable line count, and overview totals must all reflect the added browser report entry before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T17:05:00.000Z","id":"doclog_20260421170500_release_doc_manifest_trio_link_contract","type":"devlog","updatedAt":"2026-04-21T17:05:00.000Z"} -->
 ## 2026-04-21 Release Doc Manifest Trio Link Contract
 
