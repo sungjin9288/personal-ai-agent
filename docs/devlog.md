@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T21:10:00.000Z","id":"doclog_20260421211000_handoff_structured_summary_signature","type":"devlog","updatedAt":"2026-04-21T21:10:00.000Z"} -->
+## 2026-04-21 Handoff Structured Summary Signature
+
+- date: 2026-04-21T21:10:00.000Z
+- extended the shared `releaseHandoffStructuredSummary` surface with deterministic line signatures, overview line, and sha256 so compact handoff JSON consumers can diff the normalized preview/open summary without hashing nested objects themselves
+- kept the keyed `preview/open` object unchanged and layered the new signature fields on top, which preserves the existing consumer path while adding a stable artifact-level fingerprint for regression checks
+- updated the persisted smoke contract so digest, manifest, and index must all round-trip the structured summary object plus its line set, overview line, and sha256 before browser E2E passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T20:55:00.000Z","id":"doclog_20260421205500_handoff_structured_summary_object","type":"devlog","updatedAt":"2026-04-21T20:55:00.000Z"} -->
 ## 2026-04-21 Handoff Structured Summary Object
 
