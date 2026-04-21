@@ -1170,7 +1170,7 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
   if (!summary || typeof summary !== 'object') {
     return [];
   }
-  return [
+  const rows = [
     {
       label: 'preview',
       value: `${Number(summary.preview?.errorFreeSessions || 0)}/${Number(summary.preview?.totalSessions || 0)} error-free`,
@@ -1180,6 +1180,13 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number(summary.open?.errorFreeSessions || 0)}/${Number(summary.open?.totalSessions || 0)} error-free`,
     },
   ];
+  if (summary.summaryCopy && typeof summary.summaryCopy === 'object') {
+    rows.push({
+      label: 'summary copy',
+      value: `${Number((summary.summaryCopy?.exactMatchCount ?? summary.summaryCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryCopy?.totalSessions || 0)} exact-match`,
+    });
+  }
+  return rows;
 }
 
 function getReleaseHandoffStructuredSummarySha(item = {}) {

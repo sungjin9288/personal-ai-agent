@@ -2702,6 +2702,15 @@
 - applied the copy path consistently whether the recommendation already has recent history or is still in the no-history state, so command handoff is available throughout the recommendation lifecycle
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_release_handoff_summary_copy_digest","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary-Copy Digest Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted the new handoff overview-copy verification from browser-only assertions into persisted release handoff artifacts, so `execution-v1-browser-e2e.json` and compact `handoff-digest/manifest/index` JSON now carry `summaryCopy` verification state alongside existing preview/open link evidence
+- extended the shared structured summary contract to include a third `summary copy` row with `exact-match` counts, which lets the release tab read the new verification state directly from compact handoff artifacts instead of inferring it from raw smoke logs
+- updated the browser fixture, UI summary-row expectations, and persisted artifact read-back checks so seeded handoff cards, runtime cards, and saved report artifacts all stay aligned on the same `entries=open,preview,summaryCopy` overview signature
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T00:00:00.000Z","id":"doclog_20260421000000_release_handoff_summary_copy","type":"devlog","updatedAt":"2026-04-21T00:00:00.000Z"} -->
 ## 2026-04-21 Release Handoff Summary Copy Pass
 
