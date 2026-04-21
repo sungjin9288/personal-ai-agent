@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T21:25:00.000Z","id":"doclog_20260421212500_handoff_text_markdown_signature_surface","type":"devlog","updatedAt":"2026-04-21T21:25:00.000Z"} -->
+## 2026-04-21 Handoff Text Markdown Signature Surface
+
+- date: 2026-04-21T21:25:00.000Z
+- extended `execution-v1-release-handoff-digest.txt/.md`, `execution-v1-release-handoff-manifest.txt/.md`, and `execution-v1-release-handoff-index.txt/.md` so the human-readable compact handoff artifacts now carry the same structured summary signature overview and line set as the JSON artifacts
+- kept the new sections additive by leaving the existing preview/open overview and bundle sections intact, then layering the normalized structured summary fingerprint on top for direct handoff review
+- updated the browser E2E contract so the regenerated text/markdown artifacts must round-trip the structured summary signature through write/read-back equality before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T21:10:00.000Z","id":"doclog_20260421211000_handoff_structured_summary_signature","type":"devlog","updatedAt":"2026-04-21T21:10:00.000Z"} -->
 ## 2026-04-21 Handoff Structured Summary Signature
 
