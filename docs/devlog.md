@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T19:45:00.000Z","id":"doclog_20260421194500_handoff_digest_open_summary","type":"devlog","updatedAt":"2026-04-21T19:45:00.000Z"} -->
+## 2026-04-21 Handoff Digest Open Summary
+
+- date: 2026-04-21T19:45:00.000Z
+- extended `execution-v1-release-handoff-digest.*` so the compact handoff artifact now carries both the existing preview deep-link summary and the new `browser-screenshot` open-link summary instead of leaving binary evidence only in the main browser report
+- kept the artifact family aligned by threading the same open-link sha and session totals into `execution-v1-release-handoff-index.*` bundle overview fields, which lets downstream tooling compare preview/open handoff evidence without parsing the full browser report payload
+- updated the persisted smoke contract so read-back equality, digest/index overview lines, and `releaseHandoffOpenStableDigestSha256` all have to match the new combined summary before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T19:20:00.000Z","id":"doclog_20260421192000_browser_screenshot_open_link_contract","type":"devlog","updatedAt":"2026-04-21T19:20:00.000Z"} -->
 ## 2026-04-21 Browser Screenshot Open-Link Contract
 
