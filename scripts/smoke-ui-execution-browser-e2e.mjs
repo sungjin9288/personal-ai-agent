@@ -1346,6 +1346,7 @@ try {
         'handoff-index-text',
         'handoff-index-markdown',
         'index-json',
+        'index-text',
       ]) {
         directCardFallbackStates[artifactId] = await runDirectCardFallback(artifactId);
       }
@@ -1361,6 +1362,7 @@ try {
         'handoff-index-text',
         'handoff-index-markdown',
         'index-json',
+        'index-text',
       ]) {
         directCardCopyStates[artifactId] = await runDirectCardCopy(artifactId);
       }
@@ -1400,6 +1402,7 @@ try {
             'handoff-index-text': document.querySelector('[data-release-handoff-preview-link-copy="handoff-index-text"]')?.textContent || '',
             'handoff-index-markdown': document.querySelector('[data-release-handoff-preview-link-copy="handoff-index-markdown"]')?.textContent || '',
             'index-json': document.querySelector('[data-release-handoff-preview-link-copy="index-json"]')?.textContent || '',
+            'index-text': document.querySelector('[data-release-handoff-preview-link-copy="index-text"]')?.textContent || '',
           };
         }),
         href: page.url(),
@@ -1426,6 +1429,7 @@ try {
     'handoff-index-text',
     'handoff-index-markdown',
     'index-json',
+    'index-text',
   ]) {
     const directCardCopyState = handoffPreviewLinkState.directCardCopyStates?.[artifactId];
     const directCardFallbackState = handoffPreviewLinkState.directCardFallbackStates?.[artifactId];
@@ -1693,6 +1697,20 @@ try {
     expectedFormat: 'json',
     expectedTitle: 'index.json',
     previewUrl: handoffPreviewLinkState.directCardFallbackStates['index-json'].promptedLink,
+    sessionLabel: 'card-fallback',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-text',
+    expectedFormat: 'text',
+    expectedTitle: 'index.txt',
+    previewUrl: handoffPreviewLinkState.directCardCopyStates['index-text'].copiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffSession({
+    expectedArtifactId: 'index-text',
+    expectedFormat: 'text',
+    expectedTitle: 'index.txt',
+    previewUrl: handoffPreviewLinkState.directCardFallbackStates['index-text'].promptedLink,
     sessionLabel: 'card-fallback',
   });
   verifyFreshReleaseHandoffSession({
@@ -2570,6 +2588,8 @@ try {
     { artifactId: 'handoff-index-markdown', sessionLabel: 'card-fallback' },
     { artifactId: 'index-json', sessionLabel: 'card-copy' },
     { artifactId: 'index-json', sessionLabel: 'card-fallback' },
+    { artifactId: 'index-text', sessionLabel: 'card-copy' },
+    { artifactId: 'index-text', sessionLabel: 'card-fallback' },
     { artifactId: 'index-markdown', sessionLabel: 'current-preview-copy' },
     { artifactId: 'index-markdown', sessionLabel: 'current-preview-fallback' },
   ];
@@ -2720,6 +2740,17 @@ try {
         fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['index-json'].promptedLink).searchParams.get('tab') || '',
         sessionLabels: releaseHandoffCoverageSummary.byArtifactId['index-json']?.sessionLabels || [],
       },
+      'index-text': {
+        copiedLinkArtifactId: new URL(handoffPreviewLinkState.directCardCopyStates['index-text'].copiedLink).searchParams.get('rartifact') || '',
+        copiedLinkTab: new URL(handoffPreviewLinkState.directCardCopyStates['index-text'].copiedLink).searchParams.get('tab') || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directCardCopyStates['index-text'].copyLabelAfterCopy,
+        expectedFormat: 'text',
+        expectedTitle: 'index.txt',
+        fallbackCopyLabel: handoffPreviewLinkState.directCardFallbackStates['index-text'].copyLabel,
+        fallbackLinkArtifactId: new URL(handoffPreviewLinkState.directCardFallbackStates['index-text'].promptedLink).searchParams.get('rartifact') || '',
+        fallbackLinkTab: new URL(handoffPreviewLinkState.directCardFallbackStates['index-text'].promptedLink).searchParams.get('tab') || '',
+        sessionLabels: releaseHandoffCoverageSummary.byArtifactId['index-text']?.sessionLabels || [],
+      },
       'index-markdown': {
         copiedLinkArtifactId: new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('rartifact') || '',
         copiedLinkTab: new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab') || '',
@@ -2776,7 +2807,7 @@ try {
     releaseHandoffLinkVerificationSummary.totalSessions,
     JSON.stringify(releaseHandoffLinkVerificationSummary),
   );
-  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 11, JSON.stringify(releaseHandoffLinkVerificationSummary));
+  assert.equal(releaseHandoffLinkVerificationSummary.stableLines.length, 12, JSON.stringify(releaseHandoffLinkVerificationSummary));
   assert.equal(
     /^[a-f0-9]{64}$/.test(releaseHandoffLinkVerificationSummary.stableSha256),
     true,
@@ -3574,7 +3605,7 @@ try {
   );
   assert.equal(
     persistedReport.releaseHandoffLinkVerificationSummary.stableLines.length,
-    11,
+    12,
     JSON.stringify(persistedReport.releaseHandoffLinkVerificationSummary),
   );
   assert.equal(
