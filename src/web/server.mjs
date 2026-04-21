@@ -298,13 +298,63 @@ function readOptionalArtifactMeta(filePath) {
   };
 }
 
+function readOptionalJsonArtifact(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  const stat = fs.statSync(filePath);
+  if (stat.isDirectory()) {
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
+  const artifactId = String(spec?.id || '').trim();
+  if (!artifactId.startsWith('handoff-')) {
+    return null;
+  }
+  const familyId = artifactId.replace(/-(json|text|markdown)$/u, '');
+  const summaryArtifactId = `${familyId}-json`;
+  if (!summaryCache.has(summaryArtifactId)) {
+    const summarySpec = executionV1ReleaseHandoffArtifactSpecs.find((item) => item.id === summaryArtifactId);
+    summaryCache.set(summaryArtifactId, summarySpec ? readOptionalJsonArtifact(summarySpec.path) : null);
+  }
+  const summaryArtifact = summaryCache.get(summaryArtifactId);
+  const structuredSummary = summaryArtifact?.releaseHandoffStructuredSummary;
+  if (!structuredSummary || typeof structuredSummary !== 'object') {
+    return null;
+  }
+  return {
+    open: {
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffOpenErrorFreeSessions || 0),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffOpenStableDigestSha256 || '').trim(),
+      totalSessions: Number(summaryArtifact.releaseHandoffOpenTotalSessions || 0),
+    },
+    overviewLine: String(summaryArtifact.releaseHandoffStructuredSummaryOverviewLine || '').trim(),
+    preview: {
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffPreviewErrorFreeSessions || 0),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffPreviewStableDigestSha256 || '').trim(),
+      totalSessions: Number(summaryArtifact.releaseHandoffPreviewTotalSessions || 0),
+    },
+    sha256: String(summaryArtifact.releaseHandoffStructuredSummarySha256 || '').trim(),
+  };
+}
+
 function buildExecutionV1ReleaseHandoffArtifacts() {
+  const summaryCache = new Map();
   return executionV1ReleaseHandoffArtifactSpecs.map((item) => {
     const meta = readOptionalArtifactMeta(item.path);
+    const structuredSummary = getExecutionV1ReleaseHandoffStructuredSummary(item, summaryCache);
     return {
       ...item,
       ...meta,
       href: meta.exists ? `/api/execution-v1/handoff-artifacts/${encodeURIComponent(item.id)}` : '',
+      structuredSummary,
     };
   });
 }

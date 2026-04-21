@@ -1140,6 +1140,27 @@ function isReleaseHandoffPreviewable(item = {}) {
   return Boolean(item.exists && item.href && RELEASE_HANDOFF_PREVIEWABLE_FORMATS.has(format));
 }
 
+function getReleaseHandoffStructuredSummaryRows(item = {}) {
+  const summary = item?.structuredSummary;
+  if (!summary || typeof summary !== 'object') {
+    return [];
+  }
+  return [
+    {
+      label: 'preview',
+      value: `${Number(summary.preview?.errorFreeSessions || 0)}/${Number(summary.preview?.totalSessions || 0)} error-free`,
+    },
+    {
+      label: 'open',
+      value: `${Number(summary.open?.errorFreeSessions || 0)}/${Number(summary.open?.totalSessions || 0)} error-free`,
+    },
+  ];
+}
+
+function getReleaseHandoffStructuredSummarySha(item = {}) {
+  return String(item?.structuredSummary?.sha256 || '').trim();
+}
+
 function buildReleaseHandoffPreviewContent(content = '') {
   const normalizedContent = String(content || '').replace(/\r/g, '');
   const lines = normalizedContent.split('\n');
@@ -6952,6 +6973,8 @@ function renderReleaseStatus() {
                           const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
                           const previewLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const openLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
+                          const structuredSummaryRows = getReleaseHandoffStructuredSummaryRows(item);
+                          const structuredSummarySha = getReleaseHandoffStructuredSummarySha(item);
                           const previewButtonLabel = previewActive
                             ? (handoffPreviewStatus === 'loading'
                               ? '미리보는 중'
@@ -6978,6 +7001,29 @@ function renderReleaseStatus() {
                                 <span class="item-meta">${escapeHtml(item.exists ? formatByteCount(item.bytes) : '파일 없음')}</span>
                                 <span class="item-meta">${escapeHtml(item.updatedAt ? formatDate(item.updatedAt) : '미생성')}</span>
                               </div>
+                              ${structuredSummaryRows.length
+                                ? `
+                                    <div class="release-handoff-summary">
+                                      ${structuredSummaryRows
+                                        .map(
+                                          (row) => `
+                                            <div class="harness-row">
+                                              <div class="item-title">${escapeHtml(row.label)}</div>
+                                              <div class="item-meta">${escapeHtml(row.value)}</div>
+                                            </div>
+                                          `,
+                                        )
+                                        .join('')}
+                                      ${structuredSummarySha
+                                        ? `
+                                            <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-structured-summary-sha="${escapeHtml(item.id || '')}">
+                                              sha ${escapeHtml(structuredSummarySha)}
+                                            </div>
+                                          `
+                                        : ''}
+                                    </div>
+                                  `
+                                : ''}
                               <div class="release-provider-meta">
                                 ${previewable
                                   ? `

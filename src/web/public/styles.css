@@ -3618,6 +3618,25 @@ button.tag:hover {
   gap: 8px;
 }
 
+.release-handoff-summary {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.release-handoff-summary .harness-row {
+  padding: 0;
+  border: 0;
+  min-height: 0;
+}
+
+.release-handoff-summary-sha {
+  word-break: break-all;
+}
+
 .release-handoff-preview {
   display: grid;
   gap: 12px;

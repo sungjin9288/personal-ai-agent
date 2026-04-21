@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T21:40:00.000Z","id":"doclog_20260421214000_handoff_card_structured_summary_surface","type":"devlog","updatedAt":"2026-04-21T21:40:00.000Z"} -->
+## 2026-04-21 Handoff Card Structured Summary Surface
+
+- date: 2026-04-21T21:40:00.000Z
+- surfaced the compact release handoff structured summary directly in the release tab by teaching `handoff-*` cards to show `preview/open` error-free session counts and the shared summary sha from their JSON sibling artifacts
+- kept the data flow simple by parsing the canonical `handoff-*-json` artifact once on the server and reusing that summary across the matching text/markdown/json cards instead of duplicating per-format parsing in the browser
+- updated the browser E2E capture contract so every `handoff-*` card must render summary rows for `preview` and `open` plus a non-empty structured summary sha before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T21:25:00.000Z","id":"doclog_20260421212500_handoff_text_markdown_signature_surface","type":"devlog","updatedAt":"2026-04-21T21:25:00.000Z"} -->
 ## 2026-04-21 Handoff Text Markdown Signature Surface
 

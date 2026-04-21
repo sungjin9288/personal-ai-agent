@@ -185,6 +185,33 @@ function buildReleaseDocIndexBundleLine(name, descriptor) {
 
 function seedReleaseHandoffFixtures() {
   const generatedAt = new Date().toISOString();
+  const seededReleaseHandoffStructuredSummary = {
+    open: {
+      errorFreeSessions: 2,
+      stableDigestSha256: 'seed-open-summary-sha',
+      totalSessions: 2,
+    },
+    preview: {
+      errorFreeSessions: 6,
+      stableDigestSha256: 'seed-preview-summary-sha',
+      totalSessions: 6,
+    },
+  };
+  const seededReleaseHandoffStructuredSummaryLines = Object.entries(seededReleaseHandoffStructuredSummary)
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([key, value]) => [
+      key,
+      `totalSessions=${Number(value?.totalSessions || 0)}`,
+      `errorFreeSessions=${Number(value?.errorFreeSessions || 0)}`,
+      `stableDigestSha256=${String(value?.stableDigestSha256 || '').trim()}`,
+    ].join('|'));
+  const seededReleaseHandoffStructuredSummarySha256 = createHash('sha256')
+    .update(seededReleaseHandoffStructuredSummaryLines.join('\n'))
+    .digest('hex');
+  const seededReleaseHandoffStructuredSummaryOverviewLine = [
+    `entries=${Object.keys(seededReleaseHandoffStructuredSummary).sort().join(',')}`,
+    `sha256=${seededReleaseHandoffStructuredSummarySha256}`,
+  ].join('|');
   const handoffFixtures = [
     {
       content: `${JSON.stringify({ artifactVersion: 'execution-v1-browser-e2e/seed', generatedAt, ok: true }, null, 2)}\n`,
@@ -195,7 +222,21 @@ function seedReleaseHandoffFixtures() {
       path: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.png'),
     },
     {
-      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-handoff-digest/seed', generatedAt, kind: 'handoff-digest' }, null, 2)}\n`,
+      content: `${JSON.stringify({
+        artifactVersion: 'execution-v1-release-handoff-digest/seed',
+        generatedAt,
+        kind: 'handoff-digest',
+        releaseHandoffOpenErrorFreeSessions: seededReleaseHandoffStructuredSummary.open.errorFreeSessions,
+        releaseHandoffOpenStableDigestSha256: seededReleaseHandoffStructuredSummary.open.stableDigestSha256,
+        releaseHandoffOpenTotalSessions: seededReleaseHandoffStructuredSummary.open.totalSessions,
+        releaseHandoffPreviewErrorFreeSessions: seededReleaseHandoffStructuredSummary.preview.errorFreeSessions,
+        releaseHandoffPreviewStableDigestSha256: seededReleaseHandoffStructuredSummary.preview.stableDigestSha256,
+        releaseHandoffPreviewTotalSessions: seededReleaseHandoffStructuredSummary.preview.totalSessions,
+        releaseHandoffStructuredSummary: seededReleaseHandoffStructuredSummary,
+        releaseHandoffStructuredSummaryLines: seededReleaseHandoffStructuredSummaryLines,
+        releaseHandoffStructuredSummaryOverviewLine: seededReleaseHandoffStructuredSummaryOverviewLine,
+        releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
+      }, null, 2)}\n`,
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-digest.json'),
     },
     {
@@ -207,7 +248,21 @@ function seedReleaseHandoffFixtures() {
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-digest.md'),
     },
     {
-      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-handoff-manifest/seed', generatedAt, kind: 'handoff-manifest' }, null, 2)}\n`,
+      content: `${JSON.stringify({
+        artifactVersion: 'execution-v1-release-handoff-manifest/seed',
+        generatedAt,
+        kind: 'handoff-manifest',
+        releaseHandoffOpenErrorFreeSessions: seededReleaseHandoffStructuredSummary.open.errorFreeSessions,
+        releaseHandoffOpenStableDigestSha256: seededReleaseHandoffStructuredSummary.open.stableDigestSha256,
+        releaseHandoffOpenTotalSessions: seededReleaseHandoffStructuredSummary.open.totalSessions,
+        releaseHandoffPreviewErrorFreeSessions: seededReleaseHandoffStructuredSummary.preview.errorFreeSessions,
+        releaseHandoffPreviewStableDigestSha256: seededReleaseHandoffStructuredSummary.preview.stableDigestSha256,
+        releaseHandoffPreviewTotalSessions: seededReleaseHandoffStructuredSummary.preview.totalSessions,
+        releaseHandoffStructuredSummary: seededReleaseHandoffStructuredSummary,
+        releaseHandoffStructuredSummaryLines: seededReleaseHandoffStructuredSummaryLines,
+        releaseHandoffStructuredSummaryOverviewLine: seededReleaseHandoffStructuredSummaryOverviewLine,
+        releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
+      }, null, 2)}\n`,
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-manifest.json'),
     },
     {
@@ -219,7 +274,21 @@ function seedReleaseHandoffFixtures() {
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-manifest.md'),
     },
     {
-      content: `${JSON.stringify({ artifactVersion: 'execution-v1-release-handoff-index/seed', generatedAt, kind: 'handoff-index' }, null, 2)}\n`,
+      content: `${JSON.stringify({
+        artifactVersion: 'execution-v1-release-handoff-index/seed',
+        generatedAt,
+        kind: 'handoff-index',
+        releaseHandoffOpenErrorFreeSessions: seededReleaseHandoffStructuredSummary.open.errorFreeSessions,
+        releaseHandoffOpenStableDigestSha256: seededReleaseHandoffStructuredSummary.open.stableDigestSha256,
+        releaseHandoffOpenTotalSessions: seededReleaseHandoffStructuredSummary.open.totalSessions,
+        releaseHandoffPreviewErrorFreeSessions: seededReleaseHandoffStructuredSummary.preview.errorFreeSessions,
+        releaseHandoffPreviewStableDigestSha256: seededReleaseHandoffStructuredSummary.preview.stableDigestSha256,
+        releaseHandoffPreviewTotalSessions: seededReleaseHandoffStructuredSummary.preview.totalSessions,
+        releaseHandoffStructuredSummary: seededReleaseHandoffStructuredSummary,
+        releaseHandoffStructuredSummaryLines: seededReleaseHandoffStructuredSummaryLines,
+        releaseHandoffStructuredSummaryOverviewLine: seededReleaseHandoffStructuredSummaryOverviewLine,
+        releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
+      }, null, 2)}\n`,
       path: path.join(tempScreenshotDir, 'execution-v1-release-handoff-index.json'),
     },
     {
@@ -2083,6 +2152,11 @@ try {
               path: node.querySelector('.release-handoff-path')?.textContent || '',
               previewLinkLabel: node.querySelector('[data-release-handoff-preview-link-copy]')?.textContent || '',
               previewButtonLabel: node.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
+              structuredSummaryRows: Array.from(node.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
+                label: row.querySelector('.item-title')?.textContent || '',
+                value: row.querySelector('.item-meta')?.textContent || '',
+              })),
+              structuredSummarySha: node.querySelector('.release-handoff-summary-sha')?.textContent || '',
             })),
             handoffPreview: (() => {
               const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
@@ -2608,6 +2682,34 @@ try {
     assert.equal(
       handoffArtifact.id === 'browser-screenshot'
         ? String(handoffArtifact.openLinkCopyLabel || '').trim().length > 0
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryRows.length >= 2
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'preview')
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'open')
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? /sha\s+[a-f0-9]{12,}/i.test(String(handoffArtifact.structuredSummarySha || ''))
         : true,
       true,
       JSON.stringify(handoffArtifact),
