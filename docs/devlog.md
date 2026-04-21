@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T19:20:00.000Z","id":"doclog_20260421192000_browser_screenshot_open_link_contract","type":"devlog","updatedAt":"2026-04-21T19:20:00.000Z"} -->
+## 2026-04-21 Browser Screenshot Open-Link Contract
+
+- date: 2026-04-21T19:20:00.000Z
+- extended the release handoff contract so non-previewable `browser-screenshot` now exposes a direct open-link copy action in the release handoff card and participates in prompt fallback plus fresh browser reopen verification
+- kept the implementation narrow by leaving the existing preview deep-link matrix unchanged, adding a binary-specific open-link path only for the screenshot card, and reusing the existing copied-state affordance instead of introducing a second visual pattern
+- updated the saved browser report contract so `releaseHandoffOpenCoverageSummary`, `releaseHandoffOpenLinkVerificationSummary`, and `artifactPair.releaseHandoffOpenLinkSummaryVerified` must all reflect the browser screenshot open-link evidence before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T18:20:00.000Z","id":"doclog_20260421182000_browser_report_link_contract","type":"devlog","updatedAt":"2026-04-21T18:20:00.000Z"} -->
 ## 2026-04-21 Browser Report Link Contract
 

@@ -66,6 +66,7 @@ const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
 const handoffSessionResults = [];
 const releaseHandoffSessionResults = [];
+const releaseHandoffOpenSessionResults = [];
 const serverOutput = { stderr: '', stdout: '' };
 const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const browserGuardScript = `async (page) => {
@@ -1272,6 +1273,46 @@ try {
         };
       }, artifactId);
 
+      const runDirectOpenCardFallback = async (artifactId) => await page.evaluate(async (currentArtifactId) => {
+        const setClipboard = (clipboardValue) => {
+          try {
+            Object.defineProperty(window.navigator, 'clipboard', {
+              configurable: true,
+              value: clipboardValue,
+            });
+          } catch {
+            window.navigator.clipboard = clipboardValue;
+          }
+        };
+        setClipboard({
+          writeText: async () => {
+            throw new Error('clipboard-blocked');
+          },
+        });
+        window.__lastClipboardText = '';
+        window.__lastPrompt = '';
+        document.querySelector('[data-release-handoff-open-link-copy="' + CSS.escape(currentArtifactId) + '"]')?.click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        let promptedLink = '';
+        try {
+          promptedLink = JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+        } catch {
+          promptedLink = '';
+        }
+        const copyLabel = document.querySelector('[data-release-handoff-open-link-copy="' + CSS.escape(currentArtifactId) + '"]')?.textContent || '';
+        const clipboardText = window.__lastClipboardText || '';
+        setClipboard({
+          writeText: async (value) => {
+            window.__lastClipboardText = String(value || '');
+          },
+        });
+        return {
+          clipboardText,
+          copyLabel,
+          promptedLink,
+        };
+      }, artifactId);
+
       const currentPreviewFallbackState = await page.evaluate(async () => {
         const setClipboard = (clipboardValue) => {
           try {
@@ -1334,6 +1375,28 @@ try {
         }, artifactId);
       };
 
+      const runDirectOpenCardCopy = async (artifactId) => {
+        await page.evaluate((currentArtifactId) => {
+          window.__lastClipboardText = '';
+          window.__lastPrompt = '';
+          document.querySelector('[data-release-handoff-open-link-copy="' + CSS.escape(currentArtifactId) + '"]')?.click();
+        }, artifactId);
+        await page.waitForTimeout(50);
+        return page.evaluate((currentArtifactId) => {
+          let promptedLink = '';
+          try {
+            promptedLink = JSON.parse(window.__lastPrompt || '{}')?.defaultValue || '';
+          } catch {
+            promptedLink = '';
+          }
+          return {
+            copiedLink: window.__lastClipboardText || '',
+            copyLabelAfterCopy: document.querySelector('[data-release-handoff-open-link-copy="' + CSS.escape(currentArtifactId) + '"]')?.textContent || '',
+            promptedLink,
+          };
+        }, artifactId);
+      };
+
       const directCardFallbackStates = {};
       for (const artifactId of [
         'browser-report',
@@ -1380,6 +1443,12 @@ try {
       ]) {
         directCardCopyStates[artifactId] = await runDirectCardCopy(artifactId);
       }
+      const directOpenCardFallbackStates = {
+        'browser-screenshot': await runDirectOpenCardFallback('browser-screenshot'),
+      };
+      const directOpenCardCopyStates = {
+        'browser-screenshot': await runDirectOpenCardCopy('browser-screenshot'),
+      };
 
       await page.evaluate(() => {
         window.__lastClipboardText = '';
@@ -1404,6 +1473,8 @@ try {
         }),
         directCardCopyStates,
         directCardFallbackStates,
+        directOpenCardCopyStates,
+        directOpenCardFallbackStates,
         directCardLabelsAfterCurrentPreviewCopy: await page.evaluate(() => {
           return {
             'browser-report': document.querySelector('[data-release-handoff-preview-link-copy="browser-report"]')?.textContent || '',
@@ -1426,6 +1497,11 @@ try {
             'index-text': document.querySelector('[data-release-handoff-preview-link-copy="index-text"]')?.textContent || '',
           };
         }),
+        directOpenCardLabelsAfterCurrentPreviewCopy: await page.evaluate(() => {
+          return {
+            'browser-screenshot': document.querySelector('[data-release-handoff-open-link-copy="browser-screenshot"]')?.textContent || '',
+          };
+        }),
         href: page.url(),
       };
     }`,
@@ -1439,6 +1515,43 @@ try {
   assert.equal(handoffPreviewLinkState.currentPreviewPromptedLink, '', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewLinkState));
   assert.equal(new URL(handoffPreviewLinkState.currentPreviewCopiedLink).searchParams.get('tab'), 'release', JSON.stringify(handoffPreviewLinkState));
+  assert.equal(Boolean(handoffPreviewLinkState.directOpenCardCopyStates?.['browser-screenshot']), true, JSON.stringify(handoffPreviewLinkState));
+  assert.equal(Boolean(handoffPreviewLinkState.directOpenCardFallbackStates?.['browser-screenshot']), true, JSON.stringify(handoffPreviewLinkState));
+  assert.equal(
+    handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot']),
+  );
+  assert.equal(
+    handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].clipboardText,
+    '',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot']),
+  );
+  assert.equal(
+    handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].copyLabel,
+    '링크',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot']),
+  );
+  assert.equal(
+    handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].promptedLink,
+    '',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot']),
+  );
+  assert.equal(
+    new URL(handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].copiedLink).pathname,
+    '/api/execution-v1/handoff-artifacts/browser-screenshot',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot']),
+  );
+  assert.equal(
+    new URL(handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].promptedLink).pathname,
+    '/api/execution-v1/handoff-artifacts/browser-screenshot',
+    JSON.stringify(handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot']),
+  );
+  assert.equal(
+    handoffPreviewLinkState.directOpenCardLabelsAfterCurrentPreviewCopy?.['browser-screenshot'],
+    '링크',
+    JSON.stringify(handoffPreviewLinkState),
+  );
   for (const artifactId of [
     'browser-report',
     'handoff-digest-json',
@@ -1518,6 +1631,7 @@ try {
     previewUrl,
     sessionLabel,
   }) => {
+    console.error(`[smoke-ui-execution-browser-e2e] release handoff preview session ${expectedArtifactId} ${sessionLabel} start`);
     const releaseHandoffSessionId = `r${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(releaseHandoffSessionId);
     runPw(['open', baseUrl], { session: releaseHandoffSessionId });
@@ -1584,6 +1698,61 @@ try {
       sessionLabel,
     };
     releaseHandoffSessionResults.push(handoffSummary);
+    console.error(`[smoke-ui-execution-browser-e2e] release handoff preview session ${expectedArtifactId} ${sessionLabel} done`);
+    return handoffSummary;
+  };
+
+  const verifyFreshReleaseHandoffOpenSession = ({
+    expectedArtifactId,
+    expectedContentType,
+    expectedTitle,
+    openUrl,
+    sessionLabel,
+  }) => {
+    console.error(`[smoke-ui-execution-browser-e2e] release handoff open session ${expectedArtifactId} ${sessionLabel} start`);
+    const releaseHandoffSessionId = `o${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
+    handoffSessionIds.push(releaseHandoffSessionId);
+    runPw(['open', baseUrl], { session: releaseHandoffSessionId });
+    installBrowserGuards({ session: releaseHandoffSessionId });
+    const handoffState = runPwJson([
+      '--raw',
+      'run-code',
+      `async (page) => {
+        const response = await page.goto(${JSON.stringify(openUrl)}, { waitUntil: 'commit' });
+        await page.waitForTimeout(250);
+        return {
+          consoleErrors: page.__codexConsoleErrors || [],
+          contentType: response?.headers()?.['content-type'] || '',
+          href: page.url(),
+          pageErrors: page.__codexPageErrors || [],
+          status: response?.status() || 0,
+        };
+      }`,
+    ], { session: releaseHandoffSessionId });
+    const relevantConsoleErrors = expectedContentType.startsWith('image/')
+      ? handoffState.consoleErrors.filter((entry) => !String(entry || '').includes('status of 404'))
+      : handoffState.consoleErrors;
+    assert.equal(handoffState.href, openUrl, JSON.stringify(handoffState));
+    assert.equal(handoffState.status, 200, JSON.stringify(handoffState));
+    assert.equal(
+      String(handoffState.contentType || '').includes(expectedContentType),
+      true,
+      JSON.stringify(handoffState),
+    );
+    assert.deepEqual(relevantConsoleErrors, [], JSON.stringify({ handoffState, relevantConsoleErrors }));
+    assert.deepEqual(handoffState.pageErrors, [], JSON.stringify(handoffState));
+
+    const handoffSummary = {
+      artifactId: expectedArtifactId,
+      contentType: expectedContentType,
+      consoleErrors: relevantConsoleErrors.length,
+      openTitle: expectedTitle,
+      pageErrors: handoffState.pageErrors.length,
+      sessionLabel,
+      status: handoffState.status,
+    };
+    releaseHandoffOpenSessionResults.push(handoffSummary);
+    console.error(`[smoke-ui-execution-browser-e2e] release handoff open session ${expectedArtifactId} ${sessionLabel} done`);
     return handoffSummary;
   };
 
@@ -1853,6 +2022,20 @@ try {
     previewUrl: handoffPreviewLinkState.currentPreviewFallbackPromptedLink,
     sessionLabel: 'current-preview-fallback',
   });
+  verifyFreshReleaseHandoffOpenSession({
+    expectedArtifactId: 'browser-screenshot',
+    expectedContentType: 'image/png',
+    expectedTitle: 'browser-e2e.png',
+    openUrl: handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].copiedLink,
+    sessionLabel: 'card-copy',
+  });
+  verifyFreshReleaseHandoffOpenSession({
+    expectedArtifactId: 'browser-screenshot',
+    expectedContentType: 'image/png',
+    expectedTitle: 'browser-e2e.png',
+    openUrl: handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].promptedLink,
+    sessionLabel: 'card-fallback',
+  });
 
   const screenshotCaptureState = runPwJson([
     '--raw',
@@ -1896,6 +2079,7 @@ try {
               label: node.querySelector('.item-title')?.textContent || '',
               linkHref: node.querySelector('[data-release-handoff-open]')?.getAttribute('href') || '',
               meta: Array.from(node.querySelectorAll('.release-handoff-meta .item-meta')).map((item) => item.textContent || ''),
+              openLinkCopyLabel: node.querySelector('[data-release-handoff-open-link-copy]')?.textContent || '',
               path: node.querySelector('.release-handoff-path')?.textContent || '',
               previewLinkLabel: node.querySelector('[data-release-handoff-preview-link-copy]')?.textContent || '',
               previewButtonLabel: node.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
@@ -2417,6 +2601,13 @@ try {
     assert.equal(
       /markdown|text|json/i.test(handoffArtifact.badges.join(' '))
         ? String(handoffArtifact.previewLinkLabel || '').trim().length > 0
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id === 'browser-screenshot'
+        ? String(handoffArtifact.openLinkCopyLabel || '').trim().length > 0
         : true,
       true,
       JSON.stringify(handoffArtifact),
@@ -3030,6 +3221,111 @@ try {
     true,
     JSON.stringify(releaseHandoffLinkVerificationSummary),
   );
+  const normalizedReleaseHandoffOpenSessionResults = [...releaseHandoffOpenSessionResults].sort((left, right) => {
+    const leftKey = `${left.sessionLabel}:${left.artifactId}`;
+    const rightKey = `${right.sessionLabel}:${right.artifactId}`;
+    return leftKey.localeCompare(rightKey);
+  });
+  const expectedReleaseHandoffOpenSessions = [
+    { artifactId: 'browser-screenshot', sessionLabel: 'card-copy' },
+    { artifactId: 'browser-screenshot', sessionLabel: 'card-fallback' },
+  ];
+  for (const expectedEntry of expectedReleaseHandoffOpenSessions) {
+    assert.equal(
+      normalizedReleaseHandoffOpenSessionResults.some(
+        (entry) =>
+          entry.artifactId === expectedEntry.artifactId &&
+          entry.sessionLabel === expectedEntry.sessionLabel,
+      ),
+      true,
+      JSON.stringify({ expectedEntry, normalizedReleaseHandoffOpenSessionResults }),
+    );
+  }
+  const releaseHandoffOpenCoverageSummary = normalizedReleaseHandoffOpenSessionResults.reduce(
+    (summary, entry) => {
+      summary.bySessionLabel[entry.sessionLabel] = (summary.bySessionLabel[entry.sessionLabel] || 0) + 1;
+      if (!summary.byArtifactId[entry.artifactId]) {
+        summary.byArtifactId[entry.artifactId] = {
+          contentType: entry.contentType,
+          openTitle: entry.openTitle,
+          sessionLabels: [],
+          totalSessions: 0,
+        };
+      }
+      summary.byArtifactId[entry.artifactId].sessionLabels.push(entry.sessionLabel);
+      summary.byArtifactId[entry.artifactId].totalSessions += 1;
+      summary.errorFreeSessions += entry.consoleErrors === 0 && entry.pageErrors === 0 && entry.status === 200 ? 1 : 0;
+      summary.totalSessions += 1;
+      return summary;
+    },
+    {
+      byArtifactId: {},
+      bySessionLabel: {},
+      errorFreeSessions: 0,
+      totalSessions: 0,
+    },
+  );
+  const releaseHandoffOpenLinkVerificationSummary = {
+    byArtifactId: {
+      'browser-screenshot': {
+        copiedLinkPathname: new URL(handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].copiedLink).pathname || '',
+        copyLabelAfterSuccess: handoffPreviewLinkState.directOpenCardCopyStates['browser-screenshot'].copyLabelAfterCopy,
+        expectedContentType: 'image/png',
+        expectedPathname: '/api/execution-v1/handoff-artifacts/browser-screenshot',
+        expectedTitle: 'browser-e2e.png',
+        fallbackCopyLabel: handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].copyLabel,
+        fallbackLinkPathname: new URL(handoffPreviewLinkState.directOpenCardFallbackStates['browser-screenshot'].promptedLink).pathname || '',
+        sessionLabels: releaseHandoffOpenCoverageSummary.byArtifactId['browser-screenshot']?.sessionLabels || [],
+      },
+    },
+    errorFreeSessions: releaseHandoffOpenCoverageSummary.errorFreeSessions,
+    totalSessions: releaseHandoffOpenCoverageSummary.totalSessions,
+  };
+  for (const [artifactId, summaryEntry] of Object.entries(releaseHandoffOpenLinkVerificationSummary.byArtifactId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedLinkPathname === summaryEntry.expectedPathname &&
+      summaryEntry.fallbackLinkPathname === summaryEntry.expectedPathname &&
+      releaseHandoffOpenCoverageSummary.byArtifactId[artifactId]?.contentType === summaryEntry.expectedContentType &&
+      releaseHandoffOpenCoverageSummary.byArtifactId[artifactId]?.openTitle === summaryEntry.expectedTitle &&
+      summaryEntry.sessionLabels.length === 2;
+  }
+  releaseHandoffOpenLinkVerificationSummary.stableLines = Object.entries(releaseHandoffOpenLinkVerificationSummary.byArtifactId)
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([artifactId, summaryEntry]) => [
+      artifactId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `copyPath=${summaryEntry.copiedLinkPathname}`,
+      `fallbackPath=${summaryEntry.fallbackLinkPathname}`,
+      `contentType=${summaryEntry.expectedContentType}`,
+      `title=${summaryEntry.expectedTitle}`,
+      `sessions=${summaryEntry.sessionLabels.join(',')}`,
+    ].join('|'));
+  releaseHandoffOpenLinkVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffOpenLinkVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffOpenLinkVerificationSummary.overviewLine = [
+    `totalSessions=${releaseHandoffOpenLinkVerificationSummary.totalSessions}`,
+    `errorFreeSessions=${releaseHandoffOpenLinkVerificationSummary.errorFreeSessions}`,
+    `artifacts=${Object.keys(releaseHandoffOpenLinkVerificationSummary.byArtifactId).join(',')}`,
+    `sha256=${releaseHandoffOpenLinkVerificationSummary.stableSha256}`,
+  ].join('|');
+  for (const [artifactId, summaryEntry] of Object.entries(releaseHandoffOpenLinkVerificationSummary.byArtifactId)) {
+    assert.equal(summaryEntry.exactMatch, true, JSON.stringify({ artifactId, releaseHandoffOpenLinkVerificationSummary }));
+    assert.equal(summaryEntry.sessionLabels.length, 2, JSON.stringify({ artifactId, releaseHandoffOpenLinkVerificationSummary }));
+  }
+  assert.equal(
+    releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
+    releaseHandoffOpenLinkVerificationSummary.totalSessions,
+    JSON.stringify(releaseHandoffOpenLinkVerificationSummary),
+  );
+  assert.equal(releaseHandoffOpenLinkVerificationSummary.stableLines.length, 1, JSON.stringify(releaseHandoffOpenLinkVerificationSummary));
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffOpenLinkVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffOpenLinkVerificationSummary),
+  );
   const smokeReport = {
     artifactVersion: 'execution-v1-browser-e2e/v1',
     browserConsoleErrors: browserErrorState.consoleErrors.length,
@@ -3044,6 +3340,9 @@ try {
     releaseDocAssetSanity,
     releaseHandoffCoverageSummary,
     releaseHandoffLinkVerificationSummary,
+    releaseHandoffOpenCoverageSummary,
+    releaseHandoffOpenLinkVerificationSummary,
+    releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     repoDir,
     artifactPair: {
@@ -3066,6 +3365,7 @@ try {
       releaseHandoffIndexVerified: true,
       releaseHandoffIndexTextPath,
       releaseHandoffIndexTextVerified: true,
+      releaseHandoffOpenLinkSummaryVerified: true,
       releaseHandoffIndexMarkdownPath,
       releaseHandoffIndexMarkdownVerified: true,
       releaseHandoffLinkSummaryVerified: true,

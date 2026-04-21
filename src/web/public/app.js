@@ -2320,6 +2320,14 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-handoff-open-link') {
+        void copyReleaseHandoffOpenLink({
+          artifactId: value || '',
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedProvider: '',
@@ -3054,6 +3062,30 @@ async function copyReleaseHandoffPreviewLink({
     promptMessage: `${handoffArtifact.label || 'handoff preview'} 링크를 복사하세요.`,
     shownNotice: `${handoffArtifact.label || 'handoff preview'} 링크를 표시했습니다.`,
     successNotice: successNotice || `${handoffArtifact.label || 'handoff preview'} 링크를 복사했습니다.`,
+  });
+  if (copyResult?.method === 'clipboard') {
+    markCopiedReleaseHandoffPreviewLink(normalizedArtifactId);
+  }
+}
+
+async function copyReleaseHandoffOpenLink({
+  artifactId = '',
+  successNotice = '',
+} = {}) {
+  const normalizedArtifactId = normalizeUiParam(artifactId);
+  const handoffArtifacts = state.releaseStatus?.handoffArtifacts || [];
+  const handoffArtifact = handoffArtifacts.find((item) => String(item.id || '').trim() === normalizedArtifactId) || null;
+
+  if (!handoffArtifact?.href) {
+    setUiNotice('복사할 handoff artifact 링크가 없습니다.');
+    return;
+  }
+
+  const artifactUrl = `${window.location.origin}${handoffArtifact.href}`;
+  const copyResult = await copyUiLink(artifactUrl, {
+    promptMessage: `${handoffArtifact.label || 'handoff artifact'} 열기 링크를 복사하세요.`,
+    shownNotice: `${handoffArtifact.label || 'handoff artifact'} 열기 링크를 표시했습니다.`,
+    successNotice: successNotice || `${handoffArtifact.label || 'handoff artifact'} 열기 링크를 복사했습니다.`,
   });
   if (copyResult?.method === 'clipboard') {
     markCopiedReleaseHandoffPreviewLink(normalizedArtifactId);
@@ -6919,6 +6951,7 @@ function renderReleaseStatus() {
                           const previewable = isReleaseHandoffPreviewable(item);
                           const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
                           const previewLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
+                          const openLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const previewButtonLabel = previewActive
                             ? (handoffPreviewStatus === 'loading'
                               ? '미리보는 중'
@@ -6968,6 +7001,18 @@ function renderReleaseStatus() {
                                   : ''}
                                 ${item.href
                                   ? `
+                                      ${!previewable
+                                        ? `
+                                            <button
+                                              class="ghost-button ${openLinkCopied ? 'is-copied' : ''}"
+                                              type="button"
+                                              data-release-handoff-open-link-copy="${escapeHtml(item.id || '')}"
+                                              data-ui-action="copy-release-handoff-open-link"
+                                              data-ui-success-notice="${escapeHtml(`${item.label || 'handoff artifact'} 열기 링크를 복사했습니다.`)}"
+                                              data-ui-value="${escapeHtml(item.id || '')}"
+                                            >${escapeHtml(openLinkCopied ? '복사됨' : '링크')}</button>
+                                          `
+                                        : ''}
                                       <a
                                         class="ghost-button"
                                         data-release-handoff-open="true"
