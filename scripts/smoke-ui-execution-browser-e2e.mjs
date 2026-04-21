@@ -3326,6 +3326,20 @@ try {
     true,
     JSON.stringify(releaseHandoffOpenLinkVerificationSummary),
   );
+  const releaseHandoffStructuredSummary = {
+    open: {
+      errorFreeSessions: releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
+      overviewLine: releaseHandoffOpenLinkVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffOpenLinkVerificationSummary.stableSha256,
+      totalSessions: releaseHandoffOpenLinkVerificationSummary.totalSessions,
+    },
+    preview: {
+      errorFreeSessions: releaseHandoffLinkVerificationSummary.errorFreeSessions,
+      overviewLine: releaseHandoffLinkVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
+      totalSessions: releaseHandoffLinkVerificationSummary.totalSessions,
+    },
+  };
   const smokeReport = {
     artifactVersion: 'execution-v1-browser-e2e/v1',
     browserConsoleErrors: browserErrorState.consoleErrors.length,
@@ -3434,6 +3448,7 @@ try {
     releaseHandoffPreviewOverviewLine: releaseHandoffLinkVerificationSummary.overviewLine,
     releaseHandoffPreviewStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
     releaseHandoffPreviewTotalSessions: releaseHandoffLinkVerificationSummary.totalSessions,
+    releaseHandoffStructuredSummary,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     releaseHandoffSummaryReportPath: reportPath,
     repoDir,
@@ -3549,6 +3564,7 @@ try {
     releaseHandoffPreviewOverviewLine: releaseHandoffLinkVerificationSummary.overviewLine,
     releaseHandoffPreviewStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
     releaseHandoffPreviewTotalSessions: releaseHandoffLinkVerificationSummary.totalSessions,
+    releaseHandoffStructuredSummary,
     releaseHandoffSummaryReportPath: reportPath,
     repoDir,
   };
@@ -3778,6 +3794,7 @@ try {
     releaseHandoffPreviewOverviewLine: releaseHandoffLinkVerificationSummary.overviewLine,
     releaseHandoffPreviewStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
     releaseHandoffPreviewTotalSessions: releaseHandoffLinkVerificationSummary.totalSessions,
+    releaseHandoffStructuredSummary,
     releaseHandoffStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
     releaseHandoffSummaryReportPath: reportPath,
     screenshotPath,
@@ -4281,6 +4298,11 @@ try {
     releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
     JSON.stringify(persistedReleaseHandoffDigestArtifact),
   );
+  assert.deepEqual(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffStructuredSummary,
+    releaseHandoffStructuredSummary,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
   assert.equal(
     persistedReleaseHandoffDigestTextArtifact,
     releaseHandoffDigestTextArtifact,
@@ -4334,6 +4356,11 @@ try {
   assert.equal(
     persistedReleaseHandoffManifest.releaseHandoffOpenErrorFreeSessions,
     releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
+    JSON.stringify(persistedReleaseHandoffManifest),
+  );
+  assert.deepEqual(
+    persistedReleaseHandoffManifest.releaseHandoffStructuredSummary,
+    releaseHandoffStructuredSummary,
     JSON.stringify(persistedReleaseHandoffManifest),
   );
   assert.equal(
@@ -4704,6 +4731,11 @@ try {
   assert.equal(
     persistedReleaseHandoffIndexArtifact.releaseHandoffOpenErrorFreeSessions,
     releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
+    JSON.stringify(persistedReleaseHandoffIndexArtifact),
+  );
+  assert.deepEqual(
+    persistedReleaseHandoffIndexArtifact.releaseHandoffStructuredSummary,
+    releaseHandoffStructuredSummary,
     JSON.stringify(persistedReleaseHandoffIndexArtifact),
   );
   assert.deepEqual(

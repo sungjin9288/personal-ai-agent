@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T20:55:00.000Z","id":"doclog_20260421205500_handoff_structured_summary_object","type":"devlog","updatedAt":"2026-04-21T20:55:00.000Z"} -->
+## 2026-04-21 Handoff Structured Summary Object
+
+- date: 2026-04-21T20:55:00.000Z
+- added a shared `releaseHandoffStructuredSummary` object to the compact release handoff JSON family so digest, manifest, and index now expose the same keyed `preview/open` summary surface instead of forcing consumers to reconstruct it from individual top-level fields
+- kept the existing top-level preview/open fields intact for backward compatibility and used the new object as a normalized consumer path rather than replacing earlier contracts
+- updated the persisted smoke contract so all three compact handoff JSON artifacts must round-trip the new structured summary object exactly before browser E2E passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T20:40:00.000Z","id":"doclog_20260421204000_handoff_digest_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:40:00.000Z"} -->
 ## 2026-04-21 Handoff Digest Structured Preview/Open Summary
 
