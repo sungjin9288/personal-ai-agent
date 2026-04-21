@@ -3423,9 +3423,17 @@ try {
     releaseHandoffCoverageSummary,
     releaseHandoffDigestArtifactPath,
     releaseHandoffLinkVerificationSummary,
+    releaseHandoffOpenErrorFreeSessions: releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
     releaseHandoffOpenCoverageSummary,
     releaseHandoffOpenLinkVerificationSummary,
+    releaseHandoffOpenOverviewLine: releaseHandoffOpenLinkVerificationSummary.overviewLine,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
+    releaseHandoffOpenStableDigestSha256: releaseHandoffOpenLinkVerificationSummary.stableSha256,
+    releaseHandoffOpenTotalSessions: releaseHandoffOpenLinkVerificationSummary.totalSessions,
+    releaseHandoffPreviewErrorFreeSessions: releaseHandoffLinkVerificationSummary.errorFreeSessions,
+    releaseHandoffPreviewOverviewLine: releaseHandoffLinkVerificationSummary.overviewLine,
+    releaseHandoffPreviewStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
+    releaseHandoffPreviewTotalSessions: releaseHandoffLinkVerificationSummary.totalSessions,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     releaseHandoffSummaryReportPath: reportPath,
     repoDir,
@@ -4232,6 +4240,46 @@ try {
     persistedReleaseHandoffDigestArtifact,
     releaseHandoffDigestArtifact,
     JSON.stringify({ persistedReleaseHandoffDigestArtifact, releaseHandoffDigestArtifact }),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffPreviewStableDigestSha256,
+    releaseHandoffLinkVerificationSummary.stableSha256,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffPreviewOverviewLine,
+    releaseHandoffLinkVerificationSummary.overviewLine,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffPreviewTotalSessions,
+    releaseHandoffLinkVerificationSummary.totalSessions,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffPreviewErrorFreeSessions,
+    releaseHandoffLinkVerificationSummary.errorFreeSessions,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffOpenStableDigestSha256,
+    releaseHandoffOpenLinkVerificationSummary.stableSha256,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffOpenOverviewLine,
+    releaseHandoffOpenLinkVerificationSummary.overviewLine,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffOpenTotalSessions,
+    releaseHandoffOpenLinkVerificationSummary.totalSessions,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
+  );
+  assert.equal(
+    persistedReleaseHandoffDigestArtifact.releaseHandoffOpenErrorFreeSessions,
+    releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
+    JSON.stringify(persistedReleaseHandoffDigestArtifact),
   );
   assert.equal(
     persistedReleaseHandoffDigestTextArtifact,

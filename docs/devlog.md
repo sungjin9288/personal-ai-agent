@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T20:40:00.000Z","id":"doclog_20260421204000_handoff_digest_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:40:00.000Z"} -->
+## 2026-04-21 Handoff Digest Structured Preview/Open Summary
+
+- date: 2026-04-21T20:40:00.000Z
+- extended `execution-v1-release-handoff-digest.json` so the compact handoff digest now exposes preview/open stable sha, overview line, and session counts as top-level structured fields instead of requiring consumers to drill into nested verification summary objects
+- kept the family contract consistent with the earlier manifest/index work so all three compact handoff JSON artifacts now present the same preview/open summary surface directly
+- updated the persisted smoke contract so digest read-back equality plus explicit preview/open field assertions all have to match the generated verification summaries before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T20:25:00.000Z","id":"doclog_20260421202500_handoff_index_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:25:00.000Z"} -->
 ## 2026-04-21 Handoff Index Structured Preview/Open Summary
 
