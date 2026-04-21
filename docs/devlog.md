@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-21T20:10:00.000Z","id":"doclog_20260421201000_handoff_manifest_structured_open_preview_summary","type":"devlog","updatedAt":"2026-04-21T20:10:00.000Z"} -->
+## 2026-04-21 Handoff Manifest Structured Preview/Open Summary
+
+- date: 2026-04-21T20:10:00.000Z
+- extended `execution-v1-release-handoff-manifest.json` so the handoff manifest now carries preview/open stable sha, overview line, and session totals as first-class structured fields instead of leaving downstream readers to parse only `artifactBundleOverviewLine`
+- kept the sibling artifacts aligned by adding the same preview/open overview lines and totals to `execution-v1-release-handoff-manifest.txt` and `execution-v1-release-handoff-manifest.md`, which makes the compact handoff manifest family readable without reopening the full browser report
+- updated the persisted smoke contract so manifest read-back equality plus explicit preview/open field assertions all have to match the generated verification summaries before smoke passes
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T19:45:00.000Z","id":"doclog_20260421194500_handoff_digest_open_summary","type":"devlog","updatedAt":"2026-04-21T19:45:00.000Z"} -->
 ## 2026-04-21 Handoff Digest Open Summary
 
