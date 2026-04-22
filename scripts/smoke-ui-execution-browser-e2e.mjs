@@ -238,19 +238,21 @@ function seedReleaseHandoffFixtures() {
     totalChecks: seededReleaseHandoffStructuredSummary.summaryCopy.totalSessions,
   };
   const seededReleaseHandoffSummaryDetailCopyVerificationSummary = {
-    exactMatchCount: 2,
+    exactMatchCount: 4,
     overviewLine: [
-      'totalChecks=2',
-      'exactMatchCount=2',
-      'surfaces=handoff-digest-json:summaryCopyPreview/card,handoff-index-markdown:summaryCopyPreview/current-preview',
+      'totalChecks=4',
+      'exactMatchCount=4',
+      'surfaces=handoff-digest-json:summaryCopyPreview/card,handoff-index-markdown:summaryCopyPreview/current-preview,handoff-digest-json:summaryDetailCopyPreviewLineCopy/card,handoff-index-markdown:summaryDetailCopyPreviewLineCopyBody/current-preview',
       'sha256=seed-summary-detail-copy-sha',
     ].join('|'),
     stableLines: [
       'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryCopyPreview|surface=card|textSha256=seed-card-summary-detail-sha|postCopyLabel=line copy',
       'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryCopyPreview|surface=current-preview|textSha256=seed-current-preview-summary-detail-sha|postCopyLabel=current copy complete',
+      'detail-line-copy-card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryDetailCopyPreviewLineCopy|surface=card|textSha256=seed-card-summary-detail-line-copy-sha|postCopyLabel=line copy',
+      'detail-line-copy-body-current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryDetailCopyPreviewLineCopyBody|surface=current-preview|textSha256=seed-current-preview-summary-detail-line-copy-body-sha|postCopyLabel=current copy complete',
     ],
     stableSha256: 'seed-summary-detail-copy-sha',
-    totalChecks: 2,
+    totalChecks: 4,
   };
   seededReleaseHandoffStructuredSummary.summaryDetailCopy = {
     errorFreeSessions: seededReleaseHandoffSummaryDetailCopyVerificationSummary.exactMatchCount,
@@ -1976,7 +1978,7 @@ try {
       target.artifactId.startsWith('handoff-')
         ? previewEntry.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy'
-          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && /totalChecks=4\|exactMatchCount=4\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview,handoff-digest-json:summaryDetailCopyPreviewLineCopy\/card,handoff-index-markdown:summaryDetailCopyPreviewLineCopyBody\/current-preview\|sha256=/i.test(String(detail.overview || ''))
           && String(detail.copyLabel || '').trim().length > 0)
         : true,
       true,
@@ -2066,7 +2068,7 @@ try {
       expectedMarker: '---summary-copy---',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount=6',
       expectedPreviewMarker: '---summary-copy-preview---',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=4',
       expectedDetailMarker: '---summary-detail-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
@@ -2082,7 +2084,7 @@ try {
       expectedMarker: 'Summary-Copy Overview',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount: 6',
       expectedPreviewMarker: 'Summary-Copy Preview Overview',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 4',
       expectedDetailMarker: 'Summary-Detail-Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
@@ -2098,7 +2100,7 @@ try {
       expectedMarker: '---summary-copy---',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount=6',
       expectedPreviewMarker: '---summary-copy-preview---',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=4',
       expectedDetailMarker: '---summary-detail-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
@@ -2114,7 +2116,7 @@ try {
       expectedMarker: 'Summary-Copy Overview',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount: 6',
       expectedPreviewMarker: 'Summary-Copy Preview Overview',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 4',
       expectedDetailMarker: 'Summary-Detail-Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
@@ -2130,7 +2132,7 @@ try {
       expectedMarker: '---summary-copy---',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount=6',
       expectedPreviewMarker: '---summary-copy-preview---',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount=4',
       expectedDetailMarker: '---summary-detail-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
@@ -2146,7 +2148,7 @@ try {
       expectedMarker: 'Summary-Copy Overview',
       expectedPreviewCounter: 'summaryCopyPreviewExactMatchCount: 6',
       expectedPreviewMarker: 'Summary-Copy Preview Overview',
-      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 2',
+      expectedDetailCounter: 'summaryDetailCopyExactMatchCount: 4',
       expectedDetailMarker: 'Summary-Detail-Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
@@ -2498,6 +2500,8 @@ try {
       const detailCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryCopyPreview');
       const detailPreviewCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryDetailCopyPreview');
       const detailPreviewCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryDetailCopyPreview');
+      const detailPreviewLineCopyCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
+      const detailPreviewLineCopyCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
 
       await clickPreview('handoff-index-markdown');
       const currentPreviewFallback = await runPreviewFallback();
@@ -2506,6 +2510,8 @@ try {
       const currentPreviewDetailCopy = await runDetailPreviewCopy('summaryCopyPreview');
       const currentPreviewDetailPreviewFallback = await runDetailPreviewFallback('summaryDetailCopyPreview');
       const currentPreviewDetailPreviewCopy = await runDetailPreviewCopy('summaryDetailCopyPreview');
+      const currentPreviewDetailPreviewLineCopyBodyFallback = await runDetailPreviewFallback('summaryDetailCopyPreviewLineCopyBody');
+      const currentPreviewDetailPreviewLineCopyBodyCopy = await runDetailPreviewCopy('summaryDetailCopyPreviewLineCopyBody');
 
       const labelsAfterCurrentPreviewCopy = await page.evaluate(() => ({
         digestJsonCard: document.querySelector('[data-release-handoff-structured-summary-copy="handoff-digest-json"]')?.textContent || '',
@@ -2514,10 +2520,14 @@ try {
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryCopyPreview"]')?.textContent || '',
         digestJsonCardDetailPreview:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryDetailCopyPreview"]')?.textContent || '',
+        digestJsonCardDetailPreviewLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryDetailCopyPreviewLineCopy"]')?.textContent || '',
         currentPreviewDetail:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryCopyPreview"]')?.textContent || '',
         currentPreviewDetailPreview:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryDetailCopyPreview"]')?.textContent || '',
+        currentPreviewDetailPreviewLineCopyBody:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryDetailCopyPreviewLineCopyBody"]')?.textContent || '',
       }));
 
       await page.waitForTimeout(1900);
@@ -2528,12 +2538,16 @@ try {
         currentPreviewDetailCopy,
         currentPreviewDetailPreviewCopy,
         currentPreviewDetailPreviewFallback,
+        currentPreviewDetailPreviewLineCopyBodyCopy,
+        currentPreviewDetailPreviewLineCopyBodyFallback,
         currentPreviewDetailFallback,
         currentPreviewCopy,
         currentPreviewFallback,
         detailCardCopy,
         detailPreviewCardCopy,
         detailPreviewCardFallback,
+        detailPreviewLineCopyCardCopy,
+        detailPreviewLineCopyCardFallback,
         detailCardFallback,
         directCardCopy,
         directCardFallback,
@@ -2631,6 +2645,36 @@ try {
     handoffStructuredSummaryCopyState.detailPreviewCardCopy.promptedValue,
     '',
     JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.copyLabel,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.promptedValue,
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.copiedText,
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy),
   );
   assert.equal(
     handoffStructuredSummaryCopyState.currentPreviewFallback.clipboardText,
@@ -2738,6 +2782,41 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.copyLabel,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.promptedValue,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.previewArtifactId,
+    'handoff-index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.copiedText,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.copyLabelAfterCopy,
+    '현재 line 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCard,
     'overview 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
@@ -2758,12 +2837,22 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewLineCopy,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetail,
     '현재 line 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
   assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreview,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewLineCopyBody,
     '현재 line 복사됨',
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
@@ -4279,7 +4368,7 @@ try {
       handoffArtifact.id.startsWith('handoff-')
         ? handoffArtifact.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy'
-          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && /totalChecks=4\|exactMatchCount=4\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview,handoff-digest-json:summaryDetailCopyPreviewLineCopy\/card,handoff-index-markdown:summaryDetailCopyPreviewLineCopyBody\/current-preview\|sha256=/i.test(String(detail.overview || ''))
           && String(detail.copyLabel || '').trim().length > 0)
         : true,
       true,
@@ -5151,9 +5240,36 @@ try {
         previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailCopy.previewArtifactId,
         surface: 'current-preview',
       },
+      'detail-line-copy-card': {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryDetailCopyPreviewLineCopy',
+        expectedLabelAfterOtherCopy: 'line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.detailPreviewLineCopyCardCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewLineCopy,
+        surface: 'card',
+      },
+      'detail-line-copy-body-current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.copyLabelAfterCopy,
+        detailKey: 'summaryDetailCopyPreviewLineCopyBody',
+        expectedLabelAfterOtherCopy: '현재 line 복사됨',
+        expectedSuccessLabel: '현재 line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewLineCopyBody,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
     },
     exactMatchCount: 0,
-    totalChecks: 2,
+    totalChecks: 4,
   };
   for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryDetailCopyVerificationSummary.bySurfaceId)) {
     summaryEntry.exactMatch =
@@ -5192,7 +5308,7 @@ try {
     releaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
     JSON.stringify(releaseHandoffSummaryDetailCopyVerificationSummary),
   );
-  assert.equal(releaseHandoffSummaryDetailCopyVerificationSummary.stableLines.length, 2, JSON.stringify(releaseHandoffSummaryDetailCopyVerificationSummary));
+  assert.equal(releaseHandoffSummaryDetailCopyVerificationSummary.stableLines.length, 4, JSON.stringify(releaseHandoffSummaryDetailCopyVerificationSummary));
   assert.equal(
     /^[a-f0-9]{64}$/.test(releaseHandoffSummaryDetailCopyVerificationSummary.stableSha256),
     true,
@@ -5218,7 +5334,7 @@ try {
         copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copiedText,
         copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copyLabelAfterCopy,
         detailKey: 'summaryDetailCopyPreview',
-        expectedLabelAfterOtherCopy: '현재 line 복사됨',
+        expectedLabelAfterOtherCopy: '현재 line 복사',
         expectedSuccessLabel: '현재 line 복사됨',
         expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.overviewLine,
         fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.copyLabel,

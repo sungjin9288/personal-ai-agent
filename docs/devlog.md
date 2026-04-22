@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_matrix","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Copy Matrix Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- widened `releaseHandoffSummaryDetailCopyVerificationSummary` from the original 2-check detail-line copy path into a 4-check matrix that now covers `summaryCopyPreview`, `summaryDetailCopyPreviewLineCopy`, and `summaryDetailCopyPreviewLineCopyBody` across the `handoff-digest-json` card and `handoff-index-markdown` current preview
+- updated the deterministic fixture plus compact `execution-v1-release-handoff-digest/manifest/index` JSON write path so the shared `summary detail copy` row now persists the expanded exact-match count and overview signature instead of under-reporting the newer detail-row copy surfaces
+- kept the release UI/server schema unchanged while tightening browser smoke and human-readable artifact expectations, which closes the remaining gap between rendered structured-summary detail rows and the copy-action evidence that backs them
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview_line_copy_body_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Preview Line Copy Body Human-Readable Pass
 
