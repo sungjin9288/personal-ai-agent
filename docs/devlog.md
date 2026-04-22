@@ -18,6 +18,15 @@
 - verified the rendered UI contract by capturing stable-line button labels in the saved browser report and keeping the existing `summary detail copy` stable line list readable alongside the new per-line copy controls
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422151000_7c96da","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Body Contract
+
+- date: 2026-04-22T00:00:00.000Z
+- extended the human-readable `execution-v1-release-handoff-digest/manifest/index` txt and markdown sibling artifacts with dedicated `summary-stable-line-copy` sections, top-level counters, and stable signature lines so stable-line copy evidence is readable without opening the compact JSON
+- added browser preview verification that requires the new stable-line counter/marker pair to render inside all six handoff txt/markdown preview bodies and persists that result as a browser report contract
+- kept the existing compact JSON `summaryStableLineCopy` row unchanged while closing the body-level gap between structured summary evidence and human-readable handoff artifacts
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422142000_1d8b7e","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Stable Line Summary Promotion
 
