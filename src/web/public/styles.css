@@ -3658,6 +3658,18 @@ button.tag:hover {
   word-break: break-all;
 }
 
+.release-handoff-summary-stable-lines {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.release-handoff-summary-stable-line {
+  display: block;
+  white-space: normal;
+  word-break: break-all;
+}
+
 .release-handoff-summary-sha {
   word-break: break-all;
 }

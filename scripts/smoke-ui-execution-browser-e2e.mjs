@@ -1819,6 +1819,7 @@ try {
               detailKey: row.querySelector('button')?.getAttribute('data-ui-detail-key') || '',
               label: row.querySelector('.item-title')?.textContent || '',
               overview: row.querySelector('.item-meta')?.textContent || '',
+              stableLines: Array.from(row.querySelectorAll('.release-handoff-summary-stable-line')).map((item) => item.textContent || ''),
             })),
             structuredSummaryOverview: panel?.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
             structuredSummarySha: panel?.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
@@ -1979,6 +1980,10 @@ try {
         ? previewEntry.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy'
           && /totalChecks=4\|exactMatchCount=4\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview,handoff-digest-json:summaryDetailCopyPreviewLineCopy\/card,handoff-index-markdown:summaryDetailCopyPreviewLineCopyBody\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && Array.isArray(detail.stableLines)
+          && detail.stableLines.length === 4
+          && detail.stableLines.some((line) => /detail-line-copy-card\|exact=true\|copyLabel=/i.test(String(line || '')))
+          && detail.stableLines.some((line) => /detail-line-copy-body-current-preview\|exact=true\|copyLabel=/i.test(String(line || '')))
           && String(detail.copyLabel || '').trim().length > 0)
         : true,
       true,
@@ -3731,6 +3736,7 @@ try {
                 detailKey: row.querySelector('button')?.getAttribute('data-ui-detail-key') || '',
                 label: row.querySelector('.item-title')?.textContent || '',
                 overview: row.querySelector('.item-meta')?.textContent || '',
+                stableLines: Array.from(row.querySelectorAll('.release-handoff-summary-stable-line')).map((item) => item.textContent || ''),
               })),
               structuredSummaryOverview: node.querySelector('.release-handoff-summary-overview')?.textContent || '',
               structuredSummarySha: node.querySelector('.release-handoff-summary-sha')?.textContent || '',
@@ -3758,6 +3764,7 @@ try {
                   detailKey: row.querySelector('button')?.getAttribute('data-ui-detail-key') || '',
                   label: row.querySelector('.item-title')?.textContent || '',
                   overview: row.querySelector('.item-meta')?.textContent || '',
+                  stableLines: Array.from(row.querySelectorAll('.release-handoff-summary-stable-line')).map((item) => item.textContent || ''),
                 })),
                 structuredSummaryOverview: panel.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
                 structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
@@ -4369,6 +4376,10 @@ try {
         ? handoffArtifact.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy'
           && /totalChecks=4\|exactMatchCount=4\|surfaces=handoff-digest-json:summaryCopyPreview\/card,handoff-index-markdown:summaryCopyPreview\/current-preview,handoff-digest-json:summaryDetailCopyPreviewLineCopy\/card,handoff-index-markdown:summaryDetailCopyPreviewLineCopyBody\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && Array.isArray(detail.stableLines)
+          && detail.stableLines.length === 4
+          && detail.stableLines.some((line) => /detail-line-copy-card\|exact=true\|copyLabel=/i.test(String(line || '')))
+          && detail.stableLines.some((line) => /detail-line-copy-body-current-preview\|exact=true\|copyLabel=/i.test(String(line || '')))
           && String(detail.copyLabel || '').trim().length > 0)
         : true,
       true,

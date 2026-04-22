@@ -331,6 +331,11 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
   }
   const normalizeSummaryEntry = (summaryEntry = null, fallback = {}) => {
     const normalizedEntry = summaryEntry && typeof summaryEntry === 'object' ? summaryEntry : {};
+    const stableLines = Array.isArray(normalizedEntry.stableLines)
+      ? normalizedEntry.stableLines
+      : Array.isArray(fallback.stableLines)
+        ? fallback.stableLines
+        : [];
     return {
       exactMatchCount: Number(
         normalizedEntry.exactMatchCount ?? fallback.exactMatchCount ?? 0,
@@ -345,6 +350,12 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
       stableDigestSha256: String(
         normalizedEntry.stableDigestSha256 || fallback.stableDigestSha256 || '',
       ).trim(),
+      stableLineCount: Number(
+        normalizedEntry.stableLineCount ?? fallback.stableLineCount ?? stableLines.length,
+      ),
+      stableLines: stableLines
+        .map((line) => String(line || '').trim())
+        .filter(Boolean),
       totalSessions: Number(normalizedEntry.totalSessions ?? fallback.totalSessions ?? 0),
     };
   };
@@ -383,6 +394,10 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyExactMatchCount || 0),
       overviewLine: String(summaryArtifact.releaseHandoffSummaryDetailCopyOverviewLine || '').trim(),
       stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryDetailCopyStableDigestSha256 || '').trim(),
+      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyVerificationSummary?.stableLines?.length || 0),
+      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryDetailCopyVerificationSummary?.stableLines)
+        ? summaryArtifact.releaseHandoffSummaryDetailCopyVerificationSummary.stableLines
+        : [],
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyTotalChecks || 0),
     }),
     summaryDetailCopyPreview: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreview, {

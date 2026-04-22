@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_stable_lines","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Copy Stable Line Surface Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended release handoff summary normalization so the compact JSON `releaseHandoffSummaryDetailCopyVerificationSummary.stableLines` are preserved on the `summary detail copy` structured-summary entry instead of being reduced to count and overview only
+- updated the release tab `handoff-*` card and inline preview detail surface to render those 4 stable lines directly under the `summary detail copy` overview, which lets operators see the exact card/current-preview matrix evidence without opening the raw JSON artifact
+- tightened browser smoke so handoff card/preview detail capture now requires the `summary detail copy` entry to expose four stable lines including the new `detail-line-copy-card` and `detail-line-copy-body-current-preview` signatures
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_matrix","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Copy Matrix Pass
 

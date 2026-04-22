@@ -1273,7 +1273,16 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
       if (!overviewLine) {
         return null;
       }
-      return { key, label, overviewLine };
+      const stableLines = Array.isArray(summary?.[key]?.stableLines)
+        ? summary[key].stableLines.map((line) => String(line || '').trim()).filter(Boolean)
+        : [];
+      return {
+        key,
+        label,
+        overviewLine,
+        stableLineCount: Number(summary?.[key]?.stableLineCount ?? stableLines.length ?? 0),
+        stableLines,
+      };
     })
     .filter(Boolean);
 }
@@ -7250,6 +7259,20 @@ function renderReleaseStatus() {
                                                         >${escapeHtml(isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? '복사됨' : 'line 복사')}</button>
                                                       </div>
                                                       <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
+                                                      ${detail.stableLines?.length
+                                                        ? `
+                                                            <div class="release-handoff-summary-stable-lines">
+                                                              <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
+                                                              ${detail.stableLines
+                                                                .map(
+                                                                  (line) => `
+                                                                    <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                  `,
+                                                                )
+                                                                .join('')}
+                                                            </div>
+                                                          `
+                                                        : ''}
                                                     </div>
                                                   `,
                                                 )
@@ -7426,6 +7449,20 @@ function renderReleaseStatus() {
                                                       )}</button>
                                                     </div>
                                                     <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
+                                                    ${detail.stableLines?.length
+                                                      ? `
+                                                          <div class="release-handoff-summary-stable-lines">
+                                                            <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
+                                                            ${detail.stableLines
+                                                              .map(
+                                                                (line) => `
+                                                                  <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                `,
+                                                              )
+                                                              .join('')}
+                                                          </div>
+                                                        `
+                                                      : ''}
                                                   </div>
                                                 `,
                                               )
