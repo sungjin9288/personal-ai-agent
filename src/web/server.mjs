@@ -399,6 +399,13 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
       stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyStableDigestSha256 || '').trim(),
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyTotalChecks || 0),
     }),
+    summaryDetailCopyPreviewLineCopyBody: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreviewLineCopyBody, {
+      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyBodyExactMatchCount || 0),
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyBodyExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyBodyOverviewLine || '').trim(),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyBodyStableDigestSha256 || '').trim(),
+      totalSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewLineCopyBodyTotalArtifacts || 0),
+    }),
     sha256: String(
       structuredSummary.sha256 || summaryArtifact.releaseHandoffStructuredSummarySha256 || '',
     ).trim(),
