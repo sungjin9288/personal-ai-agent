@@ -1,6 +1,11 @@
 # Devlog
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview_line_copy_body_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Preview Line Copy Body Human-Readable Pass
+
+- added `summary-detail-copy-preview-line-copy-body` dedicated section, counter, and stable signature lines to `execution-v1-release-handoff-digest/manifest/index` txt+markdown sibling artifacts so the body-verification contract is visible outside compact JSON
+- tightened browser preview verification so handoff txt/markdown preview bodies must render the new body section marker and exact-match counter, keeping persisted artifact text and release inline preview in sync
+
 ## 2026-04-22 Release Handoff Summary Detail Preview Line Copy Body Structured Pass
 
 - date: 2026-04-22T00:00:00.000Z
