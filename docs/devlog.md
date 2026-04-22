@@ -2764,6 +2764,15 @@
 - verified the served asset exports `pushState`/`popstate` handling and updated README copy to reflect refresh, sharing, and browser-history recovery behavior
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summarycopy_siblings","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary-Copy Sibling Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended the seeded and persisted `execution-v1-release-handoff-digest/manifest/index` txt and markdown artifacts so they now expose explicit `summaryCopyTotalChecks`, `summaryCopyExactMatchCount`, `summaryCopyStableSha256`, plus a dedicated `summary-copy` section instead of hiding that verification only inside compact JSON
+- kept the compact JSON contract unchanged while making the human-readable handoff siblings carry the same verification payload, which closes the gap between machine-readable summary state and operator-facing handoff text surfaces
+- verified the new sections through the browser E2E smoke write/read-back path so the sibling artifacts round-trip with the same `summary copy` overview line and stable signature lines that power the compact JSON structured summary
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414091500_3f2d41","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
 ## 2026-04-14 URL State Sync Pass
 
