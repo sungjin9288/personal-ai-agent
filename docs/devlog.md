@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Preview Body Contract
+
+- date: 2026-04-22T00:00:00.000Z
+- extended the human-readable `execution-v1-release-handoff-digest/manifest/index` txt and markdown sibling artifacts with dedicated `summary-stable-line-copy-preview` sections, top-level counters, and stable signature lines so the preview-body verification remains readable without reopening the compact JSON
+- tightened browser preview verification so every handoff txt/markdown preview now has to render the new `summaryStableLineCopyPreviewExactMatchCount` counter and `Summary-Stable-Line-Copy Preview Overview` marker instead of reusing the older `summary-stable-line-copy` body section
+- persisted the new body-level closure as a separate browser report flag while leaving the already-promoted compact JSON `summaryStableLineCopyPreview` row and release UI structured-summary rendering path unchanged
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_stable_lines","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Copy Stable Line Surface Pass
 
