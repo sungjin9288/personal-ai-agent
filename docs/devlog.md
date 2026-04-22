@@ -1,5 +1,13 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview_handoff_sections","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Preview Section Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended seeded and persisted `execution-v1-release-handoff-digest/manifest/index` txt and markdown siblings so they now carry explicit `summary-detail-copy-preview` counters plus dedicated overview/signature sections instead of leaving that evidence only in compact JSON and release UI rows
+- tightened browser preview verification so the six handoff txt/markdown previews must render both `summary-detail-copy` and `summary-detail-copy-preview` markers/counters, and the saved browser report now records `releaseHandoffSummaryDetailCopyPreviewBodyVerified` as a separate artifact-pair contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Preview Structured Pass
 
