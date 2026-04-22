@@ -285,6 +285,28 @@ function seedReleaseHandoffFixtures() {
     stableDigestSha256: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
     totalSessions: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts,
   };
+  const seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryDetailCopyPreview/card,handoff-index-markdown:summaryDetailCopyPreview/current-preview',
+      'sha256=seed-summary-detail-copy-preview-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryDetailCopyPreview|surface=card|textSha256=seed-card-summary-detail-preview-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryDetailCopyPreview|surface=current-preview|textSha256=seed-current-preview-summary-detail-preview-line-copy-sha|postCopyLabel=current copy complete',
+    ],
+    stableSha256: 'seed-summary-detail-copy-preview-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryDetailCopyPreviewLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256,
+    totalSessions: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
+  };
   const seededReleaseHandoffStructuredSummaryLines = Object.entries(seededReleaseHandoffStructuredSummary)
     .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
     .map(([key, value]) => [
@@ -1756,6 +1778,13 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary detail copy preview line copy')
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
         ? previewEntry.structuredSummaryDetails.length >= 6
         : previewEntry.structuredSummaryDetails.length === 0,
       true,
@@ -1800,7 +1829,17 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
+        ? previewEntry.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary detail copy preview line copy'
+          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryDetailCopyPreview\/card,handoff-index-markdown:summaryDetailCopyPreview\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && String(detail.copyLabel || '').trim().length > 0)
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
         : String(previewEntry.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(previewEntry),
@@ -2210,20 +2249,28 @@ try {
       const directCardCopy = await runCardCopy('handoff-digest-json');
       const detailCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryCopyPreview');
       const detailCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryCopyPreview');
+      const detailPreviewCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryDetailCopyPreview');
+      const detailPreviewCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryDetailCopyPreview');
 
       await clickPreview('handoff-index-markdown');
       const currentPreviewFallback = await runPreviewFallback();
       const currentPreviewCopy = await runPreviewCopy();
       const currentPreviewDetailFallback = await runDetailPreviewFallback('summaryCopyPreview');
       const currentPreviewDetailCopy = await runDetailPreviewCopy('summaryCopyPreview');
+      const currentPreviewDetailPreviewFallback = await runDetailPreviewFallback('summaryDetailCopyPreview');
+      const currentPreviewDetailPreviewCopy = await runDetailPreviewCopy('summaryDetailCopyPreview');
 
       const labelsAfterCurrentPreviewCopy = await page.evaluate(() => ({
         digestJsonCard: document.querySelector('[data-release-handoff-structured-summary-copy="handoff-digest-json"]')?.textContent || '',
         currentPreview: document.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
         digestJsonCardDetail:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryCopyPreview"]')?.textContent || '',
+        digestJsonCardDetailPreview:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryDetailCopyPreview"]')?.textContent || '',
         currentPreviewDetail:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryCopyPreview"]')?.textContent || '',
+        currentPreviewDetailPreview:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryDetailCopyPreview"]')?.textContent || '',
       }));
 
       await page.waitForTimeout(1900);
@@ -2232,10 +2279,14 @@ try {
       return {
         activePreviewArtifactId: await page.evaluate(() => document.querySelector('[data-release-handoff-preview-panel]')?.getAttribute('data-release-handoff-preview-panel') || ''),
         currentPreviewDetailCopy,
+        currentPreviewDetailPreviewCopy,
+        currentPreviewDetailPreviewFallback,
         currentPreviewDetailFallback,
         currentPreviewCopy,
         currentPreviewFallback,
         detailCardCopy,
+        detailPreviewCardCopy,
+        detailPreviewCardFallback,
         detailCardFallback,
         directCardCopy,
         directCardFallback,
@@ -2303,6 +2354,36 @@ try {
     handoffStructuredSummaryCopyState.detailCardCopy.promptedValue,
     '',
     JSON.stringify(handoffStructuredSummaryCopyState.detailCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardFallback.copyLabel,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardFallback.promptedValue,
+    handoffStructuredSummaryCopyState.detailPreviewCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardCopy.copiedText,
+    handoffStructuredSummaryCopyState.detailPreviewCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardCopy.copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewCardCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewCardCopy),
   );
   assert.equal(
     handoffStructuredSummaryCopyState.currentPreviewFallback.clipboardText,
@@ -2375,6 +2456,41 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailCopy),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.copyLabel,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.promptedValue,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.previewArtifactId,
+    'handoff-index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copiedText,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copyLabelAfterCopy,
+    '현재 line 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCard,
     'overview 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
@@ -2390,7 +2506,17 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreview,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetail,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreview,
     '현재 line 복사됨',
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
@@ -3866,6 +3992,13 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary detail copy preview line copy')
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
         ? handoffArtifact.structuredSummaryDetails.length >= 6
         : handoffArtifact.structuredSummaryDetails.length === 0,
       true,
@@ -3910,7 +4043,17 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
+        ? handoffArtifact.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary detail copy preview line copy'
+          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryDetailCopyPreview\/card,handoff-index-markdown:summaryDetailCopyPreview\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && String(detail.copyLabel || '').trim().length > 0)
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
         : String(handoffArtifact.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(handoffArtifact),
@@ -4735,7 +4878,7 @@ try {
         copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailCopy.copiedText,
         copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailCopy.copyLabelAfterCopy,
         detailKey: 'summaryCopyPreview',
-        expectedLabelAfterOtherCopy: '현재 line 복사됨',
+        expectedLabelAfterOtherCopy: '현재 line 복사',
         expectedSuccessLabel: '현재 line 복사됨',
         expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailCopy.overviewLine,
         fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailFallback.copyLabel,
@@ -4791,6 +4934,82 @@ try {
     true,
     JSON.stringify(releaseHandoffSummaryDetailCopyVerificationSummary),
   );
+  const releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
+    bySurfaceId: {
+      card: {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.detailPreviewCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryDetailCopyPreview',
+        expectedLabelAfterOtherCopy: 'line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.detailPreviewCardCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewCardFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreview,
+        surface: 'card',
+      },
+      'current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.copyLabelAfterCopy,
+        detailKey: 'summaryDetailCopyPreview',
+        expectedLabelAfterOtherCopy: '현재 line 복사됨',
+        expectedSuccessLabel: '현재 line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreview,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
+    },
+    exactMatchCount: 0,
+    totalChecks: 2,
+  };
+  for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.bySurfaceId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedText === summaryEntry.expectedText &&
+      summaryEntry.fallbackPromptedValue === summaryEntry.expectedText &&
+      summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel &&
+      summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy &&
+      (summaryEntry.surface !== 'current-preview' || summaryEntry.previewArtifactId === summaryEntry.artifactId);
+    assert.equal(summaryEntry.exactMatch, true, JSON.stringify({ surfaceId, releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary }));
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount += summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableLines = Object.entries(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.bySurfaceId)
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([surfaceId, summaryEntry]) => [
+      surfaceId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `artifactId=${summaryEntry.artifactId}`,
+      `detailKey=${summaryEntry.detailKey}`,
+      `surface=${summaryEntry.surface}`,
+      `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+      `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+    ].join('|'));
+  releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine = [
+    `totalChecks=${releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks}`,
+    `exactMatchCount=${releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount}`,
+    `surfaces=${Object.values(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}/${entry.surface}`).join(',')}`,
+    `sha256=${releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary),
+  );
+  assert.equal(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableLines.length, 2, JSON.stringify(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary));
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary),
+  );
   const releaseHandoffStructuredSummary = {
     open: {
       errorFreeSessions: releaseHandoffOpenLinkVerificationSummary.errorFreeSessions,
@@ -4832,6 +5051,13 @@ try {
       stableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
       totalSessions: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts,
     },
+    summaryDetailCopyPreviewLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256,
+      totalSessions: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
+    },
   };
   const releaseHandoffStructuredSummaryLines = Object.entries(releaseHandoffStructuredSummary)
     .sort(([left], [right]) => left.localeCompare(right))
@@ -4864,6 +5090,7 @@ try {
     releaseHandoffOpenLinkVerificationSummary,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyVerificationSummary,
@@ -4894,6 +5121,7 @@ try {
       releaseHandoffIndexMarkdownVerified: true,
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffSummaryDetailCopyVerified: true,
+      releaseHandoffSummaryDetailCopyPreviewLineCopyVerified: true,
       releaseHandoffSummaryDetailCopyPreviewBodyVerified: true,
       releaseHandoffSummaryDetailCopyPreviewVerified: true,
       releaseHandoffSummaryDetailCopyPreviewStructuredVerified: true,
@@ -4980,11 +5208,16 @@ try {
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyPreviewTotalArtifacts: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyExactMatchCount: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyOverviewLine: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyTotalChecks: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
     releaseHandoffStructuredSummary,
     releaseHandoffStructuredSummaryLines,
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyVerificationSummary,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
@@ -5197,11 +5430,16 @@ try {
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyPreviewTotalArtifacts: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyExactMatchCount: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyOverviewLine: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyTotalChecks: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
     releaseHandoffStructuredSummary,
     releaseHandoffStructuredSummaryLines,
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyVerificationSummary,
     releaseHandoffSummaryReportPath: reportPath,
@@ -5528,11 +5766,16 @@ try {
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyPreviewTotalArtifacts: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyExactMatchCount: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyOverviewLine: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyTotalChecks: releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary.totalChecks,
     releaseHandoffStructuredSummary,
     releaseHandoffStructuredSummaryLines,
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyVerificationSummary,
     releaseHandoffStableDigestSha256: releaseHandoffLinkVerificationSummary.stableSha256,
