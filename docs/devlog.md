@@ -18,6 +18,15 @@
 - verified the rendered UI contract by capturing stable-line button labels in the saved browser report and keeping the existing `summary detail copy` stable line list readable alongside the new per-line copy controls
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422142000_1d8b7e","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Summary Promotion
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted stable line copy evidence from the main browser report into the compact `execution-v1-release-handoff-digest/manifest/index.json` contract so release handoff JSON siblings now carry a dedicated `summary stable line copy` structured summary row
+- updated release handoff summary normalization and rendering so the release tab card/inline preview reads the new compact JSON entry directly instead of depending on browser-report-only evidence
+- tightened browser smoke to require the new `summary stable line copy` row/detail and the expanded structured summary overview signature on both persisted handoff JSON artifacts and rendered release UI surfaces
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_matrix","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Copy Matrix Pass
 

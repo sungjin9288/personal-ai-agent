@@ -261,6 +261,28 @@ function seedReleaseHandoffFixtures() {
     stableDigestSha256: seededReleaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
     totalSessions: seededReleaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
   };
+  const seededReleaseHandoffSummaryStableLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryDetailCopy:0/card,handoff-index-markdown:summaryDetailCopy:3/current-preview',
+      'sha256=seed-summary-stable-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=stable line copy|artifactId=handoff-digest-json|detailKey=summaryDetailCopy|lineIndex=0|surface=card|textSha256=seed-card-summary-stable-line-copy-sha|postCopyLabel=stable line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current stable line copy|artifactId=handoff-index-markdown|detailKey=summaryDetailCopy|lineIndex=3|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-sha|postCopyLabel=current stable line copy complete',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
+  };
   const seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary = {
     exactMatchCount: 6,
     overviewLine: [
@@ -383,6 +405,10 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffSummaryDetailCopyOverviewLine: seededReleaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyStableDigestSha256: seededReleaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
         releaseHandoffSummaryDetailCopyTotalChecks: seededReleaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+        releaseHandoffSummaryStableLineCopyExactMatchCount: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+        releaseHandoffSummaryStableLineCopyOverviewLine: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+        releaseHandoffSummaryStableLineCopyStableDigestSha256: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+        releaseHandoffSummaryStableLineCopyTotalChecks: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
         releaseHandoffSummaryDetailCopyPreviewExactMatchCount: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
         releaseHandoffSummaryDetailCopyPreviewOverviewLine: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -401,6 +427,7 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
         releaseHandoffSummaryCopyVerificationSummary: seededReleaseHandoffSummaryCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyVerificationSummary,
+        releaseHandoffSummaryStableLineCopyVerificationSummary: seededReleaseHandoffSummaryStableLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
@@ -553,6 +580,10 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffSummaryDetailCopyOverviewLine: seededReleaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyStableDigestSha256: seededReleaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
         releaseHandoffSummaryDetailCopyTotalChecks: seededReleaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+        releaseHandoffSummaryStableLineCopyExactMatchCount: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+        releaseHandoffSummaryStableLineCopyOverviewLine: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+        releaseHandoffSummaryStableLineCopyStableDigestSha256: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+        releaseHandoffSummaryStableLineCopyTotalChecks: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
         releaseHandoffSummaryDetailCopyPreviewExactMatchCount: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
         releaseHandoffSummaryDetailCopyPreviewOverviewLine: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -571,6 +602,7 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
         releaseHandoffSummaryCopyVerificationSummary: seededReleaseHandoffSummaryCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyVerificationSummary,
+        releaseHandoffSummaryStableLineCopyVerificationSummary: seededReleaseHandoffSummaryStableLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
@@ -723,6 +755,10 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffSummaryDetailCopyOverviewLine: seededReleaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyStableDigestSha256: seededReleaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
         releaseHandoffSummaryDetailCopyTotalChecks: seededReleaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+        releaseHandoffSummaryStableLineCopyExactMatchCount: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+        releaseHandoffSummaryStableLineCopyOverviewLine: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+        releaseHandoffSummaryStableLineCopyStableDigestSha256: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+        releaseHandoffSummaryStableLineCopyTotalChecks: seededReleaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
         releaseHandoffSummaryDetailCopyPreviewExactMatchCount: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
         releaseHandoffSummaryDetailCopyPreviewOverviewLine: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -741,6 +777,7 @@ function seedReleaseHandoffFixtures() {
         releaseHandoffStructuredSummarySha256: seededReleaseHandoffStructuredSummarySha256,
         releaseHandoffSummaryCopyVerificationSummary: seededReleaseHandoffSummaryCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyVerificationSummary,
+        releaseHandoffSummaryStableLineCopyVerificationSummary: seededReleaseHandoffSummaryStableLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
         releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary: seededReleaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
@@ -1895,7 +1932,7 @@ try {
     assert.equal(String(previewEntry.previewBody || '').trim().length > 0, true, JSON.stringify(previewEntry));
     assert.equal(
       target.artifactId.startsWith('handoff-')
-        ? previewEntry.structuredSummaryRows.length >= 4
+        ? previewEntry.structuredSummaryRows.length >= 5
         : previewEntry.structuredSummaryRows.length === 0,
       true,
       JSON.stringify(previewEntry),
@@ -1937,6 +1974,13 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary stable line copy')
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
         ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary detail copy preview')
         : true,
       true,
@@ -1958,7 +2002,7 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
-        ? previewEntry.structuredSummaryDetails.length >= 8
+        ? previewEntry.structuredSummaryDetails.length >= 9
         : previewEntry.structuredSummaryDetails.length === 0,
       true,
       JSON.stringify(previewEntry),
@@ -2000,6 +2044,16 @@ try {
     assert.equal(
       target.artifactId.startsWith('handoff-')
         ? previewEntry.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary stable line copy'
+          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryDetailCopy:0\/card,handoff-index-markdown:summaryDetailCopy:3\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && String(detail.copyLabel || '').trim().length > 0)
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy preview'
           && /totalArtifacts=6\|exactMatchCount=6\|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown\|sha256=/i.test(String(detail.overview || ''))
           && String(detail.copyLabel || '').trim().length > 0)
@@ -2029,7 +2083,7 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
+        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody,summaryStableLineCopy\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
         : String(previewEntry.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(previewEntry),
@@ -4500,6 +4554,13 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary stable line copy')
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
         ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary detail copy preview')
         : true,
       true,
@@ -4521,7 +4582,7 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
-        ? handoffArtifact.structuredSummaryDetails.length >= 8
+        ? handoffArtifact.structuredSummaryDetails.length >= 9
         : handoffArtifact.structuredSummaryDetails.length === 0,
       true,
       JSON.stringify(handoffArtifact),
@@ -4563,6 +4624,16 @@ try {
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
         ? handoffArtifact.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary stable line copy'
+          && /totalChecks=2\|exactMatchCount=2\|surfaces=handoff-digest-json:summaryDetailCopy:0\/card,handoff-index-markdown:summaryDetailCopy:3\/current-preview\|sha256=/i.test(String(detail.overview || ''))
+          && String(detail.copyLabel || '').trim().length > 0)
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryDetails.some((detail) =>
           String(detail.label || '').trim() === 'summary detail copy preview'
           && /totalArtifacts=6\|exactMatchCount=6\|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown\|sha256=/i.test(String(detail.overview || ''))
           && String(detail.copyLabel || '').trim().length > 0)
@@ -4592,7 +4663,7 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
+        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody,summaryStableLineCopy\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
         : String(handoffArtifact.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(handoffArtifact),
@@ -5689,6 +5760,13 @@ try {
       stableDigestSha256: releaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
       totalSessions: releaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
     },
+    summaryStableLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+      totalSessions: releaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
+    },
     summaryDetailCopyPreview: {
       errorFreeSessions: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
       exactMatchCount: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
@@ -5860,6 +5938,10 @@ try {
     releaseHandoffSummaryDetailCopyOverviewLine: releaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyStableDigestSha256: releaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyTotalChecks: releaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyExactMatchCount: releaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyOverviewLine: releaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryStableLineCopyStableDigestSha256: releaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryStableLineCopyTotalChecks: releaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
     releaseHandoffSummaryDetailCopyPreviewExactMatchCount: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -5877,6 +5959,7 @@ try {
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
@@ -6121,6 +6204,10 @@ try {
     releaseHandoffSummaryDetailCopyOverviewLine: releaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyStableDigestSha256: releaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyTotalChecks: releaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyExactMatchCount: releaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyOverviewLine: releaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryStableLineCopyStableDigestSha256: releaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryStableLineCopyTotalChecks: releaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
     releaseHandoffSummaryDetailCopyPreviewExactMatchCount: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -6138,6 +6225,7 @@ try {
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
@@ -6496,6 +6584,10 @@ try {
     releaseHandoffSummaryDetailCopyOverviewLine: releaseHandoffSummaryDetailCopyVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyStableDigestSha256: releaseHandoffSummaryDetailCopyVerificationSummary.stableSha256,
     releaseHandoffSummaryDetailCopyTotalChecks: releaseHandoffSummaryDetailCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyExactMatchCount: releaseHandoffSummaryStableLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyOverviewLine: releaseHandoffSummaryStableLineCopyVerificationSummary.overviewLine,
+    releaseHandoffSummaryStableLineCopyStableDigestSha256: releaseHandoffSummaryStableLineCopyVerificationSummary.stableSha256,
+    releaseHandoffSummaryStableLineCopyTotalChecks: releaseHandoffSummaryStableLineCopyVerificationSummary.totalChecks,
     releaseHandoffSummaryDetailCopyPreviewExactMatchCount: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
     releaseHandoffSummaryDetailCopyPreviewOverviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     releaseHandoffSummaryDetailCopyPreviewStableDigestSha256: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256,
@@ -6513,6 +6605,7 @@ try {
     releaseHandoffStructuredSummaryOverviewLine,
     releaseHandoffStructuredSummarySha256,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary,
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary,
