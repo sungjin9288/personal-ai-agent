@@ -9,6 +9,15 @@
 - updated the browser E2E card capture, preview-cycle assertions, and final screenshot capture so handoff surfaces must show the `entries=open,preview|sha256=...` line while the `index-markdown` control preview remains summary-free
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_5df2ce","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary-Copy Preview Sibling Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended the seeded and persisted `execution-v1-release-handoff-digest/manifest/index` txt and markdown artifacts so they now expose a dedicated `summary-copy-preview` section instead of keeping that verification only in compact JSON and top-level counters
+- tightened the browser E2E preview verification so each human-readable handoff sibling must render both the original `summary-copy` section and the new `summary-copy-preview` marker plus exact-match counter inside the inline preview body
+- reused the existing `summaryCopyPreview.overviewLine` and stable line set as the source for the new sibling sections so machine-readable and operator-facing handoff evidence stay in lockstep
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T22:05:00.000Z","id":"doclog_20260421220500_handoff_preview_summary_surface","type":"devlog","updatedAt":"2026-04-21T22:05:00.000Z"} -->
 ## 2026-04-21 Handoff Preview Summary Surface
 
