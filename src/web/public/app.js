@@ -1186,6 +1186,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryCopy?.exactMatchCount ?? summary.summaryCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryCopy?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryCopyPreview && typeof summary.summaryCopyPreview === 'object') {
+    rows.push({
+      label: 'summary copy preview',
+      value: `${Number((summary.summaryCopyPreview?.exactMatchCount ?? summary.summaryCopyPreview?.errorFreeSessions) || 0)}/${Number(summary.summaryCopyPreview?.totalSessions || 0)} exact-match`,
+    });
+  }
   return rows;
 }
 

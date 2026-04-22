@@ -2764,6 +2764,15 @@
 - verified the served asset exports `pushState`/`popstate` handling and updated README copy to reflect refresh, sharing, and browser-history recovery behavior
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summarycopypreview_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary-Copy Preview Structured Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted `summary copy preview` verification from main browser report-only evidence into the shared compact handoff structured summary so `execution-v1-release-handoff-digest/manifest/index` JSON artifacts now carry preview-body exact-match counts alongside existing `preview/open/summary copy` rows
+- extended the release tab handoff card and inline preview summary rows to render a fourth `summary copy preview` entry directly from compact handoff JSON, which lets operators read preview-body verification state without opening the full browser report artifact
+- tightened the browser smoke contract so handoff card/preview structured summary rows and overview line must now include the new `summaryCopyPreview` entry in addition to the existing `summaryCopy` row
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summarycopy_preview","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary-Copy Preview Pass
 
