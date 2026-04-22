@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Preview Structured Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted `releaseHandoffSummaryDetailCopyPreviewVerificationSummary` from browser-report-only preview evidence into the shared compact handoff JSON contract so `execution-v1-release-handoff-digest/manifest/index` now persist `summary detail copy preview` exact-match counters, overview line, stable sha, and the verification summary alongside the existing `summary detail copy` entry
+- extended release handoff structured summary normalization and rendering so `handoff-*` cards and inline preview panels now show a sixth `summary detail copy preview` row plus its overview detail, which exposes preview-body detail-copy verification directly on the release review surface
+- tightened browser E2E coverage so seeded and persisted handoff cards/previews must render `summary detail copy preview`, and the combined structured summary overview must expand to `entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Preview Pass
 

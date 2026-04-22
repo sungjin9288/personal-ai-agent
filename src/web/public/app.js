@@ -1232,6 +1232,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryDetailCopy?.exactMatchCount ?? summary.summaryDetailCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopy?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
+    rows.push({
+      label: 'summary detail copy preview',
+      value: `${Number((summary.summaryDetailCopyPreview?.exactMatchCount ?? summary.summaryDetailCopyPreview?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopyPreview?.totalSessions || 0)} exact-match`,
+    });
+  }
   return rows;
 }
 
@@ -1246,6 +1252,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryCopy', label: 'summary copy' },
     { key: 'summaryCopyPreview', label: 'summary copy preview' },
     { key: 'summaryDetailCopy', label: 'summary detail copy' },
+    { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
   ]
     .map(({ key, label }) => {
       const overviewLine = String(summary?.[key]?.overviewLine || '').trim();
