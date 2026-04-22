@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Copy Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- added row-level `line 복사` and `현재 line 복사` actions to the release tab `handoff-*` card and inline preview summary detail rows, so operators can hand off the exact `preview/open/summary copy/summary copy preview` overview line instead of re-copying only the top-level summary block
+- extended browser E2E coverage so the `summary copy preview` detail line must survive both clipboard success and prompt fallback paths, and the copied-state transition must reset correctly between the card-level and current-preview surfaces
+- persisted the new evidence as `releaseHandoffSummaryDetailCopyVerificationSummary` plus `artifactPair.releaseHandoffSummaryDetailCopyVerified` in the saved browser report so detail-line copy behavior is no longer assertion-only runtime state
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-21T22:20:00.000Z","id":"doclog_20260421222000_handoff_overview_line_surface","type":"devlog","updatedAt":"2026-04-21T22:20:00.000Z"} -->
 ## 2026-04-21 Handoff Overview Line Surface
 

@@ -3643,6 +3643,13 @@ button.tag:hover {
   gap: 2px;
 }
 
+.release-handoff-summary-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .release-handoff-summary-detail .item-title {
   font-size: 0.72rem;
 }
