@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422173000_stable_line_preview_body_promotion","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Preview Body Promotion
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted the newly closed `summary-stable-line-copy-preview` body verification from browser-report-only evidence into compact `execution-v1-release-handoff-digest/manifest/index.json` fields and shared `releaseHandoffStructuredSummary`
+- updated release tab handoff normalization/rendering so card와 inline preview가 `summary stable line copy preview body` exact-match row와 overview detail을 기존 `summary stable line copy preview` row와 분리해서 직접 읽도록 정리
+- tightened browser smoke so persisted handoff JSON artifacts and rendered release UI surfaces now require the expanded structured summary overview signature including `summaryStableLineCopyPreviewBody`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Stable Line Preview Body Contract
 
