@@ -1353,13 +1353,15 @@ try {
         results.push(await page.evaluate((currentTarget) => {
           const card = document.querySelector('[data-release-handoff-id="' + CSS.escape(currentTarget.artifactId) + '"]');
           const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+          const previewBody = panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '';
           return {
             activeCard: card?.classList.contains('is-preview-active') || false,
             artifactId: currentTarget.artifactId,
             buttonLabel: card?.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
             format: panel?.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
             note: panel?.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
-            previewBody: panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            previewBody,
+            previewBodySample: previewBody.replace(/\s+/g, ' ').trim().slice(0, 320),
             previewStructuredSummaryCopyLabel:
               panel?.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
             structuredSummaryCopyLabel:
@@ -1502,6 +1504,93 @@ try {
   assert.equal(String(handoffPreviewState.activePreview.structuredSummaryOverview || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(String(handoffPreviewState.activePreview.structuredSummarySha || '').trim().length, 0, JSON.stringify(handoffPreviewState.activePreview));
   assert.equal(new URL(handoffPreviewState.href).searchParams.get('rartifact'), 'index-markdown', JSON.stringify(handoffPreviewState));
+  const releaseHandoffSummaryCopyPreviewVerificationSummary = {
+    byArtifactId: {},
+    exactMatchCount: 0,
+    totalArtifacts: 0,
+  };
+  for (const target of [
+    {
+      artifactId: 'handoff-digest-text',
+      expectedCounter: 'summaryCopyExactMatchCount=2',
+      expectedMarker: '---summary-copy---',
+      format: 'text',
+    },
+    {
+      artifactId: 'handoff-digest-markdown',
+      expectedCounter: 'summaryCopyExactMatchCount: 2',
+      expectedMarker: 'Summary-Copy Overview',
+      format: 'markdown',
+    },
+    {
+      artifactId: 'handoff-manifest-text',
+      expectedCounter: 'summaryCopyExactMatchCount=2',
+      expectedMarker: '---summary-copy---',
+      format: 'text',
+    },
+    {
+      artifactId: 'handoff-manifest-markdown',
+      expectedCounter: 'summaryCopyExactMatchCount: 2',
+      expectedMarker: 'Summary-Copy Overview',
+      format: 'markdown',
+    },
+    {
+      artifactId: 'handoff-index-text',
+      expectedCounter: 'summaryCopyExactMatchCount=2',
+      expectedMarker: '---summary-copy---',
+      format: 'text',
+    },
+    {
+      artifactId: 'handoff-index-markdown',
+      expectedCounter: 'summaryCopyExactMatchCount: 2',
+      expectedMarker: 'Summary-Copy Overview',
+      format: 'markdown',
+    },
+  ]) {
+    const previewEntry = handoffPreviewState.results.find((item) => item.artifactId === target.artifactId);
+    assert.equal(Boolean(previewEntry), true, JSON.stringify({ handoffPreviewState, target }));
+    const normalizedBody = String(previewEntry?.previewBody || '').replace(/\s+/g, ' ').trim();
+    const summaryEntry = {
+      bodySample: String(previewEntry?.previewBodySample || '').trim(),
+      expectedCounter: target.expectedCounter,
+      expectedMarker: target.expectedMarker,
+      format: target.format,
+      hasExpectedCounter: normalizedBody.includes(target.expectedCounter),
+      hasExpectedMarker: normalizedBody.includes(target.expectedMarker),
+      title: String(previewEntry?.title || '').trim(),
+    };
+    summaryEntry.exactMatch = summaryEntry.hasExpectedCounter && summaryEntry.hasExpectedMarker;
+    assert.equal(summaryEntry.exactMatch, true, JSON.stringify({ target, summaryEntry, previewEntry }));
+    releaseHandoffSummaryCopyPreviewVerificationSummary.byArtifactId[target.artifactId] = summaryEntry;
+    releaseHandoffSummaryCopyPreviewVerificationSummary.totalArtifacts += 1;
+    releaseHandoffSummaryCopyPreviewVerificationSummary.exactMatchCount += summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryCopyPreviewVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryCopyPreviewVerificationSummary.byArtifactId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([artifactId, summaryEntry]) => [
+      artifactId,
+      `format=${summaryEntry.format}`,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `counter=${summaryEntry.hasExpectedCounter ? 'present' : 'missing'}`,
+      `marker=${summaryEntry.hasExpectedMarker ? 'present' : 'missing'}`,
+      `bodySha256=${createHash('sha256').update(summaryEntry.bodySample).digest('hex')}`,
+    ].join('|'));
+  releaseHandoffSummaryCopyPreviewVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryCopyPreviewVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryCopyPreviewVerificationSummary.overviewLine = [
+    `totalArtifacts=${releaseHandoffSummaryCopyPreviewVerificationSummary.totalArtifacts}`,
+    `exactMatchCount=${releaseHandoffSummaryCopyPreviewVerificationSummary.exactMatchCount}`,
+    `artifacts=${Object.keys(releaseHandoffSummaryCopyPreviewVerificationSummary.byArtifactId).join(',')}`,
+    `sha256=${releaseHandoffSummaryCopyPreviewVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryCopyPreviewVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryCopyPreviewVerificationSummary.totalArtifacts,
+    JSON.stringify(releaseHandoffSummaryCopyPreviewVerificationSummary),
+  );
 
   const handoffStructuredSummaryCopyState = runPwJson([
     '--raw',
@@ -4022,6 +4111,7 @@ try {
     releaseHandoffOpenCoverageSummary,
     releaseHandoffOpenLinkVerificationSummary,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
+    releaseHandoffSummaryCopyPreviewVerificationSummary,
     releaseHandoffSummaryCopyVerificationSummary,
     releaseHandoffSessionResults: normalizedReleaseHandoffSessionResults,
     repoDir,
@@ -4049,6 +4139,7 @@ try {
       releaseHandoffIndexMarkdownPath,
       releaseHandoffIndexMarkdownVerified: true,
       releaseHandoffLinkSummaryVerified: true,
+      releaseHandoffSummaryCopyPreviewVerified: true,
       releaseHandoffSummaryCopySummaryVerified: true,
       releaseHandoffPreviewLinkSessionsVerified: true,
       releaseDocHeadVerified: true,

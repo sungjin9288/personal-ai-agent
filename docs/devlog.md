@@ -2764,6 +2764,15 @@
 - verified the served asset exports `pushState`/`popstate` handling and updated README copy to reflect refresh, sharing, and browser-history recovery behavior
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summarycopy_preview","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary-Copy Preview Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended browser E2E preview verification so the release tab must render the new `summary-copy` marker and exact-match counter inside human-readable `handoff-digest/manifest/index` txt and markdown preview bodies, not just inside persisted artifact files
+- added `releaseHandoffSummaryCopyPreviewVerificationSummary` to the saved browser report with deterministic stable lines and sha, which turns the preview-body assertion into reusable evidence instead of leaving it as a transient runtime check
+- kept the final active preview control case on `index-markdown`, so the report still shows non-handoff preview surfaces without structured-summary chrome while the dedicated handoff previews prove the new `Summary-Copy` section is visible when expected
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summarycopy_siblings","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary-Copy Sibling Pass
 
