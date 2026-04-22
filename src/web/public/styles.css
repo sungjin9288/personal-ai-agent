@@ -3670,6 +3670,17 @@ button.tag:hover {
   word-break: break-all;
 }
 
+.release-handoff-summary-stable-line-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.release-handoff-summary-stable-line-row .ghost-button {
+  flex: 0 0 auto;
+}
+
 .release-handoff-summary-sha {
   word-break: break-all;
 }

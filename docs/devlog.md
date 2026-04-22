@@ -9,6 +9,15 @@
 - tightened browser smoke so handoff card/preview detail capture now requires the `summary detail copy` entry to expose four stable lines including the new `detail-line-copy-card` and `detail-line-copy-body-current-preview` signatures
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422113000_9a12bc","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Copy Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- added `stable line 복사` and `현재 stable line 복사` actions to the release handoff structured summary so the `summary detail copy` stable evidence lines can be handed off directly from both the card surface and the inline preview panel
+- extended the browser E2E smoke to verify clipboard success, prompt fallback, copied-state reset, and persisted browser report evidence for one card stable line and one current-preview stable line without widening the compact handoff JSON contract yet
+- verified the rendered UI contract by capturing stable-line button labels in the saved browser report and keeping the existing `summary detail copy` stable line list readable alongside the new per-line copy controls
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_copy_matrix","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Copy Matrix Pass
 

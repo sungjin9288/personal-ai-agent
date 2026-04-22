@@ -38,6 +38,8 @@ const state = {
   releaseHandoffCopiedSummaryId: '',
   releaseHandoffCopiedSummaryDetailKey: '',
   releaseHandoffCopiedSummaryDetailTimer: null,
+  releaseHandoffCopiedSummaryStableLineKey: '',
+  releaseHandoffCopiedSummaryStableLineTimer: null,
   releaseHandoffCopiedSummaryTimer: null,
   retrievalCopiedSourceKey: '',
   retrievalCopiedSourceTimer: null,
@@ -822,6 +824,20 @@ function isCopiedReleaseHandoffSummaryDetail(artifactId = '', detailKey = '') {
   return state.releaseHandoffCopiedSummaryDetailKey === getReleaseHandoffStructuredSummaryDetailCopyKey(artifactId, detailKey);
 }
 
+function getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId = '', detailKey = '', lineIndex = -1) {
+  const normalizedArtifactId = normalizeUiParam(artifactId);
+  const normalizedDetailKey = normalizeUiParam(detailKey);
+  const normalizedLineIndex = Number.isInteger(lineIndex) ? lineIndex : Number.parseInt(lineIndex, 10);
+  if (!normalizedArtifactId || !normalizedDetailKey || normalizedLineIndex < 0) {
+    return '';
+  }
+  return `${normalizedArtifactId}:${normalizedDetailKey}:${normalizedLineIndex}`;
+}
+
+function isCopiedReleaseHandoffSummaryStableLine(artifactId = '', detailKey = '', lineIndex = -1) {
+  return state.releaseHandoffCopiedSummaryStableLineKey === getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId, detailKey, lineIndex);
+}
+
 function renderRetrievalSourceSurfaces() {
   renderAgentBlueprintBuilder();
   renderHarnessPanel();
@@ -900,6 +916,25 @@ function markCopiedReleaseHandoffSummaryDetail(artifactId = '', detailKey = '') 
   state.releaseHandoffCopiedSummaryDetailTimer = window.setTimeout(() => {
     state.releaseHandoffCopiedSummaryDetailKey = '';
     state.releaseHandoffCopiedSummaryDetailTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
+function markCopiedReleaseHandoffSummaryStableLine(artifactId = '', detailKey = '', lineIndex = -1) {
+  const nextCopyKey = getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId, detailKey, lineIndex);
+  if (!nextCopyKey) {
+    return;
+  }
+
+  state.releaseHandoffCopiedSummaryStableLineKey = nextCopyKey;
+  if (state.releaseHandoffCopiedSummaryStableLineTimer) {
+    window.clearTimeout(state.releaseHandoffCopiedSummaryStableLineTimer);
+    state.releaseHandoffCopiedSummaryStableLineTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseHandoffCopiedSummaryStableLineTimer = window.setTimeout(() => {
+    state.releaseHandoffCopiedSummaryStableLineKey = '';
+    state.releaseHandoffCopiedSummaryStableLineTimer = null;
     renderReleaseStatus();
   }, 1800);
 }
@@ -2511,6 +2546,16 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-handoff-structured-summary-stable-line') {
+        void copyReleaseHandoffStructuredSummaryStableLine({
+          artifactId: value || '',
+          detailKey: button.dataset.uiDetailKey || '',
+          lineIndex: button.dataset.uiLineIndex || '',
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
           focusedProvider: '',
@@ -3299,6 +3344,35 @@ async function copyReleaseHandoffStructuredSummaryDetail({
   });
   if (copyResult?.method === 'clipboard') {
     markCopiedReleaseHandoffSummaryDetail(normalizedArtifactId, normalizedDetailKey);
+  }
+}
+
+async function copyReleaseHandoffStructuredSummaryStableLine({
+  artifactId = state.releaseHandoffPreviewId,
+  detailKey = '',
+  lineIndex = -1,
+  successNotice = '',
+} = {}) {
+  const normalizedArtifactId = normalizeUiParam(artifactId);
+  const normalizedDetailKey = normalizeUiParam(detailKey);
+  const normalizedLineIndex = Number.isInteger(lineIndex) ? lineIndex : Number.parseInt(lineIndex, 10);
+  const handoffArtifacts = state.releaseStatus?.handoffArtifacts || [];
+  const handoffArtifact = handoffArtifacts.find((item) => String(item.id || '').trim() === normalizedArtifactId) || null;
+  const detailEntry = getReleaseHandoffStructuredSummaryDetails(handoffArtifact).find(
+    (detail) => normalizeUiParam(detail.key) === normalizedDetailKey,
+  );
+  const stableLine = String(detailEntry?.stableLines?.[normalizedLineIndex] || '').trim();
+  if (!stableLine) {
+    setUiNotice('복사할 handoff stable line이 없습니다.');
+    return;
+  }
+  const copyResult = await copyPlainTextValue(stableLine, {
+    promptMessage: `${handoffArtifact?.label || 'handoff summary'} ${detailEntry?.label || 'detail'} stable line을 복사하세요.`,
+    shownNotice: `${handoffArtifact?.label || 'handoff summary'} ${detailEntry?.label || 'detail'} stable line을 표시했습니다.`,
+    successNotice: successNotice || `${handoffArtifact?.label || 'handoff summary'} ${detailEntry?.label || 'detail'} stable line을 복사했습니다.`,
+  });
+  if (copyResult?.method === 'clipboard') {
+    markCopiedReleaseHandoffSummaryStableLine(normalizedArtifactId, normalizedDetailKey, normalizedLineIndex);
   }
 }
 
@@ -7265,8 +7339,20 @@ function renderReleaseStatus() {
                                                               <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
                                                               ${detail.stableLines
                                                                 .map(
-                                                                  (line) => `
-                                                                    <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                  (line, lineIndex) => `
+                                                                    <div class="release-handoff-summary-stable-line-row">
+                                                                      <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                      <button
+                                                                        class="ghost-button ${isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? 'is-copied' : ''}"
+                                                                        type="button"
+                                                                        data-release-handoff-structured-summary-stable-line-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}:${lineIndex}`)}"
+                                                                        data-ui-action="copy-release-handoff-structured-summary-stable-line"
+                                                                        data-ui-detail-key="${escapeHtml(detail.key || '')}"
+                                                                        data-ui-line-index="${escapeHtml(String(lineIndex))}"
+                                                                        data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
+                                                                        data-ui-value="${escapeHtml(item.id || '')}"
+                                                                      >${escapeHtml(isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? '복사됨' : 'stable line 복사')}</button>
+                                                                    </div>
                                                                   `,
                                                                 )
                                                                 .join('')}
@@ -7455,8 +7541,24 @@ function renderReleaseStatus() {
                                                             <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
                                                             ${detail.stableLines
                                                               .map(
-                                                                (line) => `
-                                                                  <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                (line, lineIndex) => `
+                                                                  <div class="release-handoff-summary-stable-line-row">
+                                                                    <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
+                                                                    <button
+                                                                      class="ghost-button ${isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex) ? 'is-copied' : ''}"
+                                                                      type="button"
+                                                                      data-release-handoff-current-preview-structured-summary-stable-line-copy="${escapeHtml(`${detail.key || ''}:${lineIndex}`)}"
+                                                                      data-ui-action="copy-release-handoff-structured-summary-stable-line"
+                                                                      data-ui-detail-key="${escapeHtml(detail.key || '')}"
+                                                                      data-ui-line-index="${escapeHtml(String(lineIndex))}"
+                                                                      data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
+                                                                      data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                                                    >${escapeHtml(
+                                                                      isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex)
+                                                                        ? '현재 stable line 복사됨'
+                                                                        : '현재 stable line 복사',
+                                                                    )}</button>
+                                                                  </div>
                                                                 `,
                                                               )
                                                               .join('')}
