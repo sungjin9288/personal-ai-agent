@@ -1,5 +1,14 @@
 # Devlog
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_preview","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Preview Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- extended the human-readable `execution-v1-release-handoff-digest/manifest/index` txt and markdown siblings so they now carry explicit `summary-detail-copy` counters and dedicated overview/signature sections instead of exposing that evidence only through compact JSON and the shared structured summary block
+- added a browser E2E preview-body verification pass that requires all six handoff txt/markdown previews to render the new `summaryDetailCopyExactMatchCount` counter plus `summary-detail-copy` marker, and persisted that result as `releaseHandoffSummaryDetailCopyPreviewVerificationSummary` with a dedicated artifactPair flag in the saved browser report
+- kept the compact JSON contract unchanged in shape while making operator-facing preview surfaces prove the same `summary detail copy` evidence end-to-end, which closes the remaining gap between machine-readable handoff JSON and human-readable preview bodies
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_summary_detail_structured","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary Detail Structured Pass
 
