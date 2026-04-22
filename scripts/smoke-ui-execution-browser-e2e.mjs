@@ -1452,6 +1452,10 @@ try {
               label: row.querySelector('.item-title')?.textContent || '',
               value: row.querySelector('.item-meta')?.textContent || '',
             })),
+            structuredSummaryDetails: Array.from(panel?.querySelectorAll('[data-release-handoff-preview-structured-summary-detail]') || []).map((row) => ({
+              label: row.querySelector('.item-title')?.textContent || '',
+              overview: row.querySelector('.item-meta')?.textContent || '',
+            })),
             structuredSummaryOverview: panel?.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
             structuredSummarySha: panel?.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
             state: panel?.getAttribute('data-release-handoff-preview-state') || '',
@@ -1550,6 +1554,22 @@ try {
     assert.equal(
       target.artifactId.startsWith('handoff-')
         ? previewEntry.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary copy preview')
+        : true,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryDetails.length >= 4
+        : previewEntry.structuredSummaryDetails.length === 0,
+      true,
+      JSON.stringify(previewEntry),
+    );
+    assert.equal(
+      target.artifactId.startsWith('handoff-')
+        ? previewEntry.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary copy preview'
+          && /totalArtifacts=6\|exactMatchCount=6\|artifacts=/i.test(String(detail.overview || '')))
         : true,
       true,
       JSON.stringify(previewEntry),
@@ -2790,6 +2810,10 @@ try {
                 label: row.querySelector('.item-title')?.textContent || '',
                 value: row.querySelector('.item-meta')?.textContent || '',
               })),
+              structuredSummaryDetails: Array.from(node.querySelectorAll('[data-release-handoff-structured-summary-detail]')).map((row) => ({
+                label: row.querySelector('.item-title')?.textContent || '',
+                overview: row.querySelector('.item-meta')?.textContent || '',
+              })),
               structuredSummaryOverview: node.querySelector('.release-handoff-summary-overview')?.textContent || '',
               structuredSummarySha: node.querySelector('.release-handoff-summary-sha')?.textContent || '',
             })),
@@ -2810,6 +2834,10 @@ try {
                 structuredSummaryRows: Array.from(panel.querySelectorAll('.release-handoff-summary .harness-row')).map((row) => ({
                   label: row.querySelector('.item-title')?.textContent || '',
                   value: row.querySelector('.item-meta')?.textContent || '',
+                })),
+                structuredSummaryDetails: Array.from(panel.querySelectorAll('[data-release-handoff-preview-structured-summary-detail]')).map((row) => ({
+                  label: row.querySelector('.item-title')?.textContent || '',
+                  overview: row.querySelector('.item-meta')?.textContent || '',
                 })),
                 structuredSummaryOverview: panel.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
                 structuredSummarySha: panel.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
@@ -3360,6 +3388,22 @@ try {
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
         ? handoffArtifact.structuredSummaryRows.some((row) => String(row.label || '').trim() === 'summary copy preview')
+        : true,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryDetails.length >= 4
+        : handoffArtifact.structuredSummaryDetails.length === 0,
+      true,
+      JSON.stringify(handoffArtifact),
+    );
+    assert.equal(
+      handoffArtifact.id.startsWith('handoff-')
+        ? handoffArtifact.structuredSummaryDetails.some((detail) =>
+          String(detail.label || '').trim() === 'summary copy preview'
+          && /totalArtifacts=6\|exactMatchCount=6\|artifacts=/i.test(String(detail.overview || '')))
         : true,
       true,
       JSON.stringify(handoffArtifact),

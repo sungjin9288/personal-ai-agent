@@ -1195,6 +1195,27 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
   return rows;
 }
 
+function getReleaseHandoffStructuredSummaryDetails(item = {}) {
+  const summary = item?.structuredSummary;
+  if (!summary || typeof summary !== 'object') {
+    return [];
+  }
+  return [
+    { key: 'preview', label: 'preview' },
+    { key: 'open', label: 'open' },
+    { key: 'summaryCopy', label: 'summary copy' },
+    { key: 'summaryCopyPreview', label: 'summary copy preview' },
+  ]
+    .map(({ key, label }) => {
+      const overviewLine = String(summary?.[key]?.overviewLine || '').trim();
+      if (!overviewLine) {
+        return null;
+      }
+      return { label, overviewLine };
+    })
+    .filter(Boolean);
+}
+
 function getReleaseHandoffStructuredSummarySha(item = {}) {
   return String(item?.structuredSummary?.sha256 || '').trim();
 }
@@ -7058,6 +7079,7 @@ function renderReleaseStatus() {
                           const openLinkCopied = isCopiedReleaseHandoffPreviewLink(item.id);
                           const structuredSummaryCopied = isCopiedReleaseHandoffSummary(item.id);
                           const structuredSummaryRows = getReleaseHandoffStructuredSummaryRows(item);
+                          const structuredSummaryDetails = getReleaseHandoffStructuredSummaryDetails(item);
                           const structuredSummaryOverviewLine = getReleaseHandoffStructuredSummaryOverviewLine(item);
                           const structuredSummarySha = getReleaseHandoffStructuredSummarySha(item);
                           const previewButtonLabel = previewActive
@@ -7099,6 +7121,22 @@ function renderReleaseStatus() {
                                           `,
                                         )
                                         .join('')}
+                                      ${structuredSummaryDetails.length
+                                        ? `
+                                            <div class="release-handoff-summary-details">
+                                              ${structuredSummaryDetails
+                                                .map(
+                                                  (detail) => `
+                                                    <div class="release-handoff-summary-detail" data-release-handoff-structured-summary-detail="${escapeHtml(item.id || '')}">
+                                                      <span class="item-title">${escapeHtml(detail.label)}</span>
+                                                      <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
+                                                    </div>
+                                                  `,
+                                                )
+                                                .join('')}
+                                            </div>
+                                          `
+                                        : ''}
                                       ${structuredSummaryOverviewLine
                                         ? `
                                             <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-structured-summary-overview="${escapeHtml(item.id || '')}">
@@ -7244,6 +7282,22 @@ function renderReleaseStatus() {
                                         `,
                                       )
                                       .join('')}
+                                    ${getReleaseHandoffStructuredSummaryDetails(handoffPreviewArtifact).length
+                                      ? `
+                                          <div class="release-handoff-summary-details">
+                                            ${getReleaseHandoffStructuredSummaryDetails(handoffPreviewArtifact)
+                                              .map(
+                                                (detail) => `
+                                                  <div class="release-handoff-summary-detail" data-release-handoff-preview-structured-summary-detail="true">
+                                                    <span class="item-title">${escapeHtml(detail.label)}</span>
+                                                    <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
+                                                  </div>
+                                                `,
+                                              )
+                                              .join('')}
+                                          </div>
+                                        `
+                                      : ''}
                                     ${handoffPreviewStructuredSummaryOverviewLine
                                       ? `
                                           <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-preview-structured-summary-overview="true">

@@ -9,6 +9,15 @@
 - updated the browser E2E card capture, preview-cycle assertions, and final screenshot capture so handoff surfaces must show the `entries=open,preview|sha256=...` line while the `index-markdown` control preview remains summary-free
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_6b57c1","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Summary Detail Surface Pass
+
+- date: 2026-04-22T00:00:00.000Z
+- changed release handoff summary normalization so the server now preserves entry-level `overviewLine` and exact-match semantics from compact handoff JSON instead of rebuilding only from top-level fallback counters
+- extended the release tab `handoff-*` card and inline preview summary box to render row-level overview details for `preview`, `open`, `summary copy`, and `summary copy preview`, which exposes the exact verification line that backs each summary row
+- tightened browser E2E coverage so persisted browser report capture must now include `structuredSummaryDetails` on handoff cards and preview panels, and the `summary copy preview` detail must match the expected `totalArtifacts=6|exactMatchCount=6|...` overview contract
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422000000_5df2ce","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Summary-Copy Preview Sibling Pass
 

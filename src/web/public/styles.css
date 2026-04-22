@@ -3633,6 +3633,24 @@ button.tag:hover {
   min-height: 0;
 }
 
+.release-handoff-summary-details {
+  display: grid;
+  gap: 6px;
+}
+
+.release-handoff-summary-detail {
+  display: grid;
+  gap: 2px;
+}
+
+.release-handoff-summary-detail .item-title {
+  font-size: 0.72rem;
+}
+
+.release-handoff-summary-detail .item-meta {
+  word-break: break-all;
+}
+
 .release-handoff-summary-sha {
   word-break: break-all;
 }

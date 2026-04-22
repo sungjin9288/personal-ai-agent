@@ -329,31 +329,58 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
   if (!structuredSummary || typeof structuredSummary !== 'object') {
     return null;
   }
+  const normalizeSummaryEntry = (summaryEntry = null, fallback = {}) => {
+    const normalizedEntry = summaryEntry && typeof summaryEntry === 'object' ? summaryEntry : {};
+    return {
+      exactMatchCount: Number(
+        normalizedEntry.exactMatchCount ?? fallback.exactMatchCount ?? 0,
+      ),
+      errorFreeSessions: Number(
+        normalizedEntry.errorFreeSessions
+        ?? fallback.errorFreeSessions
+        ?? fallback.exactMatchCount
+        ?? 0,
+      ),
+      overviewLine: String(normalizedEntry.overviewLine || fallback.overviewLine || '').trim(),
+      stableDigestSha256: String(
+        normalizedEntry.stableDigestSha256 || fallback.stableDigestSha256 || '',
+      ).trim(),
+      totalSessions: Number(normalizedEntry.totalSessions ?? fallback.totalSessions ?? 0),
+    };
+  };
   return {
-    open: {
+    open: normalizeSummaryEntry(structuredSummary.open, {
       errorFreeSessions: Number(summaryArtifact.releaseHandoffOpenErrorFreeSessions || 0),
+      overviewLine: '',
       stableDigestSha256: String(summaryArtifact.releaseHandoffOpenStableDigestSha256 || '').trim(),
       totalSessions: Number(summaryArtifact.releaseHandoffOpenTotalSessions || 0),
-    },
-    overviewLine: String(summaryArtifact.releaseHandoffStructuredSummaryOverviewLine || '').trim(),
-    preview: {
+    }),
+    overviewLine: String(
+      structuredSummary.overviewLine || summaryArtifact.releaseHandoffStructuredSummaryOverviewLine || '',
+    ).trim(),
+    preview: normalizeSummaryEntry(structuredSummary.preview, {
       errorFreeSessions: Number(summaryArtifact.releaseHandoffPreviewErrorFreeSessions || 0),
+      overviewLine: '',
       stableDigestSha256: String(summaryArtifact.releaseHandoffPreviewStableDigestSha256 || '').trim(),
       totalSessions: Number(summaryArtifact.releaseHandoffPreviewTotalSessions || 0),
-    },
-    summaryCopy: {
+    }),
+    summaryCopy: normalizeSummaryEntry(structuredSummary.summaryCopy, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryCopyExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryCopyExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryCopyOverviewLine || '').trim(),
       stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryCopyStableDigestSha256 || '').trim(),
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryCopyTotalChecks || 0),
-    },
-    summaryCopyPreview: {
+    }),
+    summaryCopyPreview: normalizeSummaryEntry(structuredSummary.summaryCopyPreview, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryCopyPreviewExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryCopyPreviewExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryCopyPreviewOverviewLine || '').trim(),
       stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryCopyPreviewStableDigestSha256 || '').trim(),
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryCopyPreviewTotalArtifacts || 0),
-    },
-    sha256: String(summaryArtifact.releaseHandoffStructuredSummarySha256 || '').trim(),
+    }),
+    sha256: String(
+      structuredSummary.sha256 || summaryArtifact.releaseHandoffStructuredSummarySha256 || '',
+    ).trim(),
   };
 }
 
