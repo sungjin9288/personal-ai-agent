@@ -18,6 +18,15 @@
 - verified the rendered UI contract by capturing stable-line button labels in the saved browser report and keeping the existing `summary detail copy` stable line list readable alongside the new per-line copy controls
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422162000_4efdc6","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
+## 2026-04-22 Release Handoff Stable Line Preview Promotion
+
+- date: 2026-04-22T00:00:00.000Z
+- promoted `summary stable line copy` preview-body verification from browser-report-only evidence into compact `execution-v1-release-handoff-digest/manifest/index.json` fields and shared `releaseHandoffStructuredSummary`
+- updated release tab handoff normalization/rendering so card와 inline preview가 `summary stable line copy preview` exact-match row와 overview detail을 compact JSON sibling에서 직접 읽도록 정리
+- expanded browser smoke to require the new row/detail and the updated structured summary overview signature including `summaryStableLineCopyPreview`
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422151000_7c96da","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Stable Line Body Contract
 

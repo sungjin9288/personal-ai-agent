@@ -411,6 +411,17 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
         : [],
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyTotalChecks || 0),
     }),
+    summaryStableLineCopyPreview: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreview, {
+      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewExactMatchCount || 0),
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewOverviewLine || '').trim(),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewStableDigestSha256 || '').trim(),
+      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary?.stableLines?.length || 0),
+      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary?.stableLines)
+        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary.stableLines
+        : [],
+      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewTotalArtifacts || 0),
+    }),
     summaryDetailCopyPreview: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreview, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
