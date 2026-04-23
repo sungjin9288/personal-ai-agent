@@ -1309,6 +1309,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy === 'object') {
+    rows.push({
+      label: 'summary stable line copy preview body line copy body line copy body line copy',
+      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
+    });
+  }
   if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
     rows.push({
       label: 'summary detail copy preview',
@@ -1348,6 +1354,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBody', label: 'summary stable line copy preview body line copy body' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body' },
+    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy' },
     { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
     { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
     { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },

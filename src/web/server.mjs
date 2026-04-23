@@ -477,6 +477,17 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
         : [],
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyTotalArtifacts || 0),
     }),
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy, {
+      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyOverviewLine || '').trim(),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableDigestSha256 || '').trim(),
+      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines?.length || 0),
+      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines)
+        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines
+        : [],
+      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks || 0),
+    }),
     summaryDetailCopyPreview: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreview, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
