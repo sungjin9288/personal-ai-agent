@@ -24,6 +24,8 @@
 - added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody` so the promoted row now proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
 - persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
 - promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 promoted row의 detail line-copy evidence를 same-surface row/detail metadata로 직접 노출하도록 확장
+- closed the next human-readable handoff gap by adding `summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy` sections to digest/manifest/index txt/md siblings and verifying their counter/marker through browser preview smoke
+- persisted that body-section evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary` with a dedicated artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->

@@ -444,6 +444,25 @@ function seedReleaseHandoffFixtures() {
     stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
     totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks,
   };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary = {
+    exactMatchCount: 6,
+    overviewLine: [
+      'totalArtifacts=6',
+      'exactMatchCount=6',
+      'artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+    ].join('|'),
+    stableLines: [
+      'handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-digest-markdown-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+      'handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-digest-text-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+      'handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-index-markdown-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+      'handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-index-text-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+      'handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-manifest-markdown-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+      'handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=seed-handoff-manifest-text-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-sha',
+    totalArtifacts: 6,
+  };
   const seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary = {
     exactMatchCount: 6,
     overviewLine: [
@@ -659,6 +678,9 @@ function seedReleaseHandoffFixtures() {
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `summaryDetailCopyPreviewTotalArtifacts=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `summaryDetailCopyPreviewExactMatchCount=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `summaryDetailCopyPreviewStableSha256=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -690,6 +712,9 @@ function seedReleaseHandoffFixtures() {
         '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
         seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+        '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+        seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
         '---summary-detail-copy-preview---',
         seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -732,6 +757,9 @@ function seedReleaseHandoffFixtures() {
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `- summaryDetailCopyPreviewTotalArtifacts: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `- summaryDetailCopyPreviewExactMatchCount: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `- summaryDetailCopyPreviewStableSha256: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -797,6 +825,14 @@ function seedReleaseHandoffFixtures() {
         '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
         '',
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+        '',
+        `- ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+        '',
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
         '',
         '## Summary-Detail-Copy Preview Overview',
         '',
@@ -928,6 +964,9 @@ function seedReleaseHandoffFixtures() {
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `summaryDetailCopyPreviewTotalArtifacts=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `summaryDetailCopyPreviewExactMatchCount=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `summaryDetailCopyPreviewStableSha256=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -959,6 +998,9 @@ function seedReleaseHandoffFixtures() {
         '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
         seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+        '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+        seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
         '---summary-detail-copy-preview---',
         seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -1001,6 +1043,9 @@ function seedReleaseHandoffFixtures() {
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `- summaryDetailCopyPreviewTotalArtifacts: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `- summaryDetailCopyPreviewExactMatchCount: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `- summaryDetailCopyPreviewStableSha256: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -1066,6 +1111,14 @@ function seedReleaseHandoffFixtures() {
         '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
         '',
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+        '',
+        `- ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+        '',
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
         '',
         '## Summary-Detail-Copy Preview Overview',
         '',
@@ -1197,6 +1250,9 @@ function seedReleaseHandoffFixtures() {
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `summaryDetailCopyPreviewTotalArtifacts=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `summaryDetailCopyPreviewExactMatchCount=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `summaryDetailCopyPreviewStableSha256=${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -1228,6 +1284,9 @@ function seedReleaseHandoffFixtures() {
         '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
         seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+        '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+        seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
         '---summary-detail-copy-preview---',
         seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
         ...seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -1270,6 +1329,9 @@ function seedReleaseHandoffFixtures() {
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
         `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+        `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
         `- summaryDetailCopyPreviewTotalArtifacts: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
         `- summaryDetailCopyPreviewExactMatchCount: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
         `- summaryDetailCopyPreviewStableSha256: ${seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -1335,6 +1397,14 @@ function seedReleaseHandoffFixtures() {
         '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
         '',
         ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+        '',
+        `- ${seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+        '',
+        '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+        '',
+        ...seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
         '',
         '## Summary-Detail-Copy Preview Overview',
         '',
@@ -2727,6 +2797,11 @@ try {
     exactMatchCount: 0,
     totalArtifacts: 0,
   };
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary = {
+    byArtifactId: {},
+    exactMatchCount: 0,
+    totalArtifacts: 0,
+  };
   for (const target of [
     {
       artifactId: 'handoff-digest-text',
@@ -2744,6 +2819,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy---',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount=2',
@@ -2768,6 +2845,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Overview',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount: 2',
@@ -2792,6 +2871,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy---',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount=2',
@@ -2816,6 +2897,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Overview',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount: 2',
@@ -2840,6 +2923,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy---',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount=6',
       expectedDetailPreviewMarker: '---summary-detail-copy-preview---',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount=2',
@@ -2864,6 +2949,8 @@ try {
       expectedStableLinePreviewBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Overview',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2',
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2',
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker: 'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
       expectedDetailPreviewCounter: 'summaryDetailCopyPreviewExactMatchCount: 6',
       expectedDetailPreviewMarker: 'Summary-Detail-Copy Preview Overview',
       expectedDetailPreviewLineCopyCounter: 'summaryDetailCopyPreviewLineCopyExactMatchCount: 2',
@@ -3008,6 +3095,32 @@ try {
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts += 1;
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount +=
       stableLinePreviewBodyLineCopyBodyLineCopyBodyEntry.exactMatch ? 1 : 0;
+    const stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry = {
+      bodySample: summaryEntry.bodySample,
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter:
+        target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter,
+      expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker:
+        target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker,
+      format: target.format,
+      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter:
+        normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter),
+      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker:
+        normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker),
+      title: summaryEntry.title,
+    };
+    stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.exactMatch =
+      stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter &&
+      stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker;
+    assert.equal(
+      stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.exactMatch,
+      true,
+      JSON.stringify({ target, stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry, previewEntry }),
+    );
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.byArtifactId[target.artifactId] =
+      stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry;
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts += 1;
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount +=
+      stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.exactMatch ? 1 : 0;
   }
   releaseHandoffSummaryCopyPreviewVerificationSummary.stableLines = Object.entries(
     releaseHandoffSummaryCopyPreviewVerificationSummary.byArtifactId,
@@ -3170,6 +3283,32 @@ try {
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts,
     JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary),
+  );
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.byArtifactId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([artifactId, summaryEntry]) => [
+      artifactId,
+      `format=${summaryEntry.format}`,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `bodyCounter=${summaryEntry.hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter ? 'present' : 'missing'}`,
+      `bodyMarker=${summaryEntry.hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker ? 'present' : 'missing'}`,
+      `bodySha256=${createHash('sha256').update(summaryEntry.bodySample).digest('hex')}`,
+    ].join('|'));
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.overviewLine = [
+    `totalArtifacts=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts}`,
+    `exactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount}`,
+    `artifacts=${Object.keys(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.byArtifactId).join(',')}`,
+    `sha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary),
   );
   const handoffStructuredSummaryCopyState = runPwJson([
     '--raw',
@@ -7338,6 +7477,7 @@ try {
     releaseHandoffOpenLinkVerificationSummary,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary,
@@ -7378,6 +7518,7 @@ try {
       releaseHandoffIndexMarkdownVerified: true,
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffSummaryDetailCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewStructuredVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerified: true,
@@ -7578,6 +7719,9 @@ try {
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `summaryDetailCopyPreviewTotalArtifacts=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `summaryDetailCopyPreviewExactMatchCount=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `summaryDetailCopyPreviewStableSha256=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -7615,6 +7759,9 @@ try {
     '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+    '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
     '---summary-detail-copy-preview---',
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     ...releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -7662,6 +7809,9 @@ try {
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `- summaryDetailCopyPreviewTotalArtifacts: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `- summaryDetailCopyPreviewExactMatchCount: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `- summaryDetailCopyPreviewStableSha256: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -7744,6 +7894,14 @@ try {
     '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
     '',
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+    '',
+    `- ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+    '',
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
     '',
     '## Summary-Detail-Copy Preview Overview',
     '',
@@ -7942,6 +8100,9 @@ try {
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `summaryDetailCopyPreviewTotalArtifacts=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `summaryDetailCopyPreviewExactMatchCount=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `summaryDetailCopyPreviewStableSha256=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -7977,6 +8138,9 @@ try {
     '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+    '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
     '---summary-detail-copy-preview---',
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     ...releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -8030,6 +8194,9 @@ try {
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `- summaryDetailCopyPreviewTotalArtifacts: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `- summaryDetailCopyPreviewExactMatchCount: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `- summaryDetailCopyPreviewStableSha256: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -8105,6 +8272,14 @@ try {
     '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
     '',
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+    '',
+    `- ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+    '',
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
     '',
     '## Summary-Detail-Copy Preview Overview',
     '',
@@ -8424,6 +8599,9 @@ try {
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `summaryDetailCopyPreviewTotalArtifacts=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `summaryDetailCopyPreviewExactMatchCount=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `summaryDetailCopyPreviewStableSha256=${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -8460,6 +8638,9 @@ try {
     '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
+    '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine,
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines,
     '---summary-detail-copy-preview---',
     releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
     ...releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableLines,
@@ -8512,6 +8693,9 @@ try {
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
     `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `- summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableSha256: ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
     `- summaryDetailCopyPreviewTotalArtifacts: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.totalArtifacts}`,
     `- summaryDetailCopyPreviewExactMatchCount: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount}`,
     `- summaryDetailCopyPreviewStableSha256: ${releaseHandoffSummaryDetailCopyPreviewVerificationSummary.stableSha256}`,
@@ -8588,6 +8772,14 @@ try {
     '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Stable Signature Lines',
     '',
     ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+    '',
+    `- ${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.overviewLine}`,
+    '',
+    '## Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Stable Signature Lines',
+    '',
+    ...releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines.map((line) => `- \`${line}\``),
     '',
     '## Summary-Detail-Copy Preview Overview',
     '',
@@ -9392,6 +9584,21 @@ try {
   );
   assert.equal(
     persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.totalArtifacts,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerified,
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
