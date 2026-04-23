@@ -15,6 +15,8 @@
 - persisted the new body-section evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary` with a dedicated artifactPair verification flag
 - promoted `summaryStableLineCopyPreviewBodyLineCopyBody` into compact release handoff JSON structured summary so digest/manifest/index artifact가 body-section exact-match row와 stable line metadata를 직접 보존하도록 확장
 - updated release tab normalization/rendering and browser smoke assertions so handoff card/preview가 `summary stable line copy preview body line copy body` row/detail을 same surface에서 읽도록 고정
+- added browser-only stable-line copy verification for `summaryStableLineCopyPreviewBodyLineCopyBody` so the promoted body-section row now proves one card stable line and one current-preview stable line can both round-trip through clipboard/prompt fallback
+- persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->

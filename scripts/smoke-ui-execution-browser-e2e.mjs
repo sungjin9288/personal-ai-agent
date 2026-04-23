@@ -3125,6 +3125,16 @@ try {
       const stableLineCardCopy = await runStableLineCardCopy('handoff-digest-json', 'summaryDetailCopy', 0);
       const stableLinePreviewBodyCardFallback = await runStableLineCardFallback('handoff-digest-json', 'summaryStableLineCopyPreviewBody', 0);
       const stableLinePreviewBodyCardCopy = await runStableLineCardCopy('handoff-digest-json', 'summaryStableLineCopyPreviewBody', 0);
+      const stableLinePreviewBodyLineCopyBodyCardFallback = await runStableLineCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBody',
+        0,
+      );
+      const stableLinePreviewBodyLineCopyBodyCardCopy = await runStableLineCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBody',
+        0,
+      );
 
       await clickPreview('handoff-index-markdown');
       const currentPreviewFallback = await runPreviewFallback();
@@ -3137,6 +3147,14 @@ try {
       const currentPreviewStableLineCopy = await runStableLinePreviewCopy('summaryDetailCopy', 3);
       const currentPreviewStableLinePreviewBodyFallback = await runStableLinePreviewFallback('summaryStableLineCopyPreviewBody', 2);
       const currentPreviewStableLinePreviewBodyCopy = await runStableLinePreviewCopy('summaryStableLineCopyPreviewBody', 2);
+      const currentPreviewStableLinePreviewBodyLineCopyBodyFallback = await runStableLinePreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBody',
+        2,
+      );
+      const currentPreviewStableLinePreviewBodyLineCopyBodyCopy = await runStableLinePreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBody',
+        2,
+      );
       const currentPreviewDetailPreviewLineCopyBodyFallback = await runDetailPreviewFallback('summaryDetailCopyPreviewLineCopyBody');
       const currentPreviewDetailPreviewLineCopyBodyCopy = await runDetailPreviewCopy('summaryDetailCopyPreviewLineCopyBody');
 
@@ -3153,6 +3171,8 @@ try {
           document.querySelector('[data-release-handoff-structured-summary-stable-line-copy="handoff-digest-json:summaryDetailCopy:0"]')?.textContent || '',
         digestJsonCardStableLinePreviewBody:
           document.querySelector('[data-release-handoff-structured-summary-stable-line-copy="handoff-digest-json:summaryStableLineCopyPreviewBody:0"]')?.textContent || '',
+        digestJsonCardStableLinePreviewBodyLineCopyBody:
+          document.querySelector('[data-release-handoff-structured-summary-stable-line-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBody:0"]')?.textContent || '',
         currentPreviewDetail:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryCopyPreview"]')?.textContent || '',
         currentPreviewDetailPreview:
@@ -3163,6 +3183,8 @@ try {
           document.querySelector('[data-release-handoff-current-preview-structured-summary-stable-line-copy="summaryDetailCopy:3"]')?.textContent || '',
         currentPreviewStableLinePreviewBody:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-stable-line-copy="summaryStableLineCopyPreviewBody:2"]')?.textContent || '',
+        currentPreviewStableLinePreviewBodyLineCopyBody:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-stable-line-copy="summaryStableLineCopyPreviewBodyLineCopyBody:2"]')?.textContent || '',
       }));
 
       await page.waitForTimeout(1900);
@@ -3179,6 +3201,8 @@ try {
         currentPreviewStableLineFallback,
         currentPreviewStableLinePreviewBodyCopy,
         currentPreviewStableLinePreviewBodyFallback,
+        currentPreviewStableLinePreviewBodyLineCopyBodyCopy,
+        currentPreviewStableLinePreviewBodyLineCopyBodyFallback,
         currentPreviewDetailFallback,
         currentPreviewCopy,
         currentPreviewFallback,
@@ -3191,6 +3215,8 @@ try {
         stableLineCardFallback,
         stableLinePreviewBodyCardCopy,
         stableLinePreviewBodyCardFallback,
+        stableLinePreviewBodyLineCopyBodyCardCopy,
+        stableLinePreviewBodyLineCopyBodyCardFallback,
         detailCardFallback,
         directCardCopy,
         directCardFallback,
@@ -3590,6 +3616,71 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyCopy),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback.copyLabel,
+    'stable line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback.promptedValue,
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.stableLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.copiedText,
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.stableLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback.copyLabel,
+    '현재 stable line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback.promptedValue,
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.stableLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.previewArtifactId,
+    'handoff-index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.copiedText,
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.stableLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.copyLabelAfterCopy,
+    '현재 stable line 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCard,
     'overview 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
@@ -3625,6 +3716,11 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardStableLinePreviewBodyLineCopyBody,
+    'stable line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetail,
     '현재 line 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
@@ -3646,6 +3742,11 @@ try {
   );
   assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewStableLinePreviewBody,
+    '현재 stable line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewStableLinePreviewBodyLineCopyBody,
     '현재 stable line 복사됨',
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
@@ -6315,7 +6416,7 @@ try {
         copiedText: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyCopy.copiedText,
         copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyCopy.copyLabelAfterCopy,
         detailKey: 'summaryStableLineCopyPreviewBody',
-        expectedLabelAfterOtherCopy: '현재 stable line 복사됨',
+        expectedLabelAfterOtherCopy: '현재 stable line 복사',
         expectedSuccessLabel: '현재 stable line 복사됨',
         expectedText: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyCopy.stableLine,
         fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyFallback.copyLabel,
@@ -6378,6 +6479,91 @@ try {
     /^[a-f0-9]{64}$/.test(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary.stableSha256),
     true,
     JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary),
+  );
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary = {
+    bySurfaceId: {
+      card: {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBody',
+        expectedLabelAfterOtherCopy: 'stable line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardCopy.stableLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.stableLinePreviewBodyLineCopyBodyCardFallback.promptedValue,
+        lineIndex: 0,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardStableLinePreviewBodyLineCopyBody,
+        surface: 'card',
+      },
+      'current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBody',
+        expectedLabelAfterOtherCopy: '현재 stable line 복사됨',
+        expectedSuccessLabel: '현재 stable line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.stableLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyFallback.promptedValue,
+        lineIndex: 2,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewStableLinePreviewBodyLineCopyBody,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewStableLinePreviewBodyLineCopyBodyCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
+    },
+    exactMatchCount: 0,
+    totalChecks: 2,
+  };
+  for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.bySurfaceId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedText === summaryEntry.expectedText &&
+      summaryEntry.fallbackPromptedValue === summaryEntry.expectedText &&
+      summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel &&
+      summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy &&
+      (summaryEntry.surface !== 'current-preview' || summaryEntry.previewArtifactId === summaryEntry.artifactId);
+    assert.equal(summaryEntry.exactMatch, true, JSON.stringify({ surfaceId, releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary }));
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount += summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.bySurfaceId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([surfaceId, summaryEntry]) => [
+      surfaceId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `artifactId=${summaryEntry.artifactId}`,
+      `detailKey=${summaryEntry.detailKey}`,
+      `lineIndex=${summaryEntry.lineIndex}`,
+      `surface=${summaryEntry.surface}`,
+      `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+      `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+    ].join('|'));
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.overviewLine = [
+    `totalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks}`,
+    `exactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount}`,
+    `surfaces=${Object.values(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}:${entry.lineIndex}/${entry.surface}`).join(',')}`,
+    `sha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines.length,
+    2,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary),
   );
   const releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
     bySurfaceId: {
@@ -6581,6 +6767,7 @@ try {
     releaseHandoffOpenLinkVerificationSummary,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyVerificationSummary: releaseHandoffSummaryStableLineCopyPreviewVerificationSummary,
@@ -6619,6 +6806,7 @@ try {
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffSummaryDetailCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewStructuredVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyVerified: true,
@@ -8503,6 +8691,21 @@ try {
   );
   assert.equal(
     persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerified,
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
