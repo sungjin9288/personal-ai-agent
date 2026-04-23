@@ -1315,6 +1315,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody === 'object') {
+    rows.push({
+      label: 'summary stable line copy preview body line copy body line copy body line copy body',
+      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
+    });
+  }
   if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
     rows.push({
       label: 'summary detail copy preview',
@@ -1355,6 +1361,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy' },
+    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body line copy body' },
     { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
     { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
     { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },

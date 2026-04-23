@@ -488,6 +488,17 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
         : [],
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks || 0),
     }),
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody, {
+      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
+      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
+      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyOverviewLine || '').trim(),
+      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyStableDigestSha256 || '').trim(),
+      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines?.length || 0),
+      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines)
+        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableLines
+        : [],
+      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyTotalArtifacts || 0),
+    }),
     summaryDetailCopyPreview: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreview, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
