@@ -1297,6 +1297,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBody?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy === 'object') {
+    rows.push({
+      label: 'summary stable line copy preview body line copy body line copy',
+      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
+    });
+  }
   if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
     rows.push({
       label: 'summary detail copy preview',
@@ -1334,6 +1340,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryStableLineCopyPreviewBody', label: 'summary stable line copy preview body' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopy', label: 'summary stable line copy preview body line copy' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBody', label: 'summary stable line copy preview body line copy body' },
+    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy' },
     { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
     { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
     { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },
