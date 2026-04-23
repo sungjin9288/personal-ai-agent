@@ -1303,6 +1303,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody === 'object') {
+    rows.push({
+      label: 'summary stable line copy preview body line copy body line copy body',
+      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
+    });
+  }
   if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
     rows.push({
       label: 'summary detail copy preview',
@@ -1341,6 +1347,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryStableLineCopyPreviewBodyLineCopy', label: 'summary stable line copy preview body line copy' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBody', label: 'summary stable line copy preview body line copy body' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy' },
+    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body' },
     { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
     { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
     { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },
