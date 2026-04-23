@@ -13,6 +13,8 @@
 - updated release tab normalization/rendering and browser smoke assertions so handoff card/preview가 새 `summary stable line copy preview body line copy` exact-match row와 overview detail을 same surface에서 읽도록 고정
 - closed the human-readable handoff gap by adding `summary-stable-line-copy-preview-body-line-copy` sections to digest/manifest/index txt/md siblings and verifying their counter/marker through browser preview smoke
 - persisted the new body-section evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBody` into compact release handoff JSON structured summary so digest/manifest/index artifact가 body-section exact-match row와 stable line metadata를 직접 보존하도록 확장
+- updated release tab normalization/rendering and browser smoke assertions so handoff card/preview가 `summary stable line copy preview body line copy body` row/detail을 same surface에서 읽도록 고정
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
