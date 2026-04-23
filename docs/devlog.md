@@ -7,6 +7,8 @@
 - promoted the newly closed `summary-stable-line-copy-preview` body verification from browser-report-only evidence into compact `execution-v1-release-handoff-digest/manifest/index.json` fields and shared `releaseHandoffStructuredSummary`
 - updated release tab handoff normalization/rendering so card와 inline preview가 `summary stable line copy preview body` exact-match row와 overview detail을 기존 `summary stable line copy preview` row와 분리해서 직접 읽도록 정리
 - tightened browser smoke so persisted handoff JSON artifacts and rendered release UI surfaces now require the expanded structured summary overview signature including `summaryStableLineCopyPreviewBody`
+- added browser-only stable-line copy verification for `summaryStableLineCopyPreviewBody` so smoke now proves one card stable line and one current-preview stable line can both round-trip through clipboard/prompt fallback
+- persisted the new browser report evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
