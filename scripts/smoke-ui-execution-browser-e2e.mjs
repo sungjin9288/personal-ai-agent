@@ -3809,6 +3809,14 @@ try {
         'handoff-digest-json',
         'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy',
       );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
       const detailPreviewLineCopyCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
       const detailPreviewLineCopyCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
       const stableLineCardFallback = await runStableLineCardFallback('handoff-digest-json', 'summaryDetailCopy', 0);
@@ -3887,6 +3895,12 @@ try {
       const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
         'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy',
       );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
       const currentPreviewDetailPreviewLineCopyBodyFallback = await runDetailPreviewFallback('summaryDetailCopyPreviewLineCopyBody');
       const currentPreviewDetailPreviewLineCopyBodyCopy = await runDetailPreviewCopy('summaryDetailCopyPreviewLineCopyBody');
       await runPreviewCopy();
@@ -3912,6 +3926,8 @@ try {
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         digestJsonCardDetailPreviewLineCopy:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryDetailCopyPreviewLineCopy"]')?.textContent || '',
         digestJsonCardStableLine:
@@ -3938,6 +3954,8 @@ try {
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         currentPreviewDetailPreviewLineCopyBody:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryDetailCopyPreviewLineCopyBody"]')?.textContent || '',
         currentPreviewStableLine:
@@ -3970,6 +3988,8 @@ try {
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyFallback,
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
         currentPreviewDetailPreviewLineCopyBodyCopy,
         currentPreviewDetailPreviewLineCopyBodyFallback,
         currentPreviewStableLineCopy,
@@ -3998,6 +4018,8 @@ try {
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyCardFallback,
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
         detailPreviewLineCopyCardCopy,
         detailPreviewLineCopyCardFallback,
         stableLineCardCopy,
@@ -4313,6 +4335,36 @@ try {
     handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.promptedValue,
     '',
     JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+    '복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy),
   );
   assert.equal(
     handoffStructuredSummaryCopyState.detailPreviewLineCopyCardFallback.clipboardText,
@@ -4695,6 +4747,41 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyCopy),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.clipboardText,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+    'handoff-index-markdown',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+    '현재 line 복사됨',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.promptedValue,
+    '',
+    JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback.clipboardText,
     '',
     JSON.stringify(handoffStructuredSummaryCopyState.currentPreviewDetailPreviewLineCopyBodyFallback),
@@ -4970,6 +5057,11 @@ try {
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
   assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+    'line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewLineCopy,
     'line 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
@@ -5021,6 +5113,11 @@ try {
   );
   assert.equal(
     handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy,
+    '현재 line 복사',
+    JSON.stringify(handoffStructuredSummaryCopyState),
+  );
+  assert.equal(
+    handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
     '현재 line 복사',
     JSON.stringify(handoffStructuredSummaryCopyState),
   );
@@ -8545,6 +8642,88 @@ try {
     true,
     JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
   );
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    bySurfaceId: {
+      card: {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: 'line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        surface: 'card',
+      },
+      'current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: '현재 line 복사',
+        expectedSuccessLabel: '현재 line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
+    },
+    exactMatchCount: 0,
+    totalChecks: 2,
+  };
+  for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedText === summaryEntry.expectedText
+      && summaryEntry.fallbackPromptedValue === summaryEntry.expectedText
+      && summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel
+      && summaryEntry.fallbackCopyLabel === summaryEntry.expectedLabelAfterOtherCopy
+      && summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy;
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount +=
+      summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([surfaceId, summaryEntry]) => [
+      surfaceId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `artifactId=${summaryEntry.artifactId}`,
+      `detailKey=${summaryEntry.detailKey}`,
+      `surface=${summaryEntry.surface}`,
+      `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+      `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+    ].join('|'));
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine = [
+    `totalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks}`,
+    `exactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount}`,
+    `surfaces=${Object.values(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}/${entry.surface}`).join(',')}`,
+    `sha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    2,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
   const releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
     bySurfaceId: {
       card: {
@@ -8837,6 +9016,7 @@ try {
     releaseHandoffOpenLinkVerificationSummary,
     releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
     releaseHandoffSummaryDetailCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
@@ -8884,6 +9064,7 @@ try {
       releaseHandoffIndexMarkdownVerified: true,
       releaseHandoffLinkSummaryVerified: true,
       releaseHandoffSummaryDetailCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyVerified: true,
@@ -11091,6 +11272,21 @@ try {
   );
   assert.equal(
     persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
