@@ -1321,6 +1321,12 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
     });
   }
+  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy === 'object') {
+    rows.push({
+      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy',
+      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
+    });
+  }
   if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
     rows.push({
       label: 'summary detail copy preview',
@@ -1362,6 +1368,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy' },
     { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body line copy body' },
+    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy' },
     { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
     { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
     { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },
