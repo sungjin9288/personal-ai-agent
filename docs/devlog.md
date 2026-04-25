@@ -3005,6 +3005,8 @@
 - verified the new sections through the browser E2E smoke write/read-back path so the sibling artifacts round-trip with the same `summary copy` overview line and stable signature lines that power the compact JSON structured summary
 - added browser-only `line copy` round-trip verification for the promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy` row so the latest release handoff detail can be re-proven directly from card/current-preview surfaces
 - persisted that new evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifact-pair verified flag in the browser report
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the newest promoted row now proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414091500_3f2d41","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
