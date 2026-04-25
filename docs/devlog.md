@@ -58,6 +58,8 @@
 - persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
 - promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 newest promoted-row line-copy evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
 - updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 newest promoted-row line-copy evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
