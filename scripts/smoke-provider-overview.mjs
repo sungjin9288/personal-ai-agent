@@ -53,6 +53,7 @@ const originalEnv = {
   LOCAL_PROVIDER_API_KEY: process.env.LOCAL_PROVIDER_API_KEY,
   LOCAL_PROVIDER_BASE_URL: process.env.LOCAL_PROVIDER_BASE_URL,
   LOCAL_PROVIDER_MODEL: process.env.LOCAL_PROVIDER_MODEL,
+  HERMES_PROVIDER_MODEL: process.env.HERMES_PROVIDER_MODEL,
 };
 
 try {
@@ -63,6 +64,7 @@ try {
   process.env.LOCAL_PROVIDER_API_KEY = 'test-local-key';
   process.env.LOCAL_PROVIDER_BASE_URL = 'http://127.0.0.1:1234/v1';
   process.env.LOCAL_PROVIDER_MODEL = 'llama3.1-local';
+  delete process.env.HERMES_PROVIDER_MODEL;
 
   globalThis.fetch = async (url) => {
     if (url === 'https://api.anthropic.test/v1/models') {
@@ -160,6 +162,7 @@ const configuredEnv = {
   LOCAL_PROVIDER_BASE_URL: 'http://127.0.0.1:1234/v1',
   LOCAL_PROVIDER_MODEL: 'llama3.1-local',
   OPENAI_API_KEY: '',
+  HERMES_PROVIDER_MODEL: '',
 };
 
 const anthropicCheckResult = runCli({
@@ -191,8 +194,8 @@ const providerOverviewResult = runCli({
 assert.equal(providerOverviewResult.status, 0);
 const providerOverview = JSON.parse(providerOverviewResult.stdout);
 
-assert.equal(providerOverview.summary.total, 4);
-assert.equal(providerOverview.summary.implementedCount, 4);
+assert.equal(providerOverview.summary.total, 5);
+assert.equal(providerOverview.summary.implementedCount, 5);
 assert.equal(providerOverview.summary.configuredCount, 3);
 assert.equal(providerOverview.summary.readyCount, 3);
 assert.equal(providerOverview.summary.probeTotal, 4);
@@ -220,13 +223,13 @@ assert.deepEqual(providerOverview.summary.attentionOverdueProviderIds, ['anthrop
 assert.equal(providerOverview.summary.latestProbeSuccessCount, 2);
 assert.equal(providerOverview.summary.latestProbeFailureCount, 1);
 assert.equal(providerOverview.summary.latestProbeSkippedCount, 1);
-assert.equal(providerOverview.summary.unprobedCount, 0);
-assert.deepEqual(providerOverview.summary.unconfiguredProviderIds, ['openai']);
+assert.equal(providerOverview.summary.unprobedCount, 1);
+assert.deepEqual(providerOverview.summary.unconfiguredProviderIds, ['openai', 'hermes']);
 assert.equal(providerOverview.summary.latestProbe.providerId, 'local');
 assert.equal(providerOverview.summary.latestSuccessfulProbe.providerId, 'local');
 assert.equal(providerOverview.summary.latestFailedProbe.providerId, 'anthropic');
 assert.equal(providerOverview.summary.latestSkippedProbe.providerId, 'openai');
-assert.equal(providerOverview.providers.length, 4);
+assert.equal(providerOverview.providers.length, 5);
 assert.equal(
   providerOverview.providers.some((provider) => provider.id === 'local' && provider.latestProbe.ok === true),
   true,
@@ -259,7 +262,7 @@ const recentProviderOverviewResult = runCli({
 assert.equal(recentProviderOverviewResult.status, 0);
 const recentProviderOverview = JSON.parse(recentProviderOverviewResult.stdout);
 assert.equal(recentProviderOverview.filters.since, recentWindowSince);
-assert.equal(recentProviderOverview.summary.total, 4);
+assert.equal(recentProviderOverview.summary.total, 5);
 assert.equal(recentProviderOverview.summary.providerRecentSince, recentWindowSince);
 assert.equal(recentProviderOverview.summary.providerRecentEventCount, 3);
 assert.equal(recentProviderOverview.summary.providerRecentProbeTotal, 3);
@@ -326,7 +329,7 @@ const globalOverviewResult = runCli({
 assert.equal(globalOverviewResult.status, 0);
 const globalOverview = JSON.parse(globalOverviewResult.stdout);
 
-assert.equal(globalOverview.summary.providerCount, 4);
+assert.equal(globalOverview.summary.providerCount, 5);
 assert.equal(globalOverview.summary.providerConfiguredCount, 3);
 assert.equal(globalOverview.summary.providerReadyCount, 3);
 assert.equal(globalOverview.summary.providerAttentionRequiredCount, 1);
@@ -335,7 +338,7 @@ assert.equal(globalOverview.summary.providerAttentionNeedsReminderCount, 1);
 assert.equal(globalOverview.summary.providerAttentionNextDueAt, '2026-03-02T00:00:00.000Z');
 assert.equal(globalOverview.summary.providerAttentionNextReminderAt, '2026-03-02T00:00:00.000Z');
 assert.equal(globalOverview.summary.providerAttentionReminderCount, 0);
-assert.equal(globalOverview.summary.providerUnprobedCount, 0);
+assert.equal(globalOverview.summary.providerUnprobedCount, 1);
 assert.equal(globalOverview.summary.providerLatestProbeFailureCount, 1);
 assert.equal(globalOverview.summary.providerLatestProbeSkippedCount, 1);
 assert.equal(globalOverview.summary.providerProbeFailureKindCounts.config, 1);

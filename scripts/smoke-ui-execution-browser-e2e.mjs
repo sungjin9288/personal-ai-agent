@@ -6,6 +6,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
+import {
+  createVisualEvidenceManifest,
+  writeVisualEvidenceManifest,
+} from '../src/core/visual-evidence-manifest-service.mjs';
+import { seedExecutionV1Docs } from './execution-v1-test-fixtures.mjs';
+import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -33,10 +39,52 @@ const releaseDocDigestTextArtifactPath = path.join(screenshotDir, 'execution-v1-
 const releaseDocDigestMarkdownArtifactPath = path.join(screenshotDir, 'execution-v1-release-doc-digest.md');
 const reportPath = path.join(screenshotDir, 'execution-v1-browser-e2e.json');
 const screenshotPath = path.join(screenshotDir, 'execution-v1-browser-e2e.png');
+const tempVisualEvidenceManifestPath = path.join(tempScreenshotDir, 'execution-v1-visual-evidence-manifest.json');
+const preservedArtifactPaths = [
+  releaseHandoffDigestArtifactPath,
+  releaseHandoffDigestTextArtifactPath,
+  releaseHandoffDigestMarkdownArtifactPath,
+  releaseHandoffManifestPath,
+  releaseHandoffManifestTextPath,
+  releaseHandoffManifestMarkdownPath,
+  releaseHandoffIndexPath,
+  releaseHandoffIndexTextPath,
+  releaseHandoffIndexMarkdownPath,
+  releaseDocDigestArtifactPath,
+  releaseDocIndexPath,
+  releaseDocIndexMarkdownPath,
+  releaseDocIndexTextPath,
+  releaseDocDigestManifestPath,
+  releaseDocDigestManifestMarkdownPath,
+  releaseDocDigestManifestTextPath,
+  releaseDocDigestTextArtifactPath,
+  releaseDocDigestMarkdownArtifactPath,
+  reportPath,
+  screenshotPath,
+];
+const artifactBackupDir = path.join(tempRoot, 'previous-output', 'playwright');
+const artifactBackups = backupArtifacts(preservedArtifactPaths, artifactBackupDir);
+let artifactsCommitted = false;
 const transparentPngBuffer = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jxX8AAAAASUVORK5CYII=',
   'base64',
 );
+const releaseHandoffStableLineCopyBaseKey =
+  'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
+const emitFullReportStdout = ['1', 'true', 'yes'].includes(
+  String(process.env.PERSONAL_AI_AGENT_BROWSER_E2E_FULL_STDOUT || '').toLowerCase(),
+);
+const browserGuardTimeoutMs = parsePositiveIntegerEnv('PERSONAL_AI_AGENT_BROWSER_GUARD_TIMEOUT_MS', 120_000);
+
+process.once('SIGINT', () => {
+  restoreArtifactsFromBackup(artifactBackups);
+  process.exit(130);
+});
+
+process.once('SIGTERM', () => {
+  restoreArtifactsFromBackup(artifactBackups);
+  process.exit(143);
+});
 
 fs.mkdirSync(screenshotDir, { recursive: true });
 fs.rmSync(releaseHandoffDigestArtifactPath, { force: true });
@@ -61,6 +109,11 @@ fs.rmSync(reportPath, { force: true });
 fs.rmSync(screenshotPath, { force: true });
 
 seedReleaseHandoffFixtures();
+seedExecutionV1Docs({
+  evidenceHref: '/tmp/personal-ai-agent-browser-e2e/docs/execution-v1-evidence.md',
+  repoDir,
+  rootDir: tempRoot,
+});
 
 const sessionId = `e${Date.now().toString(36).slice(-5)}`;
 const handoffSessionIds = [];
@@ -143,6 +196,47 @@ function decodeBase64Text(value) {
   return Buffer.from(String(value), 'base64').toString('utf8');
 }
 
+function capitalizeReleaseHandoffSummaryKey(value) {
+  return `${value[0].toUpperCase()}${value.slice(1)}`;
+}
+
+function buildReleaseHandoffStableLineCopyKey(totalLineCopyCount) {
+  return `${releaseHandoffStableLineCopyBaseKey}${'LineCopy'.repeat(totalLineCopyCount - 5)}`;
+}
+
+function parsePositiveIntegerEnv(envKey, fallbackValue) {
+  const rawValue = process.env[envKey];
+  if (rawValue === undefined || rawValue === '') {
+    return fallbackValue;
+  }
+  const parsedValue = Number.parseInt(rawValue, 10);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallbackValue;
+}
+
+function buildReleaseHandoffSummaryVerificationReportKey(summaryKey) {
+  return `releaseHandoff${capitalizeReleaseHandoffSummaryKey(summaryKey)}VerificationSummary`;
+}
+
+function buildSeededReleaseHandoffDetailLineCopySummary(detailKey) {
+  const stableLines = [
+    `card|exact=true|copyLabel=복사됨|fallbackLabel=line 복사|artifactId=handoff-digest-json|detailKey=${detailKey}|surface=card|textSha256=seed-${detailKey}-card-sha|postCopyLabel=line 복사`,
+    `current-preview|exact=true|copyLabel=현재 line 복사됨|fallbackLabel=현재 line 복사|artifactId=handoff-index-markdown|detailKey=${detailKey}|surface=current-preview|textSha256=seed-${detailKey}-current-preview-sha|postCopyLabel=현재 line 복사`,
+  ];
+  const stableSha256 = createHash('sha256').update(stableLines.join('\n')).digest('hex');
+  return {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      `surfaces=handoff-digest-json:${detailKey}/card,handoff-index-markdown:${detailKey}/current-preview`,
+      `sha256=${stableSha256}`,
+    ].join('|'),
+    stableLines,
+    stableSha256,
+    totalChecks: 2,
+  };
+}
+
 function buildTextArtifactDescriptor(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   return {
@@ -165,6 +259,44 @@ function buildBinaryArtifactDescriptor(filePath, extra = {}) {
 
 function buildArtifactBundleLine(name, descriptor) {
   return `${name}|bytes=${descriptor.bytes}|lines=${descriptor.lineCount}|sha256=${descriptor.sha256}`;
+}
+
+function buildConsoleSmokeReport(smokeReport) {
+  const summaryChips = {};
+  for (const chip of smokeReport.screenshotSurfaceSummary?.summaryChips || []) {
+    if (chip?.label) {
+      summaryChips[chip.label] = chip.value || '';
+    }
+  }
+
+  return {
+    artifactVersion: `${smokeReport.artifactVersion}/stdout-summary`,
+    browserConsoleErrors: smokeReport.browserConsoleErrors,
+    browserPageErrors: smokeReport.browserPageErrors,
+    generatedAt: smokeReport.generatedAt,
+    handoffCoverageSummary: smokeReport.handoffCoverageSummary,
+    mode: smokeReport.mode,
+    ok: smokeReport.ok,
+    reportPath: smokeReport.reportPath,
+    releaseDocVerificationSummary: {
+      artifactCount: smokeReport.releaseDocVerificationSummary?.artifactCount,
+      exactMatchCount: smokeReport.releaseDocVerificationSummary?.exactMatchCount,
+      overallExactMatch: smokeReport.releaseDocVerificationSummary?.overallExactMatch,
+      stableDigestSha256: smokeReport.releaseDocVerificationSummary?.stableDigestSha256,
+      totalChecks: smokeReport.releaseDocVerificationSummary?.totalChecks,
+    },
+    releaseHandoffCoverageSummary: smokeReport.releaseHandoffCoverageSummary,
+    releaseHandoffOpenCoverageSummary: smokeReport.releaseHandoffOpenCoverageSummary,
+    screenshot: {
+      bytes: smokeReport.screenshotBytes,
+      height: smokeReport.screenshotHeight,
+      path: smokeReport.screenshotPath,
+      sha256: smokeReport.screenshotSha256,
+      width: smokeReport.screenshotWidth,
+    },
+    summaryChips,
+    workspaceId: smokeReport.workspaceId,
+  };
 }
 
 function buildReleaseDocIndexBundleLine(name, descriptor) {
@@ -688,7 +820,419 @@ function seedReleaseHandoffFixtures() {
     stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
     totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
   };
-  const seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary = {
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: 2,
+    overviewLine: [
+      'totalChecks=2',
+      'exactMatchCount=2',
+      'surfaces=handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/card,handoff-index-markdown:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy/current-preview',
+      'sha256=seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    ].join('|'),
+    stableLines: [
+      'card|exact=true|copyLabel=copy-complete|fallbackLabel=line copy|artifactId=handoff-digest-json|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=card|textSha256=seed-card-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=line copy',
+      'current-preview|exact=true|copyLabel=current-copy-complete|fallbackLabel=current line copy|artifactId=handoff-index-markdown|detailKey=summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy|surface=current-preview|textSha256=seed-current-preview-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha|postCopyLabel=current line copy',
+    ],
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: 2,
+  };
+  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+    ),
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+    )),
+    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+  };
+	  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+    ),
+    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+	  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+	  const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+const seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    ),
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.map((line) => line.replaceAll(
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	    )),
+	    stableSha256: 'seed-summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy-body-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-line-copy-sha',
+	    totalChecks: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+	  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+	  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+	  seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+seededReleaseHandoffStructuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy = {
+	    errorFreeSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    exactMatchCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    overviewLine: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	    stableDigestSha256: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	    stableLineCount: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	    stableLines: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	    totalSessions: seededReleaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	  };
+  const seededReleaseHandoffPromotedLineCopySummary =
+    buildSeededReleaseHandoffDetailLineCopySummary(buildReleaseHandoffStableLineCopyKey(30));
+  seededReleaseHandoffStructuredSummary[buildReleaseHandoffStableLineCopyKey(31)] = {
+    errorFreeSessions: seededReleaseHandoffPromotedLineCopySummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffPromotedLineCopySummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffPromotedLineCopySummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffPromotedLineCopySummary.stableSha256,
+    stableLineCount: seededReleaseHandoffPromotedLineCopySummary.stableLines.length,
+    stableLines: seededReleaseHandoffPromotedLineCopySummary.stableLines,
+    totalSessions: seededReleaseHandoffPromotedLineCopySummary.totalChecks,
+  };
+  const seededReleaseHandoffSecondPromotedLineCopySummary =
+    buildSeededReleaseHandoffDetailLineCopySummary(buildReleaseHandoffStableLineCopyKey(31));
+  seededReleaseHandoffStructuredSummary[buildReleaseHandoffStableLineCopyKey(32)] = {
+    errorFreeSessions: seededReleaseHandoffSecondPromotedLineCopySummary.exactMatchCount,
+    exactMatchCount: seededReleaseHandoffSecondPromotedLineCopySummary.exactMatchCount,
+    overviewLine: seededReleaseHandoffSecondPromotedLineCopySummary.overviewLine,
+    stableDigestSha256: seededReleaseHandoffSecondPromotedLineCopySummary.stableSha256,
+    stableLineCount: seededReleaseHandoffSecondPromotedLineCopySummary.stableLines.length,
+    stableLines: seededReleaseHandoffSecondPromotedLineCopySummary.stableLines,
+    totalSessions: seededReleaseHandoffSecondPromotedLineCopySummary.totalChecks,
+  };
+	  const seededReleaseHandoffSummaryDetailCopyPreviewVerificationSummary = {
     exactMatchCount: 6,
     overviewLine: [
       'totalArtifacts=6',
@@ -1715,6 +2259,37 @@ function seedReleaseHandoffFixtures() {
     fs.mkdirSync(path.dirname(fixture.path), { recursive: true });
     fs.writeFileSync(fixture.path, fixture.content);
   }
+
+  writeVisualEvidenceManifest({
+    manifest: createVisualEvidenceManifest({
+      artifactRoot: tempScreenshotDir,
+      captureSession: {
+        id: 'execution-v1-browser-e2e-seed',
+        source: 'smoke:ui-execution-browser-e2e',
+      },
+      evidenceItems: [
+        {
+          captureTarget: 'execution-v1 release UI flow',
+          evidenceRole: 'browser interaction report',
+          filePath: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.json'),
+          format: 'json',
+          id: 'browser-report',
+          kind: 'report',
+        },
+        {
+          captureTarget: 'execution-v1 release UI final state',
+          evidenceRole: 'browser visual screenshot',
+          filePath: path.join(tempScreenshotDir, 'execution-v1-browser-e2e.png'),
+          format: 'png',
+          id: 'browser-screenshot',
+          kind: 'screenshot',
+        },
+      ],
+      outputPath: tempVisualEvidenceManifestPath,
+      rootDir: tempRoot,
+    }),
+    outputPath: tempVisualEvidenceManifestPath,
+  });
 }
 
 const port = await getFreePort();
@@ -1769,7 +2344,7 @@ try {
   runPw(['open', baseUrl]);
 
   console.error('[smoke-ui-execution-browser-e2e] install dialog guards');
-  installBrowserGuards();
+  installBrowserGuards({ context: 'main-session-initial-guards' });
 
   const missionTitle = `Browser Execution E2E ${Date.now().toString(36)}`;
 
@@ -2418,11 +2993,41 @@ try {
 
   console.error('[smoke-ui-execution-browser-e2e] verify retrieval source handoff session');
   const verifyFreshHandoffSession = ({ retrievalFocusState, retrievalUrl, sessionLabel = 'copy' }) => {
+    for (let attemptIndex = 0; attemptIndex < 2; attemptIndex += 1) {
+      try {
+        return verifyFreshHandoffSessionAttempt({
+          attemptIndex,
+          retrievalFocusState,
+          retrievalUrl,
+          sessionLabel,
+        });
+      } catch (error) {
+        if (attemptIndex === 0 && isPlaywrightTransientSessionError(error)) {
+          console.error(
+            `[smoke-ui-execution-browser-e2e] retrying retrieval handoff session after transient browser failure: source=${retrievalFocusState.sourceType} label=${sessionLabel}`,
+          );
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw new Error(`retrieval handoff session retry exhausted: ${retrievalFocusState.sourceType} ${sessionLabel}`);
+  };
+
+  const verifyFreshHandoffSessionAttempt = ({
+    attemptIndex = 0,
+    retrievalFocusState,
+    retrievalUrl,
+    sessionLabel = 'copy',
+  }) => {
     assert.equal(retrievalUrl, retrievalFocusState.reopenedHref);
-    const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
+    const handoffSessionId = `${retrievalFocusState.sourceType.slice(0, 1)}${sessionLabel.slice(0, 1)}${attemptIndex}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(handoffSessionId);
     runPw(['open', baseUrl], { session: handoffSessionId });
-    installBrowserGuards({ session: handoffSessionId });
+    installBrowserGuards({
+      context: `retrieval-handoff-${retrievalFocusState.sourceType}-${sessionLabel}`,
+      session: handoffSessionId,
+    });
     const handoffState = runPwJson([
       '--raw',
       'run-code',
@@ -2571,10 +3176,10 @@ try {
     '--raw',
     'run-code',
     `async (page) => {
-      const previewTargets = [
-        { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
-        { artifactId: 'handoff-digest-text', expectedFormat: 'text', label: 'handoff-digest.txt' },
-        { artifactId: 'handoff-digest-markdown', expectedFormat: 'markdown', label: 'handoff-digest.md' },
+	      const previewTargets = [
+	        { artifactId: 'handoff-digest-json', expectedFormat: 'json', label: 'handoff-digest.json' },
+	        { artifactId: 'handoff-digest-text', expectedFormat: 'text', label: 'handoff-digest.txt' },
+	        { artifactId: 'handoff-digest-markdown', expectedFormat: 'markdown', label: 'handoff-digest.md' },
         { artifactId: 'handoff-manifest-json', expectedFormat: 'json', label: 'handoff-manifest.json' },
         { artifactId: 'handoff-manifest-text', expectedFormat: 'text', label: 'handoff-manifest.txt' },
         { artifactId: 'handoff-manifest-markdown', expectedFormat: 'markdown', label: 'handoff-manifest.md' },
@@ -2582,10 +3187,56 @@ try {
         { artifactId: 'handoff-index-text', expectedFormat: 'text', label: 'handoff-index.txt' },
         { artifactId: 'handoff-index-markdown', expectedFormat: 'markdown', label: 'handoff-index.md' },
         { artifactId: 'index-markdown', expectedFormat: 'markdown', label: 'index.md' },
-        { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
-        { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
-      ];
-      const results = [];
+	        { artifactId: 'index-text', expectedFormat: 'text', label: 'index.txt' },
+	        { artifactId: 'index-json', expectedFormat: 'json', label: 'index.json' },
+	      ];
+	      const previewExactTokens = [
+	        'summaryCopyExactMatchCount=2',
+	        'summaryCopyExactMatchCount: 2',
+	        '---summary-copy---',
+	        'Summary-Copy Overview',
+	        'summaryCopyPreviewExactMatchCount=6',
+	        'summaryCopyPreviewExactMatchCount: 6',
+	        '---summary-copy-preview---',
+	        'Summary-Copy Preview Overview',
+	        'summaryDetailCopyExactMatchCount=4',
+	        'summaryDetailCopyExactMatchCount: 4',
+	        '---summary-detail-copy---',
+	        'Summary-Detail-Copy Overview',
+	        'summaryStableLineCopyExactMatchCount=2',
+	        'summaryStableLineCopyExactMatchCount: 2',
+	        '---summary-stable-line-copy---',
+	        'Summary-Stable-Line-Copy Overview',
+	        'summaryStableLineCopyPreviewExactMatchCount=6',
+	        'summaryStableLineCopyPreviewExactMatchCount: 6',
+	        '---summary-stable-line-copy-preview---',
+	        'Summary-Stable-Line-Copy Preview Overview',
+	        'summaryStableLineCopyPreviewBodyLineCopyExactMatchCount=2',
+	        'summaryStableLineCopyPreviewBodyLineCopyExactMatchCount: 2',
+	        '---summary-stable-line-copy-preview-body-line-copy---',
+	        'Summary-Stable-Line-Copy Preview Body Line Copy Overview',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2',
+	        '---summary-stable-line-copy-preview-body-line-copy-body-line-copy---',
+	        'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2',
+	        '---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---',
+	        'Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview',
+	        'summaryDetailCopyPreviewExactMatchCount=6',
+	        'summaryDetailCopyPreviewExactMatchCount: 6',
+	        '---summary-detail-copy-preview---',
+	        'Summary-Detail-Copy Preview Overview',
+	        'summaryDetailCopyPreviewLineCopyExactMatchCount=2',
+	        'summaryDetailCopyPreviewLineCopyExactMatchCount: 2',
+	        '---summary-detail-copy-preview-line-copy---',
+	        'Summary-Detail-Copy Preview Line Copy Overview',
+	        'summaryDetailCopyPreviewLineCopyBodyExactMatchCount=6',
+	        'summaryDetailCopyPreviewLineCopyBodyExactMatchCount: 6',
+	        '---summary-detail-copy-preview-line-copy-body---',
+	        'Summary-Detail-Copy Preview Line Copy Body Overview',
+	      ];
+	      const results = [];
       for (const target of previewTargets) {
         await page.evaluate((currentTarget) => {
           document.querySelector('[data-release-handoff-preview-trigger="' + CSS.escape(currentTarget.artifactId) + '"]')?.click();
@@ -2596,18 +3247,20 @@ try {
             && panel.getAttribute('data-release-handoff-preview-panel') === currentTarget.artifactId
             && panel.getAttribute('data-release-handoff-preview-state') === 'ready';
         }, target, { timeout: 15000 });
-        results.push(await page.evaluate((currentTarget) => {
-          const card = document.querySelector('[data-release-handoff-id="' + CSS.escape(currentTarget.artifactId) + '"]');
-          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
-          const previewBody = panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '';
-          return {
-            activeCard: card?.classList.contains('is-preview-active') || false,
-            artifactId: currentTarget.artifactId,
-            buttonLabel: card?.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
+	        results.push(await page.evaluate(({ currentTarget, previewExactTokens }) => {
+	          const card = document.querySelector('[data-release-handoff-id="' + CSS.escape(currentTarget.artifactId) + '"]');
+	          const panel = document.querySelector('#release-status [data-release-handoff-preview-panel]');
+	          const previewBody = panel?.querySelector('[data-release-handoff-preview-body]')?.textContent || '';
+	          const bodyContains = Object.fromEntries(previewExactTokens.map((token) => [token, previewBody.includes(token)]));
+	          return {
+	            activeCard: card?.classList.contains('is-preview-active') || false,
+	            artifactId: currentTarget.artifactId,
+	            bodyContains,
+	            buttonLabel: card?.querySelector('[data-release-handoff-preview-trigger]')?.textContent || '',
             format: panel?.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
             note: panel?.querySelector('[data-release-handoff-preview-note]')?.textContent || '',
-            previewBody,
-            previewBodySample: previewBody.replace(/\s+/g, ' ').trim().slice(0, 320),
+            previewBody: previewBody.replace(/\\s+/g, ' ').trim().slice(0, 512),
+            previewBodySample: previewBody.replace(/\\s+/g, ' ').trim().slice(0, 320),
             previewStructuredSummaryCopyLabel:
               panel?.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
             structuredSummaryCopyLabel:
@@ -2630,10 +3283,10 @@ try {
             })),
             structuredSummaryOverview: panel?.querySelector('[data-release-handoff-preview-structured-summary-overview]')?.textContent || '',
             structuredSummarySha: panel?.querySelector('[data-release-handoff-preview-structured-summary-sha]')?.textContent || '',
-            state: panel?.getAttribute('data-release-handoff-preview-state') || '',
-            title: panel?.querySelector('.item-title')?.textContent || '',
-          };
-        }, target));
+	            state: panel?.getAttribute('data-release-handoff-preview-state') || '',
+	            title: panel?.querySelector('.item-title')?.textContent || '',
+	          };
+	        }, { currentTarget: target, previewExactTokens }));
       }
 
       await page.evaluate(() => {
@@ -2654,7 +3307,7 @@ try {
           }
           return {
             artifactId: panel.getAttribute('data-release-handoff-preview-panel') || '',
-            body: panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '',
+            body: (panel.querySelector('[data-release-handoff-preview-body]')?.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 512),
             format: panel.querySelector('[data-release-handoff-preview-format]')?.textContent || '',
             previewStructuredSummaryCopyLabel:
               panel.querySelector('[data-release-handoff-current-preview-structured-summary-copy]')?.textContent || '',
@@ -2996,7 +3649,7 @@ try {
     );
     assert.equal(
       target.artifactId.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody,summaryStableLineCopy,summaryStableLineCopyPreview,summaryStableLineCopyPreviewBody,summaryStableLineCopyPreviewBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
+	        ? String(previewEntry.structuredSummaryOverview || '').includes('summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy') && /\|sha256=/i.test(String(previewEntry.structuredSummaryOverview || ''))
         : String(previewEntry.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(previewEntry),
@@ -3221,26 +3874,27 @@ try {
   ]) {
     const previewEntry = handoffPreviewState.results.find((item) => item.artifactId === target.artifactId);
     assert.equal(Boolean(previewEntry), true, JSON.stringify({ handoffPreviewState, target }));
-    const normalizedBody = String(previewEntry?.previewBody || '').replace(/\s+/g, ' ').trim();
-    const summaryEntry = {
-      bodySample: String(previewEntry?.previewBodySample || '').trim(),
-      expectedCounter: target.expectedCounter,
-      expectedMarker: target.expectedMarker,
-      expectedPreviewCounter: target.expectedPreviewCounter,
-      expectedPreviewMarker: target.expectedPreviewMarker,
-      format: target.format,
-      hasExpectedCounter: normalizedBody.includes(target.expectedCounter),
-      hasExpectedMarker: normalizedBody.includes(target.expectedMarker),
-      hasExpectedDetailCounter: normalizedBody.includes(target.expectedDetailCounter),
-      hasExpectedDetailMarker: normalizedBody.includes(target.expectedDetailMarker),
-      hasExpectedDetailPreviewCounter: normalizedBody.includes(target.expectedDetailPreviewCounter),
-      hasExpectedDetailPreviewMarker: normalizedBody.includes(target.expectedDetailPreviewMarker),
-      hasExpectedDetailPreviewLineCopyCounter: normalizedBody.includes(target.expectedDetailPreviewLineCopyCounter),
-      hasExpectedDetailPreviewLineCopyMarker: normalizedBody.includes(target.expectedDetailPreviewLineCopyMarker),
-      hasExpectedPreviewCounter: normalizedBody.includes(target.expectedPreviewCounter),
-      hasExpectedPreviewMarker: normalizedBody.includes(target.expectedPreviewMarker),
-      title: String(previewEntry?.title || '').trim(),
-    };
+	    const normalizedBody = String(previewEntry?.previewBody || '').replace(/\s+/g, ' ').trim();
+	    const hasPreviewBodyToken = (token) => previewEntry?.bodyContains?.[token] ?? normalizedBody.includes(token);
+	    const summaryEntry = {
+	      bodySample: String(previewEntry?.previewBodySample || '').trim(),
+	      expectedCounter: target.expectedCounter,
+	      expectedMarker: target.expectedMarker,
+	      expectedPreviewCounter: target.expectedPreviewCounter,
+	      expectedPreviewMarker: target.expectedPreviewMarker,
+	      format: target.format,
+	      hasExpectedCounter: hasPreviewBodyToken(target.expectedCounter),
+	      hasExpectedMarker: hasPreviewBodyToken(target.expectedMarker),
+	      hasExpectedDetailCounter: hasPreviewBodyToken(target.expectedDetailCounter),
+	      hasExpectedDetailMarker: hasPreviewBodyToken(target.expectedDetailMarker),
+	      hasExpectedDetailPreviewCounter: hasPreviewBodyToken(target.expectedDetailPreviewCounter),
+	      hasExpectedDetailPreviewMarker: hasPreviewBodyToken(target.expectedDetailPreviewMarker),
+	      hasExpectedDetailPreviewLineCopyCounter: hasPreviewBodyToken(target.expectedDetailPreviewLineCopyCounter),
+	      hasExpectedDetailPreviewLineCopyMarker: hasPreviewBodyToken(target.expectedDetailPreviewLineCopyMarker),
+	      hasExpectedPreviewCounter: hasPreviewBodyToken(target.expectedPreviewCounter),
+	      hasExpectedPreviewMarker: hasPreviewBodyToken(target.expectedPreviewMarker),
+	      title: String(previewEntry?.title || '').trim(),
+	    };
     summaryEntry.exactMatch =
       summaryEntry.hasExpectedCounter &&
       summaryEntry.hasExpectedMarker &&
@@ -3279,10 +3933,10 @@ try {
       expectedStableLinePreviewCounter: target.expectedStableLinePreviewCounter,
       expectedStableLinePreviewMarker: target.expectedStableLinePreviewMarker,
       format: target.format,
-      hasExpectedStableLineCounter: normalizedBody.includes(target.expectedStableLineCounter),
-      hasExpectedStableLineMarker: normalizedBody.includes(target.expectedStableLineMarker),
-      hasExpectedStableLinePreviewCounter: normalizedBody.includes(target.expectedStableLinePreviewCounter),
-      hasExpectedStableLinePreviewMarker: normalizedBody.includes(target.expectedStableLinePreviewMarker),
+	      hasExpectedStableLineCounter: hasPreviewBodyToken(target.expectedStableLineCounter),
+	      hasExpectedStableLineMarker: hasPreviewBodyToken(target.expectedStableLineMarker),
+	      hasExpectedStableLinePreviewCounter: hasPreviewBodyToken(target.expectedStableLinePreviewCounter),
+	      hasExpectedStableLinePreviewMarker: hasPreviewBodyToken(target.expectedStableLinePreviewMarker),
       title: summaryEntry.title,
     };
     stableLineSummaryEntry.exactMatch =
@@ -3299,8 +3953,8 @@ try {
       expectedDetailPreviewLineCopyBodyCounter: target.expectedDetailPreviewLineCopyBodyCounter,
       expectedDetailPreviewLineCopyBodyMarker: target.expectedDetailPreviewLineCopyBodyMarker,
       format: target.format,
-      hasExpectedDetailPreviewLineCopyBodyCounter: normalizedBody.includes(target.expectedDetailPreviewLineCopyBodyCounter),
-      hasExpectedDetailPreviewLineCopyBodyMarker: normalizedBody.includes(target.expectedDetailPreviewLineCopyBodyMarker),
+	      hasExpectedDetailPreviewLineCopyBodyCounter: hasPreviewBodyToken(target.expectedDetailPreviewLineCopyBodyCounter),
+	      hasExpectedDetailPreviewLineCopyBodyMarker: hasPreviewBodyToken(target.expectedDetailPreviewLineCopyBodyMarker),
       title: summaryEntry.title,
     };
     detailLineCopyBodyEntry.exactMatch =
@@ -3315,8 +3969,8 @@ try {
       expectedStableLinePreviewBodyLineCopyCounter: target.expectedStableLinePreviewBodyLineCopyCounter,
       expectedStableLinePreviewBodyLineCopyMarker: target.expectedStableLinePreviewBodyLineCopyMarker,
       format: target.format,
-      hasExpectedStableLinePreviewBodyLineCopyCounter: normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyCounter),
-      hasExpectedStableLinePreviewBodyLineCopyMarker: normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyMarker),
+	      hasExpectedStableLinePreviewBodyLineCopyCounter: hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyCounter),
+	      hasExpectedStableLinePreviewBodyLineCopyMarker: hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyMarker),
       title: summaryEntry.title,
     };
     stableLinePreviewBodyLineCopyBodyEntry.exactMatch =
@@ -3337,8 +3991,10 @@ try {
       expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: target.expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter,
       expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: target.expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker,
       format: target.format,
-      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyCounter: normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter),
-      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyMarker: normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker),
+	      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyCounter:
+	        hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter),
+	      hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyMarker:
+	        hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker),
       title: summaryEntry.title,
     };
     stableLinePreviewBodyLineCopyBodyLineCopyBodyEntry.exactMatch =
@@ -3362,9 +4018,9 @@ try {
         target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker,
       format: target.format,
       hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter:
-        normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter),
+	        hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter),
       hasExpectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker:
-        normalizedBody.includes(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker),
+	        hasPreviewBodyToken(target.expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker),
       title: summaryEntry.title,
     };
     stableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyEntry.exactMatch =
@@ -3913,6 +4569,148 @@ try {
         'handoff-digest-json',
         'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
       );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+        'handoff-digest-json',
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback = await runDetailCardFallback(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy = await runDetailCardCopy(
+	        'handoff-digest-json',
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+      const reportOnlyPromotedDetailKey = '${buildReleaseHandoffStableLineCopyKey(31)}';
+      const reportOnlyNextDetailKey = '${buildReleaseHandoffStableLineCopyKey(32)}';
+      const reportOnlyPromotedCardFallback = await runDetailCardFallback('handoff-digest-json', reportOnlyPromotedDetailKey);
+      const reportOnlyPromotedCardCopy = await runDetailCardCopy('handoff-digest-json', reportOnlyPromotedDetailKey);
+      const reportOnlyNextCardFallback = await runDetailCardFallback('handoff-digest-json', reportOnlyNextDetailKey);
+      const reportOnlyNextCardCopy = await runDetailCardCopy('handoff-digest-json', reportOnlyNextDetailKey);
       const detailPreviewLineCopyCardFallback = await runDetailCardFallback('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
       const detailPreviewLineCopyCardCopy = await runDetailCardCopy('handoff-digest-json', 'summaryDetailCopyPreviewLineCopy');
       const stableLineCardFallback = await runStableLineCardFallback('handoff-digest-json', 'summaryDetailCopy', 0);
@@ -4015,8 +4813,115 @@ try {
       const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
         'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
       );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback = await runDetailPreviewFallback(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
+	      const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy = await runDetailPreviewCopy(
+	        'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	      );
       const currentPreviewDetailPreviewLineCopyBodyFallback = await runDetailPreviewFallback('summaryDetailCopyPreviewLineCopyBody');
       const currentPreviewDetailPreviewLineCopyBodyCopy = await runDetailPreviewCopy('summaryDetailCopyPreviewLineCopyBody');
+      const reportOnlyPromotedCurrentPreviewFallback = await runDetailPreviewFallback(reportOnlyPromotedDetailKey);
+      const reportOnlyPromotedCurrentPreviewCopy = await runDetailPreviewCopy(reportOnlyPromotedDetailKey);
+      const reportOnlyNextCurrentPreviewFallback = await runDetailPreviewFallback(reportOnlyNextDetailKey);
+      const reportOnlyNextCurrentPreviewCopy = await runDetailPreviewCopy(reportOnlyNextDetailKey);
+      await runDetailPreviewCopy('summaryDetailCopyPreviewLineCopyBody');
       await runPreviewCopy();
 
       const labelsAfterCurrentPreviewCopy = await page.evaluate(() => ({
@@ -4048,6 +4953,40 @@ try {
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         digestJsonCardDetailPreviewLineCopy:
           document.querySelector('[data-release-handoff-structured-summary-detail-copy="handoff-digest-json:summaryDetailCopyPreviewLineCopy"]')?.textContent || '',
         digestJsonCardStableLine:
@@ -4082,6 +5021,40 @@ try {
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy:
+	          document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy"]')?.textContent || '',
         currentPreviewDetailPreviewLineCopyBody:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="summaryDetailCopyPreviewLineCopyBody"]')?.textContent || '',
         currentPreviewStableLine:
@@ -4091,6 +5064,18 @@ try {
         currentPreviewStableLinePreviewBodyLineCopyBody:
           document.querySelector('[data-release-handoff-current-preview-structured-summary-stable-line-copy="summaryStableLineCopyPreviewBodyLineCopyBody:2"]')?.textContent || '',
       }));
+      labelsAfterCurrentPreviewCopy.reportOnlyNextCardDetail = await page.evaluate((detailKey) =>
+        document.querySelector('[data-release-handoff-structured-summary-detail-copy="' + CSS.escape('handoff-digest-json:' + detailKey) + '"]')?.textContent || '',
+      reportOnlyNextDetailKey);
+      labelsAfterCurrentPreviewCopy.reportOnlyNextCurrentPreviewDetail = await page.evaluate((detailKey) =>
+        document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="' + CSS.escape(detailKey) + '"]')?.textContent || '',
+      reportOnlyNextDetailKey);
+      labelsAfterCurrentPreviewCopy.reportOnlyPromotedCardDetail = await page.evaluate((detailKey) =>
+        document.querySelector('[data-release-handoff-structured-summary-detail-copy="' + CSS.escape('handoff-digest-json:' + detailKey) + '"]')?.textContent || '',
+      reportOnlyPromotedDetailKey);
+      labelsAfterCurrentPreviewCopy.reportOnlyPromotedCurrentPreviewDetail = await page.evaluate((detailKey) =>
+        document.querySelector('[data-release-handoff-current-preview-structured-summary-detail-copy="' + CSS.escape(detailKey) + '"]')?.textContent || '',
+      reportOnlyPromotedDetailKey);
 
       await page.waitForTimeout(1900);
       await clickPreview('index-markdown');
@@ -4122,6 +5107,40 @@ try {
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
         currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy,
+	        currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback,
         currentPreviewDetailPreviewLineCopyBodyCopy,
         currentPreviewDetailPreviewLineCopyBodyFallback,
         currentPreviewStableLineCopy,
@@ -4133,6 +5152,14 @@ try {
         currentPreviewDetailFallback,
         currentPreviewCopy,
         currentPreviewFallback,
+        reportOnlyPromotedCardCopy,
+        reportOnlyPromotedCardFallback,
+        reportOnlyPromotedCurrentPreviewCopy,
+        reportOnlyPromotedCurrentPreviewFallback,
+        reportOnlyNextCardCopy,
+        reportOnlyNextCardFallback,
+        reportOnlyNextCurrentPreviewCopy,
+        reportOnlyNextCurrentPreviewFallback,
         detailCardCopy,
         detailPreviewCardCopy,
         detailPreviewCardFallback,
@@ -4158,6 +5185,40 @@ try {
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
         detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy,
+	        detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback,
         detailPreviewLineCopyCardCopy,
         detailPreviewLineCopyCardFallback,
         stableLineCardCopy,
@@ -5918,10 +6979,46 @@ try {
     sessionLabel,
   }) => {
     console.error(`[smoke-ui-execution-browser-e2e] release handoff preview session ${expectedArtifactId} ${sessionLabel} start`);
-    const releaseHandoffSessionId = `r${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
+    for (let attemptIndex = 0; attemptIndex < 2; attemptIndex += 1) {
+      try {
+        const summary = verifyFreshReleaseHandoffSessionAttempt({
+          attemptIndex,
+          expectedArtifactId,
+          expectedFormat,
+          expectedTitle,
+          previewUrl,
+          sessionLabel,
+        });
+        console.error(`[smoke-ui-execution-browser-e2e] release handoff preview session ${expectedArtifactId} ${sessionLabel} done`);
+        return summary;
+      } catch (error) {
+        if (attemptIndex === 0 && isPlaywrightTransientSessionError(error)) {
+          console.error(
+            `[smoke-ui-execution-browser-e2e] retrying release handoff preview session after transient browser failure: artifact=${expectedArtifactId} label=${sessionLabel}`,
+          );
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw new Error(`release handoff preview session retry exhausted: ${expectedArtifactId} ${sessionLabel}`);
+  };
+
+  const verifyFreshReleaseHandoffSessionAttempt = ({
+    attemptIndex = 0,
+    expectedArtifactId,
+    expectedFormat,
+    expectedTitle,
+    previewUrl,
+    sessionLabel,
+  }) => {
+    const releaseHandoffSessionId = `r${sessionLabel.slice(0, 1)}${attemptIndex}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(releaseHandoffSessionId);
     runPw(['open', baseUrl], { session: releaseHandoffSessionId });
-    installBrowserGuards({ session: releaseHandoffSessionId });
+    installBrowserGuards({
+      context: `release-handoff-preview-${expectedArtifactId}-${sessionLabel}`,
+      session: releaseHandoffSessionId,
+    });
     const handoffState = runPwJson([
       '--raw',
       'run-code',
@@ -5984,7 +7081,6 @@ try {
       sessionLabel,
     };
     releaseHandoffSessionResults.push(handoffSummary);
-    console.error(`[smoke-ui-execution-browser-e2e] release handoff preview session ${expectedArtifactId} ${sessionLabel} done`);
     return handoffSummary;
   };
 
@@ -5999,7 +7095,10 @@ try {
     const releaseHandoffSessionId = `o${sessionLabel.slice(0, 1)}${Date.now().toString(36).slice(-5)}`;
     handoffSessionIds.push(releaseHandoffSessionId);
     runPw(['open', baseUrl], { session: releaseHandoffSessionId });
-    installBrowserGuards({ session: releaseHandoffSessionId });
+    installBrowserGuards({
+      context: `release-handoff-open-${expectedArtifactId}-${sessionLabel}`,
+      session: releaseHandoffSessionId,
+    });
     const handoffState = runPwJson([
       '--raw',
       'run-code',
@@ -6432,8 +7531,8 @@ try {
                 .filter(Boolean)
                 .slice(0, 3);
               const rawDocKind = compactInline(node.getAttribute('data-release-doc-kind') || '');
-              const fallbackDocKind = index === 0 ? 'closeout' : index === 1 ? 'evidence' : '';
-              const docKind = ['closeout', 'evidence'].includes(rawDocKind) ? rawDocKind : fallbackDocKind;
+              const fallbackDocKind = index === 0 ? 'closeout' : index === 1 ? 'evidence' : index === 2 ? 'handoff' : '';
+              const docKind = ['closeout', 'evidence', 'handoff'].includes(rawDocKind) ? rawDocKind : fallbackDocKind;
               const previewItems = bodyChildren
                 .flatMap((child) => {
                   if (child.matches('ul, ol')) {
@@ -6475,11 +7574,27 @@ try {
               scopeMeta: node.querySelector('.release-provider-meta .item-meta')?.textContent || '',
               summary: node.querySelector(':scope > .item-meta')?.textContent || '',
             })),
+            deterministicRuntimeRows: Array.from(document.querySelectorAll('#release-status [data-release-deterministic-runtime-row]')).map((node) => ({
+              elapsed: node.querySelector('.mini-badge')?.textContent || '',
+              script: node.getAttribute('data-release-deterministic-runtime-row') || '',
+              summary: node.querySelector('.item-meta')?.textContent || '',
+              meta: Array.from(node.querySelectorAll('.harness-row-meta .item-meta')).map((item) => item.textContent || ''),
+            })),
             providerCardCount: document.querySelectorAll('#release-status .release-provider-card').length,
             providerCards: Array.from(document.querySelectorAll('#release-status .release-provider-card')).map((node) => ({
               envKey: node.querySelector('.item-meta.mono')?.textContent || '',
               label: node.querySelector('.item-title')?.textContent || '',
               statusBadges: Array.from(node.querySelectorAll('.release-provider-meta .mini-badge')).map((badge) => badge.textContent || ''),
+            })),
+            releaseActionButtons: Array.from(document.querySelectorAll('#release-status button[data-ui-action]')).map((node) => ({
+              action: node.getAttribute('data-ui-action') || '',
+              label: node.textContent || '',
+              provider: node.getAttribute('data-ui-provider') || '',
+              value: node.getAttribute('data-ui-value') || '',
+            })),
+            releaseCallouts: Array.from(document.querySelectorAll('#release-status .harness-callout')).map((node) => ({
+              title: node.querySelector('strong')?.textContent || '',
+              text: node.textContent || '',
             })),
             recommendationCardCount: document.querySelectorAll('#release-status .release-recommendation-card').length,
             recommendationCards: Array.from(document.querySelectorAll('#release-status .release-recommendation-card')).map((node) => ({
@@ -6623,13 +7738,18 @@ try {
     screenshotSurfaceSummary.historyRowCount,
     JSON.stringify(screenshotSurfaceSummary),
   );
-  assert.equal(screenshotSurfaceSummary.docSurfaceCount, 2, JSON.stringify(screenshotSurfaceSummary));
+  assert.equal(
+    screenshotSurfaceSummary.deterministicRuntimeRows.length,
+    7,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(screenshotSurfaceSummary.docSurfaceCount, 3, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(
     screenshotSurfaceSummary.docSurfaces.length,
     screenshotSurfaceSummary.docSurfaceCount,
     JSON.stringify(screenshotSurfaceSummary),
   );
-  for (const docKind of ['closeout', 'evidence']) {
+  for (const docKind of ['closeout', 'evidence', 'handoff']) {
     assert.equal(
       screenshotSurfaceSummary.docSurfaces.some((docSurface) => docSurface.docKind === docKind),
       true,
@@ -6644,6 +7764,7 @@ try {
   const expectedDocSurfaceSuffixByKind = {
     closeout: 'docs/execution-v1-closeout.md',
     evidence: 'docs/execution-v1-evidence.md',
+    handoff: 'docs/execution-v1-handoff.md',
   };
   const expectedReleaseDocKinds = Object.keys(expectedDocSurfaceSuffixByKind);
   const toStableDocPathSuffix = (value) => {
@@ -6819,9 +7940,35 @@ try {
     JSON.stringify(screenshotSurfaceSummary),
   );
   assert.equal(
+    screenshotSurfaceSummary.surfaceHeadings.includes('smoke 실행 시간과 출력 크기'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary),
+  );
+  assert.equal(
     screenshotSurfaceSummary.surfaceHeadings.includes('남은 gap, provider readiness, 증거 문서'),
     true,
     JSON.stringify(screenshotSurfaceSummary),
+  );
+  const browserRuntimeRow = screenshotSurfaceSummary.deterministicRuntimeRows.find(
+    (item) => item.script === 'smoke:ui-execution-browser-e2e',
+  );
+  assert.equal(Boolean(browserRuntimeRow), true, JSON.stringify(screenshotSurfaceSummary.deterministicRuntimeRows));
+  assert.match(browserRuntimeRow.elapsed, /m|s/, JSON.stringify(browserRuntimeRow));
+  assert.match(browserRuntimeRow.summary, /elapsed, stdout .* stderr .* timeout/, JSON.stringify(browserRuntimeRow));
+  assert.equal(
+    browserRuntimeRow.meta.some((item) => /stdout /.test(item)),
+    true,
+    JSON.stringify(browserRuntimeRow),
+  );
+  assert.equal(
+    browserRuntimeRow.meta.some((item) => /stderr /.test(item)),
+    true,
+    JSON.stringify(browserRuntimeRow),
+  );
+  assert.equal(
+    browserRuntimeRow.meta.some((item) => /timeout /.test(item)),
+    true,
+    JSON.stringify(browserRuntimeRow),
   );
   assert.equal(screenshotSurfaceSummary.releaseHeadline.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
   assert.equal(screenshotSurfaceSummary.releaseCopy.length > 0, true, JSON.stringify(screenshotSurfaceSummary));
@@ -6884,6 +8031,9 @@ try {
   );
   const requiredSummaryChipLabels = [
     'deterministic smoke',
+    'reference gate',
+    'live helper',
+    'handoff generator',
     '열린 체크리스트',
     '필수 gap',
     'verified baseline',
@@ -6896,6 +8046,28 @@ try {
     assert.equal(Boolean(summaryChip), true, JSON.stringify({ label, screenshotSurfaceSummary }));
     assert.equal(String(summaryChip?.value || '').trim().length > 0, true, JSON.stringify({ label, screenshotSurfaceSummary }));
   }
+  const deterministicSmokeChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === 'deterministic smoke');
+  assert.equal(deterministicSmokeChip?.value, '4/4 passed', JSON.stringify({ deterministicSmokeChip, screenshotSurfaceSummary }));
+  const referenceGateChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === 'reference gate');
+  assert.equal(referenceGateChip?.value, '1/1 passed', JSON.stringify({ referenceGateChip, screenshotSurfaceSummary }));
+  const liveHelperChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === 'live helper');
+  assert.equal(liveHelperChip?.value, '1/1 passed', JSON.stringify({ liveHelperChip, screenshotSurfaceSummary }));
+  const handoffGeneratorChip = screenshotSurfaceSummary.summaryChips.find((item) => item.label === 'handoff generator');
+  assert.equal(handoffGeneratorChip?.value, '1/1 passed', JSON.stringify({ handoffGeneratorChip, screenshotSurfaceSummary }));
+  assert.equal(
+    screenshotSurfaceSummary.currentStatusRows.some((row) =>
+      String(row.label || '').trim() === 'reference adoption gate'
+      && String(row.value || '').trim() === 'ready'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary.currentStatusRows),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.currentStatusRows.some((row) =>
+      String(row.label || '').trim() === 'deterministic runtime summary'
+      && String(row.value || '').trim() === 'ready'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary.currentStatusRows),
+  );
   for (const recommendationCard of screenshotSurfaceSummary.recommendationCards) {
     assert.equal(String(recommendationCard.label || '').trim().length > 0, true, JSON.stringify(recommendationCard));
     assert.equal(recommendationCard.badges.length >= 1, true, JSON.stringify(recommendationCard));
@@ -6905,6 +8077,28 @@ try {
     assert.equal(String(providerCard.envKey || '').trim().length > 0, true, JSON.stringify(providerCard));
     assert.equal(providerCard.statusBadges.length >= 2, true, JSON.stringify(providerCard));
   }
+  assert.equal(
+    screenshotSurfaceSummary.releaseActionButtons.some((button) =>
+      String(button.action || '').trim() === 'run-release-preflight-all'
+      && String(button.label || '').includes('전체 preflight 실행')),
+    true,
+    JSON.stringify(screenshotSurfaceSummary.releaseActionButtons),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.releaseActionButtons.some((button) =>
+      String(button.action || '').trim() === 'copy-release-command'
+      && String(button.value || '').trim() === 'npm run preflight:execution-v1:all'),
+    true,
+    JSON.stringify(screenshotSurfaceSummary.releaseActionButtons),
+  );
+  assert.equal(
+    screenshotSurfaceSummary.releaseCallouts.some((callout) =>
+      String(callout.title || '').includes('전체 provider preflight')
+      && String(callout.text || '').includes('not-run')
+      && String(callout.text || '').includes('missing env not tracked')),
+    true,
+    JSON.stringify(screenshotSurfaceSummary.releaseCallouts),
+  );
   for (const handoffArtifact of screenshotSurfaceSummary.handoffArtifacts) {
     assert.equal(String(handoffArtifact.id || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
     assert.equal(String(handoffArtifact.label || '').trim().length > 0, true, JSON.stringify(handoffArtifact));
@@ -7298,7 +8492,7 @@ try {
     );
     assert.equal(
       handoffArtifact.id.startsWith('handoff-')
-        ? /entries=open,preview,summaryCopy,summaryCopyPreview,summaryDetailCopy,summaryDetailCopyPreview,summaryDetailCopyPreviewLineCopy,summaryDetailCopyPreviewLineCopyBody,summaryStableLineCopy,summaryStableLineCopyPreview,summaryStableLineCopyPreviewBody,summaryStableLineCopyPreviewBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
+	        ? String(handoffArtifact.structuredSummaryOverview || '').includes('summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy') && /\|sha256=/i.test(String(handoffArtifact.structuredSummaryOverview || ''))
         : String(handoffArtifact.structuredSummaryOverview || '').trim().length === 0,
       true,
       JSON.stringify(handoffArtifact),
@@ -9357,7 +10551,761 @@ try {
     true,
     JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
   );
-  const releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    bySurfaceId: {
+      card: {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: 'line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        surface: 'card',
+      },
+      'current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: '현재 line 복사',
+        expectedSuccessLabel: '현재 line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
+    },
+    exactMatchCount: 0,
+    totalChecks: 2,
+  };
+  for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedText === summaryEntry.expectedText
+      && summaryEntry.fallbackPromptedValue === summaryEntry.expectedText
+      && summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel
+      && summaryEntry.fallbackCopyLabel === summaryEntry.expectedLabelAfterOtherCopy
+      && summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy;
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount +=
+      summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([surfaceId, summaryEntry]) => [
+      surfaceId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `artifactId=${summaryEntry.artifactId}`,
+      `detailKey=${summaryEntry.detailKey}`,
+      `surface=${summaryEntry.surface}`,
+      `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+      `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+    ].join('|'));
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine = [
+    `totalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks}`,
+    `exactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount}`,
+    `surfaces=${Object.values(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}/${entry.surface}`).join(',')}`,
+    `sha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    2,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary = {
+    bySurfaceId: {
+      card: {
+        artifactId: 'handoff-digest-json',
+        copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: 'line 복사',
+        expectedSuccessLabel: '복사됨',
+        expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        surface: 'card',
+      },
+      'current-preview': {
+        artifactId: 'handoff-index-markdown',
+        copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+        copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+        detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+        expectedLabelAfterOtherCopy: '현재 line 복사',
+        expectedSuccessLabel: '현재 line 복사됨',
+        expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+        fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+        fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+        observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+        previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+        surface: 'current-preview',
+      },
+    },
+    exactMatchCount: 0,
+    totalChecks: 2,
+  };
+  for (const [surfaceId, summaryEntry] of Object.entries(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId)) {
+    summaryEntry.exactMatch =
+      summaryEntry.copiedText === summaryEntry.expectedText
+      && summaryEntry.fallbackPromptedValue === summaryEntry.expectedText
+      && summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel
+      && summaryEntry.fallbackCopyLabel === summaryEntry.expectedLabelAfterOtherCopy
+      && summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy;
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount +=
+      summaryEntry.exactMatch ? 1 : 0;
+  }
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines = Object.entries(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId,
+  )
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([surfaceId, summaryEntry]) => [
+      surfaceId,
+      `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+      `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+      `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+      `artifactId=${summaryEntry.artifactId}`,
+      `detailKey=${summaryEntry.detailKey}`,
+      `surface=${summaryEntry.surface}`,
+      `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+      `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+    ].join('|'));
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256 = createHash('sha256')
+    .update(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.join('\n'))
+    .digest('hex');
+  releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine = [
+    `totalChecks=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks}`,
+    `exactMatchCount=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount}`,
+    `surfaces=${Object.values(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}/${entry.surface}`).join(',')}`,
+    `sha256=${releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256}`,
+  ].join('|');
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+    2,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    /^[a-f0-9]{64}$/.test(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256),
+    true,
+    JSON.stringify(releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  const buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary = ({ bySurfaceId }) => {
+    const summary = {
+      bySurfaceId,
+      exactMatchCount: 0,
+      totalChecks: Object.keys(bySurfaceId).length,
+    };
+    for (const [surfaceId, summaryEntry] of Object.entries(summary.bySurfaceId)) {
+      summaryEntry.exactMatch =
+        summaryEntry.copiedText === summaryEntry.expectedText
+        && summaryEntry.fallbackPromptedValue === summaryEntry.expectedText
+        && summaryEntry.copyLabelAfterSuccess === summaryEntry.expectedSuccessLabel
+        && summaryEntry.fallbackCopyLabel === summaryEntry.expectedLabelAfterOtherCopy
+        && summaryEntry.observedLabelAfterOtherCopy === summaryEntry.expectedLabelAfterOtherCopy;
+      summary.exactMatchCount += summaryEntry.exactMatch ? 1 : 0;
+    }
+    summary.stableLines = Object.entries(summary.bySurfaceId)
+      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+      .map(([surfaceId, summaryEntry]) => [
+        surfaceId,
+        `exact=${summaryEntry.exactMatch ? 'true' : 'false'}`,
+        `copyLabel=${summaryEntry.copyLabelAfterSuccess}`,
+        `fallbackLabel=${summaryEntry.fallbackCopyLabel}`,
+        `artifactId=${summaryEntry.artifactId}`,
+        `detailKey=${summaryEntry.detailKey}`,
+        `surface=${summaryEntry.surface}`,
+        `textSha256=${createHash('sha256').update(summaryEntry.expectedText).digest('hex')}`,
+        `postCopyLabel=${summaryEntry.observedLabelAfterOtherCopy}`,
+      ].join('|'));
+    summary.stableSha256 = createHash('sha256')
+      .update(summary.stableLines.join('\n'))
+      .digest('hex');
+    summary.overviewLine = [
+      `totalChecks=${summary.totalChecks}`,
+      `exactMatchCount=${summary.exactMatchCount}`,
+      `surfaces=${Object.values(summary.bySurfaceId).map((entry) => `${entry.artifactId}:${entry.detailKey}/${entry.surface}`).join(',')}`,
+      `sha256=${summary.stableSha256}`,
+    ].join('|');
+    assert.equal(summary.exactMatchCount, summary.totalChecks, JSON.stringify(summary));
+    assert.equal(summary.stableLines.length, 2, JSON.stringify(summary));
+    assert.equal(/^[a-f0-9]{64}$/.test(summary.stableSha256), true, JSON.stringify(summary));
+    return summary;
+  };
+  const releaseHandoffPromotedReportOnlySummaryKey = buildReleaseHandoffStableLineCopyKey(32);
+  const releaseHandoffPromotedReportOnlyDetailKey = buildReleaseHandoffStableLineCopyKey(31);
+  const releaseHandoffPromotedReportOnlyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.reportOnlyPromotedCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.reportOnlyPromotedCardCopy.copyLabelAfterCopy,
+          detailKey: releaseHandoffPromotedReportOnlyDetailKey,
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.reportOnlyPromotedCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.reportOnlyPromotedCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.reportOnlyPromotedCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.reportOnlyPromotedCardDetail,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewCopy.copyLabelAfterCopy,
+          detailKey: releaseHandoffPromotedReportOnlyDetailKey,
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.reportOnlyPromotedCurrentPreviewDetail,
+          previewArtifactId: handoffStructuredSummaryCopyState.reportOnlyPromotedCurrentPreviewCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffReportOnlyNextSummaryKey = buildReleaseHandoffStableLineCopyKey(33);
+  const releaseHandoffReportOnlyNextDetailKey = buildReleaseHandoffStableLineCopyKey(32);
+  const releaseHandoffReportOnlyNextVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.reportOnlyNextCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.reportOnlyNextCardCopy.copyLabelAfterCopy,
+          detailKey: releaseHandoffReportOnlyNextDetailKey,
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.reportOnlyNextCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.reportOnlyNextCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.reportOnlyNextCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.reportOnlyNextCardDetail,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewCopy.copyLabelAfterCopy,
+          detailKey: releaseHandoffReportOnlyNextDetailKey,
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.reportOnlyNextCurrentPreviewDetail,
+          previewArtifactId: handoffStructuredSummaryCopyState.reportOnlyNextCurrentPreviewCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+      bySurfaceId: {
+        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+        },
+      },
+    });
+	  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+          artifactId: 'handoff-digest-json',
+          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: 'line 복사',
+          expectedSuccessLabel: '복사됨',
+          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          surface: 'card',
+        },
+        'current-preview': {
+          artifactId: 'handoff-index-markdown',
+          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+          expectedLabelAfterOtherCopy: '현재 line 복사',
+          expectedSuccessLabel: '현재 line 복사됨',
+          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+          surface: 'current-preview',
+	        },
+	      },
+	    });
+	  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+	  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+	  const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+const releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary =
+	    buildReleaseHandoffStructuredSummaryDetailLineCopyVerificationSummary({
+	      bySurfaceId: {
+	        card: {
+	          artifactId: 'handoff-digest-json',
+	          copiedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: 'line 복사',
+	          expectedSuccessLabel: '복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.detailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCardFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.digestJsonCardDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          surface: 'card',
+	        },
+	        'current-preview': {
+	          artifactId: 'handoff-index-markdown',
+	          copiedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copiedText,
+	          copyLabelAfterSuccess: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.copyLabelAfterCopy,
+	          detailKey: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy',
+	          expectedLabelAfterOtherCopy: '현재 line 복사',
+	          expectedSuccessLabel: '현재 line 복사됨',
+	          expectedText: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.overviewLine,
+	          fallbackCopyLabel: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.copyLabel,
+	          fallbackPromptedValue: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyFallback.promptedValue,
+	          observedLabelAfterOtherCopy: handoffStructuredSummaryCopyState.labelsAfterCurrentPreviewCopy.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy,
+	          previewArtifactId: handoffStructuredSummaryCopyState.currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyCopy.previewArtifactId,
+	          surface: 'current-preview',
+	        },
+	      },
+	    });
+	  const releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary = {
     bySurfaceId: {
       card: {
         artifactId: 'handoff-digest-json',
@@ -9623,7 +11571,160 @@ try {
       stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
       totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
     },
-    summaryDetailCopyPreview: {
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    },
+	    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+	    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+	    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: {
+	      errorFreeSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      exactMatchCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	      overviewLine: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.overviewLine,
+	      stableDigestSha256: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableSha256,
+	      stableLineCount: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines.length,
+	      stableLines: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines,
+	      totalSessions: releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    },
+	    summaryDetailCopyPreview: {
       errorFreeSessions: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
       exactMatchCount: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.exactMatchCount,
       overviewLine: releaseHandoffSummaryDetailCopyPreviewVerificationSummary.overviewLine,
@@ -9645,6 +11746,24 @@ try {
       totalSessions: releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary.totalArtifacts,
     },
   };
+  for (const promotedLineCopyCount of [31, 32]) {
+    const promotedLineCopyVerificationSummary = promotedLineCopyCount === 32
+      ? releaseHandoffPromotedReportOnlyVerificationSummary
+      : eval(
+        buildReleaseHandoffSummaryVerificationReportKey(
+          buildReleaseHandoffStableLineCopyKey(promotedLineCopyCount),
+        ),
+      );
+    releaseHandoffStructuredSummary[buildReleaseHandoffStableLineCopyKey(promotedLineCopyCount)] = {
+      errorFreeSessions: promotedLineCopyVerificationSummary.exactMatchCount,
+      exactMatchCount: promotedLineCopyVerificationSummary.exactMatchCount,
+      overviewLine: promotedLineCopyVerificationSummary.overviewLine,
+      stableDigestSha256: promotedLineCopyVerificationSummary.stableSha256,
+      stableLineCount: promotedLineCopyVerificationSummary.stableLines.length,
+      stableLines: promotedLineCopyVerificationSummary.stableLines,
+      totalSessions: promotedLineCopyVerificationSummary.totalChecks,
+    };
+  }
   const releaseHandoffStructuredSummaryLines = Object.entries(releaseHandoffStructuredSummary)
     .sort(([left], [right]) => left.localeCompare(right))
     .map(
@@ -9674,8 +11793,25 @@ try {
     releaseHandoffLinkVerificationSummary,
     releaseHandoffOpenCoverageSummary,
     releaseHandoffOpenLinkVerificationSummary,
-    releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
-    releaseHandoffSummaryDetailCopyVerificationSummary,
+	    releaseHandoffOpenSessionResults: normalizedReleaseHandoffOpenSessionResults,
+	    releaseHandoffSummaryDetailCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
     releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary,
@@ -9724,9 +11860,26 @@ try {
       releaseHandoffIndexTextVerified: true,
       releaseHandoffOpenLinkSummaryVerified: true,
       releaseHandoffIndexMarkdownPath,
-      releaseHandoffIndexMarkdownVerified: true,
-      releaseHandoffLinkSummaryVerified: true,
-      releaseHandoffSummaryDetailCopyVerified: true,
+	      releaseHandoffIndexMarkdownVerified: true,
+	      releaseHandoffLinkSummaryVerified: true,
+	      releaseHandoffSummaryDetailCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+	      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
+      releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
       releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified: true,
@@ -9803,6 +11956,19 @@ try {
     url: reloadState.href,
     workspaceId: workspace.id,
   };
+  const releaseHandoffReportOnlyNextReportKey =
+    buildReleaseHandoffSummaryVerificationReportKey(releaseHandoffReportOnlyNextSummaryKey);
+  const releaseHandoffPromotedReportOnlyReportKey =
+    buildReleaseHandoffSummaryVerificationReportKey(releaseHandoffPromotedReportOnlySummaryKey);
+  smokeReport[releaseHandoffPromotedReportOnlyReportKey] =
+    releaseHandoffPromotedReportOnlyVerificationSummary;
+  smokeReport.artifactPair[
+    `${releaseHandoffPromotedReportOnlyReportKey.replace(/VerificationSummary$/, '')}Verified`
+  ] = true;
+  smokeReport[releaseHandoffReportOnlyNextReportKey] = releaseHandoffReportOnlyNextVerificationSummary;
+  smokeReport.artifactPair[
+    `${releaseHandoffReportOnlyNextReportKey.replace(/VerificationSummary$/, '')}Verified`
+  ] = true;
   const releaseHandoffDigestArtifact = {
     artifactVersion: 'execution-v1-release-handoff-digest/v1',
     generatedAt: smokeReport.generatedAt,
@@ -11549,8 +13715,203 @@ try {
   const persistedReleaseDocDigestManifestMarkdownArtifact = fs.readFileSync(releaseDocDigestManifestMarkdownPath, 'utf8');
   const persistedReleaseDocDigestManifestTextArtifact = fs.readFileSync(releaseDocDigestManifestTextPath, 'utf8');
   const persistedReleaseDocDigestTextArtifact = fs.readFileSync(releaseDocDigestTextArtifactPath, 'utf8');
-  const persistedReleaseDocDigestMarkdownArtifact = fs.readFileSync(releaseDocDigestMarkdownArtifactPath, 'utf8');
-  assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
+	  const persistedReleaseDocDigestMarkdownArtifact = fs.readFileSync(releaseDocDigestMarkdownArtifactPath, 'utf8');
+	  assert.deepEqual(persistedReport, smokeReport, JSON.stringify({ persistedReport, smokeReport }));
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+	    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+	  );
+	  assert.equal(
+	    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+	    true,
+	    JSON.stringify(persistedReport.artifactPair),
+	  );
+	  assert.equal(
+	    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+	    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
   assert.equal(
     persistedReport.releaseHandoffLinkVerificationSummary.overviewLine.includes(
       `errorFreeSessions=${releaseHandoffLinkVerificationSummary.errorFreeSessions}`,
@@ -12043,6 +14404,51 @@ try {
   );
   assert.equal(
     persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.exactMatchCount,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.totalChecks,
+    JSON.stringify(persistedReport.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
+    true,
+    JSON.stringify(persistedReport.artifactPair),
+  );
+  assert.equal(
+    persistedReport.artifactPair.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerified,
     true,
     JSON.stringify(persistedReport.artifactPair),
   );
@@ -12721,8 +15127,13 @@ try {
     JSON.stringify({ persistedReleaseDocDigestMarkdownArtifact, releaseDocDigestMarkdownLines }),
   );
 
-  console.log(JSON.stringify(smokeReport, null, 2));
+  artifactsCommitted = true;
+  console.log(JSON.stringify(emitFullReportStdout ? smokeReport : buildConsoleSmokeReport(smokeReport), null, 2));
 } finally {
+  if (!artifactsCommitted) {
+    restoreArtifactsFromBackup(artifactBackups);
+  }
+
   try {
     runPw(['close'], { timeoutMs: 5_000 });
   } catch {}
@@ -12758,45 +15169,114 @@ function runCli({ rootDir, args }) {
   return stdout ? JSON.parse(stdout) : null;
 }
 
-function installBrowserGuards({ session = sessionId } = {}) {
-  runPw(['--raw', 'run-code', browserGuardScript], { session });
+function backupArtifacts(filePaths, backupDir) {
+  const backups = [];
+  fs.mkdirSync(backupDir, { recursive: true });
+
+  for (const [index, filePath] of filePaths.entries()) {
+    if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+      continue;
+    }
+    const backupPath = path.join(backupDir, `${String(index).padStart(2, '0')}-${path.basename(filePath)}`);
+    fs.copyFileSync(filePath, backupPath);
+    backups.push({ backupPath, filePath });
+  }
+
+  return backups;
+}
+
+function restoreArtifactsFromBackup(backups) {
+  for (const { backupPath, filePath } of backups) {
+    try {
+      if (!fs.existsSync(backupPath)) {
+        continue;
+      }
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.copyFileSync(backupPath, filePath);
+    } catch {}
+  }
+}
+
+function installBrowserGuards({ context = 'browser-guard', session = sessionId, timeoutMs = browserGuardTimeoutMs } = {}) {
+  try {
+    runPw(['--raw', 'run-code', browserGuardScript], { label: context, session, timeoutMs });
+  } catch (error) {
+    if (!isPlaywrightTimeoutError(error)) {
+      throw error;
+    }
+
+    console.error(
+      `[smoke-ui-execution-browser-e2e] retrying browser guard install after timeout: context=${context} session=${session}`,
+    );
+    runPw(['--raw', 'run-code', browserGuardScript], { label: `${context}-retry`, session, timeoutMs });
+  }
+}
+
+function isPlaywrightTimeoutError(error) {
+  return /playwright-cli timed out/.test(String(error?.message || error || ''));
+}
+
+function isPlaywrightTransientSessionError(error) {
+  return /playwright-cli timed out|Page crashed|Target page, context or browser has been closed|browser has been closed|playwright-cli failed.*\(open [^)]+\): status=1 signal= <no output>/i
+    .test(String(error?.message || error || ''));
 }
 
 function getBrowserErrorState({ session = sessionId } = {}) {
-  return runPwJson(
-    [
-      '--raw',
-      'run-code',
-      `async (page) => ({
-        consoleErrors: page.__codexConsoleErrors || [],
-        pageErrors: page.__codexPageErrors || [],
-      })`,
-    ],
-    { session },
-  );
+  const args = [
+    '--raw',
+    'run-code',
+    `async (page) => ({
+      consoleErrors: page.__codexConsoleErrors || [],
+      pageErrors: page.__codexPageErrors || [],
+    })`,
+  ];
+  try {
+    return runPwJson(args, { label: 'browser-error-state', session, timeoutMs: browserGuardTimeoutMs });
+  } catch (error) {
+    if (!isPlaywrightTimeoutError(error)) {
+      throw error;
+    }
+
+    console.error(
+      `[smoke-ui-execution-browser-e2e] retrying browser error state read after timeout: session=${session}`,
+    );
+    return runPwJson(args, { label: 'browser-error-state-retry', session, timeoutMs: browserGuardTimeoutMs });
+  }
 }
 
-function runPw(args, { session = sessionId, timeoutMs = 60_000 } = {}) {
-  const result = spawnSync('npx', [...playwrightArgsBase, '--session', session, ...args], {
-    cwd: repoDir,
-    encoding: 'utf8',
-    env: process.env,
-    timeout: timeoutMs,
-  });
+function runPw(args, { label = '', session = sessionId, timeoutMs = 60_000 } = {}) {
+  const result = runCommandWithHardTimeout(
+    'npx',
+    [...playwrightArgsBase, '--session', session, ...args],
+    {
+      cwd: repoDir,
+      tempDir: tempRoot,
+      timeoutMs,
+    },
+  );
+  const labelSegment = label ? ` [${label}]` : '';
 
-  if (result.error?.code === 'ETIMEDOUT') {
-    throw new Error(`playwright-cli timed out (${args.join(' ')}) after ${timeoutMs}ms`);
+  if (result.timedOut) {
+    throw new Error(`playwright-cli timed out${labelSegment} session=${session} (${args.join(' ')}) after ${timeoutMs}ms`);
+  }
+
+  if (result.error) {
+    throw new Error(`playwright-cli failed${labelSegment} session=${session} (${args.join(' ')}): ${result.error}`);
   }
 
   if (result.status !== 0) {
-    throw new Error(`playwright-cli failed (${args.join(' ')}): ${result.stderr || result.stdout}`);
+    const output = result.stderr || result.stdout || '<no output>';
+    throw new Error(
+      `playwright-cli failed${labelSegment} session=${session} (${args.join(' ')}): `
+        + `status=${result.status} signal=${result.signal || ''} ${output}`,
+    );
   }
 
   return String(result.stdout || '').trim();
 }
 
-function runPwJson(args, { session = sessionId } = {}) {
-  const stdout = runPw(args, { session });
+function runPwJson(args, { label = '', session = sessionId, timeoutMs = 60_000 } = {}) {
+  const stdout = runPw(args, { label, session, timeoutMs });
   if (!stdout) {
     return null;
   }

@@ -52,8 +52,38 @@ export function formatLiveValidationFailureLines(parsedReason) {
   const lines = [`  - failure: ${parsedReason.message}`];
   for (const [key, label] of orderedFields) {
     if (parsedReason.details[key]) {
-      lines.push(`  - ${label}: ${parsedReason.details[key]}`);
+      lines.push(`  - ${label}: ${sanitizePortableMarkdown(parsedReason.details[key])}`);
     }
+  }
+  return lines;
+}
+
+export function formatLiveValidationProviderFailureLines(providerFailure) {
+  if (!providerFailure) {
+    return [];
+  }
+
+  const lines = [];
+  if (providerFailure.providerId) {
+    lines.push(`  - providerId: ${providerFailure.providerId}`);
+  }
+  if (providerFailure.role) {
+    lines.push(`  - failedRole: ${providerFailure.role}`);
+  }
+  if (providerFailure.failureKind) {
+    lines.push(`  - failureKind: ${providerFailure.failureKind}`);
+  }
+  if (providerFailure.httpStatus) {
+    lines.push(`  - httpStatus: ${providerFailure.httpStatus}`);
+  }
+  if (providerFailure.rawMessage) {
+    lines.push(`  - providerMessage: ${providerFailure.rawMessage}`);
+  }
+  if (providerFailure.recoverable !== null && providerFailure.recoverable !== undefined) {
+    lines.push(`  - recoverable: ${providerFailure.recoverable}`);
+  }
+  if (providerFailure.timedOut !== null && providerFailure.timedOut !== undefined) {
+    lines.push(`  - timedOut: ${providerFailure.timedOut}`);
   }
   return lines;
 }
@@ -93,6 +123,49 @@ export function readLiveValidationTriage(parsedReason) {
   return triage;
 }
 
+export function readLiveValidationProviderFailure(parsedReason) {
+  if (!parsedReason?.details?.rootDir || !parsedReason?.details?.sessionId) {
+    return null;
+  }
+
+  const statePath = path.join(parsedReason.details.rootDir, 'var', 'state.json');
+  if (!fs.existsSync(statePath)) {
+    return null;
+  }
+
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  } catch {
+    return null;
+  }
+
+  const run = Array.isArray(state.agentRuns)
+    ? state.agentRuns.find((item) => item?.sessionId === parsedReason.details.sessionId && item?.status === 'failed')
+    : null;
+  if (!run) {
+    return null;
+  }
+
+  return {
+    failureKind: run.failureKind || '',
+    httpStatus: run.httpStatus || '',
+    outputSummary: compactSingleLine(run.outputSummary || ''),
+    providerId: run.providerId || '',
+    rawMessage: compactSingleLine(extractProviderMessage(run.rawMessage || '')),
+    recoverable: typeof run.recoverable === 'boolean' ? run.recoverable : null,
+    role: run.role || run.workflowRole || '',
+    timedOut: typeof run.timedOut === 'boolean' ? run.timedOut : null,
+  };
+}
+
+export function sanitizePortableMarkdown(markdown) {
+  return String(markdown || '').replace(
+    /\/(?:private\/)?var\/folders\/[^"'\s)]+\/T\/(personal-ai-agent-[^"'\s,)]+)/g,
+    '<temp>/$1',
+  );
+}
+
 function extractReviewerFailedChecks(markdown) {
   const lines = String(markdown || '')
     .split('\n')
@@ -117,6 +190,23 @@ function extractMarkdownSection(markdown, heading) {
   const pattern = new RegExp(`## ${escapeRegExp(heading)}\\n([\\s\\S]*?)(?:\\n## |$)`);
   const match = String(markdown || '').match(pattern);
   return match?.[1]?.trim() || '';
+}
+
+function extractProviderMessage(rawMessage) {
+  if (!rawMessage) {
+    return '';
+  }
+
+  try {
+    const parsed = JSON.parse(rawMessage);
+    return parsed?.error?.message || parsed?.message || rawMessage;
+  } catch {
+    return rawMessage;
+  }
+}
+
+function compactSingleLine(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
 function escapeRegExp(value) {

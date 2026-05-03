@@ -42,7 +42,9 @@ import {
   hashExecutionManifest,
   normalizeExecutionManifest,
 } from './execution-utils.mjs';
+import { createFactGraphService } from './fact-graph-service.mjs';
 import { createId } from './id.mjs';
+import { buildRetrievalContext, summarizeMissionRetrievalPreview } from './retrieval-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
@@ -101,44 +103,6 @@ const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE = 3_000;
 const MISSION_ATTACHMENT_PREVIEW_CHARS = 280;
-const RETRIEVAL_MAX_ITEMS = 6;
-const RETRIEVAL_MAX_TOTAL_CHARS = 2_400;
-const RETRIEVAL_SNIPPET_MAX_CHARS = 420;
-const RETRIEVAL_ATTACHMENT_CHUNK_CHARS = 900;
-const RETRIEVAL_MIN_TOKEN_LENGTH = 2;
-const RETRIEVAL_STOP_TOKENS = new Set([
-  'about',
-  'after',
-  'again',
-  'and',
-  'before',
-  'context',
-  'deliverable',
-  'execution',
-  'for',
-  'from',
-  'into',
-  'memory',
-  'mission',
-  'mode',
-  'next',
-  'objective',
-  'path',
-  'prompt',
-  'retrieval',
-  'role',
-  'run',
-  'step',
-  'that',
-  'the',
-  'this',
-  'through',
-  'title',
-  'type',
-  'verify',
-  'with',
-  'work',
-]);
 const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
   '.c',
   '.cc',
@@ -166,275 +130,6 @@ const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
   '.yaml',
   '.yml',
 ]);
-
-function normalizeWhitespace(value) {
-  return normalizeText(value).replace(/\s+/g, ' ').trim();
-}
-
-function truncateText(value, maxChars) {
-  const normalized = normalizeWhitespace(value);
-  if (!normalized || normalized.length <= maxChars) {
-    return normalized;
-  }
-
-  return `${normalized.slice(0, Math.max(maxChars - 3, 0)).trim()}...`;
-}
-
-function tokenizeRetrievalText(value) {
-  return [...new Set(
-    normalizeText(value)
-      .toLowerCase()
-      .split(/[^0-9a-z\u3131-\u318e\uac00-\ud7a3]+/u)
-      .map((token) => token.trim())
-      .filter((token) => token.length >= RETRIEVAL_MIN_TOKEN_LENGTH && !RETRIEVAL_STOP_TOKENS.has(token)),
-  )];
-}
-
-function splitRetrievalChunks(value, maxChars = RETRIEVAL_ATTACHMENT_CHUNK_CHARS) {
-  const normalized = normalizeText(value);
-  if (!normalized) {
-    return [];
-  }
-
-  const paragraphs = normalized
-    .split(/\n\s*\n/)
-    .map((paragraph) => normalizeWhitespace(paragraph))
-    .filter(Boolean);
-
-  if (!paragraphs.length) {
-    return [truncateText(normalized, maxChars)].filter(Boolean);
-  }
-
-  const chunks = [];
-  for (const paragraph of paragraphs) {
-    if (paragraph.length <= maxChars) {
-      chunks.push(truncateText(paragraph, maxChars));
-      continue;
-    }
-
-    for (let index = 0; index < paragraph.length; index += maxChars) {
-      chunks.push(truncateText(paragraph.slice(index, index + maxChars), maxChars));
-    }
-  }
-
-  return chunks.filter(Boolean);
-}
-
-function summarizePreviousOutputsForRetrieval(previousOutputs = {}) {
-  const summaries = [];
-
-  for (const [key, value] of Object.entries(previousOutputs)) {
-    if (key === 'specialists') {
-      for (const item of ensureArray(value)) {
-        summaries.push(normalizeText(item?.summaryText));
-        summaries.push(normalizeText(item?.handoff?.currentState));
-      }
-      continue;
-    }
-
-    if (value && typeof value === 'object') {
-      summaries.push(normalizeText(value.summaryText));
-      summaries.push(...normalizeStringList(value.planSteps));
-      summaries.push(...normalizeStringList(value.adaptationNotes));
-      continue;
-    }
-
-    summaries.push(normalizeText(value));
-  }
-
-  return summaries.filter(Boolean).join(' ');
-}
-
-function scoreRetrievalSnippet(snippet, queryTokenSet) {
-  let score = 0;
-
-  for (const token of tokenizeRetrievalText(snippet)) {
-    if (!queryTokenSet.has(token)) {
-      continue;
-    }
-
-    if (token.length >= 8) {
-      score += 4;
-    } else if (token.length >= 5) {
-      score += 3;
-    } else {
-      score += 2;
-    }
-  }
-
-  return score;
-}
-
-function buildRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
-  const queryText = [
-    mission.title,
-    mission.objective,
-    mission.deliverableType,
-    mission.mode,
-    role,
-    providerRole,
-    ensureArray(mission.constraints).join(' '),
-    ensureArray(pack.requiredSections).join(' '),
-    ensureArray(pack.reviewRules)
-      .map((rule) => normalizeText(rule?.description))
-      .join(' '),
-    summarizePreviousOutputsForRetrieval(previousOutputs),
-  ]
-    .filter(Boolean)
-    .join(' ');
-  const queryTokens = tokenizeRetrievalText(queryText);
-  const queryTokenSet = new Set(queryTokens);
-  const candidates = [];
-  let sequence = 0;
-
-  for (const entry of ensureArray(memoryEntries)) {
-    const snippet = truncateText(entry?.content, RETRIEVAL_SNIPPET_MAX_CHARS);
-    if (!snippet) {
-      continue;
-    }
-
-    candidates.push({
-      fileName: null,
-      score: scoreRetrievalSnippet(snippet, queryTokenSet),
-      sequence: sequence += 1,
-      snippet,
-      sourceLabel: `${normalizeText(entry.scope, 'memory')}/${normalizeText(entry.kind, 'note')}`,
-      sourceType: 'memory',
-    });
-  }
-
-  for (const attachment of ensureArray(attachments)) {
-    const fileName = normalizeText(attachment?.fileName, 'attachment');
-    const content = normalizeText(attachment?.promptContent, attachment?.excerpt);
-    const chunks = splitRetrievalChunks(content);
-
-    chunks.forEach((chunk, index) => {
-      candidates.push({
-        chunkIndex: index + 1,
-        fileName,
-        score: scoreRetrievalSnippet(chunk, queryTokenSet),
-        sequence: sequence += 1,
-        snippet: truncateText(chunk, RETRIEVAL_SNIPPET_MAX_CHARS),
-        sourceLabel: fileName,
-        sourceType: 'attachment',
-      });
-    });
-  }
-
-  const rankedCandidates = (candidates.some((candidate) => candidate.score > 0)
-    ? candidates.filter((candidate) => candidate.score > 0)
-    : candidates
-  ).sort((left, right) => right.score - left.score || left.sequence - right.sequence);
-
-  const selected = [];
-  const seenSnippets = new Set();
-  let remainingChars = RETRIEVAL_MAX_TOTAL_CHARS;
-
-  for (const candidate of rankedCandidates) {
-    if (selected.length >= RETRIEVAL_MAX_ITEMS || remainingChars <= 0) {
-      break;
-    }
-
-    const snippet = truncateText(candidate.snippet, Math.min(RETRIEVAL_SNIPPET_MAX_CHARS, remainingChars));
-    if (!snippet || seenSnippets.has(snippet)) {
-      continue;
-    }
-
-    seenSnippets.add(snippet);
-    selected.push({
-      chunkIndex: candidate.chunkIndex || null,
-      fileName: candidate.fileName || null,
-      score: candidate.score,
-      snippet,
-      sourceLabel: candidate.sourceLabel,
-      sourceType: candidate.sourceType,
-    });
-    remainingChars = Math.max(remainingChars - snippet.length, 0);
-  }
-
-  return selected;
-}
-
-function getRetrievalPreviewRoles(specialistKinds = []) {
-  const roles = [
-    { label: '매니저', providerRole: 'manager', role: 'manager' },
-    { label: '플래너', providerRole: 'planner', role: 'planner' },
-    { label: '실행', providerRole: 'executor', role: 'executor' },
-    { label: '리뷰어', providerRole: 'reviewer', role: 'reviewer' },
-  ];
-
-  for (const specialistKind of ensureArray(specialistKinds)) {
-    roles.push({
-      label: `${specialistKind} specialist`,
-      providerRole: 'specialist',
-      role: 'specialist',
-      specialistKind,
-    });
-  }
-
-  return roles;
-}
-
-function summarizeMissionRetrievalPreview({ attachments, memoryEntries, mission, pack, specialistKinds = [] }) {
-  const rolePreviews = getRetrievalPreviewRoles(specialistKinds).map((roleConfig) => ({
-    itemCount: 0,
-    items: buildRetrievalContext({
-      attachments,
-      memoryEntries,
-      mission,
-      pack,
-      previousOutputs: {},
-      providerRole: roleConfig.providerRole,
-      role: roleConfig.role,
-    }),
-    label: roleConfig.label,
-    providerRole: roleConfig.providerRole,
-    role: roleConfig.role,
-    specialistKind: roleConfig.specialistKind || null,
-  }));
-
-  const previewItemMap = new Map();
-
-  for (const preview of rolePreviews) {
-    preview.itemCount = preview.items.length;
-
-    for (const item of preview.items) {
-      const key = [item.sourceType, item.sourceLabel, item.fileName || '', item.chunkIndex || '', item.snippet].join('|');
-      if (!previewItemMap.has(key)) {
-        previewItemMap.set(key, {
-          ...item,
-          roles: [preview.label],
-        });
-        continue;
-      }
-
-      const current = previewItemMap.get(key);
-      current.roles = [...new Set([...current.roles, preview.label])];
-    }
-  }
-
-  const previewItems = [...previewItemMap.values()]
-    .sort((left, right) => Number(right.score || 0) - Number(left.score || 0))
-    .slice(0, RETRIEVAL_MAX_ITEMS);
-
-  return {
-    previewItems,
-    roles: rolePreviews.map((preview) => ({
-      itemCount: preview.itemCount,
-      label: preview.label,
-      providerRole: preview.providerRole,
-      role: preview.role,
-      specialistKind: preview.specialistKind,
-    })),
-    summary: {
-      attachmentSourceCount: new Set(previewItems.filter((item) => item.sourceType === 'attachment').map((item) => item.sourceLabel)).size,
-      memorySourceCount: new Set(previewItems.filter((item) => item.sourceType === 'memory').map((item) => item.sourceLabel)).size,
-      ready: previewItems.length > 0,
-      roleCount: rolePreviews.length,
-      snippetCount: previewItems.length,
-    },
-  };
-}
 
 function getRetrievalSourceCompareKey(sourceType, sourceLabel) {
   return `${normalizeText(sourceType)}:${normalizeText(sourceLabel)}`;
@@ -570,7 +265,7 @@ ${retrievalContext.length
   ? retrievalContext
       .map(
         (item) =>
-          `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - snippet: ${item.snippet}`,
+          `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - lexicalScore: ${item.lexicalScore ?? item.score}\n  - bm25Score: ${item.bm25Score ?? 0}\n  - phraseBoostScore: ${item.phraseBoostScore ?? 0}\n  - matchTermCount: ${item.matchTermCount ?? 0}\n  - matchedTerms: ${Array.isArray(item.matchedTerms) ? item.matchedTerms.join(', ') : ''}\n  - retrievalReason: ${item.retrievalReason || 'not recorded'}\n  - snippet: ${item.snippet}`,
       )
       .join('\n')
   : '- no retrieval snippets selected'}
@@ -1135,6 +830,7 @@ function extractOrchestrationProfileMetadata(item) {
     deliverableTypes: normalizeStringList(item?.orchestrationProfileDeliverableTypes),
     description: normalizeText(item?.orchestrationProfileDescription) || null,
     displayName: normalizeText(item?.orchestrationProfileDisplayName, profileId),
+    harnessPatterns: normalizeStringList(item?.orchestrationProfileHarnessPatterns),
     id: profileId,
     mergeOwner: normalizeText(item?.orchestrationProfileMergeOwner) || null,
     mode: normalizeText(item?.orchestrationProfileMode) || null,
@@ -1142,6 +838,8 @@ function extractOrchestrationProfileMetadata(item) {
       SPECIALIST_KINDS.includes(kind),
     ),
     qualityGate: normalizeText(item?.orchestrationProfileQualityGate) || null,
+    recommendedProvider: normalizeText(item?.orchestrationProfileRecommendedProvider) || null,
+    runtimeBlueprint: normalizeText(item?.orchestrationProfileRuntimeBlueprint) || null,
     retryPolicy: normalizeText(item?.orchestrationProfileRetryPolicy) || null,
     source: normalizeText(item?.orchestrationProfileSource) || null,
   };
@@ -1592,6 +1290,18 @@ function deriveEffectiveActionOwner({ recommendedOwner, reminderCount, needsRemi
 
 function formatAgentInputSummary({ role, mission, providerId }) {
   return `${role} preparing ${mission.deliverableType} for mission ${mission.id} with provider ${providerId}.`;
+}
+
+function normalizeSessionSourceContext(value = {}) {
+  const sourceType = normalizeText(value.sourceType, 'service');
+  return {
+    channel: normalizeText(value.channel) || sourceType,
+    command: normalizeText(value.command),
+    requestId: normalizeText(value.requestId),
+    route: normalizeText(value.route),
+    sourceType,
+    startedBy: normalizeText(value.startedBy),
+  };
 }
 
 function formatApprovalResolution(decision, reason) {
@@ -3826,6 +3536,7 @@ function summarizeWorkspaceUsageTrendEntries(entries = []) {
 
 export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
+  const factGraph = createFactGraphService({ store });
   const providerRegistry = createProviderRegistry({ rootDir });
   const harness = createRuntimeHarness({ store });
   const activeExecutionRuntimes = new Map();
@@ -4059,6 +3770,26 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
   }
 
+  function resolveExecutionStepCwd(workspacePath, stepCwd = '.') {
+    const normalizedWorkspacePath = path.resolve(workspacePath || '.');
+    const rawCwd = normalizeText(stepCwd, '.');
+    const resolvedCwd = path.resolve(normalizedWorkspacePath, rawCwd || '.');
+    if (fs.existsSync(resolvedCwd)) {
+      return resolvedCwd;
+    }
+
+    // Some live providers omit the leading slash when echoing an absolute cwd.
+    // Normalize that shape before failing the execution session on a missing cwd.
+    if (!path.isAbsolute(rawCwd) && /^[A-Za-z0-9_.-]+\//.test(rawCwd)) {
+      const absoluteCandidate = path.resolve(path.sep, rawCwd);
+      if (fs.existsSync(absoluteCandidate)) {
+        return absoluteCandidate;
+      }
+    }
+
+    return resolvedCwd;
+  }
+
   function captureChangedFiles(workspacePath) {
     try {
       const output = normalizeText(
@@ -4188,7 +3919,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             } else {
               await new Promise((resolve, reject) => {
                 const child = spawn(step.command, {
-                  cwd: path.resolve(latestSession.workspacePath, step.cwd || '.'),
+                  cwd: resolveExecutionStepCwd(latestSession.workspacePath, step.cwd),
                   shell: true,
                   stdio: ['ignore', 'pipe', 'pipe'],
                 });
@@ -4350,6 +4081,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     for (const attachment of ensureArray(input.attachments)) {
       addMissionAttachment({
         content: attachment.content,
+        conversion: attachment.conversion,
         fileName: attachment.fileName,
         mimeType: attachment.mimeType,
         missionId: savedMission.id,
@@ -4360,7 +4092,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return savedMission;
   }
 
-  function buildMissionAttachmentRecord({ content, fileName, mimeType, missionId, source = 'mission-upload' }) {
+  function normalizeAttachmentConversion(conversion) {
+    const source = ensureObject(conversion);
+    if (!Object.keys(source).length) {
+      return null;
+    }
+
+    return {
+      converted: Boolean(source.converted),
+      converter: normalizeText(source.converter),
+      extension: normalizeText(source.extension),
+      sourcePath: normalizeText(source.sourcePath),
+      truncated: Boolean(source.truncated),
+    };
+  }
+
+  function buildMissionAttachmentRecord({ content, conversion = null, fileName, mimeType, missionId, source = 'mission-upload' }) {
     const mission = getMission(missionId);
     const normalizedFileName = normalizeMissionAttachmentFileName(fileName);
     const normalizedMimeType = normalizeText(mimeType, inferMissionAttachmentMimeType(normalizedFileName));
@@ -4392,6 +4139,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     return {
       charCount: originalCharCount,
+      conversion: normalizeAttachmentConversion(conversion),
       createdAt,
       excerpt: summarizeAttachmentText(storedContent),
       fileName: normalizedFileName,
@@ -4407,9 +4155,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function addMissionAttachment({ content, fileName, mimeType, missionId, source = 'mission-upload' }) {
+  function addMissionAttachment({ content, conversion = null, fileName, mimeType, missionId, source = 'mission-upload' }) {
     const record = buildMissionAttachmentRecord({
       content,
+      conversion,
       fileName,
       mimeType,
       missionId,
@@ -5192,9 +4941,13 @@ function summarizeProviderExecutions(executions) {
 
   function summarizeProviderStatusEntries(providers) {
     return {
+      capabilityCostTelemetryCount: providers.filter((provider) => provider.capabilities?.costTelemetry).length,
+      capabilityStructuredJsonCount: providers.filter((provider) => provider.capabilities?.structuredJson).length,
+      capabilityUsageMetricsCount: providers.filter((provider) => provider.capabilities?.usageMetrics).length,
       configuredCount: providers.filter((provider) => provider.configured).length,
       defaultProviderId: providerRegistry.getDefaultProviderId(),
       implementedCount: providers.filter((provider) => provider.implemented).length,
+      rateLimitedProviderCount: providers.filter((provider) => Number(provider.rateLimit?.maxRequests || 0) > 0).length,
       total: providers.length,
     };
   }
@@ -7087,6 +6840,7 @@ function summarizeProviderExecutions(executions) {
       pack,
       memoryEntries,
       retrievalContext,
+      sessionSourceContext: session.sourceContext || normalizeSessionSourceContext(),
       previousOutputs,
       parallelGroupId: normalizeText(runMetadata.parallelGroupId) || null,
       parallelRequiredKinds: ensureArray(runMetadata.parallelRequiredKinds),
@@ -7288,6 +7042,7 @@ function summarizeProviderExecutions(executions) {
     const session = harness.startSession({
       missionId: mission.id,
       provider: providerId,
+      sourceContext: normalizeSessionSourceContext(options.sourceContext),
     });
 
     const previousOutputs = {};
@@ -7395,12 +7150,15 @@ function summarizeProviderExecutions(executions) {
             orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
             orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
             orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+            orchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
             orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
             orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
             orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
             orchestrationProfileParallelSpecialistKinds:
               parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
             orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+            orchestrationProfileRecommendedProvider: parallelPlan.orchestrationProfile?.recommendedProvider || null,
+            orchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
             orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
             orchestrationProfileSource: parallelPlan.source,
             parallelGroupId,
@@ -7461,11 +7219,14 @@ function summarizeProviderExecutions(executions) {
           orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
           orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
           orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+          orchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
           orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
           orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
           orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
           orchestrationProfileParallelSpecialistKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
           orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+          orchestrationProfileRecommendedProvider: parallelPlan.orchestrationProfile?.recommendedProvider || null,
+          orchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
           orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
           orchestrationProfileSource: parallelPlan.source,
           parallelGroupId,
@@ -8184,11 +7945,15 @@ function summarizeProviderExecutions(executions) {
       specialistOrchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
       specialistOrchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
       specialistOrchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
+      specialistOrchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
       specialistOrchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
       specialistOrchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
       specialistOrchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
       specialistOrchestrationProfilePresetKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
       specialistOrchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
+      specialistOrchestrationProfileRecommendedProvider:
+        parallelPlan.orchestrationProfile?.recommendedProvider || null,
+      specialistOrchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
       specialistOrchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
       specialistOrchestrationProfileSource: parallelPlan.source,
       specialistRunCount: parallelActivity.specialistRunCount,
@@ -8589,6 +8354,54 @@ function summarizeProviderExecutions(executions) {
       });
     }
 
+    const allFactGraph = factGraph.listFactGraph({ status: 'all' });
+    const missionFactGraph = factGraph.listFactGraph({ scope: 'mission', scopeId: mission.id, status: 'all' });
+    const workspaceFactGraph = factGraph.listFactGraph({
+      scope: 'workspace',
+      scopeId: mission.workspaceId,
+      status: 'all',
+    });
+    const compactFactGraphPreview = (graph) => {
+      const nodeById = new Map((graph.nodes || []).map((node) => [node.id, node]));
+      const nodes = (graph.nodes || [])
+        .filter((node) => node.status === 'active')
+        .sort((left, right) => String(right.updatedAt || right.createdAt || '').localeCompare(String(left.updatedAt || left.createdAt || '')))
+        .slice(0, 5)
+        .map((node) => ({
+          id: node.id,
+          provenance: Array.isArray(node.provenance) ? node.provenance.slice(0, 1) : [],
+          scope: node.scope,
+          scopeId: node.scopeId,
+          sourceId: node.sourceId,
+          statement: node.statement,
+          updatedAt: node.updatedAt || node.createdAt || null,
+          version: node.version || 1,
+        }));
+      const edges = (graph.edges || [])
+        .filter((edge) => edge.status === 'active')
+        .sort((left, right) => Number(right.weight || 0) - Number(left.weight || 0))
+        .slice(0, 5)
+        .map((edge) => ({
+          fromNodeId: edge.fromNodeId,
+          fromStatement: nodeById.get(edge.fromNodeId)?.statement || '',
+          id: edge.id,
+          relation: edge.relation,
+          relationReason: edge.relationReason || `related by shared fact terms: ${(edge.sharedTokens || []).slice(0, 8).join(', ')}`,
+          scope: edge.scope,
+          scopeId: edge.scopeId,
+          sharedTokens: Array.isArray(edge.sharedTokens) ? edge.sharedTokens.slice(0, 8) : [],
+          toNodeId: edge.toNodeId,
+          toStatement: nodeById.get(edge.toNodeId)?.statement || '',
+          weight: edge.weight || 0,
+        }));
+
+      return {
+        edges,
+        nodes,
+        summary: graph.summary,
+      };
+    };
+
     return {
       adoptedPatterns: [
         {
@@ -8661,6 +8474,14 @@ function summarizeProviderExecutions(executions) {
         },
       },
       memory: {
+        factGraph: allFactGraph.summary,
+        factGraphPreview: {
+          all: compactFactGraphPreview(allFactGraph),
+          mission: compactFactGraphPreview(missionFactGraph),
+          workspace: compactFactGraphPreview(workspaceFactGraph),
+        },
+        missionFactGraph: missionFactGraph.summary,
+        workspaceFactGraph: workspaceFactGraph.summary,
         missionCounts: summary.memoryCounts,
         recentMissionEntries: missionMemoryEntries.slice(-5).reverse().map((entry) => ({
           createdAt: entry.createdAt,
@@ -15003,12 +14824,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       getMission(scopeId);
     }
 
-    return harness.addMemoryEntry({
+    const entry = harness.addMemoryEntry({
       scope,
       scopeId,
       kind,
       content: normalizeText(content),
     });
+    factGraph.syncMemoryFact(entry);
+    return entry;
   }
 
   function getScopedMemoryEntryOrThrow({ scope, scopeId, memoryId }) {
@@ -15039,14 +14862,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       getMission(scopeId);
     }
 
-    getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
-
-    return store.updateMemoryEntry(memoryId, (entry) => ({
+    const previousEntry = getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
+    const updatedEntry = store.updateMemoryEntry(memoryId, (entry) => ({
       ...entry,
       content: normalizeText(content),
       kind,
       updatedAt: now(),
     }));
+    factGraph.syncMemoryFact(updatedEntry, { previousEntry });
+    return updatedEntry;
   }
 
   function deleteMemory({ scope, scopeId, memoryId }) {
@@ -15061,12 +14885,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       getMission(scopeId);
     }
 
-    getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
-    return store.deleteMemoryEntry(memoryId);
+    const previousEntry = getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
+    const removedEntry = store.deleteMemoryEntry(memoryId);
+    factGraph.retireMemoryFact(previousEntry, { reason: 'memory-deleted' });
+    return removedEntry;
   }
 
   function listMemory(filter = {}) {
     return store.listMemoryEntries(filter);
+  }
+
+  function listFactGraph(filter = {}) {
+    return factGraph.listFactGraph(filter);
   }
 
   function logDocument({ type, title, content }) {
@@ -15211,6 +15041,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getExecutionStatus,
     listApprovals,
     listMemory,
+    listFactGraph,
     listMissions,
     listMissionAttachments,
     listProviderProbeHistory,

@@ -28,6 +28,7 @@ const providerListResult = runCli({
   args: ['provider', 'list'],
   env: {
     ANTHROPIC_API_KEY: '',
+    HERMES_PROVIDER_MODEL: '',
     LOCAL_PROVIDER_MODEL: '',
     OPENAI_API_KEY: '',
   },
@@ -36,16 +37,17 @@ const providerListResult = runCli({
 assert.equal(providerListResult.status, 0);
 const providerList = JSON.parse(providerListResult.stdout);
 
-assert.equal(providerList.summary.total, 4);
-assert.equal(providerList.summary.implementedCount, 4);
+assert.equal(providerList.summary.total, 5);
+assert.equal(providerList.summary.implementedCount, 5);
 assert.equal(providerList.summary.configuredCount, 1);
 assert.equal(providerList.summary.defaultProviderId, 'stub');
-assert.equal(providerList.providers.length, 4);
+assert.equal(providerList.providers.length, 5);
 
 const stubProvider = providerList.providers.find((provider) => provider.id === 'stub');
 const openAIProvider = providerList.providers.find((provider) => provider.id === 'openai');
 const anthropicProvider = providerList.providers.find((provider) => provider.id === 'anthropic');
 const localProvider = providerList.providers.find((provider) => provider.id === 'local');
+const hermesProvider = providerList.providers.find((provider) => provider.id === 'hermes');
 
 assert.equal(stubProvider.configured, true);
 assert.deepEqual(stubProvider.requiredEnv, []);
@@ -55,6 +57,8 @@ assert.equal(anthropicProvider.configured, false);
 assert.deepEqual(anthropicProvider.missingEnv, ['ANTHROPIC_API_KEY']);
 assert.equal(localProvider.configured, false);
 assert.deepEqual(localProvider.missingEnv, ['LOCAL_PROVIDER_MODEL']);
+assert.equal(hermesProvider.configured, false);
+assert.deepEqual(hermesProvider.missingEnv, ['HERMES_PROVIDER_MODEL']);
 
 const openAICheckResult = runCli({
   args: ['provider', 'check', 'openai'],
@@ -111,6 +115,29 @@ assert.equal(localCheck.configuration.apiKeyPresent, true);
 assert.equal(localCheck.configuration.baseUrl, 'http://127.0.0.1:1234/v1');
 assert.equal(localCheck.configuration.model, 'llama3.1-local');
 assert.equal(localCheck.configuration.maxTokens, '1024');
+
+const hermesCheckResult = runCli({
+  args: ['provider', 'check', 'hermes'],
+  env: {
+    HERMES_PROVIDER_API_KEY: 'test-hermes-key',
+    HERMES_PROVIDER_BASE_URL: 'http://127.0.0.1:8088/v1',
+    HERMES_PROVIDER_MAX_TOKENS: '1024',
+    HERMES_PROVIDER_MODEL: 'nous-hermes-4-test',
+    HERMES_PROVIDER_PROBE_TIMEOUT_MS: '3000',
+    HERMES_PROVIDER_RUN_TIMEOUT_MS: '12000',
+  },
+});
+
+assert.equal(hermesCheckResult.status, 0);
+const hermesCheck = JSON.parse(hermesCheckResult.stdout);
+assert.equal(hermesCheck.id, 'hermes');
+assert.equal(hermesCheck.configured, true);
+assert.equal(hermesCheck.configuration.apiKeyPresent, true);
+assert.equal(hermesCheck.configuration.baseUrl, 'http://127.0.0.1:8088/v1');
+assert.equal(hermesCheck.configuration.model, 'nous-hermes-4-test');
+assert.equal(hermesCheck.configuration.maxTokens, '1024');
+assert.equal(hermesCheck.configuration.probeTimeoutMs, '3000');
+assert.equal(hermesCheck.configuration.runTimeoutMs, '12000');
 
 const providerListWithOpenAIResult = runCli({
   args: ['provider', 'list'],

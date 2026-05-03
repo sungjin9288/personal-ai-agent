@@ -9,6 +9,11 @@ const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-worksp
 const workspacePath = path.join(tempRoot, 'workspace');
 fs.mkdirSync(workspacePath, { recursive: true });
 
+function currentUtcMonthStartDate() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
 const workspace = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspacePath, '--name', 'workspace-overview-workspace'],
@@ -217,9 +222,9 @@ assert.equal(overview.summary.latestEscalation.workspaceId, workspace.id);
 assert.equal(overview.summary.maintenanceRunCount, 1);
 assert.equal(overview.summary.maintenanceTotalRemindedCount, 5);
 assert.equal(overview.summary.maintenanceMonthlyBucketCount, 1);
-assert.equal(overview.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(overview.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(overview.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentUtcMonthStartDate());
 assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(overview.summary.maintenanceAffectedMissionCount, 3);
 assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);

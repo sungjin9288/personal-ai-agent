@@ -1,7 +1,7 @@
 # Execution v1 Evidence
 
 - archivedAt: 2026-04-15T11:59:08.241Z
-- sourcePath: /Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-evidence.md
+- sourcePath: docs/execution-v1-evidence.md
 
 - generatedAt: 2026-04-15T11:32:02.728Z
 - branch: codex/managed-multi-agent-v1-foundation
@@ -60,7 +60,7 @@
       "executionSessionId": "execsession_20260415113202_8efd99",
       "missionId": "mission_20260415113050_3da50b",
       "provider": "openai",
-      "rootDir": "/var/folders/n7/g1vxvrg97t11t_nxzvdk0dpr0000gn/T/personal-ai-agent-live-openai-DJXKlK",
+      "rootDir": "<temp>/personal-ai-agent-live-openai-DJXKlK",
       "status": "passed",
       "verificationStatus": "passed",
       "workspaceId": "workspace_20260415113050_69d003"

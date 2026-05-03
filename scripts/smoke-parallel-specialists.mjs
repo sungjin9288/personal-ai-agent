@@ -207,6 +207,47 @@ assert.deepEqual(
   ['research', 'implementation', 'verification', 'design', 'documentation'],
 );
 
+const hermesEngineeringProfileMission = service.createMission({
+  constraints: ['orchestration-profile:engineering-full-spectrum'],
+  deliverableType: 'implementation-proposal',
+  mode: 'engineering',
+  objective: 'Verify Hermes Agent metadata is preserved through a full-spectrum engineering profile run.',
+  title: 'Hermes engineering full-spectrum profile mission',
+  workspaceId: workspace.id,
+});
+
+const hermesEngineeringProfileRun = await service.runMission(hermesEngineeringProfileMission.id, {
+  provider: 'stub',
+  providerSpecified: true,
+});
+
+assert.equal(hermesEngineeringProfileRun.mission.status, 'awaiting_approval');
+
+const hermesEngineeringProfileSummary = service.showMission(hermesEngineeringProfileMission.id).summary;
+assert.equal(hermesEngineeringProfileSummary.specialistRunCount, 5);
+assert.equal(hermesEngineeringProfileSummary.specialistOrchestrationProfileId, 'engineering-full-spectrum');
+assert.equal(hermesEngineeringProfileSummary.specialistOrchestrationProfileDisplayName, 'Engineering Full Spectrum');
+assert.equal(hermesEngineeringProfileSummary.specialistOrchestrationProfileRecommendedProvider, 'hermes');
+assert.equal(hermesEngineeringProfileSummary.specialistOrchestrationProfileRuntimeBlueprint, 'hermes-agent-full-spectrum');
+assert.deepEqual(hermesEngineeringProfileSummary.specialistOrchestrationProfileHarnessPatterns, [
+  'hermes-agent-session-loop',
+  'parallel-subagent-workstreams',
+  'provider-aware-tool-calling',
+  'memory-backed-handoff',
+]);
+assert.deepEqual(
+  hermesEngineeringProfileSummary.specialistConfiguredKinds,
+  ['research', 'implementation', 'verification', 'design', 'documentation'],
+);
+assert.equal(
+  hermesEngineeringProfileSummary.specialistLatestParallelGroup?.orchestrationProfile?.recommendedProvider,
+  'hermes',
+);
+assert.equal(
+  hermesEngineeringProfileSummary.specialistLatestParallelGroup?.orchestrationProfile?.runtimeBlueprint,
+  'hermes-agent-full-spectrum',
+);
+
 const qualityGateMission = service.createMission({
   constraints: ['orchestration-profile:knowledge-triad', 'parallel-abandon:verification'],
   deliverableType: 'decision-memo',
@@ -547,6 +588,7 @@ console.log(
     {
       blockedMissionId: blockedMission.id,
       failedResumeMissionId: failedResumeMission.id,
+      hermesEngineeringProfileMissionId: hermesEngineeringProfileMission.id,
       mode: 'parallel-specialists',
       ok: true,
       profileMissionId: profileMission.id,

@@ -1,5 +1,6 @@
 import { PROVIDER_IDS } from '../core/constants.mjs';
 import { createAnthropicProvider } from './anthropic-provider.mjs';
+import { createHermesProvider } from './hermes-provider.mjs';
 import { createLocalProvider } from './local-provider.mjs';
 import { createOpenAIProvider } from './openai-provider.mjs';
 import { getProviderSpec, listProviderSpecs } from './provider-catalog.mjs';
@@ -31,6 +32,10 @@ function buildProviderStatus(spec, env, provider, defaultProviderId = '') {
   const missingEnv = spec.requiredEnv.filter((key) => !normalizeText(env[key]));
   const configured = missingEnv.length === 0;
   const status = {
+    capabilities: {
+      ...spec.capabilities,
+      roles: [...(spec.capabilities?.roles || [])],
+    },
     configured,
     defaultProvider: spec.id === defaultProviderId,
     displayName: spec.displayName,
@@ -38,7 +43,9 @@ function buildProviderStatus(spec, env, provider, defaultProviderId = '') {
     implemented: Boolean(provider?.implemented),
     missingEnv,
     optionalEnv: [...spec.optionalEnv],
+    rateLimit: { ...(spec.runtime?.rateLimit || {}) },
     requiredEnv: [...spec.requiredEnv],
+    runtime: { ...spec.runtime, rateLimit: { ...(spec.runtime?.rateLimit || {}) } },
     transport: spec.transport,
   };
 
@@ -53,6 +60,7 @@ export function createProviderRegistry({ rootDir, env = process.env, fetchImpl =
     openai: createOpenAIProvider({ rootDir, env, fetchImpl }),
     anthropic: createAnthropicProvider({ rootDir, env, fetchImpl }),
     local: createLocalProvider({ rootDir, env, fetchImpl }),
+    hermes: createHermesProvider({ rootDir, env, fetchImpl }),
   };
 
   function getDefaultProviderId() {

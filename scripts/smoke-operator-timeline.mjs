@@ -13,6 +13,11 @@ const recentProviderSince = '2026-04-02T00:00:00.000Z';
 fs.mkdirSync(workspaceOnePath, { recursive: true });
 fs.mkdirSync(workspaceTwoPath, { recursive: true });
 
+function currentUtcMonthStartDate() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
 const workspaceOne = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspaceOnePath, '--name', 'workspace-one'],
@@ -287,9 +292,9 @@ assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-resolved'
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['reviewer-follow-up-resolved'] || 0, 0);
 assert.equal(workspaceTimeline.summary.maintenanceMonthlyBucketCount, 1);
-assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(workspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(workspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentUtcMonthStartDate());
 assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(workspaceTimeline.summary.specialistFollowUpRequiredCount || 0, 0);
 assert.equal(workspaceTimeline.summary.specialistFollowUpNeedsReminderCount || 0, 0);
@@ -342,8 +347,8 @@ assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.filters.since,
 assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionCount, 4);
 assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionEstimatedCostUsdTotal, 0);
 assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionMonthlyBucketCount, 1);
-assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(recentReviewerWorkspaceTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(
   recentReviewerWorkspaceTimeline.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate,
   null,
@@ -365,7 +370,7 @@ assert.equal(
   recentReviewerWorkspaceTimeline.providerRecentWindow.executionDailyBuckets[0].date,
 );
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
-assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(recentReviewerWorkspaceTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
 assert.equal(
   recentReviewerWorkspaceTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate,
@@ -397,9 +402,9 @@ assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1)
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
 assert.equal(globalTimeline.summary.maintenanceMonthlyBucketCount, 1);
-assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(globalTimeline.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(globalTimeline.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentUtcMonthStartDate());
 assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(globalTimeline.summary.specialistFollowUpRequiredCount, 1);
 assert.equal(globalTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
@@ -495,8 +500,8 @@ assert.equal(
   recentGlobalTimeline.providerRecentWindow.executionTotal,
 );
 assert.equal(recentGlobalTimeline.summary.providerRecentExecutionMonthlyBucketCount, 1);
-assert.equal(recentGlobalTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(recentGlobalTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentGlobalTimeline.summary.providerRecentExecutionLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(recentGlobalTimeline.summary.providerRecentExecutionOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(recentGlobalTimeline.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentGlobalTimeline.providerHealthDrift.status, 'watch');
 assert.deepEqual(recentGlobalTimeline.providerHealthDrift.reasonCodes, ['monthly-failed-up']);
@@ -519,7 +524,7 @@ assert.equal(
   recentGlobalTimeline.providerRecentWindow.executionDailyBuckets[0].date,
 );
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionMonthlyBucketCount, 1);
-assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentGlobalTimeline.providerRecentWindow.executionLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(recentGlobalTimeline.providerRecentWindow.executionWeeklyBucketCount, 1);
 assert.equal(
   recentGlobalTimeline.providerRecentWindow.executionLatestWeeklyBucketStartDate,

@@ -1,5 +1,219 @@
 # Devlog
 
+## 2026-05-04 Pilot Handoff Documentation Alignment Pass
+
+- aligned roadmap, operator runbook, deployment guide, onboarding guide, and demo catalog to the current `provider-scoped pilot ready for OpenAI-backed local-first path` release label
+- documented the current provider boundary consistently: OpenAI live validation is archived, Anthropic is blocked by provider account billing/credit, and local/Hermes require approved runtime endpoint/model configuration
+- replaced blind deterministic-only evidence refresh guidance with live-aware selected-provider refresh commands so operators do not overwrite archived live proof while updating closeout, handoff, or snapshot artifacts
+- aligned README, release-readiness, release status API, closeout recommendations, handoff generator output, and smoke assertions to the same selected-provider evidence refresh command contract
+- aligned product plan and security model source-of-record wording so the planning pack describes OpenAI-scoped pilot readiness without overstating production or all-provider readiness
+- hardened browser E2E artifact lifecycle by backing up release handoff/report artifacts before the smoke clears output paths and restoring them on failure or signal interruption, preventing a failed browser smoke from breaking later execution-v1 status checks
+- added `smoke:ui-execution-browser-e2e-artifact-restore` to force a browser guard timeout against sentinel artifacts and verify the browser E2E failure path restores prior report/screenshot files without leaving the release status surface broken
+- kept commit/push deferred and limited this pass to planning and operator-facing documentation
+
+## 2026-05-04 Date Rollover Verification Pass
+
+- confirmed local runtime date as `2026-05-04 00:26:32 KST +0900`, then reran execution-v1 status, snapshot, handoff, and aggregate provider preflight to verify the OpenAI-scoped pilot-ready evidence stayed local-current after the date rollover
+- reran date-sensitive mission timeline, maintenance history, provider cost telemetry, and operator timeline smokes; all passed without 2026-05-04 rollover fixture changes
+- reran broader regression coverage after the date-sensitive pass: default smoke, 15-script reference adoption aggregate, UI harness browse contract, execution-v1 live-helper smoke, and closeout runtime summary smoke all passed
+- fixed the closeout runtime summary smoke fixture to include the `smoke:execution-v1-handoff` runtime row and to expect the closeout generator's relative evidence link, matching the current generated closeout contract
+- reran the full deterministic `verify:execution-v1` gate after the fixture fix; all seven rows passed, including browser E2E, 15-script reference adoption aggregate, live-helper smoke, and handoff generator smoke
+- kept evidence/closeout/handoff/snapshot content unchanged except for this devlog note because current release artifacts already match HEAD and no new live provider validation was performed
+- current remaining live blockers are unchanged: Anthropic is blocked by provider account billing/credit, and local/Hermes still require target runtime configuration
+
+## 2026-05-03 OpenAI Live Validation and Scoped Pilot Readiness Pass
+
+- ran combined OpenAI and Anthropic execution-v1 live validation with provider keys loaded only into the child process; OpenAI passed with execution session `execsession_20260503151913_b6ab40`, while Anthropic failed with HTTP 400 account billing/credit blocker from the provider API
+- fixed live validation stability by normalizing the OpenAI execution fixture to one deterministic `node --check src/cli.mjs` execution step after the provider-reviewed mission is produced, preventing provider-generated read-only `grep` commands from failing solely because no matches were found
+- added live evidence portability and triage detail so current evidence, closeout, handoff, and snapshots redact macOS temp roots as `<temp>/...` while still recording provider failure kind, HTTP status, recoverability, timeout state, and Anthropic billing message
+- regenerated execution-v1 evidence, closeout, handoff, and immutable snapshot with visual artifact set `61b2df678feae5ca2f3d076de5db506b30e57f7e0231de33550ae0b8fd36cd6c`, then updated the release decision to `provider-scoped pilot ready for OpenAI-backed local-first path` while keeping production readiness blocked
+
+## 2026-05-03 Date Rollover Verification Pass
+
+- confirmed local runtime date as `2026-05-03 15:18:19 KST +0900`, then reran date-sensitive mission timeline, maintenance history, provider cost telemetry, specialist follow-up inbox, action overdue logging, action maintenance, provider action inbox, and operator timeline smokes to verify the 2026-05-02 rollover state remained stable on the following day
+- reran the default smoke, execution-v1 release status, snapshot integrity, aggregate provider preflight, UI harness browse contract, and handoff generator smoke after the 2026-05-03 rollover; release status stayed deterministic 7/7 with reference adoption ready, and provider preflight still reported zero blocked providers with four missing live env values
+- regenerated execution-v1 evidence, closeout, handoff, and immutable snapshot after the 2026-05-03 rollover pass; refreshed visual artifact set is `7a10d6524a6ad033050ea8fc9915ba219532e2a0b05eedfb327d7a1965a5ff1d`
+- added `docs/product-plan-v1.md` as the product planning source of record, separating achieved deterministic execution-v1 readiness from the remaining live-provider, enterprise policy, pilot onboarding, demo scenario, and release-decision work required before claiming company-ready production use
+- added `docs/security-model-v1.md` as the v1 security planning source of record, covering trust boundaries, workspace isolation policy, RBAC matrix, secret handling, tool permission model, prompt/input boundary, audit evidence, retention/export/delete defaults, threat model, and pilot security checklist while keeping production readiness blocked on live validation and enforced enterprise controls
+- added `docs/operator-runbook-v1.md` as the v1 operator runbook, documenting daily start checks, UI startup, workspace registration, mission execution, approval handling, provider live validation, evidence refresh, artifact hygiene, incident triage, failure handling, release decision gates, and handoff template for controlled self-hosted pilot operation
+- added `docs/deployment-pilot-v1.md` as the self-hosted pilot deployment guide, covering prerequisites, pilot runtime layout, environment configuration, install/bootstrap, workspace registration, UI startup, pre-live validation, provider live validation, operation loop, backup/export, cleanup, failure recovery, and pilot acceptance criteria
+- added `docs/pilot-onboarding-v1.md` as the customer pilot onboarding guide, documenting participant roles, pre-onboarding checklist, Day 0 preparation, first session agenda, first demo mission, provider onboarding path, UI walkthrough, success criteria, stop conditions, pilot outcome template, and common readiness questions
+- added `docs/demo-scenarios-v1.md` as the customer demo scenario catalog, covering release readiness, engineering mission with approval, provider validation and readiness, document and memory grounding, multi-specialist analysis, recommended demo order, scenario-specific success/stop criteria, and demo outcome template
+- added `docs/release-readiness-v1.md` as the current release readiness decision record, formally labeling the project as `internal alpha with deterministic execution-v1 readiness` while keeping pilot-ready and production-ready blocked on archived live provider validation evidence and regenerated release artifacts
+
+## 2026-05-02 Date Rollover Verification Pass
+
+- confirmed local runtime date as `2026-05-02 02:01:58 KST +0900`, then reran date-sensitive mission timeline, maintenance history, provider cost telemetry, specialist follow-up inbox, action overdue logging, action maintenance, provider action inbox, and operator timeline smokes to verify the 2026-05-01 rollover fixes stayed stable on the next day
+- reran the execution-v1 release status, snapshot integrity, aggregate provider preflight, and default smoke after the 2026-05-02 rollover; status remained deterministic 6/6 with reference adoption ready, snapshot stayed aligned to `0622c86d27a3bd203fda6f976a55eafa0465cb1e`, and provider preflight still reported zero blocked providers with four missing live env values
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after the 2026-05-02 rollover pass; refreshed visual artifact set is `ce4fa14607efe6e253d8e229482a357ee6112bdcecd2fde5e63e93abacd467fd`, then status, snapshot, UI harness, and aggregate provider preflight checks passed
+- completed the no-commit readiness sweep for the refreshed `ce4fa14607efe6e253d8e229482a357ee6112bdcecd2fde5e63e93abacd467fd` artifact set: default smoke, execution-v1 live helpers, closeout runtime summary, 15-script reference adoption aggregate, all changed/untracked JavaScript syntax checks, release-doc portability scan, credential-like scan, and `git diff --check` passed
+- added `docs/execution-v1-handoff.md` to consolidate the current no-commit operational handoff state, including deterministic readiness, reference adoption coverage, latest visual artifact set, live-provider missing-env blockers, and the exact provider validation commands required before claiming live-provider-complete readiness
+- added a reproducible `handoff:execution-v1` generator and archived handoff support in `snapshot:execution-v1`, so the operator handoff surface is regenerated from current evidence/closeout and stored beside evidence/closeout in immutable release snapshots
+- promoted execution-v1 handoff into the release status API and operator UI current-surface model, so refresh/stale/snapshot planning now treats evidence, closeout, and handoff as one reproducible release artifact set
+- added `smoke:execution-v1-handoff` to lock the standalone handoff generator contract against fixture evidence/closeout input, including reference adoption aggregate, visual artifact set, live-provider missing-env blockers, and next-operator command guidance
+- promoted `smoke:execution-v1-handoff` into `verify:execution-v1`, so release evidence now records handoff generator readiness as the seventh deterministic execution-v1 row and closeout exposes `handoff generator: ready`
+- regenerated execution-v1 evidence, closeout, handoff, and immutable snapshot after adding the handoff generator to the release verification gate; refreshed visual artifact set is `665a11d66a82a82c7c4b5c31059459f5c8e44bd3a8ae616ea021bc53a536caf9`
+- exposed handoff generator readiness as a first-class release UI summary chip and locked the value in UI harness/browser E2E smoke coverage
+- regenerated execution-v1 evidence, closeout, handoff, and immutable snapshot after the release UI handoff-generator summary chip pass; refreshed visual artifact set is `134c2bce0525f7a70e9521cd7221c22cf13b88ec0677bf37ddcc45ff1e3be058`
+- extended the UI harness smoke to verify `/api/execution-v1/refresh/preflight` and the no-confirm `/api/execution-v1/refresh` guard both report evidence/closeout/handoff rewrite scope before any mutating refresh can run
+
+## 2026-05-01 Date Rollover Verification Pass
+
+- confirmed local runtime date as `2026-05-01 00:09:39 KST +0900`, then reran date-sensitive escalation reminder, reminder due, overdue action logging, operator timeline, mission timeline, provider timeline, specialist follow-up reminder, and default smoke paths to verify rollover behavior across the midnight boundary
+- reran execution-v1 release status, snapshot integrity, and aggregate provider preflight after the date rollover; release status stayed deterministic 6/6 with reference adoption ready, snapshot remained aligned to `0622c86d27a3bd203fda6f976a55eafa0465cb1e`, and provider preflight reported zero blocked providers with four missing live env values
+- completed post-rollover hygiene by checking 67 changed/untracked JavaScript files with `node --check`, scanning README/docs/scripts/src/package metadata for credential-like patterns, and confirming `git diff --check` passed
+- reran the full `verify:execution-v1` gate after the 2026-05-01 KST rollover; all six deterministic rows passed, including browser E2E and the 14-script reference adoption aggregate, then regenerated execution-v1 evidence/closeout/snapshot with visual artifact set `a0c3bf7e9d4f6862ca136b4bcf93c26827cf32f198963bb77cb013c49d131b43` and reconfirmed status, snapshot, syntax, credential, and diff hygiene
+- expanded `smoke:execution-v1-live-helpers` so OpenAI, Anthropic, local, and Hermes each verify provider-specific preflight plus structured `missing-env` JSON from `npm run live:execution-v1:*`; a first evidence regeneration attempt hit a transient browser preview `ERR_CONNECTION_REFUSED`, the standalone browser E2E retry passed, and the subsequent evidence/closeout/snapshot regeneration completed with visual artifact set `a6014f94e06c49ede7bd74b673da0ead565a4c6aaf2e704fd83817a4c2344560`
+- aligned the README execution-v1 live-helper documentation with the new four-provider smoke coverage so the status chip, missing-env JSON behavior, and `npm run live:execution-v1:*` helper flow no longer read as Hermes-only; reran live-helper, status, snapshot, and diff hygiene checks
+- reran the broader smoke gate after README live-helper documentation alignment: default `npm run smoke`, `smoke:reference-adoptions`, and `preflight:execution-v1:all` passed, then 67 changed/untracked JavaScript files passed `node --check`, credential-like scanning returned no matches, and `git diff --check` passed
+- extended provider preflight JSON with `missingEnvCommand` so both single-provider and aggregate preflight output include a shell-ready `export ... && npm run live:execution-v1:*` command; updated live-helper and UI harness smokes to lock the new field, then reran preflight, status, snapshot, syntax, and diff checks
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after adding `missingEnvCommand` to preflight output; the refreshed evidence records `smoke:execution-v1-live-helpers` with the new contract and visual artifact set `75019cc2d6556e2c96637f01720ecc92248b13dbf2dac161f0380ac6a77b2111`, then status, snapshot, syntax, credential, and diff hygiene checks passed
+- wired the release UI provider live command copy path to prefer preflight `missingEnvCommand`, so after running provider or aggregate preflight the provider card copies the exact shell-ready env command returned by the backend instead of reconstructing it locally; reran UI harness, aggregate preflight, status, syntax, and diff checks
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after the release UI command-copy update so visual/release artifacts include the `missingEnvCommand`-aware provider card behavior; refreshed visual artifact set is `68f496efaf43ed4f3a60e0364245464261fff13baffac21f177318505868741b`, with status, snapshot, syntax, credential, and diff hygiene checks passing afterward
+- reran the broader regression gate after the latest release evidence refresh: default `npm run smoke`, `smoke:reference-adoptions`, and `preflight:execution-v1:all` passed; aggregate preflight still reported zero blocked providers with four missing live env values and shell-ready `missingEnvCommand` entries, then 67 changed/untracked JavaScript files passed `node --check`, credential-like scanning returned no matches, and `git diff --check` passed
+- aligned execution-v1 closeout recommended actions with the shell-ready provider command contract, so OpenAI now includes `OPENAI_RUN_TIMEOUT_MS=60000` and all provider rows show direct `export ... && npm run live:execution-v1:*` commands; regenerated closeout/snapshot and reran closeout runtime summary, status, snapshot, syntax, credential, and diff checks
+- aligned README release UI handoff guidance with the same `missingEnvCommand` contract, documenting that provider cards prefer backend shell-ready commands after preflight and only fall back to `export ENV_KEY=\"...\" && ...` skeletons when no preflight result is available
+- verified the README handoff documentation alignment with `smoke:ui-harness-browse`, `smoke:execution-v1-status`, targeted credential-like scanning, and `git diff --check`
+- reran aggregate provider preflight after the README alignment; OpenAI, Anthropic, local, and Hermes all stayed `ready-but-missing-env` with zero blocked providers and shell-ready `missingEnvCommand` values
+- hardened the browser E2E Playwright CLI wrapper with a process-group hard timeout after an evidence regeneration attempt stalled in `playwright-cli open`; reran `smoke:ui-execution-browser-e2e` successfully, then regenerated execution-v1 evidence, closeout, and snapshot with visual artifact set `a7517e7b32563959ef4c77df80bad7615b2b2846e0605e35a71188d1e3605591`
+- extracted the process-group hard-timeout runner into `scripts/process-timeout-utils.mjs` and reused it from `verify-execution-v1` so every deterministic `npm run` smoke in the release gate now fails fast instead of hanging on orphaned child process pipes; reran full `verify:execution-v1`, regenerated evidence/closeout/snapshot, and refreshed visual artifact set `f734e62f25c54251468b1d9a60c0f6260cda43eea3e222d5208b489b7081a92e`
+- added `smoke:process-timeout-utils` to lock the hard-timeout helper contract for success, timeout, and nested child cleanup behavior; documented the standalone command in README and reran syntax plus diff hygiene checks
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after adding the standalone hard-timeout smoke command so current artifacts reflect the latest verification runner code; refreshed visual artifact set is `662cadd4bb18b0b647d9f5e2a266ba504858670d7d0bcd08c964a52de2219a06`
+- completed a broader post-timeout-runner regression sweep: default `npm run smoke`, `smoke:reference-adoptions`, `smoke:process-timeout-utils`, execution-v1 status/snapshot smokes, and changed/untracked JavaScript syntax checks all passed
+- promoted `smoke:process-timeout-utils` into the `smoke:reference-adoptions` aggregate so process hard-timeout behavior is covered by the same borrowed-pattern regression gate as provider guard, Hermes, retrieval, fact graph, and parallel specialist contracts; updated status/snapshot/UI harness assertions for the 15-script aggregate
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after promoting the timeout helper smoke into the reference adoption aggregate; current evidence now records `scriptCount: 15` including `scripts/smoke-process-timeout-utils.mjs`, with visual artifact set `6a09d9de5c9cf5ac2ba3b489ee062ffc26dd0a28445c176df1bdaa45c883c18d`
+- verified the 15-script reference adoption contract through `smoke:execution-v1-status`, `smoke:execution-v1-snapshot`, `smoke:ui-harness-browse`, and `smoke:reference-adoptions`; changed/untracked JavaScript syntax checks, aggregate provider preflight, credential-like scanning, and `git diff --check` also passed
+- centralized the reference adoption smoke list in `scripts/reference-adoption-scripts.mjs` so the aggregate runner, status smoke, snapshot smoke, and UI harness smoke share one script-count contract; fixed the seeded execution-v1 fixture to include all required aggregate rows and reran status, snapshot, UI harness, reference adoption, and syntax checks
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after centralizing the reference adoption script list so current artifacts reflect the shared 15-script aggregate contract; refreshed visual artifact set is `915cbaead3d25259bb131c89443141e7f92ee5e3c60c5daccaba122cedcd0a1b`
+- removed the last current fixture-level hardcoded reference adoption script count by deriving seeded execution-v1 aggregate rows from `reference-adoption-scripts.mjs`; reran UI harness smoke plus syntax and diff checks
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after the fixture dynamic-row cleanup so release artifacts now reflect the latest shared reference-adoption contract; refreshed visual artifact set is `7e2c0d16bd0301448a85a4ff8335f4bf4478ed653215799e19d4f5bbcc976052`
+- hardened `smoke:reference-adoptions` itself with the shared process-group hard-timeout runner so standalone aggregate execution cannot hang indefinitely on a child smoke; documented the `PERSONAL_AI_AGENT_REFERENCE_ADOPTION_SCRIPT_TIMEOUT_MS` per-script timeout control in README
+- extended execution-v1 verification/evidence parsing so reference adoption aggregate rows preserve per-script `timeoutMs` and `timedOut` metadata instead of dropping the new hard-timeout contract
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after preserving reference-adoption timeout metadata; evidence now shows each aggregate row with `timeout 5.0m` and `timedOut false`, with visual artifact set `44175e6f355a7974c878d75cf78df40c7afb97fc470cce2b08b00ddeffdc2a02`
+- extended the execution-v1 status API and release UI reference-adoption table to parse and render aggregate per-script `timeout` and `timedOut` fields, then tightened status and UI harness smokes around the structured metadata
+- moved the hard-timeout helper payload from `argv` into a temp JSON file so large Playwright `run-code` browser E2E calls no longer exceed command-line limits, added targeted retry coverage for transient retrieval handoff `open` sessions, and regenerated execution-v1 evidence/closeout/snapshot with visual artifact set `e09b45e94d07d1de72fc0253c7de61c96c5474487cfdf2569b8a230766dcebb3`
+- completed the follow-up operational regression pass after the browser E2E hardening: default smoke, live-helper smoke, provider surface/overview/probe/global overview, orchestration profiles, parallel specialists, UI agent blueprints, runtime discovery, action inbox, escalation sync/owner chain, and UI mission attachment smokes all passed with provider preflight still intentionally `ready-but-missing-env`
+- fixed additional 2026-05-01 rollover-sensitive smoke fixtures by deriving maintenance and provider-health-drift month buckets from the current UTC month instead of hardcoded `2026-04-01`; reran provider action inbox, action overdue logging, action maintenance, workspace overview, provider telemetry/attention/recovery/history, reviewer/specialist/approval, document/retrieval/fact-graph, provider implementation, and 15-script reference adoption smokes successfully
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after the rollover fixture fixes; current visual artifact set is `234e5837cc0616b1c34bdb22835f970d4cad6e53f8c7c2b38ba1c2f049aa4e53`, with status, snapshot, aggregate provider preflight, and UI harness smokes passing afterward
+- completed a no-commit pre-commit readiness sweep after the refreshed evidence set: all changed/untracked JavaScript files passed `node --check`, default smoke passed, reference adoption aggregate passed all 15 scripts with no timeouts, execution-v1 status/snapshot smokes passed, aggregate provider preflight still reported zero blocked providers with four missing live env values, credential-like scanning found only placeholder commands, and `git diff --check` passed
+- hardened execution-v1 snapshot portability by scrubbing transient `/var/folders/...` temp roots from archived markdown, extending the snapshot smoke to reject local absolute and macOS temp paths across all release snapshots, and refreshing the current snapshot after confirming status and diff hygiene
+- reran the closeout/runtime and operator-surface checks after snapshot portability hardening; closeout runtime summary, execution-v1 live helper smoke, UI harness browse contract, and aggregate provider preflight all passed, with provider preflight still blocked only by missing live env configuration
+- extended the post-portability operator regression sweep through execution flow/CLI/UI console, escalated inbox, escalation reminder/owner-handoff/history, provider rate guard, timeout helper, global/workspace overview, and operator timeline; fixed the remaining operator timeline monthly bucket assertions to derive current UTC month boundaries instead of hardcoded `2026-04-01`
+
+## 2026-04-30 Date Rollover Verification Pass
+
+- reran date-sensitive escalation, reminder, overdue, operator timeline, mission timeline, provider timeline, and specialist reminder smokes after the local date moved to 2026-04-30 KST, confirming relative due/reminder fixtures still pass across the day boundary
+- reran the default `npm run smoke` CLI aggregate after the date rollover to confirm workspace, memory, mission, approval, and document logging flows still pass under the new local date
+- reran `smoke:reference-adoptions` after the date rollover to confirm the adopted output compaction, provider guard, Hermes provider, mission quality gate, document conversion, runtime discovery, visual evidence, retrieval, fact graph, and instruction-boundary contracts remain green together
+- reran provider surface, overview, probe, history, timeline, events, telemetry, retry telemetry, attention lifecycle, and global overview smokes after the Hermes/aggregate-preflight sweep to confirm provider control-plane state still reports five providers and stable operational telemetry
+- reran quick UI contract smokes for agent blueprints, mission attachments, harness browse, and execution console to confirm the release aggregate-preflight UI changes did not regress adjacent operator surfaces
+- reran orchestration profiles, parallel specialists, specialist follow-up inbox/reminders/remediation, reviewer follow-up lifecycle/accepted-risk, and approval inbox/approve smokes to confirm multi-agent control-plane and human approval flows remain stable after the release UI hardening
+- reran action inbox, action maintenance, maintenance history, escalated inbox, escalation owner handoff/reminders/history/chain, and escalation sync smokes to confirm operational reminder and owner-escalation flows remain stable after the date rollover
+- ran a pre-commit hygiene pass across changed and untracked files, including pattern-based sensitive-data scanning, changed `.mjs` syntax checks, `git diff --check`, `smoke:execution-v1-status`, and the default `npm run smoke`; only fixture keys and env variable names were detected by the scan
+- cleaned release handoff structured summary handling in the web API and UI so stable-line-copy summary rows are derived from dynamic summary keys instead of hardcoded repeated key chains, then reran syntax checks, `smoke:ui-harness-browse`, `smoke:execution-v1-live-helpers`, `smoke:execution-v1-status`, and the default `npm run smoke`
+- fixed the release handoff structured summary regression caught by `verify:execution-v1` so text/markdown handoff artifacts reuse their paired JSON summary while non-handoff index/browser artifacts stay summary-free, then reran `smoke:ui-execution-browser-e2e`, full `verify:execution-v1`, regenerated evidence/closeout/snapshot, and confirmed `smoke:execution-v1-status` plus `smoke:execution-v1-snapshot` with visual artifact set `77ec3b3de18b2b0dc31a6ac4547a9ef52091794c76227a2053d8101a07bd9260`
+- completed the final pre-commit readiness scan after artifact regeneration: `git status --short`, `git diff --stat`, repo-local path leak search, and changed/untracked sensitive-data scan all completed, with only deterministic fixture keys and provider env variable names detected
+- hardened runtime job and request registries to fall back to an empty normalized state when their persisted JSON is malformed, matching runtime status service resilience and preventing corrupted `var/runtime-*.json` files from breaking UI startup or runtime summary APIs; reran `smoke:runtime-discovery`, syntax checks, and `git diff --check`
+- extended `smoke:runtime-discovery` with direct malformed `runtime-jobs.json` and `runtime-requests.json` fixtures so the registry fallback contract is locked before staging; reran the smoke with syntax checks and diff whitespace validation
+- reran `smoke:reference-adoptions` after the runtime registry fallback fixture, regenerated execution-v1 evidence/closeout, and then regenerated the release snapshot sequentially after catching a parallel closeout/snapshot timestamp race; final `smoke:execution-v1-status`, `smoke:execution-v1-snapshot`, and `git diff --check` passed with visual artifact set `b1fb01ff4c2f0318e5d4a0b4469918b0f0a314aedf7d0c2a88183686837f147b`
+- rechecked Harness, Claude Code Harness, and Hermes Agent references on 2026-04-30, then mapped the transferable Hermes Agent pattern into the existing `engineering-full-spectrum` orchestration profile through `runtimeBlueprint=hermes-agent-full-spectrum`, `recommendedProvider=hermes`, Hermes harness pattern metadata, and a dedicated UI `Hermes 에이전트` card without adding a new agent lane or increasing the runtime surface cap
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after the Hermes Agent profile metadata/UI card pass; final `smoke:execution-v1-status`, `smoke:execution-v1-snapshot`, and `git diff --check` passed with visual artifact set `914f454179b21ee8fdd73435135269e7631cfb2cb40bc0547e75d6411e02c0e1`
+- completed a follow-up pre-commit hygiene pass after snapshot regeneration: reran the default `npm run smoke`, checked all changed/untracked JavaScript files with `node --check`, scanned changed non-release files for credential-like patterns, and confirmed README/docs/scripts/src have no new machine-local path leaks outside generated release/devlog evidence
+- reran the full `verify:execution-v1` deterministic gate after the hygiene pass; all six rows passed, including browser E2E in 447084ms and `smoke:execution-v1-live-helpers`, while live validation remained intentionally skipped because provider credentials/base URLs are not configured
+- reran `preflight:execution-v1:all` after the full verification gate; OpenAI, Anthropic, local, and Hermes all reported `ready-but-missing-env` with zero blocked providers, confirming the remaining live gap is credential/config injection rather than deterministic code readiness
+- locked Hermes Agent profile metadata into the actual multi-agent run contract by extending `smoke:parallel-specialists` with an `engineering-full-spectrum` mission that reaches the normal approval gate while preserving `recommendedProvider=hermes`, `runtimeBlueprint=hermes-agent-full-spectrum`, and Hermes harness pattern metadata in the mission summary and latest parallel group
+- reran the adjacent multi-agent control-plane sweep after locking the Hermes profile run contract: specialist follow-up inbox, reminders, remediation, reviewer follow-up lifecycle, accepted-risk escalation, approval inbox, and approval approve smokes all passed
+- expanded `smoke:reference-adoptions` so the external-reference aggregate now also covers orchestration profiles, UI agent blueprints, and parallel specialist runs, keeping the Hermes Agent profile card and run metadata contract inside the same regression gate as the other borrowed patterns
+- reran the expanded `smoke:reference-adoptions` aggregate after adding orchestration/profile/UI coverage; all 14 scripts passed in 34904ms, including `smoke:orchestration-profiles`, `smoke:ui-agent-blueprints`, and `smoke:parallel-specialists`
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after expanding the reference adoption aggregate; final `smoke:execution-v1-status`, `smoke:execution-v1-snapshot`, and `git diff --check` passed with visual artifact set `f0fc3e1690a9fb9662ca6a87972b25674cdd8431d6963a60402edd204ffdc9e8`
+- completed the final hygiene pass after the expanded reference adoption evidence refresh: all changed/untracked JavaScript files passed `node --check`, changed non-release files had no credential-like pattern hits, README/docs/scripts/src had no new machine-local path leaks outside generated release/devlog evidence, `smoke:execution-v1-status` passed, and `git diff --check` passed
+- extended `verify:execution-v1` and the evidence generator so the reference adoption aggregate's internal script list is parsed from stdout and written into `execution-v1-evidence.md`; regenerated evidence/closeout/snapshot and confirmed the new `Reference Adoption Aggregate` section lists all 14 scripts with visual artifact set `271c3bacf1a6a151f30ae4203be18d8fa5fcce6d3f7607deb601375d7fa0c88e`
+- tightened `smoke:execution-v1-snapshot` so both current and archived evidence must include the `Reference Adoption Aggregate` section with `scriptCount: 14` plus orchestration profile, UI agent blueprint, and parallel specialist script rows; reran the snapshot smoke, syntax check, and `git diff --check`
+- surfaced the parsed reference adoption aggregate through `/api/execution-v1/status` for both current and baseline evidence, then tightened `smoke:execution-v1-status` to require `scriptCount: 14` and the orchestration profile, UI agent blueprint, and parallel specialist rows in the API payload
+- rendered the reference adoption aggregate in the release UI as a dedicated section with one row per borrowed-pattern smoke and tightened `smoke:ui-harness-browse` to require the UI markers plus API `scriptCount: 14` and parallel-specialist row
+- regenerated execution-v1 evidence, closeout, and immutable snapshot after adding the release UI reference-adoption aggregate section; final `smoke:execution-v1-status`, `smoke:execution-v1-snapshot`, and `git diff --check` passed with visual artifact set `4419b382b5bd5b4f5a066030e7e02accec46feb1e93da7a2bcd071d214a5b630`
+- completed the next operational regression pass after the release UI aggregate refresh: reran the default `npm run smoke`, `smoke:reference-adoptions`, full `verify:execution-v1`, and `preflight:execution-v1:all`; all deterministic rows passed, all 14 reference adoption scripts passed, and provider preflight remained `ready-but-missing-env` with zero blocked providers
+- reran final local hygiene after the operational regression pass: 67 changed/untracked JavaScript files passed `node --check`, `git diff --check` passed, and the credential-like pattern scan across README/docs/scripts/src/package metadata returned no matches
+- hardened the execution-v1 closeout generator so `Recommended Next Action` now lists aggregate preflight plus OpenAI, Anthropic, local, and Hermes live-validation env commands instead of only pointing at OpenAI; regenerated closeout/snapshot and reran closeout runtime summary, status, and snapshot smokes
+- aligned the release status API and UI recommendation command surface with the `npm run live:execution-v1:*` helpers by exposing live/preflight/evidence commands on provider readiness and recommended action payloads; reran `smoke:execution-v1-status`, `smoke:ui-harness-browse`, focused syntax checks, and `git diff --check`
+- reran the broader regression gate after the release command contract alignment: default `npm run smoke`, `smoke:reference-adoptions`, and `preflight:execution-v1:all` passed; provider preflight reported zero blocked providers and four missing live env values, then 67 changed/untracked JavaScript files passed `node --check`, credential-like scanning returned no matches, and `git diff --check` passed
+- reran the full `verify:execution-v1` gate after the release command contract alignment; all six deterministic rows passed, including browser E2E and the 14-script reference adoption aggregate, then regenerated execution-v1 evidence/closeout/snapshot with visual artifact set `c27cfe6b1e80c9f4bf7e03bdd1fd6e8fc9080c1014692138748f60dcebb513c4` and reconfirmed status, snapshot, syntax, credential, and diff hygiene
+
+## 2026-04-29 Date Rollover Verification Pass
+
+- added a first-class `hermes` provider inspired by NousResearch Hermes Agent, including OpenAI-compatible chat-completions transport, Hermes `<tool_call>` parser/formatter, context-boundary system guidance, provider catalog visibility, and deterministic provider smoke coverage
+- extended Hermes into the execution-v1 operational surface with `--live-hermes`, provider preflight/live npm scripts, UI release readiness cards/actions, closeout checklist/status rows, and the mission run provider selector
+- added deterministic live-helper smoke coverage for Hermes preflight and missing-env live command output, plus closeout fixture assertions that the Hermes optional live validation row remains visible
+- promoted `smoke:execution-v1-live-helpers` into the execution-v1 verification gate so release evidence/status now tracks six deterministic rows while preserving the original core execution smoke count at four
+- surfaced execution-v1 live-helper readiness as a first-class status summary field and UI `live helper` chip so Hermes helper contract drift is visible without inspecting runtime rows
+- added `preflight:execution-v1:all` to aggregate OpenAI/Anthropic/local/Hermes live validation prerequisites into one JSON readiness matrix, and extended the live-helper smoke to lock that aggregate contract
+- wired the aggregate preflight helper into the release UI/API through `provider: all`, including a `전체 preflight 실행` action, aggregate readiness callout, and UI harness smoke coverage
+- hardened browser E2E release handoff verification against transient Playwright session crashes/timeouts by retrying fresh preview sessions and final browser error-state reads before failing the run
+- clarified aggregate preflight not-run UI copy so readiness/missing-env counters show `not tracked` until the operator actually runs the aggregate check
+- reran UI agent blueprint, UI execution console, and UI harness browse smokes to confirm served UI contracts remain intact after the release artifact and path portability updates
+- reran retrieval memory, fact graph memory, document conversion, conversion diagnostics, mission attachments, UI mission attachments, memory rerun, and instruction-boundary smokes to confirm document/memory context and prompt-boundary contracts remain stable
+- reran orchestration profiles, parallel specialists, specialist follow-up inbox/reminders/remediation, and reviewer follow-up lifecycle/accepted-risk smokes to confirm specialist control-plane and remediation contracts remain stable after the provider sweep
+- reran provider surface, overview, events, attention lifecycle/remediation/recovery/reminders, telemetry, retry telemetry, probe, history, and timeline smokes to confirm provider control-plane state still passes after the date rollover
+- reran date-sensitive escalation and overview smokes after the local date moved to 2026-04-29 KST, confirming relative timestamp fixtures still pass across day boundaries
+- verified `smoke:escalation-sync`, `smoke:escalation-owner-chain`, `smoke:global-overview`, `smoke:escalation-reminder-due`, `smoke:escalation-reminders`, and `smoke:maintenance-history`
+
+## 2026-04-28 Execution V1 Hygiene and Operational Test Pass
+
+- regenerated execution-v1 evidence, closeout, and snapshot through the updated relative-path generators; reran snapshot and status smokes to prove the generated release surface stays portable and current
+- expanded the execution-v1 snapshot smoke portability guard so README, UI workspace placeholder, current release docs, and archived release snapshots fail the smoke if machine-local `/Users/...` paths leak back in
+- reran OpenAI, Anthropic, and local execution-v1 provider preflights after the broader smoke pass; all deterministic prerequisites are code-ready and all three remain blocked only by missing runtime env
+- reran the default runtime smoke, reference adoption aggregate smoke, and mission quality gate smoke after release path portability cleanup to confirm the core managed-agent flow and imported reference features still pass together
+- changed execution-v1 evidence, closeout, and snapshot generators to emit repo-relative paths for committed repo artifacts, reducing machine-local `/Users/...` path leakage in release handoff docs
+- added `smoke:execution-v1-snapshot` to verify immutable release snapshot archive metadata, source links, commit alignment, and deterministic/runtime summary rows without rewriting the snapshot
+- added `smoke:execution-v1-status` so the actual repo-root `/api/execution-v1/status` release readiness contract is repeatable instead of relying on one-off manual endpoint checks
+- added a one-shot Playwright browser guard retry for timeout-only failures in `smoke:ui-execution-browser-e2e`, after a fresh release handoff preview session exceeded the 120s guard install budget during evidence regeneration
+- reran `evidence:execution-v1` successfully after the browser guard retry and refreshed `execution-v1-evidence.md`, `execution-v1-closeout.md`, and the immutable execution-v1 snapshot for commit `0622c86d27a3bd203fda6f976a55eafa0465cb1e`
+- removed stray `TBD` and placeholder-shaped untracked files that were left from earlier repository recon notes, while preserving actual feature modules, smoke scripts, and generated evidence artifacts
+- regenerated `execution-v1-evidence.md` and `execution-v1-closeout.md` after cleanup so deterministic smoke results, runtime summary rows, visual evidence manifest hash, and closeout readiness reflect the current workspace state
+- completed operational verification with `smoke:execution-v1-closeout-runtime-summary`, `smoke:ui-harness-browse`, `evidence:execution-v1`, `closeout:execution-v1 -- --reuse-existing-evidence`, and provider preflight checks for OpenAI, Anthropic, and local providers
+- reran the default `smoke` entrypoint after the focused execution-v1 checks to verify the broader workspace, mission, document, memory, approval, and execution basics still pass together
+- completed a provider deterministic smoke sweep across provider surface, overview, activity, events, hardening, telemetry, cost telemetry, retry telemetry, provider capability/rate guard, and OpenAI/Anthropic/local adapter missing-env contracts
+- completed an affected mission/document/memory smoke sweep across mission attachments, UI mission attachments, retrieval memory, fact graph memory, document conversion, conversion diagnostics, runtime discovery, and instruction-boundary fixtures
+- completed an approval/action/escalation smoke sweep and removed date-sensitive escalation fixture assumptions by switching tier and owner-chain checks to relative timestamps and the current `handoff-required` inbox contract
+- completed workspace/global overview, orchestration profile, parallel specialist, specialist follow-up, and provider attention lifecycle smoke sweeps; also stabilized global overview bucket assertions around current UTC month/week boundaries
+- completed remaining memory rerun and UI agent blueprint contract smokes, then rechecked provider overview/events after the broader mission-service smoke sweep
+- archived the current execution-v1 evidence and closeout into `docs/releases/execution-v1/0622c86d27a3bd203fda6f976a55eafa0465cb1e/` so the verified deterministic release state has an immutable snapshot before commit/push
+- ran a pre-commit sensitive-data scan across changed and newly added files for API keys, bearer tokens, private keys, passwords, and secret-like literals; no real credential material was detected
+- verified the live release status API against the current repo state; deterministic smoke, reference adoption, runtime summary, browser E2E, and snapshot discovery are all recognized, while overall `ready` remains false only because OpenAI live validation is still `missing-env`
+- confirmed all provider preflight paths are code-ready but blocked on missing runtime credentials or base URL: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `LOCAL_PROVIDER_BASE_URL`
+
+## 2026-04-28 Execution Closeout Runtime Summary Smoke Pass
+
+- added `--output-path` support to `build-execution-v1-closeout.mjs` so closeout generation can be smoke-tested against temporary fixtures without mutating the canonical release checklist
+- changed the generated evidence link to follow the selected evidence path, which keeps both default docs and fixture output self-describing
+- added `smoke:execution-v1-closeout-runtime-summary` to verify ready and not-verified deterministic runtime summary states from fixture evidence
+
+## 2026-04-28 Execution Closeout Runtime Summary Pass
+
+- promoted deterministic runtime summary readiness into `execution-v1-closeout.md` so the closeout checklist and current status expose whether smoke duration/stdout/stderr evidence was recorded
+- updated the shared execution-v1 fixture and fast UI smoke to require `deterministic runtime summary: ready`
+- extended browser E2E release surface assertions to require the `deterministic runtime summary: ready` current-status row
+
+## 2026-04-28 Execution Evidence Runtime Summary Pass
+
+- added a human-readable deterministic runtime summary to `execution-v1-evidence.md` so reviewer-facing closeout evidence surfaces elapsed time, stdout/stderr size, and timeout budget without requiring raw JSON inspection
+- updated the shared execution-v1 document fixture so fast UI smoke coverage keeps the same runtime summary section shape as generated evidence
+- exposed deterministic runtime summary rows through `/api/execution-v1/status` and locked the browser E2E runtime row in `smoke:ui-harness-browse`
+- rendered deterministic runtime rows in the release tab so operators can inspect smoke duration, stdout/stderr size, and timeout budget without opening the evidence markdown
+- extended browser E2E release surface capture so the screenshot report now proves the deterministic runtime summary panel and browser E2E runtime row are rendered in the operator UI
+
+## 2026-04-28 Execution V1 Verifier Timeout Pass
+
+- added bounded per-script timeout handling to `verify:execution-v1` so long-running deterministic npm smokes cannot hang the closeout gate indefinitely
+- extended verifier JSON with `durationMs`, `stdoutBytes`, `stderrBytes`, and `timeoutMs` per deterministic smoke while preserving the existing `script/status` contract used by evidence generation
+- documented `PERSONAL_AI_AGENT_VERIFY_SCRIPT_TIMEOUT_MS` and `PERSONAL_AI_AGENT_VERIFY_MAX_BUFFER_BYTES` overrides for local operator tuning
+- split browser E2E Playwright guard installation onto a dedicated `PERSONAL_AI_AGENT_BROWSER_GUARD_TIMEOUT_MS` timeout and added context labels to Playwright timeout failures so fresh-session flakes identify the affected handoff path
+
+## 2026-04-27 Browser E2E Stdout Compaction Pass
+
+- changed `smoke-ui-execution-browser-e2e` so default stdout now emits a compact verification summary instead of the full persisted browser report, reducing `verify:execution-v1` buffer pressure while preserving `output/playwright/execution-v1-browser-e2e.json` as the complete artifact
+- added `PERSONAL_AI_AGENT_BROWSER_E2E_FULL_STDOUT=1` as an explicit diagnostic escape hatch for full JSON stdout when deep local inspection is needed
+
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422173000_stable_line_preview_body_promotion","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
 ## 2026-04-22 Release Handoff Stable Line Preview Body Promotion
 
@@ -62,6 +276,58 @@
 - updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
 - added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the newest promoted row now proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
 - persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 newest promoted-row line-copy evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the newly promoted row now proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 newest promoted-row line-copy evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 newest report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-16 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 latest report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-17 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 latest report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-18 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 count-19 report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-19 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 count-20 report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-20 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` into compact release handoff JSON structured summary so digest/manifest/index artifact와 release UI surface가 count-21 report-only evidence를 row/detail/stable-line metadata로 직접 노출하도록 확장
+- updated release tab normalization/rendering and browser smoke overview assertions so handoff card/preview가 `summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy line copy` row/detail을 same surface에서 읽도록 고정
+- added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the just-promoted count-21 row proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
+- persisted that report-only evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted the count-26 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-26 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-26 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-27 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-27 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-27 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-28 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-28 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-28 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-29 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-29 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-29 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-30 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-30 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-30 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-22T00:00:00.000Z","id":"doclog_20260422170000_stable_line_preview_body_contract","type":"devlog","updatedAt":"2026-04-22T00:00:00.000Z"} -->
@@ -3011,6 +3277,30 @@
 - persisted that new evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifact-pair verified flag in the browser report
 - added browser-only detail line-copy verification for `summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy` so the newest promoted row now proves one card detail line and one current-preview detail line can both round-trip through clipboard/prompt fallback
 - persisted that evidence as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` with a dedicated artifactPair verification flag
+- promoted the latest count-22 `summaryStableLineCopyPreviewBody...LineCopy` browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the row without requiring the full browser report
+- extended release UI structured summary rows/details to render the count-22 exact-match state and stable-line metadata in both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-22 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-23 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-23 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-23 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-24 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-24 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-24 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-25 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row
+- extended release UI structured summary rows/details to render the count-25 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-25 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as `releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary` plus a matching artifactPair verification flag
+- promoted the count-31 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest stable line-copy row through the release UI
+- extended release UI structured summary rows/details to render the count-31 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-31 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as dynamic count-32 release handoff verification summary plus a matching artifactPair verification flag
+- promoted the count-32 browser-only verification into compact release handoff structured summary JSON so handoff digest, manifest, and index artifacts expose the latest dynamic stable line-copy row through the release UI
+- extended release UI structured summary rows/details to render the count-32 exact-match state and stable-line metadata on both handoff cards and current preview surfaces
+- added browser-only detail line-copy verification for the just-promoted count-32 structured summary row so the next report-only evidence captures both handoff card and current-preview copy/fallback round-trips
+- persisted that follow-up as dynamic count-33 release handoff verification summary plus a matching artifactPair verification flag
 <!-- document-log:end -->
 
 <!-- document-log:start {"createdAt":"2026-04-14T00:00:00.000Z","id":"doclog_20260414091500_3f2d41","type":"devlog","updatedAt":"2026-04-14T00:00:00.000Z"} -->
@@ -3038,6 +3328,295 @@
 - introduced tracked document-log blocks with stable `doclog_*` ids so harness document intake can support update and delete instead of remaining append-only markdown output
 - extended the harness source panel with recent document entries plus `불러오기` and `삭제` actions, and added edit-mode status/cancel flow to the existing document log form
 - verified the full document lifecycle by creating a temporary reference entry, moving it to `devlog` through PATCH, deleting it, and confirming the temporary id and content no longer exist in any docs file
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_retrieval_service_extract","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Retrieval Service Extraction Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extracted the existing lexical retrieval context builder and mission retrieval preview aggregation into `src/core/retrieval-service.mjs` so retrieval can evolve behind a smaller service seam before MarkItDown-style document conversion or MemPalace-style ranking changes land
+- kept `mission-service.mjs` as the orchestration caller and preserved the existing memory/attachment scoring, snippet limits, role preview shape, and retrieval artifact comparison contract
+- verified the extraction with syntax checks for the new retrieval service and mission service plus the existing `smoke:retrieval-memory` flow
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_request_ui","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Request UI Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- wired `/api/runtime/requests` into the served UI bootstrap so the command header metric shows active and recent runtime request counts instead of leaving request observability as an API-only surface
+- added a `data-runtime-request-metric` marker to the metric card so the served UI contract can be smoke-tested without requiring a browser click path
+- extended `smoke:ui-harness-browse` to verify the app bundle includes the runtime request loader/metric marker and that the runtime request endpoint exposes the current active request
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_request_registry","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Request Registry Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added an in-memory active/recent API request registry keyed by `X-Request-Id` so operator tooling can inspect non-sensitive request method, path, status, and duration without parsing terminal logs
+- exposed the request summary through `/api/health` counts and `/api/runtime/requests` detail output, keeping query strings and request bodies out of the observable payload
+- extended `smoke:runtime-discovery` to prove caller-provided request id echoing, generated request ids, recent request capture, and the currently active `/api/runtime/requests` call are all visible through the runtime endpoint
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_discovery","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Discovery Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added UI server port fallback so `npm run ui` can bind the next available local port when the requested port is already occupied, while preserving the existing `PERSONAL_AI_AGENT_UI_HOST` and `PERSONAL_AI_AGENT_UI_PORT` controls
+- added `var/server.json` and `/api/health` so local tools and operators can discover the actual URL, requested port, active port, pid, root path, and discovery file path without scraping terminal output
+- added per-request `X-Request-Id` response headers with safe caller-provided id echoing, plus `smoke:runtime-discovery` to verify fallback, discovery JSON, health metadata, and request-id behavior
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_hybrid_retrieval_ranking","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Hybrid Retrieval Ranking Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added BM25 candidate scoring inside `src/core/retrieval-service.mjs` and combined it with the existing lexical overlap score so retrieval ranking can prefer more discriminative memory/attachment chunks without introducing a vector-store dependency
+- added bounded attachment neighbor expansion that includes adjacent chunks only when they also overlap the query, preserving the existing guard that unrelated appendix content must not leak into retrieved context
+- surfaced `lexicalScore` and `bm25Score` in retrieval artifacts so ranking decisions are auditable, then extended `smoke:retrieval-memory` to prove expanded relevant context is included while unrelated appendix text remains excluded
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_document_conversion_adapter","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Document Conversion Adapter Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `src/core/document-conversion-service.mjs` as a narrow MarkItDown-compatible child-process adapter so CLI mission attachments can convert local document files into Markdown without adding a production dependency or importing Python into the Node runtime
+- wired `mission create --attachment` to use native text reads for text files and the optional converter for MarkItDown-compatible document extensions, then stored conversion metadata on mission attachment records for later auditability
+- added `smoke:document-conversion` to prove converted CLI attachments are persisted as Markdown, flow into retrieval artifacts, and remain compatible with the existing mission run path
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_instruction_boundary_fixture","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Instruction Boundary Fixture Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added a CL4R1T4S-inspired offline red-team smoke fixture that injects adversarial attachment text as quoted mission data and verifies the managed run still completes without replaying the marker in the final deliverable
+- added an explicit context boundary to stub provider prompt/context artifacts so attachments, memory, retrieved context, and previous artifacts are labeled as untrusted data rather than executable instructions
+- changed executor deliverables to summarize reviewed attachments by filename, character count, and MIME type only, keeping raw attachment excerpts available in manager context but out of final user-facing artifacts
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_ui_document_conversion_upload","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 UI Document Conversion Upload Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extended browser mission attachment intake so text files still upload as plain `content`, while non-text document files are sent as base64 payloads for server-side conversion instead of being misread as UTF-8 text in the browser
+- wired the web mission create and mission attachment routes through the existing MarkItDown-compatible conversion service, preserving the child-process boundary and storing converted UI uploads as `ui-converted` Markdown attachments with conversion metadata
+- extended `smoke:ui-mission-attachments` with a fake local converter and PDF-like upload fixture so the served UI bundle, public API route, conversion metadata, and harness attachment summary are verified together
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_document_conversion_diagnostics","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Document Conversion Diagnostics Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added converter capability diagnostics for the MarkItDown-compatible adapter so operators can see whether the local converter is available before attachment conversion fails at runtime
+- exposed diagnostics through `converter diagnostics` and `/api/converter/diagnostics`, including supported extension allowlists, disabled reason details, probe evidence, and explicit local-only security defaults for URL/OCR/network behavior
+- added `smoke:document-conversion-diagnostics` to verify available converter, missing converter, CLI output, direct service output, and web API output under deterministic fake-converter conditions
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_visual_evidence_manifest","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Visual Evidence Manifest Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added a local-only visual evidence manifest service for existing execution-v1 browser report and screenshot artifacts, recording safe artifact-root paths, sha256, bytes, PNG dimensions, capture session status, and disabled network/recorder flags
+- exposed the manifest through `evidence:visual-manifest`, the execution-v1 evidence generator, and the web handoff artifact list without adding an Electron recorder or broad media ingestion path
+- added `smoke:visual-evidence-manifest` to verify manifest generation, safe path rejection, image metadata extraction, signature hashing, and release artifact output shape under deterministic fixture conditions
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_durable_runtime_request_registry","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Durable Runtime Request Registry Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- replaced the web UI's memory-only request tracking with a durable `var/runtime-requests.json` registry that records active and terminal HTTP requests with request id, method, path, duration, status code, and process id
+- added stale active-request recovery on server start so interrupted requests from a prior process are marked as `abandoned` terminal records instead of disappearing after restart
+- extended `/api/health`, `/api/runtime/requests`, server discovery metadata, and `smoke:runtime-discovery` to verify registry path exposure, stale request recovery, active request visibility, and persisted terminal history
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_job_registry","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Job Registry Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added a durable `var/runtime-jobs.json` registry for non-HTTP runtime work, tracking active and terminal release jobs with kind, scope, request id, process id, duration, compact result metadata, and failure summaries
+- wired execution-v1 refresh and snapshot operations through the runtime job registry so long-running release actions can be correlated with release action history without storing full generated payloads in the registry
+- exposed `/api/runtime/jobs`, health/discovery registry metadata, and stale active-job recovery on server start, then extended `smoke:runtime-discovery` to verify abandoned job recovery and persisted terminal job history
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_execution_v1_fixture_reuse","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Execution V1 Fixture Reuse Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extracted the seeded execution-v1 evidence and closeout markdown fixture into `scripts/execution-v1-test-fixtures.mjs` so browser E2E and harness browse smoke share the same release-status test input
+- removed duplicated document seed logic from `smoke-ui-execution-browser-e2e` and `smoke-ui-harness-browse`, reducing the chance that reference gate fixture semantics drift between slow and fast UI checks
+- kept each smoke's caller-specific evidence href configurable while centralizing deterministic smoke, reference adoption gate, current status, and notes content
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_reference_adoption_status_contract","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Reference Adoption Status Contract Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extended `smoke:ui-harness-browse` with seeded execution-v1 evidence and closeout docs so `/api/execution-v1/status` can be validated without running the full browser E2E path
+- locked the release status API contract for `coreDeterministicPassed/Total`, aggregate `deterministicPassed/Total`, and `referenceAdoptionPassed/Total/Ready` so the reference gate cannot be silently merged back into the core execution smoke count
+- added served UI asset coverage for the `reference gate` summary chip label alongside the existing runtime job and fact graph release surface anchors
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_reference_adoption_release_ui","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Reference Adoption Release UI Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- separated core execution deterministic smoke counts from the `smoke:reference-adoptions` aggregate gate in `execution-v1/status`, preserving the operator meaning of the original 4 execution smoke checks
+- added a dedicated `reference gate` release summary chip so operators can see the externally inspired adoption regression status without conflating it with core execution smoke readiness
+- extended browser E2E assertions to require `deterministic smoke 4/4`, `reference gate 1/1`, and the closeout `reference adoption gate: ready` current-status row
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_reference_adoption_execution_evidence","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Reference Adoption Execution Evidence Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- wired `smoke:reference-adoptions` into `verify:execution-v1` so release evidence now runs the externally inspired aggregate regression gate together with the existing execution smoke set
+- updated execution evidence and closeout generators to report reference adoption readiness separately from the core deterministic execution smoke result, keeping browser/live validation semantics unchanged
+- refreshed README guidance so operators know `evidence:execution-v1` and `closeout:execution-v1` now cover both execution-v1 readiness and the adopted reference feature regression set
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_reference_adoption_smoke_gate","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Reference Adoption Smoke Gate Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `smoke:reference-adoptions` as an aggregate deterministic gate for externally inspired adoption work: output compaction, provider guard, mission quality gate, document conversion, runtime discovery, visual evidence, retrieval, fact graph, and instruction-boundary coverage
+- kept the default `npm run smoke` lightweight and unchanged, while giving release/review workflows a single command that exercises the higher-scope reference adoption regression set
+- documented the aggregate gate in README so operators do not need to remember each individual reference-adoption smoke command before handoff
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_instruction_boundary_retrieval_memory","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Instruction Boundary Retrieval Memory Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- strengthened the offline instruction-boundary smoke with an adversarial workspace fact memory fixture so the boundary is verified across memory, retrieved context, manager prompt/context artifacts, and final deliverable output
+- asserted that the memory marker is allowed to appear only as untrusted quoted context in prompt/context/retrieval artifacts, while the executor deliverable must not replay the adversarial marker
+- kept the CL4R1T4S-inspired source isolated as a local deterministic fixture and did not vendor or ingest external prompt corpus content
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_fact_graph_relation_reason","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Fact Graph Relation Reason Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `relationReason` to shared-keyword fact graph edges so edge records explain why two facts are related instead of exposing only raw token arrays and weight
+- propagated relation reasons into mission harness fact graph previews and compact CLI output, with fallback text for older edge records that do not yet have the field
+- extended fact graph and UI harness smokes to verify relation reasons are persisted, surfaced in compact operator output, and present in the served UI bundle
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_fact_graph_compact_cli","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Fact Graph Compact CLI Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `memory facts --compact` so operators can inspect fact graph summary, bounded node preview, and edge preview without dumping full revision/provenance-heavy graph records
+- included linked edge statement previews in compact CLI output to mirror the web harness Fact Graph Preview surface and make shared-keyword edges understandable from terminal output alone
+- extended `smoke:fact-graph-memory` to verify raw graph output remains available while compact output omits full revision arrays and still includes node/edge summaries
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_fact_graph_preview_surface","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Fact Graph Preview Surface Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extended mission harness memory payloads with compact fact graph previews for all, mission, and workspace scopes, including active nodes, active shared-keyword edges, provenance source ids, versions, shared tokens, and linked statements
+- rendered a Fact Graph Preview section in the web harness memory tab so operators can inspect active fact nodes and related facts without opening the raw `memory facts` CLI output
+- strengthened `smoke:fact-graph-memory` and `smoke:ui-harness-browse` to verify preview node/edge payloads and served UI anchors for fact graph visibility
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_retrieval_source_diversity_cap","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Retrieval Source Diversity Cap Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added a soft per-source diversity cap to retrieval selection so one highly-ranked source is limited during the first pass and lower-ranked relevant sources can still enter the final grounding set
+- kept the cap soft by backfilling overflow candidates when there are not enough distinct sources, preserving full context capacity for single-source missions
+- extended `smoke:retrieval-memory` with a source-diversity fixture proving an alternate `mission/decision` source remains visible even when `workspace/fact` has enough dominant phrase-matching candidates to fill the result set
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_retrieval_phrase_proximity_boost","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Retrieval Phrase Proximity Boost Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added deterministic phrase/proximity scoring to the retrieval service so adjacent or near-adjacent query term pairs can lift snippets that preserve phrases like provider drift and prompt normalization
+- blended the new `phraseBoostScore` with lexical and BM25 scores, then persisted it into retrieval artifacts and `retrievalReason` metadata for operator auditability
+- extended `smoke:retrieval-memory` with a direct phrase-ranking fixture proving an exact phrase candidate outranks a scattered-term candidate without adding vector search or external dependencies
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_retrieval_explainability_metadata","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Retrieval Explainability Metadata Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added matched query term extraction to the retrieval service so selected snippets now carry `matchedTerms`, `matchTermCount`, and a compact `retrievalReason` alongside lexical and BM25 scores
+- persisted the explainability metadata into `*-retrieval.md` artifacts and surfaced the reason text in mission setup/harness retrieval preview rows, making source selection auditable without opening raw service internals
+- strengthened `smoke:retrieval-memory` to require matched provider-drift terms and retrieval reason metadata in both run artifacts and harness preview payloads
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_job_history_surface","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Job History Surface Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- extended the release status surface from runtime job counts to an operator-readable active/recent job history with kind, scope, status, request id, duration, summary, timestamp, and job id context
+- added compact UI helpers for runtime job kind labels and duration formatting, while reusing the existing release snapshot card layout to avoid introducing a separate visual pattern
+- strengthened `smoke:ui-harness-browse` with a seeded terminal runtime job fixture so the runtime jobs API and release UI bundle contract verify real recent job visibility instead of only checking active-count shape
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_job_operator_surface","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Job Operator Surface Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added runtime job summary data to `execution-v1/status` so the release surface can display active and recent release job pressure alongside closeout and evidence readiness
+- wired the web UI to load `/api/runtime/jobs`, render `Runtime jobs` in the hero metrics, and expose a release-tab runtime job metric without requiring operators to open the raw registry endpoint
+- extended `smoke:ui-harness-browse` to verify the public UI bundle contains runtime job loading and metric anchors, and that the runtime jobs API returns the same active/recent contract as runtime requests
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_fact_graph_memory_adapter","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Fact Graph Memory Adapter Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added a JSON-backed `factGraphNodes` collection and `src/core/fact-graph-service.mjs` so `kind=fact` memory can be mirrored into local fact nodes without adding ChromaDB, Python, or a separate graph database dependency
+- wired memory create/update/delete flows to keep fact graph nodes active or retired by source memory id, preserving provenance and revision history when a fact statement changes
+- added deterministic shared-keyword `factGraphEdges` within the same scope and retire those edges when either connected fact node changes or is retired, keeping graph relations auditable without vector search
+- exposed the fact graph through `memory facts` CLI output and mission harness memory summary, then added `smoke:fact-graph-memory` to verify active/retired node lifecycle, edge lifecycle, provenance, revisions, and CLI visibility
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_external_reference_round2","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 External Reference Round 2 Review
+
+- date: 2026-04-27T00:00:00.000Z
+- inspected `free-claude-code`, `andrej-karpathy-skills`, `hermes-agent`, `openscreen`, `markitdown`, and `rtk` through shallow clones, manifests, READMEs, and representative implementation files
+- documented Node-native adoption candidates in `docs/reference-repos.md`: RTK-style output compaction, provider capability routing and rate guard, Hermes-style runtime/session context, Karpathy-style mission quality gates, MarkItDown capability diagnostics, and OpenScreen-inspired evidence manifests
+- kept all candidates as design input only; no external code was vendored and no git commit/push was performed during this review
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_output_compaction_artifact","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Output Compaction Artifact Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `src/core/output-compaction-service.mjs` as an RTK-inspired Node-native compaction service that preserves the raw output path while extracting head/tail context, issue lines, repeated-line groups, and estimated token reduction metadata
+- added `artifact compact-output` CLI support so long smoke/runtime/provider logs can be converted into auditable Markdown artifacts attached to an existing mission session without shell hooks or command rewriting
+- added `smoke:output-compaction` to verify direct service compaction, CLI artifact creation, raw-path metadata retention, warning/error detection, repeated-line detection, and bounded compact output
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_provider_capability_rate_guard","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Provider Capability Rate Guard Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- expanded the provider catalog with explicit capability metadata and provider rate-limit defaults so provider status surfaces expose structured output, usage/cost telemetry, model discovery, locality, and throttling constraints
+- added `src/providers/provider-rate-guard.mjs` and wired `requestJsonWithPolicy` through provider-scoped proactive request windows, reactive 429 block windows, and max-concurrency slots for OpenAI, Anthropic, and local providers
+- added `smoke:provider-capability-rate-guard` to verify capability/status exposure, proactive throttle waits, reactive 429 cool-down, and concurrency slot behavior without making network calls
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_mission_quality_gate","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Mission Quality Gate Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `src/core/mission-quality-gate.mjs` as a project-native Karpathy-style checklist helper that renders Success Criteria, Assumptions, Minimal Change, and Verification for each mission
+- wired the mission quality gate into stub planner/executor artifacts and into structured executor normalization so external provider executor output gets a deterministic quality-gate section when missing
+- added `smoke:mission-quality-gate` to verify knowledge and engineering managed artifacts include the gate, engineering approval assumptions remain explicit, and external executor normalization injects verification targets
+<!-- document-log:end -->
+
+<!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_runtime_session_context","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
+## 2026-04-27 Runtime Session Context Pass
+
+- date: 2026-04-27T00:00:00.000Z
+- added `src/core/runtime-status-service.mjs` so the web runtime persists `var/runtime-status.json`, links it from `var/server.json`, marks shutdown state, and carries stale previous-runtime metadata when a dead listening PID is replaced
+- stored mission session source context for CLI, web, and service-initiated runs, then surfaced that source context inside manager prompts and manager context artifacts as a Session Source section
+- extended `smoke:runtime-discovery` and `smoke` to verify runtime status discovery, stale previous-runtime reporting, web request-id source capture, CLI source capture, and prompt-level source metadata
 <!-- document-log:end -->
 
 

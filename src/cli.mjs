@@ -3,7 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { GLOBAL_USER_SCOPE_ID } from './core/constants.mjs';
+import {
+  convertMissionAttachmentFile,
+  getDocumentConversionCapabilities,
+} from './core/document-conversion-service.mjs';
+import { createId } from './core/id.mjs';
 import { createMissionService } from './core/mission-service.mjs';
+import { compactOutputFile } from './core/output-compaction-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
 import { createStore } from './core/store.mjs';
 
@@ -53,11 +59,29 @@ function parseBooleanOption(args, name) {
   throw new Error(`${name} must be true or false.`);
 }
 
+function parsePositiveIntegerOption(args, name) {
+  const value = readOption(args, name, '');
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new Error(`${name} must be a positive integer.`);
+  }
+
+  return parsed;
+}
+
 function parseConstraints(rawValue) {
   return String(rawValue || '')
     .split('|')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function appendUnique(list, value) {
+  return list.includes(value) ? list : [...list, value];
 }
 
 function printHelp() {
@@ -71,13 +95,13 @@ Commands:
   overview providers [--since <iso-timestamp>]
 
   provider list
-  provider check <stub|openai|anthropic|local>
-  provider activity [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
-  provider activity-timeline [--provider <stub|openai|anthropic|local>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
-  provider events [--provider <stub|openai|anthropic|local>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
-  provider probe <stub|openai|anthropic|local>
-  provider history [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
-  provider timeline [--provider <stub|openai|anthropic|local>] [--ok <true|false>] [--attempted <true|false>]
+  provider check <stub|openai|anthropic|local|hermes>
+  provider activity [--provider <stub|openai|anthropic|local|hermes>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
+  provider activity-timeline [--provider <stub|openai|anthropic|local|hermes>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
+  provider events [--provider <stub|openai|anthropic|local|hermes>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
+  provider probe <stub|openai|anthropic|local|hermes>
+  provider history [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]
+  provider timeline [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]
 
   workspace add <path> [--name <name>]
   workspace list
@@ -87,7 +111,7 @@ Commands:
 
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>] [--attachment <path>]
   mission list
-  mission run <missionId> [--provider <stub|openai|anthropic|local>]
+  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>]
   mission show <missionId> [--provider-since <iso-timestamp>]
   mission timeline <missionId> [--provider-since <iso-timestamp>]
   mission execution preflight <missionId> [--request-approval]
@@ -100,20 +124,20 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|provider-health-drift-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--provider <stub|openai|anthropic|local>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
-  action provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
-  action provider-health-drift [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--overdue]
-  action specialist-follow-ups [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--needs-reminder] [--overdue]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|provider-health-drift-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--provider <stub|openai|anthropic|local|hermes>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
+  action provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
+  action provider-health-drift [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--overdue]
+  action specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--needs-reminder] [--overdue]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
   action maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--note <text>]
-  action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-health-drift-required|specialist-follow-up-required>] [--provider <stub|openai|anthropic|local>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
+  action log-overdue [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-health-drift-required|specialist-follow-up-required>] [--provider <stub|openai|anthropic|local|hermes>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>]
   action escalated [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>] [--tier <normal|warning|critical|resolved>] [--needs-reminder]
   action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action remind-owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
-  action remind-provider-attention [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
-  action remind-specialist-follow-ups [--provider <stub|openai|anthropic|local>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--due] [--overdue] [--note <text>]
+  action remind-provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
+  action remind-specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action remediate-provider-attention <actionId>
   action remediate-specialist-follow-up <actionId>
@@ -128,6 +152,11 @@ Commands:
 
   memory list [--scope <user|workspace|mission>] [--workspace <workspaceId>] [--mission <missionId>]
   memory add --scope <user|workspace|mission> --kind <preference|decision|fact> --content <text> [--workspace <workspaceId>] [--mission <missionId>]
+  memory facts [--scope <user|workspace|mission>] [--workspace <workspaceId>] [--mission <missionId>] [--status <active|retired|all>] [--compact]
+
+  converter diagnostics [--converter <path>]
+
+  artifact compact-output --mission <missionId> --session <sessionId> --input <path> [--source <name>] [--title <title>] [--file-name <name>] [--max-head-lines <n>] [--max-tail-lines <n>] [--max-issue-lines <n>]
 
   doc log --type <devlog|incident|reference> --title <title> --content <text>
 `);
@@ -135,6 +164,37 @@ Commands:
 
 function printJson(payload) {
   console.log(JSON.stringify(payload, null, 2));
+}
+
+function compactFactGraph(graph) {
+  const nodeById = new Map((graph.nodes || []).map((node) => [node.id, node]));
+  return {
+    edges: (graph.edges || []).slice(0, 10).map((edge) => ({
+      fromNodeId: edge.fromNodeId,
+      fromStatement: nodeById.get(edge.fromNodeId)?.statement || '',
+      id: edge.id,
+      relation: edge.relation,
+      relationReason: edge.relationReason || `related by shared fact terms: ${(edge.sharedTokens || []).slice(0, 8).join(', ')}`,
+      sharedTokens: Array.isArray(edge.sharedTokens) ? edge.sharedTokens.slice(0, 8) : [],
+      status: edge.status,
+      toNodeId: edge.toNodeId,
+      toStatement: nodeById.get(edge.toNodeId)?.statement || '',
+      weight: edge.weight || 0,
+    })),
+    nodes: (graph.nodes || []).slice(0, 10).map((node) => ({
+      id: node.id,
+      provenance: Array.isArray(node.provenance) ? node.provenance.slice(0, 1) : [],
+      retiredReason: node.retiredReason || '',
+      scope: node.scope,
+      scopeId: node.scopeId,
+      sourceId: node.sourceId,
+      statement: node.statement,
+      status: node.status,
+      updatedAt: node.updatedAt || node.createdAt || null,
+      version: node.version || 1,
+    })),
+    summary: graph.summary,
+  };
 }
 
 function resolveScopeId(scope, args) {
@@ -178,6 +238,15 @@ async function main() {
     printJson(
       service.getGlobalOverview({
         providerSince: readOption(rest, '--provider-since', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'converter' && command === 'diagnostics') {
+    printJson(
+      await getDocumentConversionCapabilities({
+        converterCommand: readOption(rest, '--converter', ''),
       }),
     );
     return;
@@ -353,13 +422,21 @@ async function main() {
 
   if (group === 'mission' && command === 'create') {
     const attachmentPaths = readOptions(rest, '--attachment');
+    const attachments = await Promise.all(
+      attachmentPaths.map(async (attachmentPath) => {
+        const converted = await convertMissionAttachmentFile({ filePath: attachmentPath });
+        return {
+          content: converted.content,
+          conversion: converted.conversion,
+          fileName: path.basename(attachmentPath),
+          mimeType: converted.conversion?.converted ? 'text/markdown' : undefined,
+          source: converted.conversion?.converted ? 'cli-converted' : 'cli',
+        };
+      }),
+    );
     printJson(
       service.createMission({
-        attachments: attachmentPaths.map((attachmentPath) => ({
-          content: fs.readFileSync(attachmentPath, 'utf8'),
-          fileName: path.basename(attachmentPath),
-          source: 'cli',
-        })),
+        attachments,
         workspaceId: readOption(rest, '--workspace'),
         mode: readOption(rest, '--mode', 'knowledge'),
         title: readOption(rest, '--title', 'Untitled mission'),
@@ -382,6 +459,11 @@ async function main() {
     const result = await service.runMission(missionId, {
       provider,
       providerSpecified: hasOption(rest, '--provider'),
+      sourceContext: {
+        channel: 'cli',
+        command: `mission run ${missionId}`,
+        sourceType: 'cli',
+      },
     });
 
     printJson({
@@ -777,6 +859,22 @@ async function main() {
     return;
   }
 
+  if (group === 'memory' && command === 'facts') {
+    const scope = readOption(rest, '--scope', '');
+    const filter = {
+      status: readOption(rest, '--status', 'active'),
+    };
+
+    if (scope) {
+      filter.scope = scope;
+      filter.scopeId = resolveScopeId(scope, rest);
+    }
+
+    const graph = service.listFactGraph(filter);
+    printJson(hasOption(rest, '--compact') ? compactFactGraph(graph) : graph);
+    return;
+  }
+
   if (group === 'memory' && command === 'add') {
     const scope = readOption(rest, '--scope');
     printJson(
@@ -787,6 +885,75 @@ async function main() {
         content: readOption(rest, '--content'),
       }),
     );
+    return;
+  }
+
+  if (group === 'artifact' && command === 'compact-output') {
+    const missionId = readOption(rest, '--mission');
+    const sessionId = readOption(rest, '--session');
+    const inputPath = readOption(rest, '--input');
+
+    if (!missionId || !sessionId || !inputPath) {
+      throw new Error('artifact compact-output requires --mission, --session, and --input.');
+    }
+
+    const mission = store.getMission(missionId);
+    if (!mission) {
+      throw new Error(`mission not found: ${missionId}`);
+    }
+
+    const session = store.getSession(sessionId);
+    if (!session || session.missionId !== missionId) {
+      throw new Error(`session not found for mission: ${sessionId}`);
+    }
+
+    const compacted = compactOutputFile({
+      inputPath,
+      maxHeadLines: parsePositiveIntegerOption(rest, '--max-head-lines'),
+      maxIssueLines: parsePositiveIntegerOption(rest, '--max-issue-lines'),
+      maxTailLines: parsePositiveIntegerOption(rest, '--max-tail-lines'),
+      sourceName: readOption(rest, '--source', ''),
+    });
+    const artifactFileName = readOption(rest, '--file-name', 'output-compaction-summary.md');
+    const artifactPath = store.writeArtifactContent({
+      content: compacted.markdown,
+      fileName: artifactFileName,
+      missionId,
+      sessionId,
+    });
+    const artifact = store.saveArtifact({
+      id: createId('artifact'),
+      createdAt: new Date().toISOString(),
+      fileName: artifactFileName,
+      kind: 'output_compaction',
+      metadata: {
+        compact: compacted.summary.compact,
+        inputPath: compacted.inputPath,
+        raw: compacted.summary.raw,
+        signals: compacted.summary.signals,
+        sourceName: compacted.summary.sourceName,
+        status: compacted.summary.status,
+      },
+      missionId,
+      path: artifactPath,
+      role: 'operator',
+      sessionId,
+      title: readOption(rest, '--title', 'Output Compaction Summary'),
+    });
+
+    store.updateSession(sessionId, (currentSession) => ({
+      ...currentSession,
+      artifactIds: appendUnique(Array.isArray(currentSession.artifactIds) ? currentSession.artifactIds : [], artifact.id),
+    }));
+
+    printJson({
+      artifact,
+      compact: compacted.summary.compact,
+      inputPath: compacted.inputPath,
+      raw: compacted.summary.raw,
+      signals: compacted.summary.signals,
+      status: compacted.summary.status,
+    });
     return;
   }
 

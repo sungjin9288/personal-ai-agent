@@ -13,6 +13,11 @@ const providerConfig = {
     liveCommand: 'npm run live:execution-v1:local',
     smokeScripts: ['smoke:execution-flow'],
   },
+  hermes: {
+    envKey: 'HERMES_PROVIDER_MODEL',
+    liveCommand: 'npm run live:execution-v1:hermes',
+    smokeScripts: ['smoke:hermes-provider', 'smoke:execution-flow'],
+  },
   openai: {
     envKey: 'OPENAI_API_KEY',
     liveCommand: 'npm run live:execution-v1:openai',
@@ -27,7 +32,7 @@ if (!config) {
   console.error(
     [
       'Unsupported provider.',
-      'Usage: node scripts/preflight-execution-v1-live.mjs <openai|anthropic|local>',
+      'Usage: node scripts/preflight-execution-v1-live.mjs <openai|anthropic|local|hermes>',
     ].join('\n'),
   );
   process.exit(1);
@@ -40,6 +45,7 @@ for (const scriptName of config.smokeScripts) {
 
 const envReady = Boolean(process.env[config.envKey]);
 const recommendedEnv = provider === 'openai' ? { OPENAI_RUN_TIMEOUT_MS: process.env.OPENAI_RUN_TIMEOUT_MS || '60000' } : {};
+const missingEnvCommand = buildMissingEnvCommand(provider, config, recommendedEnv);
 
 const ok = checks.every((check) => check.status === 'passed');
 console.log(
@@ -49,6 +55,7 @@ console.log(
       envKey: config.envKey,
       envReady,
       liveCommand: config.liveCommand,
+      missingEnvCommand,
       ok,
       provider,
       recommendedEnv,
@@ -75,4 +82,15 @@ function runScript(scriptName) {
 
 function compactOutput(value) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, 240);
+}
+
+function buildMissingEnvCommand(providerName, config, recommendedEnv) {
+  const recommendedPairs = Object.entries(recommendedEnv || {});
+  if (!recommendedPairs.length) {
+    return `export ${config.envKey}="..." && npm run live:execution-v1:${providerName}`;
+  }
+
+  return `export ${recommendedPairs
+    .map(([key, value]) => `${key}=${value}`)
+    .join(' ')} ${config.envKey}="..." && npm run live:execution-v1:${providerName}`;
 }

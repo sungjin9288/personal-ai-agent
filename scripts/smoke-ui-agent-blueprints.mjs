@@ -48,6 +48,10 @@ try {
   assert.equal(appJs.includes('선택 결과'), true);
   assert.equal(appJs.includes('빠르게 초안'), true);
   assert.equal(appJs.includes('끝까지 handoff'), true);
+  assert.equal(appJs.includes('Hermes 에이전트'), true);
+  assert.equal(appJs.includes('engineering-hermes-agent'), true);
+  assert.equal(appJs.includes('hermes-agent-full-spectrum'), true);
+  assert.equal(appJs.includes('recommendedProvider'), true);
   assert.equal(appJs.includes('현재는 지식 주입 + retrieval memory'), true);
   assert.equal(appJs.includes('prompt grounding + retrieval memory'), true);
   assert.equal(appJs.includes('retrieval-ready'), true);

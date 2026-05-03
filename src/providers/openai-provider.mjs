@@ -105,6 +105,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         maxAttempts: config.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'OpenAI',
+        rateLimit: {
+          ...OPENAI_SPEC.runtime.rateLimit,
+          scope: OPENAI_SPEC.id,
+        },
         timeoutMs: config.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
@@ -145,6 +149,10 @@ export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = g
         maxAttempts: config.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'OpenAI',
+        rateLimit: {
+          ...OPENAI_SPEC.runtime.rateLimit,
+          scope: OPENAI_SPEC.id,
+        },
         timeoutMs: config.runtime.runTimeoutMs,
         url: `${config.baseUrl}/responses`,
       });

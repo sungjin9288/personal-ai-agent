@@ -3,12 +3,13 @@ import path from 'node:path';
 
 const cliPath = path.join(process.cwd(), 'src', 'cli.mjs');
 
-export function runCli({ rootDir, args }) {
+export function runCli({ rootDir, args, env = {} }) {
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     cwd: process.cwd(),
     encoding: 'utf8',
     env: {
       ...process.env,
+      ...env,
       PERSONAL_AI_AGENT_ROOT: rootDir,
     },
   });

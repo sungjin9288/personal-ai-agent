@@ -1,12 +1,12 @@
 # Execution v1 Closeout
 
 - archivedAt: 2026-04-15T11:59:08.241Z
-- sourcePath: /Users/sungjin/dev/personal/personal-ai-agent/docs/execution-v1-closeout.md
+- sourcePath: docs/execution-v1-closeout.md
 
 - generatedAt: 2026-04-15T11:32:02.762Z
 - branch: codex/managed-multi-agent-v1-foundation
 - commit: be6d2f621a970d36c7ce193c366e4b4e53b769a6
-- evidence: [execution-v1-evidence.md](/Users/sungjin/dev/personal/personal-ai-agent/docs/releases/execution-v1/be6d2f621a970d36c7ce193c366e4b4e53b769a6/execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/be6d2f621a970d36c7ce193c366e4b4e53b769a6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

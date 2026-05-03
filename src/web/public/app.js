@@ -53,6 +53,7 @@ const state = {
   releaseHandoffPreviewStatus: 'idle',
   releaseHandoffPreviewTruncated: false,
   releaseLiveConfirmProvider: '',
+  releaseAllPreflight: null,
   releaseExpandedHistoryId: '',
   releaseFocusedProvider: '',
   releaseHistoryFilterOutcome: '',
@@ -66,6 +67,8 @@ const state = {
   releaseSnapshotConfirmArmed: false,
   releaseSnapshotPreflight: null,
   releaseStatus: null,
+  runtimeJobs: null,
+  runtimeRequests: null,
   selectedAgentBlueprintByMode: {
     engineering: 'engineering-default',
     knowledge: 'knowledge-default',
@@ -82,6 +85,34 @@ const state = {
 const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
 const RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS = 20000;
 const RELEASE_HANDOFF_PREVIEW_MAX_LINES = 180;
+const UI_TEXT_ATTACHMENT_EXTENSIONS = new Set([
+  '.c',
+  '.cc',
+  '.cpp',
+  '.css',
+  '.csv',
+  '.go',
+  '.html',
+  '.htm',
+  '.java',
+  '.js',
+  '.json',
+  '.jsx',
+  '.log',
+  '.md',
+  '.mjs',
+  '.py',
+  '.rb',
+  '.rs',
+  '.sql',
+  '.text',
+  '.ts',
+  '.tsx',
+  '.txt',
+  '.xml',
+  '.yaml',
+  '.yml',
+]);
 
 const missionTemplates = [
   {
@@ -263,6 +294,20 @@ const AGENT_BLUEPRINTS = {
       specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
       title: '엔지니어링 풀 스펙트럼',
     },
+    {
+      bestFor: 'Hermes형 subagent, tool-calling, memory handoff 운영 패턴으로 복잡한 구현을 닫을 때',
+      description: 'Hermes Agent 레퍼런스의 session loop, parallel subagent, provider-aware tool call 패턴을 full-spectrum 하네스 프로파일로 실행합니다.',
+      directive: 'orchestration-profile:engineering-full-spectrum',
+      emphasis: 'Hermes agent profile',
+      id: 'engineering-hermes-agent',
+      kind: 'profile',
+      outcome: 'Hermes provider 권장값과 5-lane specialist handoff를 함께 노출합니다.',
+      profileId: 'engineering-full-spectrum',
+      recommendedProvider: 'hermes',
+      runtimeBlueprint: 'hermes-agent-full-spectrum',
+      specialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
+      title: 'Hermes 에이전트',
+    },
   ],
   knowledge: [
     {
@@ -336,6 +381,11 @@ const AGENT_INTENT_PRESETS = {
       blueprintId: 'engineering-full-spectrum',
       description: 'UX와 문서 handoff까지 한 번에 정리',
       label: '끝까지 handoff',
+    },
+    {
+      blueprintId: 'engineering-hermes-agent',
+      description: 'Hermes형 tool/subagent loop로 운영',
+      label: 'Hermes agent',
     },
   ],
   knowledge: [
@@ -542,17 +592,25 @@ function getMissionAiConfiguration(detail = state.missionDetail) {
     ? summary.specialistConfiguredKinds.filter(Boolean)
     : [];
   const profileDisplayName = String(summary.specialistOrchestrationProfileDisplayName || '').trim();
+  const profileHarnessPatterns = Array.isArray(summary.specialistOrchestrationProfileHarnessPatterns)
+    ? summary.specialistOrchestrationProfileHarnessPatterns.filter(Boolean)
+    : [];
   const profileId = String(summary.specialistOrchestrationProfileId || '').trim();
   const qualityGate = String(summary.specialistQualityGate || '').trim();
+  const recommendedProvider = String(summary.specialistOrchestrationProfileRecommendedProvider || '').trim();
   const requiredKinds = Array.isArray(summary.specialistQualityGateRequiredKinds)
     ? summary.specialistQualityGateRequiredKinds.filter(Boolean)
     : [];
+  const runtimeBlueprint = String(summary.specialistOrchestrationProfileRuntimeBlueprint || '').trim();
 
   return {
+    profileHarnessPatterns,
     profileDisplayName: profileDisplayName || (specialistKinds.length ? 'Custom specialist composition' : 'Core 4 only'),
     profileId,
     qualityGate,
+    recommendedProvider,
     requiredKinds,
+    runtimeBlueprint,
     specialistKinds,
   };
 }
@@ -771,6 +829,17 @@ function writeUiStateToUrl({ historyMode = 'replace' } = {}) {
 
 function stripFileExtension(fileName = '') {
   return String(fileName).replace(/\.[^.]+$/, '');
+}
+
+function getFileExtension(fileName = '') {
+  const match = String(fileName || '').toLowerCase().match(/\.[^.]+$/);
+  return match ? match[0] : '';
+}
+
+function isTextMissionAttachmentFile(file) {
+  const extension = getFileExtension(file?.name);
+  const mimeType = String(file?.type || '').toLowerCase();
+  return UI_TEXT_ATTACHMENT_EXTENSIONS.has(extension) || mimeType.startsWith('text/');
 }
 
 function setUiNotice(message = '') {
@@ -1215,6 +1284,20 @@ function formatDate(value) {
   }
 }
 
+function formatDurationMs(value) {
+  const durationMs = Number(value);
+  if (!Number.isFinite(durationMs) || durationMs < 0) {
+    return '-';
+  }
+  if (durationMs < 1000) {
+    return `${Math.round(durationMs)}ms`;
+  }
+  if (durationMs < 60_000) {
+    return `${(durationMs / 1000).toFixed(1)}s`;
+  }
+  return `${Math.round(durationMs / 60_000)}m`;
+}
+
 function formatByteCount(value) {
   const bytes = Number(value);
   if (!Number.isFinite(bytes) || bytes < 0) {
@@ -1234,6 +1317,39 @@ function isReleaseHandoffPreviewable(item = {}) {
   return Boolean(item.exists && item.href && RELEASE_HANDOFF_PREVIEWABLE_FORMATS.has(format));
 }
 
+const releaseHandoffStableLineCopyBaseKey =
+  'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
+
+function buildReleaseHandoffStableLineCopyKey(totalLineCopyCount) {
+  return `${releaseHandoffStableLineCopyBaseKey}${'LineCopy'.repeat(totalLineCopyCount - 5)}`;
+}
+
+function getReleaseHandoffStableLineCopyLabel(summaryKey) {
+  return summaryKey
+    .replace(/([A-Z])/g, ' $1')
+    .trim()
+    .toLowerCase();
+}
+
+function getReleaseHandoffAdditionalSummaryKeys(summary = {}) {
+  const stableKeys = Object.keys(summary)
+    .filter((key) => key.startsWith('summaryStableLineCopy'))
+    .sort((left, right) => left.length - right.length || left.localeCompare(right));
+  return [...new Set([
+      ...stableKeys,
+      'summaryDetailCopyPreview',
+      'summaryDetailCopyPreviewLineCopy',
+      'summaryDetailCopyPreviewLineCopyBody',
+    ])].filter((key) => summary[key] && typeof summary[key] === 'object');
+}
+
+function appendReleaseHandoffSummaryRow(rows, key, entry = {}) {
+  rows.push({
+    label: getReleaseHandoffStableLineCopyLabel(key),
+    value: `${Number((entry.exactMatchCount ?? entry.errorFreeSessions) || 0)}/${Number(entry.totalSessions || 0)} exact-match`,
+  });
+}
+
 function getReleaseHandoffStructuredSummaryRows(item = {}) {
   const summary = item?.structuredSummary;
   if (!summary || typeof summary !== 'object') {
@@ -1249,150 +1365,17 @@ function getReleaseHandoffStructuredSummaryRows(item = {}) {
       value: `${Number(summary.open?.errorFreeSessions || 0)}/${Number(summary.open?.totalSessions || 0)} error-free`,
     },
   ];
-  if (summary.summaryCopy && typeof summary.summaryCopy === 'object') {
-    rows.push({
-      label: 'summary copy',
-      value: `${Number((summary.summaryCopy?.exactMatchCount ?? summary.summaryCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryCopy?.totalSessions || 0)} exact-match`,
-    });
+
+  for (const key of ['summaryCopy', 'summaryCopyPreview', 'summaryDetailCopy']) {
+    if (summary[key] && typeof summary[key] === 'object') {
+      appendReleaseHandoffSummaryRow(rows, key, summary[key]);
+    }
   }
-  if (summary.summaryCopyPreview && typeof summary.summaryCopyPreview === 'object') {
-    rows.push({
-      label: 'summary copy preview',
-      value: `${Number((summary.summaryCopyPreview?.exactMatchCount ?? summary.summaryCopyPreview?.errorFreeSessions) || 0)}/${Number(summary.summaryCopyPreview?.totalSessions || 0)} exact-match`,
-    });
+
+  for (const summaryKey of getReleaseHandoffAdditionalSummaryKeys(summary)) {
+    appendReleaseHandoffSummaryRow(rows, summaryKey, summary[summaryKey]);
   }
-  if (summary.summaryDetailCopy && typeof summary.summaryDetailCopy === 'object') {
-    rows.push({
-      label: 'summary detail copy',
-      value: `${Number((summary.summaryDetailCopy?.exactMatchCount ?? summary.summaryDetailCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopy && typeof summary.summaryStableLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy',
-      value: `${Number((summary.summaryStableLineCopy?.exactMatchCount ?? summary.summaryStableLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreview && typeof summary.summaryStableLineCopyPreview === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview',
-      value: `${Number((summary.summaryStableLineCopyPreview?.exactMatchCount ?? summary.summaryStableLineCopyPreview?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreview?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBody && typeof summary.summaryStableLineCopyPreviewBody === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body',
-      value: `${Number((summary.summaryStableLineCopyPreviewBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBody?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBody && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBody === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBody?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy && typeof summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy === 'object') {
-    rows.push({
-      label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy',
-      value: `${Number((summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.exactMatchCount ?? summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryDetailCopyPreview && typeof summary.summaryDetailCopyPreview === 'object') {
-    rows.push({
-      label: 'summary detail copy preview',
-      value: `${Number((summary.summaryDetailCopyPreview?.exactMatchCount ?? summary.summaryDetailCopyPreview?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopyPreview?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryDetailCopyPreviewLineCopy && typeof summary.summaryDetailCopyPreviewLineCopy === 'object') {
-    rows.push({
-      label: 'summary detail copy preview line copy',
-      value: `${Number((summary.summaryDetailCopyPreviewLineCopy?.exactMatchCount ?? summary.summaryDetailCopyPreviewLineCopy?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopyPreviewLineCopy?.totalSessions || 0)} exact-match`,
-    });
-  }
-  if (summary.summaryDetailCopyPreviewLineCopyBody && typeof summary.summaryDetailCopyPreviewLineCopyBody === 'object') {
-    rows.push({
-      label: 'summary detail copy preview line copy body',
-      value: `${Number((summary.summaryDetailCopyPreviewLineCopyBody?.exactMatchCount ?? summary.summaryDetailCopyPreviewLineCopyBody?.errorFreeSessions) || 0)}/${Number(summary.summaryDetailCopyPreviewLineCopyBody?.totalSessions || 0)} exact-match`,
-    });
-  }
+
   return rows;
 }
 
@@ -1401,35 +1384,17 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
   if (!summary || typeof summary !== 'object') {
     return [];
   }
-  return [
-    { key: 'preview', label: 'preview' },
-    { key: 'open', label: 'open' },
-    { key: 'summaryCopy', label: 'summary copy' },
-    { key: 'summaryCopyPreview', label: 'summary copy preview' },
-    { key: 'summaryDetailCopy', label: 'summary detail copy' },
-    { key: 'summaryStableLineCopy', label: 'summary stable line copy' },
-    { key: 'summaryStableLineCopyPreview', label: 'summary stable line copy preview' },
-    { key: 'summaryStableLineCopyPreviewBody', label: 'summary stable line copy preview body' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopy', label: 'summary stable line copy preview body line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBody', label: 'summary stable line copy preview body line copy body' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody', label: 'summary stable line copy preview body line copy body line copy body line copy body' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy' },
-    { key: 'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy', label: 'summary stable line copy preview body line copy body line copy body line copy body line copy line copy line copy line copy line copy line copy line copy line copy line copy' },
-    { key: 'summaryDetailCopyPreview', label: 'summary detail copy preview' },
-    { key: 'summaryDetailCopyPreviewLineCopy', label: 'summary detail copy preview line copy' },
-    { key: 'summaryDetailCopyPreviewLineCopyBody', label: 'summary detail copy preview line copy body' },
-  ]
-    .map(({ key, label }) => {
+  const detailKeys = [
+    'preview',
+    'open',
+    'summaryCopy',
+    'summaryCopyPreview',
+    'summaryDetailCopy',
+    ...getReleaseHandoffAdditionalSummaryKeys(summary),
+  ];
+
+  return [...new Set(detailKeys)]
+    .map((key) => {
       const overviewLine = String(summary?.[key]?.overviewLine || '').trim();
       if (!overviewLine) {
         return null;
@@ -1439,7 +1404,7 @@ function getReleaseHandoffStructuredSummaryDetails(item = {}) {
         : [];
       return {
         key,
-        label,
+        label: getReleaseHandoffStableLineCopyLabel(key),
         overviewLine,
         stableLineCount: Number(summary?.[key]?.stableLineCount ?? stableLines.length ?? 0),
         stableLines,
@@ -1704,10 +1669,15 @@ function getReleaseStatusBadge(status = '') {
   if (!normalized) {
     return 'status-pending';
   }
-  if (normalized.includes('passed') || normalized.includes('ready')) {
+  if (normalized.includes('passed') || normalized.includes('ready') || normalized.includes('completed')) {
     return 'status-completed';
   }
-  if (normalized.includes('blocked') || normalized.includes('missing-env') || normalized.includes('failed')) {
+  if (
+    normalized.includes('abandoned') ||
+    normalized.includes('blocked') ||
+    normalized.includes('failed') ||
+    normalized.includes('missing-env')
+  ) {
     return 'status-failed';
   }
   return 'status-pending';
@@ -1736,6 +1706,49 @@ function getReleaseActionScopeLabel(scope = '') {
       snapshot: 'snapshot freeze',
     }[normalized] || 'release flow'
   );
+}
+
+function getRuntimeJobKindLabel(kind = '') {
+  const normalized = String(kind || '').trim().toLowerCase();
+  return (
+    {
+      'execution-v1-refresh': 'execution v1 refresh',
+      'execution-v1-snapshot': 'execution v1 snapshot',
+    }[normalized] || getDisplayLabel(kind || 'runtime job')
+  );
+}
+
+function renderReleaseRuntimeJobCard(job = {}, bucket = 'recent') {
+  const jobId = String(job.id || '').trim();
+  const requestId = String(job.requestId || '').trim();
+  const status = String(job.status || (bucket === 'active' ? 'active' : 'unknown')).trim();
+  const scope = String(job.scope || '').trim();
+  const durationLabel = bucket === 'active'
+    ? 'running'
+    : formatDurationMs(job.durationMs);
+  const timestamp = bucket === 'active'
+    ? job.startedAt
+    : job.endedAt || job.startedAt;
+  return `
+    <article class="release-snapshot-card" data-release-runtime-job-id="${escapeHtml(jobId)}">
+      <div class="release-provider-meta">
+        <div>
+          <div class="item-title">${escapeHtml(getRuntimeJobKindLabel(job.kind))}</div>
+          <div class="item-meta">${escapeHtml(scope ? getReleaseActionScopeLabel(scope) : 'runtime flow')}${requestId ? ` · request ${escapeHtml(requestId.slice(0, 12))}` : ''}</div>
+        </div>
+        <div class="release-history-actions">
+          <span class="mini-badge ${getReleaseStatusBadge(status)}">${escapeHtml(status || 'unknown')}</span>
+          <span class="mini-badge status-pending">${escapeHtml(durationLabel)}</span>
+        </div>
+      </div>
+      <div class="item-meta">${escapeHtml(job.summary || (bucket === 'active' ? 'runtime job is currently active.' : 'runtime job summary가 없습니다.'))}</div>
+      <div class="release-meta release-meta-secondary">
+        <span class="item-meta">${escapeHtml(bucket === 'active' ? 'started' : 'finished')} ${escapeHtml(formatDate(timestamp))}</span>
+        ${jobId ? `<span class="item-meta mono">${escapeHtml(jobId.slice(0, 24))}</span>` : ''}
+        ${job.source ? `<span class="item-meta">${escapeHtml(job.source)}</span>` : ''}
+      </div>
+    </article>
+  `;
 }
 
 function isReleaseAttentionOutcome(outcome = '') {
@@ -1805,14 +1818,22 @@ function getRecommendationProviderEntry(item, providerReadiness = []) {
 
 function getRecommendationCommandContext(item, providerReadiness = []) {
   const action = String(item?.action || '').trim();
+  const explicitCommand = String(item?.command || '').trim();
   const envKey = String(item?.envKey || '').trim();
   const providerEntry = getRecommendationProviderEntry(item, providerReadiness);
 
-  if (!providerEntry) {
-    return null;
+  if (explicitCommand) {
+    return {
+      command: explicitCommand,
+      label: item?.label ? `${item.label} 명령` : '권장 액션 명령',
+      buttonLabel: action === 'run-release-preflight' ? 'preflight 명령 복사' : 'live 명령 복사',
+    };
   }
 
   if (action === 'run-release-preflight') {
+    if (!providerEntry) {
+      return null;
+    }
     return {
       command: String(providerEntry.preflightCommand || '').trim(),
       label: `${providerEntry.label} preflight 명령`,
@@ -1821,6 +1842,9 @@ function getRecommendationCommandContext(item, providerReadiness = []) {
   }
 
   if (envKey) {
+    if (!providerEntry) {
+      return null;
+    }
     return {
       command: providerEntry.ready
         ? String(providerEntry.command || '').trim()
@@ -1831,6 +1855,15 @@ function getRecommendationCommandContext(item, providerReadiness = []) {
   }
 
   return null;
+}
+
+function getProviderLiveCommand(providerEntry = {}, preflight = null) {
+  if (providerEntry?.ready) {
+    return String(providerEntry.command || '').trim();
+  }
+
+  return String(preflight?.missingEnvCommand || '').trim()
+    || `export ${providerEntry.envKey}="..." && ${providerEntry.command}`;
 }
 
 function isRecommendationFlowActive({ attentionAction = null, latestAction = null }, {
@@ -2111,6 +2144,78 @@ function summarizeRetrievalSnippet(value, fallback = '-') {
   }
 
   return normalized.length > 140 ? `${normalized.slice(0, 140).trim()}…` : normalized;
+}
+
+function renderFactGraphPreview(memory = {}) {
+  const preview = memory.factGraphPreview || {};
+  const allPreview = preview.all || { edges: [], nodes: [], summary: {} };
+  const missionPreview = preview.mission || { edges: [], nodes: [], summary: {} };
+  const workspacePreview = preview.workspace || { edges: [], nodes: [], summary: {} };
+  const activeNodes = [...(missionPreview.nodes || []), ...(workspacePreview.nodes || [])].slice(0, 6);
+  const activeEdges = [...(missionPreview.edges || []), ...(workspacePreview.edges || [])].slice(0, 6);
+
+  return `
+    <div class="harness-subsection" data-fact-graph-preview="true">
+      <div class="harness-filter-row">
+        <p class="summary-label">Fact Graph Preview</p>
+        <span class="item-meta">active ${escapeHtml(String(allPreview.summary?.activeCount || 0))} · retired ${escapeHtml(String(allPreview.summary?.retiredCount || 0))} · edges ${escapeHtml(String(allPreview.summary?.activeEdgeCount || 0))}</span>
+      </div>
+      <div class="harness-overview-grid">
+        <div class="summary-chip"><span>mission facts</span><strong>${escapeHtml(String(missionPreview.summary?.activeCount || 0))}</strong></div>
+        <div class="summary-chip"><span>workspace facts</span><strong>${escapeHtml(String(workspacePreview.summary?.activeCount || 0))}</strong></div>
+        <div class="summary-chip"><span>active edges</span><strong>${escapeHtml(String(allPreview.summary?.activeEdgeCount || 0))}</strong></div>
+      </div>
+      ${
+        activeNodes.length
+          ? `<div class="harness-list">
+              ${activeNodes
+                .map(
+                  (node) => `
+                    <div class="harness-row" data-fact-graph-node-id="${escapeHtml(node.id)}">
+                      <div>
+                        <div class="item-title">${escapeHtml(`${getDisplayLabel(node.scope, node.scope)} fact · v${node.version || 1}`)}</div>
+                        <div class="item-meta">${escapeHtml(summarizeRetrievalSnippet(node.statement, '-'))}</div>
+                        <div class="item-meta mono">${escapeHtml(node.provenance?.[0]?.sourceId || node.sourceId || '-')}</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="mini-badge status-completed">active</span>
+                        <span class="item-meta">${escapeHtml(formatDate(node.updatedAt))}</span>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>`
+          : `<div class="harness-empty-inline">
+              <strong>active fact graph node가 없습니다.</strong>
+              <p>kind=fact 메모를 추가하면 provenance가 붙은 fact node로 동기화됩니다.</p>
+            </div>`
+      }
+      ${
+        activeEdges.length
+          ? `<div class="harness-list">
+              ${activeEdges
+                .map(
+                  (edge) => `
+                    <div class="harness-row" data-fact-graph-edge-id="${escapeHtml(edge.id)}">
+                      <div>
+                        <div class="item-title">${escapeHtml(edge.relation || 'fact relation')} · weight ${escapeHtml(String(edge.weight || 0))}</div>
+                        <div class="item-meta">${escapeHtml(edge.relationReason || 'relation reason 없음')}</div>
+                        <div class="item-meta">${escapeHtml((edge.sharedTokens || []).join(', ') || 'shared token 없음')}</div>
+                        <div class="item-meta">${escapeHtml(summarizeRetrievalSnippet(edge.fromStatement, '-'))} ↔ ${escapeHtml(summarizeRetrievalSnippet(edge.toStatement, '-'))}</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="mini-badge status-running">${escapeHtml(getDisplayLabel(edge.scope, edge.scope))}</span>
+                      </div>
+                    </div>
+                  `,
+                )
+                .join('')}
+            </div>`
+          : ''
+      }
+    </div>
+  `;
 }
 
 function getRetrievalCompareStatusLabel(compare = {}) {
@@ -4079,6 +4184,14 @@ function renderAgentBlueprintBuilder() {
                   <span>결과</span>
                   <strong>${escapeHtml(blueprint.outcome || '기본 실행 제안')}</strong>
                 </div>
+                ${
+                  blueprint.recommendedProvider
+                    ? `<div class="agent-blueprint-card-detail">
+                        <span>권장 provider</span>
+                        <strong>${escapeHtml(blueprint.recommendedProvider)}</strong>
+                      </div>`
+                    : ''
+                }
                 <div class="tag-list">
                   ${renderSpecialistTagList(blueprint.specialistKinds)}
                 </div>
@@ -4129,6 +4242,11 @@ function renderAgentBlueprintBuilder() {
           </div>
           <div class="agent-blueprint-footer">
             <span class="mini-badge">${escapeHtml(selectedBlueprint?.directive || '추가 directive 없음')}</span>
+            ${
+              selectedBlueprint?.recommendedProvider
+                ? `<span class="mini-badge status-completed">${escapeHtml(`provider:${selectedBlueprint.recommendedProvider}`)}</span>`
+                : ''
+            }
             <span class="item-meta">${escapeHtml(qualityGateCopy)}</span>
           </div>
         </section>
@@ -4200,6 +4318,7 @@ function renderAgentBlueprintBuilder() {
                             <div class="agent-retrieval-meta">
                               <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
                               <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
+                              <span>${escapeHtml(item.retrievalReason || `score ${item.score ?? '-'}`)}</span>
                             </div>
                             <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
                           </div>
@@ -4482,6 +4601,17 @@ function renderDetailTabLabels() {
 }
 
 function renderHeroMetrics() {
+  const runtimeJobs = state.runtimeJobs?.jobs || {};
+  const runtimeRequests = state.runtimeRequests?.requests || {};
+  const runtimeJobMetric = [
+    'Runtime jobs',
+    `active ${Number(runtimeJobs.activeCount || 0)} · recent ${Number(runtimeJobs.recentCount || 0)}`,
+  ];
+  const runtimeRequestMetric = [
+    'Runtime requests',
+    `active ${Number(runtimeRequests.activeCount || 0)} · recent ${Number(runtimeRequests.recentCount || 0)}`,
+  ];
+
   if (!state.missionDetail) {
     elements.heroMetrics.innerHTML = `
       <div class="metric-card">
@@ -4495,6 +4625,14 @@ function renderHeroMetrics() {
       <div class="metric-card">
         <span>최근 실행</span>
         <strong>아직 실행 전</strong>
+      </div>
+      <div class="metric-card" data-runtime-request-metric="true">
+        <span>${escapeHtml(runtimeRequestMetric[0])}</span>
+        <strong>${escapeHtml(runtimeRequestMetric[1])}</strong>
+      </div>
+      <div class="metric-card" data-runtime-job-metric="true">
+        <span>${escapeHtml(runtimeJobMetric[0])}</span>
+        <strong>${escapeHtml(runtimeJobMetric[1])}</strong>
       </div>
     `;
     return;
@@ -4517,17 +4655,21 @@ function renderHeroMetrics() {
                 ? `후속 ${actionSummary.pendingActionCount}건 남음`
                 : '정리 완료',
           ],
+          runtimeRequestMetric,
+          runtimeJobMetric,
         ]
       : [
           ['현재 단계', flow.currentStepLabel],
           ['검토와 후속', `승인 ${summary.approvalCounts?.pending ?? 0}건 · 후속 ${actionSummary.pendingActionCount ?? 0}건`],
           ['최근 실행', latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '아직 실행 전'],
+          runtimeRequestMetric,
+          runtimeJobMetric,
         ];
 
   elements.heroMetrics.innerHTML = metrics
     .map(
       ([label, value]) => `
-        <div class="metric-card">
+        <div class="metric-card"${label === 'Runtime requests' ? ' data-runtime-request-metric="true"' : label === 'Runtime jobs' ? ' data-runtime-job-metric="true"' : ''}>
           <span>${escapeHtml(label)}</span>
           <strong>${escapeHtml(value)}</strong>
         </div>
@@ -4873,9 +5015,12 @@ function renderMissionSummary() {
           <div class="definition-item"><span>추가 AI</span><strong>${escapeHtml(String(aiConfig.specialistKinds.length))}개</strong></div>
           <div class="definition-item"><span>품질 게이트</span><strong>${escapeHtml(getDisplayLabel(aiConfig.qualityGate, aiConfig.qualityGate || 'none'))}</strong></div>
           <div class="definition-item"><span>필수 신호</span><strong>${escapeHtml(aiConfig.requiredKinds.length ? aiConfig.requiredKinds.map((kind) => formatSpecialistShortLabel(kind)).join(', ') : '없음')}</strong></div>
+          <div class="definition-item"><span>권장 provider</span><strong>${escapeHtml(aiConfig.recommendedProvider || '사용자 선택')}</strong></div>
+          <div class="definition-item"><span>runtime blueprint</span><strong>${escapeHtml(aiConfig.runtimeBlueprint || '-')}</strong></div>
         </div>
         <div class="tag-list">
           ${renderSpecialistTagList(aiConfig.specialistKinds)}
+          ${aiConfig.profileHarnessPatterns.map((pattern) => `<span class="tag tag-muted">${escapeHtml(pattern)}</span>`).join('')}
         </div>
         <p class="summary-note">${escapeHtml(aiConfig.profileId ? `directive · orchestration-profile:${aiConfig.profileId}` : '별도 specialist directive 없이 core 4-agent 흐름으로 실행됩니다.')}</p>
       </section>
@@ -5573,7 +5718,7 @@ function renderOutputCloseout() {
       detail: releaseSummary.ready
         ? 'execution v1 closeout checklist가 현재 HEAD 기준으로 닫혀 있습니다.'
         : releaseSummary.baselineReady
-          ? 'verified snapshot 기준 필수 closeout은 닫혀 있고, current surface evidence만 새 HEAD 기준으로 다시 맞추면 됩니다.'
+          ? 'verified snapshot 기준 필수 closeout은 닫혀 있고, current surface evidence/closeout/handoff만 새 HEAD 기준으로 다시 맞추면 됩니다.'
           : releaseSummary.checklistOpen
             ? `열린 체크리스트 ${releaseSummary.checklistOpen}건 · 환경 gap ${releaseSummary.blockedItems || 0}건`
             : 'execution v1 closeout 상태를 다시 확인해야 합니다.',
@@ -6077,6 +6222,7 @@ function renderHarnessPanel() {
       <strong>레이어드 메모리</strong>
       <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
     </div>
+    ${renderFactGraphPreview(memory)}
     ${
       activeRetrievalSourceFocus?.type === 'memory'
         ? `<div class="harness-callout">
@@ -6131,6 +6277,7 @@ function renderHarnessPanel() {
                       <div class="agent-retrieval-meta">
                         <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
                         <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
+                        <span>${escapeHtml(item.retrievalReason || `score ${item.score ?? '-'}`)}</span>
                       </div>
                       <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
                     </div>
@@ -6369,22 +6516,61 @@ function renderReleaseStatus() {
   const summary = release.summary || {};
   const closeout = release.closeout || {};
   const evidence = release.evidence || {};
+  const handoff = release.handoff || {};
   const values = release.values || {};
   const checklist = release.checklist || [];
   const gaps = release.gaps || [];
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const handoffArtifacts = release.handoffArtifacts || [];
+  const deterministicRuntime = Array.isArray(release.deterministicRuntime) ? release.deterministicRuntime : [];
   const releaseActionHistory = release.releaseActionHistory || [];
   const recommendedActions = release.recommendedActions || [];
+  const runtimeJobs = release.runtimeJobs || {};
+  const activeRuntimeJobs = Array.isArray(runtimeJobs.active) ? runtimeJobs.active.slice(0, 5) : [];
+  const recentRuntimeJobs = Array.isArray(runtimeJobs.recent) ? runtimeJobs.recent.slice(0, 5) : [];
+  const visibleRuntimeJobs = [
+    ...activeRuntimeJobs.map((item) => ({ bucket: 'active', item })),
+    ...recentRuntimeJobs.map((item) => ({ bucket: 'recent', item })),
+  ].slice(0, 8);
   const refreshPlan = release.refreshPlan || null;
   const liveRefreshPreflight = state.releaseLiveRefreshPreflight || null;
   const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
   const releaseSnapshotPreflight = state.releaseSnapshotPreflight || null;
+  const releaseAllPreflight = state.releaseAllPreflight || null;
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
   const focusedProvider = String(state.releaseFocusedProvider || '').trim();
+  const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
+  const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
+  const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
+  const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
+  const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
+  const coreDeterministicPassed = summary.coreDeterministicPassed ?? summary.deterministicPassed ?? 0;
+  const coreDeterministicTotal = summary.coreDeterministicTotal ?? summary.deterministicTotal ?? 0;
+  const referenceAdoptionPassed = Number(summary.referenceAdoptionPassed || 0);
+  const referenceAdoptionTotal = Number(summary.referenceAdoptionTotal || 0);
+  const referenceAdoptionLabel = referenceAdoptionTotal > 0
+    ? `${referenceAdoptionPassed}/${referenceAdoptionTotal} passed`
+    : 'not tracked';
+  const referenceAdoptionAggregate = release.referenceAdoptionAggregate || {};
+  const referenceAdoptionAggregateScripts = Array.isArray(referenceAdoptionAggregate.scripts)
+    ? referenceAdoptionAggregate.scripts
+    : [];
+  const referenceAdoptionAggregateScriptCount = Number(
+    summary.referenceAdoptionAggregateScriptCount || referenceAdoptionAggregate.scriptCount || referenceAdoptionAggregateScripts.length || 0,
+  );
+  const executionV1HelperPassed = Number(summary.executionV1HelperPassed || 0);
+  const executionV1HelperTotal = Number(summary.executionV1HelperTotal || 0);
+  const executionV1HelperLabel = executionV1HelperTotal > 0
+    ? `${executionV1HelperPassed}/${executionV1HelperTotal} passed`
+    : 'not tracked';
+  const executionV1HandoffPassed = Number(summary.executionV1HandoffPassed || 0);
+  const executionV1HandoffTotal = Number(summary.executionV1HandoffTotal || 0);
+  const executionV1HandoffLabel = executionV1HandoffTotal > 0
+    ? `${executionV1HandoffPassed}/${executionV1HandoffTotal} passed`
+    : 'not tracked';
   const focusedProviderEntry = providerReadiness.find((item) => String(item.provider || '').trim() === focusedProvider) || null;
   const focusedProviderPreflight = focusedProviderEntry
     ? state.releasePreflightResults?.[focusedProviderEntry.provider] || null
@@ -6412,11 +6598,6 @@ function renderReleaseStatus() {
         ...providerReadiness.filter((item) => String(item.provider || '').trim() !== focusedProvider),
       ]
     : providerReadiness;
-  const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
-  const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
-  const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
-  const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
-  const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -6488,22 +6669,46 @@ function renderReleaseStatus() {
           : 'execution v1 closeout 미완료';
   const releaseCopy = summary.ready
     ? (release.artifactState === 'local-current'
-      ? '현재 HEAD 기준 evidence/closeout가 로컬에서 갱신되었습니다. 커밋되지 않았지만 근거 문서는 최신입니다.'
+      ? '현재 HEAD 기준 evidence/closeout/handoff가 로컬에서 갱신되었습니다. 커밋되지 않았지만 근거 문서는 최신입니다.'
       : 'deterministic 검증과 closeout checklist가 모두 닫혔습니다.')
     : baseline?.ready && release.stale
-      ? '마지막 verified snapshot 기준 필수 closeout은 이미 닫혔습니다. 현재 화면의 evidence/closeout는 최신 HEAD와 어긋나 있어 current surface만 다시 생성하면 됩니다.'
+      ? '마지막 verified snapshot 기준 필수 closeout은 이미 닫혔습니다. 현재 화면의 evidence/closeout/handoff는 최신 HEAD와 어긋나 있어 current surface만 다시 생성하면 됩니다.'
       : baseline?.ready
-        ? 'verified snapshot 기준 release baseline은 준비되어 있습니다. current surface evidence를 다시 만들면 현재 HEAD 기준 closeout 상태도 맞출 수 있습니다.'
+        ? 'verified snapshot 기준 release baseline은 준비되어 있습니다. current surface evidence/closeout/handoff를 다시 만들면 현재 HEAD 기준 closeout 상태도 맞출 수 있습니다.'
         : release.stale
-          ? '현재 HEAD와 evidence/closeout 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
+          ? '현재 HEAD와 evidence/closeout/handoff 문서 상태가 어긋나 있습니다. rerun 또는 refresh로 근거 문서를 다시 맞춰야 합니다.'
           : '남은 gap과 환경 block을 먼저 정리해야 closeout을 닫을 수 있습니다.';
+  const aggregatePreflightLabel = releaseAllPreflight
+    ? `${releaseAllPreflight.status || 'unknown'} · ready ${Number(releaseAllPreflight.readyForLiveCount || 0)} · env ${Number(releaseAllPreflight.missingEnvCount || 0)}`
+    : 'not-run';
+  const aggregatePreflightReadyLabel = releaseAllPreflight
+    ? `ready ${Number(releaseAllPreflight.readyForLiveCount || 0)}`
+    : 'ready not tracked';
+  const aggregatePreflightMissingEnvLabel = releaseAllPreflight
+    ? `missing env ${Number(releaseAllPreflight.missingEnvCount || 0)}`
+    : 'missing env not tracked';
+  const aggregatePreflightBlockedLabel = releaseAllPreflight
+    ? `blocked ${Number(releaseAllPreflight.blockedCount || 0)}`
+    : 'blocked not tracked';
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
       <section class="release-summary-grid">
         <div class="summary-chip">
           <span>deterministic smoke</span>
-          <strong>${escapeHtml(`${summary.deterministicPassed || 0}/${summary.deterministicTotal || 0} passed`)}</strong>
+          <strong>${escapeHtml(`${coreDeterministicPassed}/${coreDeterministicTotal} passed`)}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>reference gate</span>
+          <strong>${escapeHtml(referenceAdoptionLabel)}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>live helper</span>
+          <strong>${escapeHtml(executionV1HelperLabel)}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>handoff generator</span>
+          <strong>${escapeHtml(executionV1HandoffLabel)}</strong>
         </div>
         <div class="summary-chip">
           <span>열린 체크리스트</span>
@@ -6524,6 +6729,10 @@ function renderReleaseStatus() {
         <div class="summary-chip">
           <span>evidence 상태</span>
           <strong>${escapeHtml(artifactStateLabel)}</strong>
+        </div>
+        <div class="summary-chip" data-release-runtime-job-metric="true">
+          <span>runtime jobs</span>
+          <strong>${escapeHtml(`active ${Number(runtimeJobs.activeCount || 0)} · recent ${Number(runtimeJobs.recentCount || 0)}`)}</strong>
         </div>
         <div class="summary-chip">
           <span>최종 갱신</span>
@@ -6575,7 +6784,7 @@ function renderReleaseStatus() {
           ${regenerationConfirmArmed
             ? `
                 <div class="release-stale-note">
-                  <div class="release-stale-line">${escapeHtml(releaseRefreshPreflight?.summary || '재생성 확인이 활성화되었습니다. 이 작업은 current surface evidence와 closeout를 다시 쓰고, deterministic verification을 다시 실행합니다.')}</div>
+                  <div class="release-stale-line">${escapeHtml(releaseRefreshPreflight?.summary || '재생성 확인이 활성화되었습니다. 이 작업은 current surface evidence, closeout, handoff를 다시 쓰고, deterministic verification을 다시 실행합니다.')}</div>
                   <div class="release-stale-line">실행하려면 아래의 재생성 확인을 누르고, 취소하려면 현재 재생성 취소를 선택하세요.</div>
                   ${(releaseRefreshPreflight?.notes || [])
                     .map((item) => `<div class="release-stale-line">${escapeHtml(item)}</div>`)
@@ -6597,6 +6806,8 @@ function renderReleaseStatus() {
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status">상태 다시 읽기</button>
+          <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all">전체 preflight 실행</button>
+          <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all">전체 preflight 명령 복사</button>
           <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
           ${regenerationConfirmArmed
             ? '<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface">현재 재생성 취소</button>'
@@ -6607,6 +6818,112 @@ function renderReleaseStatus() {
             : ''}
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
+        </div>
+      </section>
+
+      <section class="surface" data-release-deterministic-runtime="true">
+        <div class="mini-head">
+          <div>
+            <p class="section-kicker">Deterministic Runtime Summary</p>
+            <h4>smoke 실행 시간과 출력 크기</h4>
+          </div>
+          <div class="release-meta release-meta-secondary">
+            <span class="item-meta">${escapeHtml(String(deterministicRuntime.length))} checks</span>
+          </div>
+        </div>
+        <div class="release-current-status">
+          ${deterministicRuntime.length
+            ? deterministicRuntime
+              .map(
+                (item) => `
+                  <div class="harness-row" data-release-deterministic-runtime-row="${escapeHtml(item.script || '')}">
+                    <div>
+                      <div class="item-title">${escapeHtml(item.script || 'unknown smoke')}</div>
+                      <div class="item-meta">${escapeHtml(item.summary || 'runtime summary unavailable')}</div>
+                    </div>
+                    <div class="harness-row-meta">
+                      <span class="mini-badge status-running">${escapeHtml(item.elapsed || 'n/a')}</span>
+                      <span class="item-meta">stdout ${escapeHtml(item.stdout || 'n/a')}</span>
+                      <span class="item-meta">stderr ${escapeHtml(item.stderr || 'n/a')}</span>
+                      <span class="item-meta">timeout ${escapeHtml(item.timeout || 'n/a')}</span>
+                    </div>
+                  </div>
+                `,
+              )
+              .join('')
+            : `
+                <article class="release-snapshot-card is-empty">
+                  <div class="item-title">deterministic runtime summary가 없습니다.</div>
+                  <p class="item-meta">archived live proof를 유지하려면 기존 evidence를 재사용하고, provider proof를 갱신할 때만 selected live evidence command를 실행하세요.</p>
+                </article>
+              `}
+        </div>
+      </section>
+
+      <section class="surface" data-release-reference-adoption-aggregate="true">
+        <div class="mini-head">
+          <div>
+            <p class="section-kicker">Reference Adoption Aggregate</p>
+            <h4>외부 레퍼런스 채택 회귀 게이트</h4>
+          </div>
+          <div class="release-meta release-meta-secondary">
+            <span class="item-meta">${escapeHtml(String(referenceAdoptionAggregateScriptCount))} scripts</span>
+            <span class="item-meta">${escapeHtml(referenceAdoptionAggregate.totalDuration || 'duration n/a')}</span>
+          </div>
+        </div>
+        <div class="release-current-status">
+          ${referenceAdoptionAggregateScripts.length
+            ? referenceAdoptionAggregateScripts
+              .map(
+                (item) => `
+                  <div class="harness-row" data-release-reference-adoption-row="${escapeHtml(item.script || '')}">
+                    <div>
+                      <div class="item-title">${escapeHtml(item.script || 'unknown reference smoke')}</div>
+                      <div class="item-meta">borrowed-pattern regression coverage</div>
+                    </div>
+                    <div class="harness-row-meta">
+                      <span class="mini-badge ${item.status === 'passed' ? 'status-completed' : 'status-failed'}">${escapeHtml(item.status || 'unknown')}</span>
+                      <span class="item-meta">${escapeHtml(item.duration || 'duration n/a')}</span>
+                      ${item.timeout ? `<span class="item-meta">timeout ${escapeHtml(item.timeout)}</span>` : ''}
+                      ${typeof item.timedOut === 'boolean'
+                        ? `<span class="item-meta">timedOut ${escapeHtml(String(item.timedOut))}</span>`
+                        : ''}
+                    </div>
+                  </div>
+                `,
+              )
+              .join('')
+            : `
+                <article class="release-snapshot-card is-empty">
+                  <div class="item-title">reference adoption aggregate details가 없습니다.</div>
+                  <p class="item-meta">archived live proof를 유지하려면 기존 evidence를 재사용하고, provider proof를 갱신할 때만 selected live evidence command를 실행하세요.</p>
+                </article>
+              `}
+        </div>
+      </section>
+
+      <section class="surface" data-release-runtime-job-list="true">
+        <div class="mini-head">
+          <div>
+            <p class="section-kicker">Runtime Job History</p>
+            <h4>active/recent release runtime jobs</h4>
+          </div>
+          <div class="release-meta release-meta-secondary">
+            <span class="item-meta">active ${escapeHtml(String(activeRuntimeJobs.length))}</span>
+            <span class="item-meta">recent ${escapeHtml(String(runtimeJobs.recentCount || recentRuntimeJobs.length))}</span>
+          </div>
+        </div>
+        <div class="release-history-list">
+          ${visibleRuntimeJobs.length
+            ? visibleRuntimeJobs
+              .map(({ bucket, item }) => renderReleaseRuntimeJobCard(item, bucket))
+              .join('')
+            : `
+                <article class="release-snapshot-card is-empty">
+                  <div class="item-title">최근 runtime job 기록이 없습니다.</div>
+                  <p class="item-meta">current surface 재생성 또는 release snapshot 고정을 실행하면 job id, request id, duration, status가 여기에 표시됩니다.</p>
+                </article>
+              `}
         </div>
       </section>
 
@@ -7103,7 +7420,7 @@ function renderReleaseStatus() {
                     </article>
                   `}
             </div>
-            ${focusedProvider
+          ${focusedProvider
               ? `
                   <div class="harness-callout release-provider-focus-callout">
                     <strong>현재 포커스된 provider readiness 카드</strong>
@@ -7152,7 +7469,7 @@ function renderReleaseStatus() {
                             <button class="ghost-button" type="button" data-ui-action="run-release-preflight" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}">preflight 실행</button>
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} preflight 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`)}">preflight 명령 복사</button>
                             <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.ready ? focusedProviderEntry.command : `export ${focusedProviderEntry.envKey}=\"...\" && ${focusedProviderEntry.command}`)}">live 명령 복사</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight))}">live 명령 복사</button>
                           `
                         : ''}
                       ${focusedProviderLatestAction
@@ -7178,6 +7495,20 @@ function renderReleaseStatus() {
                   </div>
                 `
               : ''}
+            <div class="harness-callout release-provider-focus-callout">
+              <strong>전체 provider preflight</strong>
+              <p>OpenAI, Anthropic, local, Hermes live validation prerequisites를 한 번에 확인합니다. 현재 결과: ${escapeHtml(aggregatePreflightLabel)}</p>
+              <div class="release-history-filter-chips">
+                <span class="mini-badge ${getReleaseStatusBadge(releaseAllPreflight?.status || 'not-run')}">${escapeHtml(releaseAllPreflight?.status || 'not-run')}</span>
+                <span class="mini-badge status-running">${escapeHtml(aggregatePreflightReadyLabel)}</span>
+                <span class="mini-badge ${releaseAllPreflight ? 'status-failed' : 'status-running'}">${escapeHtml(aggregatePreflightMissingEnvLabel)}</span>
+                <span class="mini-badge ${releaseAllPreflight?.blockedCount ? 'status-failed' : 'status-completed'}">${escapeHtml(aggregatePreflightBlockedLabel)}</span>
+              </div>
+              <div class="release-history-focus-actions">
+                <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all">전체 preflight 실행</button>
+                <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all">전체 preflight 명령 복사</button>
+              </div>
+            </div>
             <div class="release-provider-grid">
               ${orderedProviderReadiness
                 .map(
@@ -7187,6 +7518,7 @@ function renderReleaseStatus() {
                       const liveConfirmArmed = liveConfirmProvider === item.provider;
                       const isFocusedProvider = focusedProvider === item.provider;
                       const preflightStatus = preflight?.status || 'not-run';
+                      const liveCommand = getProviderLiveCommand(item, preflight);
                       const preflightSummary = preflight
                         ? preflight.status === 'ready-for-live-validation'
                           ? `preflight 통과 · ${preflight.checks?.length || 0}개 smoke passed`
@@ -7232,7 +7564,7 @@ function renderReleaseStatus() {
                           type="button"
                           data-ui-action="copy-release-command"
                           data-ui-label="${escapeHtml(`${item.label} live 명령`)}"
-                          data-ui-value="${escapeHtml(item.ready ? item.command : `export ${item.envKey}=\"...\" && ${item.command}`)}"
+                          data-ui-value="${escapeHtml(liveCommand)}"
                         >live 명령 복사</button>
                         <button
                           class="ghost-button"
@@ -7256,7 +7588,7 @@ function renderReleaseStatus() {
                             `
                           : ''}
                       </div>
-                      <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다.`)}</p>
+                      <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${liveCommand}`)}</p>
                       <p class="item-meta">${escapeHtml(preflightSummary)}</p>
                       ${liveConfirmArmed && liveRefreshPreflight
                         ? `
@@ -7315,7 +7647,7 @@ function renderReleaseStatus() {
                 `
               : ''}
             <div class="release-stale-note">
-              <div class="release-stale-line">${escapeHtml(snapshotEligibility.allowed ? 'current HEAD 기준 evidence/closeout가 fresh해서 snapshot을 바로 고정할 수 있습니다.' : snapshotEligibility.reason || '현재 상태에서는 snapshot을 고정할 수 없습니다.')}</div>
+              <div class="release-stale-line">${escapeHtml(snapshotEligibility.allowed ? 'current HEAD 기준 evidence/closeout/handoff가 fresh해서 snapshot을 바로 고정할 수 있습니다.' : snapshotEligibility.reason || '현재 상태에서는 snapshot을 고정할 수 없습니다.')}</div>
             </div>
             ${snapshot
               ? `
@@ -7350,13 +7682,19 @@ function renderReleaseStatus() {
                           <div class="item-meta mono">${escapeHtml(snapshot.closeoutPath || '-')}</div>
                         </div>
                       </div>
+                      <div class="harness-row">
+                        <div>
+                          <div class="item-title">snapshot handoff</div>
+                          <div class="item-meta mono">${escapeHtml(snapshot.handoffPath || '-')}</div>
+                        </div>
+                      </div>
                     </div>
                   </article>
                 `
               : `
                   <article class="release-snapshot-card is-empty">
                     <div class="item-title">Release snapshot이 아직 없습니다.</div>
-                    <p class="item-meta">상태 다시 읽기는 read-only reload이고, current surface evidence를 다시 만들려면 위의 current surface 재생성 또는 provider별 live validation을 실행하면 됩니다.</p>
+                    <p class="item-meta">상태 다시 읽기는 read-only reload이고, current surface evidence/closeout/handoff를 다시 만들려면 위의 current surface 재생성 또는 provider별 live validation을 실행하면 됩니다.</p>
                   </article>
                 `}
             <div class="release-live-list">
@@ -7778,6 +8116,13 @@ function renderReleaseStatus() {
                 </div>
                 ${markdownToHtml(evidence.markdown || '문서가 없습니다.')}
               </article>
+              <article class="release-doc-surface markdown-surface" data-release-doc-kind="handoff">
+                <div class="release-doc-head">
+                  <strong>handoff</strong>
+                  <span class="item-meta mono">${escapeHtml(handoff.path || '-')}</span>
+                </div>
+                ${markdownToHtml(handoff.markdown || '문서가 없습니다.')}
+              </article>
             </div>
           </div>
         </section>
@@ -7792,6 +8137,11 @@ function renderReleaseStatus() {
         return;
       }
       await runReleasePreflight(provider);
+    });
+  });
+  elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight-all"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await runReleasePreflightAll();
     });
   });
   elements.releaseStatus.querySelectorAll('[data-ui-action="refresh-release-status-live"]').forEach((button) => {
@@ -8895,6 +9245,16 @@ async function loadProviders() {
   renderProviders();
 }
 
+async function loadRuntimeRequests() {
+  state.runtimeRequests = await api('/api/runtime/requests');
+  renderHeroMetrics();
+}
+
+async function loadRuntimeJobs() {
+  state.runtimeJobs = await api('/api/runtime/jobs');
+  renderHeroMetrics();
+}
+
 async function loadApprovals() {
   const payload = await api('/api/approvals');
   state.approvals = payload.items || [];
@@ -9033,6 +9393,7 @@ async function armReleaseRegenerationConfirm() {
     const payload = await api('/api/execution-v1/refresh/preflight', {
       body: JSON.stringify({
         liveAnthropic: false,
+        liveHermes: false,
         liveLocal: false,
         liveOpenAI: false,
       }),
@@ -9073,13 +9434,14 @@ async function refreshReleaseStatusWithOptions(
     setUiNotice(
       isLiveRun
         ? `${normalizedLiveMode} live validation과 current surface를 갱신 중입니다.`
-        : 'current surface evidence/closeout를 재생성 중입니다.',
+        : 'current surface evidence/closeout/handoff를 재생성 중입니다.',
     );
     const payload = await api('/api/execution-v1/refresh', {
       body: JSON.stringify({
         confirmCurrentSurfaceRewrite,
         confirmLiveValidation,
         liveAnthropic: normalizedLiveMode === 'anthropic',
+        liveHermes: normalizedLiveMode === 'hermes',
         liveLocal: normalizedLiveMode === 'local',
         liveOpenAI: normalizedLiveMode === 'openai',
       }),
@@ -9093,7 +9455,7 @@ async function refreshReleaseStatusWithOptions(
     setUiNotice(
       isLiveRun
         ? `${normalizedLiveMode} live validation 결과로 current surface를 갱신했습니다.`
-        : 'current surface evidence/closeout를 재생성했습니다.',
+        : 'current surface evidence/closeout/handoff를 재생성했습니다.',
     );
   } catch (error) {
     window.alert(
@@ -9131,6 +9493,39 @@ async function runReleasePreflight(provider = '') {
   }
 }
 
+async function runReleasePreflightAll() {
+  try {
+    setUiNotice('전체 provider preflight를 실행 중입니다.');
+    const payload = await api('/api/execution-v1/preflight', {
+      body: JSON.stringify({
+        provider: 'all',
+      }),
+      method: 'POST',
+    });
+    const aggregatePreflight = payload.preflight || null;
+    const providerResults = Array.isArray(aggregatePreflight?.providers)
+      ? aggregatePreflight.providers
+      : [];
+    const nextPreflightResults = { ...state.releasePreflightResults };
+    for (const providerPreflight of providerResults) {
+      const provider = String(providerPreflight?.provider || '').trim();
+      if (provider) {
+        nextPreflightResults[provider] = providerPreflight;
+      }
+    }
+    state.releaseAllPreflight = aggregatePreflight;
+    state.releasePreflightResults = nextPreflightResults;
+    renderReleaseStatus();
+    renderDetailContextbar();
+    setActiveDetailTab('release', { urlMode: 'push' });
+    setUiNotice(
+      `전체 provider preflight 완료: ${aggregatePreflight?.status || 'unknown'} · missing env ${Number(aggregatePreflight?.missingEnvCount || 0)}`,
+    );
+  } catch (error) {
+    window.alert(error.message || '전체 provider preflight 실행에 실패했습니다.');
+  }
+}
+
 async function armReleaseLiveConfirm(provider = '') {
   try {
     const normalizedProvider = String(provider || '').trim();
@@ -9141,6 +9536,7 @@ async function armReleaseLiveConfirm(provider = '') {
     const payload = await api('/api/execution-v1/refresh/preflight', {
       body: JSON.stringify({
         liveAnthropic: normalizedProvider === 'anthropic',
+        liveHermes: normalizedProvider === 'hermes',
         liveLocal: normalizedProvider === 'local',
         liveOpenAI: normalizedProvider === 'openai',
       }),
@@ -9768,18 +10164,42 @@ async function readTextFile(file) {
   });
 }
 
+async function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('선택한 파일을 읽을 수 없습니다.'));
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      resolve(result.includes(',') ? result.split(',').pop() : result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function readMissionAttachmentFiles(fileList) {
   const files = Array.from(fileList || []);
   const attachments = [];
 
   for (const file of files) {
-    const content = await readTextFile(file);
-    attachments.push({
-      content,
+    const baseAttachment = {
       fileName: file.name,
-      mimeType: file.type || 'text/plain',
+      mimeType: file.type || 'application/octet-stream',
       source: 'ui',
-    });
+    };
+
+    if (isTextMissionAttachmentFile(file)) {
+      attachments.push({
+        ...baseAttachment,
+        content: await readTextFile(file),
+        mimeType: file.type || 'text/plain',
+      });
+    } else {
+      attachments.push({
+        ...baseAttachment,
+        contentBase64: await readFileAsBase64(file),
+        contentEncoding: 'base64',
+      });
+    }
   }
 
   return attachments;
@@ -9982,7 +10402,7 @@ async function bootstrap() {
   setActiveStep('step-setup', { syncUrl: false });
 
   try {
-    await Promise.all([loadWorkspaces(), loadProviders(), loadApprovals(), loadMissions(), loadReleaseStatus()]);
+    await Promise.all([loadWorkspaces(), loadProviders(), loadRuntimeRequests(), loadRuntimeJobs(), loadApprovals(), loadMissions(), loadReleaseStatus()]);
     await restoreUiStateFromUrl();
   } catch (error) {
     window.alert(error.message);

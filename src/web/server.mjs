@@ -1,27 +1,118 @@
 import { spawnSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  convertMissionAttachmentFile,
+  getDocumentConversionCapabilities,
+} from '../core/document-conversion-service.mjs';
 import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { resolveRootDir } from '../core/root.mjs';
+import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
+import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
+import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const rootDir = resolveRootDir();
+const codeRootDir = process.cwd();
 const publicDir = path.join(__dirname, 'public');
-const evidenceScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-evidence.mjs');
-const closeoutScriptPath = path.join(rootDir, 'scripts', 'build-execution-v1-closeout.mjs');
-const preflightScriptPath = path.join(rootDir, 'scripts', 'preflight-execution-v1-live.mjs');
-const snapshotScriptPath = path.join(rootDir, 'scripts', 'archive-execution-v1-snapshot.mjs');
+const evidenceScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-evidence.mjs');
+const closeoutScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-closeout.mjs');
+const handoffScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-handoff.mjs');
+const preflightAllScriptPath = path.join(codeRootDir, 'scripts', 'preflight-execution-v1-all.mjs');
+const preflightScriptPath = path.join(codeRootDir, 'scripts', 'preflight-execution-v1-live.mjs');
+const snapshotScriptPath = path.join(codeRootDir, 'scripts', 'archive-execution-v1-snapshot.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
+const handoffDocPath = path.join(rootDir, 'docs', 'execution-v1-handoff.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
+const releaseHandoffStableLineCopyBaseKey =
+  'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
+
+function capitalizeReleaseHandoffSummaryKey(value) {
+  return `${value[0].toUpperCase()}${value.slice(1)}`;
+}
+
+function buildReleaseHandoffStableLineCopyKey(totalLineCopyCount) {
+  return `${releaseHandoffStableLineCopyBaseKey}${'LineCopy'.repeat(totalLineCopyCount - 5)}`;
+}
+
+function buildReleaseHandoffSummaryVerificationReportKey(summaryKey) {
+  return `releaseHandoff${capitalizeReleaseHandoffSummaryKey(summaryKey)}VerificationSummary`;
+}
+
+function buildReleaseHandoffSummaryArtifactPrefix(summaryKey) {
+  return `releaseHandoff${capitalizeReleaseHandoffSummaryKey(summaryKey)}`;
+}
+
+function parseReleaseHandoffSummaryArtifactKey(key) {
+  const match = String(key || '').match(
+    /^releaseHandoff(.+?)(ExactMatchCount|OverviewLine|StableDigestSha256|TotalArtifacts|TotalChecks|VerificationSummary)$/,
+  );
+  if (!match || !match[1].startsWith('SummaryStableLineCopy')) {
+    return '';
+  }
+  return `${match[1][0].toLowerCase()}${match[1].slice(1)}`;
+}
+
+function getReleaseHandoffStableSummaryKeys(summaryArtifact = {}, structuredSummary = {}) {
+  return [...new Set([
+      ...Object.keys(structuredSummary || {}).filter((key) => key.startsWith('summaryStableLineCopy')),
+      ...Object.keys(summaryArtifact || {})
+        .map((key) => parseReleaseHandoffSummaryArtifactKey(key))
+        .filter(Boolean),
+    ])].sort((left, right) => left.length - right.length || left.localeCompare(right));
+}
+
+function buildReleaseHandoffSummaryArtifactFallback(summaryArtifact = {}, summaryKey = '') {
+  const prefix = buildReleaseHandoffSummaryArtifactPrefix(summaryKey);
+  const verificationSummary = summaryArtifact[`${prefix}VerificationSummary`];
+  const promotedReport = summaryArtifact[buildReleaseHandoffSummaryVerificationReportKey(summaryKey)];
+  const stableLines = Array.isArray(verificationSummary?.stableLines)
+    ? verificationSummary.stableLines
+    : Array.isArray(promotedReport?.stableLines)
+      ? promotedReport.stableLines
+      : [];
+  const exactMatchCount = Number(
+    summaryArtifact[`${prefix}ExactMatchCount`] ?? promotedReport?.exactMatchCount ?? 0,
+  );
+  return {
+    exactMatchCount,
+    errorFreeSessions: exactMatchCount,
+    overviewLine: String(summaryArtifact[`${prefix}OverviewLine`] ?? promotedReport?.overviewLine ?? '').trim(),
+    stableDigestSha256: String(
+      summaryArtifact[`${prefix}StableDigestSha256`] ?? promotedReport?.stableSha256 ?? '',
+    ).trim(),
+    stableLineCount: stableLines.length,
+    stableLines,
+    totalSessions: Number(
+      summaryArtifact[`${prefix}TotalChecks`]
+        ?? summaryArtifact[`${prefix}TotalArtifacts`]
+        ?? promotedReport?.totalChecks
+        ?? 0,
+    ),
+  };
+}
+
+function resolveReleaseHandoffSummaryArtifactPath(spec = {}) {
+  if (!String(spec.id || '').startsWith('handoff-')) {
+    return '';
+  }
+  if (spec.format === 'json') {
+    return spec.path;
+  }
+  return String(spec.path || '').replace(/\.(md|markdown|txt)$/i, '.json');
+}
+
 const executionV1ReleaseHandoffArtifactSpecs = [
   {
     description: '브라우저 E2E 메인 report',
@@ -39,6 +130,15 @@ const executionV1ReleaseHandoffArtifactSpecs = [
     kind: 'screenshot',
     label: 'browser-e2e.png',
     path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-browser-e2e.png'),
+    recommended: false,
+  },
+  {
+    description: 'browser visual evidence manifest',
+    format: 'json',
+    id: 'visual-evidence-manifest-json',
+    kind: 'visual-evidence-manifest',
+    label: 'visual-evidence-manifest.json',
+    path: path.join(executionV1ReleaseArtifactRoot, 'execution-v1-visual-evidence-manifest.json'),
     recommended: false,
   },
   {
@@ -206,29 +306,125 @@ const executionV1ReleaseHandoffArtifactSpecs = [
 ];
 const liveValidationProviders = [
   {
-    command: 'npm run evidence:execution-v1 -- --live-openai',
+    command: 'npm run live:execution-v1:openai',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-openai',
     envKey: 'OPENAI_API_KEY',
     label: 'OpenAI',
     provider: 'openai',
   },
   {
-    command: 'npm run evidence:execution-v1 -- --live-anthropic',
+    command: 'npm run live:execution-v1:anthropic',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-anthropic',
     envKey: 'ANTHROPIC_API_KEY',
     label: 'Anthropic',
     provider: 'anthropic',
   },
   {
-    command: 'npm run evidence:execution-v1 -- --live-local',
+    command: 'npm run live:execution-v1:local',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-local',
     envKey: 'LOCAL_PROVIDER_BASE_URL',
     label: 'Local provider',
     provider: 'local',
   },
+  {
+    command: 'npm run live:execution-v1:hermes',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-hermes',
+    envKey: 'HERMES_PROVIDER_MODEL',
+    label: 'Hermes',
+    provider: 'hermes',
+  },
 ];
 const host = String(process.env.PERSONAL_AI_AGENT_UI_HOST || '127.0.0.1').trim() || '127.0.0.1';
-const port = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
+const requestedPort = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
+let activePort = requestedPort;
+const serverDiscoveryPath = path.join(rootDir, 'var', 'server.json');
+const runtimeJobRegistry = createRuntimeJobRegistry({ rootDir });
+const runtimeRequestRegistry = createRuntimeRequestRegistry({ rootDir });
+const runtimeStatus = createRuntimeStatusService({ rootDir });
 
 const store = createStore({ rootDir });
 const service = createMissionService({ store, rootDir });
+const recoveredRuntimeJobs = runtimeJobRegistry.recoverStaleActiveJobs({
+  reason: 'web-ui-start',
+});
+const recoveredRuntimeRequests = runtimeRequestRegistry.recoverStaleActiveRequests({
+  reason: 'web-ui-start',
+});
+
+function normalizeRequestId(value) {
+  const rawValue = Array.isArray(value) ? value[0] : value;
+  return typeof rawValue === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(rawValue)
+    ? rawValue
+    : `req_${randomUUID()}`;
+}
+
+function writeServerDiscovery({ actualPort, fallback = false }) {
+  const url = `http://${host}:${actualPort}`;
+  fs.mkdirSync(path.dirname(serverDiscoveryPath), { recursive: true });
+  fs.writeFileSync(
+    serverDiscoveryPath,
+    `${JSON.stringify(
+      {
+        actualPort,
+        fallback,
+        host,
+        pid: process.pid,
+        requestedPort,
+        rootDir,
+        runtimeJobRegistryPath: runtimeJobRegistry.registryPath,
+        runtimeRequestRegistryPath: runtimeRequestRegistry.registryPath,
+        staleRuntimeJobCount: recoveredRuntimeJobs.recoveredCount,
+        staleRuntimeRequestCount: recoveredRuntimeRequests.recoveredCount,
+        runtimeStatusPath: runtimeStatus.statusPath,
+        startedAt: new Date().toISOString(),
+        status: 'listening',
+        url,
+      },
+      null,
+      2,
+    )}\n`,
+    'utf8',
+  );
+  return url;
+}
+
+runtimeStatus.startRuntime({
+  discoveryPath: serverDiscoveryPath,
+  host,
+  kind: 'web-ui',
+  requestedPort,
+  rootPath: rootDir,
+});
+
+function getRequestPath(request) {
+  return String(request.url || '').split('?')[0] || '/';
+}
+
+function startRuntimeRequest(request, response, url) {
+  const startedAt = new Date().toISOString();
+  const startedAtMs = Date.now();
+  runtimeRequestRegistry.startRequest({
+    id: request.id,
+    method: request.method || 'GET',
+    path: url?.pathname || getRequestPath(request),
+    startedAt,
+    startedAtMs,
+  });
+
+  response.once('finish', () => {
+    runtimeRequestRegistry.finishRequest(request.id, {
+      statusCode: response.statusCode,
+    });
+  });
+}
+
+function summarizeRuntimeRequests() {
+  return runtimeRequestRegistry.summarize();
+}
+
+function summarizeRuntimeJobs() {
+  return runtimeJobRegistry.summarize();
+}
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -314,22 +510,16 @@ function readOptionalJsonArtifact(filePath) {
 }
 
 function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
-  const artifactId = String(spec?.id || '').trim();
-  if (!artifactId.startsWith('handoff-')) {
+  const summaryArtifactPath = resolveReleaseHandoffSummaryArtifactPath(spec);
+  if (!summaryArtifactPath || !fs.existsSync(summaryArtifactPath)) {
     return null;
   }
-  const familyId = artifactId.replace(/-(json|text|markdown)$/u, '');
-  const summaryArtifactId = `${familyId}-json`;
-  if (!summaryCache.has(summaryArtifactId)) {
-    const summarySpec = executionV1ReleaseHandoffArtifactSpecs.find((item) => item.id === summaryArtifactId);
-    summaryCache.set(summaryArtifactId, summarySpec ? readOptionalJsonArtifact(summarySpec.path) : null);
+  if (summaryCache.has(summaryArtifactPath)) {
+    return summaryCache.get(summaryArtifactPath);
   }
-  const summaryArtifact = summaryCache.get(summaryArtifactId);
-  const structuredSummary = summaryArtifact?.releaseHandoffStructuredSummary;
-  if (!structuredSummary || typeof structuredSummary !== 'object') {
-    return null;
-  }
-  const normalizeSummaryEntry = (summaryEntry = null, fallback = {}) => {
+  const summaryArtifact = readOptionalJsonArtifact(summaryArtifactPath) || {};
+  const structuredSummary = summaryArtifact.releaseHandoffStructuredSummary || {};
+  const normalizeSummaryEntry = (summaryEntry, fallback = {}) => {
     const normalizedEntry = summaryEntry && typeof summaryEntry === 'object' ? summaryEntry : {};
     const stableLines = Array.isArray(normalizedEntry.stableLines)
       ? normalizedEntry.stableLines
@@ -337,29 +527,27 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
         ? fallback.stableLines
         : [];
     return {
-      exactMatchCount: Number(
-        normalizedEntry.exactMatchCount ?? fallback.exactMatchCount ?? 0,
-      ),
+      exactMatchCount: Number(normalizedEntry.exactMatchCount ?? fallback.exactMatchCount ?? 0),
       errorFreeSessions: Number(
-        normalizedEntry.errorFreeSessions
-        ?? fallback.errorFreeSessions
-        ?? fallback.exactMatchCount
-        ?? 0,
+        normalizedEntry.errorFreeSessions ?? fallback.errorFreeSessions ?? fallback.exactMatchCount ?? 0,
       ),
       overviewLine: String(normalizedEntry.overviewLine || fallback.overviewLine || '').trim(),
-      stableDigestSha256: String(
-        normalizedEntry.stableDigestSha256 || fallback.stableDigestSha256 || '',
-      ).trim(),
-      stableLineCount: Number(
-        normalizedEntry.stableLineCount ?? fallback.stableLineCount ?? stableLines.length,
-      ),
-      stableLines: stableLines
-        .map((line) => String(line || '').trim())
-        .filter(Boolean),
+      stableDigestSha256: String(normalizedEntry.stableDigestSha256 || fallback.stableDigestSha256 || '').trim(),
+      stableLineCount: Number(normalizedEntry.stableLineCount ?? fallback.stableLineCount ?? stableLines.length),
+      stableLines: stableLines.map((line) => String(line || '').trim()).filter(Boolean),
       totalSessions: Number(normalizedEntry.totalSessions ?? fallback.totalSessions ?? 0),
     };
   };
-  return {
+  const stableSummaryEntries = Object.fromEntries(
+    getReleaseHandoffStableSummaryKeys(summaryArtifact, structuredSummary).map((summaryKey) => [
+      summaryKey,
+      normalizeSummaryEntry(
+        structuredSummary[summaryKey],
+        buildReleaseHandoffSummaryArtifactFallback(summaryArtifact, summaryKey),
+      ),
+    ]),
+  );
+  const result = {
     open: normalizeSummaryEntry(structuredSummary.open, {
       errorFreeSessions: Number(summaryArtifact.releaseHandoffOpenErrorFreeSessions || 0),
       overviewLine: '',
@@ -400,204 +588,7 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
         : [],
       totalSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyTotalChecks || 0),
     }),
-    summaryStableLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreview: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreview, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewTotalArtifacts || 0),
-    }),
-    summaryStableLineCopyPreviewBody: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBody, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyTotalArtifacts || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBody: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBody, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyTotalArtifacts || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBody, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyTotalArtifacts || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBody, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyTotalArtifacts || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
-    summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy: normalizeSummaryEntry(structuredSummary.summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopy, {
-      exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyExactMatchCount || 0),
-      overviewLine: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyOverviewLine || '').trim(),
-      stableDigestSha256: String(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyStableDigestSha256 || '').trim(),
-      stableLineCount: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines?.length || 0),
-      stableLines: Array.isArray(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary?.stableLines)
-        ? summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary.stableLines
-        : [],
-      totalSessions: Number(summaryArtifact.releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyTotalChecks || 0),
-    }),
+    ...stableSummaryEntries,
     summaryDetailCopyPreview: normalizeSummaryEntry(structuredSummary.summaryDetailCopyPreview, {
       exactMatchCount: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
       errorFreeSessions: Number(summaryArtifact.releaseHandoffSummaryDetailCopyPreviewExactMatchCount || 0),
@@ -623,6 +614,8 @@ function getExecutionV1ReleaseHandoffStructuredSummary(spec, summaryCache) {
       structuredSummary.sha256 || summaryArtifact.releaseHandoffStructuredSummarySha256 || '',
     ).trim(),
   };
+  summaryCache.set(summaryArtifactPath, result);
+  return result;
 }
 
 function buildExecutionV1ReleaseHandoffArtifacts() {
@@ -730,8 +723,64 @@ function recordReleaseAction({
   });
 }
 
+function runRuntimeJob({
+  details = null,
+  jobKind,
+  requestId = '',
+  scope = '',
+  summary = '',
+  task,
+}) {
+  const job = runtimeJobRegistry.startJob({
+    details,
+    kind: jobKind,
+    requestId,
+    scope,
+    source: 'web-ui',
+    summary,
+  });
+
+  try {
+    const result = task(job);
+    runtimeJobRegistry.finishJob(job.id, {
+      details: {
+        ...job.details,
+        result: summarizeRuntimeJobResult(result),
+      },
+      status: 'completed',
+      summary,
+    });
+    return {
+      job,
+      result,
+    };
+  } catch (error) {
+    runtimeJobRegistry.finishJob(job.id, {
+      error: error instanceof Error ? error.message : 'unknown runtime job error',
+      status: 'failed',
+      summary,
+    });
+    throw error;
+  }
+}
+
+function summarizeRuntimeJobResult(result) {
+  if (!result || typeof result !== 'object') {
+    return null;
+  }
+
+  return {
+    archiveCommit: String(result.archiveResult?.verifiedCommit || '').trim(),
+    evidencePath: String(result.evidencePath || result.evidenceResult?.outputPath || '').trim(),
+    generatedAt: String(result.generatedAt || result.closeoutResult?.generatedAt || '').trim(),
+    keyCount: Object.keys(result).length,
+    ok: Boolean(result.ok),
+    outputPath: String(result.outputPath || result.closeoutResult?.checklistPath || '').trim(),
+  };
+}
+
 function isOptionalCloseoutLabel(label) {
-  return /Anthropic live validation|Local provider live validation|local live validation/i.test(String(label || ''));
+  return /Anthropic live validation|Local provider live validation|local live validation|Hermes live validation|hermes live validation/i.test(String(label || ''));
 }
 
 function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
@@ -751,14 +800,17 @@ function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
         const evidencePath = path.join(snapshotDir, 'execution-v1-evidence.md');
         const closeoutPath = path.join(snapshotDir, 'execution-v1-closeout.md');
+        const handoffPath = path.join(snapshotDir, 'execution-v1-handoff.md');
         return {
           archivedAt: manifest.archivedAt || '',
           closeoutPath,
           evidencePath,
+          handoffPath: fs.existsSync(handoffPath) ? handoffPath : '',
           exists: true,
           matchesCurrentHead: Boolean(currentCommit && manifest.verifiedCommit === currentCommit),
           matchesGeneratedCommit: Boolean(preferredCommit && manifest.verifiedCommit === preferredCommit),
           snapshotDir,
+          sourceHandoffPath: manifest.sourceHandoffPath || '',
           verifiedCommit: manifest.verifiedCommit || entry.name,
         };
       } catch {
@@ -863,9 +915,97 @@ function extractDeterministicItems(markdown) {
   });
 }
 
+function extractDeterministicRuntimeItems(markdown) {
+  return extractSectionBullets(markdown, 'Deterministic Runtime Summary').map((line) => {
+    const match = line.match(/^(.*):\s+(.+?) elapsed, stdout (.+?), stderr (.+?), timeout (.+)$/);
+    if (!match) {
+      return {
+        script: line,
+        summary: line,
+      };
+    }
+
+    return {
+      elapsed: String(match[2] || '').trim(),
+      script: String(match[1] || '').trim(),
+      stderr: String(match[4] || '').trim(),
+      stdout: String(match[3] || '').trim(),
+      summary: String(line.slice(String(match[1] || '').length + 1) || '').trim(),
+      timeout: String(match[5] || '').trim(),
+    };
+  });
+}
+
+function isReferenceAdoptionVerification(item) {
+  return String(item?.script || '').trim() === 'smoke:reference-adoptions';
+}
+
+function isExecutionV1HelperVerification(item) {
+  return String(item?.script || '').trim() === 'smoke:execution-v1-live-helpers';
+}
+
+function isExecutionV1HandoffVerification(item) {
+  return String(item?.script || '').trim() === 'smoke:execution-v1-handoff';
+}
+
+function extractReferenceAdoptionAggregate(markdown) {
+  const lines = extractSectionBullets(markdown, 'Reference Adoption Aggregate');
+  const scriptCountLine = lines.find((line) => line.startsWith('scriptCount:'));
+  const totalDurationLine = lines.find((line) => line.startsWith('totalDuration:'));
+  const okLine = lines.find((line) => line.startsWith('ok:'));
+  const scripts = lines
+    .map((line) => {
+      const match = line.match(/^(scripts\/[^:]+):\s+(\w+)(?:\s+\(([^)]+)\))?$/);
+      if (!match) {
+        return null;
+      }
+
+      const details = parseReferenceAdoptionScriptDetails(match[3] || '');
+      return {
+        duration: details.duration,
+        script: String(match[1] || '').trim(),
+        status: String(match[2] || '').trim(),
+        timedOut: details.timedOut,
+        timeout: details.timeout,
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    ok: okLine ? okLine.split(':').slice(1).join(':').trim() === 'true' : null,
+    scriptCount: Number.parseInt(String(scriptCountLine || '').split(':').slice(1).join(':').trim(), 10) || scripts.length,
+    scripts,
+    totalDuration: totalDurationLine ? totalDurationLine.split(':').slice(1).join(':').trim() : null,
+  };
+}
+
+function parseReferenceAdoptionScriptDetails(rawDetails = '') {
+  const segments = String(rawDetails || '')
+    .split(',')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  const duration = segments[0] || null;
+  const timeoutSegment = segments.find((segment) => segment.startsWith('timeout '));
+  const timedOutSegment = segments.find((segment) => segment.startsWith('timedOut '));
+
+  return {
+    duration,
+    timedOut: timedOutSegment ? timedOutSegment.split(/\s+/).slice(1).join(' ') === 'true' : null,
+    timeout: timeoutSegment ? timeoutSegment.split(/\s+/).slice(1).join(' ') || null : null,
+  };
+}
+
 function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown = '') {
   const checklist = extractChecklistItems(closeoutMarkdown);
   const deterministic = extractDeterministicItems(evidenceMarkdown);
+  const deterministicRuntime = extractDeterministicRuntimeItems(evidenceMarkdown);
+  const referenceAdoptionAggregate = extractReferenceAdoptionAggregate(evidenceMarkdown);
+  const coreDeterministic = deterministic.filter(
+    (item) => !isReferenceAdoptionVerification(item) && !isExecutionV1HelperVerification(item) && !isExecutionV1HandoffVerification(item),
+  );
+  const referenceAdoption = deterministic.filter(isReferenceAdoptionVerification);
+  const executionV1Helpers = deterministic.filter(isExecutionV1HelperVerification);
+  const executionV1Handoff = deterministic.filter(isExecutionV1HandoffVerification);
   const liveValidation = extractLiveValidationItems(evidenceMarkdown);
   const gaps = extractSectionBullets(evidenceMarkdown, 'Remaining Gaps');
   const notes = extractSectionBullets(closeoutMarkdown, 'Notes');
@@ -885,14 +1025,24 @@ function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown
     checklist,
     closeoutGeneratedAt: extractBulletValue(closeoutMarkdown, 'generatedAt'),
     commit: extractBulletValue(closeoutMarkdown, 'commit') || extractBulletValue(evidenceMarkdown, 'commit'),
+    coreDeterministicPassed: coreDeterministic.filter((item) => item.status === 'passed').length,
+    coreDeterministicTotal: coreDeterministic.length,
     deterministic,
     deterministicPassed: deterministic.filter((item) => item.status === 'passed').length,
+    deterministicRuntime,
     evidenceGeneratedAt: extractBulletValue(evidenceMarkdown, 'generatedAt'),
     gaps,
     liveValidation,
     notes,
     optionalBlockedItems,
     optionalChecklistOpen,
+    referenceAdoptionAggregate,
+    referenceAdoptionPassed: referenceAdoption.filter((item) => item.status === 'passed').length,
+    referenceAdoptionTotal: referenceAdoption.length,
+    executionV1HelperPassed: executionV1Helpers.filter((item) => item.status === 'passed').length,
+    executionV1HelperTotal: executionV1Helpers.length,
+    executionV1HandoffPassed: executionV1Handoff.filter((item) => item.status === 'passed').length,
+    executionV1HandoffTotal: executionV1Handoff.length,
     requiredChecklistOpen,
     values,
   };
@@ -907,12 +1057,14 @@ function getLiveValidationValue(values, provider) {
 function buildExecutionV1Status() {
   const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
   const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
+  const handoffMarkdown = readMarkdownFile(handoffDocPath);
   const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
   const currentCommit = runGit(['rev-parse', 'HEAD']);
   const currentArtifacts = buildExecutionV1ArtifactSummary(evidenceMarkdown, closeoutMarkdown);
   const providerReadiness = liveValidationProviders.map((item) => ({
     command: item.command,
     envKey: item.envKey,
+    evidenceCommand: item.evidenceCommand,
     label: item.label,
     preflightCommand: `npm run preflight:execution-v1:${item.provider}`,
     provider: item.provider,
@@ -924,25 +1076,36 @@ function buildExecutionV1Status() {
   const snapshot = readExecutionV1Snapshot(generatedCommit, currentCommit);
   const baselineEvidenceMarkdown = snapshot ? readMarkdownFile(snapshot.evidencePath) : '';
   const baselineCloseoutMarkdown = snapshot ? readMarkdownFile(snapshot.closeoutPath) : '';
+  const baselineHandoffMarkdown = snapshot?.handoffPath ? readMarkdownFile(snapshot.handoffPath) : '';
   const baselineArtifacts = buildExecutionV1ArtifactSummary(baselineEvidenceMarkdown, baselineCloseoutMarkdown);
-  const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath]);
+  const handoffCommit = extractBulletValue(handoffMarkdown, 'commit');
+  const docStatuses = getTrackedFileStatus([evidenceDocPath, closeoutDocPath, handoffDocPath]);
   const handoffArtifacts = buildExecutionV1ReleaseHandoffArtifacts();
   const staleReasons = [];
   const localArtifactNotes = [];
+  const runtimeJobs = summarizeRuntimeJobs();
 
-  if (!evidenceMarkdown || !closeoutMarkdown) {
-    staleReasons.push('evidence 또는 closeout 문서가 아직 생성되지 않았습니다.');
+  if (!evidenceMarkdown || !closeoutMarkdown || !handoffMarkdown) {
+    staleReasons.push('evidence, closeout, handoff 문서 중 아직 생성되지 않은 문서가 있습니다.');
   }
   if (generatedCommit && currentCommit && generatedCommit !== currentCommit) {
     staleReasons.push('현재 HEAD와 evidence/closeout이 가리키는 commit이 다릅니다.');
   }
+  if (handoffCommit && currentCommit && handoffCommit !== currentCommit) {
+    staleReasons.push('현재 HEAD와 handoff가 가리키는 commit이 다릅니다.');
+  }
+  if (handoffCommit && generatedCommit && handoffCommit !== generatedCommit) {
+    staleReasons.push('handoff와 evidence/closeout이 가리키는 commit이 다릅니다.');
+  }
   const artifactsMatchCurrentHead = Boolean(generatedCommit && currentCommit && generatedCommit === currentCommit);
+  const handoffMatchesCurrentHead = Boolean(handoffCommit && currentCommit && handoffCommit === currentCommit);
+  const handoffMatchesGeneratedCommit = Boolean(handoffCommit && generatedCommit && handoffCommit === generatedCommit);
   const hasLocalArtifactChanges = docStatuses.length > 0;
   if (hasLocalArtifactChanges) {
-    if (artifactsMatchCurrentHead) {
-      localArtifactNotes.push('evidence/closeout 문서가 현재 HEAD 기준으로 로컬에서 갱신되었지만 아직 커밋되지는 않았습니다.');
+    if (artifactsMatchCurrentHead && handoffMatchesCurrentHead) {
+      localArtifactNotes.push('evidence/closeout/handoff 문서가 현재 HEAD 기준으로 로컬에서 갱신되었지만 아직 커밋되지는 않았습니다.');
     } else {
-      staleReasons.push('evidence 또는 closeout 문서가 워크트리에서 수정된 상태입니다.');
+      staleReasons.push('evidence, closeout, handoff 문서 중 워크트리에서 수정된 문서가 현재 HEAD와 어긋나 있습니다.');
     }
   }
 
@@ -955,10 +1118,11 @@ function buildExecutionV1Status() {
     snapshot
       && baselineEvidenceMarkdown
       && baselineCloseoutMarkdown
+      && baselineHandoffMarkdown
       && baselineArtifacts.requiredChecklistOpen === 0
       && baselineArtifacts.blockedItems === 0,
   );
-  const artifactState = !evidenceMarkdown || !closeoutMarkdown
+  const artifactState = !evidenceMarkdown || !closeoutMarkdown || !handoffMarkdown
     ? 'missing'
     : stale
       ? 'stale'
@@ -967,19 +1131,19 @@ function buildExecutionV1Status() {
       : 'current';
   const refreshPlan = {
     allowed: true,
-    affectsPaths: [evidenceDocPath, closeoutDocPath],
+    affectsPaths: [evidenceDocPath, closeoutDocPath, handoffDocPath],
     rerunsDeterministicVerification: true,
     rerunsLiveValidation: false,
     rewritesCurrentSurface: true,
     snapshotChanges: false,
     summary:
-      'current surface 재생성은 deterministic verification을 다시 실행한 뒤 evidence와 closeout markdown을 현재 HEAD 기준으로 다시 씁니다.',
+      'current surface 재생성은 deterministic verification을 다시 실행한 뒤 evidence, closeout, handoff markdown을 현재 HEAD 기준으로 다시 씁니다.',
     notes: [
-      'verified snapshot은 그대로 유지되고, current surface evidence/closeout만 다시 생성됩니다.',
+      'verified snapshot은 그대로 유지되고, current surface evidence/closeout/handoff만 다시 생성됩니다.',
       'provider live validation은 provider별 live action을 눌렀을 때만 다시 실행됩니다.',
       hasLocalArtifactChanges
-        ? '현재 로컬에서 수정된 evidence/closeout 문서는 재생성 결과로 덮어써질 수 있습니다.'
-        : '현재 evidence/closeout 문서가 워크트리에서 추가로 수정된 상태는 아닙니다.',
+        ? '현재 로컬에서 수정된 evidence/closeout/handoff 문서는 재생성 결과로 덮어써질 수 있습니다.'
+        : '현재 evidence/closeout/handoff 문서가 워크트리에서 추가로 수정된 상태는 아닙니다.',
       stale
         ? '현재 stale reason이 남아 있어도 재생성은 가능하며, 최신 HEAD 기준 상태를 다시 계산합니다.'
         : '현재 HEAD 기준으로 다시 계산해도 같은 readiness를 유지해야 합니다.',
@@ -991,13 +1155,13 @@ function buildExecutionV1Status() {
     recommendedActions.push({
       action: 'regenerate-release-surface',
       category: 'required',
-      description: '현재 HEAD와 current surface evidence/closeout가 어긋나 있어 release tab의 mutable artifact를 다시 맞춰야 합니다.',
+      description: '현재 HEAD와 current surface evidence/closeout/handoff가 어긋나 있어 release tab의 mutable artifact를 다시 맞춰야 합니다.',
       label: 'current surface 재생성',
       priority: 1,
     });
   }
 
-  if (!stale && snapshot?.verifiedCommit !== currentCommit && evidenceMarkdown && closeoutMarkdown && currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0) {
+  if (!stale && snapshot?.verifiedCommit !== currentCommit && evidenceMarkdown && closeoutMarkdown && handoffMarkdown && currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0) {
     recommendedActions.push({
       action: 'archive-release-snapshot',
       category: 'release',
@@ -1017,18 +1181,27 @@ function buildExecutionV1Status() {
         action: 'run-release-preflight',
         actionProvider: item.provider,
         category: isOptionalCloseoutLabel(`${item.provider} live validation`) ? 'optional' : 'required',
+        command: item.preflightCommand,
         description: `${item.label} provider env가 준비되어 있습니다. live validation 전 deterministic preflight를 다시 확인할 수 있습니다.`,
+        envKey: item.envKey,
+        evidenceCommand: item.evidenceCommand,
         label: `${item.label} preflight 실행`,
+        liveCommand: item.command,
         priority: item.provider === 'openai' ? 3 : 4,
+        provider: item.provider,
       });
       return;
     }
     recommendedActions.push({
       category: isOptionalCloseoutLabel(`${item.provider} live validation`) ? 'optional' : 'required',
+      command: `export ${item.envKey}="..." && ${item.command}`,
       description: `${item.label} live validation은 ${item.envKey}가 있어야 실행할 수 있습니다.`,
       envKey: item.envKey,
+      evidenceCommand: item.evidenceCommand,
       label: `${item.label} env 준비`,
+      liveCommand: item.command,
       priority: item.provider === 'openai' ? 3 : 5,
+      provider: item.provider,
     });
   });
 
@@ -1048,6 +1221,7 @@ function buildExecutionV1Status() {
     currentBranch,
     currentCommit,
     deterministic: currentArtifacts.deterministic,
+    deterministicRuntime: currentArtifacts.deterministicRuntime,
     docStatuses,
     evidence: {
       generatedAt: currentArtifacts.evidenceGeneratedAt,
@@ -1056,11 +1230,19 @@ function buildExecutionV1Status() {
     },
     gaps: currentArtifacts.gaps,
     handoffArtifacts,
+    handoff: {
+      commit: handoffCommit,
+      generatedAt: extractBulletValue(handoffMarkdown, 'generatedAt'),
+      markdown: handoffMarkdown,
+      path: handoffDocPath,
+    },
     liveValidation: currentArtifacts.liveValidation,
     localArtifactNotes,
     notes: currentArtifacts.notes,
     recommendedActions,
+    referenceAdoptionAggregate: currentArtifacts.referenceAdoptionAggregate,
     releaseActionHistory,
+    runtimeJobs,
     providerReadiness,
     refreshPlan,
     snapshotEligibility: {
@@ -1069,12 +1251,13 @@ function buildExecutionV1Status() {
           && currentArtifacts.requiredChecklistOpen === 0
           && currentArtifacts.blockedItems === 0
           && evidenceMarkdown
-          && closeoutMarkdown,
+          && closeoutMarkdown
+          && handoffMarkdown,
       ),
-      reason: !evidenceMarkdown || !closeoutMarkdown
-        ? 'evidence 또는 closeout 문서가 아직 없습니다.'
+      reason: !evidenceMarkdown || !closeoutMarkdown || !handoffMarkdown
+        ? 'evidence, closeout, handoff 문서 중 아직 없는 문서가 있습니다.'
         : stale
-          ? 'current evidence/closeout가 최신 HEAD와 어긋나 있습니다.'
+          ? 'current evidence/closeout/handoff가 최신 HEAD와 어긋나 있습니다.'
           : currentArtifacts.requiredChecklistOpen > 0
             ? `필수 closeout checklist ${currentArtifacts.requiredChecklistOpen}건이 남아 있습니다.`
             : currentArtifacts.blockedItems > 0
@@ -1089,13 +1272,24 @@ function buildExecutionV1Status() {
           checklistOpen: baselineArtifacts.requiredChecklistOpen,
           checklistTotal: baselineArtifacts.checklist.length,
           commit: snapshot.verifiedCommit || baselineArtifacts.commit,
+          coreDeterministicPassed: baselineArtifacts.coreDeterministicPassed,
+          coreDeterministicTotal: baselineArtifacts.coreDeterministicTotal,
           deterministicPassed: baselineArtifacts.deterministicPassed,
+          deterministicRuntimeTotal: baselineArtifacts.deterministicRuntime.length,
           deterministicTotal: baselineArtifacts.deterministic.length,
           exists: true,
           generatedAt:
             baselineArtifacts.closeoutGeneratedAt || baselineArtifacts.evidenceGeneratedAt || snapshot.archivedAt,
           optionalBlockedItems: baselineArtifacts.optionalBlockedItems,
           optionalChecklistOpen: baselineArtifacts.optionalChecklistOpen,
+          handoffGeneratedAt: extractBulletValue(baselineHandoffMarkdown, 'generatedAt'),
+          referenceAdoptionAggregate: baselineArtifacts.referenceAdoptionAggregate,
+          executionV1HelperPassed: baselineArtifacts.executionV1HelperPassed,
+          executionV1HelperTotal: baselineArtifacts.executionV1HelperTotal,
+          executionV1HandoffPassed: baselineArtifacts.executionV1HandoffPassed,
+          executionV1HandoffTotal: baselineArtifacts.executionV1HandoffTotal,
+          referenceAdoptionPassed: baselineArtifacts.referenceAdoptionPassed,
+          referenceAdoptionTotal: baselineArtifacts.referenceAdoptionTotal,
           ready: baselineReady,
         }
       : null,
@@ -1105,23 +1299,53 @@ function buildExecutionV1Status() {
     summary: {
       baselineBlockedItems: baselineArtifacts.blockedItems,
       baselineChecklistOpen: baselineArtifacts.requiredChecklistOpen,
+      baselineCoreDeterministicPassed: baselineArtifacts.coreDeterministicPassed,
+      baselineCoreDeterministicTotal: baselineArtifacts.coreDeterministicTotal,
       baselineDeterministicPassed: baselineArtifacts.deterministicPassed,
+      baselineDeterministicRuntimeTotal: baselineArtifacts.deterministicRuntime.length,
       baselineDeterministicTotal: baselineArtifacts.deterministic.length,
+      baselineExecutionV1HelperPassed: baselineArtifacts.executionV1HelperPassed,
+      baselineExecutionV1HelperTotal: baselineArtifacts.executionV1HelperTotal,
+      baselineExecutionV1HandoffPassed: baselineArtifacts.executionV1HandoffPassed,
+      baselineExecutionV1HandoffTotal: baselineArtifacts.executionV1HandoffTotal,
+      baselineReferenceAdoptionAggregateScriptCount: baselineArtifacts.referenceAdoptionAggregate.scriptCount,
+      baselineReferenceAdoptionPassed: baselineArtifacts.referenceAdoptionPassed,
+      baselineReferenceAdoptionTotal: baselineArtifacts.referenceAdoptionTotal,
       baselineReady,
       blockedItems: currentArtifacts.blockedItems,
       checklistOpen: currentArtifacts.requiredChecklistOpen,
       checklistTotal: currentArtifacts.checklist.length,
+      coreDeterministicPassed: currentArtifacts.coreDeterministicPassed,
+      coreDeterministicTotal: currentArtifacts.coreDeterministicTotal,
       deterministicPassed: currentArtifacts.deterministicPassed,
+      deterministicRuntimeTotal: currentArtifacts.deterministicRuntime.length,
       deterministicTotal: currentArtifacts.deterministic.length,
+      executionV1HelperPassed: currentArtifacts.executionV1HelperPassed,
+      executionV1HelperReady: currentArtifacts.executionV1HelperTotal > 0
+        && currentArtifacts.executionV1HelperPassed === currentArtifacts.executionV1HelperTotal,
+      executionV1HelperTotal: currentArtifacts.executionV1HelperTotal,
+      executionV1HandoffPassed: currentArtifacts.executionV1HandoffPassed,
+      executionV1HandoffReady: currentArtifacts.executionV1HandoffTotal > 0
+        && currentArtifacts.executionV1HandoffPassed === currentArtifacts.executionV1HandoffTotal,
+      executionV1HandoffTotal: currentArtifacts.executionV1HandoffTotal,
       optionalBlockedItems: currentArtifacts.optionalBlockedItems,
       optionalChecklistOpen: currentArtifacts.optionalChecklistOpen,
+      referenceAdoptionAggregateScriptCount: currentArtifacts.referenceAdoptionAggregate.scriptCount,
+      referenceAdoptionPassed: currentArtifacts.referenceAdoptionPassed,
+      referenceAdoptionReady: currentArtifacts.referenceAdoptionTotal > 0
+        && currentArtifacts.referenceAdoptionPassed === currentArtifacts.referenceAdoptionTotal,
+      referenceAdoptionTotal: currentArtifacts.referenceAdoptionTotal,
       ready: currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0 && !stale,
+      runtimeJobActiveCount: runtimeJobs.activeCount,
+      runtimeJobRecentCount: runtimeJobs.recentCount,
       stale,
       staleReasonCount: staleReasons.length,
+      handoffReady: Boolean(handoffMarkdown && (handoffMatchesCurrentHead || (!currentCommit && handoffMatchesGeneratedCommit))),
     },
     updatedAt:
       currentArtifacts.closeoutGeneratedAt ||
       currentArtifacts.evidenceGeneratedAt ||
+      extractBulletValue(handoffMarkdown, 'generatedAt') ||
       new Date().toISOString(),
     values: currentArtifacts.values,
   };
@@ -1138,6 +1362,9 @@ function buildLiveValidationArgs(body = {}) {
   if (body.liveLocal) {
     args.push('--live-local');
   }
+  if (body.liveHermes) {
+    args.push('--live-hermes');
+  }
   return args;
 }
 
@@ -1150,7 +1377,9 @@ function buildExecutionV1RefreshPreflight(args = []) {
       ? 'anthropic'
       : normalizedArgs.includes('--live-local')
         ? 'local'
-        : '';
+        : normalizedArgs.includes('--live-hermes')
+          ? 'hermes'
+          : '';
 
   if (!liveProvider) {
     return {
@@ -1162,7 +1391,7 @@ function buildExecutionV1RefreshPreflight(args = []) {
       affectedPaths: status.refreshPlan?.affectsPaths || [],
       summary:
         status.refreshPlan?.summary
-        || 'current surface evidence와 closeout를 다시 쓰고 deterministic verification을 재실행합니다.',
+        || 'current surface evidence, closeout, handoff를 다시 쓰고 deterministic verification을 재실행합니다.',
     };
   }
 
@@ -1199,7 +1428,7 @@ function buildExecutionV1SnapshotPreflight() {
     confirmRequired: true,
     notes: [
       allowed
-        ? '현재 HEAD 기준 current surface evidence와 closeout가 fresh한 상태입니다.'
+        ? '현재 HEAD 기준 current surface evidence, closeout, handoff가 fresh한 상태입니다.'
         : eligibility.reason || '현재 상태에서는 release snapshot을 고정할 수 없습니다.',
       'snapshot 고정은 current surface를 다시 쓰지 않고 immutable release artifact만 생성합니다.',
       status.snapshot?.exists
@@ -1231,6 +1460,16 @@ function refreshExecutionV1Artifacts(args = []) {
 
   if (result.status !== 0) {
     throw new Error(result.stderr || result.stdout || 'execution-v1 closeout refresh failed');
+  }
+
+  const handoffResult = spawnSync(process.execPath, [handoffScriptPath], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (handoffResult.status !== 0) {
+    throw new Error(handoffResult.stderr || handoffResult.stdout || 'execution-v1 handoff refresh failed');
   }
 
   return buildExecutionV1Status();
@@ -1270,9 +1509,12 @@ function runExecutionV1Preflight(provider = '') {
   if (!normalizedProvider) {
     throw new Error('preflight provider가 필요합니다.');
   }
+  if (normalizedProvider === 'all') {
+    return runExecutionV1AllPreflight();
+  }
 
   const result = spawnSync(process.execPath, [preflightScriptPath, normalizedProvider], {
-    cwd: rootDir,
+    cwd: codeRootDir,
     encoding: 'utf8',
     env: process.env,
   });
@@ -1285,6 +1527,24 @@ function runExecutionV1Preflight(provider = '') {
     return JSON.parse(String(result.stdout || '{}'));
   } catch {
     throw new Error(`execution-v1 preflight output could not be parsed for ${normalizedProvider}`);
+  }
+}
+
+function runExecutionV1AllPreflight() {
+  const result = spawnSync(process.execPath, [preflightAllScriptPath], {
+    cwd: codeRootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || 'execution-v1 aggregate preflight failed');
+  }
+
+  try {
+    return JSON.parse(String(result.stdout || '{}'));
+  } catch {
+    throw new Error('execution-v1 aggregate preflight output could not be parsed');
   }
 }
 
@@ -1303,7 +1563,7 @@ function parseConstraints(value) {
     .filter(Boolean);
 }
 
-function parseMissionAttachments(value) {
+function parseMissionAttachmentPayloads(value) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -1311,11 +1571,50 @@ function parseMissionAttachments(value) {
   return value
     .map((item) => ({
       content: String(item?.content || ''),
+      contentBase64: String(item?.contentBase64 || '').trim(),
+      contentEncoding: String(item?.contentEncoding || '').trim(),
       fileName: String(item?.fileName || '').trim(),
       mimeType: String(item?.mimeType || '').trim(),
       source: String(item?.source || 'ui').trim() || 'ui',
     }))
-    .filter((item) => item.fileName && item.content);
+    .filter((item) => item.fileName && (item.content || item.contentBase64));
+}
+
+async function convertMissionAttachmentPayloads(value) {
+  const attachments = [];
+
+  for (const item of parseMissionAttachmentPayloads(value)) {
+    if (!item.contentBase64) {
+      attachments.push({
+        content: item.content,
+        fileName: item.fileName,
+        mimeType: item.mimeType,
+        source: item.source,
+      });
+      continue;
+    }
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-ui-attachment-'));
+    const tempFilePath = path.join(tempDir, path.basename(item.fileName));
+    try {
+      fs.writeFileSync(tempFilePath, Buffer.from(item.contentBase64, 'base64'));
+      const converted = await convertMissionAttachmentFile({ filePath: tempFilePath });
+      attachments.push({
+        content: converted.content,
+        conversion: {
+          ...converted.conversion,
+          sourcePath: item.fileName,
+        },
+        fileName: item.fileName,
+        mimeType: converted.conversion?.converted ? 'text/markdown' : item.mimeType,
+        source: converted.conversion?.converted ? 'ui-converted' : item.source,
+      });
+    } finally {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
+  }
+
+  return attachments;
 }
 
 async function readJsonBody(request) {
@@ -1423,8 +1722,62 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
       host,
-      port,
+      port: activePort,
       rootDir,
+    });
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/health') {
+    const runtimeJobs = summarizeRuntimeJobs();
+    const runtimeRequests = summarizeRuntimeRequests();
+    sendJson(response, 200, {
+      ok: true,
+      discoveryPath: serverDiscoveryPath,
+      generatedAt: new Date().toISOString(),
+      host,
+      pid: process.pid,
+      port: activePort,
+      requestedPort,
+      jobs: {
+        activeCount: runtimeJobs.activeCount,
+        recentCount: runtimeJobs.recentCount,
+        registryPath: runtimeJobs.registryPath,
+      },
+      requests: {
+        activeCount: runtimeRequests.activeCount,
+        recentCount: runtimeRequests.recentCount,
+        registryPath: runtimeRequests.registryPath,
+      },
+      rootDir,
+      runtimeJobRegistryPath: runtimeJobRegistry.registryPath,
+      runtimeRequestRegistryPath: runtimeRequestRegistry.registryPath,
+      staleRuntimeJobCount: recoveredRuntimeJobs.recoveredCount,
+      staleRuntimeRequestCount: recoveredRuntimeRequests.recoveredCount,
+      runtime: runtimeStatus.readStatus(),
+      runtimeStatusPath: runtimeStatus.statusPath,
+      url: `http://${host}:${activePort}`,
+    });
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/converter/diagnostics') {
+    sendJson(response, 200, await getDocumentConversionCapabilities());
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/runtime/requests') {
+    sendJson(response, 200, {
+      generatedAt: new Date().toISOString(),
+      requests: summarizeRuntimeRequests(),
+    });
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/runtime/jobs') {
+    sendJson(response, 200, {
+      generatedAt: new Date().toISOString(),
+      jobs: summarizeRuntimeJobs(),
     });
     return;
   }
@@ -1560,22 +1913,36 @@ async function handleApi(request, response, url) {
         outcome: 'confirmation-required',
         provider,
         scope: refreshScope,
-        summary: 'current surface evidence/closeout 재생성은 명시적 확인이 필요합니다.',
+        summary: 'current surface evidence/closeout/handoff 재생성은 명시적 확인이 필요합니다.',
       });
       sendJson(response, 409, {
         error: 'refresh-confirmation-required',
-        message: 'current surface evidence/closeout 재생성은 명시적 확인이 필요합니다.',
+        message: 'current surface evidence/closeout/handoff 재생성은 명시적 확인이 필요합니다.',
         preflight,
         status: buildExecutionV1Status(),
       });
       return;
     }
     try {
-      const payload = refreshExecutionV1Artifacts(args);
+      const { job, result: payload } = runRuntimeJob({
+        details: {
+          args,
+          preflight,
+          provider,
+        },
+        jobKind: 'execution-v1-refresh',
+        requestId: request.id,
+        scope: refreshScope,
+        summary: isLiveValidationRefresh
+          ? `${provider} live validation과 current surface 재생성을 실행합니다.`
+          : 'current surface evidence/closeout/handoff 재생성을 실행합니다.',
+        task: () => refreshExecutionV1Artifacts(args),
+      });
       recordReleaseAction({
         action: 'refresh',
         details: {
           args,
+          runtimeJobId: job.id,
           preflight,
         },
         outcome: 'completed',
@@ -1583,9 +1950,12 @@ async function handleApi(request, response, url) {
         scope: refreshScope,
         summary: isLiveValidationRefresh
           ? `${provider} live validation과 current surface 재생성을 완료했습니다.`
-          : 'current surface evidence/closeout 재생성을 완료했습니다.',
+          : 'current surface evidence/closeout/handoff 재생성을 완료했습니다.',
       });
-      sendJson(response, 200, payload);
+      sendJson(response, 200, {
+        ...payload,
+        runtimeJobId: job.id,
+      });
     } catch (error) {
       recordReleaseAction({
         action: 'refresh',
@@ -1628,16 +1998,19 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'POST' && pathname === '/api/execution-v1/preflight') {
     const body = await readJsonBody(request);
-    const preflight = runExecutionV1Preflight(body.provider);
+    const requestedProvider = String(body.provider || '').trim();
+    const preflight = runExecutionV1Preflight(requestedProvider);
     recordReleaseAction({
-      action: 'provider-preflight',
+      action: requestedProvider === 'all' ? 'aggregate-provider-preflight' : 'provider-preflight',
       details: {
         preflight,
       },
       outcome: preflight.status || 'unknown',
-      provider: String(body.provider || '').trim(),
+      provider: requestedProvider === 'all' ? '' : requestedProvider,
       scope: 'provider-readiness',
-      summary: `${String(body.provider || '').trim() || 'provider'} preflight ${preflight.status || 'unknown'}`,
+      summary: requestedProvider === 'all'
+        ? `all provider preflight ${preflight.status || 'unknown'} · missing env ${preflight.missingEnvCount ?? 'unknown'}`
+        : `${requestedProvider || 'provider'} preflight ${preflight.status || 'unknown'}`,
     });
     sendJson(response, 200, {
       preflight,
@@ -1686,18 +2059,31 @@ async function handleApi(request, response, url) {
       return;
     }
     try {
-      const payload = archiveExecutionV1Snapshot();
+      const { job, result: payload } = runRuntimeJob({
+        details: {
+          preflight,
+        },
+        jobKind: 'execution-v1-snapshot',
+        requestId: request.id,
+        scope: 'snapshot',
+        summary: 'release snapshot 고정을 실행합니다.',
+        task: () => archiveExecutionV1Snapshot(),
+      });
       recordReleaseAction({
         action: 'snapshot',
         details: {
           archiveResult: payload.archiveResult || null,
+          runtimeJobId: job.id,
           preflight,
         },
         outcome: 'completed',
         scope: 'snapshot',
         summary: `release snapshot을 고정했습니다. (${String(payload.archiveResult?.verifiedCommit || '').slice(0, 7) || 'verified'})`,
       });
-      sendJson(response, 200, payload);
+      sendJson(response, 200, {
+        ...payload,
+        runtimeJobId: job.id,
+      });
     } catch (error) {
       recordReleaseAction({
         action: 'snapshot',
@@ -1770,7 +2156,7 @@ async function handleApi(request, response, url) {
   if (request.method === 'POST' && pathname === '/api/missions') {
     const body = await readJsonBody(request);
     const mission = service.createMission({
-      attachments: parseMissionAttachments(body.attachments),
+      attachments: await convertMissionAttachmentPayloads(body.attachments),
       constraints: parseConstraints(body.constraints),
       deliverableType: String(body.deliverableType || '').trim(),
       mode: String(body.mode || '').trim(),
@@ -1794,10 +2180,11 @@ async function handleApi(request, response, url) {
   ) {
     const missionId = decodePathSegment(pathParts[2]);
     const body = await readJsonBody(request);
-    const attachments = parseMissionAttachments(body.attachments);
+    const attachments = await convertMissionAttachmentPayloads(body.attachments);
     const created = attachments.map((attachment) =>
       service.addMissionAttachment({
         content: attachment.content,
+        conversion: attachment.conversion,
         fileName: attachment.fileName,
         mimeType: attachment.mimeType,
         missionId,
@@ -2190,6 +2577,12 @@ async function handleApi(request, response, url) {
     const result = await service.runMission(missionId, {
       provider,
       providerSpecified: Boolean(provider),
+      sourceContext: {
+        channel: 'web',
+        requestId: request.id,
+        route: pathname,
+        sourceType: 'web',
+      },
     });
 
     sendJson(response, 200, result);
@@ -2241,7 +2634,12 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  const url = new URL(request.url, `http://${request.headers.host || `${host}:${port}`}`);
+  const requestId = normalizeRequestId(request.headers['x-request-id']);
+  request.id = requestId;
+  response.setHeader('X-Request-Id', requestId);
+
+  const url = new URL(request.url, `http://${request.headers.host || `${host}:${activePort}`}`);
+  startRuntimeRequest(request, response, url);
 
   try {
     if (url.pathname.startsWith('/api/')) {
@@ -2263,17 +2661,85 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(port, host, () => {
-  const consoleUrl = `http://${host}:${port}`;
-  console.log(
-    JSON.stringify(
-      {
-        rootDir,
-        status: 'listening',
-        url: consoleUrl,
-      },
-      null,
-      2,
-    ),
-  );
+function listenOnce(serverInstance, portToTry) {
+  return new Promise((resolve, reject) => {
+    const onError = (error) => {
+      serverInstance.off('listening', onListening);
+      reject(error);
+    };
+    const onListening = () => {
+      serverInstance.off('error', onError);
+      resolve();
+    };
+
+    serverInstance.once('error', onError);
+    serverInstance.once('listening', onListening);
+    serverInstance.listen(portToTry, host);
+  });
+}
+
+async function listenWithPortFallback(serverInstance, startPort, maxAttempts = 20) {
+  for (let offset = 0; offset <= maxAttempts; offset += 1) {
+    const candidatePort = startPort + offset;
+    try {
+      await listenOnce(serverInstance, candidatePort);
+      return {
+        fallback: offset > 0,
+        port: candidatePort,
+      };
+    } catch (error) {
+      if (error?.code !== 'EADDRINUSE' || offset >= maxAttempts) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error(`No available UI port found from ${startPort}.`);
+}
+
+const listenResult = await listenWithPortFallback(server, requestedPort);
+activePort = listenResult.port;
+const consoleUrl = writeServerDiscovery({
+  actualPort: activePort,
+  fallback: listenResult.fallback,
 });
+runtimeStatus.markListening({
+  discoveryPath: serverDiscoveryPath,
+  host,
+  port: activePort,
+  requestedPort,
+  rootPath: rootDir,
+  url: consoleUrl,
+});
+
+function shutdownRuntime(reason) {
+  try {
+    runtimeStatus.markStopped(reason);
+  } catch {
+    // Shutdown should not be blocked by status-file best-effort cleanup.
+  }
+}
+
+process.once('SIGINT', () => {
+  shutdownRuntime('SIGINT');
+  process.exit(130);
+});
+
+process.once('SIGTERM', () => {
+  shutdownRuntime('SIGTERM');
+  process.exit(143);
+});
+
+console.log(
+  JSON.stringify(
+    {
+      discoveryPath: serverDiscoveryPath,
+      requestedPort,
+      rootDir,
+      status: 'listening',
+      url: consoleUrl,
+    },
+    null,
+    2,
+  ),
+);

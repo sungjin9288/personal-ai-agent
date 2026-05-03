@@ -955,6 +955,14 @@ const unusedEngineeringFullSpectrum = overview.items.find((item) => item.id === 
 assert.ok(unusedEngineeringFullSpectrum);
 assert.equal(unusedEngineeringFullSpectrum.used, false);
 assert.equal(unusedEngineeringFullSpectrum.adoptionDrift.status, 'unused');
+assert.deepEqual(unusedEngineeringFullSpectrum.harnessPatterns, [
+  'hermes-agent-session-loop',
+  'parallel-subagent-workstreams',
+  'provider-aware-tool-calling',
+  'memory-backed-handoff',
+]);
+assert.equal(unusedEngineeringFullSpectrum.recommendedProvider, 'hermes');
+assert.equal(unusedEngineeringFullSpectrum.runtimeBlueprint, 'hermes-agent-full-spectrum');
 assert.equal(unusedEngineeringFullSpectrum.usageTrend.status, 'unused');
 assert.equal(unusedEngineeringFullSpectrum.workspaceUsageTrend.status, 'unused');
 

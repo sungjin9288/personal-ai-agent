@@ -11,8 +11,20 @@ const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-ui-mission-attachments-'));
 const workspacePath = path.join(tempRoot, 'workspace');
+const converterPath = path.join(tempRoot, 'fake-markitdown.mjs');
 
 fs.mkdirSync(workspacePath, { recursive: true });
+fs.writeFileSync(
+  converterPath,
+  [
+    '#!/usr/bin/env node',
+    "const filePath = process.argv.at(-1);",
+    "console.log(`# UI Converted Packet\\n\\nConverted from ${filePath.split('/').pop()} with upload conversion evidence.`);",
+    '',
+  ].join('\n'),
+  'utf8',
+);
+fs.chmodSync(converterPath, 0o755);
 
 const workspace = runCli({
   rootDir: tempRoot,
@@ -28,6 +40,7 @@ const serverProcess = spawn(process.execPath, [serverEntry], {
   env: {
     ...process.env,
     PERSONAL_AI_AGENT_ROOT: tempRoot,
+    PERSONAL_AI_AGENT_MARKITDOWN_BIN: converterPath,
     PERSONAL_AI_AGENT_UI_HOST: '127.0.0.1',
     PERSONAL_AI_AGENT_UI_PORT: String(port),
   },
@@ -51,6 +64,7 @@ try {
   assert.equal(rootHtml.includes('id="mission-attachment-input"'), true);
   assert.equal(appJs.includes('mission-harness-attachment-form'), true);
   assert.equal(appJs.includes('handleMissionAttachmentUpload'), true);
+  assert.equal(appJs.includes('contentBase64'), true);
 
   const createMissionResponse = await fetchJson(`${baseUrl}/api/missions`, {
     body: JSON.stringify({
@@ -82,6 +96,38 @@ try {
   assert.equal(missionAfterCreate.summary.attachmentCounts.total, 1);
   assert.equal(missionAfterCreate.harness.attachments.recentEntries[0].fileName, 'brief.md');
 
+  const createConvertedMissionResponse = await fetchJson(`${baseUrl}/api/missions`, {
+    body: JSON.stringify({
+      attachments: [
+        {
+          contentBase64: Buffer.from('%PDF pseudo composer upload fixture\n', 'utf8').toString('base64'),
+          contentEncoding: 'base64',
+          fileName: 'composer-packet.pdf',
+          mimeType: 'application/pdf',
+          source: 'ui',
+        },
+      ],
+      deliverableType: 'decision-memo',
+      mode: 'knowledge',
+      objective: 'Validate converted document intake during public mission creation.',
+      title: 'UI converted mission attachment smoke',
+      workspaceId: workspace.id,
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+    method: 'POST',
+  });
+
+  const convertedMissionAfterCreate = await fetchJson(
+    `${baseUrl}/api/missions/${encodeURIComponent(createConvertedMissionResponse.mission.id)}`,
+  );
+  assert.equal(convertedMissionAfterCreate.harness.attachments.summary.total, 1);
+  assert.equal(convertedMissionAfterCreate.harness.attachments.recentEntries[0].fileName, 'composer-packet.pdf');
+  assert.equal(convertedMissionAfterCreate.harness.attachments.recentEntries[0].source, 'ui-converted');
+  assert.equal(convertedMissionAfterCreate.harness.attachments.recentEntries[0].mimeType, 'text/markdown');
+  assert.match(convertedMissionAfterCreate.harness.attachments.recentEntries[0].excerpt, /UI Converted Packet/);
+
   const uploadResponse = await fetchJson(`${baseUrl}/api/missions/${encodeURIComponent(missionId)}/attachments`, {
     body: JSON.stringify({
       attachments: [
@@ -102,15 +148,45 @@ try {
   assert.equal(uploadResponse.attachments.length, 1);
   assert.equal(uploadResponse.attachments[0].fileName, 'operator.log');
 
+  const convertedUploadResponse = await fetchJson(`${baseUrl}/api/missions/${encodeURIComponent(missionId)}/attachments`, {
+    body: JSON.stringify({
+      attachments: [
+        {
+          contentBase64: Buffer.from('%PDF pseudo browser upload fixture\n', 'utf8').toString('base64'),
+          contentEncoding: 'base64',
+          fileName: 'ui-packet.pdf',
+          mimeType: 'application/pdf',
+          source: 'ui',
+        },
+      ],
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+    method: 'POST',
+  });
+
+  assert.equal(convertedUploadResponse.attachments.length, 1);
+  assert.equal(convertedUploadResponse.attachments[0].fileName, 'ui-packet.pdf');
+  assert.equal(convertedUploadResponse.attachments[0].source, 'ui-converted');
+  assert.equal(convertedUploadResponse.attachments[0].mimeType, 'text/markdown');
+  assert.equal(convertedUploadResponse.attachments[0].conversion?.converted, true);
+  assert.equal(convertedUploadResponse.attachments[0].conversion?.converter, path.basename(converterPath));
+  assert.match(convertedUploadResponse.attachments[0].excerpt, /UI Converted Packet/);
+
   const missionAfterUpload = await fetchJson(`${baseUrl}/api/missions/${encodeURIComponent(missionId)}`);
-  assert.equal(missionAfterUpload.harness.attachments.summary.total, 2);
-  assert.equal(missionAfterUpload.summary.attachmentCounts.total, 2);
+  assert.equal(missionAfterUpload.harness.attachments.summary.total, 3);
+  assert.equal(missionAfterUpload.summary.attachmentCounts.total, 3);
   assert.equal(
     missionAfterUpload.harness.attachments.recentEntries.some((entry) => entry.fileName === 'brief.md'),
     true,
   );
   assert.equal(
     missionAfterUpload.harness.attachments.recentEntries.some((entry) => entry.fileName === 'operator.log'),
+    true,
+  );
+  assert.equal(
+    missionAfterUpload.harness.attachments.recentEntries.some((entry) => entry.fileName === 'ui-packet.pdf'),
     true,
   );
 

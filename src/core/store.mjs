@@ -20,6 +20,8 @@ const DEFAULT_STATE = {
   specialistFollowUpReminders: [],
   maintenanceRuns: [],
   memoryEntries: [],
+  factGraphNodes: [],
+  factGraphEdges: [],
 };
 
 function cloneDefaultState() {
@@ -42,6 +44,8 @@ function cloneDefaultState() {
     specialistFollowUpReminders: [],
     maintenanceRuns: [],
     memoryEntries: [],
+    factGraphNodes: [],
+    factGraphEdges: [],
   };
 }
 
@@ -109,6 +113,8 @@ export function createStore({ rootDir }) {
         : [],
       maintenanceRuns: Array.isArray(state.maintenanceRuns) ? state.maintenanceRuns : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
+      factGraphNodes: Array.isArray(state.factGraphNodes) ? state.factGraphNodes : [],
+      factGraphEdges: Array.isArray(state.factGraphEdges) ? state.factGraphEdges : [],
     };
   }
 
@@ -420,6 +426,44 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listFactGraphNodes(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('factGraphNodes').filter((node) => {
+          if (filter.status && filter.status !== 'all' && node.status !== filter.status) {
+            return false;
+          }
+          if (filter.scope && node.scope !== filter.scope) {
+            return false;
+          }
+          if (filter.scopeId && node.scopeId !== filter.scopeId) {
+            return false;
+          }
+          if (filter.sourceId && node.sourceId !== filter.sourceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
+    listFactGraphEdges(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('factGraphEdges').filter((edge) => {
+          if (filter.status && filter.status !== 'all' && edge.status !== filter.status) {
+            return false;
+          }
+          if (filter.scope && edge.scope !== filter.scope) {
+            return false;
+          }
+          if (filter.scopeId && edge.scopeId !== filter.scopeId) {
+            return false;
+          }
+          if (filter.nodeId && edge.fromNodeId !== filter.nodeId && edge.toNodeId !== filter.nodeId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listExecutionLeases(filter = {}) {
       return sortByCreatedAt(
         listCollection('executionLeases').filter((lease) => {
@@ -521,6 +565,12 @@ export function createStore({ rootDir }) {
     saveMemoryEntry(memoryEntry) {
       return saveCollectionItem('memoryEntries', memoryEntry);
     },
+    saveFactGraphNode(factGraphNode) {
+      return saveCollectionItem('factGraphNodes', factGraphNode);
+    },
+    saveFactGraphEdge(factGraphEdge) {
+      return saveCollectionItem('factGraphEdges', factGraphEdge);
+    },
     saveExecutionLease(executionLease) {
       return saveCollectionItem('executionLeases', executionLease);
     },
@@ -562,6 +612,12 @@ export function createStore({ rootDir }) {
     },
     updateMemoryEntry(memoryEntryId, updater) {
       return updateCollectionItem('memoryEntries', memoryEntryId, updater);
+    },
+    updateFactGraphNode(factGraphNodeId, updater) {
+      return updateCollectionItem('factGraphNodes', factGraphNodeId, updater);
+    },
+    updateFactGraphEdge(factGraphEdgeId, updater) {
+      return updateCollectionItem('factGraphEdges', factGraphEdgeId, updater);
     },
     updateExecutionLease(executionLeaseId, updater) {
       return updateCollectionItem('executionLeases', executionLeaseId, updater);

@@ -65,6 +65,9 @@ const registry = createProviderRegistry({
     LOCAL_PROVIDER_BASE_URL: 'http://127.0.0.1:1234/v1',
     LOCAL_PROVIDER_MODEL: 'llama3.1-local',
     LOCAL_PROVIDER_API_KEY: 'test-local-key',
+    HERMES_PROVIDER_API_KEY: 'test-hermes-key',
+    HERMES_PROVIDER_BASE_URL: 'http://127.0.0.1:8088/v1',
+    HERMES_PROVIDER_MODEL: 'nous-hermes-4-test',
   },
   fetchImpl: async (url, init) => {
     capturedRequests.push({
@@ -109,6 +112,18 @@ const registry = createProviderRegistry({
       };
     }
 
+    if (url === 'http://127.0.0.1:8088/v1/models') {
+      return {
+        ok: true,
+        status: 200,
+        async json() {
+          return {
+            data: [{ id: 'nous-hermes-4-test' }, { id: 'hermes-reasoning-test' }],
+          };
+        },
+      };
+    }
+
     throw new Error(`Unexpected probe url: ${url}`);
   },
 });
@@ -116,6 +131,7 @@ const registry = createProviderRegistry({
 const openAIProbe = await registry.probeProvider('openai');
 const anthropicProbe = await registry.probeProvider('anthropic');
 const localProbe = await registry.probeProvider('local');
+const hermesProbe = await registry.probeProvider('hermes');
 
 assert.equal(openAIProbe.ok, true);
 assert.equal(openAIProbe.attempted, true);
@@ -135,9 +151,16 @@ assert.equal(localProbe.modelAvailable, true);
 assert.equal(localProbe.modelCount, 2);
 assert.equal(localProbe.endpoint, 'http://127.0.0.1:1234/v1/models');
 
+assert.equal(hermesProbe.ok, true);
+assert.equal(hermesProbe.attempted, true);
+assert.equal(hermesProbe.modelAvailable, true);
+assert.equal(hermesProbe.modelCount, 2);
+assert.equal(hermesProbe.endpoint, 'http://127.0.0.1:8088/v1/models');
+
 const openAIRequest = capturedRequests.find((request) => request.url === 'https://api.openai.test/v1/models');
 const anthropicRequest = capturedRequests.find((request) => request.url === 'https://api.anthropic.test/v1/models');
 const localRequest = capturedRequests.find((request) => request.url === 'http://127.0.0.1:1234/v1/models');
+const hermesRequest = capturedRequests.find((request) => request.url === 'http://127.0.0.1:8088/v1/models');
 
 assert.equal(openAIRequest.method, 'GET');
 assert.equal(openAIRequest.headers.Authorization, 'Bearer test-openai-key');
@@ -146,13 +169,15 @@ assert.equal(anthropicRequest.headers['x-api-key'], 'test-anthropic-key');
 assert.equal(anthropicRequest.headers['anthropic-version'], '2023-06-01');
 assert.equal(localRequest.method, 'GET');
 assert.equal(localRequest.headers.Authorization, 'Bearer test-local-key');
+assert.equal(hermesRequest.method, 'GET');
+assert.equal(hermesRequest.headers.Authorization, 'Bearer test-hermes-key');
 
 console.log(
   JSON.stringify(
     {
       ok: true,
       mode: 'provider-probe',
-      probedProviders: ['stub', 'openai', 'anthropic', 'local'],
+      probedProviders: ['stub', 'openai', 'anthropic', 'local', 'hermes'],
     },
     null,
     2,

@@ -1,4 +1,5 @@
 import { createProviderFailure } from './provider-runtime-utils.mjs';
+import { ensureMissionQualityGateSection } from '../core/mission-quality-gate.mjs';
 
 export function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
@@ -348,6 +349,7 @@ Artifact rules:
 Artifact rules:
 - artifactContent must be Markdown
 - include sections Mission, Plan, Adaptation Signals, Verification Lens
+- include section Mission Quality Gate with Success Criteria, Assumptions, Minimal Change, and Verification
 - planSteps must be bounded and concrete`;
   }
 
@@ -384,6 +386,7 @@ Artifact rules:
 - artifactContent must be Markdown
 - include all required sections exactly once
 - required sections: ${pack.requiredSections.join(', ')}
+- include section Mission Quality Gate with Success Criteria, Assumptions, Minimal Change, and Verification
 - Next Action must name the next owner or the next review step
 - executionManifest is required for engineering mode and must stay workspace-local
 - do not include sudo, destructive git reset/checkout, repo-external paths, or background daemon commands`;
@@ -704,6 +707,10 @@ function normalizeExecutorOutput(output, input, providerLabel) {
     executionManifest,
     input,
     summaryText,
+  });
+  artifactContent = ensureMissionQualityGateSection(artifactContent, {
+    ...input,
+    executionManifest,
   });
 
   const normalizedApprovalOutput = enforceEngineeringApprovalNextAction({

@@ -15,6 +15,10 @@ const providerConfig = {
     envKey: 'LOCAL_PROVIDER_BASE_URL',
     flag: '--live-local',
   },
+  hermes: {
+    envKey: 'HERMES_PROVIDER_MODEL',
+    flag: '--live-hermes',
+  },
   openai: {
     envKey: 'OPENAI_API_KEY',
     flag: '--live-openai',
@@ -31,7 +35,7 @@ if (!config) {
   console.error(
     [
       'Unsupported provider.',
-      'Usage: node scripts/run-execution-v1-live.mjs <openai|anthropic|local>',
+      'Usage: node scripts/run-execution-v1-live.mjs <openai|anthropic|local|hermes>',
     ].join('\n'),
   );
   process.exit(1);

@@ -17,12 +17,13 @@ export function createRuntimeHarness({ store }) {
     }));
   }
 
-  function startSession({ missionId, provider }) {
+  function startSession({ missionId, provider, sourceContext = {} }) {
     return store.saveSession({
       id: createId('session'),
       missionId,
       currentStage: 'manager',
       provider,
+      sourceContext,
       status: 'executing',
       agentRunIds: [],
       approvalIds: [],

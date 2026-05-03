@@ -5,10 +5,12 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const currentEvidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const currentCloseoutPath = path.join(docsDir, 'execution-v1-closeout.md');
+const currentHandoffPath = path.join(docsDir, 'execution-v1-handoff.md');
 const snapshotsRoot = path.join(docsDir, 'releases', 'execution-v1');
 
 const evidenceMarkdown = readRequiredFile(currentEvidencePath);
 const closeoutMarkdown = readRequiredFile(currentCloseoutPath);
+const handoffMarkdown = fs.existsSync(currentHandoffPath) ? fs.readFileSync(currentHandoffPath, 'utf8') : '';
 
 const evidenceCommit = extractBulletValue(evidenceMarkdown, 'commit');
 const closeoutCommit = extractBulletValue(closeoutMarkdown, 'commit');
@@ -28,29 +30,53 @@ fs.mkdirSync(snapshotDir, { recursive: true });
 const archivedAt = new Date().toISOString();
 const snapshotEvidencePath = path.join(snapshotDir, 'execution-v1-evidence.md');
 const snapshotCloseoutPath = path.join(snapshotDir, 'execution-v1-closeout.md');
+const snapshotHandoffPath = path.join(snapshotDir, 'execution-v1-handoff.md');
 const snapshotManifestPath = path.join(snapshotDir, 'snapshot.json');
 
 const archivedEvidence = injectArchiveMetadata({
-  markdown: evidenceMarkdown,
+  markdown: sanitizePortableMarkdown(evidenceMarkdown),
   archivedAt,
-  sourcePath: currentEvidencePath,
+  sourcePath: formatDisplayPath(currentEvidencePath),
 });
 const archivedCloseout = injectArchiveMetadata({
-  markdown: rewriteCloseoutEvidencePath(closeoutMarkdown, snapshotEvidencePath),
+  markdown: sanitizePortableMarkdown(rewriteCloseoutEvidencePath(closeoutMarkdown, snapshotEvidencePath)),
   archivedAt,
-  sourcePath: currentCloseoutPath,
+  sourcePath: formatDisplayPath(currentCloseoutPath),
 });
+const archivedHandoff = handoffMarkdown
+  ? injectArchiveMetadata({
+      markdown: sanitizePortableMarkdown(
+        rewriteHandoffPaths({
+          markdown: handoffMarkdown,
+          snapshotCloseoutPath,
+          snapshotDir,
+          snapshotEvidencePath,
+        }),
+      ),
+      archivedAt,
+      sourcePath: formatDisplayPath(currentHandoffPath),
+    })
+  : '';
 
 fs.writeFileSync(snapshotEvidencePath, archivedEvidence, 'utf8');
 fs.writeFileSync(snapshotCloseoutPath, archivedCloseout, 'utf8');
+if (archivedHandoff) {
+  fs.writeFileSync(snapshotHandoffPath, archivedHandoff, 'utf8');
+}
 fs.writeFileSync(
   snapshotManifestPath,
   JSON.stringify(
     {
       archivedAt,
-      snapshotDir,
-      sourceCloseoutPath: currentCloseoutPath,
-      sourceEvidencePath: currentEvidencePath,
+      snapshotDir: formatDisplayPath(snapshotDir),
+      sourceCloseoutPath: formatDisplayPath(currentCloseoutPath),
+      sourceEvidencePath: formatDisplayPath(currentEvidencePath),
+      ...(archivedHandoff
+        ? {
+            sourceHandoffPath: formatDisplayPath(currentHandoffPath),
+            snapshotHandoffPath: formatDisplayPath(snapshotHandoffPath),
+          }
+        : {}),
       verifiedCommit,
     },
     null,
@@ -66,6 +92,7 @@ console.log(
       archivedAt,
       snapshotCloseoutPath,
       snapshotEvidencePath,
+      ...(archivedHandoff ? { snapshotHandoffPath } : {}),
       snapshotManifestPath,
       verifiedCommit,
     },
@@ -104,6 +131,37 @@ function injectArchiveMetadata({ markdown, archivedAt, sourcePath }) {
 }
 
 function rewriteCloseoutEvidencePath(markdown, snapshotEvidencePath) {
-  const replacement = `- evidence: [execution-v1-evidence.md](${snapshotEvidencePath})`;
+  const replacement = `- evidence: [execution-v1-evidence.md](${formatDisplayPath(snapshotEvidencePath)})`;
   return String(markdown || '').replace(/^- evidence:\s+.+$/m, replacement);
+}
+
+function rewriteHandoffPaths({ markdown, snapshotCloseoutPath, snapshotDir, snapshotEvidencePath }) {
+  return String(markdown || '')
+    .replace(
+      /^- evidence:\s+.+$/m,
+      `- evidence: [execution-v1-evidence.md](${formatDisplayPath(snapshotEvidencePath)})`,
+    )
+    .replace(
+      /^- closeout:\s+.+$/m,
+      `- closeout: [execution-v1-closeout.md](${formatDisplayPath(snapshotCloseoutPath)})`,
+    )
+    .replace(
+      /^- immutableSnapshot:\s+.+$/m,
+      `- immutableSnapshot: [${formatDisplayPath(snapshotDir)}](${formatDisplayPath(snapshotDir)})`,
+    );
+}
+
+function sanitizePortableMarkdown(markdown) {
+  return String(markdown || '').replace(
+    /\/(?:private\/)?var\/folders\/[^"'\s)]+\/T\/(personal-ai-agent-[^"'\s,)]+)/g,
+    '<temp>/$1',
+  );
+}
+
+function formatDisplayPath(filePath) {
+  const relativePath = path.relative(repoDir, String(filePath || ''));
+  if (relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath)) {
+    return relativePath;
+  }
+  return String(filePath || '');
 }

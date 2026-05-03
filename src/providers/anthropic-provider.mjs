@@ -107,6 +107,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         maxAttempts: ANTHROPIC_SPEC.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'Anthropic',
+        rateLimit: {
+          ...ANTHROPIC_SPEC.runtime.rateLimit,
+          scope: ANTHROPIC_SPEC.id,
+        },
         timeoutMs: ANTHROPIC_SPEC.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
@@ -156,6 +160,10 @@ export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl 
         maxAttempts: ANTHROPIC_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Anthropic',
+        rateLimit: {
+          ...ANTHROPIC_SPEC.runtime.rateLimit,
+          scope: ANTHROPIC_SPEC.id,
+        },
         timeoutMs: ANTHROPIC_SPEC.runtime.runTimeoutMs,
         url: `${config.baseUrl}/messages`,
       });

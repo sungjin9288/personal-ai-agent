@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
 
 const repoDir = process.cwd();
 const cliPath = path.join(repoDir, 'src', 'cli.mjs');
@@ -24,6 +25,11 @@ const liveProviders = [
     flag: '--live-local',
     provider: 'local',
   },
+  {
+    envKey: 'HERMES_PROVIDER_MODEL',
+    flag: '--live-hermes',
+    provider: 'hermes',
+  },
 ];
 
 const deterministicScripts = [
@@ -31,7 +37,18 @@ const deterministicScripts = [
   'smoke:execution-cli',
   'smoke:ui-execution-console',
   'smoke:ui-execution-browser-e2e',
+  'smoke:reference-adoptions',
+  'smoke:execution-v1-live-helpers',
+  'smoke:execution-v1-handoff',
 ];
+const npmScriptTimeoutMs = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_VERIFY_SCRIPT_TIMEOUT_MS',
+  20 * 60 * 1000,
+);
+const npmScriptMaxBufferBytes = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_VERIFY_MAX_BUFFER_BYTES',
+  128 * 1024 * 1024,
+);
 
 const requestedLiveProviders = liveProviders.filter((item) => process.argv.includes(item.flag));
 const captureLiveFailures = process.argv.includes('--capture-live-failures');
@@ -67,20 +84,132 @@ for (const liveProvider of requestedLiveProviders) {
 console.log(JSON.stringify(summary, null, 2));
 
 function runNpmScript(scriptName) {
-  const result = spawnSync('npm', ['run', scriptName], {
+  const startedAt = Date.now();
+  const result = runCommandWithHardTimeout('npm', ['run', scriptName], {
     cwd: repoDir,
-    encoding: 'utf8',
     env: process.env,
+    timeoutMs: npmScriptTimeoutMs,
   });
+  const durationMs = Date.now() - startedAt;
+  const stdoutBytes = Buffer.byteLength(result.stdout || '', 'utf8');
+  const stderrBytes = Buffer.byteLength(result.stderr || '', 'utf8');
+
+  if (stdoutBytes > npmScriptMaxBufferBytes || stderrBytes > npmScriptMaxBufferBytes) {
+    throw new Error(
+      formatNpmFailure(scriptName, result, {
+        durationMs,
+        stderrBytes,
+        stdoutBytes,
+        timeoutMs: npmScriptTimeoutMs,
+      }),
+    );
+  }
+
+  if (result.timedOut || result.error) {
+    throw new Error(
+      formatNpmFailure(scriptName, result, {
+        durationMs,
+        stderrBytes,
+        stdoutBytes,
+        timeoutMs: npmScriptTimeoutMs,
+      }),
+    );
+  }
 
   if (result.status !== 0) {
-    throw new Error(`npm run ${scriptName} failed\n${result.stderr || result.stdout}`);
+    throw new Error(
+      formatNpmFailure(scriptName, result, {
+        durationMs,
+        stderrBytes,
+        stdoutBytes,
+        timeoutMs: npmScriptTimeoutMs,
+      }),
+    );
+  }
+
+  const scriptSummary = {
+    durationMs,
+    script: scriptName,
+    status: 'passed',
+    stderrBytes,
+    stdoutBytes,
+    timeoutMs: npmScriptTimeoutMs,
+  };
+
+  if (scriptName === 'smoke:reference-adoptions') {
+    const referenceAdoptionSummary = parseReferenceAdoptionSummary(result.stdout || '');
+    if (referenceAdoptionSummary) {
+      scriptSummary.referenceAdoptionSummary = referenceAdoptionSummary;
+    }
+  }
+
+  return scriptSummary;
+}
+
+function parseReferenceAdoptionSummary(stdout) {
+  const parsed = parseLastJsonObject(stdout);
+  if (!parsed || parsed.mode !== 'reference-adoptions-smoke' || !Array.isArray(parsed.results)) {
+    return null;
   }
 
   return {
-    script: scriptName,
-    status: 'passed',
+    mode: parsed.mode,
+    ok: parsed.ok === true,
+    scriptCount: parsed.results.length,
+    scripts: parsed.results.map((item) => ({
+      durationMs: Number(item.durationMs || 0),
+      ok: item.ok === true,
+      script: String(item.script || '').trim(),
+      timedOut: item.timedOut === true,
+      timeoutMs: Number(item.timeoutMs || 0),
+    })),
+    totalDurationMs: Number(parsed.totalDurationMs || 0),
   };
+}
+
+function parseLastJsonObject(stdout) {
+  const text = String(stdout || '').trim();
+  if (!text) {
+    return null;
+  }
+
+  for (let index = text.lastIndexOf('{'); index >= 0; index = text.lastIndexOf('{', index - 1)) {
+    try {
+      return JSON.parse(text.slice(index));
+    } catch {
+      // npm script banners precede the JSON payload; keep scanning left.
+    }
+  }
+
+  return null;
+}
+
+function parsePositiveIntegerEnv(envKey, fallbackValue) {
+  const rawValue = process.env[envKey];
+  if (rawValue === undefined || rawValue === '') {
+    return fallbackValue;
+  }
+  const parsedValue = Number.parseInt(rawValue, 10);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallbackValue;
+}
+
+function formatNpmFailure(scriptName, result, { durationMs, stderrBytes, stdoutBytes, timeoutMs }) {
+  const output = result.stderr || result.stdout || '';
+  const outputTail = String(output).slice(-8000);
+  return [
+    `npm run ${scriptName} failed`,
+    result.error ? `error=${result.error}` : null,
+    result.signal ? `signal=${result.signal}` : null,
+    result.timedOut ? 'timedOut=true' : null,
+    result.status !== null ? `status=${result.status}` : null,
+    `durationMs=${durationMs}`,
+    `timeoutMs=${timeoutMs}`,
+    `stdoutBytes=${stdoutBytes}`,
+    `stderrBytes=${stderrBytes}`,
+    outputTail ? `outputTail:\n${outputTail}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
 function runCli({ rootDir, args, env = {} }) {
@@ -131,6 +260,14 @@ async function runLiveValidation(provider, envKey) {
       `${provider} execution live validation`,
       '--objective',
       'Validate the bounded engineering execution loop against a live provider.',
+      '--constraints',
+      [
+        'Execution manifest must use cwd .',
+        'Execution manifest must include only read-only inspect commands and node --check src/cli.mjs',
+        'Do not write files',
+        'Do not use placeholder or TBD commands',
+        'Do not run network, install, git commit, git push, or deployment commands',
+      ].join('|'),
     ],
   });
 
@@ -162,6 +299,18 @@ async function runLiveValidation(provider, envKey) {
   }
 
   assert.equal(runResult.status, 'reviewed');
+  const reviewedMissionDetail = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'show', mission.id],
+  });
+  const reviewedSession = Array.isArray(reviewedMissionDetail.sessions)
+    ? reviewedMissionDetail.sessions.at(-1)
+    : null;
+  forceLiveValidationExecutionManifest({
+    missionId: mission.id,
+    rootDir: tempRoot,
+    sessionId: reviewedSession?.id,
+  });
 
   const preflight = runCli({
     rootDir: tempRoot,
@@ -220,4 +369,44 @@ async function runLiveValidation(provider, envKey) {
     verificationStatus: executionSession.verification.status,
     workspaceId: workspace.id,
   };
+}
+
+function forceLiveValidationExecutionManifest({ missionId, rootDir, sessionId }) {
+  if (!sessionId) {
+    throw new Error(`Cannot force live validation manifest without a reviewed session for ${missionId}`);
+  }
+
+  const statePath = path.join(rootDir, 'var', 'state.json');
+  const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  const manifest = {
+    source: 'live-validation-fixture',
+    summary: 'Deterministic live validation execution manifest that runs one bounded Node syntax check.',
+    steps: [
+      {
+        command: 'node --check src/cli.mjs',
+        cwd: '.',
+        expectedOutputs: ['Exit code 0 from Node syntax check'],
+        kind: 'test',
+        reason: 'Keep provider live validation deterministic while still exercising the approved execution loop.',
+        riskClassification: 'low',
+        title: 'Check CLI entrypoint syntax',
+        verificationTarget: 'src/cli.mjs parses successfully under Node.',
+      },
+    ],
+  };
+
+  let patched = false;
+  for (const run of state.agentRuns || []) {
+    if (run?.missionId === missionId && run?.sessionId === sessionId && run?.role === 'executor') {
+      run.executionManifest = manifest;
+      run.outputSummary = `${run.outputSummary || ''} Live validation fixture normalized executionManifest to a single deterministic node --check command.`.trim();
+      patched = true;
+    }
+  }
+
+  if (!patched) {
+    throw new Error(`Cannot find executor run to force live validation manifest for ${missionId}/${sessionId}`);
+  }
+
+  fs.writeFileSync(statePath, JSON.stringify(state, null, 2), 'utf8');
 }

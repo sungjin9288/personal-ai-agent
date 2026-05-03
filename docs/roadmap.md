@@ -3,7 +3,7 @@
 ## Current Milestone
 
 - milestone: v1 managed multi-agent foundation
-- status: in progress
+- status: OpenAI-scoped pilot ready; production blocked by remaining provider and deployment hardening gaps
 
 ## Completed In This Milestone
 
@@ -211,14 +211,19 @@
 - maintenance-specific summary now exposes latestBucketDelta, so operators can read latest-vs-previous daily change without manually diffing bucket arrays
 - memory and document logging commands
 - deterministic local-first smoke coverage
+- OpenAI live execution-v1 validation is archived and reflected in the current evidence, closeout, handoff, and snapshot package
+- Anthropic live validation reaches the provider API but is blocked by account credit/billing, so its failure is treated as a provider-account blocker rather than a harness runtime failure
+- local and Hermes provider validation remain blocked until approved runtime endpoint and model environment are injected
+- pilot deployment, onboarding, demo, security, operator runbook, evidence, closeout, handoff, and snapshot artifacts are aligned for an OpenAI-backed local-first pilot
 
 ## Next Milestone Scope
 
-- live provider interoperability validation against real OpenAI, Anthropic, and local endpoints
-- richer provider telemetry for provider-side usage variants and estimated cost
-- richer risk policy for path-level file and shell execution
-- deeper remediation automation for provider failover and policy-aware retries
-- stronger reviewer rubrics per deliverable type
+- remediate Anthropic billing/account credits, rerun live validation, and archive updated evidence
+- inject approved local and Hermes runtime endpoint/model configuration, rerun live validation, and archive updated evidence
+- add production deployment controls for authenticated RBAC, tenant isolation, centralized secret handling, retention/export/delete verification, incident/SLO evidence, and production-like clean-environment release generation
+- deepen provider failover, policy-aware retries, and operator remediation automation using the existing provider attention and maintenance surfaces
+- strengthen path-level file and shell execution policy before allowing broader workspace mutation
+- add provider-side usage/cost variants and stronger deliverable-specific reviewer rubrics after provider coverage is unblocked
 
 ## Deferred
 

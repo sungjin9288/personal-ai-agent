@@ -63,11 +63,19 @@ const ORCHESTRATION_PROFILES = Object.freeze([
     deliverableTypes: ENGINEERING_DELIVERABLE_TYPES,
     description: 'Research, implementation, verification, design, and documentation split for broader engineering discovery and handoff.',
     displayName: 'Engineering Full Spectrum',
+    harnessPatterns: [
+      'hermes-agent-session-loop',
+      'parallel-subagent-workstreams',
+      'provider-aware-tool-calling',
+      'memory-backed-handoff',
+    ],
     id: 'engineering-full-spectrum',
     mergeOwner: 'manager',
     mode: 'engineering',
     parallelSpecialistKinds: ['research', 'implementation', 'verification', 'design', 'documentation'],
     qualityGate: 'research-and-verification-signal-required',
+    recommendedProvider: 'hermes',
+    runtimeBlueprint: 'hermes-agent-full-spectrum',
     retryPolicy: 'resume-research-and-verification-fast',
   },
 ]);
@@ -86,6 +94,7 @@ function cloneProfile(profile) {
   return {
     ...profile,
     deliverableTypes: [...profile.deliverableTypes],
+    harnessPatterns: Array.isArray(profile.harnessPatterns) ? [...profile.harnessPatterns] : [],
     parallelSpecialistKinds: [...profile.parallelSpecialistKinds],
   };
 }

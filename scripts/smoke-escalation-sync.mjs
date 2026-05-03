@@ -87,7 +87,7 @@ warningState.escalations = warningState.escalations.map((escalation) => {
   if (escalation.id === resolution.escalation.id) {
     return {
       ...escalation,
-      dueAt: '2026-04-05T23:00:00.000Z',
+      dueAt: isoHoursAgo(1),
     };
   }
 
@@ -120,7 +120,7 @@ criticalState.escalations = criticalState.escalations.map((escalation) => {
   if (escalation.id === resolution.escalation.id) {
     return {
       ...escalation,
-      dueAt: '2026-04-03T00:00:00.000Z',
+      dueAt: isoHoursAgo(25),
     };
   }
 
@@ -199,3 +199,7 @@ console.log(
     2,
   ),
 );
+
+function isoHoursAgo(hours) {
+  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+}

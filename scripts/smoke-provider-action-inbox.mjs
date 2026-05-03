@@ -12,6 +12,15 @@ const workspacePath = path.join(tempRoot, 'workspace');
 
 fs.mkdirSync(workspacePath, { recursive: true });
 
+function currentUtcMonthStartTimestamp() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
+
+function isOlderThanSla(timestamp, slaHours = 24) {
+  return Date.now() - Date.parse(timestamp) >= slaHours * 60 * 60 * 1000;
+}
+
 const originalFetch = globalThis.fetch;
 const originalEnv = {
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
@@ -19,6 +28,8 @@ const originalEnv = {
   ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL,
   ANTHROPIC_VERSION: process.env.ANTHROPIC_VERSION,
 };
+const overdueCurrentMonthTimestamp = currentUtcMonthStartTimestamp();
+const expectedProviderHealthDriftOverdueCount = isOlderThanSla(overdueCurrentMonthTimestamp) ? 1 : 0;
 
 try {
   process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
@@ -83,7 +94,6 @@ service.resolveProviderAttention(stubAttention.actionId, {
 
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
-const overdueCurrentMonthTimestamp = '2026-04-01T00:00:00.000Z';
 
 state.agentRuns = state.agentRuns.map((agentRun) => {
   if (agentRun.missionId === failedMission.id && agentRun.status === 'failed') {
@@ -187,11 +197,11 @@ const dedicatedProviderHealthDriftInbox = runCli({
 
 assert.equal(dedicatedProviderHealthDriftInbox.items.length, 1);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.total, 1);
-assert.equal(dedicatedProviderHealthDriftInbox.summary.overdueCount, 1);
+assert.equal(dedicatedProviderHealthDriftInbox.summary.overdueCount, expectedProviderHealthDriftOverdueCount);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.providerCounts.stub, 1);
 assert.equal(dedicatedProviderHealthDriftInbox.summary.reasonCodeCounts['monthly-failed-up'], 1);
 assert.equal(dedicatedProviderHealthDriftInbox.items[0].actionId, providerHealthDriftInbox.items[0].actionId);
-assert.equal(dedicatedProviderHealthDriftInbox.items[0].isOverdue, true);
+assert.equal(dedicatedProviderHealthDriftInbox.items[0].isOverdue, expectedProviderHealthDriftOverdueCount === 1);
 
 const overdueProviderHealthDriftInbox = runCli({
   rootDir: tempRoot,
@@ -199,10 +209,12 @@ const overdueProviderHealthDriftInbox = runCli({
 });
 
 assert.equal(overdueProviderHealthDriftInbox.filters.overdueOnly, true);
-assert.equal(overdueProviderHealthDriftInbox.items.length, 1);
-assert.equal(overdueProviderHealthDriftInbox.summary.total, 1);
-assert.equal(overdueProviderHealthDriftInbox.summary.overdueCount, 1);
-assert.equal(overdueProviderHealthDriftInbox.items[0].providerId, 'stub');
+assert.equal(overdueProviderHealthDriftInbox.items.length, expectedProviderHealthDriftOverdueCount);
+assert.equal(overdueProviderHealthDriftInbox.summary.total, expectedProviderHealthDriftOverdueCount);
+assert.equal(overdueProviderHealthDriftInbox.summary.overdueCount, expectedProviderHealthDriftOverdueCount);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.equal(overdueProviderHealthDriftInbox.items[0].providerId, 'stub');
+}
 
 const workspace = runCli({
   rootDir: tempRoot,

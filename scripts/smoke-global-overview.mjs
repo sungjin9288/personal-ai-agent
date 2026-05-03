@@ -13,6 +13,8 @@ const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-global
 const workspaceOnePath = path.join(tempRoot, 'workspace-one');
 const workspaceTwoPath = path.join(tempRoot, 'workspace-two');
 const recentProviderSince = '2026-04-02T00:00:00.000Z';
+const currentMonthStartDate = getUtcMonthStartDate();
+const currentWeekStartDate = getUtcWeekStartDate();
 
 fs.mkdirSync(workspaceOnePath, { recursive: true });
 fs.mkdirSync(workspaceTwoPath, { recursive: true });
@@ -194,10 +196,10 @@ const overview = runCli({
 assert.equal(overview.summary.workspaceCount, 2);
 assert.equal(overview.summary.missionCount, 3);
 assert.equal(overview.summary.sessionCount, 3);
-assert.equal(overview.summary.providerCount, 4);
+assert.equal(overview.summary.providerCount, 5);
 assert.equal(overview.summary.providerConfiguredCount, 1);
 assert.equal(overview.summary.providerReadyCount, 1);
-assert.equal(overview.summary.providerUnprobedCount, 2);
+assert.equal(overview.summary.providerUnprobedCount, 3);
 assert.equal(overview.summary.providerLatestProbeFailureCount, 0);
 assert.equal(overview.summary.providerLatestProbeSkippedCount, 1);
 assert.equal(overview.summary.missionCounts.completed, 1);
@@ -214,9 +216,9 @@ assert.equal(overview.summary.openEscalationCount, 2);
 assert.equal(overview.summary.maintenanceRunCount, 1);
 assert.equal(overview.summary.maintenanceTotalRemindedCount, 2);
 assert.equal(overview.summary.maintenanceMonthlyBucketCount, 1);
-assert.equal(overview.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(overview.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(overview.summary.maintenanceOldestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentMonthStartDate);
 assert.equal(overview.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(overview.summary.maintenanceAffectedMissionCount, 2);
 assert.equal(overview.summary.latestMaintenanceImpactRun.id, maintenanceRun.maintenanceRun.id);
@@ -238,11 +240,11 @@ assert.equal(overview.summary.latestFailedProviderProbe, null);
 assert.equal(overview.summary.latestSuccessfulProviderProbe.providerId, 'stub');
 assert.equal(overview.escalations.length, 2);
 assert.equal(overview.inbox.length, 1);
-assert.equal(overview.providerOverview.summary.total, 4);
-assert.equal(overview.providerOverview.summary.unprobedCount, 2);
+assert.equal(overview.providerOverview.summary.total, 5);
+assert.equal(overview.providerOverview.summary.unprobedCount, 3);
 assert.equal(overview.providerHealthDrift.status, 'stable');
 assert.deepEqual(overview.providerHealthDrift.reasonCodes, []);
-assert.equal(overview.providerOverview.providers.length, 4);
+assert.equal(overview.providerOverview.providers.length, 5);
 
 const recentOverview = runCli({
   rootDir: tempRoot,
@@ -257,13 +259,13 @@ assert.equal(recentOverview.summary.providerRecentEventFamilyCounts.attention, 0
 assert.equal(recentOverview.summary.providerRecentProbeTotal, 2);
 assert.equal(recentOverview.summary.providerRecentExecutionCount, 12);
 assert.equal(recentOverview.summary.providerRecentExecutionMonthlyBucketCount, 1);
-assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(recentOverview.summary.providerRecentExecutionOldestMonthlyBucketStartDate, currentMonthStartDate);
 assert.equal(recentOverview.summary.providerRecentExecutionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentOverview.providerHealthDrift.status, 'stable');
 assert.deepEqual(recentOverview.providerHealthDrift.reasonCodes, []);
 assert.equal(recentOverview.providerHealthDrift.recentExecutionMonthlyBucketCount, 1);
-assert.equal(recentOverview.providerHealthDrift.recentExecutionCurrentMonthStartDate, '2026-04-01');
+assert.equal(recentOverview.providerHealthDrift.recentExecutionCurrentMonthStartDate, currentMonthStartDate);
 assert.equal(recentOverview.summary.providerHealthDriftStatus, 'stable');
 assert.deepEqual(recentOverview.summary.providerHealthDriftReasonCodes, []);
 assert.equal(recentOverview.summary.providerHealthDriftRecentExecutionMonthlyBucketCount, 1);
@@ -287,13 +289,13 @@ assert.equal(
 assert.equal(recentOverview.providerRecentWindow.executionDailyBuckets[0].executionCount, 12);
 assert.equal(recentOverview.providerRecentWindow.executionLatestBucketDelta.previousDate, null);
 assert.equal(recentOverview.providerRecentWindow.executionMonthlyBucketCount, 1);
-assert.equal(recentOverview.providerRecentWindow.executionLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(recentOverview.providerRecentWindow.executionOldestMonthlyBucketStartDate, '2026-04-01');
+assert.equal(recentOverview.providerRecentWindow.executionLatestMonthlyBucketStartDate, currentMonthStartDate);
+assert.equal(recentOverview.providerRecentWindow.executionOldestMonthlyBucketStartDate, currentMonthStartDate);
 assert.equal(recentOverview.providerRecentWindow.executionMonthlyBuckets[0].executionCount, 12);
 assert.equal(recentOverview.providerRecentWindow.executionLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(recentOverview.providerRecentWindow.executionWeeklyBucketCount, 1);
-assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketStartDate, '2026-04-06');
-assert.equal(recentOverview.providerRecentWindow.executionOldestWeeklyBucketStartDate, '2026-04-06');
+assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketStartDate, currentWeekStartDate);
+assert.equal(recentOverview.providerRecentWindow.executionOldestWeeklyBucketStartDate, currentWeekStartDate);
 assert.equal(recentOverview.providerRecentWindow.executionWeeklyBuckets[0].executionCount, 12);
 assert.equal(recentOverview.providerRecentWindow.executionLatestWeeklyBucketDelta.previousWeekStartDate, null);
 assert.equal(recentOverview.providerRecentWindow.probeSkippedCount, 1);
@@ -335,3 +337,16 @@ console.log(
     2,
   ),
 );
+
+function getUtcMonthStartDate(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
+function getUtcWeekStartDate(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  const day = date.getUTCDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + mondayOffset));
+  return start.toISOString().slice(0, 10);
+}

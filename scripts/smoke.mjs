@@ -99,6 +99,16 @@ const decisionRun = runCli({
 });
 
 assert.equal(decisionRun.status, 'completed');
+const decisionSession = runCli({
+  rootDir: tempRoot,
+  args: ['session', 'show', decisionMission.id, '--session', decisionRun.sessionId],
+});
+assert.equal(decisionSession.session.sourceContext.sourceType, 'cli');
+assert.equal(decisionSession.session.sourceContext.channel, 'cli');
+assert.match(
+  fs.readFileSync(decisionSession.artifacts.find((artifact) => artifact.fileName === 'manager-context.md').path, 'utf8'),
+  /## Session Source[\s\S]*source type: cli/,
+);
 
 const engineeringMission = runCli({
   rootDir: tempRoot,
@@ -198,10 +208,12 @@ const incidentResult = runCli({
   args: ['doc', 'log', '--type', 'incident', '--title', 'Sample issue', '--content', 'Recorded a placeholder incident entry for CLI coverage.'],
 });
 
-assert.ok(fs.existsSync(devlogResult.path));
-assert.ok(fs.existsSync(incidentResult.path));
-assert.match(fs.readFileSync(devlogResult.path, 'utf8'), /Smoke note/);
-assert.match(fs.readFileSync(incidentResult.path, 'utf8'), /Sample issue/);
+const devlogResultPath = path.resolve(tempRoot, devlogResult.path);
+const incidentResultPath = path.resolve(tempRoot, incidentResult.path);
+assert.ok(fs.existsSync(devlogResultPath));
+assert.ok(fs.existsSync(incidentResultPath));
+assert.match(fs.readFileSync(devlogResultPath, 'utf8'), /Smoke note/);
+assert.match(fs.readFileSync(incidentResultPath, 'utf8'), /Sample issue/);
 assert.match(fs.readFileSync(prdRun.artifactPath, 'utf8'), /## Acceptance Signals/);
 
 console.log(

@@ -99,6 +99,10 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         maxAttempts: LOCAL_SPEC.runtime.maxAttempts,
         method: 'GET',
         providerLabel: 'Local',
+        rateLimit: {
+          ...LOCAL_SPEC.runtime.rateLimit,
+          scope: LOCAL_SPEC.id,
+        },
         timeoutMs: LOCAL_SPEC.runtime.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
@@ -156,6 +160,10 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         maxAttempts: LOCAL_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Local',
+        rateLimit: {
+          ...LOCAL_SPEC.runtime.rateLimit,
+          scope: LOCAL_SPEC.id,
+        },
         timeoutMs: LOCAL_SPEC.runtime.runTimeoutMs,
         url: `${config.baseUrl}/chat/completions`,
       });

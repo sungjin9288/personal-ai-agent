@@ -1,3 +1,8 @@
+import {
+  acquireProviderRateGuardSlot,
+  recordProviderRateLimit,
+} from './provider-rate-guard.mjs';
+
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
@@ -238,6 +243,7 @@ export async function requestJsonWithPolicy({
   maxAttempts = 2,
   method = 'GET',
   providerLabel,
+  rateLimit = null,
   timeoutMs = 15000,
   url,
 }) {
@@ -257,6 +263,7 @@ export async function requestJsonWithPolicy({
   for (let attempt = 1; attempt <= totalAttempts; attempt += 1) {
     const attemptStartedAtMs = Date.now();
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    let releaseRateGuardSlot = null;
     const timeoutHandle =
       controller && timeoutMs > 0
         ? setTimeout(() => {
@@ -265,6 +272,17 @@ export async function requestJsonWithPolicy({
         : null;
 
     try {
+      if (rateLimit) {
+        releaseRateGuardSlot = await acquireProviderRateGuardSlot({
+          maxConcurrency: rateLimit.maxConcurrency,
+          maxRequests: rateLimit.maxRequests,
+          nowMs: rateLimit.nowMs,
+          scope: rateLimit.scope,
+          sleep: rateLimit.sleep,
+          windowMs: rateLimit.windowMs,
+        });
+      }
+
       const response = await fetchImpl(url, {
         ...init,
         headers,
@@ -291,6 +309,14 @@ export async function requestJsonWithPolicy({
             timedOut: false,
           },
         );
+        if (rateLimit && Number(response.status) === 429) {
+          recordProviderRateLimit({
+            defaultBlockMs: rateLimit?.reactiveBlockMs,
+            nowMs: rateLimit?.nowMs,
+            response,
+            scope: rateLimit?.scope,
+          });
+        }
         attemptHistory.push(
           normalizeAttemptHistoryEntry({
             attempt,
@@ -395,6 +421,10 @@ export async function requestJsonWithPolicy({
         continue;
       }
       throw failureWithDuration;
+    } finally {
+      if (typeof releaseRateGuardSlot === 'function') {
+        releaseRateGuardSlot();
+      }
     }
   }
 

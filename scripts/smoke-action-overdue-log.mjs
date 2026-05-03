@@ -14,6 +14,15 @@ const workspaceTwoPath = path.join(tempRoot, 'workspace-two');
 fs.mkdirSync(workspaceOnePath, { recursive: true });
 fs.mkdirSync(workspaceTwoPath, { recursive: true });
 
+function currentUtcMonthStartTimestamp() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
+
+function isOlderThanSla(timestamp, slaHours = 24) {
+  return Date.now() - Date.parse(timestamp) >= slaHours * 60 * 60 * 1000;
+}
+
 const workspaceOne = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspaceOnePath, '--name', 'workspace-one'],
@@ -176,7 +185,9 @@ runCli({
 const statePath = path.join(tempRoot, 'var', 'state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const overdueTimestamp = '2026-03-01T00:00:00.000Z';
-const overdueCurrentMonthTimestamp = '2026-04-01T00:00:00.000Z';
+const overdueCurrentMonthTimestamp = currentUtcMonthStartTimestamp();
+const expectedProviderHealthDriftOverdueCount = isOlderThanSla(overdueCurrentMonthTimestamp) ? 1 : 0;
+const expectedOverdueActionCount = 4 + expectedProviderHealthDriftOverdueCount;
 
 state.approvals = state.approvals.map((approval) => {
   if (approval.id === approvalRun.approvalId) {
@@ -236,10 +247,10 @@ const incidentLog = runCli({
 });
 
 assert.equal(incidentLog.logged, true);
-assert.equal(incidentLog.count, 5);
-assert.equal(incidentLog.escalationIds.length, 5);
+assert.equal(incidentLog.count, expectedOverdueActionCount);
+assert.equal(incidentLog.escalationIds.length, expectedOverdueActionCount);
 assert.ok(incidentLog.path);
-assert.equal(incidentLog.itemIds.length, 5);
+assert.equal(incidentLog.itemIds.length, expectedOverdueActionCount);
 assert.equal(incidentLog.summary.specialistFollowUpOverdueCount, 1);
 assert.equal(incidentLog.summary.specialistFollowUpNeedsReminderCount, 1);
 assert.equal(incidentLog.summary.specialistFollowUpReminderCountTotal, 0);
@@ -250,17 +261,19 @@ assert.equal(incidentLog.summary.specialistFollowUpRemediationRouteCounts['stand
 assert.equal(incidentLog.summary.specialistFollowUpStatusCounts.failed, 1);
 assert.equal(incidentLog.summary.specialistFollowUpLatestReminderAt, null);
 assert.ok(incidentLog.summary.specialistFollowUpNextReminderAt);
-assert.equal(incidentLog.summary.providerHealthDriftOverdueCount, 1);
-assert.equal(incidentLog.summary.providerHealthDriftProviderCounts.stub, 1);
-assert.equal(incidentLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+assert.equal(incidentLog.summary.providerHealthDriftOverdueCount, expectedProviderHealthDriftOverdueCount);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.equal(incidentLog.summary.providerHealthDriftProviderCounts.stub, 1);
+  assert.equal(incidentLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+}
 assert.equal(incidentLog.summary.maintenanceMonthlyBucketCount, 0);
 assert.equal(incidentLog.summary.maintenanceLatestMonthlyBucketStartDate, null);
 assert.equal(incidentLog.summary.maintenanceOldestMonthlyBucketStartDate, null);
 assert.equal(incidentLog.summary.maintenanceLatestMonthlyBucketDelta, null);
 
 const incidentsContent = fs.readFileSync(incidentLog.path, 'utf8');
-assert.match(incidentsContent, /Overdue Action Escalation \(5 items\)/);
-assert.match(incidentsContent, /overdue action count: 5/);
+assert.match(incidentsContent, new RegExp(`Overdue Action Escalation \\(${expectedOverdueActionCount} items\\)`));
+assert.match(incidentsContent, new RegExp(`overdue action count: ${expectedOverdueActionCount}`));
 assert.match(incidentsContent, /specialist follow-up overdue count: 1/);
 assert.match(incidentsContent, /specialist follow-up needs-reminder count: 1/);
 assert.match(incidentsContent, /specialist follow-up reminder total: 0/);
@@ -271,9 +284,13 @@ assert.match(incidentsContent, /fallback: node src\/cli\.mjs mission run/);
 assert.match(incidentsContent, /specialist follow-up providers: stub=1/);
 assert.match(incidentsContent, /specialist follow-up kinds: documentation=1/);
 assert.match(incidentsContent, /specialist follow-up next reminder at: 2026-03-02T00:00:00.000Z/);
-assert.match(incidentsContent, /provider health drift overdue count: 1/);
-assert.match(incidentsContent, /provider health drift providers: stub=1/);
-assert.match(incidentsContent, /provider health drift reason codes: monthly-failed-up=1/);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.match(incidentsContent, /provider health drift overdue count: 1/);
+  assert.match(incidentsContent, /provider health drift providers: stub=1/);
+  assert.match(incidentsContent, /provider health drift reason codes: monthly-failed-up=1/);
+} else {
+  assert.doesNotMatch(incidentsContent, /provider health drift overdue count:/);
+}
 assert.match(incidentsContent, /maintenance monthly bucket count: 0/);
 assert.match(incidentsContent, /maintenance latest monthly bucket start: none/);
 assert.match(incidentsContent, /maintenance oldest monthly bucket start: none/);
@@ -281,12 +298,16 @@ assert.match(incidentsContent, /maintenance latest monthly delta: none/);
 assert.match(incidentsContent, /Approve engineering execution proposal/);
 assert.match(incidentsContent, /Maintenance sweep required for workspace-two/);
 assert.match(incidentsContent, /Blocked after rejected approval/);
-assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.match(incidentsContent, /Provider health drift review for Reviewer overdue candidate/);
+}
 assert.match(incidentsContent, /Specialist follow-up required for Specialist overdue follow-up \(documentation\)/);
 assert.match(incidentsContent, /approval resolve/);
 assert.match(incidentsContent, /action maintenance/);
 assert.match(incidentsContent, /mission show/);
-assert.match(incidentsContent, /mission timeline/);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.match(incidentsContent, /mission timeline/);
+}
 assert.match(incidentsContent, /mission run .* --provider stub/);
 assert.match(incidentsContent, /escalate to the workspace owner/i);
 
@@ -312,24 +333,34 @@ const driftOnlyLog = runCli({
   args: ['action', 'log-overdue', '--class', 'provider-health-drift-required'],
 });
 
-assert.equal(driftOnlyLog.logged, true);
-assert.equal(driftOnlyLog.count, 1);
-assert.equal(driftOnlyLog.summary.specialistFollowUpOverdueCount, 0);
-assert.equal(driftOnlyLog.summary.providerHealthDriftOverdueCount, 1);
-assert.equal(driftOnlyLog.summary.providerHealthDriftProviderCounts.stub, 1);
-assert.equal(driftOnlyLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+assert.equal(driftOnlyLog.logged, expectedProviderHealthDriftOverdueCount === 1);
+assert.equal(driftOnlyLog.count, expectedProviderHealthDriftOverdueCount);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.equal(driftOnlyLog.summary.specialistFollowUpOverdueCount, 0);
+  assert.equal(driftOnlyLog.summary.providerHealthDriftOverdueCount, 1);
+  assert.equal(driftOnlyLog.summary.providerHealthDriftProviderCounts.stub, 1);
+  assert.equal(driftOnlyLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+} else {
+  assert.equal(driftOnlyLog.summary, undefined);
+  assert.equal(driftOnlyLog.path, null);
+}
 
 const driftProviderLog = runCli({
   rootDir: tempRoot,
   args: ['action', 'log-overdue', '--class', 'provider-health-drift-required', '--provider', 'stub'],
 });
 
-assert.equal(driftProviderLog.logged, true);
-assert.equal(driftProviderLog.count, 1);
+assert.equal(driftProviderLog.logged, expectedProviderHealthDriftOverdueCount === 1);
+assert.equal(driftProviderLog.count, expectedProviderHealthDriftOverdueCount);
 assert.equal(driftProviderLog.filters.providerId, 'stub');
-assert.equal(driftProviderLog.summary.providerHealthDriftOverdueCount, 1);
-assert.equal(driftProviderLog.summary.providerHealthDriftProviderCounts.stub, 1);
-assert.equal(driftProviderLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+if (expectedProviderHealthDriftOverdueCount === 1) {
+  assert.equal(driftProviderLog.summary.providerHealthDriftOverdueCount, 1);
+  assert.equal(driftProviderLog.summary.providerHealthDriftProviderCounts.stub, 1);
+  assert.equal(driftProviderLog.summary.providerHealthDriftReasonCodeCounts['monthly-failed-up'], 1);
+} else {
+  assert.equal(driftProviderLog.summary, undefined);
+  assert.equal(driftProviderLog.path, null);
+}
 
 const specialistOnlyLog = runCli({
   rootDir: tempRoot,

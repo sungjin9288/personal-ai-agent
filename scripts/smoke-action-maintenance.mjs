@@ -10,6 +10,11 @@ const workspacePath = path.join(tempRoot, 'workspace');
 
 fs.mkdirSync(workspacePath, { recursive: true });
 
+function currentUtcMonthStartDate() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
 const workspace = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspacePath, '--name', 'maintenance-workspace'],
@@ -248,9 +253,9 @@ assert.equal(maintenance.summary.specialistFollowUpRemindedCount, 1);
 assert.equal(maintenance.summary.specialistFollowUpRetryPolicyCounts['resume-blocked-or-failed-branch'], 1);
 assert.equal(maintenance.summary.specialistFollowUpRemediationRouteCounts['standard-branch-remediation'], 1);
 assert.equal(maintenance.summary.maintenanceMonthlyBucketCount, 1);
-assert.equal(maintenance.summary.maintenanceLatestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(maintenance.summary.maintenanceOldestMonthlyBucketStartDate, '2026-04-01');
-assert.equal(maintenance.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, '2026-04-01');
+assert.equal(maintenance.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(maintenance.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
+assert.equal(maintenance.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentUtcMonthStartDate());
 assert.equal(maintenance.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
 assert.equal(maintenance.summary.totalRemindedCount, 3);
 assert.equal(maintenance.summary.acknowledgedMaintenanceRequiredCount, 1);

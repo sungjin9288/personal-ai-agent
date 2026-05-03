@@ -66,9 +66,9 @@ initialState.escalations = initialState.escalations.map((escalation) => {
   if (escalation.id === resolution.escalation.id) {
     return {
       ...escalation,
-      createdAt: '2026-03-01T00:00:00.000Z',
-      dueAt: '2026-03-02T00:00:00.000Z',
-      updatedAt: '2026-03-01T00:00:00.000Z',
+      createdAt: isoHoursAgo(50),
+      dueAt: isoHoursAgo(25),
+      updatedAt: isoHoursAgo(50),
     };
   }
 
@@ -101,8 +101,8 @@ afterReminderState.escalations = afterReminderState.escalations.map((escalation)
   if (escalation.id === resolution.escalation.id) {
     return {
       ...escalation,
-      lastReminderAt: '2026-04-05T00:00:00.000Z',
-      updatedAt: '2026-04-05T00:00:00.000Z',
+      lastReminderAt: isoHoursAgo(7),
+      updatedAt: isoHoursAgo(7),
     };
   }
 
@@ -121,14 +121,14 @@ assert.equal(escalatedOwnerInbox.items[0].ownerEscalationLevel, 'final');
 assert.equal(escalatedOwnerInbox.items[0].ownerEscalationStep, 1);
 assert.equal(escalatedOwnerInbox.summary.effectiveOwnerCounts['human-approver'], 1);
 
-const monitoringInbox = runCli({
+const handoffInbox = runCli({
   rootDir: tempRoot,
-  args: ['action', 'inbox', '--workspace', workspace.id, '--class', 'monitoring-required', '--effective-owner', 'human-approver'],
+  args: ['action', 'inbox', '--workspace', workspace.id, '--class', 'handoff-required', '--effective-owner', 'human-approver'],
 });
 
-assert.equal(monitoringInbox.items.length, 1);
-assert.equal(monitoringInbox.items[0].effectiveRecommendedOwner, 'human-approver');
-assert.equal(monitoringInbox.summary.effectiveOwnerCounts['human-approver'], 1);
+assert.equal(handoffInbox.items.length, 1);
+assert.equal(handoffInbox.items[0].effectiveRecommendedOwner, 'human-approver');
+assert.equal(handoffInbox.summary.effectiveOwnerCounts['human-approver'], 1);
 
 console.log(
   JSON.stringify(
@@ -142,3 +142,7 @@ console.log(
     2,
   ),
 );
+
+function isoHoursAgo(hours) {
+  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+}
