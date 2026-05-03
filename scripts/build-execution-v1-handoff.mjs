@@ -24,6 +24,7 @@ const snapshotDir = path.join(snapshotsRoot, commit);
 const snapshotDisplayPath = fs.existsSync(snapshotDir)
   ? formatMarkdownLinkTarget(snapshotDir, outputPath)
   : formatMarkdownLinkTarget(path.join(snapshotsRoot, commit), outputPath);
+const commitPushStatus = getCommitPushStatus({ branch, commit });
 const deterministicRows = extractSectionBullets(evidenceMarkdown, 'Deterministic Verification');
 const runtimeRows = extractSectionBullets(evidenceMarkdown, 'Deterministic Runtime Summary');
 const referenceRows = extractSectionBullets(evidenceMarkdown, 'Reference Adoption Aggregate');
@@ -89,7 +90,7 @@ const lines = [
   `- closeout: [${path.basename(closeoutPath)}](${formatMarkdownLinkTarget(closeoutPath, outputPath)})`,
   `- immutableSnapshot: [${snapshotDisplayPath}](${snapshotDisplayPath})`,
   `- visualArtifactSetSha256: ${visualArtifactSetSha256}`,
-  '- commitPushStatus: deferred by operator request',
+  `- commitPushStatus: ${commitPushStatus.summary}`,
   '',
   '## Operational State',
   '',
@@ -179,7 +180,9 @@ lines.push(
   '1. Resolve failed provider account-level blockers, then rerun only the affected `live:execution-v1:*` commands.',
   '2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.',
   '3. Rerun `node scripts/build-execution-v1-evidence.mjs --live-<provider>`, `npm run closeout:execution-v1 -- --reuse-existing-evidence`, `npm run handoff:execution-v1`, and `npm run snapshot:execution-v1` after live validation if the release artifact must include updated live-provider proof.',
-  '4. Keep commit and push deferred until the operator explicitly resumes git publishing.',
+  commitPushStatus.pushed
+    ? `4. Current verified commit is already contained in \`${commitPushStatus.remoteRef}\`; only commit/push again after intentionally changing release artifacts.`
+    : '4. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.',
   '',
   '## Completion Boundary',
   '',
@@ -200,6 +203,7 @@ console.log(
       closeoutPath,
       outputPath,
       generatedAt,
+      commitPushStatus,
       visualArtifactSetSha256,
     },
     null,
@@ -305,6 +309,66 @@ function runGit(args) {
     throw new Error(`git ${args.join(' ')} failed\n${result.stderr || result.stdout}`);
   }
   return String(result.stdout || '').trim();
+}
+
+function runGitOptional(args) {
+  const result = spawnSync('git', args, {
+    cwd: repoDir,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) {
+    return '';
+  }
+  return String(result.stdout || '').trim();
+}
+
+function getCommitPushStatus({ branch = '', commit = '' } = {}) {
+  const normalizedBranch = String(branch || '').trim();
+  const normalizedCommit = String(commit || '').trim();
+  if (!normalizedCommit) {
+    return {
+      pushed: false,
+      remoteRef: '',
+      summary: 'unknown, missing verified commit',
+    };
+  }
+  if (!normalizedBranch || normalizedBranch === 'HEAD') {
+    return {
+      pushed: false,
+      remoteRef: '',
+      summary: 'unknown, detached HEAD or missing branch',
+    };
+  }
+
+  const remoteRef = `origin/${normalizedBranch}`;
+  const remoteCommit = runGitOptional(['rev-parse', '--verify', remoteRef]);
+  if (!remoteCommit) {
+    return {
+      pushed: false,
+      remoteRef,
+      summary: `not pushed, ${remoteRef} not found`,
+    };
+  }
+
+  const containsResult = spawnSync('git', ['merge-base', '--is-ancestor', normalizedCommit, remoteRef], {
+    cwd: repoDir,
+    encoding: 'utf8',
+  });
+  if (containsResult.status === 0) {
+    return {
+      pushed: true,
+      remoteCommit,
+      remoteRef,
+      summary: `pushed to ${remoteRef}`,
+    };
+  }
+
+  return {
+    pushed: false,
+    remoteCommit,
+    remoteRef,
+    summary: `not pushed to ${remoteRef}`,
+  };
 }
 
 function formatDisplayPath(filePath) {

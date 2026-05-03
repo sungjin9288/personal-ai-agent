@@ -113,10 +113,12 @@ const payload = JSON.parse(String(result.stdout || '{}'));
 assert.equal(payload.ok, true);
 assert.equal(payload.outputPath, handoffPath);
 assert.equal(payload.visualArtifactSetSha256, artifactSetSha256);
+assert.equal(typeof payload.commitPushStatus?.summary, 'string');
 
 const handoff = fs.readFileSync(handoffPath, 'utf8');
 assert.match(handoff, /^# Execution v1 Handoff/m);
 assert.match(handoff, new RegExp(`^- commit: ${escapeRegExp(commit)}$`, 'm'));
+assert.match(handoff, /^- commitPushStatus: .+$/m);
 assert.match(handoff, /^- deterministic execution flow: ready$/m);
 assert.match(handoff, /^- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=1.0s$/m);
 assert.match(handoff, /^- OpenAI live validation: blocked by missing `OPENAI_API_KEY`$/m);
@@ -125,6 +127,11 @@ assert.match(handoff, new RegExp(`^- visual artifact set: ${escapeRegExp(artifac
 assert.equal(handoff.includes('npm run preflight:execution-v1:all'), true);
 assert.equal(handoff.includes('node scripts/build-execution-v1-evidence.mjs --live-<provider>'), true);
 assert.equal(handoff.includes('npm run handoff:execution-v1'), true);
+assert.equal(
+  handoff.includes('Commit and push the refreshed release artifacts')
+    || handoff.includes('only commit/push again after intentionally changing release artifacts'),
+  true,
+);
 
 console.log(
   JSON.stringify(
