@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-03T17:26:46.398Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-03T17:26:46.277Z
 - localDate: 2026-05-04
 - branch: codex/managed-multi-agent-v1-foundation
 - commit: 51ab10f20f0d144da3692acaf509208689d22d65
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65](releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65](docs/releases/execution-v1/51ab10f20f0d144da3692acaf509208689d22d65)
 - visualArtifactSetSha256: 795800869223e29089a4d1582eb26e0ef0a93609b360c23ab948b1c7b2e2ea2f
 - commitPushStatus: deferred by operator request
 
