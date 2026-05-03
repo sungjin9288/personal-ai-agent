@@ -22,11 +22,22 @@ const evidenceCommit = extractBulletValue(evidenceMarkdown, 'commit');
 const closeoutCommit = extractBulletValue(closeoutMarkdown, 'commit');
 const handoffCommit = extractBulletValue(handoffMarkdown, 'commit');
 const verifiedCommit = closeoutCommit || evidenceCommit;
+const artifactSyncCommit = buildArtifactSyncCommit(currentCommit, verifiedCommit);
+const effectiveVerifiedCommit = artifactSyncCommit.detected ? artifactSyncCommit.verifiedCommit : currentCommit;
 
-assert.equal(evidenceCommit, currentCommit);
-assert.equal(closeoutCommit, currentCommit);
-assert.equal(handoffCommit, currentCommit);
-assert.equal(verifiedCommit, currentCommit);
+assert.equal(evidenceCommit, effectiveVerifiedCommit);
+assert.equal(closeoutCommit, effectiveVerifiedCommit);
+assert.equal(handoffCommit, effectiveVerifiedCommit);
+assert.equal(verifiedCommit, effectiveVerifiedCommit);
+if (artifactSyncCommit.detected) {
+  assert.notEqual(currentCommit, effectiveVerifiedCommit);
+  assert.equal(artifactSyncCommit.changedPaths.length > 0, true);
+  assert.equal(
+    artifactSyncCommit.changedPaths.every((filePath) => isReleaseArtifactSyncPath(filePath)),
+    true,
+    JSON.stringify(artifactSyncCommit),
+  );
+}
 
 const snapshotDir = path.join(snapshotsRoot, verifiedCommit);
 const snapshotEvidencePath = path.join(snapshotDir, 'execution-v1-evidence.md');
@@ -41,7 +52,7 @@ const snapshotEvidenceMarkdown = readRequiredFile(snapshotEvidencePath);
 const snapshotCloseoutMarkdown = readRequiredFile(snapshotCloseoutPath);
 const snapshotHandoffMarkdown = readRequiredFile(snapshotHandoffPath);
 
-assert.equal(manifest.verifiedCommit, currentCommit);
+assert.equal(manifest.verifiedCommit, effectiveVerifiedCommit);
 assert.equal(manifest.snapshotDir, snapshotDirDisplayPath);
 assert.equal(manifest.sourceEvidencePath, formatDisplayPath(evidencePath));
 assert.equal(manifest.sourceCloseoutPath, formatDisplayPath(closeoutPath));
@@ -55,9 +66,9 @@ assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'archivedAt'), manifest
 assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'sourcePath'), formatDisplayPath(evidencePath));
 assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'sourcePath'), formatDisplayPath(closeoutPath));
 assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'sourcePath'), formatDisplayPath(handoffPath));
-assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'commit'), currentCommit);
-assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'commit'), currentCommit);
-assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'commit'), currentCommit);
+assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'commit'), effectiveVerifiedCommit);
+assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'commit'), effectiveVerifiedCommit);
+assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'commit'), effectiveVerifiedCommit);
 assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'generatedAt'), extractBulletValue(evidenceMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'generatedAt'), extractBulletValue(closeoutMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'visualArtifactSetSha256'), extractBulletValue(handoffMarkdown, 'visualArtifactSetSha256'));
@@ -115,12 +126,14 @@ console.log(
   JSON.stringify(
     {
       archivedAt: manifest.archivedAt,
+      artifactSyncCommit: artifactSyncCommit.detected,
       commit: currentCommit,
       deterministicPassed: deterministicLines.filter((line) => /: passed$/.test(line)).length,
       ok: true,
       runtimeRows: runtimeLines.length,
       snapshotDir,
       snapshotHandoffPath,
+      verifiedCommit: effectiveVerifiedCommit,
     },
     null,
     2,
@@ -180,6 +193,68 @@ function runGit(args) {
     throw new Error(result.stderr || result.stdout || `git ${args.join(' ')} failed`);
   }
   return String(result.stdout || '').trim();
+}
+
+function runGitLines(args) {
+  return runGit(args)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function isGitAncestor(ancestorCommit = '', descendantCommit = '') {
+  if (!ancestorCommit || !descendantCommit) {
+    return false;
+  }
+
+  const result = spawnSync('git', ['merge-base', '--is-ancestor', ancestorCommit, descendantCommit], {
+    cwd: repoDir,
+    encoding: 'utf8',
+  });
+  return result.status === 0;
+}
+
+function buildArtifactSyncCommit(currentCommitValue = '', verifiedCommitValue = '') {
+  if (!currentCommitValue || !verifiedCommitValue || currentCommitValue === verifiedCommitValue) {
+    return {
+      changedPaths: [],
+      commits: [],
+      currentCommit: currentCommitValue,
+      detected: false,
+      verifiedCommit: verifiedCommitValue,
+    };
+  }
+  if (!isGitAncestor(verifiedCommitValue, currentCommitValue)) {
+    return {
+      changedPaths: [],
+      commits: [],
+      currentCommit: currentCommitValue,
+      detected: false,
+      verifiedCommit: verifiedCommitValue,
+    };
+  }
+
+  const commits = runGitLines(['rev-list', '--reverse', `${verifiedCommitValue}..${currentCommitValue}`]);
+  const changedPaths = [...new Set(
+    commits.flatMap((commit) => runGitLines(['diff-tree', '--no-commit-id', '--name-only', '-r', commit])),
+  )].sort();
+
+  return {
+    changedPaths,
+    commits,
+    currentCommit: currentCommitValue,
+    detected: changedPaths.length > 0 && changedPaths.every(isReleaseArtifactSyncPath),
+    verifiedCommit: verifiedCommitValue,
+  };
+}
+
+function isReleaseArtifactSyncPath(filePath) {
+  const relativePath = String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '');
+  return [
+    'docs/execution-v1-closeout.md',
+    'docs/execution-v1-evidence.md',
+    'docs/execution-v1-handoff.md',
+  ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
 function formatDisplayPath(filePath) {

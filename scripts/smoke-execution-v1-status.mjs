@@ -34,14 +34,37 @@ serverProcess.stderr.on('data', (chunk) => {
 try {
   const baseUrl = await waitForServer(serverProcess);
   const status = await fetchJson(`${baseUrl}/api/execution-v1/status`);
+  const isArtifactSyncCommit = status.artifactSyncCommit?.detected === true;
+  const verifiedCommit = isArtifactSyncCommit ? status.artifactSyncCommit.verifiedCommit : status.currentCommit;
 
   assert.equal(status.artifactsMatchCurrentHead, true);
-  assert.match(status.artifactState, /^(committed-current|local-current)$/);
-  assert.equal(status.currentCommit, status.commit);
+  assert.match(status.artifactState, /^(current|committed-current|local-current|artifact-sync-current)$/);
+  assert.equal(status.commit, verifiedCommit);
+  if (isArtifactSyncCommit) {
+    assert.notEqual(status.currentCommit, verifiedCommit);
+    assert.equal(status.artifactSyncCommit.currentCommit, status.currentCommit);
+    assert.equal(status.artifactSyncCommit.changedPaths.length > 0, true);
+    assert.equal(
+      status.artifactSyncCommit.changedPaths.every((filePath) => isReleaseArtifactSyncPath(filePath)),
+      true,
+      JSON.stringify(status.artifactSyncCommit),
+    );
+    assert.equal(status.stale, false);
+    assert.deepEqual(status.staleReasons, []);
+    assert.equal(status.snapshotEligibility.allowed, false);
+    assert.match(status.snapshotEligibility.reason, /artifact sync|release artifact sync/i);
+    assert.equal(
+      status.recommendedActions.some((entry) => entry.action === 'archive-release-snapshot'),
+      false,
+      JSON.stringify(status.recommendedActions),
+    );
+  } else {
+    assert.equal(status.currentCommit, verifiedCommit);
+  }
   assert.equal(typeof status.evidence?.generatedAt, 'string');
   assert.equal(typeof status.closeout?.generatedAt, 'string');
   assert.equal(typeof status.handoff?.generatedAt, 'string');
-  assert.equal(status.handoff?.commit, status.currentCommit);
+  assert.equal(status.handoff?.commit, verifiedCommit);
   assert.equal(status.summary.handoffReady, true);
   assert.equal(
     status.refreshPlan.affectsPaths.some((item) => String(item || '').endsWith('docs/execution-v1-handoff.md')),
@@ -164,9 +187,9 @@ try {
   assert.equal(status.snapshot?.exists, true);
   assert.equal(status.snapshot.matchesCurrentHead, true);
   assert.equal(status.snapshot.matchesGeneratedCommit, true);
-  assert.equal(status.snapshot.verifiedCommit, status.currentCommit);
+  assert.equal(status.snapshot.verifiedCommit, verifiedCommit);
   assert.equal(
-    String(status.snapshot.handoffPath || '').endsWith(`docs/releases/execution-v1/${status.currentCommit}/execution-v1-handoff.md`),
+    String(status.snapshot.handoffPath || '').endsWith(`docs/releases/execution-v1/${verifiedCommit}/execution-v1-handoff.md`),
     true,
     JSON.stringify(status.snapshot),
   );
@@ -185,6 +208,7 @@ try {
     JSON.stringify(
       {
         artifactState: status.artifactState,
+        artifactSyncCommit: isArtifactSyncCommit,
         branch: status.currentBranch,
         commit: status.currentCommit,
         deterministic: `${status.summary.deterministicPassed}/${status.summary.deterministicTotal}`,
@@ -200,6 +224,15 @@ try {
 } finally {
   serverProcess.kill('SIGTERM');
   await waitForExit(serverProcess, { timeoutMs: 5_000 });
+}
+
+function isReleaseArtifactSyncPath(filePath) {
+  const relativePath = String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '');
+  return [
+    'docs/execution-v1-closeout.md',
+    'docs/execution-v1-evidence.md',
+    'docs/execution-v1-handoff.md',
+  ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
 async function fetchJson(url) {

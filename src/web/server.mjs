@@ -35,6 +35,11 @@ const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const handoffDocPath = path.join(rootDir, 'docs', 'execution-v1-handoff.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
+const executionV1MutableArtifactPaths = new Set([
+  'docs/execution-v1-closeout.md',
+  'docs/execution-v1-evidence.md',
+  'docs/execution-v1-handoff.md',
+]);
 const releaseHandoffStableLineCopyBaseKey =
   'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
 
@@ -668,6 +673,71 @@ function runGit(args) {
   return String(result.stdout || '').trim();
 }
 
+function runGitLines(args) {
+  return runGit(args)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function isGitAncestor(ancestorCommit = '', descendantCommit = '') {
+  if (!ancestorCommit || !descendantCommit) {
+    return false;
+  }
+
+  const result = spawnSync('git', ['merge-base', '--is-ancestor', ancestorCommit, descendantCommit], {
+    cwd: rootDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+  return result.status === 0;
+}
+
+function normalizeRepoRelativePath(filePath = '') {
+  return String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '').trim();
+}
+
+function isExecutionV1ReleaseArtifactPath(filePath = '') {
+  const relativePath = normalizeRepoRelativePath(filePath);
+  return executionV1MutableArtifactPaths.has(relativePath)
+    || relativePath.startsWith('docs/releases/execution-v1/');
+}
+
+function buildExecutionV1ArtifactSyncCommit(currentCommit = '', verifiedCommit = '') {
+  if (!currentCommit || !verifiedCommit || currentCommit === verifiedCommit) {
+    return {
+      changedPaths: [],
+      commits: [],
+      currentCommit,
+      detected: false,
+      verifiedCommit,
+    };
+  }
+  if (!isGitAncestor(verifiedCommit, currentCommit)) {
+    return {
+      changedPaths: [],
+      commits: [],
+      currentCommit,
+      detected: false,
+      verifiedCommit,
+    };
+  }
+
+  const commits = runGitLines(['rev-list', '--reverse', `${verifiedCommit}..${currentCommit}`]);
+  const changedPaths = [...new Set(
+    commits.flatMap((commit) => runGitLines(['diff-tree', '--no-commit-id', '--name-only', '-r', commit])),
+  )].sort();
+  const detected = changedPaths.length > 0 && changedPaths.every(isExecutionV1ReleaseArtifactPath);
+
+  return {
+    changedPaths,
+    commits,
+    currentCommit,
+    detected,
+    verifiedCommit,
+  };
+}
+
 function getCurrentGitContext() {
   return {
     branch: runGit(['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -1073,7 +1143,9 @@ function buildExecutionV1Status() {
   }));
   const generatedCommit = currentArtifacts.commit;
   const generatedBranch = currentArtifacts.branch;
-  const snapshot = readExecutionV1Snapshot(generatedCommit, currentCommit);
+  const artifactSyncCommit = buildExecutionV1ArtifactSyncCommit(currentCommit, generatedCommit);
+  const effectiveReleaseCommit = artifactSyncCommit.detected ? generatedCommit : currentCommit;
+  const snapshot = readExecutionV1Snapshot(generatedCommit, effectiveReleaseCommit);
   const baselineEvidenceMarkdown = snapshot ? readMarkdownFile(snapshot.evidencePath) : '';
   const baselineCloseoutMarkdown = snapshot ? readMarkdownFile(snapshot.closeoutPath) : '';
   const baselineHandoffMarkdown = snapshot?.handoffPath ? readMarkdownFile(snapshot.handoffPath) : '';
@@ -1088,17 +1160,30 @@ function buildExecutionV1Status() {
   if (!evidenceMarkdown || !closeoutMarkdown || !handoffMarkdown) {
     staleReasons.push('evidence, closeout, handoff 문서 중 아직 생성되지 않은 문서가 있습니다.');
   }
-  if (generatedCommit && currentCommit && generatedCommit !== currentCommit) {
+  if (generatedCommit && currentCommit && generatedCommit !== currentCommit && !artifactSyncCommit.detected) {
     staleReasons.push('현재 HEAD와 evidence/closeout이 가리키는 commit이 다릅니다.');
   }
-  if (handoffCommit && currentCommit && handoffCommit !== currentCommit) {
+  if (
+    handoffCommit
+      && currentCommit
+      && handoffCommit !== currentCommit
+      && !(artifactSyncCommit.detected && handoffCommit === artifactSyncCommit.verifiedCommit)
+  ) {
     staleReasons.push('현재 HEAD와 handoff가 가리키는 commit이 다릅니다.');
   }
   if (handoffCommit && generatedCommit && handoffCommit !== generatedCommit) {
     staleReasons.push('handoff와 evidence/closeout이 가리키는 commit이 다릅니다.');
   }
-  const artifactsMatchCurrentHead = Boolean(generatedCommit && currentCommit && generatedCommit === currentCommit);
-  const handoffMatchesCurrentHead = Boolean(handoffCommit && currentCommit && handoffCommit === currentCommit);
+  const artifactsMatchCurrentHead = Boolean(
+    generatedCommit
+      && currentCommit
+      && (generatedCommit === currentCommit || artifactSyncCommit.detected),
+  );
+  const handoffMatchesCurrentHead = Boolean(
+    handoffCommit
+      && currentCommit
+      && (handoffCommit === currentCommit || (artifactSyncCommit.detected && handoffCommit === artifactSyncCommit.verifiedCommit)),
+  );
   const handoffMatchesGeneratedCommit = Boolean(handoffCommit && generatedCommit && handoffCommit === generatedCommit);
   const hasLocalArtifactChanges = docStatuses.length > 0;
   if (hasLocalArtifactChanges) {
@@ -1107,6 +1192,9 @@ function buildExecutionV1Status() {
     } else {
       staleReasons.push('evidence, closeout, handoff 문서 중 워크트리에서 수정된 문서가 현재 HEAD와 어긋나 있습니다.');
     }
+  }
+  if (artifactSyncCommit.detected) {
+    localArtifactNotes.push('현재 HEAD는 verified commit 위에 release artifact만 동기화한 커밋이므로 evidence/closeout/handoff freshness를 유지한 것으로 처리합니다.');
   }
 
   const stale = staleReasons.length > 0;
@@ -1126,6 +1214,8 @@ function buildExecutionV1Status() {
     ? 'missing'
     : stale
       ? 'stale'
+      : artifactSyncCommit.detected
+      ? 'artifact-sync-current'
       : hasLocalArtifactChanges
       ? 'local-current'
       : 'current';
@@ -1161,7 +1251,16 @@ function buildExecutionV1Status() {
     });
   }
 
-  if (!stale && snapshot?.verifiedCommit !== currentCommit && evidenceMarkdown && closeoutMarkdown && handoffMarkdown && currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0) {
+  if (
+    !stale
+      && !artifactSyncCommit.detected
+      && snapshot?.verifiedCommit !== currentCommit
+      && evidenceMarkdown
+      && closeoutMarkdown
+      && handoffMarkdown
+      && currentArtifacts.requiredChecklistOpen === 0
+      && currentArtifacts.blockedItems === 0
+  ) {
     recommendedActions.push({
       action: 'archive-release-snapshot',
       category: 'release',
@@ -1209,6 +1308,7 @@ function buildExecutionV1Status() {
 
   return {
     artifactState,
+    artifactSyncCommit,
     artifactsMatchCurrentHead,
     branch: generatedBranch,
     checklist: currentArtifacts.checklist,
@@ -1248,6 +1348,7 @@ function buildExecutionV1Status() {
     snapshotEligibility: {
       allowed: Boolean(
         !stale
+          && !artifactSyncCommit.detected
           && currentArtifacts.requiredChecklistOpen === 0
           && currentArtifacts.blockedItems === 0
           && evidenceMarkdown
@@ -1258,6 +1359,8 @@ function buildExecutionV1Status() {
         ? 'evidence, closeout, handoff 문서 중 아직 없는 문서가 있습니다.'
         : stale
           ? 'current evidence/closeout/handoff가 최신 HEAD와 어긋나 있습니다.'
+          : artifactSyncCommit.detected
+            ? '현재 HEAD는 release artifact sync 커밋이므로 새 snapshot freeze 대상이 아닙니다.'
           : currentArtifacts.requiredChecklistOpen > 0
             ? `필수 closeout checklist ${currentArtifacts.requiredChecklistOpen}건이 남아 있습니다.`
             : currentArtifacts.blockedItems > 0

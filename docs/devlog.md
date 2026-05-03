@@ -9,6 +9,7 @@
 - aligned product plan and security model source-of-record wording so the planning pack describes OpenAI-scoped pilot readiness without overstating production or all-provider readiness
 - hardened browser E2E artifact lifecycle by backing up release handoff/report artifacts before the smoke clears output paths and restoring them on failure or signal interruption, preventing a failed browser smoke from breaking later execution-v1 status checks
 - added `smoke:ui-execution-browser-e2e-artifact-restore` to force a browser guard timeout against sentinel artifacts and verify the browser E2E failure path restores prior report/screenshot files without leaving the release status surface broken
+- added artifact-only sync commit detection for execution-v1 status and snapshot smokes so committing refreshed evidence/closeout/handoff/snapshot files no longer immediately turns the release status stale when no runtime/source files changed
 - kept commit/push deferred and limited this pass to planning and operator-facing documentation
 
 ## 2026-05-04 Date Rollover Verification Pass
