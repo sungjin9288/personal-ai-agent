@@ -75,6 +75,7 @@ Current planning status:
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
+- OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - clean deployment release rehearsal evidence can be regenerated with `npm run rehearsal:clean-deployment-release`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
@@ -146,6 +147,7 @@ Authenticated web RBAC gate:
 ```bash
 npm run smoke:web-auth-rbac
 npm run smoke:web-oidc-rbac
+npm run smoke:web-tenant-isolation
 ```
 
 Pilot export package manifest:
@@ -730,6 +732,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
 `npm run smoke:web-auth-rbac`는 `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce`와 `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`을 사용해 `/api/*` 요청의 bearer/header token을 먼저 검증하고, 인증된 요청도 `x-personal-ai-agent-role` RBAC를 통과해야 mutation이 허용되는지 확인합니다. 이 gate는 local shared-secret auth evidence이며 hosted identity/session RBAC를 대체하지 않습니다.
 `npm run smoke:web-oidc-rbac`는 `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc`와 JWKS 기반 RS256 bearer token을 사용해 issuer, audience, expiry, role claim을 검증하고, viewer token이 `x-personal-ai-agent-role` spoofing으로 operator 권한을 얻지 못하는지 확인합니다.
+`npm run smoke:web-tenant-isolation`은 `PERSONAL_AI_AGENT_TENANT_MODE=enforce`와 OIDC `tenant_id` claim을 사용해 workspace 생성 tenant binding, workspace/mission list filtering, cross-tenant mission create/read 차단, tenant header spoofing 무시를 검증합니다.
 `npm run smoke:runtime-data-lifecycle`는 isolated temp runtime에서 `var/state.json`과 mission artifact inventory를 만들고, relative-path export manifest와 sha256 audit evidence를 생성한 뒤, exact confirmation token 없이는 delete가 실패하고 올바른 token에서는 `var/` 삭제와 post-delete absence check가 통과하는지 검증합니다.
 `npm run smoke:runtime-isolation`은 두 개의 isolated temp runtime을 만들어 각각 workspace, memory, mission, session, artifact, export를 생성하고, 한쪽 runtime 삭제가 다른 runtime state hash와 `var/` 존재 여부를 바꾸지 않는지 검증합니다.
 `npm run smoke:retention-delete-policy`는 [retention-delete-v1.md](docs/retention-delete-v1.md)의 data class retention table, export checklist, delete checklist, required commands, stop conditions, production gap, 그리고 release/security/deployment/product/README 연결 상태를 검증합니다. 이 gate는 pilot lifecycle evidence이며 `productionReadyClaim: false`를 유지합니다.

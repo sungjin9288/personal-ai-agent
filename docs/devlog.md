@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 OIDC Tenant Isolation Gate Pass
+
+- added `PERSONAL_AI_AGENT_TENANT_MODE=enforce` support to bind workspace and mission API access to an OIDC tenant claim instead of trusting caller-supplied tenant headers
+- added `smoke:web-tenant-isolation` to verify tenant-bound workspace creation, tenant-filtered workspace/mission lists, cross-tenant mission create/read blocking, and tenant header spoofing prevention
+- wired the tenant isolation gate into enterprise controls rehearsal, deployment guidance, security model, product checklist, README, and release readiness while preserving hosted tenant storage, encryption, backup, and centralized tenant administration blockers
+
 ## 2026-05-05 OIDC Web Auth RBAC Gate Pass
 
 - added optional `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc` support for RS256 bearer JWT validation against configured issuer, audience, JWKS URL, expiry, and role claim

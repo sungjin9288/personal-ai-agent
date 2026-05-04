@@ -14,6 +14,7 @@ import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { resolveRootDir } from '../core/root.mjs';
+import { evaluateTenantAccess, extractTenantClaim, normalizeTenantMode } from '../core/tenant-policy.mjs';
 import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
@@ -32,6 +33,8 @@ const oidcIssuer = String(process.env.PERSONAL_AI_AGENT_OIDC_ISSUER || '').trim(
 const oidcAudience = String(process.env.PERSONAL_AI_AGENT_OIDC_AUDIENCE || '').trim();
 const oidcJwksUrl = String(process.env.PERSONAL_AI_AGENT_OIDC_JWKS_URL || '').trim();
 const oidcRoleClaim = String(process.env.PERSONAL_AI_AGENT_OIDC_ROLE_CLAIM || 'role').trim() || 'role';
+const tenantMode = normalizeTenantMode(process.env.PERSONAL_AI_AGENT_TENANT_MODE);
+const tenantClaim = String(process.env.PERSONAL_AI_AGENT_TENANT_CLAIM || 'tenant_id').trim() || 'tenant_id';
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-closeout.mjs');
@@ -1798,9 +1801,10 @@ function getLatestSessionSummary(missionId) {
   return service.listSessions(missionId).at(-1) || null;
 }
 
-function buildMissionListPayload() {
-  const workspaces = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
-  const missions = service.listMissions().map((mission) => ({
+function buildMissionListPayload({ tenantId = '' } = {}) {
+  const visibleWorkspaces = filterTenantWorkspaces(store.listWorkspaces(), tenantId);
+  const workspaces = new Map(visibleWorkspaces.map((workspace) => [workspace.id, workspace]));
+  const missions = service.listMissions().filter((mission) => workspaces.has(mission.workspaceId)).map((mission) => ({
     latestSession: getLatestSessionSummary(mission.id),
     mission,
     workspace: workspaces.get(mission.workspaceId) || null,
@@ -1810,6 +1814,70 @@ function buildMissionListPayload() {
     generatedAt: new Date().toISOString(),
     missions,
   };
+}
+
+function filterTenantWorkspaces(workspaces, tenantId = '') {
+  if (tenantMode !== 'enforce') {
+    return workspaces;
+  }
+  return workspaces.filter((workspace) => String(workspace.tenantId || '').trim() === tenantId);
+}
+
+function resolveAuthTenantId(auth) {
+  if (tenantMode !== 'enforce') {
+    return '';
+  }
+  return extractTenantClaim(auth.claims || {}, tenantClaim);
+}
+
+function evaluateWorkspaceTenantAccess(workspaceId, auth) {
+  const workspace = store.getWorkspace(workspaceId);
+  if (!workspace) {
+    return {
+      allowed: false,
+      error: 'workspace-not-found',
+      reason: `Workspace not found: ${workspaceId}`,
+      status: 404,
+    };
+  }
+  return {
+    ...evaluateTenantAccess({
+      auth,
+      mode: tenantMode,
+      resourceTenantId: workspace.tenantId,
+      tenantClaim,
+    }),
+    workspace,
+  };
+}
+
+function evaluateMissionTenantAccess(missionId, auth) {
+  const mission = store.getMission(missionId);
+  if (!mission) {
+    return {
+      allowed: false,
+      error: 'mission-not-found',
+      reason: `Mission not found: ${missionId}`,
+      status: 404,
+    };
+  }
+  const tenant = evaluateWorkspaceTenantAccess(mission.workspaceId, auth);
+  return {
+    ...tenant,
+    mission,
+  };
+}
+
+function sendTenantDenied(response, tenant) {
+  sendJson(response, tenant.status || 403, {
+    error: tenant.error || 'tenant-forbidden',
+    message: tenant.reason,
+    tenant: {
+      mode: tenant.mode || tenantMode,
+      required: tenant.required ?? tenantMode === 'enforce',
+      tenantId: tenant.tenantId || '',
+    },
+  });
 }
 
 function resolveArtifactRecord(artifactId) {
@@ -1935,6 +2003,11 @@ async function handleApi(request, response, url) {
         required: webAuthMode === 'enforce' || webAuthMode === 'oidc',
         roleClaim: webAuthMode === 'oidc' ? oidcRoleClaim : '',
       },
+      tenant: {
+        claim: tenantMode === 'enforce' ? tenantClaim : '',
+        mode: tenantMode,
+        required: tenantMode === 'enforce',
+      },
       rootDir,
     });
     return;
@@ -1996,7 +2069,7 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && pathname === '/api/workspaces') {
     sendJson(response, 200, {
-      workspaces: store.listWorkspaces(),
+      workspaces: filterTenantWorkspaces(store.listWorkspaces(), resolveAuthTenantId(auth)),
     });
     return;
   }
@@ -2005,11 +2078,33 @@ async function handleApi(request, response, url) {
     const body = await readJsonBody(request);
     const rawWorkspacePath = String(body.workspacePath || '').trim();
     const normalizedPath = rawWorkspacePath ? path.resolve(rawWorkspacePath) : '';
+    const authTenantId = resolveAuthTenantId(auth);
+    const tenant = evaluateTenantAccess({
+      auth,
+      mode: tenantMode,
+      resourceTenantId: authTenantId,
+      tenantClaim,
+    });
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+
     const existingWorkspace = store
       .listWorkspaces()
       .find((workspace) => path.resolve(String(workspace.path || '')) === normalizedPath);
 
     if (existingWorkspace) {
+      const existingTenant = evaluateTenantAccess({
+        auth,
+        mode: tenantMode,
+        resourceTenantId: existingWorkspace.tenantId,
+        tenantClaim,
+      });
+      if (!existingTenant.allowed) {
+        sendTenantDenied(response, existingTenant);
+        return;
+      }
       sendJson(response, 200, {
         created: false,
         workspace: existingWorkspace,
@@ -2019,6 +2114,7 @@ async function handleApi(request, response, url) {
 
     const workspace = service.addWorkspace({
       name: String(body.name || '').trim(),
+      tenantId: authTenantId,
       workspacePath: normalizedPath,
     });
 
@@ -2335,9 +2431,17 @@ async function handleApi(request, response, url) {
   }
 
   if (request.method === 'GET' && pathname === '/api/actions') {
+    const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();
+    if (workspaceId) {
+      const tenant = evaluateWorkspaceTenantAccess(workspaceId, auth);
+      if (!tenant.allowed) {
+        sendTenantDenied(response, tenant);
+        return;
+      }
+    }
     sendJson(response, 200, service.getActionInbox({
       missionId: String(url.searchParams.get('missionId') || '').trim(),
-      workspaceId: String(url.searchParams.get('workspaceId') || '').trim(),
+      workspaceId,
     }));
     return;
   }
@@ -2361,12 +2465,17 @@ async function handleApi(request, response, url) {
   }
 
   if (request.method === 'GET' && pathname === '/api/missions') {
-    sendJson(response, 200, buildMissionListPayload());
+    sendJson(response, 200, buildMissionListPayload({ tenantId: resolveAuthTenantId(auth) }));
     return;
   }
 
   if (request.method === 'POST' && pathname === '/api/missions') {
     const body = await readJsonBody(request);
+    const tenant = evaluateWorkspaceTenantAccess(String(body.workspaceId || '').trim(), auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
     const mission = service.createMission({
       attachments: await convertMissionAttachmentPayloads(body.attachments),
       constraints: parseConstraints(body.constraints),
@@ -2391,6 +2500,11 @@ async function handleApi(request, response, url) {
     pathParts[3] === 'attachments'
   ) {
     const missionId = decodePathSegment(pathParts[2]);
+    const tenant = evaluateMissionTenantAccess(missionId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
     const body = await readJsonBody(request);
     const attachments = await convertMissionAttachmentPayloads(body.attachments);
     const created = attachments.map((attachment) =>
@@ -2411,7 +2525,13 @@ async function handleApi(request, response, url) {
   }
 
   if (request.method === 'GET' && pathParts[0] === 'api' && pathParts[1] === 'missions' && pathParts[2] && pathParts.length === 3) {
-    sendJson(response, 200, service.showMission(decodePathSegment(pathParts[2])));
+    const missionId = decodePathSegment(pathParts[2]);
+    const tenant = evaluateMissionTenantAccess(missionId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+    sendJson(response, 200, service.showMission(missionId));
     return;
   }
 

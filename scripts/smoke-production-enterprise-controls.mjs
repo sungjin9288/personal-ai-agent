@@ -42,11 +42,14 @@ assert.match(controls, /session lifecycle management/);
 assert.match(controls, /persistent role assignment/);
 assert.match(controls, /OIDC\/JWKS bearer authentication/);
 assert.match(controls, /issuer, audience, RS256 signature, expiry, and role claim mapping/);
+assert.match(controls, /API tenant\/workspace binding/);
+assert.match(controls, /rejects cross-tenant workspace and mission access/);
 assert.match(controls, /prevents OIDC viewer tokens from escalating through spoofed role headers/);
 
 for (const command of [
   'npm run smoke:web-auth-rbac',
   'npm run smoke:web-oidc-rbac',
+  'npm run smoke:web-tenant-isolation',
   'npm run smoke:web-rbac',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-isolation',
@@ -69,7 +72,7 @@ assert.match(readme, /npm run smoke:production-enterprise-controls/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 6,
+      commandCount: 7,
       mode: 'production-enterprise-controls',
       ok: true,
       path: 'docs/production-enterprise-controls-v1.md',

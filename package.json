@@ -23,6 +23,7 @@
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:web-auth-rbac": "node scripts/smoke-web-auth-rbac.mjs",
     "smoke:web-oidc-rbac": "node scripts/smoke-web-oidc-rbac.mjs",
+    "smoke:web-tenant-isolation": "node scripts/smoke-web-tenant-isolation.mjs",
     "smoke:runtime-data-lifecycle": "node scripts/smoke-runtime-data-lifecycle.mjs",
     "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",

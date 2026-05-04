@@ -4011,7 +4011,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     void run();
   }
 
-  function addWorkspace({ workspacePath, name }) {
+  function addWorkspace({ workspacePath, name, tenantId = '' }) {
     const normalizedPath = normalizeText(workspacePath);
     if (!normalizedPath) {
       throw new Error('워크스페이스 경로를 입력하세요.');
@@ -4038,6 +4038,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       id: createId('workspace'),
       name: normalizeText(name, path.basename(resolvedPath) || 'workspace'),
       path: resolvedPath,
+      tenantId: normalizeText(tenantId),
       createdAt: now(),
     });
   }
