@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-04T09:46:05.551Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-04T09:46:00.130Z
 - branch: codex/managed-multi-agent-v1-foundation
 - commit: 180e686613129558d3c8f398b54af0ca3a741c71
