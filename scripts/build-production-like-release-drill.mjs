@@ -27,6 +27,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:production-provider-readiness',
   },
   {
+    command: 'npm run smoke:target-deployment-contract',
+    script: 'smoke:target-deployment-contract',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -156,6 +160,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:production-provider-readiness') {
     return pick(parsed, ['mode', 'productionReadyClaim', 'providerCount']);
+  }
+  if (script === 'smoke:target-deployment-contract') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'profileCount']);
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Target Deployment Contract Gate Pass
+
+- added [target-deployment-contract-v1.md](target-deployment-contract-v1.md) as the production-target evidence contract for provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, and support operations
+- added `smoke:target-deployment-contract` to verify production-like and hosted SaaS deployment profiles, mandatory controls, required commands, blocking rules, and cross-document wiring while keeping `productionReadyClaim: false`
+- wired the target deployment contract into release readiness, security, deployment guidance, product checklist, README, production readiness gate, clean deployment rehearsal, production-like drill, pilot export package, and release artifact hygiene so hosted production blockers remain explicit and testable
+
 ## 2026-05-05 Tenant Data Lifecycle Gate Pass
 
 - added tenant-scoped runtime data inventory, export, delete confirmation token, and deletion helpers so one local runtime root can export/delete one tenant without including or modifying another tenant's state

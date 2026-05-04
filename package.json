@@ -18,6 +18,7 @@
     "smoke:execution-v1-closeout-runtime-summary": "node scripts/smoke-execution-v1-closeout-runtime-summary.mjs",
     "smoke:execution-v1-live-helpers": "node scripts/smoke-execution-v1-live-helpers.mjs",
     "smoke:execution-v1-handoff": "node scripts/smoke-execution-v1-handoff.mjs",
+    "smoke:target-deployment-contract": "node scripts/smoke-target-deployment-contract.mjs",
     "smoke:production-readiness-gate": "node scripts/smoke-production-readiness-gate.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",

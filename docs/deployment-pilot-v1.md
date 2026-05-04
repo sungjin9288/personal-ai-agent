@@ -307,6 +307,28 @@ Stop condition:
 - if the rehearsal fails, do not present enterprise controls readiness in a pilot review until the failed gate is fixed
 - if the rehearsal passes, treat it only as local enterprise controls evidence, not identity-backed hosted RBAC/session administration or hosted tenant isolation
 
+## Target Deployment Contract
+
+Before describing the system as production-ready for another company or as hosted SaaS, verify the target deployment contract:
+
+```bash
+npm run smoke:target-deployment-contract
+npm run smoke:production-readiness-gate
+```
+
+The source of record is [target-deployment-contract-v1.md](target-deployment-contract-v1.md). It separates the current OpenAI-scoped self-hosted pilot from production-like single-tenant, hosted multi-tenant SaaS, and hybrid control-plane deployment claims.
+
+Acceptance:
+
+- target provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, and support operations all have explicit target-environment evidence
+- hosted SaaS claims have a separate approved architecture decision record
+- the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
+
+Stop condition:
+
+- if any target deployment control is missing, do not claim hosted production readiness
+- if the contract passes only as a blocker checklist, treat it as production-readiness boundary evidence, not production deployment evidence
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -316,7 +338,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -389,7 +411,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, runtime isolation, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

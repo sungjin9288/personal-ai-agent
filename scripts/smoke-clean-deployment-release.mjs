@@ -34,11 +34,13 @@ for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:retention-delete-policy',
   'npm run smoke:web-auth-rbac',
+  'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
   'npm run smoke:runtime-isolation',
+  'npm run package:pilot-export',
   'npm run smoke:pilot-export-package',
 ]) {
   assert.match(rehearsal, new RegExp(`\\| \`${escapeRegExp(command)}\` \\| pass \\| 0 \\|`), command);
@@ -56,7 +58,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 9,
+      commandCount: 11,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

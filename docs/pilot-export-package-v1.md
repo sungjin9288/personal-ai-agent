@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-04T18:44:44.769Z
+- generatedAt: 2026-05-04T19:07:44.430Z
 - verifiedCommit: 1d7fb035937c84314908bca803ce6d88ff0ee2d5
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: ea64ec171342f15e0b3e1bf93f678ae1ab0a01c2c0513559d808d66e65709901
-- fileCount: 24
+- bundleSha256: d2c36e6d13e9971f02c752aca99b412b7284bf497a4c3f85e8388e1daaff769d
+- fileCount: 25
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -17,6 +17,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
+- relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 
 ## Decision Boundary
 
@@ -30,23 +31,24 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 156607 | `9a251d0f3469a6347edcd7af24198612c0608427e62a9b3c8e9fab6de618f121` |
-| `docs/product-plan-v1.md` | 11363 | `8367666efc857de80a9e66df0bc233955a61a4f0f1a556c91d0e5854568bfd39` |
-| `docs/security-model-v1.md` | 19483 | `9ac48b8410f2e714836d776699f67055cc03db49396f1bd2d8b95d04ec3afc50` |
+| `README.md` | 157439 | `59676f5d86db435dcae6fbd5f2260c409b49abeda376bfde41d29b4e1e81c7bc` |
+| `docs/product-plan-v1.md` | 11413 | `c641fc2d0ef20f9215e2cde3082897333149d7969232bfb1accfa56be3b7afb1` |
+| `docs/security-model-v1.md` | 19849 | `05fb2ceaad5e23e099436659e8060d76a78fd61460f461801f9d36cd496864f3` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 23699 | `4b91cddbf8e8709eac5531a2f0e52e3304f283514a0258e293e76dcc6f1a3ee6` |
+| `docs/deployment-pilot-v1.md` | 24958 | `0db93af6f1cfad81610264beb1b4d7ad4d813c0df2135e8eb510f3a2047998c9` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
 | `docs/runtime-isolation-v1.md` | 2706 | `3df3871cd9ab71d9fd63fd45fb6b1824f9ae4e008fcabc6f805548dfd5455f21` |
 | `docs/retention-delete-v1.md` | 6517 | `ca7282026a953feb6c9b7a91e47737cb6a06997d5a0d6357c93c23237a39ade0` |
-| `docs/clean-deployment-release-v1.md` | 4167 | `2c483d8f229ad1f0d3a1d7593d11615d3fe748ab8008187a4956cadac8db49d0` |
+| `docs/clean-deployment-release-v1.md` | 4686 | `fda7c949be0c69ba80f162c4b706d2c65a2c5e4f0151fd003e92ebb3647aeda1` |
 | `docs/production-slo-operating-v1.md` | 4160 | `724c51eaa86719585d5683256ec78562613ff932a0f322d1af2f847899ca7d66` |
 | `docs/production-retention-operating-v1.md` | 4729 | `995641035e10e76180e413ce320e49e94bc93f3bb0ba7ff9be840d8e533cce0a` |
 | `docs/production-provider-readiness-v1.md` | 5682 | `a03f0d523d81dbbadcbf8213c17c00dfd1c4d5067e07ba1fb234568f1cc24a1e` |
 | `docs/production-enterprise-controls-v1.md` | 5627 | `1ecafdcfc45643036d5199cd361840affec0b1e17b34924c0e261314b1f4d1f6` |
-| `docs/release-readiness-v1.md` | 13260 | `7271d8167d3cdd67ff9948ed66ea954bfc92046f52128f542ce6169965039120` |
-| `docs/production-like-release-drill-v1.md` | 7032 | `e6e129f99b4a8e5f6f63a4dd37014d322594911b577150f7c1f38efe31b1b5a3` |
+| `docs/target-deployment-contract-v1.md` | 5673 | `e16ecc0a9146abc18c8ed19bfb83e4996eace578a59c1285bbe673303c5970d9` |
+| `docs/release-readiness-v1.md` | 13959 | `c1820501c7c1718502de3e3f50b2c837ab3044c0259fc88008b42e4d2a489b97` |
+| `docs/production-like-release-drill-v1.md` | 7367 | `a51c662e42d353febe9109ad77970e140e165734ceee95f4235da010ac99503a` |
 | `docs/execution-v1-evidence.md` | 10637 | `8f1994f9d71f270415e5ccf44230e5bb6b4b239c6f4e2dc7d415eef0727af2d4` |
 | `docs/execution-v1-closeout.md` | 3351 | `75184da9c92de22ded0aa043458ae6f781defb489bc052a587cf6b80922f4a60` |
 | `docs/execution-v1-handoff.md` | 5241 | `79c9bb3ca7f6e9e3e2ffed467d7eaa0e1783e7bb5ad4e3bd5d7438c8dace61d0` |

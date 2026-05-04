@@ -15,6 +15,7 @@ const productionSloOperatingPath = path.join(docsDir, 'production-slo-operating-
 const productionRetentionOperatingPath = path.join(docsDir, 'production-retention-operating-v1.md');
 const productionProviderReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
+const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
@@ -30,6 +31,7 @@ const productionSloOperating = readRequiredFile(productionSloOperatingPath);
 const productionRetentionOperating = readRequiredFile(productionRetentionOperatingPath);
 const productionProviderReadiness = readRequiredFile(productionProviderReadinessPath);
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
+const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
@@ -62,6 +64,7 @@ for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /identity-backed hosted RBAC\/session administration is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
+  /target deployment contract is not satisfied by target-environment evidence/,
   /production retention\/export\/delete verification is not complete/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
@@ -74,6 +77,7 @@ assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
@@ -105,6 +109,14 @@ assert.match(productionEnterpriseControls, /^- productionReadyClaim: false$/m);
 assert.match(productionEnterpriseControls, /npm run smoke:production-enterprise-controls/);
 assert.match(productionEnterpriseControls, /not identity-backed hosted RBAC/);
 assert.match(productionEnterpriseControls, /not hosted tenant isolation/);
+assert.match(targetDeploymentContract, /^# Target Deployment Contract v1$/m);
+assert.match(targetDeploymentContract, /^- status: target-contract-current$/m);
+assert.match(targetDeploymentContract, /^- productionReadyClaim: false$/m);
+assert.match(targetDeploymentContract, /Hosted multi-tenant SaaS/);
+assert.match(targetDeploymentContract, /Target provider validation/);
+assert.match(targetDeploymentContract, /Identity-backed RBAC and session administration/);
+assert.match(targetDeploymentContract, /Hosted tenant isolation/);
+assert.match(targetDeploymentContract, /not permission to claim `production-ready`/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
@@ -136,6 +148,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
+  /target deployment contract is blocked until hosted identity, tenant storage, backup, retention, SLO\/SLA, clean deployment, and support operations have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -176,6 +189,7 @@ console.log(
       pilotProductionSloOperating: 'present',
       pilotRetentionDeletePolicy: 'present',
       pilotRuntimeIsolation: 'present',
+      pilotTargetDeploymentContract: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
       releaseArtifactHygiene: 'passed',

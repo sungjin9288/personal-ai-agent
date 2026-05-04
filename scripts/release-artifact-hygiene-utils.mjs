@@ -51,6 +51,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
   'docs/production-enterprise-controls-v1.md',
+  'docs/target-deployment-contract-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

@@ -21,6 +21,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:target-deployment-contract',
+    script: 'smoke:target-deployment-contract',
+  },
+  {
     command: 'npm run smoke:production-readiness-gate',
     script: 'smoke:production-readiness-gate',
   },
@@ -39,6 +43,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
   {
     command: 'npm run smoke:runtime-isolation',
     script: 'smoke:runtime-isolation',
+  },
+  {
+    command: 'npm run package:pilot-export',
+    script: 'package:pilot-export',
   },
   {
     command: 'npm run smoke:pilot-export-package',
@@ -180,6 +188,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:web-auth-rbac') {
     return pick(parsed, ['authMode', 'mode', 'roleChecks']);
   }
+  if (script === 'smoke:target-deployment-contract') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'profileCount']);
+  }
   if (script === 'smoke:production-readiness-gate') {
     return pick(parsed, [
       'blockedProductionReady',
@@ -201,6 +212,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:runtime-isolation') {
     return pick(parsed, ['deletedRuntimeA', 'exportAFileCount', 'exportBFileCount', 'mode']);
+  }
+  if (script === 'package:pilot-export') {
+    return pick(parsed, ['fileCount', 'hygiene', 'mode', 'ok', 'verifiedCommit']);
   }
   if (script === 'smoke:pilot-export-package') {
     return pick(parsed, ['fileCount', 'mode', 'verifiedCommit']);
