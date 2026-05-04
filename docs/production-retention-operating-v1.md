@@ -1,9 +1,9 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-04T17:06:04.480Z
+- generatedAt: 2026-05-04T17:39:36.270Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 1cb73a2e2e0e3eccf28759b97b316a1c62e13208
+- sourceCommit: 254aa024b0371f3af2d7f9f29e98f5a1ae720f97
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like retention, export, delete, and isolation rehearsal
 - productionReadyClaim: false
@@ -24,12 +24,12 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 128 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 311 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 478 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 131 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 133 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 120 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 130 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 317 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 454 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 120 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 114 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 113 | 5s | yes |
 
 ## Key Signals
 
@@ -72,7 +72,7 @@ Production-ready remains blocked until the approved target environment provides 
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
-    "verifiedCommit": "1cb73a2e2e0e3eccf28759b97b316a1c62e13208"
+    "verifiedCommit": "254aa024b0371f3af2d7f9f29e98f5a1ae720f97"
   }
 ```
 
@@ -82,7 +82,7 @@ Production-ready remains blocked until the approved target environment provides 
 {
     "fileCount": 24,
     "mode": "pilot-export-package",
-    "verifiedCommit": "1cb73a2e2e0e3eccf28759b97b316a1c62e13208"
+    "verifiedCommit": "254aa024b0371f3af2d7f9f29e98f5a1ae720f97"
   }
 ```
 
@@ -93,7 +93,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 15,
     "secretFindingCount": 0,
-    "verifiedCommit": "1cb73a2e2e0e3eccf28759b97b316a1c62e13208"
+    "verifiedCommit": "254aa024b0371f3af2d7f9f29e98f5a1ae720f97"
   }
 ```
 
