@@ -1,12 +1,12 @@
 # Clean Deployment Release Rehearsal v1
 
 - status: clean-local-rehearsal-current
-- generatedAt: 2026-05-04T11:26:53.177Z
+- generatedAt: 2026-05-04T12:01:14.070Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 728a956bbab6bd5d7917ddb02465ac04b6d906c3
+- sourceCommit: 5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - cleanCheckoutMode: tracked-files-only
-- cleanCheckoutFileCount: 243
+- cleanCheckoutFileCount: 247
 - excludedRuntimeState: var/, output/playwright/, node_modules/, .git/
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -25,13 +25,13 @@ Production-ready remains blocked until the approved target environment produces 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 262 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 252 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 280 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 427 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1046 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1194 |
-| `npm run smoke:pilot-export-package` | pass | 0 | 248 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 137 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 161 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 133 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 130 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 357 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 554 |
+| `npm run smoke:pilot-export-package` | pass | 0 | 187 |
 
 ## Key Signals
 
@@ -74,7 +74,7 @@ Production-ready remains blocked until the approved target environment produces 
     "machinePathFindingCount": 0,
     "scannedFileCount": 11,
     "secretFindingCount": 0,
-    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
+    "verifiedCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
   }
 ```
 

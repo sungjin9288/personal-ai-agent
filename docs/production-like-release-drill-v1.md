@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T11:27:05.017Z
+- generatedAt: 2026-05-04T12:01:16.099Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 728a956bbab6bd5d7917ddb02465ac04b6d906c3
+- verifiedCommit: 5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -25,15 +25,15 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 414 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 778 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 327 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 857 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 286 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 230 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 800 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1055 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1135 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 165 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 161 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 179 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 418 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 177 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 134 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 169 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 366 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 608 |
 
 ## Key Signals
 
@@ -70,13 +70,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
+    "snapshotCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
   }
 ```
 
@@ -84,10 +84,10 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
+    "verifiedCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
   }
 ```
 
@@ -115,7 +115,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 11,
     "secretFindingCount": 0,
-    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
+    "verifiedCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
   }
 ```
 
