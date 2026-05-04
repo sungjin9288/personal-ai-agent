@@ -7,6 +7,7 @@
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -244,6 +245,29 @@ Stop condition:
 - if the drill fails, do not run live validation for a production-like review until the failed local gate is fixed
 - if the drill passes, treat it only as local dry-run evidence, not production deployment evidence
 
+## Clean Deployment Release Rehearsal
+
+Before treating a release pack as portable, replay core release gates from a clean tracked-file checkout:
+
+```bash
+npm run rehearsal:clean-deployment-release
+npm run smoke:clean-deployment-release
+```
+
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, runtime isolation, and pilot export package checks.
+
+Acceptance:
+
+- every command in the clean checkout command matrix passes
+- no local runtime state, generated Playwright output, dependency folder, or git metadata is required
+- release artifact hygiene reports zero credential findings and zero machine-local path findings
+- the generated rehearsal keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if the clean rehearsal fails, do not share the pilot export package externally until the failing gate is fixed
+- if the clean rehearsal passes, treat it only as local portability evidence, not target production deployment evidence
+
 ## Live Provider Validation
 
 Run only approved providers for the pilot. It is acceptable for a pilot to validate one provider first, but the release label must reflect partial provider validation.
@@ -332,6 +356,7 @@ Export package should include:
 - `docs/deployment-pilot-v1.md`
 - `docs/runtime-isolation-v1.md`
 - `docs/retention-delete-v1.md`
+- `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`
 - `docs/execution-v1-handoff.md`

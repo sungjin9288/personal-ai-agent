@@ -28,6 +28,7 @@ assert.match(drill, /productionReadyClaim: false/);
 for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:retention-delete-policy',
+  'npm run smoke:clean-deployment-release',
   'npm run smoke:execution-v1-status',
   'npm run smoke:execution-v1-snapshot',
   'npm run smoke:production-readiness-gate',
@@ -60,7 +61,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 8,
+      commandCount: 9,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

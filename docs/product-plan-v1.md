@@ -100,6 +100,7 @@
 - [x] Data export/delete policy documented
 - [x] Runtime data lifecycle export/delete verification gate implemented
 - [x] Retention/delete policy gate implemented
+- [x] Clean deployment release rehearsal gate implemented
 - [x] Incident and SLO policy documented
 - [x] Pilot export package manifest implemented
 - [x] Tool permission model documented

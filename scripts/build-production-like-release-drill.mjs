@@ -15,6 +15,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:retention-delete-policy',
   },
   {
+    command: 'npm run smoke:clean-deployment-release',
+    script: 'smoke:clean-deployment-release',
+  },
+  {
     command: 'npm run smoke:execution-v1-status',
     script: 'smoke:execution-v1-status',
   },
@@ -120,6 +124,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
+  if (script === 'smoke:clean-deployment-release') {
+    return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
+  }
   if (script === 'smoke:execution-v1-status') {
     return pick(parsed, [
       'artifactState',
@@ -139,6 +146,7 @@ function extractKeySignals(script, parsed) {
       'blockedProductionReady',
       'label',
       'openaiLiveValidation',
+      'pilotCleanDeploymentRelease',
       'pilotIncidentSloPolicy',
       'pilotRetentionDeletePolicy',
       'productionLikeReleaseDrill',
@@ -199,6 +207,7 @@ function renderDrillMarkdown({
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 
 ## Decision Boundary
 

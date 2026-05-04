@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Clean Deployment Release Rehearsal Gate Pass
+
+- added `docs/clean-deployment-release-v1.md` as a local clean-checkout rehearsal artifact that proves core release gates can replay without `var/`, Playwright output, dependency folders, or git metadata
+- added `rehearsal:clean-deployment-release` and `smoke:clean-deployment-release` so pilot handoff portability can be verified before sharing release packages
+- wired the clean deployment rehearsal into release readiness, deployment guidance, product checklist, README, production-like drill, pilot export package, production readiness gate, and artifact hygiene while keeping `productionReadyClaim: false`
+
 ## 2026-05-04 Retention Delete Policy Gate Pass
 
 - added `docs/retention-delete-v1.md` as the pilot lifecycle source of record for data class retention, export checklist, delete checklist, stop conditions, and production gap wording
