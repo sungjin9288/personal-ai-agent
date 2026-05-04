@@ -219,6 +219,29 @@ Stop condition:
 - if deterministic checks fail, do not run live validation
 - if preflight is blocked, fix provider prerequisite first
 
+## Production-Like Release Drill
+
+Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
+
+```bash
+npm run drill:production-like-release
+npm run smoke:production-like-release-drill
+```
+
+The drill replays the incident/SLO policy gate, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, and runtime data lifecycle export/delete smoke.
+
+Acceptance:
+
+- every command in the drill matrix passes
+- artifact hygiene reports zero secret findings and zero machine-local path findings
+- the generated drill keeps `productionReadyClaim: false`
+- the release label remains scoped to OpenAI-backed local-first pilot operation unless target production providers and enterprise controls are separately verified
+
+Stop condition:
+
+- if the drill fails, do not run live validation for a production-like review until the failed local gate is fixed
+- if the drill passes, treat it only as local dry-run evidence, not production deployment evidence
+
 ## Live Provider Validation
 
 Run only approved providers for the pilot. It is acceptable for a pilot to validate one provider first, but the release label must reflect partial provider validation.

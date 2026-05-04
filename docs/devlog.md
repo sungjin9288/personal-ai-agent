@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Production-Like Release Drill Gate
+
+- added a production-like local release drill generator that replays incident/SLO, execution-v1 status/snapshot, production readiness, artifact hygiene, and runtime data lifecycle gates into one operator-facing evidence document
+- added a dedicated smoke guard so the drill remains a dry-run artifact with `productionReadyClaim: false` and cannot be used to claim production readiness
+- extended release artifact hygiene to scan the drill document so generated operating evidence is covered by the same secret and machine-local path checks as execution-v1 evidence artifacts
+
 ## 2026-05-04 Incident SLO Policy Gate Pass
 
 - added `docs/incident-slo-v1.md` as the pilot incident and SLO policy source of record, covering severity levels, response targets, update cadence, owner expectations, incident entry criteria, response workflow, evidence requirements, and closure criteria

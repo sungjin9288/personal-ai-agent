@@ -43,6 +43,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/execution-v1-evidence.md',
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-handoff.md',
+  'docs/production-like-release-drill-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

@@ -60,6 +60,7 @@ Current planning status:
 - pilot onboarding guide now covers participant roles, Day 0 preparation, first session agenda, first demo mission, provider onboarding, UI walkthrough, success criteria, stop conditions, and outcome template
 - demo scenario catalog now covers release readiness, engineering mission with approval, provider validation, document and memory grounding, and multi-specialist analysis
 - release readiness decision is recorded as `provider-scoped pilot ready for OpenAI-backed local-first path`
+- production-like release drill evidence can be regenerated with `npm run drill:production-like-release`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
 
@@ -69,6 +70,13 @@ Local bootstrap for first test run:
 
 ```bash
 npm run bootstrap:local
+```
+
+Production-like local release drill:
+
+```bash
+npm run drill:production-like-release
+npm run smoke:production-like-release-drill
 ```
 
 로컬 운영 콘솔 실행:

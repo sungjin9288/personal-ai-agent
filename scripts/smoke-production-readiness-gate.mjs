@@ -11,12 +11,14 @@ const evidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const handoffPath = path.join(docsDir, 'execution-v1-handoff.md');
 const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
+const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const evidence = readRequiredFile(evidencePath);
 const closeout = readRequiredFile(closeoutPath);
 const handoff = readRequiredFile(handoffPath);
 const incidentSlo = readRequiredFile(incidentSloPath);
+const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 
 const releaseLabel = extractBulletValue(releaseReadiness, 'releaseLabel');
 const decision = extractBulletValue(releaseReadiness, 'decision');
@@ -52,6 +54,7 @@ for (const blocker of [
 }
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
+assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(incidentSlo, /Severity Levels/);
 assert.match(incidentSlo, /Pilot SLO Targets/);
 assert.match(incidentSlo, /Incident Entry Criteria/);
@@ -59,6 +62,20 @@ assert.match(incidentSlo, /Production Gap/);
 assert.match(incidentSlo, /not a production SLO\/SLA commitment/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
+}
+assert.match(productionLikeDrill, /^# Production-Like Release Drill v1$/m);
+assert.match(productionLikeDrill, /^- status: dry-run-evidence-current$/m);
+assert.match(productionLikeDrill, /^- productionReadyClaim: false$/m);
+assert.match(productionLikeDrill, /not permission to claim `production-ready`/);
+for (const command of [
+  'npm run smoke:incident-slo-policy',
+  'npm run smoke:execution-v1-status',
+  'npm run smoke:execution-v1-snapshot',
+  'npm run smoke:production-readiness-gate',
+  'npm run smoke:release-artifact-hygiene',
+  'npm run smoke:runtime-data-lifecycle',
+]) {
+  assert.match(productionLikeDrill, new RegExp(`\\| \`${escapeRegExp(command)}\` \\| pass \\| 0 \\|`));
 }
 
 for (const blocker of [
@@ -97,6 +114,7 @@ console.log(
       ok: true,
       openaiLiveValidation: currentStatus.get('openai live validation'),
       pilotIncidentSloPolicy: 'present',
+      productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
       releaseArtifactHygiene: 'passed',
       releaseArtifactHygieneScannedFiles: releaseArtifactHygiene.scannedFiles.length,
