@@ -1,12 +1,12 @@
 # Clean Deployment Release Rehearsal v1
 
 - status: clean-local-rehearsal-current
-- generatedAt: 2026-05-04T12:01:14.070Z
+- generatedAt: 2026-05-04T12:12:48.788Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc
+- sourceCommit: 007b0526d81b0bf9bd979518087d87f6547b5de5
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - cleanCheckoutMode: tracked-files-only
-- cleanCheckoutFileCount: 247
+- cleanCheckoutFileCount: 251
 - excludedRuntimeState: var/, output/playwright/, node_modules/, .git/
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -25,13 +25,13 @@ Production-ready remains blocked until the approved target environment produces 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 137 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 161 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 133 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 130 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 357 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 554 |
-| `npm run smoke:pilot-export-package` | pass | 0 | 187 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 116 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 110 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 114 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 109 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 306 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 461 |
+| `npm run smoke:pilot-export-package` | pass | 0 | 124 |
 
 ## Key Signals
 
@@ -74,7 +74,7 @@ Production-ready remains blocked until the approved target environment produces 
     "machinePathFindingCount": 0,
     "scannedFileCount": 11,
     "secretFindingCount": 0,
-    "verifiedCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
+    "verifiedCommit": "007b0526d81b0bf9bd979518087d87f6547b5de5"
   }
 ```
 
@@ -105,7 +105,7 @@ Production-ready remains blocked until the approved target environment produces 
 {
     "fileCount": 20,
     "mode": "pilot-export-package",
-    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
+    "verifiedCommit": "5668fcbafc243e7e316fbb3d9d9cfd9dc686d7fc"
   }
 ```
 
