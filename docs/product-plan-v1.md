@@ -91,6 +91,7 @@
 - [ ] Live Hermes validation archived
 - [x] Tenant/workspace isolation policy documented
 - [x] RBAC role matrix documented
+- [x] Optional web API RBAC enforcement gate implemented
 - [x] Secret handling policy documented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented

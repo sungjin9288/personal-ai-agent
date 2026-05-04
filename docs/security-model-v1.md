@@ -67,7 +67,9 @@ Production gap:
 
 Current implementation note:
 
-- The local CLI/UI does not yet enforce authenticated RBAC. This matrix is the pilot policy contract and must be enforced operationally in the deployment environment.
+- The web API now supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
+- The enforced role contract is covered by `smoke:web-rbac`: viewer can read only, operator can create/run normal local work, approver can resolve approvals, and admin is required for workspace registration, release refresh/snapshot, and delete operations.
+- The CLI remains a local operator tool and does not yet provide authenticated user/session identity. Hosted or shared deployments still require deployment-level authentication in front of this local RBAC gate.
 
 Pilot-ready requirement:
 
@@ -77,7 +79,7 @@ Pilot-ready requirement:
 
 Production gap:
 
-- authenticated users, sessions, role assignment, and permission checks are not yet implemented as a hosted control-plane feature
+- authenticated users, sessions, persistent role assignment, and centralized permission administration are not yet implemented as a hosted control-plane feature
 
 ## Secret Handling
 

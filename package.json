@@ -20,6 +20,7 @@
     "smoke:execution-v1-handoff": "node scripts/smoke-execution-v1-handoff.mjs",
     "smoke:production-readiness-gate": "node scripts/smoke-production-readiness-gate.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
+    "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",

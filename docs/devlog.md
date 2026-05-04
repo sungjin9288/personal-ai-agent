@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Optional Web RBAC Enforcement Pass
+
+- added optional web API RBAC enforcement behind `PERSONAL_AI_AGENT_RBAC_MODE=enforce`, using `x-personal-ai-agent-role` to distinguish viewer, operator, approver, and admin access for mutating routes
+- required admin role for workspace registration, release refresh/snapshot, and delete operations; required approver role for approval resolution; kept normal mission/runtime mutation under operator role while read-only APIs remain available to viewer
+- added `smoke:web-rbac` to boot the UI server in enforced mode and verify blocked viewer/operator mutations plus successful operator mission creation and approver approval resolution
+
 ## 2026-05-04 Release Artifact Hygiene Gate Pass
 
 - added an executable release artifact hygiene gate that scans current execution-v1 evidence, closeout, handoff, and the verified immutable snapshot for real credential patterns and machine-local path leaks

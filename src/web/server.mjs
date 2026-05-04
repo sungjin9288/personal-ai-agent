@@ -12,6 +12,7 @@ import {
 } from '../core/document-conversion-service.mjs';
 import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
+import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { resolveRootDir } from '../core/root.mjs';
 import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
@@ -23,6 +24,7 @@ const __dirname = path.dirname(__filename);
 
 const rootDir = resolveRootDir();
 const codeRootDir = process.cwd();
+const rbacMode = normalizeRbacMode(process.env.PERSONAL_AI_AGENT_RBAC_MODE);
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-closeout.mjs');
@@ -361,6 +363,15 @@ function normalizeRequestId(value) {
   return typeof rawValue === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(rawValue)
     ? rawValue
     : `req_${randomUUID()}`;
+}
+
+function resolveRequestRbacRole(request) {
+  return normalizeRbacRole(
+    request.headers['x-personal-ai-agent-role'] ||
+      request.headers['x-operator-role'] ||
+      process.env.PERSONAL_AI_AGENT_DEFAULT_ROLE ||
+      'viewer',
+  );
 }
 
 function writeServerDiscovery({ actualPort, fallback = false }) {
@@ -1839,12 +1850,30 @@ function serveStatic(response, pathname) {
 async function handleApi(request, response, url) {
   const pathname = url.pathname;
   const pathParts = pathname.split('/').filter(Boolean);
+  const rbac = evaluateApiRbac({
+    method: request.method,
+    mode: rbacMode,
+    pathname,
+    role: resolveRequestRbacRole(request),
+  });
+
+  if (!rbac.allowed) {
+    sendJson(response, 403, {
+      error: 'rbac-forbidden',
+      message: rbac.reason,
+      rbac,
+    });
+    return;
+  }
 
   if (request.method === 'GET' && pathname === '/api/meta') {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
       host,
       port: activePort,
+      rbac: {
+        mode: rbacMode,
+      },
       rootDir,
     });
     return;
