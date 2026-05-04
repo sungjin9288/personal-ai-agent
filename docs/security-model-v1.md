@@ -8,6 +8,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -79,6 +80,7 @@ Current implementation note:
 - The web API supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
 - The enforced role contract is covered by `smoke:web-rbac`: viewer can read only, operator can create/run normal local work, approver can resolve approvals, and admin is required for workspace registration, release refresh/snapshot, and delete operations.
 - The authenticated local role contract is covered by `smoke:web-auth-rbac`: missing or invalid tokens are rejected before RBAC, authenticated viewer mutations are still blocked, and authenticated operator mutations can proceed.
+- [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence by replaying shared-secret auth, RBAC, artifact hygiene, runtime isolation, and provider readiness checks together while preserving the hosted identity and tenant isolation production gap.
 - The CLI remains a local operator tool and does not yet provide user/session identity. Hosted or shared deployments still require identity-backed authentication, session lifecycle, and persistent role assignment outside this local shared-secret gate.
 
 Pilot-ready requirement:
@@ -175,6 +177,7 @@ Current status:
 - Anthropic evidence records a provider account billing/credit blocker
 - local and Hermes provider evidence remain blocked until approved runtime endpoint/model configuration is injected
 - [production-provider-readiness-v1.md](production-provider-readiness-v1.md) records provider preflight readiness and live-validation blockers while keeping live-provider-complete and production-ready claims blocked
+- [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence while identity-backed hosted RBAC, session lifecycle, centralized permission administration, and hosted tenant isolation remain blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
 
 ## Retention, Export, And Delete

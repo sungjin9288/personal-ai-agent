@@ -14,6 +14,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -50,6 +51,7 @@ Current execution evidence:
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`
 - local provider readiness operating rehearsal: passed, with `productionReadyClaim: false`
+- local enterprise controls rehearsal: passed, with `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 
 Current handoff state:
@@ -78,6 +80,7 @@ Current handoff state:
 | [production-slo-operating-v1.md](production-slo-operating-v1.md) | local-slo-operating-current | local SLO operating rehearsal and production telemetry gap |
 | [production-retention-operating-v1.md](production-retention-operating-v1.md) | local-retention-operating-current | local retention/export/delete operating rehearsal and production environment gap |
 | [production-provider-readiness-v1.md](production-provider-readiness-v1.md) | local-provider-readiness-current | provider preflight and live-validation blocker rehearsal |
+| [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) | local-enterprise-controls-current | local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal |
 | [runtime-isolation-v1.md](runtime-isolation-v1.md) | pilot-isolation-evidence-current | one-runtime-per-customer isolation smoke and production gap |
 | [retention-delete-v1.md](retention-delete-v1.md) | pilot-policy-evidence-current | data class retention, export checklist, delete checklist, and production gap |
 | [clean-deployment-release-v1.md](clean-deployment-release-v1.md) | clean-local-rehearsal-current | tracked-files-only clean checkout release gate replay and production gap |
@@ -192,6 +195,8 @@ npm run smoke:production-like-release-drill
 npm run smoke:runtime-isolation
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
+npm run rehearsal:production-enterprise-controls
+npm run smoke:production-enterprise-controls
 npm run smoke:retention-delete-policy
 npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating

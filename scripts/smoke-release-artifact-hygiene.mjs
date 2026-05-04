@@ -17,6 +17,7 @@ assert.equal(result.scannedFiles.includes('docs/clean-deployment-release-v1.md')
 assert.equal(result.scannedFiles.includes('docs/production-slo-operating-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-retention-operating-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-provider-readiness-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/production-enterprise-controls-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);
 assert.equal(
   result.scannedFiles.some(

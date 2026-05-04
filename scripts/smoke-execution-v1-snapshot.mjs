@@ -261,6 +261,7 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/production-slo-operating-v1.md',
     'docs/production-retention-operating-v1.md',
     'docs/production-provider-readiness-v1.md',
+    'docs/production-enterprise-controls-v1.md',
   ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
 }
 

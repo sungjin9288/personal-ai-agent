@@ -96,6 +96,7 @@
 - [x] RBAC role matrix documented
 - [x] Optional web API RBAC enforcement gate implemented
 - [x] Optional shared-secret web auth gate implemented
+- [x] Production enterprise controls rehearsal gate implemented
 - [x] Secret handling policy documented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented

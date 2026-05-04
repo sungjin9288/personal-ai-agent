@@ -10,6 +10,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
@@ -259,6 +260,30 @@ Stop condition:
 - if deterministic provider preflight is blocked, do not run live validation until the failed smoke is fixed
 - if a provider has missing env or account-level failure, do not expand the release label to that provider until live validation is archived
 
+## Production Enterprise Controls Rehearsal
+
+Before presenting a pilot package for enterprise control review, replay the local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls together:
+
+```bash
+npm run rehearsal:production-enterprise-controls
+npm run smoke:production-enterprise-controls
+```
+
+The rehearsal records local shared-secret API auth, role-gated web API access, artifact hygiene, one-runtime-per-customer isolation, and provider readiness blocker visibility into [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md).
+
+Acceptance:
+
+- every command in the enterprise controls matrix passes
+- artifact hygiene reports zero credential and machine-local path findings
+- shared-secret auth and RBAC remain described as local pilot gates, not hosted identity
+- runtime isolation remains described as self-hosted one-runtime-per-customer evidence, not hosted tenant isolation
+- the generated rehearsal keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if the rehearsal fails, do not present enterprise controls readiness in a pilot review until the failed gate is fixed
+- if the rehearsal passes, treat it only as local enterprise controls evidence, not identity-backed hosted RBAC/session administration or hosted tenant isolation
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -445,6 +470,7 @@ Export package should include:
 - `docs/production-slo-operating-v1.md`
 - `docs/production-retention-operating-v1.md`
 - `docs/production-provider-readiness-v1.md`
+- `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`

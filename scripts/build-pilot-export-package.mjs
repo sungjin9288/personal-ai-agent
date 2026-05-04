@@ -23,6 +23,7 @@ const BASE_PACKAGE_FILES = [
   'docs/production-slo-operating-v1.md',
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
+  'docs/production-enterprise-controls-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/execution-v1-evidence.md',
@@ -138,6 +139,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 
 ## Decision Boundary
 

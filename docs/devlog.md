@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Production Enterprise Controls Rehearsal Gate Pass
+
+- added `docs/production-enterprise-controls-v1.md` as the local enterprise controls rehearsal artifact for shared-secret web auth, route-level RBAC, release artifact hygiene, runtime isolation, and provider readiness checks
+- added `rehearsal:production-enterprise-controls` and `smoke:production-enterprise-controls` so local enterprise-control evidence can be regenerated and verified without claiming identity-backed hosted RBAC, hosted tenant isolation, or production-ready status
+- wired the enterprise controls rehearsal into release readiness, deployment guidance, security model, product checklist, README, production-like drill, pilot export package, production readiness gate, artifact hygiene, and artifact-sync allowlists while preserving hosted identity/session and tenant isolation blockers
+
 ## 2026-05-05 Production Provider Readiness Rehearsal Gate Pass
 
 - added `docs/production-provider-readiness-v1.md` as the local provider readiness rehearsal artifact for OpenAI, Anthropic, local, and Hermes preflight status, env readiness, archived live status, and next live-validation commands

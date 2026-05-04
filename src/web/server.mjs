@@ -52,6 +52,7 @@ const executionV1MutableArtifactPaths = new Set([
   'docs/production-slo-operating-v1.md',
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
+  'docs/production-enterprise-controls-v1.md',
 ]);
 const releaseHandoffStableLineCopyBaseKey =
   'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
