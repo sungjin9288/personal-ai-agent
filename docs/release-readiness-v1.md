@@ -159,6 +159,7 @@ Verification:
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
+npm run smoke:production-readiness-gate
 npm run smoke:ui-harness-browse
 git diff --check
 ```
