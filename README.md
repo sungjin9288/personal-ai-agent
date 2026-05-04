@@ -49,6 +49,7 @@ The self-hosted pilot deployment guide is [docs/deployment-pilot-v1.md](docs/dep
 The customer pilot onboarding guide is [docs/pilot-onboarding-v1.md](docs/pilot-onboarding-v1.md).
 The customer demo scenario catalog is [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md).
 The current release readiness decision is [docs/release-readiness-v1.md](docs/release-readiness-v1.md).
+The pilot retention/delete policy is [docs/retention-delete-v1.md](docs/retention-delete-v1.md).
 
 Current planning status:
 
@@ -63,6 +64,7 @@ Current planning status:
 - release readiness decision is recorded as `provider-scoped pilot ready for OpenAI-backed local-first path`
 - production-like release drill evidence can be regenerated with `npm run drill:production-like-release`, but it intentionally keeps `productionReadyClaim: false`
 - pilot export package evidence can be regenerated with `npm run package:pilot-export` and verified with `npm run smoke:pilot-export-package`
+- retention/export/delete policy evidence can be verified with `npm run smoke:retention-delete-policy`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
 
@@ -85,6 +87,12 @@ Self-hosted runtime isolation smoke:
 
 ```bash
 npm run smoke:runtime-isolation
+```
+
+Retention/export/delete policy gate:
+
+```bash
+npm run smoke:retention-delete-policy
 ```
 
 Pilot export package manifest:
@@ -669,6 +677,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
 `npm run smoke:runtime-data-lifecycle`는 isolated temp runtime에서 `var/state.json`과 mission artifact inventory를 만들고, relative-path export manifest와 sha256 audit evidence를 생성한 뒤, exact confirmation token 없이는 delete가 실패하고 올바른 token에서는 `var/` 삭제와 post-delete absence check가 통과하는지 검증합니다.
 `npm run smoke:runtime-isolation`은 두 개의 isolated temp runtime을 만들어 각각 workspace, memory, mission, session, artifact, export를 생성하고, 한쪽 runtime 삭제가 다른 runtime state hash와 `var/` 존재 여부를 바꾸지 않는지 검증합니다.
+`npm run smoke:retention-delete-policy`는 [retention-delete-v1.md](docs/retention-delete-v1.md)의 data class retention table, export checklist, delete checklist, required commands, stop conditions, production gap, 그리고 release/security/deployment/product/README 연결 상태를 검증합니다. 이 gate는 pilot lifecycle evidence이며 `productionReadyClaim: false`를 유지합니다.
 `npm run smoke:incident-slo-policy`는 [incident-slo-v1.md](docs/incident-slo-v1.md)의 SEV1-SEV4 severity table, pilot SLO targets, incident entry criteria, required triage commands, evidence requirements, production gap wording이 release-readiness/security/product planning 문서와 일치하는지 검증합니다.
 `npm run smoke:pilot-export-package`는 [pilot-export-package-v1.md](docs/pilot-export-package-v1.md)가 planning pack, release evidence, production-like drill, immutable snapshot을 repository-relative path와 sha256 digest로 묶고 `productionReadyClaim: false`를 유지하는지 검증합니다.
 

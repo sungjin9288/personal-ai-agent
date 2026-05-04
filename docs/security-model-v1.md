@@ -6,6 +6,7 @@
 - relatedPlan: [product-plan-v1.md](product-plan-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
+- relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Security Position
@@ -183,15 +184,18 @@ Current implementation support:
 - `smoke:runtime-isolation` verifies one-runtime-per-customer pilot isolation by creating two separate runtime roots, checking state hashes and marker separation, exporting both roots, and deleting one root without modifying the other
 - runtime export paths are recorded relative to the runtime root, and export manifests include file counts, byte counts, collection counts, and sha256 hashes for audit comparison
 - `package:pilot-export` and `smoke:pilot-export-package` generate and verify a pilot export package manifest with repository-relative paths, sha256 hashes, immutable snapshot references, and `productionReadyClaim: false`
+- [retention-delete-v1.md](retention-delete-v1.md) defines data class retention windows, export checklist, delete checklist, stop conditions, and the production gap for pilot lifecycle handling
+- `smoke:retention-delete-policy` verifies that the retention/export/delete policy gate remains wired into release readiness, deployment, security, product planning, and README guidance
 - the pilot export package manifest is scanned by release artifact hygiene before external handoff
 - destructive runtime deletion is guarded by a deterministic confirmation token generated from the target runtime root, preventing accidental cleanup calls from proceeding without explicit operator intent
 
 Required before production:
 
-- documented retention period by data class
-- export checklist for customer handoff
-- deletion checklist for local runtime state, generated artifacts, and provider transcripts
-- verification that deleted pilot data is not still present in release artifacts
+- target-deployment retention periods approved by customer data class
+- customer-specific export checklist and handoff approval evidence
+- deletion checklist execution evidence for local runtime state, generated artifacts, backups, and provider transcripts
+- verification that deleted production-like pilot data is not still present in release artifacts, backups, provider logs, or external handoff packages
+- provider-side transcript deletion or non-retention evidence for every provider included in the production claim
 
 ## Threat Model
 

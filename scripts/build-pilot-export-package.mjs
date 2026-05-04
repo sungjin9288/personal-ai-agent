@@ -18,6 +18,7 @@ const BASE_PACKAGE_FILES = [
   'docs/demo-scenarios-v1.md',
   'docs/incident-slo-v1.md',
   'docs/runtime-isolation-v1.md',
+  'docs/retention-delete-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/execution-v1-evidence.md',
@@ -128,6 +129,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
+- relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 
 ## Decision Boundary
 

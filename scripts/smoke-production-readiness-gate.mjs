@@ -14,6 +14,7 @@ const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
+const retentionDeletePath = path.join(docsDir, 'retention-delete-v1.md');
 
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const evidence = readRequiredFile(evidencePath);
@@ -23,6 +24,7 @@ const incidentSlo = readRequiredFile(incidentSloPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
+const retentionDelete = readRequiredFile(retentionDeletePath);
 
 const releaseLabel = extractBulletValue(releaseReadiness, 'releaseLabel');
 const decision = extractBulletValue(releaseReadiness, 'decision');
@@ -61,6 +63,7 @@ assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/)
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
+assert.match(releaseReadiness, /\[retention-delete-v1\.md\]\(retention-delete-v1\.md\)/);
 assert.match(incidentSlo, /Severity Levels/);
 assert.match(incidentSlo, /Pilot SLO Targets/);
 assert.match(incidentSlo, /Incident Entry Criteria/);
@@ -82,6 +85,11 @@ assert.match(runtimeIsolation, /^# Runtime Isolation v1$/m);
 assert.match(runtimeIsolation, /^- productionReadyClaim: false$/m);
 assert.match(runtimeIsolation, /npm run smoke:runtime-isolation/);
 assert.match(runtimeIsolation, /hosted tenant isolation is not implemented/);
+assert.match(retentionDelete, /^# Retention And Delete Policy v1$/m);
+assert.match(retentionDelete, /^- status: pilot-policy-evidence-current$/m);
+assert.match(retentionDelete, /^- productionReadyClaim: false$/m);
+assert.match(retentionDelete, /npm run smoke:retention-delete-policy/);
+assert.match(retentionDelete, /not production deletion evidence/);
 
 for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
@@ -120,6 +128,7 @@ console.log(
       openaiLiveValidation: currentStatus.get('openai live validation'),
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
+      pilotRetentionDeletePolicy: 'present',
       pilotRuntimeIsolation: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,

@@ -12,6 +12,7 @@ assert.equal(result.scannedFiles.includes('docs/execution-v1-closeout.md'), true
 assert.equal(result.scannedFiles.includes('docs/execution-v1-handoff.md'), true);
 assert.equal(result.scannedFiles.includes('docs/pilot-export-package-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-like-release-drill-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/retention-delete-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);
 assert.equal(
   result.scannedFiles.some(

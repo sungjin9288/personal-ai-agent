@@ -26,7 +26,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 18$/m);
+assert.match(manifest, /^- fileCount: 19$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -43,6 +43,7 @@ for (const requiredPath of [
   'docs/demo-scenarios-v1.md',
   'docs/incident-slo-v1.md',
   'docs/runtime-isolation-v1.md',
+  'docs/retention-delete-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/execution-v1-evidence.md',
@@ -64,12 +65,13 @@ assert.match(deployment, /## Pilot Export Package/);
 assert.match(deployment, /npm run package:pilot-export/);
 assert.match(deployment, /npm run smoke:pilot-export-package/);
 assert.match(security, /pilot export package manifest/);
+assert.match(security, /retention\/export\/delete policy gate/);
 assert.match(readme, /npm run package:pilot-export/);
 
 console.log(
   JSON.stringify(
     {
-      fileCount: 18,
+      fileCount: 19,
       mode: 'pilot-export-package',
       ok: true,
       path: 'docs/pilot-export-package-v1.md',

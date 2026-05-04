@@ -6,6 +6,7 @@
 - relatedPlan: [product-plan-v1.md](product-plan-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
+- relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -330,6 +331,7 @@ Export package should include:
 - `docs/operator-runbook-v1.md`
 - `docs/deployment-pilot-v1.md`
 - `docs/runtime-isolation-v1.md`
+- `docs/retention-delete-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`
 - `docs/execution-v1-handoff.md`
@@ -361,6 +363,35 @@ Stop condition:
 
 - if the manifest is missing files, do not share the handoff package
 - if hygiene finds a secret or machine-local path, stop export, scrub/regenerate artifacts, and rotate any exposed secret
+
+## Retention And Delete Policy
+
+Before export or cleanup, verify the pilot lifecycle policy:
+
+```bash
+npm run smoke:retention-delete-policy
+npm run smoke:runtime-data-lifecycle
+npm run smoke:runtime-isolation
+npm run package:pilot-export
+npm run smoke:pilot-export-package
+npm run smoke:release-artifact-hygiene
+```
+
+The source of record is [retention-delete-v1.md](retention-delete-v1.md). It defines pilot data classes, retention periods, export checklist, delete checklist, provider transcript handling, stop conditions, and the production gap.
+
+Acceptance:
+
+- every pilot data class has an explicit retention period
+- export package paths are repository-relative and hashed
+- runtime deletion requires the deterministic confirmation token
+- deleted runtime state has post-delete absence evidence
+- release artifacts and package manifests keep `productionReadyClaim: false`
+
+Stop condition:
+
+- if the runtime root ownership is unclear, do not delete
+- if the export package or artifact hygiene gate fails, do not share externally
+- if provider transcript deletion or non-retention cannot be proven, keep production-ready blocked
 
 Before export:
 

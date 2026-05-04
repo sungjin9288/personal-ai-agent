@@ -24,6 +24,7 @@
     "smoke:runtime-data-lifecycle": "node scripts/smoke-runtime-data-lifecycle.mjs",
     "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
+    "smoke:retention-delete-policy": "node scripts/smoke-retention-delete-policy.mjs",
     "smoke:production-like-release-drill": "node scripts/smoke-production-like-release-drill.mjs",
     "smoke:pilot-export-package": "node scripts/smoke-pilot-export-package.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",

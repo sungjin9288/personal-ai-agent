@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Retention Delete Policy Gate Pass
+
+- added `docs/retention-delete-v1.md` as the pilot lifecycle source of record for data class retention, export checklist, delete checklist, stop conditions, and production gap wording
+- added `smoke:retention-delete-policy` to verify the policy document remains wired into release readiness, security, deployment, product planning, and README guidance
+- expanded the production-like release drill, pilot export package, and release artifact hygiene boundary so retention/export/delete evidence is included in repeatable handoff checks without claiming production readiness
+
 ## 2026-05-04 Runtime Isolation Gate
 
 - added `smoke:runtime-isolation` to verify one-runtime-per-customer pilot separation across workspace, mission, memory, export, and confirmed delete flows
