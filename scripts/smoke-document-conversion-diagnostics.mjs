@@ -18,8 +18,8 @@ const missingConverterPath = path.join(tempRoot, 'missing-markitdown');
 fs.writeFileSync(
   converterPath,
   [
-    '#!/usr/bin/env node',
-    "console.log(`fake MarkItDown help probe: ${process.argv.slice(2).join(' ')}`);",
+    '#!/bin/sh',
+    'printf "%s\\n" "fake MarkItDown help probe: $*"',
     '',
   ].join('\n'),
   'utf8',
