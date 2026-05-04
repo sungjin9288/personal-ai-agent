@@ -10,6 +10,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedOnboarding: [pilot-onboarding-v1.md](pilot-onboarding-v1.md)
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
+- relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Product Thesis
@@ -97,6 +98,7 @@
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented
 - [x] Runtime data lifecycle export/delete verification gate implemented
+- [x] Incident and SLO policy documented
 - [x] Tool permission model documented
 - [x] Threat model documented
 - [x] Pilot onboarding guide documented

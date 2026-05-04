@@ -10,11 +10,13 @@ const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const evidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const handoffPath = path.join(docsDir, 'execution-v1-handoff.md');
+const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
 
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const evidence = readRequiredFile(evidencePath);
 const closeout = readRequiredFile(closeoutPath);
 const handoff = readRequiredFile(handoffPath);
+const incidentSlo = readRequiredFile(incidentSloPath);
 
 const releaseLabel = extractBulletValue(releaseReadiness, 'releaseLabel');
 const decision = extractBulletValue(releaseReadiness, 'decision');
@@ -43,10 +45,20 @@ for (const blocker of [
   /authenticated RBAC is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
   /production retention\/export\/delete verification is not complete/,
-  /production SLO\/SLA and incident response policy are not finalized/,
+  /production SLO\/SLA operating evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(productionReadySection, blocker);
+}
+
+assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
+assert.match(incidentSlo, /Severity Levels/);
+assert.match(incidentSlo, /Pilot SLO Targets/);
+assert.match(incidentSlo, /Incident Entry Criteria/);
+assert.match(incidentSlo, /Production Gap/);
+assert.match(incidentSlo, /not a production SLO\/SLA commitment/);
+for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
+  assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
 
 for (const blocker of [
@@ -84,6 +96,7 @@ console.log(
       mode: 'production-readiness-gate',
       ok: true,
       openaiLiveValidation: currentStatus.get('openai live validation'),
+      pilotIncidentSloPolicy: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
       releaseArtifactHygiene: 'passed',
       releaseArtifactHygieneScannedFiles: releaseArtifactHygiene.scannedFiles.length,

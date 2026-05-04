@@ -4,6 +4,7 @@
 - localDate: 2026-05-04
 - scope: self-hosted local-first pilot
 - relatedPlan: [product-plan-v1.md](product-plan-v1.md)
+- relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Security Position
@@ -149,6 +150,7 @@ Auditable records:
 - specialist follow-up and escalation records
 - maintenance runs and reminders
 - execution-v1 evidence, closeout, handoff, and immutable snapshots
+- incident severity, SLO triage commands, owner, evidence, and closure records defined in [incident-slo-v1.md](incident-slo-v1.md)
 
 Policy:
 

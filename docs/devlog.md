@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Incident SLO Policy Gate Pass
+
+- added `docs/incident-slo-v1.md` as the pilot incident and SLO policy source of record, covering severity levels, response targets, update cadence, owner expectations, incident entry criteria, response workflow, evidence requirements, and closure criteria
+- added `smoke:incident-slo-policy` and wired the policy into `smoke:production-readiness-gate` so release readiness now verifies the pilot incident/SLO policy while keeping production SLO/SLA operating evidence blocked until target deployment proof exists
+- updated release-readiness, security model, product plan, and README references so operators can verify incident/SLO policy coverage without changing the current OpenAI-scoped pilot-ready label
+
 ## 2026-05-04 Runtime Data Lifecycle Gate Pass
 
 - added runtime data lifecycle utilities for local runtime inventory, relative-path export manifest generation, sha256 audit evidence, and confirmation-token guarded `var/` deletion

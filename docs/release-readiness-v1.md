@@ -10,6 +10,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedOnboarding: [pilot-onboarding-v1.md](pilot-onboarding-v1.md)
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
+- relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-closeout.md](execution-v1-closeout.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Decision
@@ -56,6 +57,7 @@ Current handoff state:
 | [deployment-pilot-v1.md](deployment-pilot-v1.md) | ready | self-hosted pilot install, validation, export, cleanup |
 | [pilot-onboarding-v1.md](pilot-onboarding-v1.md) | ready | first pilot session, roles, first mission, success/stop criteria |
 | [demo-scenarios-v1.md](demo-scenarios-v1.md) | ready | customer demo catalog and scenario-specific proof paths |
+| [incident-slo-v1.md](incident-slo-v1.md) | pilot-policy-ready | incident severity, SLO triage commands, response workflow |
 | [execution-v1-evidence.md](execution-v1-evidence.md) | OpenAI-live-validated | current verification evidence |
 | [execution-v1-closeout.md](execution-v1-closeout.md) | OpenAI-live-validated | closeout checklist with remaining provider gaps |
 | [execution-v1-handoff.md](execution-v1-handoff.md) | handoff-ready | operator handoff and next live validation commands |
@@ -120,7 +122,7 @@ Blockers:
 - authenticated RBAC is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
 - production retention/export/delete verification is not complete
-- production SLO/SLA and incident response policy are not finalized
+- production SLO/SLA operating evidence is not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment
 
 Production-ready must not be claimed from the current state.
