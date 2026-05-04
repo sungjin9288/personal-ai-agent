@@ -55,6 +55,7 @@ Current planning status:
 - execution-v1 is provider-scoped pilot-ready for OpenAI-backed local-first operation
 - OpenAI live validation is archived; Anthropic is currently blocked by provider account billing/credit, and local/Hermes still require runtime configuration
 - security model documentation now covers workspace isolation policy, RBAC matrix, secret handling, audit/retention/export/delete policy, tool permission model, and threat model
+- self-hosted runtime isolation can be verified with `npm run smoke:runtime-isolation`
 - operator runbook now covers daily start, UI operation, workspace/mission flow, approval handling, live validation, evidence refresh, artifact hygiene, incident triage, and release decision gates
 - pilot deployment guide now covers install/bootstrap, runtime isolation, provider env injection, validation gates, operation loop, export, cleanup, and rollback
 - pilot onboarding guide now covers participant roles, Day 0 preparation, first session agenda, first demo mission, provider onboarding, UI walkthrough, success criteria, stop conditions, and outcome template
@@ -78,6 +79,12 @@ Production-like local release drill:
 ```bash
 npm run drill:production-like-release
 npm run smoke:production-like-release-drill
+```
+
+Self-hosted runtime isolation smoke:
+
+```bash
+npm run smoke:runtime-isolation
 ```
 
 Pilot export package manifest:
@@ -661,6 +668,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:release-artifact-hygiene`는 현재 execution-v1 evidence/closeout/handoff, production-like release drill, pilot export package manifest, verified immutable snapshot에 실제 credential pattern 또는 machine-local path leak이 없는지 검증합니다. 같은 hygiene check는 `smoke:production-readiness-gate`에도 포함되어 production-ready overclaim 방지와 shareable artifact hygiene을 같은 gate에서 확인합니다.
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
 `npm run smoke:runtime-data-lifecycle`는 isolated temp runtime에서 `var/state.json`과 mission artifact inventory를 만들고, relative-path export manifest와 sha256 audit evidence를 생성한 뒤, exact confirmation token 없이는 delete가 실패하고 올바른 token에서는 `var/` 삭제와 post-delete absence check가 통과하는지 검증합니다.
+`npm run smoke:runtime-isolation`은 두 개의 isolated temp runtime을 만들어 각각 workspace, memory, mission, session, artifact, export를 생성하고, 한쪽 runtime 삭제가 다른 runtime state hash와 `var/` 존재 여부를 바꾸지 않는지 검증합니다.
 `npm run smoke:incident-slo-policy`는 [incident-slo-v1.md](docs/incident-slo-v1.md)의 SEV1-SEV4 severity table, pilot SLO targets, incident entry criteria, required triage commands, evidence requirements, production gap wording이 release-readiness/security/product planning 문서와 일치하는지 검증합니다.
 `npm run smoke:pilot-export-package`는 [pilot-export-package-v1.md](docs/pilot-export-package-v1.md)가 planning pack, release evidence, production-like drill, immutable snapshot을 repository-relative path와 sha256 digest로 묶고 `productionReadyClaim: false`를 유지하는지 검증합니다.
 

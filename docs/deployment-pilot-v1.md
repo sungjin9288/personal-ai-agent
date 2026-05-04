@@ -228,12 +228,13 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, and runtime data lifecycle export/delete smoke.
+The drill replays the incident/SLO policy gate, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
 - every command in the drill matrix passes
 - artifact hygiene reports zero secret findings and zero machine-local path findings
+- runtime isolation smoke confirms one-runtime-per-customer state separation
 - the generated drill keeps `productionReadyClaim: false`
 - the release label remains scoped to OpenAI-backed local-first pilot operation unless target production providers and enterprise controls are separately verified
 
@@ -328,6 +329,7 @@ Export package should include:
 - `docs/security-model-v1.md`
 - `docs/operator-runbook-v1.md`
 - `docs/deployment-pilot-v1.md`
+- `docs/runtime-isolation-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`
 - `docs/execution-v1-handoff.md`

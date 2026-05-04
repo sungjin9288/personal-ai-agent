@@ -22,6 +22,7 @@
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:runtime-data-lifecycle": "node scripts/smoke-runtime-data-lifecycle.mjs",
+    "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
     "smoke:production-like-release-drill": "node scripts/smoke-production-like-release-drill.mjs",
     "smoke:pilot-export-package": "node scripts/smoke-pilot-export-package.mjs",

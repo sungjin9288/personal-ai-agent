@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T09:46:05.693Z
+- generatedAt: 2026-05-04T09:55:43.313Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 180e686613129558d3c8f398b54af0ca3a741c71
+- verifiedCommit: 79472575a64b91bac4be7be97f67a5ccdb170047
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -23,12 +23,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 138 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 417 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 314 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 131 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 126 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 307 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 378 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 821 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 407 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 297 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 374 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 691 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1179 |
 
 ## Key Signals
 
@@ -45,8 +46,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -59,7 +60,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "180e686613129558d3c8f398b54af0ca3a741c71"
@@ -99,6 +100,17 @@ Production-ready remains blocked until the target deployment model produces clea
     "deleted": true,
     "exportedFileCount": 13,
     "mode": "runtime-data-lifecycle"
+  }
+```
+
+### npm run smoke:runtime-isolation
+
+```json
+{
+    "deletedRuntimeA": true,
+    "exportAFileCount": 13,
+    "exportBFileCount": 13,
+    "mode": "runtime-isolation"
   }
 ```
 

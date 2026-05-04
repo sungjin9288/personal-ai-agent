@@ -91,6 +91,7 @@
 - [ ] Live local provider validation archived
 - [ ] Live Hermes validation archived
 - [x] Tenant/workspace isolation policy documented
+- [x] Self-hosted runtime isolation smoke implemented
 - [x] RBAC role matrix documented
 - [x] Optional web API RBAC enforcement gate implemented
 - [x] Secret handling policy documented

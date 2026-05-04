@@ -30,6 +30,10 @@ const DRILL_COMMANDS = [
     command: 'npm run smoke:runtime-data-lifecycle',
     script: 'smoke:runtime-data-lifecycle',
   },
+  {
+    command: 'npm run smoke:runtime-isolation',
+    script: 'smoke:runtime-isolation',
+  },
 ];
 
 const generatedAt = new Date().toISOString();
@@ -140,6 +144,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:runtime-data-lifecycle') {
     return pick(parsed, ['deleted', 'exportedFileCount', 'mode']);
+  }
+  if (script === 'smoke:runtime-isolation') {
+    return pick(parsed, ['deletedRuntimeA', 'exportAFileCount', 'exportBFileCount', 'mode']);
   }
 
   return pick(parsed, ['mode']);

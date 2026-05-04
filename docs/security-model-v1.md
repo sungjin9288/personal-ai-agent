@@ -5,6 +5,7 @@
 - scope: self-hosted local-first pilot
 - relatedPlan: [product-plan-v1.md](product-plan-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Security Position
@@ -50,6 +51,7 @@ Pilot policy:
 - do not mix unrelated customers in the same `var/` state root
 - do not share release artifacts externally until the credential/path leak scan passes
 - workspace roots must be explicitly registered by an operator
+- `smoke:runtime-isolation` verifies that two isolated runtime roots do not share workspace, mission, memory, export, or deletion state
 
 Production gap:
 
@@ -178,6 +180,7 @@ Pilot defaults:
 Current implementation support:
 
 - `smoke:runtime-data-lifecycle` verifies local runtime inventory, export manifest generation, exact confirmation-token deletion, and post-delete absence checks on an isolated temp runtime
+- `smoke:runtime-isolation` verifies one-runtime-per-customer pilot isolation by creating two separate runtime roots, checking state hashes and marker separation, exporting both roots, and deleting one root without modifying the other
 - runtime export paths are recorded relative to the runtime root, and export manifests include file counts, byte counts, collection counts, and sha256 hashes for audit comparison
 - `package:pilot-export` and `smoke:pilot-export-package` generate and verify a pilot export package manifest with repository-relative paths, sha256 hashes, immutable snapshot references, and `productionReadyClaim: false`
 - the pilot export package manifest is scanned by release artifact hygiene before external handoff

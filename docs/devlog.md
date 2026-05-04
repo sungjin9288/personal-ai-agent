@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Runtime Isolation Gate
+
+- added `smoke:runtime-isolation` to verify one-runtime-per-customer pilot separation across workspace, mission, memory, export, and confirmed delete flows
+- added [runtime-isolation-v1.md](runtime-isolation-v1.md) as the self-hosted pilot isolation evidence source of record while keeping hosted tenant isolation blocked
+- wired runtime isolation into production-like drill, release readiness, security model, deployment guidance, product checklist, and README smoke guidance
+
 ## 2026-05-04 Pilot Export Package Gate
 
 - added a pilot export package manifest generator that records the shareable planning pack, release evidence, production-like drill, and immutable execution-v1 snapshot with repository-relative paths and sha256 hashes
