@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T09:14:45.038Z
+- generatedAt: 2026-05-04T09:28:18.477Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 898ad86983eb52b8ee6e4f5eabca2b406e50d0b2
+- verifiedCommit: 947334830c0de5e2a1be76fa77017d6b77bd3d1a
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -23,12 +23,12 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 221 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 659 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 237 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 228 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 220 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 581 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 130 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 485 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 149 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 111 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 124 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 291 |
 
 ## Key Signals
 
@@ -51,7 +51,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "898ad86983eb52b8ee6e4f5eabca2b406e50d0b2"
+    "snapshotCommit": "947334830c0de5e2a1be76fa77017d6b77bd3d1a"
   }
 ```
 
@@ -62,7 +62,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "898ad86983eb52b8ee6e4f5eabca2b406e50d0b2"
+    "verifiedCommit": "947334830c0de5e2a1be76fa77017d6b77bd3d1a"
   }
 ```
 
@@ -88,7 +88,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 8,
     "secretFindingCount": 0,
-    "verifiedCommit": "898ad86983eb52b8ee6e4f5eabca2b406e50d0b2"
+    "verifiedCommit": "947334830c0de5e2a1be76fa77017d6b77bd3d1a"
   }
 ```
 
