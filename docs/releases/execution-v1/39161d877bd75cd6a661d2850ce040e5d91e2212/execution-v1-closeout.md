@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-04T08:39:14.119Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-04T08:38:55.977Z
 - branch: codex/managed-multi-agent-v1-foundation
 - commit: 39161d877bd75cd6a661d2850ce040e5d91e2212
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/39161d877bd75cd6a661d2850ce040e5d91e2212/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
