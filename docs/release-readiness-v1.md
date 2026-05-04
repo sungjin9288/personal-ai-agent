@@ -42,7 +42,7 @@ Current execution evidence:
 - browser interaction E2E: passed
 - reference adoption aggregate: ready, 15 scripts
 - handoff generator: passed
-- visual artifact set: `3d9d8ea58d838cf468f0e1a96f0ac9d32051bef24874d88f3a6198a2bb8f2c40`
+- visual artifact set: `71b1982b0f8c116ac7b3ecd1e44618e85f9c6785014955bd9e99c640ce6aba55`
 - live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local/Hermes missing runtime env
 - local deterministic production-like release drill: passed, with `productionReadyClaim: false`
 - pilot export package manifest: passed, with repository-relative paths and `productionReadyClaim: false`
