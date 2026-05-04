@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 OIDC Web Auth RBAC Gate Pass
+
+- added optional `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc` support for RS256 bearer JWT validation against configured issuer, audience, JWKS URL, expiry, and role claim
+- added `smoke:web-oidc-rbac` to verify missing token rejection, invalid audience rejection, token-derived operator role access, and viewer-token header spoofing prevention
+- wired OIDC/JWKS auth evidence into security, deployment, product, README, release readiness, and production enterprise controls rehearsal while keeping hosted session administration and centralized permission lifecycle blockers explicit
+
 ## 2026-05-05 Production Enterprise Controls Rehearsal Gate Pass
 
 - added `docs/production-enterprise-controls-v1.md` as the local enterprise controls rehearsal artifact for shared-secret web auth, route-level RBAC, release artifact hygiene, runtime isolation, and provider readiness checks

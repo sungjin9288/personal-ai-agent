@@ -77,9 +77,11 @@ Production gap:
 Current implementation note:
 
 - The web API now supports optional local shared-secret authentication with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce` and `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, accepting either `Authorization: Bearer ...` or `x-personal-ai-agent-auth-token`.
+- The web API now supports optional OIDC/JWKS bearer authentication with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc`, `PERSONAL_AI_AGENT_OIDC_ISSUER`, `PERSONAL_AI_AGENT_OIDC_AUDIENCE`, `PERSONAL_AI_AGENT_OIDC_JWKS_URL`, and `PERSONAL_AI_AGENT_OIDC_ROLE_CLAIM`, verifying RS256 signature, issuer, audience, expiry, and token-derived RBAC role.
 - The web API supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
 - The enforced role contract is covered by `smoke:web-rbac`: viewer can read only, operator can create/run normal local work, approver can resolve approvals, and admin is required for workspace registration, release refresh/snapshot, and delete operations.
 - The authenticated local role contract is covered by `smoke:web-auth-rbac`: missing or invalid tokens are rejected before RBAC, authenticated viewer mutations are still blocked, and authenticated operator mutations can proceed.
+- The OIDC role contract is covered by `smoke:web-oidc-rbac`: missing tokens and invalid audience tokens are rejected, token role claims drive RBAC, and a viewer token cannot escalate by spoofing `x-personal-ai-agent-role`.
 - [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence by replaying shared-secret auth, RBAC, artifact hygiene, runtime isolation, and provider readiness checks together while preserving the hosted identity and tenant isolation production gap.
 - The CLI remains a local operator tool and does not yet provide user/session identity. Hosted or shared deployments still require identity-backed authentication, session lifecycle, and persistent role assignment outside this local shared-secret gate.
 
@@ -91,7 +93,7 @@ Pilot-ready requirement:
 
 Production gap:
 
-- identity-backed hosted users, sessions, persistent role assignment, and centralized permission administration are not yet implemented as a hosted control-plane feature
+- hosted identity-backed users are supported only through OIDC/JWKS bearer validation at the local web API boundary; session lifecycle, persistent role assignment administration, and centralized permission administration are not yet implemented as a hosted control-plane feature
 
 ## Secret Handling
 

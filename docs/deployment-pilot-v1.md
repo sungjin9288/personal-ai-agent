@@ -141,6 +141,19 @@ export PERSONAL_AI_AGENT_RBAC_MODE=enforce
 
 When web auth is enforced, every `/api/*` request must include either `Authorization: Bearer ...` or `x-personal-ai-agent-auth-token`. RBAC role checks still require `x-personal-ai-agent-role`, so authentication and authorization remain separate gates.
 
+Optional OIDC/JWKS web auth for identity-backed pilot environments:
+
+```bash
+export PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc
+export PERSONAL_AI_AGENT_OIDC_ISSUER="https://issuer.example.com"
+export PERSONAL_AI_AGENT_OIDC_AUDIENCE="personal-ai-agent-web"
+export PERSONAL_AI_AGENT_OIDC_JWKS_URL="https://issuer.example.com/.well-known/jwks.json"
+export PERSONAL_AI_AGENT_OIDC_ROLE_CLAIM="role"
+export PERSONAL_AI_AGENT_RBAC_MODE=enforce
+```
+
+When OIDC mode is enabled, `/api/*` requests must use an RS256 bearer JWT with matching issuer, audience, expiry, and JWKS key. RBAC role is derived from the configured token role claim and cannot be escalated by spoofing `x-personal-ai-agent-role`.
+
 ## Install And Bootstrap
 
 1. Enter the repository.
@@ -220,6 +233,7 @@ npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
 npm run smoke:web-auth-rbac
+npm run smoke:web-oidc-rbac
 npm run preflight:execution-v1:all
 ```
 
@@ -229,6 +243,7 @@ Expected result:
 - snapshot integrity passes
 - handoff generator passes
 - web auth plus RBAC smoke passes when shared pilot API access is enabled
+- OIDC/JWKS plus RBAC smoke passes when identity-backed pilot API access is enabled
 - aggregate preflight has `blockedCount: 0`
 - missing env providers are explicitly listed
 
@@ -269,11 +284,12 @@ npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
 ```
 
-The rehearsal records local shared-secret API auth, role-gated web API access, artifact hygiene, one-runtime-per-customer isolation, and provider readiness blocker visibility into [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md).
+The rehearsal records local shared-secret API auth, OIDC/JWKS bearer auth, role-gated web API access, artifact hygiene, one-runtime-per-customer isolation, and provider readiness blocker visibility into [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md).
 
 Acceptance:
 
 - every command in the enterprise controls matrix passes
+- OIDC/JWKS bearer validation rejects invalid audience tokens and token-role header spoofing
 - artifact hygiene reports zero credential and machine-local path findings
 - shared-secret auth and RBAC remain described as local pilot gates, not hosted identity
 - runtime isolation remains described as self-hosted one-runtime-per-customer evidence, not hosted tenant isolation

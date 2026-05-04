@@ -12,6 +12,10 @@ const ENTERPRISE_CONTROL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:web-oidc-rbac',
+    script: 'smoke:web-oidc-rbac',
+  },
+  {
     command: 'npm run smoke:web-rbac',
     script: 'smoke:web-rbac',
   },
@@ -114,6 +118,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:web-auth-rbac') {
     return pick(parsed, ['authMode', 'mode', 'roleChecks']);
   }
+  if (script === 'smoke:web-oidc-rbac') {
+    return pick(parsed, ['authMode', 'mode', 'roleChecks']);
+  }
   if (script === 'smoke:web-rbac') {
     return pick(parsed, ['mode', 'roleChecks']);
   }
@@ -161,7 +168,7 @@ function renderEnterpriseControlsMarkdown({
 - sourceBranch: ${sourceBranch}
 - sourceCommit: ${sourceCommit}
 - releaseLabel: ${releaseLabel}
-- scope: local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
+- scope: local auth, OIDC/JWKS auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -171,7 +178,7 @@ function renderEnterpriseControlsMarkdown({
 
 ## Decision Boundary
 
-This rehearsal proves that local shared-secret API authentication, local RBAC enforcement, release artifact hygiene, one-runtime-per-customer isolation, and provider-readiness blockers can be checked together before a pilot handoff.
+This rehearsal proves that local shared-secret API authentication, OIDC/JWKS bearer authentication, token-claim RBAC role mapping, local RBAC enforcement, release artifact hygiene, one-runtime-per-customer isolation, and provider-readiness blockers can be checked together before a pilot handoff.
 
 It is not identity-backed hosted RBAC, not hosted tenant isolation, not centralized permission administration, not customer identity lifecycle evidence, and not permission to claim \`production-ready\`.
 
@@ -190,7 +197,8 @@ ${keySignalRows}
 ## Operating Interpretation
 
 - shared-secret web auth is only a local pilot access gate, not enterprise identity
-- RBAC enforcement proves route-level role boundaries locally, not centralized permission lifecycle management
+- OIDC/JWKS web auth verifies issuer, audience, RS256 signature, expiry, and role claim mapping without storing token values
+- RBAC enforcement proves route-level role boundaries locally and prevents OIDC viewer tokens from escalating through spoofed role headers, but it is not centralized permission lifecycle management
 - artifact hygiene proves shareable release artifacts avoid credential and machine-local path leaks
 - runtime isolation proves one-runtime-per-customer pilot separation, not hosted multi-tenant isolation
 - provider readiness proves missing provider blockers remain explicit before expanding the release label
@@ -204,7 +212,7 @@ npm run smoke:production-enterprise-controls
 
 ## Acceptance Rule
 
-The rehearsal is acceptable only when every command passes, artifact hygiene reports zero credential and machine-local path findings, and local auth/RBAC boundaries remain explicit.
+The rehearsal is acceptable only when every command passes, OIDC/JWKS token validation rejects invalid audience and header spoofing, artifact hygiene reports zero credential and machine-local path findings, and local auth/RBAC boundaries remain explicit.
 
 The rehearsal must keep \`productionReadyClaim: false\` until the same controls are backed by an approved identity provider, audited hosted role administration, tenant isolation, and production-like deployment evidence.
 `;
@@ -218,7 +226,7 @@ function renderPendingEnterpriseControlsMarkdown({ generatedAt, releaseLabel, so
 - sourceBranch: ${sourceBranch}
 - sourceCommit: ${sourceCommit}
 - releaseLabel: ${releaseLabel}
-- scope: local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
+- scope: local auth, OIDC/JWKS auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
 
 ## Decision Boundary

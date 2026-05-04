@@ -51,8 +51,9 @@ Current execution evidence:
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`
 - local provider readiness operating rehearsal: passed, with `productionReadyClaim: false`
-- local enterprise controls rehearsal: passed, with `productionReadyClaim: false`
+- local enterprise controls rehearsal: passed, including OIDC/JWKS auth and token-claim RBAC smoke, with `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
+- local OIDC/JWKS auth plus RBAC gate: passed for bearer JWT issuer/audience/signature/expiry and token role claim enforcement, without hosted session administration claims
 
 Current handoff state:
 

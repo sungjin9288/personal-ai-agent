@@ -18,7 +18,7 @@ import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
-import { evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
+import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,6 +28,10 @@ const codeRootDir = process.cwd();
 const rbacMode = normalizeRbacMode(process.env.PERSONAL_AI_AGENT_RBAC_MODE);
 const webAuthMode = normalizeWebAuthMode(process.env.PERSONAL_AI_AGENT_WEB_AUTH_MODE);
 const webAuthToken = String(process.env.PERSONAL_AI_AGENT_WEB_AUTH_TOKEN || '');
+const oidcIssuer = String(process.env.PERSONAL_AI_AGENT_OIDC_ISSUER || '').trim();
+const oidcAudience = String(process.env.PERSONAL_AI_AGENT_OIDC_AUDIENCE || '').trim();
+const oidcJwksUrl = String(process.env.PERSONAL_AI_AGENT_OIDC_JWKS_URL || '').trim();
+const oidcRoleClaim = String(process.env.PERSONAL_AI_AGENT_OIDC_ROLE_CLAIM || 'role').trim() || 'role';
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-closeout.mjs');
@@ -377,7 +381,11 @@ function normalizeRequestId(value) {
     : `req_${randomUUID()}`;
 }
 
-function resolveRequestRbacRole(request) {
+function resolveRequestRbacRole(request, auth = {}) {
+  if (auth.mode === 'oidc' && auth.authenticated) {
+    return normalizeRbacRole(auth.role || 'viewer');
+  }
+
   return normalizeRbacRole(
     request.headers['x-personal-ai-agent-role'] ||
       request.headers['x-operator-role'] ||
@@ -1868,12 +1876,21 @@ function serveStatic(response, pathname) {
 async function handleApi(request, response, url) {
   const pathname = url.pathname;
   const pathParts = pathname.split('/').filter(Boolean);
-  const auth = evaluateWebAuth({
-    authorizationHeader: request.headers.authorization,
-    configuredToken: webAuthToken,
-    mode: webAuthMode,
-    tokenHeader: request.headers['x-personal-ai-agent-auth-token'],
-  });
+  const auth =
+    webAuthMode === 'oidc'
+      ? await evaluateOidcWebAuth({
+          audience: oidcAudience,
+          authorizationHeader: request.headers.authorization,
+          issuer: oidcIssuer,
+          jwksUrl: oidcJwksUrl,
+          roleClaim: oidcRoleClaim,
+        })
+      : evaluateWebAuth({
+          authorizationHeader: request.headers.authorization,
+          configuredToken: webAuthToken,
+          mode: webAuthMode,
+          tokenHeader: request.headers['x-personal-ai-agent-auth-token'],
+        });
 
   if (!auth.allowed) {
     sendJson(response, 401, {
@@ -1893,7 +1910,7 @@ async function handleApi(request, response, url) {
     method: request.method,
     mode: rbacMode,
     pathname,
-    role: resolveRequestRbacRole(request),
+    role: resolveRequestRbacRole(request, auth),
   });
 
   if (!rbac.allowed) {
@@ -1915,7 +1932,8 @@ async function handleApi(request, response, url) {
       },
       webAuth: {
         mode: webAuthMode,
-        required: webAuthMode === 'enforce',
+        required: webAuthMode === 'enforce' || webAuthMode === 'oidc',
+        roleClaim: webAuthMode === 'oidc' ? oidcRoleClaim : '',
       },
       rootDir,
     });

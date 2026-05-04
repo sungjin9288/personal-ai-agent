@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-04T16:37:14.721Z
+- generatedAt: 2026-05-04T16:55:59.704Z
 - verifiedCommit: a19aa820ebafc7d54d849ac3810da64ea7505895
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: a93dc3ab3ddfbe6e78e801c074884ebace569e56febba464fbaa534c484d2dc7
+- bundleSha256: c510e5a6da8777d6bf414d6825b0900f278f572d648f976e76c62fe5b8639c3c
 - fileCount: 24
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -30,11 +30,11 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 154832 | `8ec6e51393f93c1c783980c91aa6c62214c47b03ad351e7e3c8615551fc2f65c` |
-| `docs/product-plan-v1.md` | 11141 | `27f003db17f278c5d0a72cfe43ad94adb5a05a87ba4a3cccac6b0ef4dc73b014` |
-| `docs/security-model-v1.md` | 18031 | `b4a3e373cf3e4dd84c0bf6f03ff0ced75afe8a97156c6fb4df66d9496197e756` |
+| `README.md` | 155362 | `6b5d91f973eddbc10bdea5614789e8fbf8dd1c827b6aaac90e05f919d25ddd1d` |
+| `docs/product-plan-v1.md` | 11213 | `7be554dffca368319cf478e64a69cef95d81dc2c9178ab7169f5d5e6e32c3631` |
+| `docs/security-model-v1.md` | 18703 | `b68c784e3acb3c43d41760d3fa12c2abdf9c14e590c6c96da55fbf24c0dc41f3` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 21985 | `75e6e2c4af94f47fa7ef207fc7550bca8a421c19cb611b8be56ee1b7a46ee355` |
+| `docs/deployment-pilot-v1.md` | 22900 | `29ac5c607452d1a52e37f31b6d1c3dd843c87c397879a7411f05d395d8429584` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
@@ -44,9 +44,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/production-slo-operating-v1.md` | 4160 | `77f95dafc48df1d767a326e610a738feff845fea67854c633214c93e28b384b1` |
 | `docs/production-retention-operating-v1.md` | 4186 | `d7bcc52237e51a5da90f224a5f55bc64318507ab4ce77ed4e693eab255c1810c` |
 | `docs/production-provider-readiness-v1.md` | 5682 | `37949cff38a8fcbef561c76a9a5b65d5ab4998353eab4bd7a9a8c41ca050c78d` |
-| `docs/production-enterprise-controls-v1.md` | 4171 | `38e003a4e63bde59ff71e68f187b2f16fa2ba96f64fa393f44c265d9f319990f` |
-| `docs/release-readiness-v1.md` | 12614 | `34630a49814798439c91d99cc5bfe3b92b61ba360b5c665f3bfa3274cd487b6f` |
-| `docs/production-like-release-drill-v1.md` | 6820 | `f9172c6f29ef42d95cc98c37eef60eed29a60d0899ab349127e9eeac16d11a6c` |
+| `docs/production-enterprise-controls-v1.md` | 4874 | `68e958445e53012f80ea1d7f28fc402fd1172fd4aab339cedb2d3e73b10a751d` |
+| `docs/release-readiness-v1.md` | 12840 | `de5cab1d59e3ff93ab08cc83ebb562137404f93e939d35a80f3b5733f64f390f` |
+| `docs/production-like-release-drill-v1.md` | 6827 | `07a59285064c64d866b14c50ed424d8216604f8536b6190c0625069618989d64` |
 | `docs/execution-v1-evidence.md` | 10637 | `d09a9d375b47d6525ab6f8348d627babd832ecb27ed0b7bff68b6fb2359e83f0` |
 | `docs/execution-v1-closeout.md` | 3351 | `b13e06a72ba3b2d307a4d86d9083ed15757b2c17beabecda533c353d87a5e9ac` |
 | `docs/execution-v1-handoff.md` | 5241 | `f174e2ad2cfcb64ab6938bead40a90d2a2134da7f2725d5e477791cb49c43b0c` |
