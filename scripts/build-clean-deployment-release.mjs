@@ -33,6 +33,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:runtime-data-lifecycle',
   },
   {
+    command: 'npm run smoke:tenant-data-lifecycle',
+    script: 'smoke:tenant-data-lifecycle',
+  },
+  {
     command: 'npm run smoke:runtime-isolation',
     script: 'smoke:runtime-isolation',
   },
@@ -191,6 +195,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:runtime-data-lifecycle') {
     return pick(parsed, ['deleted', 'exportedFileCount', 'mode']);
+  }
+  if (script === 'smoke:tenant-data-lifecycle') {
+    return pick(parsed, ['deletedTenantA', 'exportedFileCount', 'mode']);
   }
   if (script === 'smoke:runtime-isolation') {
     return pick(parsed, ['deletedRuntimeA', 'exportAFileCount', 'exportBFileCount', 'mode']);

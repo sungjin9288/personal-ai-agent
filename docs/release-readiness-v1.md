@@ -47,6 +47,7 @@ Current execution evidence:
 - pilot export package manifest: passed, with repository-relative paths and `productionReadyClaim: false`
 - self-hosted runtime isolation smoke: passed, with `productionReadyClaim: false`
 - pilot retention/export/delete policy gate: passed, with documented data classes, export checklist, delete checklist, and `productionReadyClaim: false`
+- tenant-scoped runtime export/delete gate: passed, with tenant-filtered export, exact tenant delete confirmation, post-delete absence, and unchanged other-tenant state
 - clean deployment release rehearsal: passed from tracked-files-only checkout, with `productionReadyClaim: false`
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`

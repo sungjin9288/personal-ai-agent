@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T17:39:39.362Z
+- generatedAt: 2026-05-04T18:07:59.604Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 254aa024b0371f3af2d7f9f29e98f5a1ae720f97
+- verifiedCommit: e869f5ce51783274308000027067bc224a085a85
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,20 +29,21 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 110 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 116 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1289 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 114 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 118 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 114 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 116 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 119 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 374 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 128 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 119 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 123 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 301 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 471 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 218 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 210 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1517 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 256 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 331 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 340 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 247 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 216 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 683 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 289 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 317 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 413 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 581 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 241 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1022 |
 
 ## Key Signals
 
@@ -104,7 +105,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "dataClassCount": 6,
+    "dataClassCount": 7,
     "mode": "retention-delete-policy",
     "productionReadyClaim": false
   }
@@ -114,7 +115,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 6,
+    "commandCount": 7,
     "mode": "production-retention-operating",
     "productionReadyClaim": false
   }
@@ -124,7 +125,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 8,
+    "commandCount": 9,
     "mode": "clean-deployment-release",
     "productionReadyClaim": false
   }
@@ -134,8 +135,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -148,7 +149,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "254aa024b0371f3af2d7f9f29e98f5a1ae720f97"
@@ -194,6 +195,16 @@ Production-ready remains blocked until the target deployment model produces clea
     "deleted": true,
     "exportedFileCount": 13,
     "mode": "runtime-data-lifecycle"
+  }
+```
+
+### npm run smoke:tenant-data-lifecycle
+
+```json
+{
+    "deletedTenantA": true,
+    "exportedFileCount": 2,
+    "mode": "tenant-data-lifecycle"
   }
 ```
 

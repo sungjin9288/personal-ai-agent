@@ -364,13 +364,14 @@ npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
 ```
 
-The rehearsal runs the retention/delete policy gate, runtime data lifecycle, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
+The rehearsal runs the retention/delete policy gate, runtime data lifecycle, tenant data lifecycle, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
 
 Acceptance:
 
 - every command in the retention operating matrix passes
 - artifact hygiene reports zero credential findings and zero machine-local path findings
 - runtime lifecycle proves export, confirmation-token deletion, and post-delete absence
+- tenant data lifecycle proves tenant-filtered export, exact tenant confirmation-token deletion, and unchanged other-tenant state
 - runtime isolation proves one customer runtime can be deleted without modifying another
 - the generated rehearsal keeps `productionReadyClaim: false`
 
@@ -388,7 +389,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, runtime isolation, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, runtime isolation, and pilot export package checks.
 
 Acceptance:
 
@@ -534,6 +535,7 @@ Before export or cleanup, verify the pilot lifecycle policy:
 ```bash
 npm run smoke:retention-delete-policy
 npm run smoke:runtime-data-lifecycle
+npm run smoke:tenant-data-lifecycle
 npm run smoke:runtime-isolation
 npm run package:pilot-export
 npm run smoke:pilot-export-package

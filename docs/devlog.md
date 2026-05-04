@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Tenant Data Lifecycle Gate Pass
+
+- added tenant-scoped runtime data inventory, export, delete confirmation token, and deletion helpers so one local runtime root can export/delete one tenant without including or modifying another tenant's state
+- added `smoke:tenant-data-lifecycle` to verify tenant-filtered export manifests, exact tenant delete confirmation, post-delete absence, and unchanged other-tenant state/artifacts
+- wired the tenant data lifecycle gate into retention operating rehearsal, retention/delete policy, runtime isolation, deployment guidance, security model, product checklist, README, and release readiness while preserving hosted storage, encryption, backup, provider transcript, and production deletion blockers
+
 ## 2026-05-05 OIDC Tenant Isolation Gate Pass
 
 - added `PERSONAL_AI_AGENT_TENANT_MODE=enforce` support to bind workspace and mission API access to an OIDC tenant claim instead of trusting caller-supplied tenant headers

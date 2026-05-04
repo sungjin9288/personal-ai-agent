@@ -195,6 +195,7 @@ Pilot defaults:
 Current implementation support:
 
 - `smoke:runtime-data-lifecycle` verifies local runtime inventory, export manifest generation, exact confirmation-token deletion, and post-delete absence checks on an isolated temp runtime
+- `smoke:tenant-data-lifecycle` verifies tenant-scoped runtime inventory, export manifest generation, exact tenant confirmation-token deletion, post-delete absence, and unchanged data for another tenant in the same runtime root
 - `smoke:runtime-isolation` verifies one-runtime-per-customer pilot isolation by creating two separate runtime roots, checking state hashes and marker separation, exporting both roots, and deleting one root without modifying the other
 - runtime export paths are recorded relative to the runtime root, and export manifests include file counts, byte counts, collection counts, and sha256 hashes for audit comparison
 - `package:pilot-export` and `smoke:pilot-export-package` generate and verify a pilot export package manifest with repository-relative paths, sha256 hashes, immutable snapshot references, and `productionReadyClaim: false`
@@ -207,9 +208,9 @@ Current implementation support:
 
 Required before production:
 
-- target-deployment retention periods approved by customer data class
+- target-deployment tenant retention periods approved by customer data class
 - customer-specific export checklist and handoff approval evidence
-- deletion checklist execution evidence for local runtime state, generated artifacts, backups, and provider transcripts
+- deletion checklist execution evidence for tenant-scoped local runtime state, generated artifacts, backups, and provider transcripts
 - verification that deleted production-like pilot data is not still present in release artifacts, backups, provider logs, or external handoff packages
 - provider-side transcript deletion or non-retention evidence for every provider included in the production claim
 

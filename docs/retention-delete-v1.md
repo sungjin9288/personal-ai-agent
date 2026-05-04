@@ -22,6 +22,7 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 | Data Class | Examples | Pilot Retention Period | Delete Trigger | Evidence |
 | --- | --- | --- | --- | --- |
 | Local runtime state under `var/` | workspaces, missions, sessions, memory, approvals, provider status | pilot duration, then delete after export approval | pilot admin approves cleanup and confirmation token matches | `npm run smoke:runtime-data-lifecycle` |
+| Tenant-scoped runtime records | tenant-bound workspaces, missions, sessions, memory, and artifacts | pilot duration, then delete after tenant export approval | tenant admin approves cleanup and tenant confirmation token matches | `npm run smoke:tenant-data-lifecycle` |
 | Isolated customer runtime root | one pilot root per customer or company | pilot duration, never shared between unrelated customers | customer pilot ends or cross-customer mixing is suspected | `npm run smoke:runtime-isolation` |
 | Immutable release snapshots | `docs/releases/execution-v1/**`, evidence, closeout, handoff, snapshot metadata | retained for release review while the release decision remains current | scrub and regenerate when hygiene fails or release claim changes | `npm run smoke:release-artifact-hygiene` |
 | Pilot export package manifest | repository-relative package file list, byte counts, sha256 digests, bundle digest | retained with release evidence for handoff audit | regenerate when package membership, evidence, or snapshot changes | `npm run package:pilot-export` |
@@ -46,10 +47,13 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 - confirm the pilot admin approved cleanup
 - confirm a shareable export package exists when handoff is required
 - run `npm run smoke:runtime-data-lifecycle`
+- run `npm run smoke:tenant-data-lifecycle` when a shared runtime root contains tenant-bound records
 - run `npm run smoke:runtime-isolation`
 - delete only the approved pilot runtime root or `var/` state root
 - require the deterministic confirmation token before destructive runtime deletion
 - verify post-delete absence for the deleted runtime state
+- verify post-delete absence for the deleted tenant state when tenant-scoped deletion is used
+- verify another tenant's state remains unchanged when tenant-scoped deletion is in scope
 - verify another customer runtime root remains unchanged when isolation is in scope
 - keep final approved evidence, closeout, handoff, snapshot, incident records, and accepted risk records
 - do not delete evidence needed to explain a live validation failure before the pilot owner signs off
@@ -59,6 +63,7 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 ```bash
 npm run smoke:retention-delete-policy
 npm run smoke:runtime-data-lifecycle
+npm run smoke:tenant-data-lifecycle
 npm run smoke:runtime-isolation
 npm run package:pilot-export
 npm run smoke:pilot-export-package
@@ -72,11 +77,12 @@ npm run smoke:production-retention-operating
 - stop export if any required file is missing from the package manifest
 - stop export if artifact hygiene finds a credential or machine-local path
 - stop deletion if the confirmation token does not match the selected runtime root
+- stop tenant deletion if the tenant confirmation token does not match the selected tenant id and runtime root
 - stop deletion if the operator cannot identify which customer or company owns the runtime root
 - stop production-ready claims until production deletion evidence is generated from the target deployment model
 
 ## Production Gap
 
-This policy is a pilot lifecycle policy. [production-retention-operating-v1.md](production-retention-operating-v1.md) records the current local operating rehearsal for the same retention, export, delete, package, and hygiene gates, but it does not prove hosted tenant retention, centralized data subject request handling, provider-side transcript deletion, backup expiry, or production environment post-delete absence.
+This policy is a pilot lifecycle policy. [production-retention-operating-v1.md](production-retention-operating-v1.md) records the current local operating rehearsal for the same retention, export, tenant-scoped delete, package, and hygiene gates, but it does not prove hosted tenant retention, centralized data subject request handling, provider-side transcript deletion, backup expiry, or production environment post-delete absence.
 
 Production-ready remains blocked until retention, export, and delete verification is repeated in the approved production-like deployment with customer-approved data classes, retention windows, provider transcript handling, backup/restore boundaries, and deletion evidence.
