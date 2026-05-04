@@ -1,9 +1,9 @@
 # Production Enterprise Controls Rehearsal v1
 
 - status: local-enterprise-controls-current
-- generatedAt: 2026-05-04T18:18:41.577Z
+- generatedAt: 2026-05-04T18:44:16.578Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: e7ba7ad18cc0795d8b8f1e1a1115a12ff77ee486
+- sourceCommit: 1d7fb035937c84314908bca803ce6d88ff0ee2d5
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local auth, OIDC/JWKS auth, RBAC, API tenant isolation, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
@@ -25,13 +25,13 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1284 |
-| `npm run smoke:web-oidc-rbac` | pass | 0 | 1326 |
-| `npm run smoke:web-tenant-isolation` | pass | 0 | 1360 |
-| `npm run smoke:web-rbac` | pass | 0 | 1409 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 124 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 430 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 109 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1396 |
+| `npm run smoke:web-oidc-rbac` | pass | 0 | 1382 |
+| `npm run smoke:web-tenant-isolation` | pass | 0 | 1386 |
+| `npm run smoke:web-rbac` | pass | 0 | 1493 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 135 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 496 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 124 |
 
 ## Key Signals
 
@@ -101,7 +101,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 15,
     "secretFindingCount": 0,
-    "verifiedCommit": "e7ba7ad18cc0795d8b8f1e1a1115a12ff77ee486"
+    "verifiedCommit": "1d7fb035937c84314908bca803ce6d88ff0ee2d5"
   }
 ```
 
