@@ -12,6 +12,7 @@
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
+- relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-closeout.md](execution-v1-closeout.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Decision
@@ -36,6 +37,7 @@ Current execution evidence:
 - visual artifact set: `61b2df678feae5ca2f3d076de5db506b30e57f7e0231de33550ae0b8fd36cd6c`
 - live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local/Hermes missing runtime env
 - local deterministic production-like release drill: passed, with `productionReadyClaim: false`
+- pilot export package manifest: passed, with repository-relative paths and `productionReadyClaim: false`
 
 Current handoff state:
 
@@ -61,6 +63,7 @@ Current handoff state:
 | [demo-scenarios-v1.md](demo-scenarios-v1.md) | ready | customer demo catalog and scenario-specific proof paths |
 | [incident-slo-v1.md](incident-slo-v1.md) | pilot-policy-ready | incident severity, SLO triage commands, response workflow |
 | [production-like-release-drill-v1.md](production-like-release-drill-v1.md) | dry-run-evidence-current | replayable local deterministic release drill with production-ready claim blocked |
+| [pilot-export-package-v1.md](pilot-export-package-v1.md) | dry-run-package-current | shareable pilot handoff package manifest with hashes and hygiene boundary |
 | [execution-v1-evidence.md](execution-v1-evidence.md) | OpenAI-live-validated | current verification evidence |
 | [execution-v1-closeout.md](execution-v1-closeout.md) | OpenAI-live-validated | closeout checklist with remaining provider gaps |
 | [execution-v1-handoff.md](execution-v1-handoff.md) | handoff-ready | operator handoff and next live validation commands |
@@ -167,6 +170,8 @@ npm run smoke:execution-v1-handoff
 npm run smoke:production-readiness-gate
 npm run drill:production-like-release
 npm run smoke:production-like-release-drill
+npm run package:pilot-export
+npm run smoke:pilot-export-package
 npm run smoke:ui-harness-browse
 git diff --check
 ```

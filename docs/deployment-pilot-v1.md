@@ -333,6 +333,32 @@ Export package should include:
 - `docs/execution-v1-handoff.md`
 - selected `docs/releases/execution-v1/<commit>/` snapshot directory
 - selected non-secret browser or visual evidence artifacts if needed
+- [pilot-export-package-v1.md](pilot-export-package-v1.md) manifest with repository-relative file paths and sha256 hashes
+
+## Pilot Export Package
+
+Before sharing a pilot handoff package, generate and verify the package manifest:
+
+```bash
+npm run package:pilot-export
+npm run smoke:pilot-export-package
+npm run smoke:release-artifact-hygiene
+```
+
+The package manifest records the minimum shareable planning pack, release evidence, production-like drill, and immutable execution-v1 snapshot using repository-relative paths, byte counts, sha256 hashes, and a bundle digest.
+
+Acceptance:
+
+- every required package file exists
+- every package path is repository-relative
+- every package entry has a sha256 digest
+- release artifact hygiene reports zero credential findings and zero machine-local path findings
+- the package keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if the manifest is missing files, do not share the handoff package
+- if hygiene finds a secret or machine-local path, stop export, scrub/regenerate artifacts, and rotate any exposed secret
 
 Before export:
 

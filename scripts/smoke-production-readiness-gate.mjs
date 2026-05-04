@@ -11,6 +11,7 @@ const evidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const handoffPath = path.join(docsDir, 'execution-v1-handoff.md');
 const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
+const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
@@ -18,6 +19,7 @@ const evidence = readRequiredFile(evidencePath);
 const closeout = readRequiredFile(closeoutPath);
 const handoff = readRequiredFile(handoffPath);
 const incidentSlo = readRequiredFile(incidentSloPath);
+const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 
 const releaseLabel = extractBulletValue(releaseReadiness, 'releaseLabel');
@@ -54,6 +56,7 @@ for (const blocker of [
 }
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
+assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(incidentSlo, /Severity Levels/);
 assert.match(incidentSlo, /Pilot SLO Targets/);
@@ -67,6 +70,11 @@ assert.match(productionLikeDrill, /^# Production-Like Release Drill v1$/m);
 assert.match(productionLikeDrill, /^- status: dry-run-evidence-current$/m);
 assert.match(productionLikeDrill, /^- productionReadyClaim: false$/m);
 assert.match(productionLikeDrill, /not permission to claim `production-ready`/);
+assert.match(pilotExportPackage, /^# Pilot Export Package v1$/m);
+assert.match(pilotExportPackage, /^- status: dry-run-package-current$/m);
+assert.match(pilotExportPackage, /^- productionReadyClaim: false$/m);
+assert.match(pilotExportPackage, /not permission to claim `production-ready`/);
+assert.match(pilotExportPackage, /^- bundleSha256: [a-f0-9]{64}$/m);
 for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:execution-v1-status',
@@ -113,6 +121,7 @@ console.log(
       mode: 'production-readiness-gate',
       ok: true,
       openaiLiveValidation: currentStatus.get('openai live validation'),
+      pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,

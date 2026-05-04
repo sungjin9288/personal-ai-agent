@@ -179,6 +179,8 @@ Current implementation support:
 
 - `smoke:runtime-data-lifecycle` verifies local runtime inventory, export manifest generation, exact confirmation-token deletion, and post-delete absence checks on an isolated temp runtime
 - runtime export paths are recorded relative to the runtime root, and export manifests include file counts, byte counts, collection counts, and sha256 hashes for audit comparison
+- `package:pilot-export` and `smoke:pilot-export-package` generate and verify a pilot export package manifest with repository-relative paths, sha256 hashes, immutable snapshot references, and `productionReadyClaim: false`
+- the pilot export package manifest is scanned by release artifact hygiene before external handoff
 - destructive runtime deletion is guarded by a deterministic confirmation token generated from the target runtime root, preventing accidental cleanup calls from proceeding without explicit operator intent
 
 Required before production:

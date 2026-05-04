@@ -61,6 +61,7 @@ Current planning status:
 - demo scenario catalog now covers release readiness, engineering mission with approval, provider validation, document and memory grounding, and multi-specialist analysis
 - release readiness decision is recorded as `provider-scoped pilot ready for OpenAI-backed local-first path`
 - production-like release drill evidence can be regenerated with `npm run drill:production-like-release`, but it intentionally keeps `productionReadyClaim: false`
+- pilot export package evidence can be regenerated with `npm run package:pilot-export` and verified with `npm run smoke:pilot-export-package`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
 
@@ -77,6 +78,13 @@ Production-like local release drill:
 ```bash
 npm run drill:production-like-release
 npm run smoke:production-like-release-drill
+```
+
+Pilot export package manifest:
+
+```bash
+npm run package:pilot-export
+npm run smoke:pilot-export-package
 ```
 
 로컬 운영 콘솔 실행:
@@ -650,10 +658,11 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:execution-v1-snapshot`은 현재 evidence/closeout/handoff와 `docs/releases/execution-v1/<verified-commit>/` immutable snapshot의 commit, archive metadata, source path, closeout evidence link, handoff evidence/closeout/snapshot link, deterministic/runtime summary row를 비교합니다. snapshot을 새로 쓰지 않고 기존 release artifact integrity만 확인합니다. status smoke와 동일하게 artifact-only sync commit은 verified commit의 immutable snapshot을 검증 대상으로 유지합니다.
 `npm run smoke:execution-v1-closeout-runtime-summary`는 이 임시 출력 경로를 사용해 runtime summary가 완전하면 `ready`, 누락되면 `not verified`로 기록되는지 검증합니다. 이 smoke는 `verify:execution-v1`의 deterministic total을 늘리지 않는 generator regression smoke입니다.
 `npm run smoke:execution-v1-live-helpers`는 OpenAI, Anthropic, local, Hermes 각각의 provider preflight가 필요한 deterministic smoke를 통과하는지 확인하고, env 누락 시 `npm run live:execution-v1:*` helper가 shell-ready `missing-env` JSON과 provider별 `export ... && npm run live:execution-v1:*` 명령을 반환하는지 검증합니다.
-`npm run smoke:release-artifact-hygiene`는 현재 execution-v1 evidence/closeout/handoff와 verified immutable snapshot에 실제 credential pattern 또는 machine-local path leak이 없는지 검증합니다. 같은 hygiene check는 `smoke:production-readiness-gate`에도 포함되어 production-ready overclaim 방지와 shareable artifact hygiene을 같은 gate에서 확인합니다.
+`npm run smoke:release-artifact-hygiene`는 현재 execution-v1 evidence/closeout/handoff, production-like release drill, pilot export package manifest, verified immutable snapshot에 실제 credential pattern 또는 machine-local path leak이 없는지 검증합니다. 같은 hygiene check는 `smoke:production-readiness-gate`에도 포함되어 production-ready overclaim 방지와 shareable artifact hygiene을 같은 gate에서 확인합니다.
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
 `npm run smoke:runtime-data-lifecycle`는 isolated temp runtime에서 `var/state.json`과 mission artifact inventory를 만들고, relative-path export manifest와 sha256 audit evidence를 생성한 뒤, exact confirmation token 없이는 delete가 실패하고 올바른 token에서는 `var/` 삭제와 post-delete absence check가 통과하는지 검증합니다.
 `npm run smoke:incident-slo-policy`는 [incident-slo-v1.md](docs/incident-slo-v1.md)의 SEV1-SEV4 severity table, pilot SLO targets, incident entry criteria, required triage commands, evidence requirements, production gap wording이 release-readiness/security/product planning 문서와 일치하는지 검증합니다.
+`npm run smoke:pilot-export-package`는 [pilot-export-package-v1.md](docs/pilot-export-package-v1.md)가 planning pack, release evidence, production-like drill, immutable snapshot을 repository-relative path와 sha256 digest로 묶고 `productionReadyClaim: false`를 유지하는지 검증합니다.
 
 provider별 live validation을 한 번에 실행하려면 아래 helper를 사용하면 됩니다.
 

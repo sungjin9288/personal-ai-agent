@@ -35,6 +35,7 @@ const snapshotScriptPath = path.join(codeRootDir, 'scripts', 'archive-execution-
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const handoffDocPath = path.join(rootDir, 'docs', 'execution-v1-handoff.md');
+const pilotExportPackageDocPath = path.join(rootDir, 'docs', 'pilot-export-package-v1.md');
 const productionLikeReleaseDrillDocPath = path.join(rootDir, 'docs', 'production-like-release-drill-v1.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
@@ -42,6 +43,7 @@ const executionV1MutableArtifactPaths = new Set([
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-evidence.md',
   'docs/execution-v1-handoff.md',
+  'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
 ]);
 const releaseHandoffStableLineCopyBaseKey =
@@ -1179,6 +1181,7 @@ function buildExecutionV1Status() {
     evidenceDocPath,
     closeoutDocPath,
     handoffDocPath,
+    pilotExportPackageDocPath,
     productionLikeReleaseDrillDocPath,
   ]);
   const handoffArtifacts = buildExecutionV1ReleaseHandoffArtifacts();
@@ -1217,13 +1220,13 @@ function buildExecutionV1Status() {
   const hasLocalArtifactChanges = docStatuses.length > 0;
   if (hasLocalArtifactChanges) {
     if (artifactsMatchCurrentHead && handoffMatchesCurrentHead) {
-      localArtifactNotes.push('evidence/closeout/handoff/drill 문서가 현재 HEAD 기준으로 로컬에서 갱신되었지만 아직 커밋되지는 않았습니다.');
+      localArtifactNotes.push('evidence/closeout/handoff/export/drill 문서가 현재 HEAD 기준으로 로컬에서 갱신되었지만 아직 커밋되지는 않았습니다.');
     } else {
-      staleReasons.push('evidence, closeout, handoff, drill 문서 중 워크트리에서 수정된 문서가 현재 HEAD와 어긋나 있습니다.');
+      staleReasons.push('evidence, closeout, handoff, export, drill 문서 중 워크트리에서 수정된 문서가 현재 HEAD와 어긋나 있습니다.');
     }
   }
   if (artifactSyncCommit.detected) {
-    localArtifactNotes.push('현재 HEAD는 verified commit 위에 release artifact만 동기화한 커밋이므로 evidence/closeout/handoff/drill freshness를 유지한 것으로 처리합니다.');
+    localArtifactNotes.push('현재 HEAD는 verified commit 위에 release artifact만 동기화한 커밋이므로 evidence/closeout/handoff/export/drill freshness를 유지한 것으로 처리합니다.');
   }
 
   const stale = staleReasons.length > 0;

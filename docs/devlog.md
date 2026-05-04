@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Pilot Export Package Gate
+
+- added a pilot export package manifest generator that records the shareable planning pack, release evidence, production-like drill, and immutable execution-v1 snapshot with repository-relative paths and sha256 hashes
+- added `smoke:pilot-export-package` so the export package cannot omit required files or claim production readiness
+- extended release artifact hygiene and artifact sync detection to include the pilot export package manifest before external handoff
+
 ## 2026-05-04 Production-Like Release Drill Gate
 
 - added a production-like local release drill generator that replays incident/SLO, execution-v1 status/snapshot, production readiness, artifact hygiene, and runtime data lifecycle gates into one operator-facing evidence document

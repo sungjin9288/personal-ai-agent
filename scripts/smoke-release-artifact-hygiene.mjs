@@ -10,6 +10,7 @@ assert.equal(result.machinePathFindingCount, 0, JSON.stringify(result.findings, 
 assert.equal(result.scannedFiles.includes('docs/execution-v1-evidence.md'), true);
 assert.equal(result.scannedFiles.includes('docs/execution-v1-closeout.md'), true);
 assert.equal(result.scannedFiles.includes('docs/execution-v1-handoff.md'), true);
+assert.equal(result.scannedFiles.includes('docs/pilot-export-package-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-like-release-drill-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);
 assert.equal(
