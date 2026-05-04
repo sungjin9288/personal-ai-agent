@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T10:18:09.901Z
+- generatedAt: 2026-05-04T10:31:00.972Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 8b8208123849a852315c80c99261bc3709386628
+- verifiedCommit: 3e6afca33f9891294b58839b6bb6b76645430803
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -24,14 +24,14 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 272 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 280 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 615 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 232 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 218 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 191 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 422 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 875 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 192 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 199 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 561 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 234 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 196 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 194 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 724 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 938 |
 
 ## Key Signals
 
@@ -58,13 +58,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "21d582db511871b8db0aa1862b658409c2b4ffb4"
+    "snapshotCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
   }
 ```
 
@@ -72,10 +72,10 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "21d582db511871b8db0aa1862b658409c2b4ffb4"
+    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
   }
 ```
 
@@ -102,7 +102,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 10,
     "secretFindingCount": 0,
-    "verifiedCommit": "21d582db511871b8db0aa1862b658409c2b4ffb4"
+    "verifiedCommit": "3e6afca33f9891294b58839b6bb6b76645430803"
   }
 ```
 
