@@ -7081,6 +7081,7 @@ const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCop
       sessionLabel,
     };
     releaseHandoffSessionResults.push(handoffSummary);
+    closeBrowserSessionQuietly(releaseHandoffSessionId);
     return handoffSummary;
   };
 
@@ -7138,6 +7139,7 @@ const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCop
     };
     releaseHandoffOpenSessionResults.push(handoffSummary);
     console.error(`[smoke-ui-execution-browser-e2e] release handoff open session ${expectedArtifactId} ${sessionLabel} done`);
+    closeBrowserSessionQuietly(releaseHandoffSessionId);
     return handoffSummary;
   };
 
@@ -15217,8 +15219,14 @@ function isPlaywrightTimeoutError(error) {
 }
 
 function isPlaywrightTransientSessionError(error) {
-  return /playwright-cli timed out|Page crashed|Target page, context or browser has been closed|browser has been closed|playwright-cli failed.*\(open [^)]+\): status=1 signal= <no output>/i
+  return /playwright-cli timed out|Page crashed|Target page, context or browser has been closed|browser has been closed|ERR_CONNECTION_REFUSED|playwright-cli failed.*\(open [^)]+\): status=1 signal= <no output>/i
     .test(String(error?.message || error || ''));
+}
+
+function closeBrowserSessionQuietly(session) {
+  try {
+    runPw(['close'], { session, timeoutMs: 5_000 });
+  } catch {}
 }
 
 function getBrowserErrorState({ session = sessionId } = {}) {
