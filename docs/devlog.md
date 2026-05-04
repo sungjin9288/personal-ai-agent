@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Release Artifact Hygiene Gate Pass
+
+- added an executable release artifact hygiene gate that scans current execution-v1 evidence, closeout, handoff, and the verified immutable snapshot for real credential patterns and machine-local path leaks
+- wired the hygiene check into `smoke:production-readiness-gate` so production-ready overclaim prevention now also verifies that shareable release artifacts do not leak provider secrets or local temp/user paths
+- documented the new `smoke:release-artifact-hygiene` entrypoint and updated the security/product planning surface to reflect automated execution-v1 artifact hygiene coverage
+
 ## 2026-05-04 Execution Policy Hardening Pass
 
 - hardened execution-v1 preflight command classification for shell-based execution by blocking shell chaining, pipe/redirection, command substitution, absolute/home path references, network/remote shell/file-transfer commands, package dependency mutation, git remote/history/worktree mutation, and deploy/release platform mutation

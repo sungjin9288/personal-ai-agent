@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { runReleaseArtifactHygiene } from './release-artifact-hygiene-utils.mjs';
+
 const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
@@ -23,6 +25,7 @@ const currentOpenBlockersSection = extractSection(releaseReadiness, '## Current 
 const currentStatus = extractStatusMap(closeout, 'Current Status');
 const operationalState = extractStatusMap(handoff, 'Operational State');
 const liveValidation = extractStatusMap(evidence, 'Live Validation');
+const releaseArtifactHygiene = runReleaseArtifactHygiene({ repoDir });
 
 assert.equal(releaseLabel, 'provider-scoped pilot ready for OpenAI-backed local-first path');
 assert.match(decision, /pilot-ready only/i);
@@ -69,6 +72,9 @@ assert.equal(operationalState.get('Hermes live validation'), 'blocked by missing
 assert.match(handoff, /Execution v1 is provider-scoped pilot ready/);
 assert.match(handoff, /It is not production-ready or live-provider-complete/);
 assert.match(releaseReadiness, /The product is not yet ready to be sold or represented as production-ready for other companies\./);
+assert.equal(releaseArtifactHygiene.ok, true, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
+assert.equal(releaseArtifactHygiene.secretFindingCount, 0, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
+assert.equal(releaseArtifactHygiene.machinePathFindingCount, 0, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
 
 console.log(
   JSON.stringify(
@@ -79,6 +85,8 @@ console.log(
       ok: true,
       openaiLiveValidation: currentStatus.get('openai live validation'),
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
+      releaseArtifactHygiene: 'passed',
+      releaseArtifactHygieneScannedFiles: releaseArtifactHygiene.scannedFiles.length,
     },
     null,
     2,

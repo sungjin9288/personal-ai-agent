@@ -92,6 +92,7 @@
 - [x] Tenant/workspace isolation policy documented
 - [x] RBAC role matrix documented
 - [x] Secret handling policy documented
+- [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented
 - [x] Tool permission model documented

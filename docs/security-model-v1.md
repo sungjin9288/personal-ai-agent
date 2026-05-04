@@ -99,7 +99,7 @@ rg -n "/Users/[^/\\s]+|/(private/)?var/folders/" docs/execution-v1-handoff.md do
 Current status:
 
 - execution-v1 handoff records missing env names only
-- latest hygiene pass found no credential pattern in the current release handoff surface
+- `smoke:release-artifact-hygiene` and `smoke:production-readiness-gate` now scan current execution-v1 evidence, closeout, handoff, and the verified immutable snapshot for credential patterns and machine-local path leaks
 - OpenAI live validation is archived without credential values in shareable release artifacts
 
 ## Tool Permission Model
@@ -183,7 +183,7 @@ Required before production:
 | Threat | Risk | Current Mitigation | Remaining Gap |
 | --- | --- | --- | --- |
 | Prompt injection through attachments | agent follows untrusted content | instruction-boundary rule, retrieval source labeling, deterministic smoke | richer red-team corpus and policy tests |
-| Credential leakage into docs | secrets shared in evidence | env-name-only guidance, credential scans | automated pre-commit/pre-release secret gate |
+| Credential leakage into docs | secrets shared in evidence | env-name-only guidance, executable release artifact hygiene gate | broader pre-commit coverage outside execution-v1 artifacts |
 | Unapproved destructive action | source, git, deployment, or data mutation | approval gate policy, operator confirmation requirement | authenticated permission enforcement |
 | Provider data exposure | sensitive context sent to external model | operator-selected provider, local-first default, retrieval scoping | data classification and provider allowlist policy |
 | Cross-customer data mixing | one runtime contains multiple customers | self-hosted one-runtime-per-customer pilot policy | true hosted tenant isolation |
