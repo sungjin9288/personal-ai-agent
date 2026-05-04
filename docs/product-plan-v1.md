@@ -96,6 +96,7 @@
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented
+- [x] Runtime data lifecycle export/delete verification gate implemented
 - [x] Tool permission model documented
 - [x] Threat model documented
 - [x] Pilot onboarding guide documented

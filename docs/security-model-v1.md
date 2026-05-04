@@ -173,6 +173,12 @@ Pilot defaults:
 - export shareable evidence by copying evidence, closeout, handoff, snapshot metadata, and selected non-secret artifacts
 - delete customer-sensitive local runtime state by removing the pilot runtime data directory after export approval
 
+Current implementation support:
+
+- `smoke:runtime-data-lifecycle` verifies local runtime inventory, export manifest generation, exact confirmation-token deletion, and post-delete absence checks on an isolated temp runtime
+- runtime export paths are recorded relative to the runtime root, and export manifests include file counts, byte counts, collection counts, and sha256 hashes for audit comparison
+- destructive runtime deletion is guarded by a deterministic confirmation token generated from the target runtime root, preventing accidental cleanup calls from proceeding without explicit operator intent
+
 Required before production:
 
 - documented retention period by data class

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Runtime Data Lifecycle Gate Pass
+
+- added runtime data lifecycle utilities for local runtime inventory, relative-path export manifest generation, sha256 audit evidence, and confirmation-token guarded `var/` deletion
+- added `smoke:runtime-data-lifecycle` to verify export/delete behavior on an isolated temp runtime without touching the operator's real local state
+- updated security and product planning docs to distinguish executable pilot lifecycle verification from the remaining production requirement for customer-specific retention periods, transcripts, and hosted control-plane deletion guarantees
+
 ## 2026-05-04 Optional Web RBAC Enforcement Pass
 
 - added optional web API RBAC enforcement behind `PERSONAL_AI_AGENT_RBAC_MODE=enforce`, using `x-personal-ai-agent-role` to distinguish viewer, operator, approver, and admin access for mutating routes
