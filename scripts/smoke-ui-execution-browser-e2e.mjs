@@ -7740,7 +7740,7 @@ const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCop
   );
   assert.equal(
     screenshotSurfaceSummary.deterministicRuntimeRows.length,
-    7,
+    8,
     JSON.stringify(screenshotSurfaceSummary),
   );
   assert.equal(screenshotSurfaceSummary.docSurfaceCount, 3, JSON.stringify(screenshotSurfaceSummary));
