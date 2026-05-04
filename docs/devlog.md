@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Web Auth RBAC Gate Pass
+
+- added an optional shared-secret web auth gate with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce` and `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, accepting bearer or `x-personal-ai-agent-auth-token` credentials before RBAC is evaluated
+- added `smoke:web-auth-rbac` to verify missing/invalid tokens are blocked, authenticated viewer mutations remain forbidden, and authenticated operator mutations can proceed
+- wired the authenticated local RBAC evidence into the production-like release drill, security model, deployment guide, product checklist, README, and release readiness while preserving the hosted identity/session RBAC production gap
+
 ## 2026-05-04 Production SLO Operating Rehearsal Gate Pass
 
 - added `docs/production-slo-operating-v1.md` as the local SLO operating rehearsal artifact for incident/SLO, release status, snapshot, artifact hygiene, clean deployment, runtime lifecycle, and runtime isolation gates

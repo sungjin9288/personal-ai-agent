@@ -128,6 +128,16 @@ Secret policy:
 - prefer short-lived shell sessions for live validation
 - review shell history policy before typing real credentials
 
+Optional web auth and RBAC for shared pilot environments:
+
+```bash
+export PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce
+export PERSONAL_AI_AGENT_WEB_AUTH_TOKEN="..."
+export PERSONAL_AI_AGENT_RBAC_MODE=enforce
+```
+
+When web auth is enforced, every `/api/*` request must include either `Authorization: Bearer ...` or `x-personal-ai-agent-auth-token`. RBAC role checks still require `x-personal-ai-agent-role`, so authentication and authorization remain separate gates.
+
 ## Install And Bootstrap
 
 1. Enter the repository.
@@ -206,6 +216,7 @@ npm run smoke
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
+npm run smoke:web-auth-rbac
 npm run preflight:execution-v1:all
 ```
 
@@ -214,6 +225,7 @@ Expected result:
 - deterministic checks pass
 - snapshot integrity passes
 - handoff generator passes
+- web auth plus RBAC smoke passes when shared pilot API access is enabled
 - aggregate preflight has `blockedCount: 0`
 - missing env providers are explicitly listed
 

@@ -46,6 +46,7 @@ Current execution evidence:
 - pilot retention/export/delete policy gate: passed, with documented data classes, export checklist, delete checklist, and `productionReadyClaim: false`
 - clean deployment release rehearsal: passed from tracked-files-only checkout, with `productionReadyClaim: false`
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
+- local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 
 Current handoff state:
 
@@ -137,7 +138,7 @@ Status: blocked.
 Blockers:
 
 - Anthropic, local, and Hermes live validations are not complete
-- authenticated RBAC is not implemented as a hosted product feature
+- identity-backed hosted RBAC/session administration is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
 - production retention/export/delete verification is not complete
 - production SLO/SLA operating evidence is not generated from a production-like environment

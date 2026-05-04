@@ -94,6 +94,7 @@
 - [x] Self-hosted runtime isolation smoke implemented
 - [x] RBAC role matrix documented
 - [x] Optional web API RBAC enforcement gate implemented
+- [x] Optional shared-secret web auth gate implemented
 - [x] Secret handling policy documented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented
@@ -201,7 +202,7 @@ Deferred models:
    - regenerate closeout, handoff, and snapshot with existing evidence reuse after each intentional provider proof refresh
 
 2. Harden enterprise production controls.
-   - implement authenticated RBAC or bind to a verified deployment-level RBAC control
+   - replace local shared-secret auth with identity-backed RBAC or bind to a verified deployment-level RBAC control
    - verify tenant/runtime isolation beyond pilot policy
    - verify retention, export, delete, incident, and SLO procedures
    - generate release evidence from a clean production-like deployment path

@@ -54,7 +54,7 @@ assert.match(productionReadySection, /Production-ready must not be claimed from 
 
 for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
-  /authenticated RBAC is not implemented/,
+  /identity-backed hosted RBAC\/session administration is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
   /production retention\/export\/delete verification is not complete/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,

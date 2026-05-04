@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T12:58:59.843Z
+- generatedAt: 2026-05-04T14:24:19.001Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 7d2885295c2900496dc899cfed667f1fc190bdc3
+- verifiedCommit: 8bf277e160f345a1fbcc433273a0e3b63b43e84e
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -26,16 +26,17 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 302 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 345 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 371 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 341 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 870 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 631 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 446 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 428 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1339 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1436 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 255 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 276 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1502 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 232 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 259 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 827 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 308 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 225 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 224 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 576 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 872 |
 
 ## Key Signals
 
@@ -58,6 +59,21 @@ Production-ready remains blocked until the target deployment model produces clea
   }
 ```
 
+### npm run smoke:web-auth-rbac
+
+```json
+{
+    "authMode": "enforce",
+    "mode": "web-auth-rbac",
+    "roleChecks": {
+      "authenticatedOperatorMissionCreated": true,
+      "authenticatedViewerMutationBlocked": true,
+      "invalidTokenBlocked": true,
+      "missingTokenBlocked": true
+    }
+  }
+```
+
 ### npm run smoke:retention-delete-policy
 
 ```json
@@ -72,7 +88,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 7,
+    "commandCount": 8,
     "mode": "clean-deployment-release",
     "productionReadyClaim": false
   }
@@ -82,8 +98,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -96,7 +112,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "7d2885295c2900496dc899cfed667f1fc190bdc3"
@@ -156,7 +172,7 @@ Production-ready remains blocked until the target deployment model produces clea
 ## Production Blockers Preserved
 
 - Anthropic, local, and Hermes live validations are not complete
-- authenticated RBAC is not implemented as a hosted product feature
+- identity-backed hosted RBAC/session administration is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
 - production retention/export/delete verification is not complete
 - production SLO/SLA operating evidence is not generated from a production-like environment

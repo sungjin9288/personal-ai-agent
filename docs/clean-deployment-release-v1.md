@@ -1,12 +1,12 @@
 # Clean Deployment Release Rehearsal v1
 
 - status: clean-local-rehearsal-current
-- generatedAt: 2026-05-04T12:58:44.524Z
+- generatedAt: 2026-05-04T14:24:10.728Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 7d2885295c2900496dc899cfed667f1fc190bdc3
+- sourceCommit: 8bf277e160f345a1fbcc433273a0e3b63b43e84e
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - cleanCheckoutMode: tracked-files-only
-- cleanCheckoutFileCount: 262
+- cleanCheckoutFileCount: 264
 - excludedRuntimeState: var/, output/playwright/, node_modules/, .git/
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -25,13 +25,14 @@ Production-ready remains blocked until the approved target environment produces 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 400 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 428 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 345 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 664 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1515 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 3122 |
-| `npm run smoke:pilot-export-package` | pass | 0 | 937 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 331 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 279 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1505 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 210 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 235 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 587 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 895 |
+| `npm run smoke:pilot-export-package` | pass | 0 | 193 |
 
 ## Key Signals
 
@@ -51,6 +52,21 @@ Production-ready remains blocked until the approved target environment produces 
     "dataClassCount": 6,
     "mode": "retention-delete-policy",
     "productionReadyClaim": false
+  }
+```
+
+### npm run smoke:web-auth-rbac
+
+```json
+{
+    "authMode": "enforce",
+    "mode": "web-auth-rbac",
+    "roleChecks": {
+      "authenticatedOperatorMissionCreated": true,
+      "authenticatedViewerMutationBlocked": true,
+      "invalidTokenBlocked": true,
+      "missingTokenBlocked": true
+    }
   }
 ```
 

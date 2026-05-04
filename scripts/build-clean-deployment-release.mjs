@@ -17,6 +17,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:retention-delete-policy',
   },
   {
+    command: 'npm run smoke:web-auth-rbac',
+    script: 'smoke:web-auth-rbac',
+  },
+  {
     command: 'npm run smoke:production-readiness-gate',
     script: 'smoke:production-readiness-gate',
   },
@@ -168,6 +172,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:web-auth-rbac') {
+    return pick(parsed, ['authMode', 'mode', 'roleChecks']);
   }
   if (script === 'smoke:production-readiness-gate') {
     return pick(parsed, [

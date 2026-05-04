@@ -15,6 +15,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:production-slo-operating',
   },
   {
+    command: 'npm run smoke:web-auth-rbac',
+    script: 'smoke:web-auth-rbac',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -127,6 +131,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:production-slo-operating') {
     return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:web-auth-rbac') {
+    return pick(parsed, ['authMode', 'mode', 'roleChecks']);
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);

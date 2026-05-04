@@ -18,6 +18,7 @@ import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
+import { evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,8 @@ const __dirname = path.dirname(__filename);
 const rootDir = resolveRootDir();
 const codeRootDir = process.cwd();
 const rbacMode = normalizeRbacMode(process.env.PERSONAL_AI_AGENT_RBAC_MODE);
+const webAuthMode = normalizeWebAuthMode(process.env.PERSONAL_AI_AGENT_WEB_AUTH_MODE);
+const webAuthToken = String(process.env.PERSONAL_AI_AGENT_WEB_AUTH_TOKEN || '');
 const publicDir = path.join(__dirname, 'public');
 const evidenceScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-evidence.mjs');
 const closeoutScriptPath = path.join(codeRootDir, 'scripts', 'build-execution-v1-closeout.mjs');
@@ -1862,6 +1865,27 @@ function serveStatic(response, pathname) {
 async function handleApi(request, response, url) {
   const pathname = url.pathname;
   const pathParts = pathname.split('/').filter(Boolean);
+  const auth = evaluateWebAuth({
+    authorizationHeader: request.headers.authorization,
+    configuredToken: webAuthToken,
+    mode: webAuthMode,
+    tokenHeader: request.headers['x-personal-ai-agent-auth-token'],
+  });
+
+  if (!auth.allowed) {
+    sendJson(response, 401, {
+      auth: {
+        authenticated: false,
+        mode: auth.mode,
+        reason: auth.reason,
+        required: auth.required,
+      },
+      error: auth.error || 'auth-forbidden',
+      message: auth.reason,
+    });
+    return;
+  }
+
   const rbac = evaluateApiRbac({
     method: request.method,
     mode: rbacMode,
@@ -1885,6 +1909,10 @@ async function handleApi(request, response, url) {
       port: activePort,
       rbac: {
         mode: rbacMode,
+      },
+      webAuth: {
+        mode: webAuthMode,
+        required: webAuthMode === 'enforce',
       },
       rootDir,
     });

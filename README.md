@@ -113,6 +113,12 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
+Authenticated web RBAC gate:
+
+```bash
+npm run smoke:web-auth-rbac
+```
+
 Pilot export package manifest:
 
 ```bash
@@ -693,6 +699,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:execution-v1-live-helpers`는 OpenAI, Anthropic, local, Hermes 각각의 provider preflight가 필요한 deterministic smoke를 통과하는지 확인하고, env 누락 시 `npm run live:execution-v1:*` helper가 shell-ready `missing-env` JSON과 provider별 `export ... && npm run live:execution-v1:*` 명령을 반환하는지 검증합니다.
 `npm run smoke:release-artifact-hygiene`는 현재 execution-v1 evidence/closeout/handoff, production-like release drill, pilot export package manifest, verified immutable snapshot에 실제 credential pattern 또는 machine-local path leak이 없는지 검증합니다. 같은 hygiene check는 `smoke:production-readiness-gate`에도 포함되어 production-ready overclaim 방지와 shareable artifact hygiene을 같은 gate에서 확인합니다.
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
+`npm run smoke:web-auth-rbac`는 `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce`와 `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`을 사용해 `/api/*` 요청의 bearer/header token을 먼저 검증하고, 인증된 요청도 `x-personal-ai-agent-role` RBAC를 통과해야 mutation이 허용되는지 확인합니다. 이 gate는 local shared-secret auth evidence이며 hosted identity/session RBAC를 대체하지 않습니다.
 `npm run smoke:runtime-data-lifecycle`는 isolated temp runtime에서 `var/state.json`과 mission artifact inventory를 만들고, relative-path export manifest와 sha256 audit evidence를 생성한 뒤, exact confirmation token 없이는 delete가 실패하고 올바른 token에서는 `var/` 삭제와 post-delete absence check가 통과하는지 검증합니다.
 `npm run smoke:runtime-isolation`은 두 개의 isolated temp runtime을 만들어 각각 workspace, memory, mission, session, artifact, export를 생성하고, 한쪽 runtime 삭제가 다른 runtime state hash와 `var/` 존재 여부를 바꾸지 않는지 검증합니다.
 `npm run smoke:retention-delete-policy`는 [retention-delete-v1.md](docs/retention-delete-v1.md)의 data class retention table, export checklist, delete checklist, required commands, stop conditions, production gap, 그리고 release/security/deployment/product/README 연결 상태를 검증합니다. 이 gate는 pilot lifecycle evidence이며 `productionReadyClaim: false`를 유지합니다.

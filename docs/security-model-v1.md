@@ -73,9 +73,11 @@ Production gap:
 
 Current implementation note:
 
-- The web API now supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
+- The web API now supports optional local shared-secret authentication with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce` and `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, accepting either `Authorization: Bearer ...` or `x-personal-ai-agent-auth-token`.
+- The web API supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
 - The enforced role contract is covered by `smoke:web-rbac`: viewer can read only, operator can create/run normal local work, approver can resolve approvals, and admin is required for workspace registration, release refresh/snapshot, and delete operations.
-- The CLI remains a local operator tool and does not yet provide authenticated user/session identity. Hosted or shared deployments still require deployment-level authentication in front of this local RBAC gate.
+- The authenticated local role contract is covered by `smoke:web-auth-rbac`: missing or invalid tokens are rejected before RBAC, authenticated viewer mutations are still blocked, and authenticated operator mutations can proceed.
+- The CLI remains a local operator tool and does not yet provide user/session identity. Hosted or shared deployments still require identity-backed authentication, session lifecycle, and persistent role assignment outside this local shared-secret gate.
 
 Pilot-ready requirement:
 
@@ -85,7 +87,7 @@ Pilot-ready requirement:
 
 Production gap:
 
-- authenticated users, sessions, persistent role assignment, and centralized permission administration are not yet implemented as a hosted control-plane feature
+- identity-backed hosted users, sessions, persistent role assignment, and centralized permission administration are not yet implemented as a hosted control-plane feature
 
 ## Secret Handling
 
