@@ -1,0 +1,299 @@
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const repoDir = process.cwd();
+const docsDir = path.join(repoDir, 'docs');
+const outputPath = path.join(docsDir, 'production-retention-operating-v1.md');
+
+const RETENTION_COMMANDS = [
+  {
+    command: 'npm run smoke:retention-delete-policy',
+    script: 'smoke:retention-delete-policy',
+  },
+  {
+    command: 'npm run smoke:runtime-data-lifecycle',
+    script: 'smoke:runtime-data-lifecycle',
+  },
+  {
+    command: 'npm run smoke:runtime-isolation',
+    script: 'smoke:runtime-isolation',
+  },
+  {
+    command: 'npm run package:pilot-export',
+    script: 'package:pilot-export',
+  },
+  {
+    command: 'npm run smoke:pilot-export-package',
+    script: 'smoke:pilot-export-package',
+  },
+  {
+    command: 'npm run smoke:release-artifact-hygiene',
+    script: 'smoke:release-artifact-hygiene',
+  },
+];
+
+const generatedAt = new Date().toISOString();
+const sourceCommit = runGit(['rev-parse', 'HEAD']);
+const sourceBranch = runGit(['branch', '--show-current']);
+const releaseReadiness = readRequiredFile(path.join(docsDir, 'release-readiness-v1.md'));
+const releaseLabel = extractBulletValue(releaseReadiness, 'releaseLabel');
+fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+if (!fs.existsSync(outputPath)) {
+  fs.writeFileSync(
+    outputPath,
+    renderPendingRetentionOperatingMarkdown({
+      generatedAt,
+      releaseLabel,
+      sourceBranch,
+      sourceCommit,
+    }),
+    'utf8',
+  );
+}
+const results = RETENTION_COMMANDS.map(runRetentionCommand);
+const failedResults = results.filter((result) => !result.ok);
+
+fs.writeFileSync(
+  outputPath,
+  renderRetentionOperatingMarkdown({
+    failedResults,
+    generatedAt,
+    releaseLabel,
+    results,
+    sourceBranch,
+    sourceCommit,
+  }),
+  'utf8',
+);
+
+console.log(
+  JSON.stringify(
+    {
+      commandCount: results.length,
+      failedCommandCount: failedResults.length,
+      generatedAt,
+      mode: 'production-retention-operating',
+      ok: failedResults.length === 0,
+      outputPath: path.relative(repoDir, outputPath),
+      productionReadyClaim: false,
+      sourceCommit,
+    },
+    null,
+    2,
+  ),
+);
+
+if (failedResults.length > 0) {
+  process.exitCode = 1;
+}
+
+function runRetentionCommand({ command, script }) {
+  const startedAt = Date.now();
+  const result = spawnSync('npm', ['run', script], {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const durationMs = Date.now() - startedAt;
+  const parsed = parseLastJson(`${result.stdout || ''}\n${result.stderr || ''}`);
+
+  return {
+    command,
+    durationMs,
+    exitCode: typeof result.status === 'number' ? result.status : 1,
+    keySignals: extractKeySignals(script, parsed),
+    ok: result.status === 0,
+  };
+}
+
+function extractKeySignals(script, parsed) {
+  if (!parsed || typeof parsed !== 'object') {
+    return {};
+  }
+
+  if (script === 'smoke:retention-delete-policy') {
+    return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:runtime-data-lifecycle') {
+    return pick(parsed, ['deleted', 'exportedFileCount', 'mode']);
+  }
+  if (script === 'smoke:runtime-isolation') {
+    return pick(parsed, ['deletedRuntimeA', 'exportAFileCount', 'exportBFileCount', 'mode']);
+  }
+  if (script === 'package:pilot-export') {
+    return pick(parsed, ['fileCount', 'hygiene', 'mode', 'ok', 'verifiedCommit']);
+  }
+  if (script === 'smoke:pilot-export-package') {
+    return pick(parsed, ['fileCount', 'mode', 'verifiedCommit']);
+  }
+  if (script === 'smoke:release-artifact-hygiene') {
+    return pick(parsed, ['machinePathFindingCount', 'scannedFileCount', 'secretFindingCount', 'verifiedCommit']);
+  }
+
+  return pick(parsed, ['mode']);
+}
+
+function renderRetentionOperatingMarkdown({
+  failedResults,
+  generatedAt,
+  releaseLabel,
+  results,
+  sourceBranch,
+  sourceCommit,
+}) {
+  const commandRows = results
+    .map((result) => {
+      const status = result.ok ? 'pass' : 'fail';
+      const target = getRetentionTarget(result.command);
+      const withinTarget = result.ok && result.durationMs <= target.durationMs;
+      return `| \`${result.command}\` | ${status} | ${result.exitCode} | ${result.durationMs} | ${target.label} | ${withinTarget ? 'yes' : 'no'} |`;
+    })
+    .join('\n');
+  const keySignalRows = results
+    .map((result) => {
+      const signals = JSON.stringify(result.keySignals, null, 2)
+        .split('\n')
+        .map((line) => `  ${line}`)
+        .join('\n');
+      return `### ${result.command}\n\n\`\`\`json\n${signals.trim()}\n\`\`\``;
+    })
+    .join('\n\n');
+
+  return `# Production Retention Operating Rehearsal v1
+
+- status: ${failedResults.length === 0 ? 'local-retention-operating-current' : 'local-retention-operating-failed'}
+- generatedAt: ${generatedAt}
+- sourceBranch: ${sourceBranch}
+- sourceCommit: ${sourceCommit}
+- releaseLabel: ${releaseLabel}
+- scope: local production-like retention, export, delete, and isolation rehearsal
+- productionReadyClaim: false
+- relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
+- relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
+- relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
+
+## Decision Boundary
+
+This rehearsal proves that pilot retention, export, delete, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
+
+It is not hosted production retention evidence, not a customer data subject request workflow, not provider transcript deletion proof, not backup expiry evidence, and not permission to claim \`production-ready\`.
+
+Production-ready remains blocked until the approved target environment provides tenant-scoped retention configuration, customer-approved data classes, provider transcript handling, backup and restore boundaries, and post-delete absence evidence.
+
+## Command Matrix
+
+| Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
+| --- | --- | ---: | ---: | --- | --- |
+${commandRows}
+
+## Key Signals
+
+${keySignalRows}
+
+## Operating Interpretation
+
+- retention/delete policy remains the source of pilot data classes, export checklist, delete checklist, stop conditions, and production gap
+- runtime lifecycle remains the gate for inventory, export manifest, confirmation-token deletion, and post-delete absence
+- runtime isolation remains the gate for one-runtime-per-customer separation during export and delete
+- pilot export package remains the gate for repository-relative paths, sha256 digests, and immutable snapshot inclusion
+- release artifact hygiene remains the gate for shareable evidence safety
+
+## Operator Re-Run
+
+\`\`\`bash
+npm run rehearsal:production-retention-operating
+npm run smoke:production-retention-operating
+\`\`\`
+
+## Acceptance Rule
+
+The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, and artifact hygiene reports zero credential and machine-local path findings.
+
+The rehearsal must keep \`productionReadyClaim: false\` until the same retention, export, delete, and absence evidence is generated from the approved production-like or production target environment.
+`;
+}
+
+function renderPendingRetentionOperatingMarkdown({ generatedAt, releaseLabel, sourceBranch, sourceCommit }) {
+  return `# Production Retention Operating Rehearsal v1
+
+- status: local-retention-operating-pending
+- generatedAt: ${generatedAt}
+- sourceBranch: ${sourceBranch}
+- sourceCommit: ${sourceCommit}
+- releaseLabel: ${releaseLabel}
+- scope: local production-like retention, export, delete, and isolation rehearsal
+- productionReadyClaim: false
+
+## Decision Boundary
+
+This pending placeholder exists only so artifact hygiene and pilot export packaging can scan the retention operating output path while the rehearsal command matrix is executing.
+
+It is not hosted production retention evidence, not provider transcript deletion proof, and not permission to claim \`production-ready\`.
+`;
+}
+
+function getRetentionTarget(command) {
+  if (/runtime-isolation/.test(command)) {
+    return { durationMs: 10_000, label: '10s' };
+  }
+  if (/runtime-data-lifecycle/.test(command)) {
+    return { durationMs: 10_000, label: '10s' };
+  }
+  if (/package:pilot-export|pilot-export-package|release-artifact-hygiene/.test(command)) {
+    return { durationMs: 5_000, label: '5s' };
+  }
+  return { durationMs: 5_000, label: '5s' };
+}
+
+function readRequiredFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`required file not found: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function runGit(args) {
+  const result = spawnSync('git', args, {
+    cwd: repoDir,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (result.status !== 0) {
+    return '';
+  }
+  return String(result.stdout || '').trim();
+}
+
+function parseLastJson(output) {
+  const text = String(output || '').trim();
+  const openIndexes = [];
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index] === '{') {
+      openIndexes.push(index);
+    }
+  }
+  for (const index of openIndexes.reverse()) {
+    try {
+      return JSON.parse(text.slice(index));
+    } catch {
+      // Continue until the last valid JSON object is found.
+    }
+  }
+  return {};
+}
+
+function pick(source, keys) {
+  return Object.fromEntries(keys.filter((key) => Object.hasOwn(source, key)).map((key) => [key, source[key]]));
+}
+
+function extractBulletValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

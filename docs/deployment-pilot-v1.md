@@ -8,6 +8,7 @@
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
@@ -282,6 +283,30 @@ Stop condition:
 - if the rehearsal fails, do not present SLO/SLA operating readiness in a pilot review until the failed gate is fixed
 - if the rehearsal passes, treat it only as local operating evidence, not customer production SLO/SLA evidence
 
+## Production Retention Operating Rehearsal
+
+Before using the pilot package for a retention/export/delete operating review, replay the local retention operating evidence:
+
+```bash
+npm run rehearsal:production-retention-operating
+npm run smoke:production-retention-operating
+```
+
+The rehearsal runs the retention/delete policy gate, runtime data lifecycle, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
+
+Acceptance:
+
+- every command in the retention operating matrix passes
+- artifact hygiene reports zero credential findings and zero machine-local path findings
+- runtime lifecycle proves export, confirmation-token deletion, and post-delete absence
+- runtime isolation proves one customer runtime can be deleted without modifying another
+- the generated rehearsal keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if the rehearsal fails, do not present retention/export/delete operating readiness in a pilot review until the failed gate is fixed
+- if the rehearsal passes, treat it only as local operating evidence, not hosted production retention or provider transcript deletion proof
+
 ## Clean Deployment Release Rehearsal
 
 Before treating a release pack as portable, replay core release gates from a clean tracked-file checkout:
@@ -394,6 +419,7 @@ Export package should include:
 - `docs/runtime-isolation-v1.md`
 - `docs/retention-delete-v1.md`
 - `docs/production-slo-operating-v1.md`
+- `docs/production-retention-operating-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`

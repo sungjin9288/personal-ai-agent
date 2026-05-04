@@ -1,19 +1,20 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-04T14:37:33.703Z
+- generatedAt: 2026-05-04T14:51:34.732Z
 - verifiedCommit: f109cbab41f3ec9a6ee144dba11a07d0328eab4c
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 864a5eaeb1eec70886b1ed6a047160e4aa09b2729411935f0557cc31085231df
-- fileCount: 21
+- bundleSha256: 7aa42330fd7b167491b3202db92f6b722d5577038fd4f08f4100c58534852f38
+- fileCount: 22
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 
 ## Decision Boundary
 
@@ -27,20 +28,21 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 153263 | `fce3d72006241a68ebf679e25963af698ceaefebca64e3436460147c7985e8ae` |
-| `docs/product-plan-v1.md` | 10950 | `b6ca456083f4464c7a1ef397e54da95fceeddb820d6a745343f3390437d183f9` |
-| `docs/security-model-v1.md` | 16636 | `905b9da9e9ce4ba2143cdd8a87dc1a9c90ec149d3ba15e6874b011d6597981ed` |
+| `README.md` | 153789 | `22fea8617ae432e8e446381c42b7ed39b6abb5aea1ae4997982c6275ee291eaa` |
+| `docs/product-plan-v1.md` | 11014 | `6269f93b27df811f361c92fd76548f1ae5e8f2905e0bea683b1a60c43b5a538b` |
+| `docs/security-model-v1.md` | 17017 | `4a7501b06aeeeb987ccae2ad1489dca8e059704b941043ea0ead06bf82987e83` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 17937 | `cd63f0e1a6631af0a6b7e379a8ea397a22803d3260ce7cf622cf00aed0ea28a4` |
+| `docs/deployment-pilot-v1.md` | 19328 | `ffc4feb04a558bf6da4c502c2f998e812ce8149748f7e5aa383bcfe97cd41a24` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
 | `docs/runtime-isolation-v1.md` | 2233 | `30697df9a53bd365c7bbeb226c785260c434d97d6134a28ab3ed357594ec70ce` |
-| `docs/retention-delete-v1.md` | 5394 | `99a48e074c395d3e02e78bbfa903bdba7f56077a9ebdea440a95068956da4e48` |
+| `docs/retention-delete-v1.md` | 5799 | `8f4bcfc405ecfc19e1746dd591c7a5b47ee9a0a216e161b151b01a5b04c2e560` |
 | `docs/clean-deployment-release-v1.md` | 3957 | `323f2214bcc17f4e2fe273b95d1f8afb874909a32f5306366fa8bf663cc66d77` |
 | `docs/production-slo-operating-v1.md` | 4161 | `d577245e5546324d092b68d3ec6f53522676934afc0958e3099746747d77ef3b` |
-| `docs/release-readiness-v1.md` | 11134 | `ae810b432196b3e931466a8451765ab69f41479107743f7fc3a14a1b43a56eb9` |
-| `docs/production-like-release-drill-v1.md` | 5604 | `8440dad41a108e13aec1e4ed15d11612acead4a9b021fc2b759f28851c3f469e` |
+| `docs/production-retention-operating-v1.md` | 4186 | `5e10867d550197a63d924fc5e5d1c1ea9be3a7d42e19007a87e6636d4af9291c` |
+| `docs/release-readiness-v1.md` | 11637 | `4dd8e86067a66a78c8acadb15b312bcd69df68ca1dfadd7019f8e7436bdb5d71` |
+| `docs/production-like-release-drill-v1.md` | 6017 | `e6aaaae2d1fd12ed4e7383b39781dc4d0e6ababaa2517056a68fedb723593ec2` |
 | `docs/execution-v1-evidence.md` | 10639 | `66df3369cab0a79143eeae93bc759994a17bdfe5717711a14247928cdc7ca52c` |
 | `docs/execution-v1-closeout.md` | 3351 | `ec829fa809af4f7eab0436823088198eb9e0f9022fce0bb3aa1d4636609b4c67` |
 | `docs/execution-v1-handoff.md` | 5241 | `4d4649d5ed621238e9ae0ba2daa1744734a1fdfff73905de3cbfb31af6dd3f83` |

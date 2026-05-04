@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Production Retention Operating Rehearsal Gate Pass
+
+- added `docs/production-retention-operating-v1.md` as the local retention/export/delete operating rehearsal artifact for retention policy, runtime lifecycle, runtime isolation, pilot package, package smoke, and artifact hygiene gates
+- added `rehearsal:production-retention-operating` and `smoke:production-retention-operating` so retention operating evidence can be regenerated and verified without claiming hosted production retention readiness
+- wired the retention operating rehearsal into release readiness, retention policy, deployment guidance, security model, product checklist, README, production-like drill, pilot export package, production readiness gate, and artifact hygiene while keeping `productionReadyClaim: false`
+
 ## 2026-05-04 Web Auth RBAC Gate Pass
 
 - added an optional shared-secret web auth gate with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce` and `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, accepting bearer or `x-personal-ai-agent-auth-token` credentials before RBAC is evaluated

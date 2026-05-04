@@ -12,6 +12,7 @@ const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const handoffPath = path.join(docsDir, 'execution-v1-handoff.md');
 const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
 const productionSloOperatingPath = path.join(docsDir, 'production-slo-operating-v1.md');
+const productionRetentionOperatingPath = path.join(docsDir, 'production-retention-operating-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
@@ -24,6 +25,7 @@ const closeout = readRequiredFile(closeoutPath);
 const handoff = readRequiredFile(handoffPath);
 const incidentSlo = readRequiredFile(incidentSloPath);
 const productionSloOperating = readRequiredFile(productionSloOperatingPath);
+const productionRetentionOperating = readRequiredFile(productionRetentionOperatingPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
@@ -65,6 +67,7 @@ for (const blocker of [
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
+assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
@@ -80,6 +83,11 @@ assert.match(productionSloOperating, /^- status: local-slo-operating-current$/m)
 assert.match(productionSloOperating, /^- productionReadyClaim: false$/m);
 assert.match(productionSloOperating, /npm run smoke:production-slo-operating/);
 assert.match(productionSloOperating, /not customer production SLO\/SLA evidence/);
+assert.match(productionRetentionOperating, /^# Production Retention Operating Rehearsal v1$/m);
+assert.match(productionRetentionOperating, /^- status: local-retention-operating-current$/m);
+assert.match(productionRetentionOperating, /^- productionReadyClaim: false$/m);
+assert.match(productionRetentionOperating, /npm run smoke:production-retention-operating/);
+assert.match(productionRetentionOperating, /not hosted production retention evidence/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
@@ -145,6 +153,7 @@ console.log(
       pilotCleanDeploymentRelease: 'present',
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
+      pilotProductionRetentionOperating: 'present',
       pilotProductionSloOperating: 'present',
       pilotRetentionDeletePolicy: 'present',
       pilotRuntimeIsolation: 'present',

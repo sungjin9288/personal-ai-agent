@@ -9,6 +9,7 @@
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
+- relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 
 ## Policy Position
 
@@ -62,6 +63,8 @@ npm run smoke:runtime-isolation
 npm run package:pilot-export
 npm run smoke:pilot-export-package
 npm run smoke:release-artifact-hygiene
+npm run rehearsal:production-retention-operating
+npm run smoke:production-retention-operating
 ```
 
 ## Stop Conditions
@@ -74,6 +77,6 @@ npm run smoke:release-artifact-hygiene
 
 ## Production Gap
 
-This policy is a pilot lifecycle policy. It does not prove hosted tenant retention, centralized data subject request handling, provider-side transcript deletion, backup expiry, or production environment post-delete absence.
+This policy is a pilot lifecycle policy. [production-retention-operating-v1.md](production-retention-operating-v1.md) records the current local operating rehearsal for the same retention, export, delete, package, and hygiene gates, but it does not prove hosted tenant retention, centralized data subject request handling, provider-side transcript deletion, backup expiry, or production environment post-delete absence.
 
 Production-ready remains blocked until retention, export, and delete verification is repeated in the approved production-like deployment with customer-approved data classes, retention windows, provider transcript handling, backup/restore boundaries, and deletion evidence.

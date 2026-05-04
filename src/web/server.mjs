@@ -50,6 +50,7 @@ const executionV1MutableArtifactPaths = new Set([
   'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/production-slo-operating-v1.md',
+  'docs/production-retention-operating-v1.md',
 ]);
 const releaseHandoffStableLineCopyBaseKey =
   'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';

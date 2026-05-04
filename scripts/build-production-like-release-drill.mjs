@@ -23,6 +23,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:retention-delete-policy',
   },
   {
+    command: 'npm run smoke:production-retention-operating',
+    script: 'smoke:production-retention-operating',
+  },
+  {
     command: 'npm run smoke:clean-deployment-release',
     script: 'smoke:clean-deployment-release',
   },
@@ -138,6 +142,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
+  if (script === 'smoke:production-retention-operating') {
+    return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
+  }
   if (script === 'smoke:clean-deployment-release') {
     return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
   }
@@ -162,6 +169,7 @@ function extractKeySignals(script, parsed) {
       'openaiLiveValidation',
       'pilotCleanDeploymentRelease',
       'pilotIncidentSloPolicy',
+      'pilotProductionRetentionOperating',
       'pilotProductionSloOperating',
       'pilotRetentionDeletePolicy',
       'productionLikeReleaseDrill',
@@ -223,6 +231,7 @@ function renderDrillMarkdown({
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 
 ## Decision Boundary
