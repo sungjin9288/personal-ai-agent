@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Production Provider Readiness Rehearsal Gate Pass
+
+- added `docs/production-provider-readiness-v1.md` as the local provider readiness rehearsal artifact for OpenAI, Anthropic, local, and Hermes preflight status, env readiness, archived live status, and next live-validation commands
+- added `rehearsal:production-provider-readiness` and `smoke:production-provider-readiness` so provider expansion readiness can be regenerated and verified without claiming live-provider-complete or production-ready status
+- wired the provider readiness rehearsal into release readiness, deployment guidance, security model, product checklist, README, production-like drill, pilot export package, production readiness gate, artifact hygiene, and artifact-sync allowlists while preserving current provider blockers
+
 ## 2026-05-05 Date Rollover Verification Pass
 
 - confirmed local runtime date as `2026-05-05 00:10:00 KST +0900`, then reran date-sensitive mission timeline, maintenance history, provider cost telemetry, operator timeline, overdue action logging, maintenance sweep, and provider action inbox smokes to verify the 2026-05-04 operating state stayed stable after midnight

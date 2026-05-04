@@ -1,0 +1,89 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const repoDir = process.cwd();
+const docsDir = path.join(repoDir, 'docs');
+const readinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
+const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
+const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
+const readmePath = path.join(repoDir, 'README.md');
+const packagePath = path.join(repoDir, 'package.json');
+
+const readiness = readRequiredFile(readinessPath);
+const releaseReadiness = readRequiredFile(releaseReadinessPath);
+const deployment = readRequiredFile(deploymentPath);
+const productPlan = readRequiredFile(productPlanPath);
+const readme = readRequiredFile(readmePath);
+const packageJson = JSON.parse(readRequiredFile(packagePath));
+
+assert.equal(
+  packageJson.scripts['rehearsal:production-provider-readiness'],
+  'node scripts/build-production-provider-readiness.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:production-provider-readiness'],
+  'node scripts/smoke-production-provider-readiness.mjs',
+);
+
+assert.match(readiness, /^# Production Provider Readiness v1$/m);
+assert.match(readiness, /^- status: local-provider-readiness-current$/m);
+assert.match(readiness, /^- productionReadyClaim: false$/m);
+assert.match(readiness, /not live-provider-complete evidence/);
+assert.match(readiness, /not target production provider validation/);
+assert.match(readiness, /not permission to claim `production-ready`/);
+assert.match(readiness, /Production-ready remains blocked/);
+assert.match(readiness, /\| `npm run preflight:execution-v1:all` \| pass \| 0 \|/);
+assert.match(readiness, /"blockedCount": 0/);
+
+for (const [provider, envKey] of [
+  ['openai', 'OPENAI_API_KEY'],
+  ['anthropic', 'ANTHROPIC_API_KEY'],
+  ['local', 'LOCAL_PROVIDER_BASE_URL'],
+  ['hermes', 'HERMES_PROVIDER_MODEL'],
+]) {
+  assert.match(readiness, new RegExp(`\\| ${provider} \\| .* \\| ${envKey} \\|`), provider);
+  assert.match(readiness, new RegExp(`### ${provider}\\n`), provider);
+  assert.match(readiness, new RegExp(`- liveCommand: \`npm run live:execution-v1:${provider}\``), provider);
+}
+
+for (const phrase of [
+  /OpenAI remains the only archived passed live provider/,
+  /Anthropic remains blocked/,
+  /local provider remains blocked/,
+  /Hermes remains blocked/,
+  /deterministic provider preflight passing is necessary but not sufficient/,
+]) {
+  assert.match(readiness, phrase);
+}
+
+assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
+assert.match(releaseReadiness, /local provider readiness operating rehearsal: passed/);
+assert.match(deployment, /## Production Provider Readiness Rehearsal/);
+assert.match(deployment, /npm run rehearsal:production-provider-readiness/);
+assert.match(deployment, /npm run smoke:production-provider-readiness/);
+assert.match(productPlan, /\[x\] Production provider readiness rehearsal gate implemented/);
+assert.match(readme, /npm run rehearsal:production-provider-readiness/);
+assert.match(readme, /npm run smoke:production-provider-readiness/);
+
+console.log(
+  JSON.stringify(
+    {
+      mode: 'production-provider-readiness',
+      ok: true,
+      path: 'docs/production-provider-readiness-v1.md',
+      productionReadyClaim: false,
+      providerCount: 4,
+    },
+    null,
+    2,
+  ),
+);
+
+function readRequiredFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`required file not found: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}

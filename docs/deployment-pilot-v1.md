@@ -9,6 +9,7 @@
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
+- relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
@@ -235,6 +236,29 @@ Stop condition:
 - if deterministic checks fail, do not run live validation
 - if preflight is blocked, fix provider prerequisite first
 
+## Production Provider Readiness Rehearsal
+
+Before expanding the pilot beyond the archived OpenAI provider path, replay the provider readiness matrix:
+
+```bash
+npm run rehearsal:production-provider-readiness
+npm run smoke:production-provider-readiness
+```
+
+The rehearsal runs aggregate provider preflight and records OpenAI, Anthropic, local, and Hermes env readiness, deterministic checks, archived live status, and next live-validation commands into [production-provider-readiness-v1.md](production-provider-readiness-v1.md).
+
+Acceptance:
+
+- aggregate preflight reports `blockedCount: 0`
+- every supported provider appears in the provider matrix
+- missing env and provider account blockers remain explicit
+- the generated rehearsal keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if deterministic provider preflight is blocked, do not run live validation until the failed smoke is fixed
+- if a provider has missing env or account-level failure, do not expand the release label to that provider until live validation is archived
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -420,6 +444,7 @@ Export package should include:
 - `docs/retention-delete-v1.md`
 - `docs/production-slo-operating-v1.md`
 - `docs/production-retention-operating-v1.md`
+- `docs/production-provider-readiness-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`

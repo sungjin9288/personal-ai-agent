@@ -19,6 +19,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:production-provider-readiness',
+    script: 'smoke:production-provider-readiness',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -139,6 +143,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:web-auth-rbac') {
     return pick(parsed, ['authMode', 'mode', 'roleChecks']);
   }
+  if (script === 'smoke:production-provider-readiness') {
+    return pick(parsed, ['mode', 'productionReadyClaim', 'providerCount']);
+  }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
@@ -169,6 +176,7 @@ function extractKeySignals(script, parsed) {
       'openaiLiveValidation',
       'pilotCleanDeploymentRelease',
       'pilotIncidentSloPolicy',
+      'pilotProductionProviderReadiness',
       'pilotProductionRetentionOperating',
       'pilotProductionSloOperating',
       'pilotRetentionDeletePolicy',
@@ -230,6 +238,7 @@ function renderDrillMarkdown({
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)

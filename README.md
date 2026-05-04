@@ -52,6 +52,7 @@ The current release readiness decision is [docs/release-readiness-v1.md](docs/re
 The pilot retention/delete policy is [docs/retention-delete-v1.md](docs/retention-delete-v1.md).
 The local SLO operating rehearsal is [docs/production-slo-operating-v1.md](docs/production-slo-operating-v1.md).
 The local retention operating rehearsal is [docs/production-retention-operating-v1.md](docs/production-retention-operating-v1.md).
+The local provider readiness rehearsal is [docs/production-provider-readiness-v1.md](docs/production-provider-readiness-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
 Current planning status:
@@ -70,6 +71,7 @@ Current planning status:
 - retention/export/delete policy evidence can be verified with `npm run smoke:retention-delete-policy`, but it intentionally keeps `productionReadyClaim: false`
 - local SLO operating rehearsal evidence can be regenerated with `npm run rehearsal:production-slo-operating` and verified with `npm run smoke:production-slo-operating`, but it intentionally keeps `productionReadyClaim: false`
 - local retention operating rehearsal evidence can be regenerated with `npm run rehearsal:production-retention-operating` and verified with `npm run smoke:production-retention-operating`, but it intentionally keeps `productionReadyClaim: false`
+- local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - clean deployment release rehearsal evidence can be regenerated with `npm run rehearsal:clean-deployment-release`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
@@ -101,6 +103,13 @@ Production retention operating rehearsal:
 ```bash
 npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
+```
+
+Production provider readiness rehearsal:
+
+```bash
+npm run rehearsal:production-provider-readiness
+npm run smoke:production-provider-readiness
 ```
 
 Self-hosted runtime isolation smoke:

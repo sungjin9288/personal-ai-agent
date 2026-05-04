@@ -85,6 +85,7 @@
 - [x] Approval gate and reviewer loop implemented
 - [x] Deterministic evidence and snapshot artifacts implemented
 - [x] Provider preflight distinguishes missing configuration from code readiness
+- [x] Production provider readiness rehearsal gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived
 - [ ] Live Anthropic validation archived

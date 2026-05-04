@@ -22,6 +22,7 @@ const BASE_PACKAGE_FILES = [
   'docs/clean-deployment-release-v1.md',
   'docs/production-slo-operating-v1.md',
   'docs/production-retention-operating-v1.md',
+  'docs/production-provider-readiness-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/execution-v1-evidence.md',
@@ -136,6 +137,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
+- relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 
 ## Decision Boundary
 
