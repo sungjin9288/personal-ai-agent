@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Execution Policy Hardening Pass
+
+- hardened execution-v1 preflight command classification for shell-based execution by blocking shell chaining, pipe/redirection, command substitution, absolute/home path references, network/remote shell/file-transfer commands, package dependency mutation, git remote/history/worktree mutation, and deploy/release platform mutation
+- kept the allowed execution path intentionally narrow around workspace-local single commands such as `git status --short`, `node --check ...`, and existing package `run` scripts to reduce runtime blast radius before broader sandboxing is introduced
+- expanded `smoke:execution-flow` with safe, blocked, warning, and workspace-escape policy assertions so execution policy regressions are checked before a one-time execution lease can be treated as runnable
+
 ## 2026-05-04 Pilot Handoff Documentation Alignment Pass
 
 - aligned roadmap, operator runbook, deployment guide, onboarding guide, and demo catalog to the current `provider-scoped pilot ready for OpenAI-backed local-first path` release label

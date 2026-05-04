@@ -52,11 +52,20 @@ function classifyCommandRisk(command) {
     return { blockedReasons, warningReasons };
   }
 
+  if (/[\n\r]|&&|\|\||;|\||`|\$\(|[<>]/.test(value)) {
+    blockedReasons.push('shell chaining, pipe, redirection, command substitution은 v1 실행 정책에서 차단됩니다.');
+  }
+  if (/(^|\s)(?:~(?:\/|\s|$)|\/[^\s]+)/.test(value)) {
+    blockedReasons.push('절대 경로 또는 홈 디렉터리 경로를 직접 참조하는 명령은 차단됩니다.');
+  }
   if (/\bsudo\b/i.test(value)) {
     blockedReasons.push('sudo 명령은 v1 실행 정책에서 차단됩니다.');
   }
   if (/\bgit\s+reset\b/i.test(value) || /\bgit\s+checkout\s+--\b/i.test(value)) {
     blockedReasons.push('파괴적 git reset/checkout 명령은 차단됩니다.');
+  }
+  if (/\bgit\s+(push|pull|fetch|merge|rebase|commit|tag|stash|apply|am|cherry-pick|restore|switch)\b/i.test(value)) {
+    blockedReasons.push('git remote/history/worktree mutation 명령은 v1 실행 정책에서 차단됩니다.');
   }
   if (/\brm\s+-rf\b/i.test(value) || /\brm\s+-fr\b/i.test(value)) {
     blockedReasons.push('파괴적 삭제 명령은 차단됩니다.');
@@ -66,6 +75,26 @@ function classifyCommandRisk(command) {
   }
   if (/\blaunchctl\b|\bosascript\b/i.test(value)) {
     blockedReasons.push('시스템 전역 설정/GUI 조작 명령은 차단됩니다.');
+  }
+  if (/\b(curl|wget|ssh|scp|rsync|nc|telnet)\b/i.test(value)) {
+    blockedReasons.push('network 또는 remote shell/file-transfer 명령은 v1 실행 정책에서 차단됩니다.');
+  }
+  if (
+    /\bnpx\b/i.test(value) ||
+    /\bnpm\s+(?:install|i|add|update|upgrade|uninstall|remove|rm|publish|link|exec)\b/i.test(value) ||
+    /\bpnpm\s+(?:install|i|add|update|upgrade|remove|rm|publish|link|exec|dlx)\b/i.test(value) ||
+    /\byarn\s+(?:install|add|update|upgrade|remove|publish|link|exec|dlx)\b/i.test(value)
+  ) {
+    blockedReasons.push('dependency install/update/publish/exec 계열 package manager 명령은 차단됩니다.');
+  }
+  if (
+    /\b(vercel|flyctl|railway)\b/i.test(value) ||
+    /\bnetlify\s+deploy\b/i.test(value) ||
+    /\bwrangler\s+deploy\b/i.test(value) ||
+    /\bfirebase\s+deploy\b/i.test(value) ||
+    /\bgh\s+(?:release|workflow|run|repo|auth)\b/i.test(value)
+  ) {
+    blockedReasons.push('deploy, release, external platform mutation 명령은 v1 실행 정책에서 차단됩니다.');
   }
   if (/\bgit\s+clean\b/i.test(value)) {
     warningReasons.push('git clean 계열 명령은 주의가 필요합니다.');
