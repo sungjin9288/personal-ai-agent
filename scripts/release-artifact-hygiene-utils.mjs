@@ -47,6 +47,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/production-like-release-drill-v1.md',
   'docs/retention-delete-v1.md',
   'docs/clean-deployment-release-v1.md',
+  'docs/production-slo-operating-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

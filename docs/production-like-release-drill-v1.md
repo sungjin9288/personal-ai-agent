@@ -1,15 +1,16 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-04T12:12:50.336Z
+- generatedAt: 2026-05-04T12:22:40.083Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 007b0526d81b0bf9bd979518087d87f6547b5de5
+- verifiedCommit: 4ceaf3d9e37dcc1478270c5c2876194ba5e6f81c
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 
@@ -25,15 +26,16 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 107 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 107 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 106 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 380 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 141 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 150 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 141 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 352 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 572 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 275 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 264 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 290 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 371 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 1145 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 553 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 219 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 230 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 573 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 894 |
 
 ## Key Signals
 
@@ -43,6 +45,16 @@ Production-ready remains blocked until the target deployment model produces clea
 {
     "mode": "incident-slo-policy",
     "severityCount": 4
+  }
+```
+
+### npm run smoke:production-slo-operating
+
+```json
+{
+    "commandCount": 7,
+    "mode": "production-slo-operating",
+    "productionReadyClaim": false
   }
 ```
 
@@ -70,8 +82,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -84,7 +96,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "007b0526d81b0bf9bd979518087d87f6547b5de5"
@@ -100,11 +112,12 @@ Production-ready remains blocked until the target deployment model produces clea
     "openaiLiveValidation": "passed",
     "pilotCleanDeploymentRelease": "present",
     "pilotIncidentSloPolicy": "present",
+    "pilotProductionSloOperating": "present",
     "pilotRetentionDeletePolicy": "present",
     "productionLikeReleaseDrill": "present",
     "productionBlockerCount": 6,
     "releaseArtifactHygiene": "passed",
-    "releaseArtifactHygieneScannedFiles": 11
+    "releaseArtifactHygieneScannedFiles": 12
   }
 ```
 
@@ -113,7 +126,7 @@ Production-ready remains blocked until the target deployment model produces clea
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 11,
+    "scannedFileCount": 12,
     "secretFindingCount": 0,
     "verifiedCommit": "007b0526d81b0bf9bd979518087d87f6547b5de5"
   }

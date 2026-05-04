@@ -11,6 +11,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:incident-slo-policy',
   },
   {
+    command: 'npm run smoke:production-slo-operating',
+    script: 'smoke:production-slo-operating',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -121,6 +125,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:incident-slo-policy') {
     return pick(parsed, ['mode', 'severityCount']);
   }
+  if (script === 'smoke:production-slo-operating') {
+    return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
+  }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
@@ -148,6 +155,7 @@ function extractKeySignals(script, parsed) {
       'openaiLiveValidation',
       'pilotCleanDeploymentRelease',
       'pilotIncidentSloPolicy',
+      'pilotProductionSloOperating',
       'pilotRetentionDeletePolicy',
       'productionLikeReleaseDrill',
       'productionBlockerCount',
@@ -206,6 +214,7 @@ function renderDrillMarkdown({
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 

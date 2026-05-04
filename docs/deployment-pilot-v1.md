@@ -7,6 +7,7 @@
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
@@ -245,6 +246,30 @@ Stop condition:
 - if the drill fails, do not run live validation for a production-like review until the failed local gate is fixed
 - if the drill passes, treat it only as local dry-run evidence, not production deployment evidence
 
+## Production SLO Operating Rehearsal
+
+Before using the pilot package for an operating review, replay the local SLO operating evidence:
+
+```bash
+npm run rehearsal:production-slo-operating
+npm run smoke:production-slo-operating
+```
+
+The rehearsal runs the incident/SLO policy gate, execution-v1 status and snapshot gates, release artifact hygiene, clean deployment rehearsal, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
+
+Acceptance:
+
+- every command in the SLO operating matrix passes
+- artifact hygiene reports zero credential findings and zero machine-local path findings
+- clean deployment rehearsal remains replayable from tracked files only
+- runtime lifecycle and runtime isolation checks remain green
+- the generated rehearsal keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if the rehearsal fails, do not present SLO/SLA operating readiness in a pilot review until the failed gate is fixed
+- if the rehearsal passes, treat it only as local operating evidence, not customer production SLO/SLA evidence
+
 ## Clean Deployment Release Rehearsal
 
 Before treating a release pack as portable, replay core release gates from a clean tracked-file checkout:
@@ -356,6 +381,7 @@ Export package should include:
 - `docs/deployment-pilot-v1.md`
 - `docs/runtime-isolation-v1.md`
 - `docs/retention-delete-v1.md`
+- `docs/production-slo-operating-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
 - `docs/execution-v1-closeout.md`

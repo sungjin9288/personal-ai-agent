@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-04 Production SLO Operating Rehearsal Gate Pass
+
+- added `docs/production-slo-operating-v1.md` as the local SLO operating rehearsal artifact for incident/SLO, release status, snapshot, artifact hygiene, clean deployment, runtime lifecycle, and runtime isolation gates
+- added `rehearsal:production-slo-operating` and `smoke:production-slo-operating` so SLO operating evidence can be regenerated and verified without claiming customer production SLO/SLA readiness
+- wired the SLO operating rehearsal into release readiness, incident policy, deployment guidance, security model, product checklist, README, production-like drill, pilot export package, production readiness gate, and artifact hygiene while keeping `productionReadyClaim: false`
+
 ## 2026-05-04 Clean Deployment Release Rehearsal Gate Pass
 
 - added `docs/clean-deployment-release-v1.md` as a local clean-checkout rehearsal artifact that proves core release gates can replay without `var/`, Playwright output, dependency folders, or git metadata

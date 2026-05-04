@@ -1,0 +1,88 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const repoDir = process.cwd();
+const docsDir = path.join(repoDir, 'docs');
+const rehearsalPath = path.join(docsDir, 'production-slo-operating-v1.md');
+const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
+const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
+const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
+const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
+const readmePath = path.join(repoDir, 'README.md');
+const packagePath = path.join(repoDir, 'package.json');
+
+const rehearsal = readRequiredFile(rehearsalPath);
+const releaseReadiness = readRequiredFile(releaseReadinessPath);
+const incidentSlo = readRequiredFile(incidentSloPath);
+const deployment = readRequiredFile(deploymentPath);
+const productPlan = readRequiredFile(productPlanPath);
+const readme = readRequiredFile(readmePath);
+const packageJson = JSON.parse(readRequiredFile(packagePath));
+
+assert.equal(packageJson.scripts['rehearsal:production-slo-operating'], 'node scripts/build-production-slo-operating.mjs');
+assert.equal(packageJson.scripts['smoke:production-slo-operating'], 'node scripts/smoke-production-slo-operating.mjs');
+
+assert.match(rehearsal, /^# Production SLO Operating Rehearsal v1$/m);
+assert.match(rehearsal, /^- status: local-slo-operating-current$/m);
+assert.match(rehearsal, /^- productionReadyClaim: false$/m);
+assert.match(rehearsal, /not customer production SLO\/SLA evidence/);
+assert.match(rehearsal, /not permission to claim `production-ready`/);
+assert.match(rehearsal, /Production-ready remains blocked/);
+
+for (const command of [
+  'npm run smoke:incident-slo-policy',
+  'npm run smoke:execution-v1-status',
+  'npm run smoke:execution-v1-snapshot',
+  'npm run smoke:release-artifact-hygiene',
+  'npm run smoke:clean-deployment-release',
+  'npm run smoke:runtime-data-lifecycle',
+  'npm run smoke:runtime-isolation',
+]) {
+  assert.match(rehearsal, new RegExp(`\\| \`${escapeRegExp(command)}\` \\| pass \\| 0 \\|`), command);
+}
+
+for (const phrase of [
+  /deterministic release status and snapshot integrity/,
+  /release artifact hygiene/,
+  /clean deployment rehearsal/,
+  /runtime lifecycle and runtime isolation/,
+  /incident\/SLO policy/,
+]) {
+  assert.match(rehearsal, phrase);
+}
+
+assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
+assert.match(releaseReadiness, /local production SLO operating rehearsal: passed/);
+assert.match(incidentSlo, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
+assert.match(deployment, /## Production SLO Operating Rehearsal/);
+assert.match(deployment, /npm run rehearsal:production-slo-operating/);
+assert.match(deployment, /npm run smoke:production-slo-operating/);
+assert.match(productPlan, /\[x\] Production SLO operating rehearsal gate implemented/);
+assert.match(readme, /npm run rehearsal:production-slo-operating/);
+assert.match(readme, /npm run smoke:production-slo-operating/);
+
+console.log(
+  JSON.stringify(
+    {
+      commandCount: 7,
+      mode: 'production-slo-operating',
+      ok: true,
+      path: 'docs/production-slo-operating-v1.md',
+      productionReadyClaim: false,
+    },
+    null,
+    2,
+  ),
+);
+
+function readRequiredFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`required file not found: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

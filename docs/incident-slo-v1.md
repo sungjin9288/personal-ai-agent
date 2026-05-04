@@ -6,6 +6,7 @@
 - relatedPlan: [product-plan-v1.md](product-plan-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
+- relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Policy Position
@@ -73,6 +74,13 @@ Runtime lifecycle:
 npm run smoke:runtime-data-lifecycle
 ```
 
+Production-like SLO operating rehearsal:
+
+```bash
+npm run rehearsal:production-slo-operating
+npm run smoke:production-slo-operating
+```
+
 Provider scope:
 
 ```bash
@@ -124,3 +132,5 @@ This policy is a pilot operating policy. It does not yet provide:
 - post-incident review governance for a hosted control plane
 
 Therefore production-ready must remain blocked until production SLO/SLA operating evidence is generated from the target deployment model.
+
+The current local rehearsal evidence is tracked in [production-slo-operating-v1.md](production-slo-operating-v1.md). It proves that pilot SLO operating checks can be replayed together locally, but it is not customer production SLO/SLA evidence.

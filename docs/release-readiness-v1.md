@@ -11,6 +11,7 @@
 - relatedOnboarding: [pilot-onboarding-v1.md](pilot-onboarding-v1.md)
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -44,6 +45,7 @@ Current execution evidence:
 - self-hosted runtime isolation smoke: passed, with `productionReadyClaim: false`
 - pilot retention/export/delete policy gate: passed, with documented data classes, export checklist, delete checklist, and `productionReadyClaim: false`
 - clean deployment release rehearsal: passed from tracked-files-only checkout, with `productionReadyClaim: false`
+- local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 
 Current handoff state:
 
@@ -68,6 +70,7 @@ Current handoff state:
 | [pilot-onboarding-v1.md](pilot-onboarding-v1.md) | ready | first pilot session, roles, first mission, success/stop criteria |
 | [demo-scenarios-v1.md](demo-scenarios-v1.md) | ready | customer demo catalog and scenario-specific proof paths |
 | [incident-slo-v1.md](incident-slo-v1.md) | pilot-policy-ready | incident severity, SLO triage commands, response workflow |
+| [production-slo-operating-v1.md](production-slo-operating-v1.md) | local-slo-operating-current | local SLO operating rehearsal and production telemetry gap |
 | [runtime-isolation-v1.md](runtime-isolation-v1.md) | pilot-isolation-evidence-current | one-runtime-per-customer isolation smoke and production gap |
 | [retention-delete-v1.md](retention-delete-v1.md) | pilot-policy-evidence-current | data class retention, export checklist, delete checklist, and production gap |
 | [clean-deployment-release-v1.md](clean-deployment-release-v1.md) | clean-local-rehearsal-current | tracked-files-only clean checkout release gate replay and production gap |
@@ -181,6 +184,8 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 npm run smoke:runtime-isolation
 npm run smoke:retention-delete-policy
+npm run rehearsal:production-slo-operating
+npm run smoke:production-slo-operating
 npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 npm run package:pilot-export
