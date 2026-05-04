@@ -84,8 +84,10 @@ const deterministicRuntimeSummaryReady = [
   'smoke:reference-adoptions',
   'smoke:execution-v1-live-helpers',
   'smoke:execution-v1-handoff',
+  'smoke:production-readiness-gate',
 ].every((scriptName) => new RegExp(`- ${escapeRegExp(scriptName)}: .+ elapsed, stdout .+, stderr .+, timeout .+`).test(evidenceBody));
 const handoffGeneratorPassed = /smoke:execution-v1-handoff: passed/.test(evidenceBody);
+const productionReadinessGatePassed = /smoke:production-readiness-gate: passed/.test(evidenceBody);
 
 const liveOpenAIRequested = process.argv.includes('--live-openai');
 const liveAnthropicRequested = process.argv.includes('--live-anthropic');
@@ -153,6 +155,7 @@ const lines = [
   `- [${referenceAdoptionsPassed ? 'x' : ' '}] reference adoption aggregate smoke gate 통과`,
   `- [${deterministicRuntimeSummaryReady ? 'x' : ' '}] deterministic runtime summary evidence 기록`,
   `- [${handoffGeneratorPassed ? 'x' : ' '}] execution-v1 handoff generator regression 통과`,
+  `- [${productionReadinessGatePassed ? 'x' : ' '}] production readiness overclaim gate 통과`,
   '- [x] engineering reviewer → execution manifest 생성 경로 연결',
   '- [x] execution lease approval → foreground execution session 연결',
   '- [x] operator console preflight/start/stop/log surface 반영',
@@ -169,6 +172,7 @@ const lines = [
   `- reference adoption gate: ${referenceAdoptionsPassed ? 'ready' : 'not verified'}`,
   `- deterministic runtime summary: ${deterministicRuntimeSummaryReady ? 'ready' : 'not verified'}`,
   `- handoff generator: ${handoffGeneratorPassed ? 'ready' : 'not verified'}`,
+  `- production readiness gate: ${productionReadinessGatePassed ? 'ready' : 'not verified'}`,
   `- openai live validation: ${liveOpenAIStatus.label}`,
   `- anthropic live validation: ${liveAnthropicStatus.label}`,
   `- local live validation: ${liveLocalStatus.label}`,

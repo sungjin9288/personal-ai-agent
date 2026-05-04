@@ -40,6 +40,7 @@ const deterministicScripts = [
   'smoke:reference-adoptions',
   'smoke:execution-v1-live-helpers',
   'smoke:execution-v1-handoff',
+  'smoke:production-readiness-gate',
 ];
 const npmScriptTimeoutMs = parsePositiveIntegerEnv(
   'PERSONAL_AI_AGENT_VERIFY_SCRIPT_TIMEOUT_MS',

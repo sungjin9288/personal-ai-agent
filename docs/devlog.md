@@ -12,6 +12,7 @@
 - added artifact-only sync commit detection for execution-v1 status and snapshot smokes so committing refreshed evidence/closeout/handoff/snapshot files no longer immediately turns the release status stale when no runtime/source files changed
 - changed the execution-v1 handoff generator to derive commit push status from `origin/<branch>` instead of hardcoding deferred publishing, so pushed artifact-sync releases can show accurate handoff state
 - added `smoke:production-readiness-gate` so the OpenAI-scoped pilot-ready boundary, provider blockers, and production-ready prohibition are checked as an executable release gate instead of documentation-only policy
+- promoted `smoke:production-readiness-gate` into `verify:execution-v1`, status, snapshot, and closeout runtime checks so release evidence now records production-overclaim protection as the eighth deterministic execution-v1 row
 - kept commit/push deferred and limited this pass to planning and operator-facing documentation
 
 ## 2026-05-04 Date Rollover Verification Pass

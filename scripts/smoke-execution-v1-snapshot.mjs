@@ -97,12 +97,13 @@ const deterministicLines = extractSectionBullets(snapshotEvidenceMarkdown, 'Dete
 const runtimeLines = extractSectionBullets(snapshotEvidenceMarkdown, 'Deterministic Runtime Summary');
 const currentReferenceAdoptionLines = extractSectionBullets(evidenceMarkdown, 'Reference Adoption Aggregate');
 const snapshotReferenceAdoptionLines = extractSectionBullets(snapshotEvidenceMarkdown, 'Reference Adoption Aggregate');
-assert.equal(deterministicLines.filter((line) => /: passed$/.test(line)).length, 7);
-assert.equal(runtimeLines.length, 7);
+assert.equal(deterministicLines.filter((line) => /: passed$/.test(line)).length, 8);
+assert.equal(runtimeLines.length, 8);
 assert.equal(deterministicLines.includes('smoke:ui-execution-browser-e2e: passed'), true);
 assert.equal(deterministicLines.includes('smoke:reference-adoptions: passed'), true);
 assert.equal(deterministicLines.includes('smoke:execution-v1-live-helpers: passed'), true);
 assert.equal(deterministicLines.includes('smoke:execution-v1-handoff: passed'), true);
+assert.equal(deterministicLines.includes('smoke:production-readiness-gate: passed'), true);
 assertReferenceAdoptionAggregate(currentReferenceAdoptionLines, 'current evidence');
 assertReferenceAdoptionAggregate(snapshotReferenceAdoptionLines, 'snapshot evidence');
 assert.equal(

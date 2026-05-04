@@ -214,9 +214,9 @@ try {
   );
   assert.equal(executionV1Status.summary.coreDeterministicPassed, 4);
   assert.equal(executionV1Status.summary.coreDeterministicTotal, 4);
-  assert.equal(executionV1Status.summary.deterministicPassed, 7);
-  assert.equal(executionV1Status.summary.deterministicTotal, 7);
-  assert.equal(executionV1Status.summary.deterministicRuntimeTotal, 7);
+  assert.equal(executionV1Status.summary.deterministicPassed, 8);
+  assert.equal(executionV1Status.summary.deterministicTotal, 8);
+  assert.equal(executionV1Status.summary.deterministicRuntimeTotal, 8);
   assert.equal(executionV1Status.summary.referenceAdoptionPassed, 1);
   assert.equal(executionV1Status.summary.referenceAdoptionTotal, 1);
   assert.equal(executionV1Status.summary.referenceAdoptionReady, true);
@@ -293,6 +293,11 @@ try {
   );
   assert.equal(
     executionV1Status.deterministic.some((item) => item.script === 'smoke:execution-v1-handoff' && item.status === 'passed'),
+    true,
+    JSON.stringify(executionV1Status.deterministic),
+  );
+  assert.equal(
+    executionV1Status.deterministic.some((item) => item.script === 'smoke:production-readiness-gate' && item.status === 'passed'),
     true,
     JSON.stringify(executionV1Status.deterministic),
   );

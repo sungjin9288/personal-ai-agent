@@ -107,6 +107,7 @@ function buildEvidenceMarkdown({ includeReferenceRuntime }) {
     runtimeLines.push('- smoke:reference-adoptions: 14ms elapsed, stdout 6B, stderr 0B, timeout 20.0m');
     runtimeLines.push('- smoke:execution-v1-live-helpers: 15ms elapsed, stdout 7B, stderr 0B, timeout 20.0m');
     runtimeLines.push('- smoke:execution-v1-handoff: 16ms elapsed, stdout 8B, stderr 0B, timeout 20.0m');
+    runtimeLines.push('- smoke:production-readiness-gate: 17ms elapsed, stdout 9B, stderr 0B, timeout 20.0m');
   }
 
   return `${[
@@ -121,6 +122,7 @@ function buildEvidenceMarkdown({ includeReferenceRuntime }) {
     '- smoke:reference-adoptions: passed',
     '- smoke:execution-v1-live-helpers: passed',
     '- smoke:execution-v1-handoff: passed',
+    '- smoke:production-readiness-gate: passed',
     '',
     '## Deterministic Runtime Summary',
     '',

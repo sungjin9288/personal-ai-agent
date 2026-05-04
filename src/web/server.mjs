@@ -1018,6 +1018,10 @@ function isExecutionV1HandoffVerification(item) {
   return String(item?.script || '').trim() === 'smoke:execution-v1-handoff';
 }
 
+function isProductionReadinessGateVerification(item) {
+  return String(item?.script || '').trim() === 'smoke:production-readiness-gate';
+}
+
 function extractReferenceAdoptionAggregate(markdown) {
   const lines = extractSectionBullets(markdown, 'Reference Adoption Aggregate');
   const scriptCountLine = lines.find((line) => line.startsWith('scriptCount:'));
@@ -1071,11 +1075,16 @@ function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown
   const deterministicRuntime = extractDeterministicRuntimeItems(evidenceMarkdown);
   const referenceAdoptionAggregate = extractReferenceAdoptionAggregate(evidenceMarkdown);
   const coreDeterministic = deterministic.filter(
-    (item) => !isReferenceAdoptionVerification(item) && !isExecutionV1HelperVerification(item) && !isExecutionV1HandoffVerification(item),
+    (item) =>
+      !isReferenceAdoptionVerification(item)
+      && !isExecutionV1HelperVerification(item)
+      && !isExecutionV1HandoffVerification(item)
+      && !isProductionReadinessGateVerification(item),
   );
   const referenceAdoption = deterministic.filter(isReferenceAdoptionVerification);
   const executionV1Helpers = deterministic.filter(isExecutionV1HelperVerification);
   const executionV1Handoff = deterministic.filter(isExecutionV1HandoffVerification);
+  const productionReadinessGate = deterministic.filter(isProductionReadinessGateVerification);
   const liveValidation = extractLiveValidationItems(evidenceMarkdown);
   const gaps = extractSectionBullets(evidenceMarkdown, 'Remaining Gaps');
   const notes = extractSectionBullets(closeoutMarkdown, 'Notes');
@@ -1113,6 +1122,8 @@ function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown
     executionV1HelperTotal: executionV1Helpers.length,
     executionV1HandoffPassed: executionV1Handoff.filter((item) => item.status === 'passed').length,
     executionV1HandoffTotal: executionV1Handoff.length,
+    productionReadinessGatePassed: productionReadinessGate.filter((item) => item.status === 'passed').length,
+    productionReadinessGateTotal: productionReadinessGate.length,
     requiredChecklistOpen,
     values,
   };
@@ -1391,6 +1402,8 @@ function buildExecutionV1Status() {
           executionV1HelperTotal: baselineArtifacts.executionV1HelperTotal,
           executionV1HandoffPassed: baselineArtifacts.executionV1HandoffPassed,
           executionV1HandoffTotal: baselineArtifacts.executionV1HandoffTotal,
+          productionReadinessGatePassed: baselineArtifacts.productionReadinessGatePassed,
+          productionReadinessGateTotal: baselineArtifacts.productionReadinessGateTotal,
           referenceAdoptionPassed: baselineArtifacts.referenceAdoptionPassed,
           referenceAdoptionTotal: baselineArtifacts.referenceAdoptionTotal,
           ready: baselineReady,
@@ -1411,6 +1424,8 @@ function buildExecutionV1Status() {
       baselineExecutionV1HelperTotal: baselineArtifacts.executionV1HelperTotal,
       baselineExecutionV1HandoffPassed: baselineArtifacts.executionV1HandoffPassed,
       baselineExecutionV1HandoffTotal: baselineArtifacts.executionV1HandoffTotal,
+      baselineProductionReadinessGatePassed: baselineArtifacts.productionReadinessGatePassed,
+      baselineProductionReadinessGateTotal: baselineArtifacts.productionReadinessGateTotal,
       baselineReferenceAdoptionAggregateScriptCount: baselineArtifacts.referenceAdoptionAggregate.scriptCount,
       baselineReferenceAdoptionPassed: baselineArtifacts.referenceAdoptionPassed,
       baselineReferenceAdoptionTotal: baselineArtifacts.referenceAdoptionTotal,
@@ -1431,6 +1446,10 @@ function buildExecutionV1Status() {
       executionV1HandoffReady: currentArtifacts.executionV1HandoffTotal > 0
         && currentArtifacts.executionV1HandoffPassed === currentArtifacts.executionV1HandoffTotal,
       executionV1HandoffTotal: currentArtifacts.executionV1HandoffTotal,
+      productionReadinessGatePassed: currentArtifacts.productionReadinessGatePassed,
+      productionReadinessGateReady: currentArtifacts.productionReadinessGateTotal > 0
+        && currentArtifacts.productionReadinessGatePassed === currentArtifacts.productionReadinessGateTotal,
+      productionReadinessGateTotal: currentArtifacts.productionReadinessGateTotal,
       optionalBlockedItems: currentArtifacts.optionalBlockedItems,
       optionalChecklistOpen: currentArtifacts.optionalChecklistOpen,
       referenceAdoptionAggregateScriptCount: currentArtifacts.referenceAdoptionAggregate.scriptCount,

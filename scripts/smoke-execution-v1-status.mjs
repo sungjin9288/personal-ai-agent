@@ -74,9 +74,9 @@ try {
 
   assert.equal(status.summary.coreDeterministicPassed, 4);
   assert.equal(status.summary.coreDeterministicTotal, 4);
-  assert.equal(status.summary.deterministicPassed, 7);
-  assert.equal(status.summary.deterministicTotal, 7);
-  assert.equal(status.summary.deterministicRuntimeTotal, 7);
+  assert.equal(status.summary.deterministicPassed, 8);
+  assert.equal(status.summary.deterministicTotal, 8);
+  assert.equal(status.summary.deterministicRuntimeTotal, 8);
   assert.equal(status.summary.referenceAdoptionPassed, 1);
   assert.equal(status.summary.referenceAdoptionTotal, 1);
   assert.equal(status.summary.referenceAdoptionReady, true);
@@ -85,6 +85,9 @@ try {
   assert.equal(status.summary.executionV1HelperPassed, 1);
   assert.equal(status.summary.executionV1HelperTotal, 1);
   assert.equal(status.summary.executionV1HelperReady, true);
+  assert.equal(status.summary.productionReadinessGatePassed, 1);
+  assert.equal(status.summary.productionReadinessGateTotal, 1);
+  assert.equal(status.summary.productionReadinessGateReady, true);
   assert.equal(status.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   assert.equal(status.baseline?.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   for (const scriptPath of requiredReferenceAdoptionSmokeScripts) {
@@ -163,6 +166,7 @@ try {
     'smoke:reference-adoptions',
     'smoke:execution-v1-live-helpers',
     'smoke:execution-v1-handoff',
+    'smoke:production-readiness-gate',
   ];
   for (const script of expectedScripts) {
     assert.equal(
