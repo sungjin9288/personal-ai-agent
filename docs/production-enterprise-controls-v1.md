@@ -1,9 +1,9 @@
 # Production Enterprise Controls Rehearsal v1
 
 - status: local-enterprise-controls-current
-- generatedAt: 2026-05-04T16:26:50.470Z
+- generatedAt: 2026-05-04T16:37:00.307Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: b3954bc02e7c3bdfb01bc3ddff631df44aac206e
+- sourceCommit: a19aa820ebafc7d54d849ac3810da64ea7505895
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
@@ -25,11 +25,11 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1381 |
-| `npm run smoke:web-rbac` | pass | 0 | 1519 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 166 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 626 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 172 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1282 |
+| `npm run smoke:web-rbac` | pass | 0 | 1441 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 139 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 410 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 106 |
 
 ## Key Signals
 
@@ -69,7 +69,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 15,
     "secretFindingCount": 0,
-    "verifiedCommit": "613d8a375099eba74ac7d26790049131a8c4abf2"
+    "verifiedCommit": "a19aa820ebafc7d54d849ac3810da64ea7505895"
   }
 ```
 
