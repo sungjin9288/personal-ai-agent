@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-05T01:48:32.967Z
+- generatedAt: 2026-05-05T02:07:02.727Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 91e689f4ed7cf125ef98e86c4c8df34db7d72041
+- verifiedCommit: b4fa0cae585814c8125b7a0d6c6e86e7216b4afb
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,24 +29,24 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 192 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 208 |
 | `npm run smoke:customer-support-operations` | pass | 0 | 206 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 233 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1411 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 179 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 205 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 211 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 181 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 168 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 205 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 502 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 226 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 185 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 173 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 445 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 194 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 199 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 708 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 219 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1748 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 221 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 246 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 291 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 267 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 204 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 198 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 484 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 247 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 283 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 253 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 533 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 219 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 229 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 779 |
 
 ## Key Signals
 
@@ -160,13 +160,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
+    "snapshotCommit": "b4fa0cae585814c8125b7a0d6c6e86e7216b4afb"
   }
 ```
 
@@ -174,10 +174,10 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
+    "verifiedCommit": "b4fa0cae585814c8125b7a0d6c6e86e7216b4afb"
   }
 ```
 
@@ -210,7 +210,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 18,
     "secretFindingCount": 0,
-    "verifiedCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
+    "verifiedCommit": "b4fa0cae585814c8125b7a0d6c6e86e7216b4afb"
   }
 ```
 
