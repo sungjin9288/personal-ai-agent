@@ -11,6 +11,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
+- relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
@@ -324,7 +325,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, support operations, and support escalation review all have explicit target-environment evidence
+- target provider validation, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 
@@ -332,6 +333,28 @@ Stop condition:
 
 - if any target deployment control is missing, do not claim hosted production readiness
 - if the contract passes only as a blocker checklist, treat it as production-readiness boundary evidence, not production deployment evidence
+
+## Identity Session Administration Gate
+
+Before presenting identity-backed access as controlled for a pilot, verify the local identity/session administration contract:
+
+```bash
+npm run smoke:identity-session-admin
+```
+
+The source of record is [identity-session-admin-v1.md](identity-session-admin-v1.md). It proves identity controls, session lifecycle, role assignment/revocation audit packet requirements, required commands, and the hosted identity production gap are present.
+
+Acceptance:
+
+- OIDC/JWKS bearer validation, role claim mapping, shared-secret fallback, session boundary, and permission audit controls are documented
+- login, expiry, logout, revocation, and role change events have required local evidence and explicit production gaps
+- audit packet requirements include branch, commit, identity mode, affected subject, role reason, verification command, hygiene result, owner, rollback, and review date
+- the generated identity session administration gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if identity controls or session lifecycle evidence are missing, do not present hosted identity/session readiness
+- if the gate passes, treat it only as local pilot identity/session administration evidence, not hosted SSO, logout, revocation, or central role administration proof
 
 ## Secret Management Gate
 

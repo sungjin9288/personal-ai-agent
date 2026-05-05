@@ -27,6 +27,7 @@ assert.match(drill, /productionReadyClaim: false/);
 
 for (const command of [
   'npm run smoke:incident-slo-policy',
+  'npm run smoke:identity-session-admin',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:secret-management',
@@ -73,7 +74,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 21,
+      commandCount: 22,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

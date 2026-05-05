@@ -67,6 +67,7 @@ Production gap:
 - API tenant/workspace binding is available only behind `PERSONAL_AI_AGENT_TENANT_MODE=enforce` and OIDC tenant claims; per-tenant encryption, separate auth realms, backup isolation, and centralized tenant administration are out of v1 scope
 - cloud SaaS mode requires a separate architecture decision record before implementation
 - [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review before any hosted production claim
+- [identity-session-admin-v1.md](identity-session-admin-v1.md) defines the local identity/session administration gate for identity controls, session lifecycle, role assignment/revocation audit packets, and the remaining hosted identity production gap
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 
@@ -83,12 +84,13 @@ Current implementation note:
 
 - The web API now supports optional local shared-secret authentication with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce` and `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, accepting either `Authorization: Bearer ...` or `x-personal-ai-agent-auth-token`.
 - The web API now supports optional OIDC/JWKS bearer authentication with `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc`, `PERSONAL_AI_AGENT_OIDC_ISSUER`, `PERSONAL_AI_AGENT_OIDC_AUDIENCE`, `PERSONAL_AI_AGENT_OIDC_JWKS_URL`, and `PERSONAL_AI_AGENT_OIDC_ROLE_CLAIM`, verifying RS256 signature, issuer, audience, expiry, and token-derived RBAC role.
+- Identity/session administration is covered by `smoke:identity-session-admin`, which documents login, expiry, logout, revocation, role change, and audit packet requirements without claiming hosted identity lifecycle management.
 - The web API supports optional local RBAC enforcement with `PERSONAL_AI_AGENT_RBAC_MODE=enforce` and `x-personal-ai-agent-role`.
 - The enforced role contract is covered by `smoke:web-rbac`: viewer can read only, operator can create/run normal local work, approver can resolve approvals, and admin is required for workspace registration, release refresh/snapshot, and delete operations.
 - The authenticated local role contract is covered by `smoke:web-auth-rbac`: missing or invalid tokens are rejected before RBAC, authenticated viewer mutations are still blocked, and authenticated operator mutations can proceed.
 - The OIDC role contract is covered by `smoke:web-oidc-rbac`: missing tokens and invalid audience tokens are rejected, token role claims drive RBAC, and a viewer token cannot escalate by spoofing `x-personal-ai-agent-role`.
 - The API tenant isolation contract is covered by `smoke:web-tenant-isolation`: OIDC `tenant_id` claims bind workspace creation, filter workspace and mission lists, block cross-tenant mission creation/read, and ignore spoofed tenant headers.
-- [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence by replaying shared-secret auth, RBAC, artifact hygiene, runtime isolation, and provider readiness checks together while preserving the hosted identity and tenant isolation production gap.
+- [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence by replaying identity/session administration, shared-secret auth, OIDC/JWKS auth, RBAC, artifact hygiene, runtime isolation, and provider readiness checks together while preserving the hosted identity and tenant isolation production gap.
 - The CLI remains a local operator tool and does not yet provide user/session identity. Hosted or shared deployments still require identity-backed authentication, session lifecycle, and persistent role assignment outside this local shared-secret gate.
 
 Pilot-ready requirement:

@@ -13,6 +13,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:incident-slo-policy',
   },
   {
+    command: 'npm run smoke:identity-session-admin',
+    script: 'smoke:identity-session-admin',
+  },
+  {
     command: 'npm run smoke:customer-support-operations',
     script: 'smoke:customer-support-operations',
   },
@@ -197,6 +201,9 @@ function extractKeySignals(script, parsed) {
 
   if (script === 'smoke:incident-slo-policy') {
     return pick(parsed, ['mode', 'severityCount']);
+  }
+  if (script === 'smoke:identity-session-admin') {
+    return pick(parsed, ['auditPacketItemCount', 'controlCount', 'mode', 'productionReadyClaim', 'sessionEventCount']);
   }
   if (script === 'smoke:customer-support-operations') {
     return pick(parsed, ['intakeClassCount', 'mode', 'productionReadyClaim', 'supportRoleCount']);

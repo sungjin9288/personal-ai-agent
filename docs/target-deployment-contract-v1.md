@@ -9,6 +9,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
+- relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
@@ -38,7 +39,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Control | Required Production Evidence | Current Local Evidence | Current Status |
 | --- | --- | --- | --- |
 | Target provider validation | every provider in the production claim has successful live validation from the target deployment boundary | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit | blocked |
-| Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local shared-secret and OIDC/JWKS API gates pass | blocked |
+| Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | OIDC tenant API isolation and tenant-scoped local export/delete gates pass | blocked |
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management gate and release artifact hygiene pass | blocked |
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, and backup/restore drill rehearsals pass | blocked |
@@ -53,6 +54,7 @@ npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:production-provider-readiness
 npm run smoke:production-enterprise-controls
+npm run smoke:identity-session-admin
 npm run smoke:production-retention-operating
 npm run smoke:backup-restore-drill
 npm run smoke:customer-support-operations

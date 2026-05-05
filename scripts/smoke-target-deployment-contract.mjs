@@ -66,6 +66,7 @@ for (const command of [
   'npm run smoke:production-readiness-gate',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:production-enterprise-controls',
+  'npm run smoke:identity-session-admin',
   'npm run smoke:production-retention-operating',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',

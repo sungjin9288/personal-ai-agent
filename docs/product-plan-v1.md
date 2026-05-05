@@ -99,6 +99,7 @@
 - [x] Optional web API RBAC enforcement gate implemented
 - [x] Optional shared-secret web auth gate implemented
 - [x] Optional OIDC/JWKS web auth and token-claim RBAC gate implemented
+- [x] Identity session administration gate implemented
 - [x] Production enterprise controls rehearsal gate implemented
 - [x] Secret handling policy documented
 - [x] Release artifact credential/path hygiene gate implemented

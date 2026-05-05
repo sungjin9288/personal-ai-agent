@@ -21,6 +21,7 @@
     "smoke:target-deployment-contract": "node scripts/smoke-target-deployment-contract.mjs",
     "smoke:production-readiness-gate": "node scripts/smoke-production-readiness-gate.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
+    "smoke:identity-session-admin": "node scripts/smoke-identity-session-admin.mjs",
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:web-auth-rbac": "node scripts/smoke-web-auth-rbac.mjs",
     "smoke:web-oidc-rbac": "node scripts/smoke-web-oidc-rbac.mjs",
