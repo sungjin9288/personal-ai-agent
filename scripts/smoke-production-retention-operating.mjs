@@ -42,6 +42,7 @@ for (const command of [
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
   'npm run smoke:backup-restore-drill',
+  'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:runtime-isolation',
   'npm run package:pilot-export',
@@ -55,6 +56,7 @@ for (const phrase of [
   /retention\/delete policy remains the source/,
   /runtime lifecycle remains the gate/,
   /tenant data lifecycle remains the gate/,
+  /target retention operations remains the gate/,
   /backup restore drill remains the gate/,
   /target backup operations remains the gate/,
   /runtime isolation remains the gate/,
@@ -77,7 +79,7 @@ assert.match(readme, /npm run smoke:production-retention-operating/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 9,
+      commandCount: 10,
       mode: 'production-retention-operating',
       ok: true,
       path: 'docs/production-retention-operating-v1.md',

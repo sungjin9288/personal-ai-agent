@@ -1,11 +1,11 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-05T12:44:14.995Z
+- generatedAt: 2026-05-05T12:56:58.202Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 94b018728a493fac74f24c0dbe937df8546e37a3
+- sourceCommit: 2ad4b7d5f7d69c4d5accca266f7c5759aeca938d
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
-- scope: local production-like retention, export, delete, tenant-scoped lifecycle, backup/restore, target backup operations, and isolation rehearsal
+- scope: local production-like retention, export, delete, tenant-scoped lifecycle, target retention operations, backup/restore, target backup operations, and isolation rehearsal
 - productionReadyClaim: false
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
@@ -14,25 +14,26 @@
 
 ## Decision Boundary
 
-This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
+This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, target retention operations, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
 
 It is not hosted production retention evidence, not a customer data subject request workflow, not provider transcript deletion proof, not backup expiry evidence, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until the approved target environment provides tenant-scoped retention configuration, customer-approved data classes, provider transcript handling, backup schedule, encrypted storage, key ownership, restore boundaries, backup expiry/deletion, and post-delete absence evidence.
+Production-ready remains blocked until the approved target environment provides tenant-scoped retention configuration, customer-approved data classes, export approval, delete workflow, provider transcript handling, backup schedule, encrypted storage, key ownership, restore boundaries, backup expiry/deletion, and post-delete absence evidence.
 
 ## Command Matrix
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 337 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 717 | 10s | yes |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 238 | 10s | yes |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 250 | 10s | yes |
-| `npm run smoke:target-backup-operations` | pass | 0 | 226 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1009 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 219 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 226 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 204 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 190 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 588 | 10s | yes |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 274 | 10s | yes |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 269 | 10s | yes |
+| `npm run smoke:target-retention-operations` | pass | 0 | 219 | 10s | yes |
+| `npm run smoke:target-backup-operations` | pass | 0 | 272 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 763 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 225 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 192 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 349 | 5s | yes |
 
 ## Key Signals
 
@@ -77,6 +78,17 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:target-retention-operations
+
+```json
+{
+    "controlCount": 6,
+    "mode": "target-retention-operations",
+    "productionReadyClaim": false,
+    "retentionPacketItemCount": 10
+  }
+```
+
 ### npm run smoke:target-backup-operations
 
 ```json
@@ -103,7 +115,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 36,
+    "fileCount": 37,
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
@@ -115,7 +127,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 36,
+    "fileCount": 37,
     "mode": "pilot-export-package",
     "verifiedCommit": "94b018728a493fac74f24c0dbe937df8546e37a3"
   }
@@ -126,7 +138,7 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 27,
+    "scannedFileCount": 28,
     "secretFindingCount": 0,
     "verifiedCommit": "94b018728a493fac74f24c0dbe937df8546e37a3"
   }
@@ -137,6 +149,7 @@ Production-ready remains blocked until the approved target environment provides 
 - retention/delete policy remains the source of pilot data classes, export checklist, delete checklist, stop conditions, and production gap
 - runtime lifecycle remains the gate for inventory, export manifest, confirmation-token deletion, and post-delete absence
 - tenant data lifecycle remains the gate for tenant-scoped export manifests, exact tenant delete confirmation, post-delete absence, and unchanged data for another tenant in the same runtime root
+- target retention operations remains the gate for data class approval, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and audit evidence requirements
 - backup restore drill remains the gate for local backup manifest digests, clean restore enforcement, restored state hash matching, and post-restore tenant delete isolation
 - target backup operations remains the gate for backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, and disaster recovery evidence requirements
 - runtime isolation remains the gate for one-runtime-per-customer separation during export and delete
@@ -152,6 +165,6 @@ npm run smoke:production-retention-operating
 
 ## Acceptance Rule
 
-The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, tenant-scoped export/delete does not include or modify another tenant, backup restore integrity and target backup operations requirements remain verified, and artifact hygiene reports zero credential and machine-local path findings.
+The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, tenant-scoped export/delete does not include or modify another tenant, target retention operations requirements, backup restore integrity, and target backup operations requirements remain verified, and artifact hygiene reports zero credential and machine-local path findings.
 
 The rehearsal must keep `productionReadyClaim: false` until the same retention, export, delete, and absence evidence is generated from the approved production-like or production target environment.

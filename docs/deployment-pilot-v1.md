@@ -491,6 +491,28 @@ Stop condition:
 - if backup or restore hash verification fails, do not present backup/restore readiness in a pilot or production-like review
 - if the drill passes, treat it only as local backup/restore evidence, not hosted encrypted backup durability or disaster recovery proof
 
+## Target Retention Operations Gate
+
+Before presenting a production-like deployment as retention-ready or data-lifecycle-ready, verify the target retention operations evidence contract:
+
+```bash
+npm run smoke:target-retention-operations
+```
+
+The source of record is [target-retention-operations-v1.md](target-retention-operations-v1.md). It proves customer-approved data classes, retention configuration, export package approval, delete workflow, provider transcript handling, post-delete absence, required commands, and the target retention production gap are present.
+
+Acceptance:
+
+- target retention operation controls cover customer-approved data classes, retention configuration, export package approval, delete workflow, provider transcript handling, and post-delete absence
+- retention evidence packets include commit, deployment boundary, data class matrix, target retention configuration, export request, delete request, provider transcript handling, post-delete absence, hygiene result, residual risk, and handoff decision
+- data lifecycle rules require data class owner, retention owner, export approver, delete approver, evidence owner, exact lifecycle ids, hygiene rerun, provider transcript review, backup expiry impact, and next review date
+- the generated target retention operations gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target retention controls or lifecycle evidence requirements are missing, do not present production-like retention/export/delete readiness
+- if the gate passes, treat it only as a local target retention operations evidence contract, not target retention enforcement, customer export approval, provider transcript deletion proof, or target post-delete absence proof
+
 ## Target Backup Operations Gate
 
 Before presenting a production-like deployment as backup-ready or disaster-recovery-ready, verify the target backup operations evidence contract:
@@ -635,7 +657,7 @@ npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
 ```
 
-The rehearsal runs the retention/delete policy gate, runtime data lifecycle, tenant data lifecycle, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
+The rehearsal runs the retention/delete policy gate, runtime data lifecycle, tenant data lifecycle, target retention operations gate, target backup operations gate, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
 
 Acceptance:
 
@@ -649,7 +671,7 @@ Acceptance:
 Stop condition:
 
 - if the rehearsal fails, do not present retention/export/delete operating readiness in a pilot review until the failed gate is fixed
-- if the rehearsal passes, treat it only as local operating evidence, not hosted production retention or provider transcript deletion proof
+- if the rehearsal passes, treat it only as local operating evidence, not target retention enforcement, hosted production retention, provider transcript deletion proof, or target post-delete absence proof
 
 ## Clean Deployment Release Rehearsal
 
@@ -660,7 +682,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

@@ -111,6 +111,7 @@
 - [x] Runtime data lifecycle export/delete verification gate implemented
 - [x] Tenant-scoped runtime data export/delete verification gate implemented
 - [x] Backup/restore drill verification gate implemented
+- [x] Target retention operations gate implemented
 - [x] Target backup operations gate implemented
 - [x] Target support operations gate implemented
 - [x] Retention/delete policy gate implemented

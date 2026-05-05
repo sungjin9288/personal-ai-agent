@@ -57,6 +57,7 @@ for (const command of [
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
   'npm run smoke:backup-restore-drill',
+  'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:runtime-isolation',
   'npm run package:pilot-export',

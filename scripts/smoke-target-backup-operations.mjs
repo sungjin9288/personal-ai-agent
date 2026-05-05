@@ -67,7 +67,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[target-backup-operations-v1\.md\]\(target-backup-operations-v1\.md\)/);
 assert.match(releaseReadiness, /local target backup operations gate: passed/);
-assert.match(targetContract, /local retention, tenant lifecycle, backup\/restore drill, and target backup operations gates pass/);
+assert.match(targetContract, /local retention, tenant lifecycle, target retention operations, backup\/restore drill, and target backup operations gates pass/);
 assert.match(targetContract, /npm run smoke:target-backup-operations/);
 assert.match(deployment, /## Target Backup Operations Gate/);
 assert.match(deployment, /npm run smoke:target-backup-operations/);

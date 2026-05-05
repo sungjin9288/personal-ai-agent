@@ -36,6 +36,7 @@ for (const command of [
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
   'npm run smoke:target-observability-operations',
+  'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:production-slo-operating',
   'npm run smoke:web-auth-rbac',
@@ -61,7 +62,7 @@ for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /identity-backed hosted RBAC\/session administration is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
-  /target backup, retention, export, delete, and post-delete absence evidence is not generated/,
+  /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated/,
   /clean deployment release evidence is not generated/,
@@ -80,7 +81,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 27,
+      commandCount: 28,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',
