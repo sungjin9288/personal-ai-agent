@@ -27,6 +27,7 @@
     "smoke:web-tenant-isolation": "node scripts/smoke-web-tenant-isolation.mjs",
     "smoke:runtime-data-lifecycle": "node scripts/smoke-runtime-data-lifecycle.mjs",
     "smoke:tenant-data-lifecycle": "node scripts/smoke-tenant-data-lifecycle.mjs",
+    "smoke:backup-restore-drill": "node scripts/smoke-backup-restore-drill.mjs",
     "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",

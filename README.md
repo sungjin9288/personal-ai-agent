@@ -55,6 +55,7 @@ The local retention operating rehearsal is [docs/production-retention-operating-
 The local provider readiness rehearsal is [docs/production-provider-readiness-v1.md](docs/production-provider-readiness-v1.md).
 The local enterprise controls rehearsal is [docs/production-enterprise-controls-v1.md](docs/production-enterprise-controls-v1.md).
 The target deployment contract is [docs/target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md).
+The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
 Current planning status:
@@ -76,6 +77,7 @@ Current planning status:
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - target deployment contract evidence can be verified with `npm run smoke:target-deployment-contract`; it defines the hosted/production-like controls that must be proven before any production-ready or hosted SaaS claim
+- local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - tenant-scoped runtime export/delete can be verified with `npm run smoke:tenant-data-lifecycle`; it proves local tenant-filtered export and delete behavior inside one runtime root, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -130,6 +132,12 @@ Target deployment contract gate:
 
 ```bash
 npm run smoke:target-deployment-contract
+```
+
+Backup/restore drill gate:
+
+```bash
+npm run smoke:backup-restore-drill
 ```
 
 Self-hosted runtime isolation smoke:
@@ -740,6 +748,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:execution-v1-live-helpers`는 OpenAI, Anthropic, local, Hermes 각각의 provider preflight가 필요한 deterministic smoke를 통과하는지 확인하고, env 누락 시 `npm run live:execution-v1:*` helper가 shell-ready `missing-env` JSON과 provider별 `export ... && npm run live:execution-v1:*` 명령을 반환하는지 검증합니다.
 `npm run smoke:release-artifact-hygiene`는 현재 execution-v1 evidence/closeout/handoff, production-like release drill, pilot export package manifest, verified immutable snapshot에 실제 credential pattern 또는 machine-local path leak이 없는지 검증합니다. 같은 hygiene check는 `smoke:production-readiness-gate`에도 포함되어 production-ready overclaim 방지와 shareable artifact hygiene을 같은 gate에서 확인합니다.
 `npm run smoke:target-deployment-contract`는 [target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md)의 production-like and hosted SaaS deployment profiles, mandatory controls, required commands, blocking rules, 그리고 release/security/deployment/product/README 연결 상태를 검증합니다. 이 gate는 target evidence contract이며 `productionReadyClaim: false`를 유지합니다.
+`npm run smoke:backup-restore-drill`은 isolated temp runtime에서 `var/` backup manifest를 만들고 sha256 digest를 검증한 뒤 clean runtime restore, restored state hash match, tenant A 삭제 후 tenant B 유지, 같은 backup에서 tenant A 재복원 가능 여부를 확인합니다. 이 gate는 local restore rehearsal이며 hosted backup durability나 encrypted backup storage 증거를 대체하지 않습니다.
 `npm run smoke:web-rbac`는 `PERSONAL_AI_AGENT_RBAC_MODE=enforce`로 UI server를 띄운 뒤 `x-personal-ai-agent-role` 기반 viewer/operator/approver/admin role contract가 mutating API를 실제로 차단하거나 허용하는지 검증합니다. 기본 로컬 UI는 기존처럼 RBAC off로 동작하며, shared pilot deployment에서만 enforce mode를 켜는 구조입니다.
 `npm run smoke:web-auth-rbac`는 `PERSONAL_AI_AGENT_WEB_AUTH_MODE=enforce`와 `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`을 사용해 `/api/*` 요청의 bearer/header token을 먼저 검증하고, 인증된 요청도 `x-personal-ai-agent-role` RBAC를 통과해야 mutation이 허용되는지 확인합니다. 이 gate는 local shared-secret auth evidence이며 hosted identity/session RBAC를 대체하지 않습니다.
 `npm run smoke:web-oidc-rbac`는 `PERSONAL_AI_AGENT_WEB_AUTH_MODE=oidc`와 JWKS 기반 RS256 bearer token을 사용해 issuer, audience, expiry, role claim을 검증하고, viewer token이 `x-personal-ai-agent-role` spoofing으로 operator 권한을 얻지 못하는지 확인합니다.

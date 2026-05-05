@@ -105,6 +105,110 @@ export function exportRuntimeDataBundle({ outputDir, rootDir }) {
   };
 }
 
+export function createRuntimeDataBackup({ backupDir, rootDir }) {
+  const normalizedRootDir = path.resolve(String(rootDir || '').trim() || process.cwd());
+  const rawBackupDir = String(backupDir || '').trim();
+  if (!rawBackupDir) {
+    throw new Error('backupDir is required for runtime data backup.');
+  }
+  const normalizedBackupDir = path.resolve(rawBackupDir);
+
+  const varDir = path.join(normalizedRootDir, VAR_DIR_NAME);
+  const backupPath = path.join(normalizedBackupDir, 'runtime-data-backup');
+  const inventory = buildRuntimeDataInventory({ rootDir: normalizedRootDir });
+  const backedUpFiles = [];
+
+  fs.rmSync(backupPath, { force: true, recursive: true });
+  fs.mkdirSync(backupPath, { recursive: true });
+
+  if (fs.existsSync(varDir)) {
+    for (const sourcePath of listFiles(varDir)) {
+      const relativePath = path.relative(normalizedRootDir, sourcePath);
+      const targetPath = path.join(backupPath, relativePath);
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+      fs.copyFileSync(sourcePath, targetPath);
+      backedUpFiles.push({
+        bytes: fs.statSync(sourcePath).size,
+        path: relativePath,
+        sha256: hashFile(sourcePath),
+      });
+    }
+  }
+
+  const manifest = {
+    backupCreatedAt: new Date().toISOString(),
+    backupFileCount: backedUpFiles.length,
+    backupSha256: hashManifestFiles(backedUpFiles),
+    backedUpFiles,
+    inventory,
+    policy: {
+      restoreRequiresCleanRuntime: true,
+      scope: 'local-runtime-var-backup',
+    },
+  };
+  const manifestPath = path.join(backupPath, 'manifest.json');
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+
+  return {
+    backupPath,
+    manifest,
+    manifestPath,
+  };
+}
+
+export function restoreRuntimeDataBackup({ backupPath, rootDir }) {
+  const normalizedRootDir = path.resolve(String(rootDir || '').trim() || process.cwd());
+  const rawBackupPath = String(backupPath || '').trim();
+  if (!rawBackupPath) {
+    throw new Error('backupPath is required for runtime data restore.');
+  }
+  const normalizedBackupPath = path.resolve(rawBackupPath);
+
+  const manifestPath = path.join(normalizedBackupPath, 'manifest.json');
+  const manifest = readJsonIfExists(manifestPath);
+  if (!manifest) {
+    throw new Error('runtime data restore requires a backup manifest.');
+  }
+
+  const backedUpFiles = ensureArray(manifest.backedUpFiles);
+  if (hashManifestFiles(backedUpFiles) !== manifest.backupSha256) {
+    throw new Error('runtime data backup manifest digest does not match backed up files.');
+  }
+
+  for (const file of backedUpFiles) {
+    assertSafeRelativeBackupPath(file.path);
+    const sourcePath = path.join(normalizedBackupPath, file.path);
+    if (!fs.existsSync(sourcePath) || hashFile(sourcePath) !== file.sha256) {
+      throw new Error(`runtime data backup file digest mismatch: ${file.path}`);
+    }
+  }
+
+  const varDir = path.join(normalizedRootDir, VAR_DIR_NAME);
+  if (fs.existsSync(varDir)) {
+    throw new Error('runtime data restore requires a clean runtime var directory.');
+  }
+
+  for (const file of backedUpFiles) {
+    const sourcePath = path.join(normalizedBackupPath, file.path);
+    const targetPath = path.join(normalizedRootDir, file.path);
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    fs.copyFileSync(sourcePath, targetPath);
+  }
+
+  const restoredInventory = buildRuntimeDataInventory({ rootDir: normalizedRootDir });
+  if (restoredInventory.stateSha256 !== manifest.inventory?.stateSha256) {
+    throw new Error('runtime data restore state digest does not match backup inventory.');
+  }
+
+  return {
+    backupSha256: manifest.backupSha256,
+    restored: true,
+    restoredAt: new Date().toISOString(),
+    restoredFileCount: backedUpFiles.length,
+    restoredInventory,
+  };
+}
+
 export function exportTenantRuntimeDataBundle({ outputDir, rootDir, tenantId }) {
   const normalizedRootDir = path.resolve(String(rootDir || '').trim() || process.cwd());
   const normalizedOutputDir = path.resolve(String(outputDir || '').trim());
@@ -406,6 +510,34 @@ function hashFile(filePath) {
 
 function hashString(value) {
   return crypto.createHash('sha256').update(String(value)).digest('hex');
+}
+
+function hashManifestFiles(files) {
+  return crypto
+    .createHash('sha256')
+    .update(
+      ensureArray(files)
+        .map((file) => `${file.path}\0${file.sha256}\0${file.bytes}`)
+        .join('\n'),
+    )
+    .digest('hex');
+}
+
+function assertSafeRelativeBackupPath(filePath) {
+  const normalized = String(filePath || '').replace(/\\/g, '/').trim();
+  const normalizedPath = path.posix.normalize(normalized);
+  if (
+    !normalized ||
+    normalized.startsWith('/') ||
+    normalizedPath !== normalized ||
+    normalizedPath === '..' ||
+    normalizedPath.startsWith('../')
+  ) {
+    throw new Error(`unsafe runtime backup path: ${filePath}`);
+  }
+  if (!normalizedPath.startsWith(`${VAR_DIR_NAME}/`)) {
+    throw new Error(`runtime backup path must stay under ${VAR_DIR_NAME}/: ${filePath}`);
+  }
 }
 
 function normalizeTenantId(value) {

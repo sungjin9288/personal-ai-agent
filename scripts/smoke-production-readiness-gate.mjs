@@ -16,6 +16,7 @@ const productionRetentionOperatingPath = path.join(docsDir, 'production-retentio
 const productionProviderReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
+const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
@@ -32,6 +33,7 @@ const productionRetentionOperating = readRequiredFile(productionRetentionOperati
 const productionProviderReadiness = readRequiredFile(productionProviderReadinessPath);
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
+const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
@@ -78,6 +80,7 @@ assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(produ
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
+assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
@@ -117,6 +120,11 @@ assert.match(targetDeploymentContract, /Target provider validation/);
 assert.match(targetDeploymentContract, /Identity-backed RBAC and session administration/);
 assert.match(targetDeploymentContract, /Hosted tenant isolation/);
 assert.match(targetDeploymentContract, /not permission to claim `production-ready`/);
+assert.match(backupRestoreDrill, /^# Backup Restore Drill v1$/m);
+assert.match(backupRestoreDrill, /^- status: local-backup-restore-current$/m);
+assert.match(backupRestoreDrill, /^- productionReadyClaim: false$/m);
+assert.match(backupRestoreDrill, /not hosted backup evidence/);
+assert.match(backupRestoreDrill, /tenant delete isolation remains true after restore/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }

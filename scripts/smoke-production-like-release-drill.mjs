@@ -41,6 +41,7 @@ for (const command of [
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
+  'npm run smoke:backup-restore-drill',
   'npm run smoke:runtime-isolation',
 ]) {
   assert.match(drill, new RegExp(`\\| \`${escapeRegExp(command)}\` \\| pass \\| 0 \\|`));
@@ -68,7 +69,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 16,
+      commandCount: 17,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

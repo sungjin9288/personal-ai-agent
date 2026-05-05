@@ -106,6 +106,7 @@
 - [x] Data export/delete policy documented
 - [x] Runtime data lifecycle export/delete verification gate implemented
 - [x] Tenant-scoped runtime data export/delete verification gate implemented
+- [x] Backup/restore drill verification gate implemented
 - [x] Retention/delete policy gate implemented
 - [x] Production retention operating rehearsal gate implemented
 - [x] Production SLO operating rehearsal gate implemented

@@ -329,6 +329,28 @@ Stop condition:
 - if any target deployment control is missing, do not claim hosted production readiness
 - if the contract passes only as a blocker checklist, treat it as production-readiness boundary evidence, not production deployment evidence
 
+## Backup Restore Drill
+
+Before treating runtime backup or restore behavior as part of a pilot review, run the local backup/restore drill:
+
+```bash
+npm run smoke:backup-restore-drill
+```
+
+The source of record is [backup-restore-drill-v1.md](backup-restore-drill-v1.md). It proves manifest-backed local runtime backup, clean restore enforcement, restored state hash matching, and tenant-isolated recovery behavior.
+
+Acceptance:
+
+- backup manifest file count and restore file count match
+- restored state sha256 equals source state sha256
+- tenant A can be deleted after restore without modifying tenant B
+- the same backup can still restore tenant A into another clean runtime root
+
+Stop condition:
+
+- if backup or restore hash verification fails, do not present backup/restore readiness in a pilot or production-like review
+- if the drill passes, treat it only as local backup/restore evidence, not hosted encrypted backup durability or disaster recovery proof
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -338,7 +360,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -411,7 +433,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

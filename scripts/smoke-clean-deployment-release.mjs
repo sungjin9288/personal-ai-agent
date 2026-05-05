@@ -39,6 +39,7 @@ for (const command of [
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
+  'npm run smoke:backup-restore-drill',
   'npm run smoke:runtime-isolation',
   'npm run package:pilot-export',
   'npm run smoke:pilot-export-package',
@@ -58,7 +59,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 11,
+      commandCount: 12,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

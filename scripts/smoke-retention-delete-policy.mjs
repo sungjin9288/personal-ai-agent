@@ -42,6 +42,7 @@ for (const heading of [
 for (const dataClass of [
   'Local runtime state under `var/`',
   'Tenant-scoped runtime records',
+  'Local runtime backup manifest',
   'Isolated customer runtime root',
   'Immutable release snapshots',
   'Pilot export package manifest',
@@ -55,6 +56,7 @@ for (const command of [
   'npm run smoke:retention-delete-policy',
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
+  'npm run smoke:backup-restore-drill',
   'npm run smoke:runtime-isolation',
   'npm run package:pilot-export',
   'npm run smoke:pilot-export-package',
@@ -86,7 +88,7 @@ assert.match(readme, /npm run smoke:retention-delete-policy/);
 console.log(
   JSON.stringify(
     {
-      dataClassCount: 7,
+      dataClassCount: 8,
       mode: 'retention-delete-policy',
       ok: true,
       path: 'docs/retention-delete-v1.md',

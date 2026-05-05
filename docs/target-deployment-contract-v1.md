@@ -37,7 +37,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local shared-secret and OIDC/JWKS API gates pass | blocked |
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | OIDC tenant API isolation and tenant-scoped local export/delete gates pass | blocked |
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | release artifact hygiene passes locally | blocked |
-| Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention and tenant lifecycle rehearsals pass | blocked |
+| Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, and backup/restore drill rehearsals pass | blocked |
 | SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating rehearsal passes | blocked |
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
 | Customer support operations | escalation route, support owner, incident communications, and customer handoff process are proven | pilot runbook and incident policy exist | blocked |
@@ -50,6 +50,7 @@ npm run smoke:production-readiness-gate
 npm run smoke:production-provider-readiness
 npm run smoke:production-enterprise-controls
 npm run smoke:production-retention-operating
+npm run smoke:backup-restore-drill
 npm run smoke:production-slo-operating
 npm run smoke:clean-deployment-release
 ```

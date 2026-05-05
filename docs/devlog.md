@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Backup Restore Drill Gate Pass
+
+- added local runtime backup and restore helpers that create manifest-backed `var/` backups, verify file sha256 digests, require a clean restore target, and confirm restored state hashes
+- added `smoke:backup-restore-drill` to prove backup manifest hygiene, clean restore enforcement, tenant A/B restore integrity, post-restore tenant delete isolation, and repeated restore from the same backup source
+- wired the backup/restore drill into retention policy, target deployment contract, release readiness, security model, deployment guide, product checklist, README, production retention operating rehearsal, production-like drill, clean deployment rehearsal, pilot export package, and artifact hygiene while preserving hosted encrypted backup and disaster recovery blockers
+
 ## 2026-05-05 Target Deployment Contract Gate Pass
 
 - added [target-deployment-contract-v1.md](target-deployment-contract-v1.md) as the production-target evidence contract for provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, and support operations

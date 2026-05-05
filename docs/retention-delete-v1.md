@@ -9,6 +9,7 @@
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
+- relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 
 ## Policy Position
@@ -23,6 +24,7 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 | --- | --- | --- | --- | --- |
 | Local runtime state under `var/` | workspaces, missions, sessions, memory, approvals, provider status | pilot duration, then delete after export approval | pilot admin approves cleanup and confirmation token matches | `npm run smoke:runtime-data-lifecycle` |
 | Tenant-scoped runtime records | tenant-bound workspaces, missions, sessions, memory, and artifacts | pilot duration, then delete after tenant export approval | tenant admin approves cleanup and tenant confirmation token matches | `npm run smoke:tenant-data-lifecycle` |
+| Local runtime backup manifest | manifest-backed copy of `var/` state and mission artifacts | retained only for local restore rehearsal, then deleted with temp workspace | restore drill or backup integrity check completes | `npm run smoke:backup-restore-drill` |
 | Isolated customer runtime root | one pilot root per customer or company | pilot duration, never shared between unrelated customers | customer pilot ends or cross-customer mixing is suspected | `npm run smoke:runtime-isolation` |
 | Immutable release snapshots | `docs/releases/execution-v1/**`, evidence, closeout, handoff, snapshot metadata | retained for release review while the release decision remains current | scrub and regenerate when hygiene fails or release claim changes | `npm run smoke:release-artifact-hygiene` |
 | Pilot export package manifest | repository-relative package file list, byte counts, sha256 digests, bundle digest | retained with release evidence for handoff audit | regenerate when package membership, evidence, or snapshot changes | `npm run package:pilot-export` |
@@ -48,6 +50,7 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 - confirm a shareable export package exists when handoff is required
 - run `npm run smoke:runtime-data-lifecycle`
 - run `npm run smoke:tenant-data-lifecycle` when a shared runtime root contains tenant-bound records
+- run `npm run smoke:backup-restore-drill`
 - run `npm run smoke:runtime-isolation`
 - delete only the approved pilot runtime root or `var/` state root
 - require the deterministic confirmation token before destructive runtime deletion
@@ -64,6 +67,7 @@ It is sufficient to run a controlled pilot lifecycle check, but it is not produc
 npm run smoke:retention-delete-policy
 npm run smoke:runtime-data-lifecycle
 npm run smoke:tenant-data-lifecycle
+npm run smoke:backup-restore-drill
 npm run smoke:runtime-isolation
 npm run package:pilot-export
 npm run smoke:pilot-export-package

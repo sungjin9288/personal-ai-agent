@@ -1,11 +1,11 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-04T19:19:06.661Z
+- generatedAt: 2026-05-05T01:28:22.858Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 3e3d1ee4c0f2f137914cc8518789c3de06231117
+- sourceCommit: c0055ea17e7f6ac6737a20e39fd6440c350570c2
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
-- scope: local production-like retention, export, delete, tenant-scoped lifecycle, and isolation rehearsal
+- scope: local production-like retention, export, delete, tenant-scoped lifecycle, backup/restore, and isolation rehearsal
 - productionReadyClaim: false
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
@@ -14,7 +14,7 @@
 
 ## Decision Boundary
 
-This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
+This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, local backup/restore, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
 
 It is not hosted production retention evidence, not a customer data subject request workflow, not provider transcript deletion proof, not backup expiry evidence, and not permission to claim `production-ready`.
 
@@ -24,13 +24,14 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 108 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 273 | 10s | yes |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 118 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 434 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 114 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 105 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 106 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 230 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 541 | 10s | yes |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 216 | 10s | yes |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 217 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 779 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 183 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 202 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 195 | 5s | yes |
 
 ## Key Signals
 
@@ -38,7 +39,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "dataClassCount": 7,
+    "dataClassCount": 8,
     "mode": "retention-delete-policy",
     "productionReadyClaim": false
   }
@@ -64,6 +65,17 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:backup-restore-drill
+
+```json
+{
+    "backupFileCount": 3,
+    "mode": "backup-restore-drill",
+    "restoredFileCount": 3,
+    "tenantDeleteIsolated": true
+  }
+```
+
 ### npm run smoke:runtime-isolation
 
 ```json
@@ -79,7 +91,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 25,
+    "fileCount": 26,
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
@@ -91,7 +103,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 25,
+    "fileCount": 26,
     "mode": "pilot-export-package",
     "verifiedCommit": "3e3d1ee4c0f2f137914cc8518789c3de06231117"
   }
@@ -102,7 +114,7 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 16,
+    "scannedFileCount": 17,
     "secretFindingCount": 0,
     "verifiedCommit": "3e3d1ee4c0f2f137914cc8518789c3de06231117"
   }
@@ -113,6 +125,7 @@ Production-ready remains blocked until the approved target environment provides 
 - retention/delete policy remains the source of pilot data classes, export checklist, delete checklist, stop conditions, and production gap
 - runtime lifecycle remains the gate for inventory, export manifest, confirmation-token deletion, and post-delete absence
 - tenant data lifecycle remains the gate for tenant-scoped export manifests, exact tenant delete confirmation, post-delete absence, and unchanged data for another tenant in the same runtime root
+- backup restore drill remains the gate for local backup manifest digests, clean restore enforcement, restored state hash matching, and post-restore tenant delete isolation
 - runtime isolation remains the gate for one-runtime-per-customer separation during export and delete
 - pilot export package remains the gate for repository-relative paths, sha256 digests, and immutable snapshot inclusion
 - release artifact hygiene remains the gate for shareable evidence safety
@@ -126,6 +139,6 @@ npm run smoke:production-retention-operating
 
 ## Acceptance Rule
 
-The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, tenant-scoped export/delete does not include or modify another tenant, and artifact hygiene reports zero credential and machine-local path findings.
+The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, tenant-scoped export/delete does not include or modify another tenant, backup restore integrity remains verified, and artifact hygiene reports zero credential and machine-local path findings.
 
 The rehearsal must keep `productionReadyClaim: false` until the same retention, export, delete, and absence evidence is generated from the approved production-like or production target environment.
