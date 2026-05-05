@@ -53,6 +53,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/production-enterprise-controls-v1.md',
   'docs/target-deployment-contract-v1.md',
   'docs/backup-restore-drill-v1.md',
+  'docs/customer-support-operations-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

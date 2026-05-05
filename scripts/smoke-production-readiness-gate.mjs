@@ -17,6 +17,7 @@ const productionProviderReadinessPath = path.join(docsDir, 'production-provider-
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
+const customerSupportOperationsPath = path.join(docsDir, 'customer-support-operations-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
@@ -34,6 +35,7 @@ const productionProviderReadiness = readRequiredFile(productionProviderReadiness
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
+const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
@@ -69,6 +71,7 @@ for (const blocker of [
   /target deployment contract is not satisfied by target-environment evidence/,
   /production retention\/export\/delete verification is not complete/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
+  /staffed customer support operations evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(productionReadySection, blocker);
@@ -81,6 +84,7 @@ assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(produc
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
+assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
@@ -125,6 +129,11 @@ assert.match(backupRestoreDrill, /^- status: local-backup-restore-current$/m);
 assert.match(backupRestoreDrill, /^- productionReadyClaim: false$/m);
 assert.match(backupRestoreDrill, /not hosted backup evidence/);
 assert.match(backupRestoreDrill, /tenant delete isolation remains true after restore/);
+assert.match(customerSupportOperations, /^# Customer Support Operations v1$/m);
+assert.match(customerSupportOperations, /^- status: local-support-operations-current$/m);
+assert.match(customerSupportOperations, /^- productionReadyClaim: false$/m);
+assert.match(customerSupportOperations, /not staffed production support evidence/);
+assert.match(customerSupportOperations, /Customer support operations remain blocked for production-ready claims/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
@@ -189,6 +198,7 @@ console.log(
       ok: true,
       openaiLiveValidation: currentStatus.get('openai live validation'),
       pilotCleanDeploymentRelease: 'present',
+      pilotCustomerSupportOperations: 'present',
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
       pilotProductionEnterpriseControls: 'present',

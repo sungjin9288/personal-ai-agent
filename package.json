@@ -30,6 +30,7 @@
     "smoke:backup-restore-drill": "node scripts/smoke-backup-restore-drill.mjs",
     "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
+    "smoke:customer-support-operations": "node scripts/smoke-customer-support-operations.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",

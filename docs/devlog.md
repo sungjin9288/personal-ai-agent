@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Customer Support Operations Gate Pass
+
+- added [customer-support-operations-v1.md](customer-support-operations-v1.md) as the local pilot support operations source of record for support roles, intake classes, escalation matrix, customer communications, pilot handoff, and evidence requirements
+- added `smoke:customer-support-operations` to verify support operating coverage and cross-document wiring while keeping `productionReadyClaim: false`
+- wired the support gate into release readiness, target deployment contract, deployment guide, product checklist, README, clean deployment rehearsal, production-like drill, pilot export package, and artifact hygiene while preserving staffed production support and SLA blockers
+
 ## 2026-05-05 Backup Restore Drill Gate Pass
 
 - added local runtime backup and restore helpers that create manifest-backed `var/` backups, verify file sha256 digests, require a clean restore target, and confirm restored state hashes

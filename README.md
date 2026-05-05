@@ -56,6 +56,7 @@ The local provider readiness rehearsal is [docs/production-provider-readiness-v1
 The local enterprise controls rehearsal is [docs/production-enterprise-controls-v1.md](docs/production-enterprise-controls-v1.md).
 The target deployment contract is [docs/target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md).
 The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
+The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
 Current planning status:
@@ -78,6 +79,7 @@ Current planning status:
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - target deployment contract evidence can be verified with `npm run smoke:target-deployment-contract`; it defines the hosted/production-like controls that must be proven before any production-ready or hosted SaaS claim
 - local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
+- local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - tenant-scoped runtime export/delete can be verified with `npm run smoke:tenant-data-lifecycle`; it proves local tenant-filtered export and delete behavior inside one runtime root, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -138,6 +140,12 @@ Backup/restore drill gate:
 
 ```bash
 npm run smoke:backup-restore-drill
+```
+
+Customer support operations gate:
+
+```bash
+npm run smoke:customer-support-operations
 ```
 
 Self-hosted runtime isolation smoke:

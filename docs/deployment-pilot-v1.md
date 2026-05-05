@@ -12,6 +12,7 @@
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
+- relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -351,6 +352,28 @@ Stop condition:
 - if backup or restore hash verification fails, do not present backup/restore readiness in a pilot or production-like review
 - if the drill passes, treat it only as local backup/restore evidence, not hosted encrypted backup durability or disaster recovery proof
 
+## Customer Support Operations Gate
+
+Before sharing a pilot package with a customer or another company, verify support ownership and escalation evidence:
+
+```bash
+npm run smoke:customer-support-operations
+```
+
+The source of record is [customer-support-operations-v1.md](customer-support-operations-v1.md). It proves support roles, intake classes, escalation matrix, customer communication rules, handoff checklist, required commands, and evidence requirements are present.
+
+Acceptance:
+
+- support owner, technical operator, incident commander, customer contact, and evidence owner are defined
+- access, provider, data lifecycle, release evidence, and incident/security intake classes are covered
+- customer communication rules prevent unverified production-ready claims and raw credential/path leakage
+- the generated support gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if support ownership or escalation evidence is missing, do not present a customer pilot package as operationally ready
+- if the gate passes, treat it only as local pilot support evidence, not staffed production support or contractual SLA evidence
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -360,7 +383,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
