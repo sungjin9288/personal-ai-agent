@@ -12,6 +12,10 @@ const SLO_COMMANDS = [
     script: 'smoke:incident-slo-policy',
   },
   {
+    command: 'npm run smoke:observability-telemetry',
+    script: 'smoke:observability-telemetry',
+  },
+  {
     command: 'npm run smoke:execution-v1-status',
     script: 'smoke:execution-v1-status',
   },
@@ -22,10 +26,6 @@ const SLO_COMMANDS = [
   {
     command: 'npm run smoke:release-artifact-hygiene',
     script: 'smoke:release-artifact-hygiene',
-  },
-  {
-    command: 'npm run smoke:clean-deployment-release',
-    script: 'smoke:clean-deployment-release',
   },
   {
     command: 'npm run smoke:runtime-data-lifecycle',
@@ -109,6 +109,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:incident-slo-policy') {
     return pick(parsed, ['mode', 'severityCount']);
   }
+  if (script === 'smoke:observability-telemetry') {
+    return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
+  }
   if (script === 'smoke:execution-v1-status') {
     return pick(parsed, ['artifactState', 'artifactSyncCommit', 'deterministic', 'runtimeRows', 'snapshotCommit']);
   }
@@ -117,9 +120,6 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:release-artifact-hygiene') {
     return pick(parsed, ['machinePathFindingCount', 'scannedFileCount', 'secretFindingCount', 'verifiedCommit']);
-  }
-  if (script === 'smoke:clean-deployment-release') {
-    return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
   }
   if (script === 'smoke:runtime-data-lifecycle') {
     return pick(parsed, ['deleted', 'exportedFileCount', 'mode']);
@@ -167,12 +167,12 @@ function renderSloOperatingMarkdown({
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
-- relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that release, artifact hygiene, clean deployment rehearsal, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
@@ -192,9 +192,9 @@ ${keySignalRows}
 
 - deterministic release status and snapshot integrity remain the gate for stale evidence detection
 - release artifact hygiene remains the gate for shareable evidence safety
-- clean deployment rehearsal remains the gate for local portability without runtime state
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
+- observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 
 ## Operator Re-Run
 

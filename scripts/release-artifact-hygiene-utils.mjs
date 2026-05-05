@@ -55,6 +55,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/backup-restore-drill-v1.md',
   'docs/customer-support-operations-v1.md',
   'docs/secret-management-v1.md',
+  'docs/observability-telemetry-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

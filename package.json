@@ -32,6 +32,7 @@
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
     "smoke:customer-support-operations": "node scripts/smoke-customer-support-operations.mjs",
     "smoke:secret-management": "node scripts/smoke-secret-management.mjs",
+    "smoke:observability-telemetry": "node scripts/smoke-observability-telemetry.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",

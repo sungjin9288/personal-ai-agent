@@ -13,6 +13,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 
 ## Decision Boundary
 
@@ -40,7 +41,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | OIDC tenant API isolation and tenant-scoped local export/delete gates pass | blocked |
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management gate and release artifact hygiene pass | blocked |
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, and backup/restore drill rehearsals pass | blocked |
-| SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating rehearsal passes | blocked |
+| SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating and observability telemetry gates pass | blocked |
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
 | Customer support operations | escalation route, support owner, incident communications, and customer handoff process are proven | pilot runbook, incident policy, and local support operations gate passes | blocked |
 
@@ -55,6 +56,7 @@ npm run smoke:production-retention-operating
 npm run smoke:backup-restore-drill
 npm run smoke:customer-support-operations
 npm run smoke:secret-management
+npm run smoke:observability-telemetry
 npm run smoke:production-slo-operating
 npm run smoke:clean-deployment-release
 ```
@@ -67,6 +69,7 @@ npm run smoke:clean-deployment-release
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested
 - stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured
 - stop retention/delete claims until target backup expiry, provider transcript handling, and post-delete absence evidence are captured
+- stop observability claims until production telemetry, alert delivery, log/trace retention, staffed on-call route, and incident review evidence are captured
 - stop SLO/SLA claims until target telemetry, alerting, on-call, and incident response evidence exist
 - stop customer support claims until staffed ownership, customer communication route, support audit history, and incident review cadence are proven in the target environment
 - stop external handoff if artifact hygiene finds credentials or machine-local paths

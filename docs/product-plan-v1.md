@@ -198,6 +198,7 @@ Deferred models:
 - [x] Release decision recorded as provider-scoped pilot-ready with production-ready explicitly blocked
 - [x] Customer support operations gate implemented
 - [x] Secret management gate implemented
+- [x] Observability telemetry gate implemented
 
 ## Recommended Step Plan
 

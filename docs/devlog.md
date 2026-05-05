@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Observability Telemetry Gate Pass
+
+- added [observability-telemetry-v1.md](observability-telemetry-v1.md) as the local pilot observability source of record for telemetry signals, alert triggers, required commands, handoff requirements, and production telemetry gap
+- added `smoke:observability-telemetry` to verify telemetry coverage and cross-document wiring while keeping `productionReadyClaim: false`
+- wired the observability gate into release readiness, target deployment contract, deployment guide, security model, product checklist, README, production SLO operating rehearsal, clean deployment rehearsal, production-like drill, pilot export package, and artifact hygiene while preserving hosted telemetry, alert delivery, staffed on-call, and incident review blockers
+
 ## 2026-05-05 Secret Management Gate Pass
 
 - added [secret-management-v1.md](secret-management-v1.md) as the local pilot secret-management source of record for secret classes, environment or secret-manager injection, redaction/hygiene rules, rotation/revocation checklist, and production gap

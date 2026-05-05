@@ -68,6 +68,7 @@ Production gap:
 - cloud SaaS mode requires a separate architecture decision record before implementation
 - [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, and support operations before any hosted production claim
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
+- [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 
 ## RBAC Matrix
 
@@ -187,6 +188,7 @@ Current status:
 - [production-provider-readiness-v1.md](production-provider-readiness-v1.md) records provider preflight readiness and live-validation blockers while keeping live-provider-complete and production-ready claims blocked
 - [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence while identity-backed hosted RBAC, session lifecycle, centralized permission administration, and hosted tenant isolation remain blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
+- `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers
 
 ## Retention, Export, And Delete
 

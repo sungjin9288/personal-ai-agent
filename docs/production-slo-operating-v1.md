@@ -1,19 +1,19 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-05T02:30:38.447Z
+- generatedAt: 2026-05-05T02:44:18.156Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76
+- sourceCommit: 2b9dc9d40cb511813df3930e70aa5d8bcdbc0fe8
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
+- relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
-- relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that release, artifact hygiene, clean deployment rehearsal, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim `production-ready`.
 
@@ -23,13 +23,13 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 123 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 396 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 140 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 115 | 5s | yes |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 117 | 15s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 315 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 469 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 126 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 134 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 425 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 160 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 125 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 333 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 479 | 10s | yes |
 
 ## Key Signals
 
@@ -42,12 +42,23 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:observability-telemetry
+
+```json
+{
+    "alertTriggerCount": 5,
+    "mode": "observability-telemetry",
+    "productionReadyClaim": false,
+    "telemetrySignalCount": 6
+  }
+```
+
 ### npm run smoke:execution-v1-status
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "deterministic": "8/8",
     "runtimeRows": 8,
     "snapshotCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
@@ -58,7 +69,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
@@ -70,19 +81,9 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 19,
+    "scannedFileCount": 20,
     "secretFindingCount": 0,
     "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
-  }
-```
-
-### npm run smoke:clean-deployment-release
-
-```json
-{
-    "commandCount": 14,
-    "mode": "clean-deployment-release",
-    "productionReadyClaim": false
   }
 ```
 
@@ -111,9 +112,9 @@ Production-ready remains blocked until the approved target environment provides 
 
 - deterministic release status and snapshot integrity remain the gate for stale evidence detection
 - release artifact hygiene remains the gate for shareable evidence safety
-- clean deployment rehearsal remains the gate for local portability without runtime state
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
+- observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 
 ## Operator Re-Run
 

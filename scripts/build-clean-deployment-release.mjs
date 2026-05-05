@@ -21,6 +21,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:secret-management',
   },
   {
+    command: 'npm run smoke:observability-telemetry',
+    script: 'smoke:observability-telemetry',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -31,10 +35,6 @@ const CLEAN_REHEARSAL_COMMANDS = [
   {
     command: 'npm run smoke:target-deployment-contract',
     script: 'smoke:target-deployment-contract',
-  },
-  {
-    command: 'npm run smoke:production-readiness-gate',
-    script: 'smoke:production-readiness-gate',
   },
   {
     command: 'npm run smoke:release-artifact-hygiene',
@@ -200,6 +200,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
   }
+  if (script === 'smoke:observability-telemetry') {
+    return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
+  }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
@@ -208,18 +211,6 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-deployment-contract') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'profileCount']);
-  }
-  if (script === 'smoke:production-readiness-gate') {
-    return pick(parsed, [
-      'blockedProductionReady',
-      'openaiLiveValidation',
-      'pilotCleanDeploymentRelease',
-      'pilotCustomerSupportOperations',
-      'pilotSecretManagement',
-      'pilotRetentionDeletePolicy',
-      'productionBlockerCount',
-      'releaseArtifactHygiene',
-    ]);
   }
   if (script === 'smoke:release-artifact-hygiene') {
     return pick(parsed, ['machinePathFindingCount', 'scannedFileCount', 'secretFindingCount', 'verifiedCommit']);

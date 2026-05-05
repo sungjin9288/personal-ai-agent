@@ -19,6 +19,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:secret-management',
   },
   {
+    command: 'npm run smoke:observability-telemetry',
+    script: 'smoke:observability-telemetry',
+  },
+  {
     command: 'npm run smoke:production-slo-operating',
     script: 'smoke:production-slo-operating',
   },
@@ -167,6 +171,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
   }
+  if (script === 'smoke:observability-telemetry') {
+    return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
+  }
   if (script === 'smoke:production-slo-operating') {
     return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
   }
@@ -213,6 +220,7 @@ function extractKeySignals(script, parsed) {
       'pilotCleanDeploymentRelease',
       'pilotCustomerSupportOperations',
       'pilotSecretManagement',
+      'pilotObservabilityTelemetry',
       'pilotProductionEnterpriseControls',
       'pilotIncidentSloPolicy',
       'pilotProductionProviderReadiness',

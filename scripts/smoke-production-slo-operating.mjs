@@ -32,10 +32,10 @@ assert.match(rehearsal, /Production-ready remains blocked/);
 
 for (const command of [
   'npm run smoke:incident-slo-policy',
+  'npm run smoke:observability-telemetry',
   'npm run smoke:execution-v1-status',
   'npm run smoke:execution-v1-snapshot',
   'npm run smoke:release-artifact-hygiene',
-  'npm run smoke:clean-deployment-release',
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:runtime-isolation',
 ]) {
@@ -44,8 +44,8 @@ for (const command of [
 
 for (const phrase of [
   /deterministic release status and snapshot integrity/,
+  /observability telemetry/,
   /release artifact hygiene/,
-  /clean deployment rehearsal/,
   /runtime lifecycle and runtime isolation/,
   /incident\/SLO policy/,
 ]) {

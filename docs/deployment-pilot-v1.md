@@ -14,6 +14,7 @@
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -354,6 +355,28 @@ Stop condition:
 - if any secret appears in tracked docs or release artifacts, stop sharing, rotate the exposed credential, scrub/regenerate artifacts, and rerun hygiene
 - if the gate passes, treat it only as local pilot secret-management evidence, not target secret manager injection, production rotation, or audit proof
 
+## Observability Telemetry Gate
+
+Before using the pilot package for an SLO/SLA or operating review, verify the local telemetry contract:
+
+```bash
+npm run smoke:observability-telemetry
+```
+
+The source of record is [observability-telemetry-v1.md](observability-telemetry-v1.md). It proves release state, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, alert triggers, required commands, and handoff requirements are present.
+
+Acceptance:
+
+- local telemetry signals cover release state, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, and incident queue
+- alert triggers map to severity and first-response actions
+- handoff requirements include branch, commit, release label, snapshot, provider readiness, hygiene counts, owner, and changed evidence status
+- the generated observability gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if telemetry signals or alert triggers are missing, do not present SLO/SLA operating readiness in a pilot review
+- if the gate passes, treat it only as local observability evidence, not hosted telemetry, production alert delivery, staffed on-call, or incident review proof
+
 ## Backup Restore Drill
 
 Before treating runtime backup or restore behavior as part of a pilot review, run the local backup/restore drill:
@@ -407,7 +430,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, secret management gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, secret management gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -431,13 +454,12 @@ npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 ```
 
-The rehearsal runs the incident/SLO policy gate, execution-v1 status and snapshot gates, release artifact hygiene, clean deployment rehearsal, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
+The rehearsal runs the incident/SLO policy gate, observability telemetry gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
 
 Acceptance:
 
 - every command in the SLO operating matrix passes
 - artifact hygiene reports zero credential findings and zero machine-local path findings
-- clean deployment rehearsal remains replayable from tracked files only
 - runtime lifecycle and runtime isolation checks remain green
 - the generated rehearsal keeps `productionReadyClaim: false`
 
@@ -480,7 +502,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, secret management gate, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, secret management gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

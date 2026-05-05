@@ -1,12 +1,12 @@
 # Clean Deployment Release Rehearsal v1
 
 - status: clean-local-rehearsal-current
-- generatedAt: 2026-05-05T02:30:40.247Z
+- generatedAt: 2026-05-05T02:44:20.071Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76
+- sourceCommit: 2b9dc9d40cb511813df3930e70aa5d8bcdbc0fe8
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - cleanCheckoutMode: tracked-files-only
-- cleanCheckoutFileCount: 337
+- cleanCheckoutFileCount: 339
 - excludedRuntimeState: var/, output/playwright/, node_modules/, .git/
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -25,20 +25,20 @@ Production-ready remains blocked until the approved target environment produces 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 120 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 122 |
-| `npm run smoke:secret-management` | pass | 0 | 119 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 119 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1287 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 126 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 149 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 124 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 283 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 129 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 132 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 489 |
-| `npm run package:pilot-export` | pass | 0 | 132 |
-| `npm run smoke:pilot-export-package` | pass | 0 | 123 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 122 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 147 |
+| `npm run smoke:secret-management` | pass | 0 | 131 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 125 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 123 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1329 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 176 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 133 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 319 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 143 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 148 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 506 |
+| `npm run package:pilot-export` | pass | 0 | 138 |
+| `npm run smoke:pilot-export-package` | pass | 0 | 130 |
 
 ## Key Signals
 
@@ -70,6 +70,17 @@ Production-ready remains blocked until the approved target environment produces 
     "mode": "secret-management",
     "productionReadyClaim": false,
     "secretClassCount": 5
+  }
+```
+
+### npm run smoke:observability-telemetry
+
+```json
+{
+    "alertTriggerCount": 5,
+    "mode": "observability-telemetry",
+    "productionReadyClaim": false,
+    "telemetrySignalCount": 6
   }
 ```
 
@@ -109,27 +120,12 @@ Production-ready remains blocked until the approved target environment produces 
   }
 ```
 
-### npm run smoke:production-readiness-gate
-
-```json
-{
-    "blockedProductionReady": true,
-    "openaiLiveValidation": "passed",
-    "pilotCleanDeploymentRelease": "present",
-    "pilotCustomerSupportOperations": "present",
-    "pilotSecretManagement": "present",
-    "pilotRetentionDeletePolicy": "present",
-    "productionBlockerCount": 9,
-    "releaseArtifactHygiene": "passed"
-  }
-```
-
 ### npm run smoke:release-artifact-hygiene
 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 19,
+    "scannedFileCount": 20,
     "secretFindingCount": 0,
     "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
   }
@@ -181,7 +177,7 @@ Production-ready remains blocked until the approved target environment produces 
 
 ```json
 {
-    "fileCount": 28,
+    "fileCount": 29,
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
@@ -193,7 +189,7 @@ Production-ready remains blocked until the approved target environment produces 
 
 ```json
 {
-    "fileCount": 28,
+    "fileCount": 29,
     "mode": "pilot-export-package",
     "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
   }
