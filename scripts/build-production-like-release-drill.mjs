@@ -15,6 +15,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:customer-support-operations',
   },
   {
+    command: 'npm run smoke:support-escalation-review',
+    script: 'smoke:support-escalation-review',
+  },
+  {
     command: 'npm run smoke:secret-management',
     script: 'smoke:secret-management',
   },
@@ -168,6 +172,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:customer-support-operations') {
     return pick(parsed, ['intakeClassCount', 'mode', 'productionReadyClaim', 'supportRoleCount']);
   }
+  if (script === 'smoke:support-escalation-review') {
+    return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
+  }
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
   }
@@ -219,6 +226,7 @@ function extractKeySignals(script, parsed) {
       'openaiLiveValidation',
       'pilotCleanDeploymentRelease',
       'pilotCustomerSupportOperations',
+      'pilotSupportEscalationReview',
       'pilotSecretManagement',
       'pilotObservabilityTelemetry',
       'pilotProductionEnterpriseControls',

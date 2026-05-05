@@ -21,6 +21,7 @@ assert.equal(result.scannedFiles.includes('docs/production-enterprise-controls-v
 assert.equal(result.scannedFiles.includes('docs/target-deployment-contract-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/backup-restore-drill-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/customer-support-operations-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/support-escalation-review-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/secret-management-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/observability-telemetry-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);

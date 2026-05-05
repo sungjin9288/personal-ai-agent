@@ -18,6 +18,7 @@ const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterpri
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const customerSupportOperationsPath = path.join(docsDir, 'customer-support-operations-v1.md');
+const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-review-v1.md');
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
@@ -38,6 +39,7 @@ const productionEnterpriseControls = readRequiredFile(productionEnterpriseContro
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
+const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
 const secretManagement = readRequiredFile(secretManagementPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
@@ -77,7 +79,7 @@ for (const blocker of [
   /target deployment contract is not satisfied by target-environment evidence/,
   /production retention\/export\/delete verification is not complete/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
-  /staffed customer support operations evidence is not generated from a production-like environment/,
+  /staffed customer support operations, support audit history, and incident review evidence are not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(productionReadySection, blocker);
@@ -91,6 +93,7 @@ assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(produ
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
+assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
@@ -142,6 +145,11 @@ assert.match(customerSupportOperations, /^- status: local-support-operations-cur
 assert.match(customerSupportOperations, /^- productionReadyClaim: false$/m);
 assert.match(customerSupportOperations, /not staffed production support evidence/);
 assert.match(customerSupportOperations, /Customer support operations remain blocked for production-ready claims/);
+assert.match(supportEscalationReview, /^# Support Escalation Review v1$/m);
+assert.match(supportEscalationReview, /^- status: local-support-escalation-review-current$/m);
+assert.match(supportEscalationReview, /^- productionReadyClaim: false$/m);
+assert.match(supportEscalationReview, /not staffed production support evidence/);
+assert.match(supportEscalationReview, /Support escalation and incident review remain blocked for production-ready claims/);
 assert.match(secretManagement, /^# Secret Management v1$/m);
 assert.match(secretManagement, /^- status: local-secret-management-current$/m);
 assert.match(secretManagement, /^- productionReadyClaim: false$/m);
@@ -183,7 +191,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity, tenant storage, target secret manager, production telemetry, backup, retention, SLO\/SLA, clean deployment, and support operations have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity, tenant storage, target secret manager, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -217,6 +225,7 @@ console.log(
       openaiLiveValidation: currentStatus.get('openai live validation'),
       pilotCleanDeploymentRelease: 'present',
       pilotCustomerSupportOperations: 'present',
+      pilotSupportEscalationReview: 'present',
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
       pilotSecretManagement: 'present',

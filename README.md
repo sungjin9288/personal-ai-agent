@@ -57,6 +57,7 @@ The local enterprise controls rehearsal is [docs/production-enterprise-controls-
 The target deployment contract is [docs/target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md).
 The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
 The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
+The local support escalation review gate is [docs/support-escalation-review-v1.md](docs/support-escalation-review-v1.md).
 The local secret management gate is [docs/secret-management-v1.md](docs/secret-management-v1.md).
 The local observability telemetry gate is [docs/observability-telemetry-v1.md](docs/observability-telemetry-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
@@ -82,6 +83,7 @@ Current planning status:
 - target deployment contract evidence can be verified with `npm run smoke:target-deployment-contract`; it defines the hosted/production-like controls that must be proven before any production-ready or hosted SaaS claim
 - local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
 - local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
+- local support escalation review evidence can be verified with `npm run smoke:support-escalation-review`; it proves escalation routes, audit packet requirements, incident review cadence, and customer update rules are present, but it does not provide staffed production support audit history
 - local secret management evidence can be verified with `npm run smoke:secret-management`; it proves secret classes, injection rules, redaction/hygiene rules, and rotation checklist are present, but it does not provide target secret manager or production rotation proof
 - local observability telemetry evidence can be verified with `npm run smoke:observability-telemetry`; it proves local telemetry signals, alert triggers, and handoff requirements are present, but it does not provide hosted telemetry, alert delivery, or staffed on-call proof
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
@@ -150,6 +152,12 @@ Customer support operations gate:
 
 ```bash
 npm run smoke:customer-support-operations
+```
+
+Support escalation review gate:
+
+```bash
+npm run smoke:support-escalation-review
 ```
 
 Secret management gate:

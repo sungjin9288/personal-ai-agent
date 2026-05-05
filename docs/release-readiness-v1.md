@@ -35,7 +35,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity, tenant storage, target secret manager, production telemetry, backup, SLO/SLA, retention, customer support, and clean production-like evidence.
+It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity, tenant storage, target secret manager, production telemetry, backup, SLO/SLA, retention, customer support audit, and clean production-like evidence.
 
 ## Evidence Summary
 
@@ -55,6 +55,7 @@ Current execution evidence:
 - tenant-scoped runtime export/delete gate: passed, with tenant-filtered export, exact tenant delete confirmation, post-delete absence, and unchanged other-tenant state
 - local backup/restore drill: passed, with manifest sha256 verification, clean-runtime restore requirement, restored state hash match, and post-restore tenant delete isolation
 - local customer support operations gate: passed, with support roles, intake classes, escalation matrix, customer communication rules, and pilot handoff checklist
+- local support escalation review gate: passed, with escalation routes, audit packet requirements, incident review cadence, customer update rules, and `productionReadyClaim: false`
 - local secret management gate: passed, with secret classes, injection rules, redaction/hygiene rules, and rotation/revocation checklist
 - local observability telemetry gate: passed, with telemetry signals, alert triggers, required commands, and handoff requirements
 - clean deployment release rehearsal: passed from tracked-files-only checkout, with `productionReadyClaim: false`
@@ -97,6 +98,7 @@ Current handoff state:
 | [target-deployment-contract-v1.md](target-deployment-contract-v1.md) | target-contract-current | mandatory hosted/production-like deployment controls and blocking rules |
 | [backup-restore-drill-v1.md](backup-restore-drill-v1.md) | local-backup-restore-current | local runtime backup manifest, restore integrity, and tenant-isolated recovery drill |
 | [customer-support-operations-v1.md](customer-support-operations-v1.md) | local-support-operations-current | local support roles, intake routing, escalation, communication, and handoff checklist |
+| [support-escalation-review-v1.md](support-escalation-review-v1.md) | local-support-escalation-review-current | local support escalation routes, audit packet requirements, incident review cadence, and customer update rules |
 | [secret-management-v1.md](secret-management-v1.md) | local-secret-management-current | local secret classes, injection, redaction, hygiene, rotation, and production gap |
 | [observability-telemetry-v1.md](observability-telemetry-v1.md) | local-observability-telemetry-current | local telemetry signals, alert triggers, handoff requirements, and production telemetry gap |
 | [runtime-isolation-v1.md](runtime-isolation-v1.md) | pilot-isolation-evidence-current | one-runtime-per-customer isolation smoke and production gap |
@@ -172,7 +174,7 @@ Blockers:
 - target deployment contract is not satisfied by target-environment evidence
 - production retention/export/delete verification is not complete
 - production SLO/SLA operating evidence is not generated from a production-like environment
-- staffed customer support operations evidence is not generated from a production-like environment
+- staffed customer support operations, support audit history, and incident review evidence are not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment
 
 Production-ready must not be claimed from the current state.
@@ -223,6 +225,7 @@ npm run smoke:retention-delete-policy
 npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
 npm run smoke:customer-support-operations
+npm run smoke:support-escalation-review
 npm run smoke:secret-management
 npm run smoke:observability-telemetry
 npm run rehearsal:production-slo-operating
@@ -267,7 +270,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity, tenant storage, target secret manager, production telemetry, backup, retention, SLO/SLA, clean deployment, and support operations have target-environment evidence
+- target deployment contract is blocked until hosted identity, tenant storage, target secret manager, production telemetry, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

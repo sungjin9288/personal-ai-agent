@@ -12,6 +12,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
+- relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 
@@ -43,7 +44,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, and backup/restore drill rehearsals pass | blocked |
 | SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating and observability telemetry gates pass | blocked |
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
-| Customer support operations | escalation route, support owner, incident communications, and customer handoff process are proven | pilot runbook, incident policy, and local support operations gate passes | blocked |
+| Customer support operations | escalation route, support owner, incident communications, customer handoff process, audit history, and incident review cadence are proven | pilot runbook, incident policy, and local support operations and support escalation review gates pass | blocked |
 
 ## Required Commands
 
@@ -55,6 +56,7 @@ npm run smoke:production-enterprise-controls
 npm run smoke:production-retention-operating
 npm run smoke:backup-restore-drill
 npm run smoke:customer-support-operations
+npm run smoke:support-escalation-review
 npm run smoke:secret-management
 npm run smoke:observability-telemetry
 npm run smoke:production-slo-operating

@@ -16,6 +16,10 @@ const SLO_COMMANDS = [
     script: 'smoke:observability-telemetry',
   },
   {
+    command: 'npm run smoke:support-escalation-review',
+    script: 'smoke:support-escalation-review',
+  },
+  {
     command: 'npm run smoke:execution-v1-status',
     script: 'smoke:execution-v1-status',
   },
@@ -112,6 +116,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
   }
+  if (script === 'smoke:support-escalation-review') {
+    return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
+  }
   if (script === 'smoke:execution-v1-status') {
     return pick(parsed, ['artifactState', 'artifactSyncCommit', 'deterministic', 'runtimeRows', 'snapshotCommit']);
   }
@@ -168,11 +175,12 @@ function renderSloOperatingMarkdown({
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, support escalation review, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
@@ -195,6 +203,7 @@ ${keySignalRows}
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
+- support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 
 ## Operator Re-Run
 

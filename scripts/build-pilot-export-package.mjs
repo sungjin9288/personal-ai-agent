@@ -18,6 +18,7 @@ const BASE_PACKAGE_FILES = [
   'docs/demo-scenarios-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
+  'docs/support-escalation-review-v1.md',
   'docs/secret-management-v1.md',
   'docs/observability-telemetry-v1.md',
   'docs/runtime-isolation-v1.md',
@@ -141,6 +142,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
+- relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)

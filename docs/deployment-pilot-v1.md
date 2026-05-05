@@ -13,6 +13,7 @@
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
+- relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
@@ -323,7 +324,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, and support operations all have explicit target-environment evidence
+- target provider validation, identity-backed RBAC, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 
@@ -421,6 +422,28 @@ Stop condition:
 - if support ownership or escalation evidence is missing, do not present a customer pilot package as operationally ready
 - if the gate passes, treat it only as local pilot support evidence, not staffed production support or contractual SLA evidence
 
+## Support Escalation Review Gate
+
+Before sharing an escalated support update, accepted risk, or incident closure note, verify the local support escalation review contract:
+
+```bash
+npm run smoke:support-escalation-review
+```
+
+The source of record is [support-escalation-review-v1.md](support-escalation-review-v1.md). It proves escalation routes, audit packet requirements, incident review cadence, customer update rules, required commands, and the production support audit gap are present.
+
+Acceptance:
+
+- SEV1-SEV4 escalation routes map triggers to required owners and evidence packets
+- support audit packets include commit, release label, severity, affected scope, hygiene result, owner, next update time, mitigation, and closure decision
+- incident review cadence covers triage, customer updates, closure review, and monthly pilot review
+- the generated support escalation review gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if audit packet requirements or incident review cadence are missing, do not share an escalated customer support update
+- if the gate passes, treat it only as local pilot support escalation evidence, not staffed production support audit history or on-call proof
+
 ## Production-Like Release Drill
 
 Before promoting a pilot package toward a production-like deployment review, run the local deterministic drill:
@@ -430,7 +453,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, secret management gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -502,7 +525,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, secret management gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

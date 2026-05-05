@@ -1,19 +1,20 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-05T02:57:39.778Z
+- generatedAt: 2026-05-05T03:34:57.296Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: e25d566ab96ae66bfb87912011e899be9cff2696
+- sourceCommit: 6f9d31e77bc20983b4fcdcf20785894d733255d7
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, support escalation review, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim `production-ready`.
 
@@ -23,13 +24,14 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 161 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 173 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 437 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 177 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 180 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 491 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1008 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 246 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 247 | 5s | yes |
+| `npm run smoke:support-escalation-review` | pass | 0 | 210 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 822 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 366 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 406 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 735 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 963 | 10s | yes |
 
 ## Key Signals
 
@@ -53,12 +55,24 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:support-escalation-review
+
+```json
+{
+    "auditPacketItemCount": 10,
+    "escalationRouteCount": 4,
+    "mode": "support-escalation-review",
+    "productionReadyClaim": false,
+    "reviewCadenceCount": 4
+  }
+```
+
 ### npm run smoke:execution-v1-status
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "deterministic": "8/8",
     "runtimeRows": 8,
     "snapshotCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
@@ -69,7 +83,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
@@ -81,7 +95,7 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 20,
+    "scannedFileCount": 21,
     "secretFindingCount": 0,
     "verifiedCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
   }
@@ -115,6 +129,7 @@ Production-ready remains blocked until the approved target environment provides 
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
+- support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 
 ## Operator Re-Run
 

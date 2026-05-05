@@ -31,6 +31,7 @@
     "smoke:runtime-isolation": "node scripts/smoke-runtime-isolation.mjs",
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
     "smoke:customer-support-operations": "node scripts/smoke-customer-support-operations.mjs",
+    "smoke:support-escalation-review": "node scripts/smoke-support-escalation-review.mjs",
     "smoke:secret-management": "node scripts/smoke-secret-management.mjs",
     "smoke:observability-telemetry": "node scripts/smoke-observability-telemetry.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",

@@ -66,7 +66,7 @@ Production gap:
 - hosted tenant isolation is not implemented
 - API tenant/workspace binding is available only behind `PERSONAL_AI_AGENT_TENANT_MODE=enforce` and OIDC tenant claims; per-tenant encryption, separate auth realms, backup isolation, and centralized tenant administration are out of v1 scope
 - cloud SaaS mode requires a separate architecture decision record before implementation
-- [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, and support operations before any hosted production claim
+- [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review before any hosted production claim
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 
@@ -171,6 +171,7 @@ Auditable records:
 - maintenance runs and reminders
 - execution-v1 evidence, closeout, handoff, and immutable snapshots
 - incident severity, SLO triage commands, owner, evidence, and closure records defined in [incident-slo-v1.md](incident-slo-v1.md)
+- support escalation routes, audit packet requirements, incident review cadence, and customer-safe update rules defined in [support-escalation-review-v1.md](support-escalation-review-v1.md)
 
 Policy:
 
