@@ -1,0 +1,66 @@
+# Target Environment Evidence Intake v1
+
+- status: local-target-environment-evidence-intake-current
+- localDate: 2026-05-06
+- scope: target environment identity, tenant storage, secrets, observability, retention, backup, support, clean deployment, and release decision evidence intake contract
+- productionReadyClaim: false
+- relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
+- relatedSecurity: [security-model-v1.md](security-model-v1.md)
+- relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
+
+## Decision Boundary
+
+This gate defines the target environment evidence packet required before the system can be described as production-ready for another company.
+
+It is not hosted production evidence, not a completed customer deployment, not SaaS architecture approval, and not permission to claim `production-ready`.
+
+Production-ready remains blocked until every target environment domain below has evidence from the approved production-like or hosted deployment boundary and the release evidence is regenerated from that boundary.
+
+## Required Evidence Packet
+
+| Domain | Required Proof | Current Local Evidence | Status |
+| --- | --- | --- | --- |
+| Deployment boundary | target environment name, owner, deployment profile, network boundary, runtime root, and rollback owner are recorded | target deployment contract and clean local rehearsal exist | blocked |
+| Identity and sessions | user lifecycle, session lifecycle, role assignment/revocation, logout/revocation behavior, and audit trail are proven | local identity, OIDC/JWKS, shared-secret, and RBAC gates pass | blocked |
+| Tenant storage and encryption | tenant partitioning, tenant admin workflow, per-tenant encryption/key policy, backup/restore isolation, and cross-tenant denial are proven | tenant storage admin, tenant lifecycle, and runtime isolation gates pass locally | blocked |
+| Provider and secret manager | provider account approval, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
+| Observability and SLO/SLA | telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | observability telemetry, target observability, incident policy, and SLO rehearsal pass locally | blocked |
+| Retention, export, delete, and backup | customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
+| Support operations | support owner, staffed coverage, support queue routing, customer communication, ticket audit history, escalation review, and on-call handoff are proven | support operations, support escalation review, and target support gates pass locally | blocked |
+| Clean release and artifact hygiene | clean checkout deployment, dependency/runtime proof, rollback proof, release snapshot, export package, and hygiene report are generated from the target boundary | clean local release rehearsal, production-like drill, pilot export package, and hygiene pass locally | blocked |
+
+## Intake Checklist
+
+Every target environment review must record:
+
+- target environment name, owner, profile, and deployment boundary
+- selected production providers and completed provider evidence intake references
+- identity provider, role owner, session policy, and permission audit evidence
+- tenant storage boundary, encryption/key policy, backup/restore isolation, and tenant admin evidence
+- target secret manager aliases, rotation evidence, revocation path, and break-glass approval
+- telemetry backend, alert route, on-call owner, customer status route, and incident review record
+- retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence
+- backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence
+- support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence
+- clean deployment run, rollback proof, release snapshot, export package, and artifact hygiene result
+- accepted risks, decision owner, and next review date
+- `productionReadyClaim` remains false unless all mandatory target deployment controls are satisfied by target evidence
+
+## Required Commands
+
+```bash
+npm run smoke:target-environment-evidence-intake
+npm run smoke:target-deployment-contract
+npm run smoke:production-readiness-gate
+npm run smoke:clean-deployment-release
+npm run smoke:production-like-release-drill
+npm run smoke:pilot-export-package
+npm run smoke:release-artifact-hygiene
+```
+
+## Production Gap
+
+This is a local target environment evidence intake contract. It does not prove hosted identity/session administration, hosted tenant storage or encryption, target secret injection, target telemetry, staffed on-call, target retention enforcement, production backup execution, staffed support operations, clean production deployment, or release approval.
+
+Target environment readiness remains blocked for production-ready claims until this evidence packet is completed from the approved production-like or hosted target environment and execution evidence, closeout, handoff, snapshot, pilot export package, production-like release drill, clean deployment release, and release readiness docs are regenerated from that evidence.

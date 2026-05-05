@@ -57,6 +57,7 @@ for (const control of [
   'SLO/SLA operations',
   'Clean deployment release',
   'Customer support operations',
+  'Target environment evidence intake',
 ]) {
   assert.match(contract, new RegExp(`\\| ${escapeRegExp(control)} \\|`));
 }
@@ -64,6 +65,7 @@ for (const control of [
 for (const command of [
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
+  'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-provider-evidence-intake',
   'npm run smoke:production-enterprise-controls',
@@ -88,6 +90,7 @@ for (const command of [
 
 for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
+  /stop production-ready claims if the target environment evidence intake packet is incomplete/,
   /stop hosted SaaS claims until a separate SaaS architecture decision record exists/,
   /stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist/,
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
@@ -102,6 +105,7 @@ for (const blocker of [
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(contract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(contract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /target deployment contract gate: passed/);
 assert.match(security, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(security, /cloud SaaS mode requires a separate architecture decision record/);
@@ -113,7 +117,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 8,
+      controlCount: 9,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

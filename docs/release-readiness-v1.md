@@ -17,6 +17,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
@@ -74,6 +75,7 @@ Current execution evidence:
 - local identity session administration gate: passed, with identity controls, session lifecycle, audit packet requirements, and `productionReadyClaim: false`
 - local tenant storage administration gate: passed, with tenant storage controls, tenant admin operations, audit packet requirements, and `productionReadyClaim: false`
 - target deployment contract gate: passed, with hosted production/SaaS mandatory controls explicitly blocked until target evidence exists
+- target environment evidence intake gate: passed, with deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene requirements, and `productionReadyClaim: false`
 - local target secret manager gate: passed, with secret manager controls, rotation evidence packet, break-glass rules, and `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 - local target observability operations gate: passed, with telemetry pipeline, alert delivery, log/trace retention, on-call routing, customer status communication, incident review history, and `productionReadyClaim: false`
@@ -113,6 +115,7 @@ Current handoff state:
 | [identity-session-admin-v1.md](identity-session-admin-v1.md) | local-identity-session-admin-current | local identity controls, session lifecycle, role audit packet requirements, and hosted identity production gap |
 | [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) | local-tenant-storage-admin-current | local tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gap |
 | [target-deployment-contract-v1.md](target-deployment-contract-v1.md) | target-contract-current | mandatory hosted/production-like deployment controls and blocking rules |
+| [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) | local-target-environment-evidence-intake-current | target environment deployment, identity, tenant, provider, secret, telemetry, retention, backup, support, clean release, and artifact evidence packet |
 | [backup-restore-drill-v1.md](backup-restore-drill-v1.md) | local-backup-restore-current | local runtime backup manifest, restore integrity, and tenant-isolated recovery drill |
 | [customer-support-operations-v1.md](customer-support-operations-v1.md) | local-support-operations-current | local support roles, intake routing, escalation, communication, and handoff checklist |
 | [support-escalation-review-v1.md](support-escalation-review-v1.md) | local-support-escalation-review-current | local support escalation routes, audit packet requirements, incident review cadence, and customer update rules |
@@ -246,6 +249,7 @@ npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
 npm run smoke:tenant-storage-admin
+npm run smoke:target-environment-evidence-intake
 npm run smoke:retention-delete-policy
 npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating

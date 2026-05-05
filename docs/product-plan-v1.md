@@ -88,6 +88,7 @@
 - [x] Production provider readiness rehearsal gate implemented
 - [x] Target provider evidence intake gate implemented
 - [x] Target deployment contract gate implemented
+- [x] Target environment evidence intake gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived
 - [ ] Live Anthropic validation archived

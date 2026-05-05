@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-05T14:56:24.122Z
+- generatedAt: 2026-05-05T15:08:46.877Z
 - verifiedCommit: 440e3ba4b3d37eda0c8f8d14707f8487bea6bc93
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 45cd91c596c0e02885269a2b43a3ffb23489b944f82b6938f8fbb274b20b6d52
-- fileCount: 38
+- bundleSha256: 7e364d7874571227ff6256f7ca50d26d5400b0044b3bdb24adcaa7b68aeea9fe
+- fileCount: 39
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -31,6 +31,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 
 ## Decision Boundary
 
@@ -44,11 +45,11 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 164542 | `074a5f8bb8991c7d83ec63dfdc82b23f63cf5c06297044d78f213faa5338075e` |
-| `docs/product-plan-v1.md` | 12069 | `b42c88f933cb78e6e4c24a7dbe60f8249a58e4c7e6b9e3bdd91e255575a75dda` |
-| `docs/security-model-v1.md` | 24844 | `db7c866e3aaea39be4395739692d8c7a48538b8dccc55fb9a4b4097f534cef5f` |
+| `README.md` | 165127 | `b48259cd2bfed91432da7d6208a4a627a881a77f954a1a849206d764ccfa4345` |
+| `docs/product-plan-v1.md` | 12127 | `5a9d2a8daa17d40d987bce982e21c5de0aaf2982c8c27e1b38d388e8bd4cc8e6` |
+| `docs/security-model-v1.md` | 25339 | `ad8be89bf93753c4e0ac388d0258b6205eee5e6466d8af562ac86a5a54793cae` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 43120 | `4f368d78c177eb7a2cc2f4a9c07762850c59de14bbd809c268fc4c701a1e2c24` |
+| `docs/deployment-pilot-v1.md` | 43921 | `60d5081c5929142d41d2e9f0042c35552386042c6f00db59e52d48da4bf6873c` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
@@ -72,8 +73,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/production-provider-readiness-v1.md` | 6535 | `da2f664348c2d914104a8c4f5f0c14d9c4d3b6219d60f6fbfbb4d5c4487dd2b1` |
 | `docs/target-provider-evidence-intake-v1.md` | 4063 | `08161129cd4238baa56f98cc2584db834db409eb63c4b31c888ff6c1d2821de9` |
 | `docs/production-enterprise-controls-v1.md` | 7002 | `1f14af0844f1dd2602617083a230dd1b4bb049a8254c10e6198f8fe742f9b85b` |
-| `docs/target-deployment-contract-v1.md` | 8669 | `fcdf173a828cee9e2b57295cf664b3aacecaf19fd708b649519ce65d8dac2a62` |
-| `docs/release-readiness-v1.md` | 21563 | `5a8efb13135381d9f0eb14473cd4e2b8ddf01a20209f867aac8760d6291bcc27` |
+| `docs/target-deployment-contract-v1.md` | 9309 | `4ea59d3e46d057c3633c0bfccee1cd8600f7886deeb1ff48520d2e51988a0413` |
+| `docs/target-environment-evidence-intake-v1.md` | 5735 | `f1134b249a65536bae3cfa2a0f4478ed739d7a49a67b576d7d6ee60366234d70` |
+| `docs/release-readiness-v1.md` | 22297 | `9bca09e4d45197df90fb0b82520920ee40bebe327e073b66e3ec929d49326d2c` |
 | `docs/production-like-release-drill-v1.md` | 11618 | `14eef5b94e7f042c4d25343e43a5dd7bb21b212afdcabe4220669ae075caa032` |
 | `docs/execution-v1-evidence.md` | 10638 | `f338954cced6081f1781fffcce8a3d3e8962d18013917a902e3c17d869fd33d7` |
 | `docs/execution-v1-closeout.md` | 3351 | `3548d8a515ccb2f233669948cf51b1d121ade2dbf2fd5bd812eacba0ceb681f6` |

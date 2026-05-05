@@ -9,6 +9,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -30,7 +31,7 @@ This contract defines what must be proven before the system can be described as 
 
 It is not hosted production evidence, not a completed SaaS architecture decision, not a billing or account readiness proof, and not permission to claim `production-ready`.
 
-The current release remains OpenAI-scoped pilot-ready only. Production-ready remains blocked until every mandatory control below has evidence from the approved target deployment.
+The current release remains OpenAI-scoped pilot-ready only. Production-ready remains blocked until every mandatory control below has evidence from the approved target deployment and the target environment evidence intake packet is complete.
 
 ## Target Deployment Profiles
 
@@ -45,6 +46,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 
 | Control | Required Production Evidence | Current Local Evidence | Current Status |
 | --- | --- | --- | --- |
+| Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | local tenant storage administration, OIDC tenant API isolation, tenant lifecycle, and runtime isolation gates pass | blocked |
@@ -59,6 +61,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 ```bash
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
+npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
 npm run smoke:production-enterprise-controls
@@ -82,6 +85,7 @@ npm run smoke:clean-deployment-release
 ## Blocking Rules
 
 - stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
+- stop production-ready claims if the target environment evidence intake packet is incomplete
 - stop hosted SaaS claims until a separate SaaS architecture decision record exists and is approved
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested

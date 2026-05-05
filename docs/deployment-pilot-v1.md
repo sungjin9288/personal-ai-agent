@@ -11,6 +11,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -287,6 +288,16 @@ npm run smoke:target-provider-evidence-intake
 ```
 
 The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
+
+## Target Environment Evidence Intake
+
+Before presenting a deployment as production-ready for another company, verify the target environment evidence packet:
+
+```bash
+npm run smoke:target-environment-evidence-intake
+```
+
+The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
 
 Acceptance:
 
@@ -800,6 +811,7 @@ Export package should include:
 - `docs/production-retention-operating-v1.md`
 - `docs/production-provider-readiness-v1.md`
 - `docs/target-provider-evidence-intake-v1.md`
+- `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`
