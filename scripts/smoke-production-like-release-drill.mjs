@@ -34,6 +34,7 @@ for (const command of [
   'npm run smoke:secret-management',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
+  'npm run smoke:target-observability-operations',
   'npm run smoke:production-slo-operating',
   'npm run smoke:web-auth-rbac',
   'npm run smoke:production-enterprise-controls',
@@ -76,7 +77,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 24,
+      commandCount: 25,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

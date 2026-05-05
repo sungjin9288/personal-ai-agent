@@ -22,6 +22,7 @@ const BASE_PACKAGE_FILES = [
   'docs/secret-management-v1.md',
   'docs/target-secret-manager-v1.md',
   'docs/observability-telemetry-v1.md',
+  'docs/target-observability-operations-v1.md',
   'docs/runtime-isolation-v1.md',
   'docs/retention-delete-v1.md',
   'docs/backup-restore-drill-v1.md',
@@ -149,6 +150,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)

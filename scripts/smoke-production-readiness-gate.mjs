@@ -24,6 +24,7 @@ const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-revie
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
 const targetSecretManagerPath = path.join(docsDir, 'target-secret-manager-v1.md');
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
+const targetObservabilityOperationsPath = path.join(docsDir, 'target-observability-operations-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
 const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
@@ -48,6 +49,7 @@ const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
 const secretManagement = readRequiredFile(secretManagementPath);
 const targetSecretManager = readRequiredFile(targetSecretManagerPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
+const targetObservabilityOperations = readRequiredFile(targetObservabilityOperationsPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
 const runtimeIsolation = readRequiredFile(runtimeIsolationPath);
@@ -81,7 +83,7 @@ for (const blocker of [
   /identity-backed hosted RBAC\/session administration is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
   /target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment/,
-  /production telemetry, alert delivery, and on-call routing evidence is not generated from a production-like environment/,
+  /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
   /production retention\/export\/delete verification is not complete/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
@@ -105,6 +107,10 @@ assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-es
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-secret-manager-v1\.md\]\(target-secret-manager-v1\.md\)/);
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
+assert.match(
+  releaseReadiness,
+  /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/,
+);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[runtime-isolation-v1\.md\]\(runtime-isolation-v1\.md\)/);
@@ -184,6 +190,11 @@ assert.match(observabilityTelemetry, /^- status: local-observability-telemetry-c
 assert.match(observabilityTelemetry, /^- productionReadyClaim: false$/m);
 assert.match(observabilityTelemetry, /not hosted telemetry evidence/);
 assert.match(observabilityTelemetry, /Observability and telemetry remain blocked for production-ready claims/);
+assert.match(targetObservabilityOperations, /^# Target Observability Operations v1$/m);
+assert.match(targetObservabilityOperations, /^- status: local-target-observability-operations-current$/m);
+assert.match(targetObservabilityOperations, /^- productionReadyClaim: false$/m);
+assert.match(targetObservabilityOperations, /not target observability evidence/);
+assert.match(targetObservabilityOperations, /Target observability operations remain blocked for production-ready claims/);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
@@ -215,7 +226,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability operations, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -257,6 +268,7 @@ console.log(
       pilotSecretManagement: 'present',
       pilotTargetSecretManager: 'present',
       pilotObservabilityTelemetry: 'present',
+      pilotTargetObservabilityOperations: 'present',
       pilotProductionEnterpriseControls: 'present',
       pilotProductionProviderReadiness: 'present',
       pilotProductionRetentionOperating: 'present',

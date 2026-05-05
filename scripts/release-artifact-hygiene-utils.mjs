@@ -60,6 +60,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/secret-management-v1.md',
   'docs/target-secret-manager-v1.md',
   'docs/observability-telemetry-v1.md',
+  'docs/target-observability-operations-v1.md',
 ];
 
 export function runReleaseArtifactHygiene({ repoDir = process.cwd() } = {}) {

@@ -447,6 +447,28 @@ Stop condition:
 - if telemetry signals or alert triggers are missing, do not present SLO/SLA operating readiness in a pilot review
 - if the gate passes, treat it only as local observability evidence, not hosted telemetry, production alert delivery, staffed on-call, or incident review proof
 
+## Target Observability Operations Gate
+
+Before presenting a production-like deployment as observability-ready, verify the target operations evidence contract:
+
+```bash
+npm run smoke:target-observability-operations
+```
+
+The source of record is [target-observability-operations-v1.md](target-observability-operations-v1.md). It proves telemetry pipeline, alert delivery, log and trace retention, on-call routing, customer status communication, incident review history, required commands, and the target observability production gap are present.
+
+Acceptance:
+
+- target observability operation controls cover telemetry pipeline, alert delivery, retention, on-call routing, status communication, and incident review history
+- operations evidence packets include commit, deployment boundary, alert route, owner acknowledgement, retention policy, redaction review, customer channel, incident timeline, and hygiene result
+- on-call rules require primary and secondary owner, acknowledgement timing, hygiene rerun, customer communication, corrective action, and residual risk review
+- the generated target observability operations gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target observability controls or operations evidence requirements are missing, do not present production-like observability readiness
+- if the gate passes, treat it only as a local target observability operations evidence contract, not production telemetry backend, alert delivery, staffed on-call, or customer status page proof
+
 ## Backup Restore Drill
 
 Before treating runtime backup or restore behavior as part of a pilot review, run the local backup/restore drill:
@@ -522,7 +544,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -546,7 +568,7 @@ npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 ```
 
-The rehearsal runs the incident/SLO policy gate, observability telemetry gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
+The rehearsal runs the incident/SLO policy gate, observability telemetry gate, target observability operations gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
 
 Acceptance:
 
@@ -594,7 +616,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

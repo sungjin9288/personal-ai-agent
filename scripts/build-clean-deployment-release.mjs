@@ -41,6 +41,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:observability-telemetry',
   },
   {
+    command: 'npm run smoke:target-observability-operations',
+    script: 'smoke:target-observability-operations',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -230,6 +234,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
+  }
+  if (script === 'smoke:target-observability-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);

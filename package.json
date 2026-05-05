@@ -37,6 +37,7 @@
     "smoke:secret-management": "node scripts/smoke-secret-management.mjs",
     "smoke:target-secret-manager": "node scripts/smoke-target-secret-manager.mjs",
     "smoke:observability-telemetry": "node scripts/smoke-observability-telemetry.mjs",
+    "smoke:target-observability-operations": "node scripts/smoke-target-observability-operations.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",

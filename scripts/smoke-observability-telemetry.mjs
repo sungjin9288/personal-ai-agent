@@ -64,7 +64,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
 assert.match(releaseReadiness, /local observability telemetry gate: passed/);
-assert.match(targetContract, /local SLO operating and observability telemetry gates pass/);
+assert.match(targetContract, /local SLO operating, observability telemetry, and target observability operations gates pass/);
 assert.match(targetContract, /npm run smoke:observability-telemetry/);
 assert.match(deployment, /## Observability Telemetry Gate/);
 assert.match(deployment, /npm run smoke:observability-telemetry/);

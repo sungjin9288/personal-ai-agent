@@ -74,6 +74,7 @@ for (const command of [
   'npm run smoke:secret-management',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
+  'npm run smoke:target-observability-operations',
   'npm run smoke:production-slo-operating',
   'npm run smoke:clean-deployment-release',
 ]) {
@@ -87,7 +88,7 @@ for (const blocker of [
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
   /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop retention\/delete claims until target backup expiry, provider transcript handling, and post-delete absence evidence are captured/,
-  /stop observability claims until production telemetry, alert delivery, log\/trace retention, staffed on-call route, and incident review evidence are captured/,
+  /stop observability claims until target observability telemetry, alert delivery, log\/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured/,
   /stop SLO\/SLA claims until target telemetry, alerting, on-call, and incident response evidence exist/,
   /stop customer support claims until staffed ownership, customer communication route, support audit history, and incident review cadence are proven in the target environment/,
 ]) {

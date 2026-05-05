@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-05T07:21:53.165Z
+- generatedAt: 2026-05-05T07:34:07.412Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: 4bd56bd121b48e1ffdb495a4c37366d542937709
+- verifiedCommit: 3b77008e0cc04871aba61afe3db7ebc7ff937f02
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,30 +29,31 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 266 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 261 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 344 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 642 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 1132 |
-| `npm run smoke:secret-management` | pass | 0 | 446 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 392 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 573 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 338 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1547 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 449 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 438 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 475 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 362 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 270 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 264 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 564 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 312 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 288 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 254 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 632 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 263 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 294 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 828 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 269 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 254 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 252 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 243 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 307 |
+| `npm run smoke:secret-management` | pass | 0 | 339 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 316 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 348 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 878 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 596 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 2435 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 768 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 573 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 439 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 440 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 573 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 718 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 1656 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 642 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 624 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 664 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1462 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 589 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 989 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1214 |
 
 ## Key Signals
 
@@ -145,11 +146,22 @@ Production-ready remains blocked until the target deployment model produces clea
   }
 ```
 
+### npm run smoke:target-observability-operations
+
+```json
+{
+    "controlCount": 6,
+    "mode": "target-observability-operations",
+    "operationsPacketItemCount": 10,
+    "productionReadyClaim": false
+  }
+```
+
 ### npm run smoke:production-slo-operating
 
 ```json
 {
-    "commandCount": 8,
+    "commandCount": 9,
     "mode": "production-slo-operating",
     "productionReadyClaim": false
   }
@@ -225,7 +237,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 18,
+    "commandCount": 19,
     "mode": "clean-deployment-release",
     "productionReadyClaim": false
   }
@@ -235,8 +247,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -249,7 +261,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "4bd56bd121b48e1ffdb495a4c37366d542937709"
@@ -271,6 +283,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "pilotSecretManagement": "present",
     "pilotTargetSecretManager": "present",
     "pilotObservabilityTelemetry": "present",
+    "pilotTargetObservabilityOperations": "present",
     "pilotProductionEnterpriseControls": "present",
     "pilotIncidentSloPolicy": "present",
     "pilotProductionProviderReadiness": "present",
@@ -280,7 +293,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "productionLikeReleaseDrill": "present",
     "productionBlockerCount": 10,
     "releaseArtifactHygiene": "passed",
-    "releaseArtifactHygieneScannedFiles": 24
+    "releaseArtifactHygieneScannedFiles": 25
   }
 ```
 
@@ -289,7 +302,7 @@ Production-ready remains blocked until the target deployment model produces clea
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 24,
+    "scannedFileCount": 25,
     "secretFindingCount": 0,
     "verifiedCommit": "4bd56bd121b48e1ffdb495a4c37366d542937709"
   }
@@ -343,7 +356,7 @@ Production-ready remains blocked until the target deployment model produces clea
 - identity-backed hosted RBAC/session administration is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
 - target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment
-- production telemetry, alert delivery, and on-call routing evidence is not generated from a production-like environment
+- target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
 - production retention/export/delete verification is not complete
 - production SLO/SLA operating evidence is not generated from a production-like environment
