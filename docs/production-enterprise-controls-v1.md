@@ -1,9 +1,9 @@
 # Production Enterprise Controls Rehearsal v1
 
 - status: local-enterprise-controls-current
-- generatedAt: 2026-05-05T12:17:52.994Z
+- generatedAt: 2026-05-05T12:44:14.994Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: e295cea1f7c11c573b9d568c1b37a09fd546c659
+- sourceCommit: 94b018728a493fac74f24c0dbe937df8546e37a3
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, tenant storage administration, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
@@ -27,15 +27,15 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:identity-session-admin` | pass | 0 | 424 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1589 |
-| `npm run smoke:web-oidc-rbac` | pass | 0 | 1549 |
-| `npm run smoke:web-tenant-isolation` | pass | 0 | 1979 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 291 |
-| `npm run smoke:web-rbac` | pass | 0 | 2211 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 335 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1161 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 256 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 337 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1541 |
+| `npm run smoke:web-oidc-rbac` | pass | 0 | 1564 |
+| `npm run smoke:web-tenant-isolation` | pass | 0 | 1712 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 232 |
+| `npm run smoke:web-rbac` | pass | 0 | 1751 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 246 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 877 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 229 |
 
 ## Key Signals
 
@@ -127,9 +127,9 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 26,
+    "scannedFileCount": 27,
     "secretFindingCount": 0,
-    "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
+    "verifiedCommit": "94b018728a493fac74f24c0dbe937df8546e37a3"
   }
 ```
 
