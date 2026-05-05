@@ -78,7 +78,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
 assert.match(releaseReadiness, /local support escalation review gate: passed/);
-assert.match(targetContract, /local support operations and support escalation review gates pass/);
+assert.match(targetContract, /local support operations, support escalation review, and target support operations gates pass/);
 assert.match(targetContract, /npm run smoke:support-escalation-review/);
 assert.match(deployment, /## Support Escalation Review Gate/);
 assert.match(deployment, /npm run smoke:support-escalation-review/);

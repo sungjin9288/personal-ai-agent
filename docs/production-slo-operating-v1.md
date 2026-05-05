@@ -1,9 +1,9 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-05T12:17:56.689Z
+- generatedAt: 2026-05-05T12:28:34.469Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: e295cea1f7c11c573b9d568c1b37a09fd546c659
+- sourceCommit: 0244eda48fe23701163071d304fb43e9f5c878f4
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
@@ -11,29 +11,31 @@
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability operations, support escalation review, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability operations, support escalation review, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until the approved target environment provides production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, incident review cadence, and provider/deployment evidence.
+Production-ready remains blocked until the approved target environment provides production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, and provider/deployment evidence.
 
 ## Command Matrix
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 387 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 501 | 5s | yes |
-| `npm run smoke:target-observability-operations` | pass | 0 | 356 | 5s | yes |
-| `npm run smoke:support-escalation-review` | pass | 0 | 322 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 723 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 500 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 329 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 676 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1396 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 1211 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 1204 | 5s | yes |
+| `npm run smoke:target-observability-operations` | pass | 0 | 999 | 5s | yes |
+| `npm run smoke:support-escalation-review` | pass | 0 | 707 | 5s | yes |
+| `npm run smoke:target-support-operations` | pass | 0 | 550 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 1332 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 2875 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 1099 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1150 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1532 | 10s | yes |
 
 ## Key Signals
 
@@ -80,12 +82,23 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:target-support-operations
+
+```json
+{
+    "controlCount": 6,
+    "mode": "target-support-operations",
+    "productionReadyClaim": false,
+    "supportPacketItemCount": 10
+  }
+```
+
 ### npm run smoke:execution-v1-status
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "deterministic": "8/8",
     "runtimeRows": 8,
     "snapshotCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
@@ -96,7 +109,7 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
@@ -108,7 +121,7 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 26,
+    "scannedFileCount": 27,
     "secretFindingCount": 0,
     "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
   }
@@ -144,6 +157,7 @@ Production-ready remains blocked until the approved target environment provides 
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 - target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
+- target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements
 
 ## Operator Re-Run
 

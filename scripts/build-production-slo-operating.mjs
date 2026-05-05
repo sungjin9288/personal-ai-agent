@@ -24,6 +24,10 @@ const SLO_COMMANDS = [
     script: 'smoke:support-escalation-review',
   },
   {
+    command: 'npm run smoke:target-support-operations',
+    script: 'smoke:target-support-operations',
+  },
+  {
     command: 'npm run smoke:execution-v1-status',
     script: 'smoke:execution-v1-status',
   },
@@ -126,6 +130,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:support-escalation-review') {
     return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
   }
+  if (script === 'smoke:target-support-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'supportPacketItemCount']);
+  }
   if (script === 'smoke:execution-v1-status') {
     return pick(parsed, ['artifactState', 'artifactSyncCommit', 'deterministic', 'runtimeRows', 'snapshotCommit']);
   }
@@ -184,15 +191,16 @@ function renderSloOperatingMarkdown({
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability operations, support escalation review, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability operations, support escalation review, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the approved target environment provides production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, incident review cadence, and provider/deployment evidence.
+Production-ready remains blocked until the approved target environment provides production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, and provider/deployment evidence.
 
 ## Command Matrix
 
@@ -213,6 +221,7 @@ ${keySignalRows}
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 - target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
+- target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements
 
 ## Operator Re-Run
 

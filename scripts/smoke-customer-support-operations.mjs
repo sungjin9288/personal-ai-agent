@@ -73,7 +73,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /local customer support operations gate: passed/);
-assert.match(targetContract, /local support operations and support escalation review gates pass/);
+assert.match(targetContract, /local support operations, support escalation review, and target support operations gates pass/);
 assert.match(targetContract, /npm run smoke:customer-support-operations/);
 assert.match(deployment, /## Customer Support Operations Gate/);
 assert.match(deployment, /npm run smoke:customer-support-operations/);

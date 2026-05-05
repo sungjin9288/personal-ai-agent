@@ -31,6 +31,7 @@ for (const command of [
   'npm run smoke:tenant-storage-admin',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
+  'npm run smoke:target-support-operations',
   'npm run smoke:secret-management',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
@@ -62,6 +63,7 @@ for (const blocker of [
   /hosted tenant isolation is out of v1 scope/,
   /target backup, retention, export, delete, and post-delete absence evidence is not generated/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
+  /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(drill, blocker);
@@ -78,7 +80,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 26,
+      commandCount: 27,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

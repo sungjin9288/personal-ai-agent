@@ -35,6 +35,7 @@
     "smoke:incident-slo-policy": "node scripts/smoke-incident-slo-policy.mjs",
     "smoke:customer-support-operations": "node scripts/smoke-customer-support-operations.mjs",
     "smoke:support-escalation-review": "node scripts/smoke-support-escalation-review.mjs",
+    "smoke:target-support-operations": "node scripts/smoke-target-support-operations.mjs",
     "smoke:secret-management": "node scripts/smoke-secret-management.mjs",
     "smoke:target-secret-manager": "node scripts/smoke-target-secret-manager.mjs",
     "smoke:observability-telemetry": "node scripts/smoke-observability-telemetry.mjs",

@@ -29,6 +29,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:support-escalation-review',
   },
   {
+    command: 'npm run smoke:target-support-operations',
+    script: 'smoke:target-support-operations',
+  },
+  {
     command: 'npm run smoke:secret-management',
     script: 'smoke:secret-management',
   },
@@ -229,6 +233,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:support-escalation-review') {
     return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
+  }
+  if (script === 'smoke:target-support-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'supportPacketItemCount']);
   }
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);

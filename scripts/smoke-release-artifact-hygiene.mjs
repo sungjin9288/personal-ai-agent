@@ -24,6 +24,7 @@ assert.equal(result.scannedFiles.includes('docs/identity-session-admin-v1.md'), 
 assert.equal(result.scannedFiles.includes('docs/tenant-storage-admin-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/customer-support-operations-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/support-escalation-review-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-support-operations-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/secret-management-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-secret-manager-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/observability-telemetry-v1.md'), true);

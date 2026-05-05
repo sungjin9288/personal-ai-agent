@@ -35,6 +35,7 @@ for (const command of [
   'npm run smoke:observability-telemetry',
   'npm run smoke:target-observability-operations',
   'npm run smoke:support-escalation-review',
+  'npm run smoke:target-support-operations',
   'npm run smoke:execution-v1-status',
   'npm run smoke:execution-v1-snapshot',
   'npm run smoke:release-artifact-hygiene',
@@ -49,6 +50,7 @@ for (const phrase of [
   /observability telemetry/,
   /target observability operations/,
   /support escalation review/,
+  /target support operations/,
   /release artifact hygiene/,
   /runtime lifecycle and runtime isolation/,
   /incident\/SLO policy/,
@@ -69,7 +71,7 @@ assert.match(readme, /npm run smoke:production-slo-operating/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 9,
+      commandCount: 10,
       mode: 'production-slo-operating',
       ok: true,
       path: 'docs/production-slo-operating-v1.md',

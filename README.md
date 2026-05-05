@@ -61,6 +61,7 @@ The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-
 The local target backup operations gate is [docs/target-backup-operations-v1.md](docs/target-backup-operations-v1.md).
 The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
 The local support escalation review gate is [docs/support-escalation-review-v1.md](docs/support-escalation-review-v1.md).
+The local target support operations gate is [docs/target-support-operations-v1.md](docs/target-support-operations-v1.md).
 The local secret management gate is [docs/secret-management-v1.md](docs/secret-management-v1.md).
 The local target secret manager gate is [docs/target-secret-manager-v1.md](docs/target-secret-manager-v1.md).
 The local observability telemetry gate is [docs/observability-telemetry-v1.md](docs/observability-telemetry-v1.md).
@@ -92,6 +93,7 @@ Current planning status:
 - local target backup operations evidence can be verified with `npm run smoke:target-backup-operations`; it proves backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, expiry/deletion, and disaster recovery evidence requirements are present, but it does not provide production backup execution or disaster recovery proof
 - local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
 - local support escalation review evidence can be verified with `npm run smoke:support-escalation-review`; it proves escalation routes, audit packet requirements, incident review cadence, and customer update rules are present, but it does not provide staffed production support audit history
+- local target support operations evidence can be verified with `npm run smoke:target-support-operations`; it proves staffed coverage, support queue routing, customer communication, ticket audit, incident review, and on-call handoff evidence requirements are present, but it does not provide production support rota or ticketing proof
 - local secret management evidence can be verified with `npm run smoke:secret-management`; it proves secret classes, injection rules, redaction/hygiene rules, and rotation checklist are present, but it does not provide target secret manager or production rotation proof
 - local target secret manager evidence can be verified with `npm run smoke:target-secret-manager`; it proves secret manager controls, rotation evidence packet, break-glass rules, and production target secret manager gaps are present, but it does not provide target secret manager injection or rotation proof
 - local observability telemetry evidence can be verified with `npm run smoke:observability-telemetry`; it proves local telemetry signals, alert triggers, and handoff requirements are present, but it does not provide hosted telemetry, alert delivery, or staffed on-call proof
@@ -186,6 +188,12 @@ Support escalation review gate:
 
 ```bash
 npm run smoke:support-escalation-review
+```
+
+Target support operations gate:
+
+```bash
+npm run smoke:target-support-operations
 ```
 
 Secret management gate:

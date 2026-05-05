@@ -73,6 +73,7 @@ for (const command of [
   'npm run smoke:target-backup-operations',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
+  'npm run smoke:target-support-operations',
   'npm run smoke:secret-management',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
@@ -92,7 +93,7 @@ for (const blocker of [
   /stop retention\/delete claims until target backup execution, encrypted storage, backup expiry, provider transcript handling, and post-delete absence evidence are captured/,
   /stop observability claims until target observability telemetry, alert delivery, log\/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured/,
   /stop SLO\/SLA claims until target telemetry, alerting, on-call, and incident response evidence exist/,
-  /stop customer support claims until staffed ownership, customer communication route, support audit history, and incident review cadence are proven in the target environment/,
+  /stop customer support claims until staffed ownership, support queue routing, customer communication route, ticket audit history, on-call handoff, and incident review cadence are proven in the target environment/,
 ]) {
   assert.match(contract, blocker);
 }
