@@ -1,9 +1,9 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-05T02:44:18.156Z
+- generatedAt: 2026-05-05T02:57:39.778Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 2b9dc9d40cb511813df3930e70aa5d8bcdbc0fe8
+- sourceCommit: e25d566ab96ae66bfb87912011e899be9cff2696
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
@@ -23,13 +23,13 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 126 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 134 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 425 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 160 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 125 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 333 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 479 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 161 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 173 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 437 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 177 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 180 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 491 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1008 | 10s | yes |
 
 ## Key Signals
 
@@ -57,11 +57,11 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "deterministic": "8/8",
     "runtimeRows": 8,
-    "snapshotCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
+    "snapshotCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
   }
 ```
 
@@ -69,10 +69,10 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
+    "verifiedCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
   }
 ```
 
@@ -83,7 +83,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 20,
     "secretFindingCount": 0,
-    "verifiedCommit": "3c6097fa0c48d6cc0c5f8b370cf6aa4a70112b76"
+    "verifiedCommit": "e25d566ab96ae66bfb87912011e899be9cff2696"
   }
 ```
 

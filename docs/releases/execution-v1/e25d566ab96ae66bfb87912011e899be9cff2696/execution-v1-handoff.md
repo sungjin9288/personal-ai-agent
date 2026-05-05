@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-05T02:57:13.814Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-05T02:57:10.840Z
 - localDate: 2026-05-05
 - branch: codex/managed-multi-agent-v1-foundation
 - commit: e25d566ab96ae66bfb87912011e899be9cff2696
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696](releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696](docs/releases/execution-v1/e25d566ab96ae66bfb87912011e899be9cff2696)
 - visualArtifactSetSha256: 37f406fafd2e1812ac180aa27196169db8b42542fab648d91f428d6ae5816fbe
 - commitPushStatus: pushed to origin/codex/managed-multi-agent-v1-foundation
 
