@@ -43,6 +43,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:target-observability-operations',
   },
   {
+    command: 'npm run smoke:target-backup-operations',
+    script: 'smoke:target-backup-operations',
+  },
+  {
     command: 'npm run smoke:production-slo-operating',
     script: 'smoke:production-slo-operating',
   },
@@ -209,6 +213,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:target-observability-operations') {
     return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
   }
+  if (script === 'smoke:target-backup-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'recoveryPacketItemCount']);
+  }
   if (script === 'smoke:production-slo-operating') {
     return pick(parsed, ['commandCount', 'mode', 'productionReadyClaim']);
   }
@@ -261,6 +268,7 @@ function extractKeySignals(script, parsed) {
       'pilotTargetSecretManager',
       'pilotObservabilityTelemetry',
       'pilotTargetObservabilityOperations',
+      'pilotTargetBackupOperations',
       'pilotProductionEnterpriseControls',
       'pilotIncidentSloPolicy',
       'pilotProductionProviderReadiness',

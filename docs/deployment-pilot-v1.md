@@ -491,6 +491,28 @@ Stop condition:
 - if backup or restore hash verification fails, do not present backup/restore readiness in a pilot or production-like review
 - if the drill passes, treat it only as local backup/restore evidence, not hosted encrypted backup durability or disaster recovery proof
 
+## Target Backup Operations Gate
+
+Before presenting a production-like deployment as backup-ready or disaster-recovery-ready, verify the target backup operations evidence contract:
+
+```bash
+npm run smoke:target-backup-operations
+```
+
+The source of record is [target-backup-operations-v1.md](target-backup-operations-v1.md). It proves backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery rules, required commands, and the target backup production gap are present.
+
+Acceptance:
+
+- target backup operation controls cover backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, and backup expiry/deletion
+- recovery evidence packets include commit, deployment boundary, backup policy, storage encryption, key owner, restore result, data inventory, tenant isolation, expiry/delete evidence, DR owner, and readiness gate result
+- disaster recovery rules require backup owner, restore owner, decision owner, restore objective, integrity proof, hygiene rerun, customer communication review, and residual risk record
+- the generated target backup operations gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target backup controls or recovery evidence requirements are missing, do not present production-like backup or disaster recovery readiness
+- if the gate passes, treat it only as a local target backup operations evidence contract, not production backup execution, encrypted storage, key rotation, expiry enforcement, or disaster recovery proof
+
 ## Customer Support Operations Gate
 
 Before sharing a pilot package with a customer or another company, verify support ownership and escalation evidence:
@@ -544,7 +566,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -616,7 +638,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

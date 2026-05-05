@@ -28,6 +28,7 @@ assert.equal(result.scannedFiles.includes('docs/secret-management-v1.md'), true)
 assert.equal(result.scannedFiles.includes('docs/target-secret-manager-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/observability-telemetry-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-observability-operations-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-backup-operations-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);
 assert.equal(
   result.scannedFiles.some(

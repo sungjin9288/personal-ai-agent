@@ -37,6 +37,7 @@ try {
   assert.match(backupDrillDoc, /encrypted backup storage and key ownership evidence/);
   assert.match(retentionDoc, /npm run smoke:backup-restore-drill/);
   assert.match(targetContractDoc, /backup\/restore drill/);
+  assert.match(targetContractDoc, /target backup operations gates pass/);
   assert.match(releaseReadinessDoc, /local backup\/restore drill: passed/);
 
   seedTenantRuntime(sourceRoot);

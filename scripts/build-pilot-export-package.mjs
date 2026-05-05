@@ -26,6 +26,7 @@ const BASE_PACKAGE_FILES = [
   'docs/runtime-isolation-v1.md',
   'docs/retention-delete-v1.md',
   'docs/backup-restore-drill-v1.md',
+  'docs/target-backup-operations-v1.md',
   'docs/identity-session-admin-v1.md',
   'docs/tenant-storage-admin-v1.md',
   'docs/clean-deployment-release-v1.md',
@@ -152,6 +153,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
+- relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)

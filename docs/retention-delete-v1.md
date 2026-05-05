@@ -10,6 +10,7 @@
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
+- relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 
 ## Policy Position
@@ -68,6 +69,7 @@ npm run smoke:retention-delete-policy
 npm run smoke:runtime-data-lifecycle
 npm run smoke:tenant-data-lifecycle
 npm run smoke:backup-restore-drill
+npm run smoke:target-backup-operations
 npm run smoke:runtime-isolation
 npm run package:pilot-export
 npm run smoke:pilot-export-package
@@ -89,4 +91,4 @@ npm run smoke:production-retention-operating
 
 This policy is a pilot lifecycle policy. [production-retention-operating-v1.md](production-retention-operating-v1.md) records the current local operating rehearsal for the same retention, export, tenant-scoped delete, package, and hygiene gates, but it does not prove hosted tenant retention, centralized data subject request handling, provider-side transcript deletion, backup expiry, or production environment post-delete absence.
 
-Production-ready remains blocked until retention, export, and delete verification is repeated in the approved production-like deployment with customer-approved data classes, retention windows, provider transcript handling, backup/restore boundaries, and deletion evidence.
+Production-ready remains blocked until retention, export, and delete verification is repeated in the approved production-like deployment with customer-approved data classes, retention windows, provider transcript handling, target backup operations, backup/restore boundaries, and deletion evidence.
