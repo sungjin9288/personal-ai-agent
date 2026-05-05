@@ -1,9 +1,9 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-05T04:35:34.330Z
+- generatedAt: 2026-05-05T07:20:54.013Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 471972f549a3ff3a17becc5f6e789bb7f3bf225a
+- sourceCommit: 4bd56bd121b48e1ffdb495a4c37366d542937709
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like retention, export, delete, tenant-scoped lifecycle, backup/restore, and isolation rehearsal
 - productionReadyClaim: false
@@ -24,14 +24,14 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 125 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 315 | 10s | yes |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 143 | 10s | yes |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 142 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 504 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 134 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 129 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 129 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 551 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1893 | 10s | yes |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 707 | 10s | yes |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 483 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1212 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 334 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 354 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 347 | 5s | yes |
 
 ## Key Signals
 
@@ -91,11 +91,11 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 32,
+    "fileCount": 33,
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
-    "verifiedCommit": "471972f549a3ff3a17becc5f6e789bb7f3bf225a"
+    "verifiedCommit": "4bd56bd121b48e1ffdb495a4c37366d542937709"
   }
 ```
 
@@ -103,9 +103,9 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 32,
+    "fileCount": 33,
     "mode": "pilot-export-package",
-    "verifiedCommit": "471972f549a3ff3a17becc5f6e789bb7f3bf225a"
+    "verifiedCommit": "4bd56bd121b48e1ffdb495a4c37366d542937709"
   }
 ```
 
@@ -114,9 +114,9 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 23,
+    "scannedFileCount": 24,
     "secretFindingCount": 0,
-    "verifiedCommit": "471972f549a3ff3a17becc5f6e789bb7f3bf225a"
+    "verifiedCommit": "4bd56bd121b48e1ffdb495a4c37366d542937709"
   }
 ```
 
