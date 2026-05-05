@@ -22,6 +22,7 @@ const tenantStorageAdminPath = path.join(docsDir, 'tenant-storage-admin-v1.md');
 const customerSupportOperationsPath = path.join(docsDir, 'customer-support-operations-v1.md');
 const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-review-v1.md');
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
+const targetSecretManagerPath = path.join(docsDir, 'target-secret-manager-v1.md');
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
 const productionLikeDrillPath = path.join(docsDir, 'production-like-release-drill-v1.md');
@@ -45,6 +46,7 @@ const tenantStorageAdmin = readRequiredFile(tenantStorageAdminPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
 const secretManagement = readRequiredFile(secretManagementPath);
+const targetSecretManager = readRequiredFile(targetSecretManagerPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
 const productionLikeDrill = readRequiredFile(productionLikeDrillPath);
@@ -78,7 +80,7 @@ for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /identity-backed hosted RBAC\/session administration is not implemented/,
   /hosted tenant isolation is out of v1 scope/,
-  /production secret manager injection, rotation, and audit evidence is not generated from a production-like environment/,
+  /target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment/,
   /production telemetry, alert delivery, and on-call routing evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
   /production retention\/export\/delete verification is not complete/,
@@ -101,6 +103,7 @@ assert.match(releaseReadiness, /\[tenant-storage-admin-v1\.md\]\(tenant-storage-
 assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-secret-manager-v1\.md\]\(target-secret-manager-v1\.md\)/);
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);
@@ -171,6 +174,11 @@ assert.match(secretManagement, /^- status: local-secret-management-current$/m);
 assert.match(secretManagement, /^- productionReadyClaim: false$/m);
 assert.match(secretManagement, /not target secret manager evidence/);
 assert.match(secretManagement, /Secret management remains blocked for production-ready claims/);
+assert.match(targetSecretManager, /^# Target Secret Manager v1$/m);
+assert.match(targetSecretManager, /^- status: local-target-secret-manager-current$/m);
+assert.match(targetSecretManager, /^- productionReadyClaim: false$/m);
+assert.match(targetSecretManager, /not target secret manager evidence/);
+assert.match(targetSecretManager, /Target secret manager readiness remains blocked for production-ready claims/);
 assert.match(observabilityTelemetry, /^# Observability Telemetry v1$/m);
 assert.match(observabilityTelemetry, /^- status: local-observability-telemetry-current$/m);
 assert.match(observabilityTelemetry, /^- productionReadyClaim: false$/m);
@@ -207,7 +215,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -247,6 +255,7 @@ console.log(
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
       pilotSecretManagement: 'present',
+      pilotTargetSecretManager: 'present',
       pilotObservabilityTelemetry: 'present',
       pilotProductionEnterpriseControls: 'present',
       pilotProductionProviderReadiness: 'present',

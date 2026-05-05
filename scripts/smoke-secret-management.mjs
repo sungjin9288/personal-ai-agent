@@ -64,7 +64,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
 assert.match(releaseReadiness, /local secret management gate: passed/);
-assert.match(targetContract, /local secret management gate and release artifact hygiene pass/);
+assert.match(targetContract, /local secret management, target secret manager contract, and release artifact hygiene pass/);
 assert.match(targetContract, /npm run smoke:secret-management/);
 assert.match(deployment, /## Secret Management Gate/);
 assert.match(deployment, /npm run smoke:secret-management/);

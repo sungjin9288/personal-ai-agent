@@ -103,6 +103,7 @@
 - [x] Identity session administration gate implemented
 - [x] Production enterprise controls rehearsal gate implemented
 - [x] Secret handling policy documented
+- [x] Target secret manager gate implemented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented

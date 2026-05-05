@@ -72,6 +72,7 @@ for (const command of [
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:secret-management',
+  'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
   'npm run smoke:production-slo-operating',
   'npm run smoke:clean-deployment-release',

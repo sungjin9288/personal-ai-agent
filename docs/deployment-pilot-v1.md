@@ -17,6 +17,7 @@
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
@@ -402,6 +403,28 @@ Stop condition:
 - if any secret appears in tracked docs or release artifacts, stop sharing, rotate the exposed credential, scrub/regenerate artifacts, and rerun hygiene
 - if the gate passes, treat it only as local pilot secret-management evidence, not target secret manager injection, production rotation, or audit proof
 
+## Target Secret Manager Gate
+
+Before presenting a production-like deployment as secret-manager-ready, verify the target secret manager evidence contract:
+
+```bash
+npm run smoke:target-secret-manager
+```
+
+The source of record is [target-secret-manager-v1.md](target-secret-manager-v1.md). It proves secret manager controls, rotation evidence packet, break-glass rules, required commands, and the target secret manager production gap are present.
+
+Acceptance:
+
+- secret injection, access policy, rotation cadence, audit trail, break-glass, and leakage review controls are documented
+- rotation evidence packet includes commit, release label, secret class, logical secret identifier, owner, approver, timestamp, affected service, reload result, hygiene result, and follow-up
+- break-glass rules require owner, approver, expiry, revocation deadline, hygiene rerun, and residual risk review
+- the generated target secret manager gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target secret manager controls or rotation evidence requirements are missing, do not present production-like secret management readiness
+- if the gate passes, treat it only as a local target secret manager evidence contract, not target secret manager injection, production rotation, or break-glass audit proof
+
 ## Observability Telemetry Gate
 
 Before using the pilot package for an SLO/SLA or operating review, verify the local telemetry contract:
@@ -499,7 +522,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -571,7 +594,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

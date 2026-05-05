@@ -19,6 +19,7 @@
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
@@ -35,7 +36,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target secret manager, production telemetry, backup, SLO/SLA, retention, customer support audit, and clean production-like evidence.
+It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, production telemetry, backup, SLO/SLA, retention, customer support audit, and clean production-like evidence.
 
 ## Evidence Summary
 
@@ -66,6 +67,7 @@ Current execution evidence:
 - local identity session administration gate: passed, with identity controls, session lifecycle, audit packet requirements, and `productionReadyClaim: false`
 - local tenant storage administration gate: passed, with tenant storage controls, tenant admin operations, audit packet requirements, and `productionReadyClaim: false`
 - target deployment contract gate: passed, with hosted production/SaaS mandatory controls explicitly blocked until target evidence exists
+- local target secret manager gate: passed, with secret manager controls, rotation evidence packet, break-glass rules, and `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 - local OIDC/JWKS auth plus RBAC gate: passed for bearer JWT issuer/audience/signature/expiry and token role claim enforcement, without hosted session administration claims
 - local OIDC tenant isolation gate: passed for tenant-bound workspace creation, workspace/mission filtering, cross-tenant mission create/read blocking, and tenant header spoofing prevention, without hosted tenant storage claims
@@ -104,6 +106,7 @@ Current handoff state:
 | [customer-support-operations-v1.md](customer-support-operations-v1.md) | local-support-operations-current | local support roles, intake routing, escalation, communication, and handoff checklist |
 | [support-escalation-review-v1.md](support-escalation-review-v1.md) | local-support-escalation-review-current | local support escalation routes, audit packet requirements, incident review cadence, and customer update rules |
 | [secret-management-v1.md](secret-management-v1.md) | local-secret-management-current | local secret classes, injection, redaction, hygiene, rotation, and production gap |
+| [target-secret-manager-v1.md](target-secret-manager-v1.md) | local-target-secret-manager-current | target secret manager controls, rotation evidence packet, break-glass rules, and production target gap |
 | [observability-telemetry-v1.md](observability-telemetry-v1.md) | local-observability-telemetry-current | local telemetry signals, alert triggers, handoff requirements, and production telemetry gap |
 | [runtime-isolation-v1.md](runtime-isolation-v1.md) | pilot-isolation-evidence-current | one-runtime-per-customer isolation smoke and production gap |
 | [retention-delete-v1.md](retention-delete-v1.md) | pilot-policy-evidence-current | data class retention, export checklist, delete checklist, and production gap |
@@ -173,7 +176,7 @@ Blockers:
 - Anthropic, local, and Hermes live validations are not complete
 - identity-backed hosted RBAC/session administration is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
-- production secret manager injection, rotation, and audit evidence is not generated from a production-like environment
+- target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment
 - production telemetry, alert delivery, and on-call routing evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
 - production retention/export/delete verification is not complete
@@ -233,6 +236,7 @@ npm run smoke:production-retention-operating
 npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
 npm run smoke:secret-management
+npm run smoke:target-secret-manager
 npm run smoke:observability-telemetry
 npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
@@ -276,7 +280,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager, production telemetry, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, production telemetry, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

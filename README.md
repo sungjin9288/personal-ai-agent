@@ -61,6 +61,7 @@ The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-
 The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
 The local support escalation review gate is [docs/support-escalation-review-v1.md](docs/support-escalation-review-v1.md).
 The local secret management gate is [docs/secret-management-v1.md](docs/secret-management-v1.md).
+The local target secret manager gate is [docs/target-secret-manager-v1.md](docs/target-secret-manager-v1.md).
 The local observability telemetry gate is [docs/observability-telemetry-v1.md](docs/observability-telemetry-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
@@ -89,6 +90,7 @@ Current planning status:
 - local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
 - local support escalation review evidence can be verified with `npm run smoke:support-escalation-review`; it proves escalation routes, audit packet requirements, incident review cadence, and customer update rules are present, but it does not provide staffed production support audit history
 - local secret management evidence can be verified with `npm run smoke:secret-management`; it proves secret classes, injection rules, redaction/hygiene rules, and rotation checklist are present, but it does not provide target secret manager or production rotation proof
+- local target secret manager evidence can be verified with `npm run smoke:target-secret-manager`; it proves secret manager controls, rotation evidence packet, break-glass rules, and production target secret manager gaps are present, but it does not provide target secret manager injection or rotation proof
 - local observability telemetry evidence can be verified with `npm run smoke:observability-telemetry`; it proves local telemetry signals, alert triggers, and handoff requirements are present, but it does not provide hosted telemetry, alert delivery, or staffed on-call proof
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -180,6 +182,12 @@ Secret management gate:
 
 ```bash
 npm run smoke:secret-management
+```
+
+Target secret manager gate:
+
+```bash
+npm run smoke:target-secret-manager
 ```
 
 Observability telemetry gate:

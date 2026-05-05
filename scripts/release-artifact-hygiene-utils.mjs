@@ -58,6 +58,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/customer-support-operations-v1.md',
   'docs/support-escalation-review-v1.md',
   'docs/secret-management-v1.md',
+  'docs/target-secret-manager-v1.md',
   'docs/observability-telemetry-v1.md',
 ];
 

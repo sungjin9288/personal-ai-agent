@@ -70,6 +70,7 @@ Production gap:
 - [identity-session-admin-v1.md](identity-session-admin-v1.md) defines the local identity/session administration gate for identity controls, session lifecycle, role assignment/revocation audit packets, and the remaining hosted identity production gap
 - [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) defines the local tenant storage administration gate for tenant storage controls, tenant admin operations, backup/restore isolation requirements, and the remaining hosted tenant isolation production gap
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
+- [target-secret-manager-v1.md](target-secret-manager-v1.md) defines the local target secret manager evidence contract for secret manager controls, rotation evidence packets, break-glass rules, and the remaining target injection/audit gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 
 ## RBAC Matrix
@@ -115,6 +116,7 @@ Rules:
 - provider live validation output must be reviewed before sharing outside the operator environment
 - local provider base URLs may reveal infrastructure shape and should be treated as internal configuration
 - `smoke:secret-management` verifies the local pilot secret-management policy surface while keeping target secret manager injection, rotation, audit, and revocation as production blockers
+- `smoke:target-secret-manager` verifies the target secret manager evidence contract while keeping actual target secret manager injection, access policy, audit, break-glass, and revocation evidence as production blockers
 
 Required scans before handoff:
 

@@ -33,6 +33,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:secret-management',
   },
   {
+    command: 'npm run smoke:target-secret-manager',
+    script: 'smoke:target-secret-manager',
+  },
+  {
     command: 'npm run smoke:observability-telemetry',
     script: 'smoke:observability-telemetry',
   },
@@ -220,6 +224,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
+  }
+  if (script === 'smoke:target-secret-manager') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'rotationPacketItemCount']);
   }
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
