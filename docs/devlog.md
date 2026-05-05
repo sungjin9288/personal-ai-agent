@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-05 Secret Management Gate Pass
+
+- added [secret-management-v1.md](secret-management-v1.md) as the local pilot secret-management source of record for secret classes, environment or secret-manager injection, redaction/hygiene rules, rotation/revocation checklist, and production gap
+- added `smoke:secret-management` to verify the policy surface and cross-document wiring while keeping `productionReadyClaim: false`
+- wired the secret management gate into release readiness, target deployment contract, deployment guide, security model, product checklist, README, clean deployment rehearsal, production-like drill, pilot export package, and artifact hygiene while preserving target secret manager, rotation, audit, and revocation blockers
+
 ## 2026-05-05 Customer Support Operations Gate Pass
 
 - added [customer-support-operations-v1.md](customer-support-operations-v1.md) as the local pilot support operations source of record for support roles, intake classes, escalation matrix, customer communications, pilot handoff, and evidence requirements

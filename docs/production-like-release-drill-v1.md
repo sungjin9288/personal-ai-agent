@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-05T02:07:02.727Z
+- generatedAt: 2026-05-05T02:16:54.039Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: b4fa0cae585814c8125b7a0d6c6e86e7216b4afb
+- verifiedCommit: c48913c12cdc61f06bb19370fbef0595069dd2ad
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,24 +29,25 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 208 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 206 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 219 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1748 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 221 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 246 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 291 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 267 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 204 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 198 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 484 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 247 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 283 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 253 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 533 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 219 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 229 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 779 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 203 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 197 |
+| `npm run smoke:secret-management` | pass | 0 | 193 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 175 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1438 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 189 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 175 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 191 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 187 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 187 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 191 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 539 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 267 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 320 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 184 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 511 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 209 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 207 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 694 |
 
 ## Key Signals
 
@@ -67,6 +68,17 @@ Production-ready remains blocked until the target deployment model produces clea
     "mode": "customer-support-operations",
     "productionReadyClaim": false,
     "supportRoleCount": 5
+  }
+```
+
+### npm run smoke:secret-management
+
+```json
+{
+    "injectionRuleCount": 5,
+    "mode": "secret-management",
+    "productionReadyClaim": false,
+    "secretClassCount": 5
   }
 ```
 
@@ -150,7 +162,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 13,
+    "commandCount": 14,
     "mode": "clean-deployment-release",
     "productionReadyClaim": false
   }
@@ -160,8 +172,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -174,7 +186,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "b4fa0cae585814c8125b7a0d6c6e86e7216b4afb"
@@ -190,6 +202,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "openaiLiveValidation": "passed",
     "pilotCleanDeploymentRelease": "present",
     "pilotCustomerSupportOperations": "present",
+    "pilotSecretManagement": "present",
     "pilotProductionEnterpriseControls": "present",
     "pilotIncidentSloPolicy": "present",
     "pilotProductionProviderReadiness": "present",
@@ -197,9 +210,9 @@ Production-ready remains blocked until the target deployment model produces clea
     "pilotProductionSloOperating": "present",
     "pilotRetentionDeletePolicy": "present",
     "productionLikeReleaseDrill": "present",
-    "productionBlockerCount": 8,
+    "productionBlockerCount": 9,
     "releaseArtifactHygiene": "passed",
-    "releaseArtifactHygieneScannedFiles": 18
+    "releaseArtifactHygieneScannedFiles": 19
   }
 ```
 
@@ -208,7 +221,7 @@ Production-ready remains blocked until the target deployment model produces clea
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 18,
+    "scannedFileCount": 19,
     "secretFindingCount": 0,
     "verifiedCommit": "b4fa0cae585814c8125b7a0d6c6e86e7216b4afb"
   }
@@ -261,6 +274,7 @@ Production-ready remains blocked until the target deployment model produces clea
 - Anthropic, local, and Hermes live validations are not complete
 - identity-backed hosted RBAC/session administration is not implemented as a hosted product feature
 - hosted tenant isolation is out of v1 scope
+- production secret manager injection, rotation, and audit evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
 - production retention/export/delete verification is not complete
 - production SLO/SLA operating evidence is not generated from a production-like environment

@@ -66,7 +66,8 @@ Production gap:
 - hosted tenant isolation is not implemented
 - API tenant/workspace binding is available only behind `PERSONAL_AI_AGENT_TENANT_MODE=enforce` and OIDC tenant claims; per-tenant encryption, separate auth realms, backup isolation, and centralized tenant administration are out of v1 scope
 - cloud SaaS mode requires a separate architecture decision record before implementation
-- [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, backup, retention, SLO/SLA, clean deployment, and support operations before any hosted production claim
+- [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, and support operations before any hosted production claim
+- [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
 
 ## RBAC Matrix
 
@@ -108,6 +109,7 @@ Rules:
 - evidence may mention required env variable names, but never their values
 - provider live validation output must be reviewed before sharing outside the operator environment
 - local provider base URLs may reveal infrastructure shape and should be treated as internal configuration
+- `smoke:secret-management` verifies the local pilot secret-management policy surface while keeping target secret manager injection, rotation, audit, and revocation as production blockers
 
 Required scans before handoff:
 

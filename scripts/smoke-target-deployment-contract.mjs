@@ -68,6 +68,7 @@ for (const command of [
   'npm run smoke:production-enterprise-controls',
   'npm run smoke:production-retention-operating',
   'npm run smoke:customer-support-operations',
+  'npm run smoke:secret-management',
   'npm run smoke:production-slo-operating',
   'npm run smoke:clean-deployment-release',
 ]) {
@@ -79,6 +80,7 @@ for (const blocker of [
   /stop hosted SaaS claims until a separate SaaS architecture decision record exists/,
   /stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist/,
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
+  /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop retention\/delete claims until target backup expiry, provider transcript handling, and post-delete absence evidence are captured/,
   /stop SLO\/SLA claims until target telemetry, alerting, on-call, and incident response evidence exist/,
   /stop customer support claims until staffed ownership, customer communication route, support audit history, and incident review cadence are proven in the target environment/,

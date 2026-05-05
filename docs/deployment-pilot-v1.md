@@ -13,6 +13,7 @@
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
+- relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -330,6 +331,29 @@ Stop condition:
 - if any target deployment control is missing, do not claim hosted production readiness
 - if the contract passes only as a blocker checklist, treat it as production-readiness boundary evidence, not production deployment evidence
 
+## Secret Management Gate
+
+Before injecting real provider credentials or sharing a pilot package, verify the local secret-management policy:
+
+```bash
+npm run smoke:secret-management
+npm run smoke:release-artifact-hygiene
+```
+
+The source of record is [secret-management-v1.md](secret-management-v1.md). It proves secret classes, injection rules, redaction and hygiene rules, rotation/revocation checklist, required commands, and the target secret manager production gap are present.
+
+Acceptance:
+
+- provider API keys, web auth tokens, OIDC/JWKS material, runtime export material, and emergency access material are classified
+- examples use placeholder values and real credentials are injected only through an approved shell or deployment secret manager
+- artifact hygiene reports zero credential and machine-local path findings
+- the generated secret management gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if any secret appears in tracked docs or release artifacts, stop sharing, rotate the exposed credential, scrub/regenerate artifacts, and rerun hygiene
+- if the gate passes, treat it only as local pilot secret-management evidence, not target secret manager injection, production rotation, or audit proof
+
 ## Backup Restore Drill
 
 Before treating runtime backup or restore behavior as part of a pilot review, run the local backup/restore drill:
@@ -383,7 +407,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, secret management gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -456,7 +480,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, secret management gate, retention/delete policy, target deployment contract, production readiness blocker gate, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

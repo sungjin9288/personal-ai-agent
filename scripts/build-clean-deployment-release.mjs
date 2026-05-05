@@ -17,6 +17,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:customer-support-operations',
   },
   {
+    command: 'npm run smoke:secret-management',
+    script: 'smoke:secret-management',
+  },
+  {
     command: 'npm run smoke:retention-delete-policy',
     script: 'smoke:retention-delete-policy',
   },
@@ -193,6 +197,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:customer-support-operations') {
     return pick(parsed, ['intakeClassCount', 'mode', 'productionReadyClaim', 'supportRoleCount']);
   }
+  if (script === 'smoke:secret-management') {
+    return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
+  }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
   }
@@ -208,6 +215,7 @@ function extractKeySignals(script, parsed) {
       'openaiLiveValidation',
       'pilotCleanDeploymentRelease',
       'pilotCustomerSupportOperations',
+      'pilotSecretManagement',
       'pilotRetentionDeletePolicy',
       'productionBlockerCount',
       'releaseArtifactHygiene',
