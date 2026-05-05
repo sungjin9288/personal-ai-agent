@@ -14,6 +14,7 @@ const incidentSloPath = path.join(docsDir, 'incident-slo-v1.md');
 const productionSloOperatingPath = path.join(docsDir, 'production-slo-operating-v1.md');
 const productionRetentionOperatingPath = path.join(docsDir, 'production-retention-operating-v1.md');
 const productionProviderReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const targetProviderEvidenceIntakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
@@ -42,6 +43,7 @@ const incidentSlo = readRequiredFile(incidentSloPath);
 const productionSloOperating = readRequiredFile(productionSloOperatingPath);
 const productionRetentionOperating = readRequiredFile(productionRetentionOperatingPath);
 const productionProviderReadiness = readRequiredFile(productionProviderReadinessPath);
+const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
@@ -103,6 +105,7 @@ assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/)
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
@@ -145,6 +148,12 @@ assert.match(productionProviderReadiness, /^- status: local-provider-readiness-c
 assert.match(productionProviderReadiness, /^- productionReadyClaim: false$/m);
 assert.match(productionProviderReadiness, /npm run smoke:production-provider-readiness/);
 assert.match(productionProviderReadiness, /not live-provider-complete evidence/);
+assert.match(targetProviderEvidenceIntake, /^# Target Provider Evidence Intake v1$/m);
+assert.match(targetProviderEvidenceIntake, /^- status: local-target-provider-evidence-intake-current$/m);
+assert.match(targetProviderEvidenceIntake, /^- productionReadyClaim: false$/m);
+assert.match(targetProviderEvidenceIntake, /npm run smoke:target-provider-evidence-intake/);
+assert.match(targetProviderEvidenceIntake, /not provider account remediation proof/);
+assert.match(targetProviderEvidenceIntake, /Target provider readiness remains blocked for production-ready claims/);
 assert.match(productionEnterpriseControls, /^# Production Enterprise Controls Rehearsal v1$/m);
 assert.match(productionEnterpriseControls, /^- status: local-enterprise-controls-current$/m);
 assert.match(productionEnterpriseControls, /^- productionReadyClaim: false$/m);
@@ -300,6 +309,7 @@ console.log(
       pilotProductionProviderReadiness: 'present',
       pilotProductionRetentionOperating: 'present',
       pilotProductionSloOperating: 'present',
+      pilotTargetProviderEvidenceIntake: 'present',
       pilotRetentionDeletePolicy: 'present',
       pilotRuntimeIsolation: 'present',
       pilotTargetDeploymentContract: 'present',

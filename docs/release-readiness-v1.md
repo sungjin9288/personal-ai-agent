@@ -14,6 +14,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
@@ -68,6 +69,7 @@ Current execution evidence:
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`
 - local provider readiness operating rehearsal: passed, with `productionReadyClaim: false`
+- target provider evidence intake gate: passed, with provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage route, and `productionReadyClaim: false`
 - local enterprise controls rehearsal: passed, including OIDC/JWKS auth, token-claim RBAC, and API tenant isolation smoke, with `productionReadyClaim: false`
 - local identity session administration gate: passed, with identity controls, session lifecycle, audit packet requirements, and `productionReadyClaim: false`
 - local tenant storage administration gate: passed, with tenant storage controls, tenant admin operations, audit packet requirements, and `productionReadyClaim: false`
@@ -106,6 +108,7 @@ Current handoff state:
 | [production-slo-operating-v1.md](production-slo-operating-v1.md) | local-slo-operating-current | local SLO operating rehearsal and production telemetry gap |
 | [production-retention-operating-v1.md](production-retention-operating-v1.md) | local-retention-operating-current | local retention/export/delete operating rehearsal and production environment gap |
 | [production-provider-readiness-v1.md](production-provider-readiness-v1.md) | local-provider-readiness-current | provider preflight and live-validation blocker rehearsal |
+| [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) | local-target-provider-evidence-intake-current | target provider account, secret injection, live validation, quota, model, and fallback evidence packet |
 | [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) | local-enterprise-controls-current | local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal |
 | [identity-session-admin-v1.md](identity-session-admin-v1.md) | local-identity-session-admin-current | local identity controls, session lifecycle, role audit packet requirements, and hosted identity production gap |
 | [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) | local-tenant-storage-admin-current | local tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gap |
@@ -238,6 +241,7 @@ npm run smoke:production-like-release-drill
 npm run smoke:runtime-isolation
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin

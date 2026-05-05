@@ -8,6 +8,7 @@
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -44,7 +45,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 
 | Control | Required Production Evidence | Current Local Evidence | Current Status |
 | --- | --- | --- | --- |
-| Target provider validation | every provider in the production claim has successful live validation from the target deployment boundary | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit | blocked |
+| Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | local tenant storage administration, OIDC tenant API isolation, tenant lifecycle, and runtime isolation gates pass | blocked |
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management, target secret manager contract, and release artifact hygiene pass | blocked |
@@ -59,6 +60,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
 npm run smoke:tenant-storage-admin
@@ -79,7 +81,7 @@ npm run smoke:clean-deployment-release
 
 ## Blocking Rules
 
-- stop production-ready claims if any provider included in the production claim lacks successful live validation from the target boundary
+- stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
 - stop hosted SaaS claims until a separate SaaS architecture decision record exists and is approved
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested

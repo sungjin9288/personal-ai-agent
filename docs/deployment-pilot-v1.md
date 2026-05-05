@@ -10,6 +10,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -272,9 +273,20 @@ Before expanding the pilot beyond the archived OpenAI provider path, replay the 
 ```bash
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 ```
 
 The rehearsal runs aggregate provider preflight and records OpenAI, Anthropic, local, and Hermes env readiness, deterministic checks, archived live status, and next live-validation commands into [production-provider-readiness-v1.md](production-provider-readiness-v1.md).
+
+## Target Provider Evidence Intake
+
+Before adding Anthropic, local, Hermes, or any provider beyond the archived OpenAI pilot path to a customer-facing target release, verify the provider evidence packet:
+
+```bash
+npm run smoke:target-provider-evidence-intake
+```
+
+The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
 
 Acceptance:
 
@@ -787,6 +799,7 @@ Export package should include:
 - `docs/production-slo-operating-v1.md`
 - `docs/production-retention-operating-v1.md`
 - `docs/production-provider-readiness-v1.md`
+- `docs/target-provider-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`
 - `docs/execution-v1-evidence.md`

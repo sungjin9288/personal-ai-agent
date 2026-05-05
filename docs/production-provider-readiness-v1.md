@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-05T14:45:05.925Z
+- generatedAt: 2026-05-05T14:56:16.440Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 440e3ba4b3d37eda0c8f8d14707f8487bea6bc93
+- sourceCommit: 65b127d95e9d136e76552eeb40f6e036c1317846
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -11,6 +11,7 @@
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - relatedCloseout: [execution-v1-closeout.md](execution-v1-closeout.md)
 - relatedHandoff: [execution-v1-handoff.md](execution-v1-handoff.md)
+- relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 
 ## Decision Boundary
 
@@ -18,13 +19,13 @@ This rehearsal proves that OpenAI, Anthropic, local, and Hermes provider determi
 
 It is not live-provider-complete evidence, not target production provider validation, not provider account remediation proof, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until every provider included in the target release has successful live validation archived from the approved production-like deployment boundary.
+Production-ready remains blocked until every provider included in the target release has a complete target provider evidence intake packet and successful live validation archived from the approved production-like deployment boundary.
 
 ## Command Matrix
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 6282 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 4938 |
 
 ## Key Signals
 
@@ -99,16 +100,22 @@ Production-ready remains blocked until every provider included in the target rel
 - local provider remains blocked until an approved `LOCAL_PROVIDER_BASE_URL` and model runtime are configured
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
+- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
+
+## Target Provider Evidence Intake
+
+Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner, target boundary, secret manager alias, model/endpoint pinning, quota/cost guard, archived live validation, and fallback/stop-condition evidence.
 
 ## Operator Re-Run
 
 ```bash
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 ```
 
 ## Acceptance Rule
 
 The rehearsal is acceptable only when aggregate preflight reports `blockedCount: 0`, every provider appears in the provider matrix, and missing env or account blockers remain explicit.
 
-The rehearsal must keep `productionReadyClaim: false` until live validation evidence is archived for every provider included in the target production claim.
+The rehearsal must keep `productionReadyClaim: false` until target provider evidence intake is complete and live validation evidence is archived for every provider included in the target production claim.

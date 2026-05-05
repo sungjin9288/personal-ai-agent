@@ -86,6 +86,7 @@
 - [x] Deterministic evidence and snapshot artifacts implemented
 - [x] Provider preflight distinguishes missing configuration from code readiness
 - [x] Production provider readiness rehearsal gate implemented
+- [x] Target provider evidence intake gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived

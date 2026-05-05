@@ -53,6 +53,7 @@ The pilot retention/delete policy is [docs/retention-delete-v1.md](docs/retentio
 The local SLO operating rehearsal is [docs/production-slo-operating-v1.md](docs/production-slo-operating-v1.md).
 The local retention operating rehearsal is [docs/production-retention-operating-v1.md](docs/production-retention-operating-v1.md).
 The local provider readiness rehearsal is [docs/production-provider-readiness-v1.md](docs/production-provider-readiness-v1.md).
+The local target provider evidence intake gate is [docs/target-provider-evidence-intake-v1.md](docs/target-provider-evidence-intake-v1.md).
 The local enterprise controls rehearsal is [docs/production-enterprise-controls-v1.md](docs/production-enterprise-controls-v1.md).
 The local identity session administration gate is [docs/identity-session-admin-v1.md](docs/identity-session-admin-v1.md).
 The local tenant storage administration gate is [docs/tenant-storage-admin-v1.md](docs/tenant-storage-admin-v1.md).
@@ -86,6 +87,7 @@ Current planning status:
 - local SLO operating rehearsal evidence can be regenerated with `npm run rehearsal:production-slo-operating` and verified with `npm run smoke:production-slo-operating`, but it intentionally keeps `productionReadyClaim: false`
 - local retention operating rehearsal evidence can be regenerated with `npm run rehearsal:production-retention-operating` and verified with `npm run smoke:production-retention-operating`, but it intentionally keeps `productionReadyClaim: false`
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
+- local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence requirements are present, but it does not provide target provider account remediation or production live validation proof
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - local identity session administration evidence can be verified with `npm run smoke:identity-session-admin`; it proves identity controls, session lifecycle, role change audit packet requirements, and production identity gap are present, but it does not provide hosted identity/session administration proof
 - local tenant storage administration evidence can be verified with `npm run smoke:tenant-storage-admin`; it proves tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gaps are present, but it does not provide hosted tenant storage or encryption proof
@@ -141,6 +143,7 @@ Production provider readiness rehearsal:
 ```bash
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 ```
 
 Production enterprise controls rehearsal:
