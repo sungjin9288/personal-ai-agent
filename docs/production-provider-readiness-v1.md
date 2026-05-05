@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-05T03:45:50.906Z
+- generatedAt: 2026-05-05T04:06:33.561Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 0890545e7f4949a90dc01865494a498c562c88ab
+- sourceCommit: a46f6dd308be13561643dddb44b75dd55e8a64bd
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -24,7 +24,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 4870 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 6592 |
 
 ## Key Signals
 
@@ -42,7 +42,7 @@ Production-ready remains blocked until every provider included in the target rel
 | Provider | Preflight Status | Env Key | Env Ready | Archived Live Status | Live Command |
 | --- | --- | --- | --- | --- | --- |
 | openai | ready-but-missing-env | OPENAI_API_KEY | no | passed | `npm run live:execution-v1:openai` |
-| anthropic | ready-but-missing-env | ANTHROPIC_API_KEY | no | failed (anthropic live mission run failed \| rootDir=<temp>/personal-ai-agent-live-anthropic-pR5Cnh \| workspaceId=workspace_20260505034534_0c8a1e \| missionId=mission_20260505034534_75ec6c \| artifact=manager-prompt.md \| sessionId=session_20260505034534_a64d77 \| missionStatus=failed) | `npm run live:execution-v1:anthropic` |
+| anthropic | ready-but-missing-env | ANTHROPIC_API_KEY | no | failed (anthropic live mission run failed \| rootDir=<temp>/personal-ai-agent-live-anthropic-PBdw1D \| workspaceId=workspace_20260505040611_64450e \| missionId=mission_20260505040611_457931 \| artifact=manager-prompt.md \| sessionId=session_20260505040611_477c92 \| missionStatus=failed) | `npm run live:execution-v1:anthropic` |
 | local | ready-but-missing-env | LOCAL_PROVIDER_BASE_URL | no | missing-env | `npm run live:execution-v1:local` |
 | hermes | ready-but-missing-env | HERMES_PROVIDER_MODEL | no | missing-env | `npm run live:execution-v1:hermes` |
 
@@ -65,8 +65,8 @@ Production-ready remains blocked until every provider included in the target rel
 - envKey: ANTHROPIC_API_KEY
 - envReady: false
 - deterministicChecks: smoke:execution-flow:passed
-- archivedLiveStatus: failed (anthropic live mission run failed | rootDir=<temp>/personal-ai-agent-live-anthropic-pR5Cnh | workspaceId=workspace_20260505034534_0c8a1e | missionId=mission_20260505034534_75ec6c | artifact=manager-prompt.md | sessionId=session_20260505034534_a64d77 | missionStatus=failed)
-- operationalState: failed (anthropic live mission run failed | rootDir=<temp>/personal-ai-agent-live-anthropic-pR5Cnh | workspaceId=workspace_20260505034534_0c8a1e | missionId=mission_20260505034534_75ec6c | artifact=manager-prompt.md | sessionId=session_20260505034534_a64d77 | missionStatus=failed)
+- archivedLiveStatus: failed (anthropic live mission run failed | rootDir=<temp>/personal-ai-agent-live-anthropic-PBdw1D | workspaceId=workspace_20260505040611_64450e | missionId=mission_20260505040611_457931 | artifact=manager-prompt.md | sessionId=session_20260505040611_477c92 | missionStatus=failed)
+- operationalState: failed (anthropic live mission run failed | rootDir=<temp>/personal-ai-agent-live-anthropic-PBdw1D | workspaceId=workspace_20260505040611_64450e | missionId=mission_20260505040611_457931 | artifact=manager-prompt.md | sessionId=session_20260505040611_477c92 | missionStatus=failed)
 - liveCommand: `npm run live:execution-v1:anthropic`
 - missingEnvCommand: `export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic`
 

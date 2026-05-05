@@ -1,9 +1,9 @@
 # Production Enterprise Controls Rehearsal v1
 
 - status: local-enterprise-controls-current
-- generatedAt: 2026-05-05T03:54:53.040Z
+- generatedAt: 2026-05-05T04:06:25.753Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: b559ed7d35e55709a5ebfabc78ccd18e00aa9886
+- sourceCommit: a46f6dd308be13561643dddb44b75dd55e8a64bd
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
@@ -26,14 +26,14 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:identity-session-admin` | pass | 0 | 270 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1640 |
-| `npm run smoke:web-oidc-rbac` | pass | 0 | 1536 |
-| `npm run smoke:web-tenant-isolation` | pass | 0 | 1490 |
-| `npm run smoke:web-rbac` | pass | 0 | 1708 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 227 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 855 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 212 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 222 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1449 |
+| `npm run smoke:web-oidc-rbac` | pass | 0 | 1552 |
+| `npm run smoke:web-tenant-isolation` | pass | 0 | 1461 |
+| `npm run smoke:web-rbac` | pass | 0 | 1704 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 219 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 762 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 208 |
 
 ## Key Signals
 
@@ -115,7 +115,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 22,
     "secretFindingCount": 0,
-    "verifiedCommit": "0890545e7f4949a90dc01865494a498c562c88ab"
+    "verifiedCommit": "a46f6dd308be13561643dddb44b75dd55e8a64bd"
   }
 ```
 
