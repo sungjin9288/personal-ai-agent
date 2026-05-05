@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-05T01:28:30.612Z
+- generatedAt: 2026-05-05T01:42:13.925Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: c0055ea17e7f6ac6737a20e39fd6440c350570c2
+- verifiedCommit: d6bc909d19b0cef037e36168d5184e2eb3fb1e88
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,23 +29,23 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 197 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 202 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1426 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 202 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 197 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 178 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 185 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 189 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 207 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 503 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 229 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 183 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 184 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 469 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 234 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 219 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 755 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 116 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 116 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1294 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 117 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 112 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 125 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 115 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 143 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 119 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 370 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 131 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 125 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 116 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 293 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 126 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 130 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 457 |
 
 ## Key Signals
 
@@ -148,13 +148,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "3e3d1ee4c0f2f137914cc8518789c3de06231117"
+    "snapshotCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
   }
 ```
 
@@ -162,10 +162,10 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "3e3d1ee4c0f2f137914cc8518789c3de06231117"
+    "verifiedCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
   }
 ```
 
@@ -197,7 +197,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 17,
     "secretFindingCount": 0,
-    "verifiedCommit": "3e3d1ee4c0f2f137914cc8518789c3de06231117"
+    "verifiedCommit": "d6bc909d19b0cef037e36168d5184e2eb3fb1e88"
   }
 ```
 
