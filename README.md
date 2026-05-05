@@ -55,6 +55,7 @@ The local retention operating rehearsal is [docs/production-retention-operating-
 The local provider readiness rehearsal is [docs/production-provider-readiness-v1.md](docs/production-provider-readiness-v1.md).
 The local enterprise controls rehearsal is [docs/production-enterprise-controls-v1.md](docs/production-enterprise-controls-v1.md).
 The local identity session administration gate is [docs/identity-session-admin-v1.md](docs/identity-session-admin-v1.md).
+The local tenant storage administration gate is [docs/tenant-storage-admin-v1.md](docs/tenant-storage-admin-v1.md).
 The target deployment contract is [docs/target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md).
 The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
 The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
@@ -82,6 +83,7 @@ Current planning status:
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - local identity session administration evidence can be verified with `npm run smoke:identity-session-admin`; it proves identity controls, session lifecycle, role change audit packet requirements, and production identity gap are present, but it does not provide hosted identity/session administration proof
+- local tenant storage administration evidence can be verified with `npm run smoke:tenant-storage-admin`; it proves tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gaps are present, but it does not provide hosted tenant storage or encryption proof
 - target deployment contract evidence can be verified with `npm run smoke:target-deployment-contract`; it defines the hosted/production-like controls that must be proven before any production-ready or hosted SaaS claim
 - local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
 - local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
@@ -142,6 +144,12 @@ Identity session administration gate:
 
 ```bash
 npm run smoke:identity-session-admin
+```
+
+Tenant storage administration gate:
+
+```bash
+npm run smoke:tenant-storage-admin
 ```
 
 Target deployment contract gate:

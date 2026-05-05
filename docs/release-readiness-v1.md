@@ -35,7 +35,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage, target secret manager, production telemetry, backup, SLO/SLA, retention, customer support audit, and clean production-like evidence.
+It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target secret manager, production telemetry, backup, SLO/SLA, retention, customer support audit, and clean production-like evidence.
 
 ## Evidence Summary
 
@@ -64,6 +64,7 @@ Current execution evidence:
 - local provider readiness operating rehearsal: passed, with `productionReadyClaim: false`
 - local enterprise controls rehearsal: passed, including OIDC/JWKS auth, token-claim RBAC, and API tenant isolation smoke, with `productionReadyClaim: false`
 - local identity session administration gate: passed, with identity controls, session lifecycle, audit packet requirements, and `productionReadyClaim: false`
+- local tenant storage administration gate: passed, with tenant storage controls, tenant admin operations, audit packet requirements, and `productionReadyClaim: false`
 - target deployment contract gate: passed, with hosted production/SaaS mandatory controls explicitly blocked until target evidence exists
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 - local OIDC/JWKS auth plus RBAC gate: passed for bearer JWT issuer/audience/signature/expiry and token role claim enforcement, without hosted session administration claims
@@ -97,6 +98,7 @@ Current handoff state:
 | [production-provider-readiness-v1.md](production-provider-readiness-v1.md) | local-provider-readiness-current | provider preflight and live-validation blocker rehearsal |
 | [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) | local-enterprise-controls-current | local auth, RBAC, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal |
 | [identity-session-admin-v1.md](identity-session-admin-v1.md) | local-identity-session-admin-current | local identity controls, session lifecycle, role audit packet requirements, and hosted identity production gap |
+| [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) | local-tenant-storage-admin-current | local tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gap |
 | [target-deployment-contract-v1.md](target-deployment-contract-v1.md) | target-contract-current | mandatory hosted/production-like deployment controls and blocking rules |
 | [backup-restore-drill-v1.md](backup-restore-drill-v1.md) | local-backup-restore-current | local runtime backup manifest, restore integrity, and tenant-isolated recovery drill |
 | [customer-support-operations-v1.md](customer-support-operations-v1.md) | local-support-operations-current | local support roles, intake routing, escalation, communication, and handoff checklist |
@@ -224,6 +226,7 @@ npm run smoke:production-provider-readiness
 npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
+npm run smoke:tenant-storage-admin
 npm run smoke:retention-delete-policy
 npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
@@ -273,7 +276,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage, target secret manager, production telemetry, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager, production telemetry, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

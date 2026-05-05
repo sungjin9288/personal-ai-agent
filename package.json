@@ -26,6 +26,7 @@
     "smoke:web-auth-rbac": "node scripts/smoke-web-auth-rbac.mjs",
     "smoke:web-oidc-rbac": "node scripts/smoke-web-oidc-rbac.mjs",
     "smoke:web-tenant-isolation": "node scripts/smoke-web-tenant-isolation.mjs",
+    "smoke:tenant-storage-admin": "node scripts/smoke-tenant-storage-admin.mjs",
     "smoke:runtime-data-lifecycle": "node scripts/smoke-runtime-data-lifecycle.mjs",
     "smoke:tenant-data-lifecycle": "node scripts/smoke-tenant-data-lifecycle.mjs",
     "smoke:backup-restore-drill": "node scripts/smoke-backup-restore-drill.mjs",

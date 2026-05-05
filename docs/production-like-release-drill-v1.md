@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-05T04:06:48.434Z
+- generatedAt: 2026-05-05T04:24:24.275Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: a46f6dd308be13561643dddb44b75dd55e8a64bd
+- verifiedCommit: 58efc4ec1e53294447959184ab2b6f37ac8fd254
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,28 +29,29 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 125 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 126 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 127 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 128 |
-| `npm run smoke:secret-management` | pass | 0 | 122 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 126 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 125 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1321 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 146 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 125 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 125 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 126 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 124 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 125 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 390 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 141 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 129 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 130 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 314 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 153 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 152 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 498 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 2858 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 1824 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 2828 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 1155 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 1003 |
+| `npm run smoke:secret-management` | pass | 0 | 1660 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 1275 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 2102 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 3815 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 339 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 374 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 336 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 334 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 434 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 361 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 1226 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 441 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 383 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 400 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1586 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 847 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 361 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 2225 |
 
 ## Key Signals
 
@@ -72,6 +73,18 @@ Production-ready remains blocked until the target deployment model produces clea
     "mode": "identity-session-admin",
     "productionReadyClaim": false,
     "sessionEventCount": 5
+  }
+```
+
+### npm run smoke:tenant-storage-admin
+
+```json
+{
+    "auditPacketItemCount": 10,
+    "controlCount": 5,
+    "mode": "tenant-storage-admin",
+    "operationCount": 5,
+    "productionReadyClaim": false
   }
 ```
 
@@ -149,7 +162,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 8,
+    "commandCount": 9,
     "mode": "production-enterprise-controls",
     "productionReadyClaim": false
   }
@@ -200,7 +213,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "commandCount": 16,
+    "commandCount": 17,
     "mode": "clean-deployment-release",
     "productionReadyClaim": false
   }
@@ -210,8 +223,8 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
@@ -224,7 +237,7 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "a46f6dd308be13561643dddb44b75dd55e8a64bd"
@@ -240,6 +253,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "openaiLiveValidation": "passed",
     "pilotCleanDeploymentRelease": "present",
     "pilotIdentitySessionAdmin": "present",
+    "pilotTenantStorageAdmin": "present",
     "pilotCustomerSupportOperations": "present",
     "pilotSupportEscalationReview": "present",
     "pilotSecretManagement": "present",
@@ -253,7 +267,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "productionLikeReleaseDrill": "present",
     "productionBlockerCount": 10,
     "releaseArtifactHygiene": "passed",
-    "releaseArtifactHygieneScannedFiles": 22
+    "releaseArtifactHygieneScannedFiles": 23
   }
 ```
 
@@ -262,7 +276,7 @@ Production-ready remains blocked until the target deployment model produces clea
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 22,
+    "scannedFileCount": 23,
     "secretFindingCount": 0,
     "verifiedCommit": "a46f6dd308be13561643dddb44b75dd55e8a64bd"
   }

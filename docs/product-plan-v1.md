@@ -95,6 +95,7 @@
 - [x] Tenant/workspace isolation policy documented
 - [x] Self-hosted runtime isolation smoke implemented
 - [x] OIDC tenant-claim API workspace/mission isolation gate implemented
+- [x] Tenant storage administration gate implemented
 - [x] RBAC role matrix documented
 - [x] Optional web API RBAC enforcement gate implemented
 - [x] Optional shared-secret web auth gate implemented

@@ -24,6 +24,10 @@ const ENTERPRISE_CONTROL_COMMANDS = [
     script: 'smoke:web-tenant-isolation',
   },
   {
+    command: 'npm run smoke:tenant-storage-admin',
+    script: 'smoke:tenant-storage-admin',
+  },
+  {
     command: 'npm run smoke:web-rbac',
     script: 'smoke:web-rbac',
   },
@@ -135,6 +139,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:web-tenant-isolation') {
     return pick(parsed, ['mode', 'tenantChecks']);
   }
+  if (script === 'smoke:tenant-storage-admin') {
+    return pick(parsed, ['auditPacketItemCount', 'controlCount', 'mode', 'operationCount', 'productionReadyClaim']);
+  }
   if (script === 'smoke:web-rbac') {
     return pick(parsed, ['mode', 'roleChecks']);
   }
@@ -182,18 +189,19 @@ function renderEnterpriseControlsMarkdown({
 - sourceBranch: ${sourceBranch}
 - sourceCommit: ${sourceCommit}
 - releaseLabel: ${releaseLabel}
-- scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
+- scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, tenant storage administration, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
+- relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that local identity/session administration, shared-secret API authentication, OIDC/JWKS bearer authentication, token-claim RBAC role mapping, API tenant/workspace binding, local RBAC enforcement, release artifact hygiene, one-runtime-per-customer isolation, and provider-readiness blockers can be checked together before a pilot handoff.
+This rehearsal proves that local identity/session administration, shared-secret API authentication, OIDC/JWKS bearer authentication, token-claim RBAC role mapping, API tenant/workspace binding, tenant storage administration, local RBAC enforcement, release artifact hygiene, one-runtime-per-customer isolation, and provider-readiness blockers can be checked together before a pilot handoff.
 
 It is not identity-backed hosted RBAC, not hosted tenant isolation, not centralized permission administration, not customer identity lifecycle evidence, and not permission to claim \`production-ready\`.
 
@@ -215,6 +223,7 @@ ${keySignalRows}
 - shared-secret web auth is only a local pilot access gate, not enterprise identity
 - OIDC/JWKS web auth verifies issuer, audience, RS256 signature, expiry, and role claim mapping without storing token values
 - API tenant isolation verifies that OIDC tenant claims bind workspace creation, mission creation, mission list filtering, and mission reads without trusting spoofed tenant headers
+- tenant storage administration documents tenant storage controls, tenant admin operations, backup/restore isolation requirements, and tenant audit packet requirements without claiming hosted tenant storage or encryption
 - RBAC enforcement proves route-level role boundaries locally and prevents OIDC viewer tokens from escalating through spoofed role headers, but it is not centralized permission lifecycle management
 - artifact hygiene proves shareable release artifacts avoid credential and machine-local path leaks
 - runtime isolation proves one-runtime-per-customer pilot separation; API tenant isolation is still not hosted multi-tenant storage, encryption, backup, or tenant-admin proof
@@ -229,7 +238,7 @@ npm run smoke:production-enterprise-controls
 
 ## Acceptance Rule
 
-The rehearsal is acceptable only when every command passes, identity/session administration keeps production gaps explicit, OIDC/JWKS token validation rejects invalid audience and header spoofing, API tenant isolation rejects cross-tenant workspace and mission access, artifact hygiene reports zero credential and machine-local path findings, and local auth/RBAC boundaries remain explicit.
+The rehearsal is acceptable only when every command passes, identity/session administration keeps production gaps explicit, OIDC/JWKS token validation rejects invalid audience and header spoofing, API tenant isolation rejects cross-tenant workspace and mission access, tenant storage administration keeps hosted tenant gaps explicit, artifact hygiene reports zero credential and machine-local path findings, and local auth/RBAC boundaries remain explicit.
 
 The rehearsal must keep \`productionReadyClaim: false\` until the same controls are backed by an approved identity provider, audited hosted role administration, tenant isolation, and production-like deployment evidence.
 `;
@@ -243,7 +252,7 @@ function renderPendingEnterpriseControlsMarkdown({ generatedAt, releaseLabel, so
 - sourceBranch: ${sourceBranch}
 - sourceCommit: ${sourceCommit}
 - releaseLabel: ${releaseLabel}
-- scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
+- scope: local identity/session administration, auth, OIDC/JWKS auth, RBAC, API tenant isolation, tenant storage administration, artifact hygiene, runtime isolation, and provider-readiness controls rehearsal
 - productionReadyClaim: false
 
 ## Decision Boundary

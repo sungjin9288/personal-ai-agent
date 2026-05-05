@@ -18,6 +18,7 @@ const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterpri
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const identitySessionAdminPath = path.join(docsDir, 'identity-session-admin-v1.md');
+const tenantStorageAdminPath = path.join(docsDir, 'tenant-storage-admin-v1.md');
 const customerSupportOperationsPath = path.join(docsDir, 'customer-support-operations-v1.md');
 const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-review-v1.md');
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
@@ -40,6 +41,7 @@ const productionEnterpriseControls = readRequiredFile(productionEnterpriseContro
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const identitySessionAdmin = readRequiredFile(identitySessionAdminPath);
+const tenantStorageAdmin = readRequiredFile(tenantStorageAdminPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
 const secretManagement = readRequiredFile(secretManagementPath);
@@ -95,6 +97,7 @@ assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(produ
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
+assert.match(releaseReadiness, /\[tenant-storage-admin-v1\.md\]\(tenant-storage-admin-v1\.md\)/);
 assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
@@ -148,6 +151,11 @@ assert.match(identitySessionAdmin, /^- status: local-identity-session-admin-curr
 assert.match(identitySessionAdmin, /^- productionReadyClaim: false$/m);
 assert.match(identitySessionAdmin, /not hosted identity evidence/);
 assert.match(identitySessionAdmin, /Identity-backed RBAC and session administration remain blocked for production-ready claims/);
+assert.match(tenantStorageAdmin, /^# Tenant Storage Administration v1$/m);
+assert.match(tenantStorageAdmin, /^- status: local-tenant-storage-admin-current$/m);
+assert.match(tenantStorageAdmin, /^- productionReadyClaim: false$/m);
+assert.match(tenantStorageAdmin, /not hosted tenant isolation evidence/);
+assert.match(tenantStorageAdmin, /Hosted tenant isolation remains blocked for production-ready claims/);
 assert.match(customerSupportOperations, /^# Customer Support Operations v1$/m);
 assert.match(customerSupportOperations, /^- status: local-support-operations-current$/m);
 assert.match(customerSupportOperations, /^- productionReadyClaim: false$/m);
@@ -199,7 +207,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage, target secret manager, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager, production telemetry, backup, retention, SLO\/SLA, clean deployment, support operations, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -233,6 +241,7 @@ console.log(
       openaiLiveValidation: currentStatus.get('openai live validation'),
       pilotCleanDeploymentRelease: 'present',
       pilotIdentitySessionAdmin: 'present',
+      pilotTenantStorageAdmin: 'present',
       pilotCustomerSupportOperations: 'present',
       pilotSupportEscalationReview: 'present',
       pilotExportPackage: 'present',

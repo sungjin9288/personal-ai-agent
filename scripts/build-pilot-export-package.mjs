@@ -25,6 +25,7 @@ const BASE_PACKAGE_FILES = [
   'docs/retention-delete-v1.md',
   'docs/backup-restore-drill-v1.md',
   'docs/identity-session-admin-v1.md',
+  'docs/tenant-storage-admin-v1.md',
   'docs/clean-deployment-release-v1.md',
   'docs/production-slo-operating-v1.md',
   'docs/production-retention-operating-v1.md',
@@ -148,6 +149,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
+- relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)

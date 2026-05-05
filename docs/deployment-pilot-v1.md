@@ -12,6 +12,7 @@
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
+- relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
@@ -355,6 +356,28 @@ Stop condition:
 
 - if identity controls or session lifecycle evidence are missing, do not present hosted identity/session readiness
 - if the gate passes, treat it only as local pilot identity/session administration evidence, not hosted SSO, logout, revocation, or central role administration proof
+
+## Tenant Storage Administration Gate
+
+Before presenting the pilot as tenant-aware, verify the local tenant storage administration contract:
+
+```bash
+npm run smoke:tenant-storage-admin
+```
+
+The source of record is [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md). It proves tenant storage controls, tenant admin operations, audit packet requirements, required commands, and the hosted tenant isolation production gap are present.
+
+Acceptance:
+
+- tenant identity binding, storage partitioning, runtime boundary, backup/restore isolation, and tenant administration controls are documented
+- tenant create, access change, export, delete, and restore operations have required local evidence and explicit production gaps
+- audit packet requirements include branch, commit, tenant owner, affected scope, admin operation, confirmation class, verification command, hygiene result, rollback/follow-up, and review date
+- the generated tenant storage administration gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if tenant storage controls or tenant admin audit requirements are missing, do not present hosted tenant isolation readiness
+- if the gate passes, treat it only as local pilot tenant storage administration evidence, not hosted tenant storage, encryption, or shared SaaS control-plane proof
 
 ## Secret Management Gate
 

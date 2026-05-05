@@ -68,6 +68,7 @@ Production gap:
 - cloud SaaS mode requires a separate architecture decision record before implementation
 - [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, backup, retention, SLO/SLA, clean deployment, support operations, and support escalation review before any hosted production claim
 - [identity-session-admin-v1.md](identity-session-admin-v1.md) defines the local identity/session administration gate for identity controls, session lifecycle, role assignment/revocation audit packets, and the remaining hosted identity production gap
+- [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) defines the local tenant storage administration gate for tenant storage controls, tenant admin operations, backup/restore isolation requirements, and the remaining hosted tenant isolation production gap
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 
@@ -90,6 +91,7 @@ Current implementation note:
 - The authenticated local role contract is covered by `smoke:web-auth-rbac`: missing or invalid tokens are rejected before RBAC, authenticated viewer mutations are still blocked, and authenticated operator mutations can proceed.
 - The OIDC role contract is covered by `smoke:web-oidc-rbac`: missing tokens and invalid audience tokens are rejected, token role claims drive RBAC, and a viewer token cannot escalate by spoofing `x-personal-ai-agent-role`.
 - The API tenant isolation contract is covered by `smoke:web-tenant-isolation`: OIDC `tenant_id` claims bind workspace creation, filter workspace and mission lists, block cross-tenant mission creation/read, and ignore spoofed tenant headers.
+- Tenant storage administration is covered by `smoke:tenant-storage-admin`, which documents tenant storage partitioning, tenant admin operations, backup/restore isolation, and audit packet requirements without claiming hosted tenant storage or encryption.
 - [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence by replaying identity/session administration, shared-secret auth, OIDC/JWKS auth, RBAC, artifact hygiene, runtime isolation, and provider readiness checks together while preserving the hosted identity and tenant isolation production gap.
 - The CLI remains a local operator tool and does not yet provide user/session identity. Hosted or shared deployments still require identity-backed authentication, session lifecycle, and persistent role assignment outside this local shared-secret gate.
 

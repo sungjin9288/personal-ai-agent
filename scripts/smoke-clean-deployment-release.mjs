@@ -33,6 +33,7 @@ assert.match(rehearsal, /not permission to claim `production-ready`/);
 for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:identity-session-admin',
+  'npm run smoke:tenant-storage-admin',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:secret-management',
@@ -63,7 +64,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 16,
+      commandCount: 17,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

@@ -10,6 +10,7 @@
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
+- relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
@@ -40,7 +41,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | --- | --- | --- | --- |
 | Target provider validation | every provider in the production claim has successful live validation from the target deployment boundary | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
-| Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | OIDC tenant API isolation and tenant-scoped local export/delete gates pass | blocked |
+| Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | local tenant storage administration, OIDC tenant API isolation, tenant lifecycle, and runtime isolation gates pass | blocked |
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management gate and release artifact hygiene pass | blocked |
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, and backup/restore drill rehearsals pass | blocked |
 | SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating and observability telemetry gates pass | blocked |
@@ -55,6 +56,7 @@ npm run smoke:production-readiness-gate
 npm run smoke:production-provider-readiness
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
+npm run smoke:tenant-storage-admin
 npm run smoke:production-retention-operating
 npm run smoke:backup-restore-drill
 npm run smoke:customer-support-operations
