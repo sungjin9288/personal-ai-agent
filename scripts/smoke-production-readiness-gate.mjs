@@ -17,6 +17,7 @@ const productionProviderReadinessPath = path.join(docsDir, 'production-provider-
 const targetProviderEvidenceIntakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
+const hostedSaasArchitectureDecisionPath = path.join(docsDir, 'hosted-saas-architecture-decision-v1.md');
 const targetEnvironmentEvidenceIntakePath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const identitySessionAdminPath = path.join(docsDir, 'identity-session-admin-v1.md');
@@ -47,6 +48,7 @@ const productionProviderReadiness = readRequiredFile(productionProviderReadiness
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
+const hostedSaasArchitectureDecision = readRequiredFile(hostedSaasArchitectureDecisionPath);
 const targetEnvironmentEvidenceIntake = readRequiredFile(targetEnvironmentEvidenceIntakePath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const identitySessionAdmin = readRequiredFile(identitySessionAdminPath);
@@ -110,6 +112,7 @@ assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(produc
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
+assert.match(releaseReadiness, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
@@ -171,6 +174,13 @@ assert.match(targetDeploymentContract, /Target provider validation/);
 assert.match(targetDeploymentContract, /Identity-backed RBAC and session administration/);
 assert.match(targetDeploymentContract, /Hosted tenant isolation/);
 assert.match(targetDeploymentContract, /not permission to claim `production-ready`/);
+assert.match(hostedSaasArchitectureDecision, /^# Hosted SaaS Architecture Decision v1$/m);
+assert.match(hostedSaasArchitectureDecision, /^- status: local-hosted-saas-architecture-decision-current$/m);
+assert.match(hostedSaasArchitectureDecision, /^- productionReadyClaim: false$/m);
+assert.match(hostedSaasArchitectureDecision, /^- hostedSaasApproved: false$/m);
+assert.match(hostedSaasArchitectureDecision, /npm run smoke:hosted-saas-architecture-decision/);
+assert.match(hostedSaasArchitectureDecision, /not hosted SaaS implementation/);
+assert.match(hostedSaasArchitectureDecision, /Hosted SaaS and hybrid control-plane readiness remain blocked/);
 assert.match(targetEnvironmentEvidenceIntake, /^# Target Environment Evidence Intake v1$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- status: local-target-environment-evidence-intake-current$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m);
@@ -322,6 +332,7 @@ console.log(
       pilotRetentionDeletePolicy: 'present',
       pilotRuntimeIsolation: 'present',
       pilotTargetDeploymentContract: 'present',
+      pilotHostedSaasArchitectureDecision: 'present',
       pilotTargetEnvironmentEvidenceIntake: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,

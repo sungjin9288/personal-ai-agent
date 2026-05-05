@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-05T15:39:50.066Z
+- generatedAt: 2026-05-05T15:50:35.428Z
 - verifiedCommit: a08bec457ca8887403a8cac04698dd624fb8ff47
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: e6c98384616eb8060a6bd207896be79d8e7014e5009a0eae3446cbc432a4b72d
-- fileCount: 39
+- bundleSha256: 2d8bae7250ba4adbdd297fab1e263d8a4708bafcc0bef24978c3d7fb605e0e55
+- fileCount: 40
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -31,6 +31,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 
 ## Decision Boundary
@@ -45,11 +46,11 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 165127 | `b48259cd2bfed91432da7d6208a4a627a881a77f954a1a849206d764ccfa4345` |
-| `docs/product-plan-v1.md` | 12127 | `5a9d2a8daa17d40d987bce982e21c5de0aaf2982c8c27e1b38d388e8bd4cc8e6` |
-| `docs/security-model-v1.md` | 25339 | `ad8be89bf93753c4e0ac388d0258b6205eee5e6466d8af562ac86a5a54793cae` |
+| `README.md` | 165670 | `8fe231b07b266cf4d2e497cd9933cb86099e7d955e9ce4081e6d3f141ec7f223` |
+| `docs/product-plan-v1.md` | 12184 | `8a3fddb9776e788c28327396238875cf75c381448ab6c0a7d3fa21b191491758` |
+| `docs/security-model-v1.md` | 25701 | `2a0b08247f213e3d64cbd2010d4a58cc5d1a38a88989fe8b426af8b37597b56a` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 43921 | `60d5081c5929142d41d2e9f0042c35552386042c6f00db59e52d48da4bf6873c` |
+| `docs/deployment-pilot-v1.md` | 44674 | `88dbf970f9d82fca15082ddc7e79434cf9c367de3cae157bb96f4ed81db55ea3` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
@@ -73,9 +74,10 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/production-provider-readiness-v1.md` | 6535 | `be4207c18e5471d2afcc0ff61ecbc9f631dfb8584528f8cbec5a7fca57beac0b` |
 | `docs/target-provider-evidence-intake-v1.md` | 4063 | `08161129cd4238baa56f98cc2584db834db409eb63c4b31c888ff6c1d2821de9` |
 | `docs/production-enterprise-controls-v1.md` | 7002 | `76a4aa05e0b1d2ca9c7e773c314064fad6888b4fa3cb5d66238eccd12e554644` |
-| `docs/target-deployment-contract-v1.md` | 9309 | `4ea59d3e46d057c3633c0bfccee1cd8600f7886deeb1ff48520d2e51988a0413` |
+| `docs/target-deployment-contract-v1.md` | 9878 | `2b27175dbe57581a672343bdceb4edaecf6273081259d57f2f048c36f03d11c5` |
+| `docs/hosted-saas-architecture-decision-v1.md` | 5389 | `71c83b96c256de453c506598cdfdc3c7efca32a51b78153a3da16bedfe78e71f` |
 | `docs/target-environment-evidence-intake-v1.md` | 5735 | `f1134b249a65536bae3cfa2a0f4478ed739d7a49a67b576d7d6ee60366234d70` |
-| `docs/release-readiness-v1.md` | 22297 | `9bca09e4d45197df90fb0b82520920ee40bebe327e073b66e3ec929d49326d2c` |
+| `docs/release-readiness-v1.md` | 22965 | `e344985d0fc6ba37abdcedab213413487abfe81ea1762ccb8100344d1cc4cf54` |
 | `docs/production-like-release-drill-v1.md` | 11617 | `9ff0b2ab0fab331a6f0465554f066d8c5202adec01cf3c824371f1f01b481a08` |
 | `docs/execution-v1-evidence.md` | 10641 | `f580f4a709e73c75890a08b86a1dea1acdaf21d5451bd9c98c8d2e99b6e2d3e7` |
 | `docs/execution-v1-closeout.md` | 3351 | `ee790c84ddae03c88e87aab26ac16dc9b1265204b75ccfd615ac8c316b0a886b` |

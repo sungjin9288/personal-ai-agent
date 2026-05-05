@@ -12,6 +12,7 @@
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
+- relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -298,6 +299,16 @@ npm run smoke:target-environment-evidence-intake
 ```
 
 The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
+
+## Hosted SaaS Architecture Decision
+
+Before implementing or claiming hosted multi-tenant SaaS or a hybrid control plane, verify the architecture decision boundary:
+
+```bash
+npm run smoke:hosted-saas-architecture-decision
+```
+
+The source of record is [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md). It requires tenant model, control plane, identity, storage/encryption, provider/secrets, billing, observability/support, data lifecycle, deployment, compliance, migration, and stop-condition decisions while keeping `hostedSaasApproved: false`.
 
 Acceptance:
 
@@ -811,6 +822,7 @@ Export package should include:
 - `docs/production-retention-operating-v1.md`
 - `docs/production-provider-readiness-v1.md`
 - `docs/target-provider-evidence-intake-v1.md`
+- `docs/hosted-saas-architecture-decision-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`

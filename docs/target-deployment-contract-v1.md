@@ -10,6 +10,7 @@
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
+- relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -39,13 +40,14 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | --- | --- | --- |
 | Self-hosted local-first pilot | supported for OpenAI-scoped pilot | pilot owner approves isolated runtime root, provider env injection, and export boundary |
 | Production-like single-tenant deployment | not yet proven | target environment, secret manager, backup, telemetry, retention, and clean release evidence must be captured |
-| Hosted multi-tenant SaaS | out of v1 scope | separate architecture decision record covering tenant model, billing, identity, storage, encryption, backup, and support operations |
-| Hybrid control plane | out of v1 scope | separate architecture decision record covering agent registration, remote job dispatch, fleet observability, and policy distribution |
+| Hosted multi-tenant SaaS | blocked by unapproved ADR | hosted SaaS architecture decision record must be approved with tenant model, billing, identity, storage, encryption, backup, and support operations |
+| Hybrid control plane | blocked by unapproved ADR | hosted SaaS architecture decision record must be approved with agent registration, remote job dispatch, fleet observability, and policy distribution |
 
 ## Mandatory Controls
 
 | Control | Required Production Evidence | Current Local Evidence | Current Status |
 | --- | --- | --- | --- |
+| Hosted SaaS architecture decision | hosted SaaS architecture decision is approved with tenant model, control plane, identity, storage, provider, billing, observability, lifecycle, deployment, and compliance decisions | local hosted SaaS architecture decision contract is present with hostedSaasApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
@@ -61,6 +63,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 ```bash
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
+npm run smoke:hosted-saas-architecture-decision
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
@@ -86,7 +89,7 @@ npm run smoke:clean-deployment-release
 
 - stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
 - stop production-ready claims if the target environment evidence intake packet is incomplete
-- stop hosted SaaS claims until a separate SaaS architecture decision record exists and is approved
+- stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested
 - stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured

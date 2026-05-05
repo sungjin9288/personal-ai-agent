@@ -38,6 +38,7 @@ const BASE_PACKAGE_FILES = [
   'docs/target-provider-evidence-intake-v1.md',
   'docs/production-enterprise-controls-v1.md',
   'docs/target-deployment-contract-v1.md',
+  'docs/hosted-saas-architecture-decision-v1.md',
   'docs/target-environment-evidence-intake-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
@@ -169,6 +170,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 
 ## Decision Boundary

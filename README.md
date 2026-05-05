@@ -58,6 +58,7 @@ The local enterprise controls rehearsal is [docs/production-enterprise-controls-
 The local identity session administration gate is [docs/identity-session-admin-v1.md](docs/identity-session-admin-v1.md).
 The local tenant storage administration gate is [docs/tenant-storage-admin-v1.md](docs/tenant-storage-admin-v1.md).
 The target deployment contract is [docs/target-deployment-contract-v1.md](docs/target-deployment-contract-v1.md).
+The hosted SaaS architecture decision gate is [docs/hosted-saas-architecture-decision-v1.md](docs/hosted-saas-architecture-decision-v1.md).
 The local target environment evidence intake gate is [docs/target-environment-evidence-intake-v1.md](docs/target-environment-evidence-intake-v1.md).
 The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
 The local target retention operations gate is [docs/target-retention-operations-v1.md](docs/target-retention-operations-v1.md).
@@ -93,6 +94,7 @@ Current planning status:
 - local identity session administration evidence can be verified with `npm run smoke:identity-session-admin`; it proves identity controls, session lifecycle, role change audit packet requirements, and production identity gap are present, but it does not provide hosted identity/session administration proof
 - local tenant storage administration evidence can be verified with `npm run smoke:tenant-storage-admin`; it proves tenant storage controls, tenant admin operations, audit packet requirements, and hosted tenant isolation gaps are present, but it does not provide hosted tenant storage or encryption proof
 - target deployment contract evidence can be verified with `npm run smoke:target-deployment-contract`; it defines the hosted/production-like controls that must be proven before any production-ready or hosted SaaS claim
+- hosted SaaS architecture decision evidence can be verified with `npm run smoke:hosted-saas-architecture-decision`; it proves tenant model, control plane, identity, storage/encryption, provider/secrets, billing, observability/support, data lifecycle, deployment, and compliance decision requirements are present, but it keeps `hostedSaasApproved: false`
 - local target environment evidence intake can be verified with `npm run smoke:target-environment-evidence-intake`; it proves deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence requirements are present, but it does not provide target environment production proof
 - local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
 - local target retention operations evidence can be verified with `npm run smoke:target-retention-operations`; it proves data class, retention configuration, export approval, delete workflow, provider transcript handling, and post-delete absence evidence requirements are present, but it does not provide target retention enforcement proof
@@ -146,6 +148,7 @@ Production provider readiness rehearsal:
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:hosted-saas-architecture-decision
 npm run smoke:target-environment-evidence-intake
 ```
 

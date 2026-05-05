@@ -89,6 +89,7 @@
 - [x] Target provider evidence intake gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Target environment evidence intake gate implemented
+- [x] Hosted SaaS architecture decision gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived
 - [ ] Live Anthropic validation archived

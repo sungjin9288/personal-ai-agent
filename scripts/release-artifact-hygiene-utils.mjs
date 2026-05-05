@@ -53,6 +53,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/target-provider-evidence-intake-v1.md',
   'docs/production-enterprise-controls-v1.md',
   'docs/target-deployment-contract-v1.md',
+  'docs/hosted-saas-architecture-decision-v1.md',
   'docs/target-environment-evidence-intake-v1.md',
   'docs/backup-restore-drill-v1.md',
   'docs/target-retention-operations-v1.md',

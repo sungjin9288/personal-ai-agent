@@ -20,6 +20,7 @@ assert.equal(result.scannedFiles.includes('docs/production-provider-readiness-v1
 assert.equal(result.scannedFiles.includes('docs/target-provider-evidence-intake-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-enterprise-controls-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-deployment-contract-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/hosted-saas-architecture-decision-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-environment-evidence-intake-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/backup-restore-drill-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-retention-operations-v1.md'), true);
