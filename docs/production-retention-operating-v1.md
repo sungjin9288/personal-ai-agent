@@ -1,9 +1,9 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-05T08:57:26.561Z
+- generatedAt: 2026-05-05T12:17:53.054Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: f9fa3de5cc2d6c31240e10d3e8a85880cb26fcdc
+- sourceCommit: e295cea1f7c11c573b9d568c1b37a09fd546c659
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like retention, export, delete, tenant-scoped lifecycle, backup/restore, target backup operations, and isolation rehearsal
 - productionReadyClaim: false
@@ -24,15 +24,15 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 233 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 736 | 10s | yes |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 326 | 10s | yes |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 299 | 10s | yes |
-| `npm run smoke:target-backup-operations` | pass | 0 | 354 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1021 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 350 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 312 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 337 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 405 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 740 | 10s | yes |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 240 | 10s | yes |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 237 | 10s | yes |
+| `npm run smoke:target-backup-operations` | pass | 0 | 189 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 811 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 209 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 210 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 301 | 5s | yes |
 
 ## Key Signals
 
@@ -107,7 +107,7 @@ Production-ready remains blocked until the approved target environment provides 
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
-    "verifiedCommit": "04e633768ceafa715c6bd2769508c77957e12297"
+    "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
   }
 ```
 
@@ -117,7 +117,7 @@ Production-ready remains blocked until the approved target environment provides 
 {
     "fileCount": 35,
     "mode": "pilot-export-package",
-    "verifiedCommit": "04e633768ceafa715c6bd2769508c77957e12297"
+    "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
   }
 ```
 
@@ -128,7 +128,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 26,
     "secretFindingCount": 0,
-    "verifiedCommit": "04e633768ceafa715c6bd2769508c77957e12297"
+    "verifiedCommit": "e295cea1f7c11c573b9d568c1b37a09fd546c659"
   }
 ```
 
