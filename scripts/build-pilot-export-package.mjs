@@ -30,6 +30,7 @@ const BASE_PACKAGE_FILES = [
   'docs/retention-delete-v1.md',
   'docs/backup-restore-drill-v1.md',
   'docs/target-data-lifecycle-architecture-v1.md',
+  'docs/target-clean-deployment-architecture-v1.md',
   'docs/target-retention-operations-v1.md',
   'docs/target-backup-operations-v1.md',
   'docs/identity-session-admin-v1.md',
@@ -168,6 +169,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
+- relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)

@@ -61,6 +61,7 @@ for (const control of [
   'Target observability architecture',
   'Target SLO architecture',
   'Target data lifecycle architecture',
+  'Target clean deployment architecture',
   'Retention, export, delete',
   'SLO/SLA operations',
   'Clean deployment release',
@@ -97,6 +98,7 @@ for (const command of [
   'npm run smoke:target-observability-operations',
   'npm run smoke:target-slo-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
+  'npm run smoke:target-clean-deployment-architecture',
   'npm run smoke:production-slo-operating',
   'npm run smoke:clean-deployment-release',
 ]) {
@@ -119,6 +121,8 @@ for (const blocker of [
   /stop retention\/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured/,
   /stop observability claims until target observability telemetry, alert delivery, log\/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured/,
   /stop SLO\/SLA claims until target telemetry, alerting, on-call, incident response, customer SLO terms, error budget, and service credit evidence exist/,
+  /stop target clean deployment claims until the target clean deployment architecture record is approved and target clean deployment evidence is generated/,
+  /stop clean deployment claims until source provenance, artifact registry, dependency install, runtime bootstrap, secret injection, environment boundary, smoke\/health, rollback, and release approval evidence are captured/,
   /stop customer support claims until staffed ownership, support queue routing, customer communication route, ticket audit history, on-call handoff, and incident review cadence are proven in the target environment/,
 ]) {
   assert.match(contract, blocker);
@@ -134,6 +138,7 @@ assert.match(contract, /\[target-secret-manager-architecture-v1\.md\]\(target-se
 assert.match(contract, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(contract, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(contract, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
+assert.match(contract, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target deployment contract gate: passed/);
 assert.match(security, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(security, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
@@ -145,7 +150,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 16,
+      controlCount: 17,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

@@ -23,6 +23,7 @@
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
+- relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -94,6 +95,7 @@ Production gap:
 - [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, disaster recovery, and the remaining target evidence gap
 - [target-observability-operations-v1.md](target-observability-operations-v1.md) defines the local target observability operations evidence contract for telemetry pipeline, alert delivery, retention, on-call routing, customer status communication, incident review history, and the remaining target operations gap
 - [target-slo-architecture-v1.md](target-slo-architecture-v1.md) defines the target SLO/SLA architecture contract for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and the remaining target evidence gap
+- [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md) defines the target clean deployment architecture contract for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, release approval, and the remaining target evidence gap
 
 ## RBAC Matrix
 

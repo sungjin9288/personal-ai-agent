@@ -76,6 +76,7 @@ The local observability telemetry gate is [docs/observability-telemetry-v1.md](d
 The target observability architecture gate is [docs/target-observability-architecture-v1.md](docs/target-observability-architecture-v1.md).
 The local target observability operations gate is [docs/target-observability-operations-v1.md](docs/target-observability-operations-v1.md).
 The target SLO architecture gate is [docs/target-slo-architecture-v1.md](docs/target-slo-architecture-v1.md).
+The target clean deployment architecture gate is [docs/target-clean-deployment-architecture-v1.md](docs/target-clean-deployment-architecture-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
 Current planning status:
@@ -118,6 +119,7 @@ Current planning status:
 - target observability architecture evidence can be verified with `npm run smoke:target-observability-architecture`; it proves telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, and disaster recovery decision requirements are present, but it keeps `targetObservabilityApproved: false`
 - local target observability operations evidence can be verified with `npm run smoke:target-observability-operations`; it proves target telemetry, alert delivery, on-call, status communication, and incident review evidence requirements are present, but it does not provide production telemetry backend or staffed on-call proof
 - target SLO architecture evidence can be verified with `npm run smoke:target-slo-architecture`; it proves customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decision requirements are present, but it keeps `targetSloApproved: false`
+- target clean deployment architecture evidence can be verified with `npm run smoke:target-clean-deployment-architecture`; it proves source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, and release approval decision requirements are present, but it keeps `targetCleanDeploymentApproved: false`
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - tenant-scoped runtime export/delete can be verified with `npm run smoke:tenant-data-lifecycle`; it proves local tenant-filtered export and delete behavior inside one runtime root, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -268,6 +270,12 @@ Target SLO architecture gate:
 
 ```bash
 npm run smoke:target-slo-architecture
+```
+
+Target clean deployment architecture gate:
+
+```bash
+npm run smoke:target-clean-deployment-architecture
 ```
 
 Self-hosted runtime isolation smoke:

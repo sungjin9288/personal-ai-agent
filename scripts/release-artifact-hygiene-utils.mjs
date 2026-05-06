@@ -60,6 +60,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/target-environment-evidence-intake-v1.md',
   'docs/backup-restore-drill-v1.md',
   'docs/target-data-lifecycle-architecture-v1.md',
+  'docs/target-clean-deployment-architecture-v1.md',
   'docs/target-retention-operations-v1.md',
   'docs/identity-session-admin-v1.md',
   'docs/tenant-storage-admin-v1.md',

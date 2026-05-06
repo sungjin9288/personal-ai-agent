@@ -34,6 +34,7 @@
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
+- relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -73,6 +74,7 @@ Current execution evidence:
 - local target support operations gate: passed, with staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, on-call handoff, and `productionReadyClaim: false`
 - local secret management gate: passed, with secret classes, injection rules, redaction/hygiene rules, and rotation/revocation checklist
 - local observability telemetry gate: passed, with telemetry signals, alert triggers, required commands, and handoff requirements
+- target clean deployment architecture gate: passed, with targetCleanDeploymentApproved false, source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, release approval decision requirements, and `productionReadyClaim: false`
 - clean deployment release rehearsal: passed from tracked-files-only checkout, with `productionReadyClaim: false`
 - local production SLO operating rehearsal: passed, with `productionReadyClaim: false`
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`
@@ -147,6 +149,7 @@ Current handoff state:
 | [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md) | local-target-data-lifecycle-architecture-current | target data lifecycle architecture decision and evidence contract with targetDataLifecycleApproved false |
 | [target-retention-operations-v1.md](target-retention-operations-v1.md) | local-target-retention-operations-current | target retention operation controls, retention evidence packet, data lifecycle rules, and production target gap |
 | [target-backup-operations-v1.md](target-backup-operations-v1.md) | local-target-backup-operations-current | target backup operation controls, recovery evidence packet, disaster recovery rules, and production target gap |
+| [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md) | local-target-clean-deployment-architecture-current | target clean deployment architecture decision and evidence contract with targetCleanDeploymentApproved false |
 | [runtime-isolation-v1.md](runtime-isolation-v1.md) | pilot-isolation-evidence-current | one-runtime-per-customer isolation smoke and production gap |
 | [retention-delete-v1.md](retention-delete-v1.md) | pilot-policy-evidence-current | data class retention, export checklist, delete checklist, and production gap |
 | [clean-deployment-release-v1.md](clean-deployment-release-v1.md) | clean-local-rehearsal-current | tracked-files-only clean checkout release gate replay and production gap |
@@ -224,6 +227,7 @@ Blockers:
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
 - production SLO/SLA operating evidence is not generated from a production-like environment
 - target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment
+- target clean deployment architecture is not approved and target clean deployment evidence is not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment
 
 Production-ready must not be claimed from the current state.
@@ -293,6 +297,7 @@ npm run smoke:target-slo-architecture
 npm run smoke:target-data-lifecycle-architecture
 npm run smoke:target-retention-operations
 npm run smoke:target-backup-operations
+npm run smoke:target-clean-deployment-architecture
 npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 npm run rehearsal:clean-deployment-release
@@ -335,7 +340,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support operations, target clean deployment architecture, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

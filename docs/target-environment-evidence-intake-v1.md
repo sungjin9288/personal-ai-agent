@@ -14,6 +14,7 @@
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
+- relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -34,7 +35,7 @@ Production-ready remains blocked until every target environment domain below has
 | Observability and SLO/SLA | target SLO architecture approval, telemetry backend approval, telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | target SLO architecture, observability telemetry, target observability architecture, target observability operations, incident policy, and SLO rehearsal pass locally | blocked |
 | Retention, export, delete, and backup | data lifecycle architecture approval, customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target data lifecycle architecture, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
 | Support operations | support owner, staffed coverage, support queue routing, customer communication, ticket audit history, escalation review, and on-call handoff are proven | support operations, support escalation review, and target support gates pass locally | blocked |
-| Clean release and artifact hygiene | clean checkout deployment, dependency/runtime proof, rollback proof, release snapshot, export package, and hygiene report are generated from the target boundary | clean local release rehearsal, production-like drill, pilot export package, and hygiene pass locally | blocked |
+| Clean release and artifact hygiene | clean deployment architecture approval, clean checkout deployment, dependency/runtime proof, rollback proof, release snapshot, export package, and hygiene report are generated from the target boundary | target clean deployment architecture, clean local release rehearsal, production-like drill, pilot export package, and hygiene pass locally | blocked |
 
 ## Intake Checklist
 
@@ -49,7 +50,7 @@ Every target environment review must record:
 - retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence
 - backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence
 - support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence
-- clean deployment run, rollback proof, release snapshot, export package, and artifact hygiene result
+- clean deployment architecture approval, clean deployment run, rollback proof, release snapshot, export package, and artifact hygiene result
 - accepted risks, decision owner, and next review date
 - `productionReadyClaim` remains false unless all mandatory target deployment controls are satisfied by target evidence
 
@@ -63,6 +64,7 @@ npm run smoke:target-secret-manager-architecture
 npm run smoke:target-observability-architecture
 npm run smoke:target-slo-architecture
 npm run smoke:target-data-lifecycle-architecture
+npm run smoke:target-clean-deployment-architecture
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:clean-deployment-release

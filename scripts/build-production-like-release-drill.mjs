@@ -71,6 +71,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:target-data-lifecycle-architecture',
   },
   {
+    command: 'npm run smoke:target-clean-deployment-architecture',
+    script: 'smoke:target-clean-deployment-architecture',
+  },
+  {
     command: 'npm run smoke:target-retention-operations',
     script: 'smoke:target-retention-operations',
   },
@@ -265,6 +269,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-data-lifecycle-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);
+  }
+  if (script === 'smoke:target-clean-deployment-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetCleanDeploymentApproved']);
   }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);

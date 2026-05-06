@@ -61,6 +61,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:target-data-lifecycle-architecture',
   },
   {
+    command: 'npm run smoke:target-clean-deployment-architecture',
+    script: 'smoke:target-clean-deployment-architecture',
+  },
+  {
     command: 'npm run smoke:target-retention-operations',
     script: 'smoke:target-retention-operations',
   },
@@ -274,6 +278,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:target-data-lifecycle-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);
   }
+  if (script === 'smoke:target-clean-deployment-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetCleanDeploymentApproved']);
+  }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);
   }
@@ -353,6 +360,7 @@ function renderCleanDeploymentMarkdown({
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
+- relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 
 ## Decision Boundary
 

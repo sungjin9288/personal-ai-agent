@@ -42,6 +42,7 @@ for (const command of [
   'npm run smoke:target-observability-operations',
   'npm run smoke:target-slo-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
+  'npm run smoke:target-clean-deployment-architecture',
   'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:production-slo-operating',
@@ -75,6 +76,7 @@ for (const blocker of [
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated/,
+  /target clean deployment architecture is not approved and target clean deployment evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(drill, blocker);
@@ -91,7 +93,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 34,
+      commandCount: 35,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',
