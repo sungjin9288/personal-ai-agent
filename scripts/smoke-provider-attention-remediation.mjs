@@ -143,10 +143,67 @@ try {
   assert.equal(providerCheck.attentionStatus, 'recovered');
   assert.equal(providerCheck.latestAttentionRecovery.providerId, 'stub');
 
+  const fallbackMission = service.createMission({
+    workspaceId: workspace.id,
+    mode: 'knowledge',
+    deliverableType: 'checklist',
+    title: 'Provider attention fallback remediation mission',
+    objective: 'Create one provider execution failure and remediate the mission through fallback provider policy.',
+    constraints: [],
+  });
+
+  const failedAnthropicRun = runCli({
+    rootDir: tempRoot,
+    env: {
+      ANTHROPIC_API_KEY: '',
+      ANTHROPIC_BASE_URL: '',
+      ANTHROPIC_MODEL: '',
+    },
+    args: ['mission', 'run', fallbackMission.id, '--provider', 'anthropic'],
+  });
+
+  assert.equal(failedAnthropicRun.status, 'failed');
+  assert.equal(failedAnthropicRun.provider, 'anthropic');
+
+  const anthropicExecutionPending = service.getProviderAttentionInbox({
+    missionId: fallbackMission.id,
+    providerId: 'anthropic',
+    workspaceId: workspace.id,
+  });
+
+  assert.equal(anthropicExecutionPending.items.length, 1);
+
+  const fallbackRemediation = runCli({
+    rootDir: tempRoot,
+    env: {
+      ANTHROPIC_API_KEY: '',
+      ANTHROPIC_BASE_URL: '',
+      ANTHROPIC_MODEL: '',
+    },
+    args: [
+      'action',
+      'remediate-provider-attention',
+      anthropicExecutionPending.items[0].actionId,
+      '--fallback-provider',
+      'stub',
+    ],
+  });
+
+  assert.equal(fallbackRemediation.remediationKind, 'mission-fallback-rerun');
+  assert.equal(fallbackRemediation.primaryProviderId, 'anthropic');
+  assert.equal(fallbackRemediation.result.missionStatus, 'completed');
+  assert.equal(fallbackRemediation.result.provider, 'stub');
+  assert.equal(fallbackRemediation.result.providerFallback.fallbackUsed, true);
+  assert.deepEqual(fallbackRemediation.result.providerFallback.attemptedProviderIds, ['anthropic', 'stub']);
+  assert.equal(fallbackRemediation.postAttention.status, 'pending');
+  assert.equal(fallbackRemediation.postAttention.pendingCount, 1);
+
   console.log(
     JSON.stringify(
       {
         anthropicProbeRemediation: probeRemediation.result.ok,
+        fallbackRemediationStatus: fallbackRemediation.result.missionStatus,
+        fallbackRemediationUsed: fallbackRemediation.result.providerFallback.fallbackUsed,
         mode: 'provider-attention-remediation',
         ok: true,
         stubExecutionRemediationStatus: executionRemediation.result.missionStatus,

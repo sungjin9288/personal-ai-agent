@@ -51,6 +51,7 @@
 - generic `action inbox` and `action log-overdue` now accept provider filtering, so provider-scoped attention and drift work can be sliced without dropping into provider-only command surfaces
 - generic `action inbox` summary now exposes provider counts, so provider-scoped backlog can be measured from the same queue response used for cross-class triage
 - `action remediate-provider-attention` now gives provider attention its first local-first remediation automation path by re-probing failed providers or rerunning the same mission and provider for execution failures
+- provider attention execution remediation now accepts explicit fallback provider policy, so operators can recover the affected mission through failover without marking the original primary provider attention as recovered
 - `action remediate-specialist-follow-up` now gives failed or blocked specialist branches the same local-first remediation path by rerunning the mission with the same provider and resuming the existing `parallelGroupId` lineage
 - added dedicated `action specialist-follow-ups` query surface so blocked or failed specialist branches can be sliced directly by provider, workspace, mission, status, or overdue state without relying on generic inbox filtering alone
 - specialist follow-up lifecycle now also supports persisted reminders plus `--needs-reminder` and `action remind-specialist-follow-ups`, and reminder events now appear on mission/workspace/operator timelines

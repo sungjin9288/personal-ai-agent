@@ -12231,7 +12231,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return null;
   }
 
-  async function remediateProviderAttention(actionId) {
+  async function remediateProviderAttention(actionId, options = {}) {
     const actionState = getProviderAttentionActionState(actionId);
     if (!actionState) {
       throw new Error(`Provider attention item not found: ${actionId}`);
@@ -12241,10 +12241,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     const attentionItem = actionState.item;
+    const fallbackProvider = normalizeText(options.fallbackProvider);
     let remediationKind = '';
     let result = null;
 
     if (attentionItem.eventFamily === 'probe') {
+      if (fallbackProvider) {
+        throw new Error('--fallback-provider is only supported for provider execution attention remediation.');
+      }
+
       remediationKind = 'probe';
       const probe = await probeProvider(attentionItem.providerId);
       result = {
@@ -12263,8 +12268,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         throw new Error(`Provider execution attention is missing mission context: ${actionId}`);
       }
 
-      remediationKind = 'mission-rerun';
+      remediationKind = fallbackProvider ? 'mission-fallback-rerun' : 'mission-rerun';
       const rerun = await runMission(attentionItem.missionId, {
+        fallbackProvider,
         provider: attentionItem.providerId,
         providerSpecified: true,
       });
@@ -12274,6 +12280,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         missionId: rerun.mission.id,
         missionStatus: rerun.mission.status,
         provider: rerun.provider,
+        providerFallback: rerun.providerFallback || null,
         reviewerVerdict: rerun.reviewerVerdict || null,
         sessionId: rerun.session?.id || null,
       };
@@ -12291,6 +12298,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: attentionItem.workspaceId || null,
       }),
       previousStatus: actionState.status,
+      primaryProviderId: attentionItem.providerId,
       providerId: attentionItem.providerId,
       remediationKind,
       result,
