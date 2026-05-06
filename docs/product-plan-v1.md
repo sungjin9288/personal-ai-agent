@@ -115,6 +115,7 @@
 - [x] Target observability operations gate implemented
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented
+- [x] Target data lifecycle architecture gate implemented
 - [x] Runtime data lifecycle export/delete verification gate implemented
 - [x] Tenant-scoped runtime data export/delete verification gate implemented
 - [x] Backup/restore drill verification gate implemented

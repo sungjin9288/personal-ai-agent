@@ -24,6 +24,10 @@ const RETENTION_COMMANDS = [
     script: 'smoke:backup-restore-drill',
   },
   {
+    command: 'npm run smoke:target-data-lifecycle-architecture',
+    script: 'smoke:target-data-lifecycle-architecture',
+  },
+  {
     command: 'npm run smoke:target-retention-operations',
     script: 'smoke:target-retention-operations',
   },
@@ -141,6 +145,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:backup-restore-drill') {
     return pick(parsed, ['backupFileCount', 'mode', 'restoredFileCount', 'tenantDeleteIsolated']);
   }
+  if (script === 'smoke:target-data-lifecycle-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);
+  }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);
   }
@@ -196,16 +203,17 @@ function renderRetentionOperatingMarkdown({
 - sourceBranch: ${sourceBranch}
 - sourceCommit: ${sourceCommit}
 - releaseLabel: ${releaseLabel}
-- scope: local production-like retention, export, delete, tenant-scoped lifecycle, target retention operations, backup/restore, target backup operations, and isolation rehearsal
+- scope: local production-like retention, export, delete, tenant-scoped lifecycle, target data lifecycle architecture, target retention operations, backup/restore, target backup operations, and isolation rehearsal
 - productionReadyClaim: false
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, target retention operations, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
+This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, target data lifecycle architecture, target retention operations, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
 
 It is not hosted production retention evidence, not a customer data subject request workflow, not provider transcript deletion proof, not backup expiry evidence, and not permission to claim \`production-ready\`.
 
@@ -226,6 +234,7 @@ ${keySignalRows}
 - retention/delete policy remains the source of pilot data classes, export checklist, delete checklist, stop conditions, and production gap
 - runtime lifecycle remains the gate for inventory, export manifest, confirmation-token deletion, and post-delete absence
 - tenant data lifecycle remains the gate for tenant-scoped export manifests, exact tenant delete confirmation, post-delete absence, and unchanged data for another tenant in the same runtime root
+- target data lifecycle architecture remains the gate for customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, and disaster recovery decisions
 - target retention operations remains the gate for data class approval, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and audit evidence requirements
 - backup restore drill remains the gate for local backup manifest digests, clean restore enforcement, restored state hash matching, and post-restore tenant delete isolation
 - target backup operations remains the gate for backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, and disaster recovery evidence requirements

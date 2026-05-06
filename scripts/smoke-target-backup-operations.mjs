@@ -57,6 +57,7 @@ for (const control of [
 
 for (const command of [
   'npm run smoke:target-backup-operations',
+  'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:backup-restore-drill',
   'npm run smoke:production-retention-operating',
   'npm run smoke:release-artifact-hygiene',
@@ -66,8 +67,12 @@ for (const command of [
 }
 
 assert.match(releaseReadiness, /\[target-backup-operations-v1\.md\]\(target-backup-operations-v1\.md\)/);
+assert.match(targetBackup, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local target backup operations gate: passed/);
-assert.match(targetContract, /local retention, tenant lifecycle, target retention operations, backup\/restore drill, and target backup operations gates pass/);
+assert.match(
+  targetContract,
+  /local retention, tenant lifecycle, target data lifecycle architecture, target retention operations, backup\/restore drill, and target backup operations gates pass/,
+);
 assert.match(targetContract, /npm run smoke:target-backup-operations/);
 assert.match(deployment, /## Target Backup Operations Gate/);
 assert.match(deployment, /npm run smoke:target-backup-operations/);

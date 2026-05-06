@@ -63,6 +63,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:target-observability-operations',
   },
   {
+    command: 'npm run smoke:target-data-lifecycle-architecture',
+    script: 'smoke:target-data-lifecycle-architecture',
+  },
+  {
     command: 'npm run smoke:target-retention-operations',
     script: 'smoke:target-retention-operations',
   },
@@ -252,6 +256,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:target-observability-operations') {
     return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
   }
+  if (script === 'smoke:target-data-lifecycle-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);
+  }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);
   }
@@ -312,6 +319,7 @@ function extractKeySignals(script, parsed) {
       'pilotObservabilityTelemetry',
       'pilotTargetObservabilityArchitecture',
       'pilotTargetObservabilityOperations',
+      'pilotTargetDataLifecycleArchitecture',
       'pilotTargetRetentionOperations',
       'pilotTargetBackupOperations',
       'pilotProductionEnterpriseControls',

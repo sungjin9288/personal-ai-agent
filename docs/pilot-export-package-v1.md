@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-06T03:28:09.012Z
+- generatedAt: 2026-05-06T03:41:17.217Z
 - verifiedCommit: 3a0be66cedbb1cd4288b45d728bf9e9710b8f000
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: f9a80a5843f0375e59bd889476fcde7f28fdfb2f867ac86ee01553eccbe15b23
-- fileCount: 44
+- bundleSha256: 8c1acc489512fbbe44637262966526a8ffe20e2011c2a09676b0581c1225b691
+- fileCount: 45
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -21,6 +21,7 @@
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
@@ -50,11 +51,11 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 167978 | `8ef236c314575406717607775e54d7b3b99390a225e0c5a3cf56b7a51c3e1db8` |
-| `docs/product-plan-v1.md` | 12419 | `f6ecd8486917f609d4f9299f609f49e61668974ca40e49bb39637ad19f132acd` |
-| `docs/security-model-v1.md` | 28500 | `5ed9f435ee1f8241900caf3ccb2f2d2c61ef4018fdb984bde9665dfa3f899772` |
+| `README.md` | 168594 | `83024e9a12e31532c75a094909506fe344e757e663bf996cd29a7045c6170539` |
+| `docs/product-plan-v1.md` | 12477 | `34d896fea7f0e5ed5dc9995f6a7139de5e0921df0c437bc447a125347d659e9d` |
+| `docs/security-model-v1.md` | 29017 | `4f63003c2913ed5e985a84759d1a3f006f437fc9bf833aca252ee0069d6da23e` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 50241 | `2ecae243c1105dff38ceddc33b2d0fa82f1bc42fbf9e3377cfc8a492850f3644` |
+| `docs/deployment-pilot-v1.md` | 52358 | `a283e95565c77d3854c758664d695455fffc46d04be234a2d1bcea57d19effa0` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5477 | `c4e0234a09a5dab27f44fe6d45b4af3d488e77a596dff2ca646568653aa8451f` |
@@ -67,26 +68,27 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-observability-architecture-v1.md` | 6950 | `a6b02f8788a3bd503a789e71615499382cdfa9a931eaa039f606ac3e986ca568` |
 | `docs/target-observability-operations-v1.md` | 5037 | `a90090c49f12ca77d89228b32a9babf57b247be8fe7c88f9da8956b721ce9cd0` |
 | `docs/runtime-isolation-v1.md` | 2706 | `3df3871cd9ab71d9fd63fd45fb6b1824f9ae4e008fcabc6f805548dfd5455f21` |
-| `docs/retention-delete-v1.md` | 7286 | `c609674cf72c9d91d5ebe7a1885e300cc70ab3d794744863046e586e8aba1016` |
+| `docs/retention-delete-v1.md` | 7507 | `977b7de750c0c7aca5ca3b299da72227477603aecbe58727fce1c3b59d1e22bf` |
 | `docs/backup-restore-drill-v1.md` | 2824 | `14fcab0a9a03d1371350b349f187ce82a8113f006860adbc42baafd8ac1ba504` |
-| `docs/target-retention-operations-v1.md` | 5731 | `1f05714bf1144fec736d4108afa46b21f81292f5050d7961f3e3cf0899b3d54c` |
-| `docs/target-backup-operations-v1.md` | 5189 | `58a74e44d2c08a6a91d9c532f18517acf85a497b8bee011c4f6d3409927df3b9` |
+| `docs/target-data-lifecycle-architecture-v1.md` | 7712 | `a0971a6c120a414acf63960c78de38b95f695d6e6620f2a9e4df3baa94d76b35` |
+| `docs/target-retention-operations-v1.md` | 5907 | `765b2ab63c9cfa0f4bc08f155781d43b603f915da221929a347155dd0af2938f` |
+| `docs/target-backup-operations-v1.md` | 5365 | `7e495e2b86760b8f83b73e98f2074b365c4c1d37d774a122fcc8ea3b69482a83` |
 | `docs/identity-session-admin-v1.md` | 4817 | `3c2c72168aa7bd6302f4b7e1cdd3666adebcdaeddf7709f1e13c702c11cd61d4` |
 | `docs/tenant-storage-admin-v1.md` | 5044 | `e76454f983e0796ba10753189b07b6ce38480d002ecfc757ab125840dba64288` |
-| `docs/clean-deployment-release-v1.md` | 7466 | `e8919356df3122de57cc63508e04b03f5028edcec4e99ab03e44862e22aa2204` |
+| `docs/clean-deployment-release-v1.md` | 8046 | `83f0935b3a9e0c1de4a7859ad37038cfcfa5ecb8a30faef5c4018f270b67277a` |
 | `docs/production-slo-operating-v1.md` | 6736 | `2cd32bd88c5f7786daa06da8ed36dde2fff1f732ec3e423c9c5bade134f81553` |
-| `docs/production-retention-operating-v1.md` | 6501 | `b8462d371fc0330283844d0d6c97b7e033dbcc578a17edcdda205237adebb104` |
+| `docs/production-retention-operating-v1.md` | 7282 | `f97d6ef1875a7fb0fe0ac3c2af19d96b3364f70da56d18ac8d63276e5044c21b` |
 | `docs/production-provider-readiness-v1.md` | 6535 | `c66f3f31a63135878179724e062707ec7ff149c809c4d336f811a963f19d4ec2` |
 | `docs/target-provider-evidence-intake-v1.md` | 4063 | `08161129cd4238baa56f98cc2584db834db409eb63c4b31c888ff6c1d2821de9` |
 | `docs/production-enterprise-controls-v1.md` | 7002 | `a4b911e1e91216b585beb4f19556cfefcfca7246ba531f60f251f53a05e2b6ef` |
-| `docs/target-deployment-contract-v1.md` | 12715 | `2a6778d7389e06579eee4ab74cdf5367a01d9d3322ff3da1d2db2f729cfb608b` |
+| `docs/target-deployment-contract-v1.md` | 13498 | `7436edc7a913f4a0545a5b14276815a2b6762f2dc6e153cef6725d6421b5e697` |
 | `docs/hosted-saas-architecture-decision-v1.md` | 5871 | `1da26fed1ef1ff84f9e0ea6fd9adfab39175d0f489b41bb34b89475f44aecd8c` |
 | `docs/hosted-identity-session-architecture-v1.md` | 6387 | `771a895cff02ee4e7bcba087555686f1162738e6f566e22e61a4b07688689229` |
 | `docs/hosted-tenant-isolation-architecture-v1.md` | 6305 | `a715fc5d62517a40c3f4c447a471bed364dd6b7960ecff66f69565079e1cc892` |
 | `docs/target-secret-manager-architecture-v1.md` | 6224 | `889b5ab3c5ba2dd58874391c538cbe910470e84d8770fb4b3d1469f65a127e3f` |
-| `docs/target-environment-evidence-intake-v1.md` | 6526 | `f1363f6afda4f7edb89e489b0b958c2734b0e06ef0f589f9b013656e413d62d6` |
-| `docs/release-readiness-v1.md` | 26095 | `ae7b3190759e9d2a1aa07b2e1937a7de8b9efbd4cd03d3ff02255950ce070d7f` |
-| `docs/production-like-release-drill-v1.md` | 13046 | `a3647b8bc2f8bb920166e487aed87a9941faa26305fbd7a47357e8c065d684d0` |
+| `docs/target-environment-evidence-intake-v1.md` | 6776 | `54e8485b1815454eee6366abc1ad7a28e85a3a098034595f08f90c21bb2f4e6f` |
+| `docs/release-readiness-v1.md` | 27046 | `4a5b11669ddc83797b3deaffee83ff54ff6015e3b13869bb269aee3093a57dff` |
+| `docs/production-like-release-drill-v1.md` | 13539 | `3c565a07e3d686363b5883b69bc36092cb4ad89e861e9821661b0f9c0a61352c` |
 | `docs/execution-v1-evidence.md` | 10166 | `4d892f3b785bd057a3640ff40b2dae17fc706de388bdbd2a45163c244c1a159c` |
 | `docs/execution-v1-closeout.md` | 3351 | `a6665fc967e0f6f6edd66d9064f7fdb20a220f082513da2dfb4a153d7ad25de0` |
 | `docs/execution-v1-handoff.md` | 5240 | `9ad3a07e5147b4a4db8306b76316c6768cfbd46b0d3ad3f371fb6524143c5754` |

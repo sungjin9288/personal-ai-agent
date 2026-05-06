@@ -6,6 +6,7 @@
 - productionReadyClaim: false
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -58,6 +59,7 @@ Every target backup operations review must include:
 
 ```bash
 npm run smoke:target-backup-operations
+npm run smoke:target-data-lifecycle-architecture
 npm run smoke:backup-restore-drill
 npm run smoke:production-retention-operating
 npm run smoke:release-artifact-hygiene

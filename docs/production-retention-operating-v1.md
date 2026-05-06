@@ -1,20 +1,21 @@
 # Production Retention Operating Rehearsal v1
 
 - status: local-retention-operating-current
-- generatedAt: 2026-05-05T16:01:27.091Z
+- generatedAt: 2026-05-06T03:40:05.589Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: a9f532d190db65dddc1a20db7e439974aaff9027
+- sourceCommit: 606dc2e1fe7d2e034bff241f1191eb8a06f7027c
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
-- scope: local production-like retention, export, delete, tenant-scoped lifecycle, target retention operations, backup/restore, target backup operations, and isolation rehearsal
+- scope: local production-like retention, export, delete, tenant-scoped lifecycle, target data lifecycle architecture, target retention operations, backup/restore, target backup operations, and isolation rehearsal
 - productionReadyClaim: false
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, target retention operations, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
+This rehearsal proves that pilot retention, export, delete, tenant-scoped export/delete, target data lifecycle architecture, target retention operations, local backup/restore, target backup operations, runtime isolation, pilot package, and artifact hygiene checks can be replayed together locally.
 
 It is not hosted production retention evidence, not a customer data subject request workflow, not provider transcript deletion proof, not backup expiry evidence, and not permission to claim `production-ready`.
 
@@ -24,16 +25,17 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 126 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 307 | 10s | yes |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 139 | 10s | yes |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 202 | 10s | yes |
-| `npm run smoke:target-retention-operations` | pass | 0 | 132 | 10s | yes |
-| `npm run smoke:target-backup-operations` | pass | 0 | 127 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 481 | 10s | yes |
-| `npm run package:pilot-export` | pass | 0 | 132 | 5s | yes |
-| `npm run smoke:pilot-export-package` | pass | 0 | 121 | 5s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 123 | 5s | yes |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 392 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1271 | 10s | yes |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 575 | 10s | yes |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 576 | 10s | yes |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 514 | 5s | yes |
+| `npm run smoke:target-retention-operations` | pass | 0 | 637 | 10s | yes |
+| `npm run smoke:target-backup-operations` | pass | 0 | 1156 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 2524 | 10s | yes |
+| `npm run package:pilot-export` | pass | 0 | 661 | 5s | yes |
+| `npm run smoke:pilot-export-package` | pass | 0 | 558 | 5s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 524 | 5s | yes |
 
 ## Key Signals
 
@@ -78,6 +80,17 @@ Production-ready remains blocked until the approved target environment provides 
   }
 ```
 
+### npm run smoke:target-data-lifecycle-architecture
+
+```json
+{
+    "areaCount": 10,
+    "mode": "target-data-lifecycle-architecture",
+    "productionReadyClaim": false,
+    "targetDataLifecycleApproved": false
+  }
+```
+
 ### npm run smoke:target-retention-operations
 
 ```json
@@ -115,11 +128,11 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 40,
+    "fileCount": 45,
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
-    "verifiedCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "verifiedCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
@@ -127,9 +140,9 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "fileCount": 40,
+    "fileCount": 45,
     "mode": "pilot-export-package",
-    "verifiedCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "verifiedCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
@@ -138,9 +151,9 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 31,
+    "scannedFileCount": 36,
     "secretFindingCount": 0,
-    "verifiedCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "verifiedCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
@@ -149,6 +162,7 @@ Production-ready remains blocked until the approved target environment provides 
 - retention/delete policy remains the source of pilot data classes, export checklist, delete checklist, stop conditions, and production gap
 - runtime lifecycle remains the gate for inventory, export manifest, confirmation-token deletion, and post-delete absence
 - tenant data lifecycle remains the gate for tenant-scoped export manifests, exact tenant delete confirmation, post-delete absence, and unchanged data for another tenant in the same runtime root
+- target data lifecycle architecture remains the gate for customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, and disaster recovery decisions
 - target retention operations remains the gate for data class approval, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and audit evidence requirements
 - backup restore drill remains the gate for local backup manifest digests, clean restore enforcement, restored state hash matching, and post-restore tenant delete isolation
 - target backup operations remains the gate for backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, and disaster recovery evidence requirements

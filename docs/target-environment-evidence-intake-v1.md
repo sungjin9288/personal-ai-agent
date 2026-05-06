@@ -12,6 +12,7 @@
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -30,7 +31,7 @@ Production-ready remains blocked until every target environment domain below has
 | Tenant storage and encryption | tenant partitioning, tenant admin workflow, per-tenant encryption/key policy, backup/restore isolation, and cross-tenant denial are proven | tenant storage admin, tenant lifecycle, and runtime isolation gates pass locally | blocked |
 | Provider and secret manager | provider account approval, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
 | Observability and SLO/SLA | telemetry backend approval, telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | observability telemetry, target observability architecture, target observability operations, incident policy, and SLO rehearsal pass locally | blocked |
-| Retention, export, delete, and backup | customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
+| Retention, export, delete, and backup | data lifecycle architecture approval, customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target data lifecycle architecture, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
 | Support operations | support owner, staffed coverage, support queue routing, customer communication, ticket audit history, escalation review, and on-call handoff are proven | support operations, support escalation review, and target support gates pass locally | blocked |
 | Clean release and artifact hygiene | clean checkout deployment, dependency/runtime proof, rollback proof, release snapshot, export package, and hygiene report are generated from the target boundary | clean local release rehearsal, production-like drill, pilot export package, and hygiene pass locally | blocked |
 
@@ -59,6 +60,7 @@ npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:target-secret-manager-architecture
 npm run smoke:target-observability-architecture
+npm run smoke:target-data-lifecycle-architecture
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:clean-deployment-release

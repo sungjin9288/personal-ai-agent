@@ -5,6 +5,7 @@
 - scope: target retention, export, delete, provider transcript handling, post-delete absence, and audit evidence contract
 - productionReadyClaim: false
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
@@ -58,6 +59,7 @@ Every target retention operations review must include:
 
 ```bash
 npm run smoke:target-retention-operations
+npm run smoke:target-data-lifecycle-architecture
 npm run smoke:retention-delete-policy
 npm run smoke:tenant-data-lifecycle
 npm run smoke:target-backup-operations

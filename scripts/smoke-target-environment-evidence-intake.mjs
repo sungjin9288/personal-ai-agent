@@ -70,6 +70,7 @@ for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-observability-architecture',
+  'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
   'npm run smoke:clean-deployment-release',
@@ -85,6 +86,7 @@ assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-id
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
+assert.match(intake, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:target-environment-evidence-intake/);
 assert.match(targetContract, /target environment evidence intake packet/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
@@ -104,7 +106,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 11,
+      requiredCommandCount: 12,
     },
     null,
     2,

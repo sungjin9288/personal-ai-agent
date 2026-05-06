@@ -26,6 +26,7 @@ assert.equal(result.scannedFiles.includes('docs/hosted-tenant-isolation-architec
 assert.equal(result.scannedFiles.includes('docs/target-secret-manager-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-environment-evidence-intake-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/backup-restore-drill-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-data-lifecycle-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-retention-operations-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/identity-session-admin-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/tenant-storage-admin-v1.md'), true);

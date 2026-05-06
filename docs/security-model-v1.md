@@ -21,6 +21,7 @@
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -83,6 +84,7 @@ Production gap:
 - [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) defines the local tenant storage administration gate for tenant storage controls, tenant admin operations, backup/restore isolation requirements, and the remaining hosted tenant isolation production gap
 - [target-retention-operations-v1.md](target-retention-operations-v1.md) defines the local target retention operations evidence contract for customer-approved data classes, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and the remaining target lifecycle production gap
 - [target-backup-operations-v1.md](target-backup-operations-v1.md) defines the local target backup operations evidence contract for backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery runbook, and the remaining target backup production gap
+- [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md) defines the target data lifecycle architecture contract for customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, disaster recovery, and the remaining target evidence gap
 - [target-support-operations-v1.md](target-support-operations-v1.md) defines the local target support operations evidence contract for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, on-call handoff, and the remaining target support production gap
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
 - [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract for platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery, and the remaining target evidence gap

@@ -26,6 +26,7 @@
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
+- relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -592,6 +593,27 @@ Stop condition:
 - if backup or restore hash verification fails, do not present backup/restore readiness in a pilot or production-like review
 - if the drill passes, treat it only as local backup/restore evidence, not hosted encrypted backup durability or disaster recovery proof
 
+## Target Data Lifecycle Architecture
+
+Before presenting a production-like deployment as data-lifecycle-ready, verify the target data lifecycle architecture evidence contract:
+
+```bash
+npm run smoke:target-data-lifecycle-architecture
+```
+
+The source of record is [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md). It requires customer data class, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, disaster recovery, migration, rollback, legal hold, and customer communication containment decisions while keeping `targetDataLifecycleApproved: false`.
+
+Acceptance:
+
+- target data lifecycle decision areas cover customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, and disaster recovery
+- required evidence packets include customer-approved data classes, target retention configuration, export request, delete request, provider transcript policy, post-delete absence, backup architecture, restore validation, backup key ownership, disaster recovery, and migration plan
+- the generated target data lifecycle architecture gate keeps `productionReadyClaim: false` and `targetDataLifecycleApproved: false`
+
+Stop condition:
+
+- if target data lifecycle architecture approval or target evidence is missing, do not present production-like retention/export/delete or backup readiness
+- if the gate passes, treat it only as a local target data lifecycle architecture contract, not target retention enforcement, customer export approval, delete execution, provider transcript deletion, backup storage, restore validation, or disaster recovery proof
+
 ## Target Retention Operations Gate
 
 Before presenting a production-like deployment as retention-ready or data-lifecycle-ready, verify the target retention operations evidence contract:
@@ -711,7 +733,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -758,7 +780,7 @@ npm run rehearsal:production-retention-operating
 npm run smoke:production-retention-operating
 ```
 
-The rehearsal runs the retention/delete policy gate, runtime data lifecycle, tenant data lifecycle, target retention operations gate, target backup operations gate, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
+The rehearsal runs the retention/delete policy gate, runtime data lifecycle, tenant data lifecycle, target data lifecycle architecture gate, target retention operations gate, target backup operations gate, runtime isolation, pilot export package, pilot export package smoke, and release artifact hygiene into [production-retention-operating-v1.md](production-retention-operating-v1.md).
 
 Acceptance:
 
@@ -783,7 +805,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 
@@ -894,6 +916,7 @@ Export package should include:
 - `docs/hosted-tenant-isolation-architecture-v1.md`
 - `docs/target-secret-manager-architecture-v1.md`
 - `docs/target-observability-architecture-v1.md`
+- `docs/target-data-lifecycle-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`

@@ -63,6 +63,7 @@ The hosted identity session architecture gate is [docs/hosted-identity-session-a
 The hosted tenant isolation architecture gate is [docs/hosted-tenant-isolation-architecture-v1.md](docs/hosted-tenant-isolation-architecture-v1.md).
 The local target environment evidence intake gate is [docs/target-environment-evidence-intake-v1.md](docs/target-environment-evidence-intake-v1.md).
 The local backup/restore drill is [docs/backup-restore-drill-v1.md](docs/backup-restore-drill-v1.md).
+The target data lifecycle architecture gate is [docs/target-data-lifecycle-architecture-v1.md](docs/target-data-lifecycle-architecture-v1.md).
 The local target retention operations gate is [docs/target-retention-operations-v1.md](docs/target-retention-operations-v1.md).
 The local target backup operations gate is [docs/target-backup-operations-v1.md](docs/target-backup-operations-v1.md).
 The local customer support operations gate is [docs/customer-support-operations-v1.md](docs/customer-support-operations-v1.md).
@@ -103,6 +104,7 @@ Current planning status:
 - hosted tenant isolation architecture evidence can be verified with `npm run smoke:hosted-tenant-isolation-architecture`; it proves tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, and lifecycle decision requirements are present, but it keeps `hostedTenantIsolationApproved: false`
 - local target environment evidence intake can be verified with `npm run smoke:target-environment-evidence-intake`; it proves deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence requirements are present, but it does not provide target environment production proof
 - local backup/restore drill evidence can be verified with `npm run smoke:backup-restore-drill`; it proves manifest-backed local restore integrity and tenant-isolated recovery behavior, but it does not provide hosted backup durability or encrypted storage proof
+- target data lifecycle architecture evidence can be verified with `npm run smoke:target-data-lifecycle-architecture`; it proves customer data class, retention enforcement, export/delete, provider transcript, post-delete absence, backup, restore, key ownership, and disaster recovery decision requirements are present, but it keeps `targetDataLifecycleApproved: false`
 - local target retention operations evidence can be verified with `npm run smoke:target-retention-operations`; it proves data class, retention configuration, export approval, delete workflow, provider transcript handling, and post-delete absence evidence requirements are present, but it does not provide target retention enforcement proof
 - local target backup operations evidence can be verified with `npm run smoke:target-backup-operations`; it proves backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, expiry/deletion, and disaster recovery evidence requirements are present, but it does not provide production backup execution or disaster recovery proof
 - local customer support operations evidence can be verified with `npm run smoke:customer-support-operations`; it proves support roles, intake classes, escalation matrix, communication rules, and handoff checklist are present, but it does not provide staffed production support proof
@@ -191,6 +193,12 @@ Backup/restore drill gate:
 
 ```bash
 npm run smoke:backup-restore-drill
+```
+
+Target data lifecycle architecture gate:
+
+```bash
+npm run smoke:target-data-lifecycle-architecture
 ```
 
 Target retention operations gate:

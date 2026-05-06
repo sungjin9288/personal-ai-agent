@@ -42,6 +42,7 @@ for (const command of [
   'npm run smoke:runtime-data-lifecycle',
   'npm run smoke:tenant-data-lifecycle',
   'npm run smoke:backup-restore-drill',
+  'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:runtime-isolation',
@@ -56,6 +57,7 @@ for (const phrase of [
   /retention\/delete policy remains the source/,
   /runtime lifecycle remains the gate/,
   /tenant data lifecycle remains the gate/,
+  /target data lifecycle architecture remains the gate/,
   /target retention operations remains the gate/,
   /backup restore drill remains the gate/,
   /target backup operations remains the gate/,
@@ -67,6 +69,7 @@ for (const phrase of [
 }
 
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
+assert.match(rehearsal, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local production retention operating rehearsal: passed/);
 assert.match(retention, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(deployment, /## Production Retention Operating Rehearsal/);
@@ -79,7 +82,7 @@ assert.match(readme, /npm run smoke:production-retention-operating/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 10,
+      commandCount: 11,
       mode: 'production-retention-operating',
       ok: true,
       path: 'docs/production-retention-operating-v1.md',

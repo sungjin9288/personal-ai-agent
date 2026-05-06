@@ -40,7 +40,9 @@ for (const command of [
   'npm run smoke:secret-management',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
+  'npm run smoke:target-observability-architecture',
   'npm run smoke:target-observability-operations',
+  'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-retention-operations',
   'npm run smoke:target-backup-operations',
   'npm run smoke:retention-delete-policy',
@@ -69,7 +71,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 22,
+      commandCount: 24,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

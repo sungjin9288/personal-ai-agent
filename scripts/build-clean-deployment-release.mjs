@@ -45,8 +45,16 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:observability-telemetry',
   },
   {
+    command: 'npm run smoke:target-observability-architecture',
+    script: 'smoke:target-observability-architecture',
+  },
+  {
     command: 'npm run smoke:target-observability-operations',
     script: 'smoke:target-observability-operations',
+  },
+  {
+    command: 'npm run smoke:target-data-lifecycle-architecture',
+    script: 'smoke:target-data-lifecycle-architecture',
   },
   {
     command: 'npm run smoke:target-retention-operations',
@@ -250,8 +258,14 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
   }
+  if (script === 'smoke:target-observability-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetObservabilityApproved']);
+  }
   if (script === 'smoke:target-observability-operations') {
     return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:target-data-lifecycle-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);
   }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);

@@ -53,6 +53,7 @@
     "smoke:target-environment-evidence-intake": "node scripts/smoke-target-environment-evidence-intake.mjs",
     "smoke:production-enterprise-controls": "node scripts/smoke-production-enterprise-controls.mjs",
     "smoke:retention-delete-policy": "node scripts/smoke-retention-delete-policy.mjs",
+    "smoke:target-data-lifecycle-architecture": "node scripts/smoke-target-data-lifecycle-architecture.mjs",
     "smoke:clean-deployment-release": "node scripts/smoke-clean-deployment-release.mjs",
     "smoke:production-like-release-drill": "node scripts/smoke-production-like-release-drill.mjs",
     "smoke:pilot-export-package": "node scripts/smoke-pilot-export-package.mjs",
