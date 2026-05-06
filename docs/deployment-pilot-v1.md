@@ -11,6 +11,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
@@ -289,6 +290,7 @@ Before expanding the pilot beyond the archived OpenAI provider path, replay the 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
@@ -306,6 +308,14 @@ npm run smoke:target-provider-evidence-intake
 ```
 
 The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
+
+## Target Provider Operations
+
+```bash
+npm run smoke:target-provider-operations
+```
+
+The source of record is [target-provider-operations-v1.md](target-provider-operations-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, provider failure containment, and keeps `productionReadyClaim: false`.
 
 ## Target OpenAI Provider Account
 
@@ -1111,6 +1121,7 @@ Export package should include:
 - `docs/production-retention-operating-v1.md`
 - `docs/production-provider-readiness-v1.md`
 - `docs/target-provider-evidence-intake-v1.md`
+- `docs/target-provider-operations-v1.md`
 - `docs/hosted-saas-architecture-decision-v1.md`
 - `docs/hosted-identity-session-architecture-v1.md`
 - `docs/hosted-tenant-isolation-architecture-v1.md`

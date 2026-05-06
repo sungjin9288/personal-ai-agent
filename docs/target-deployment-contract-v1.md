@@ -9,6 +9,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
@@ -71,6 +72,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Target secret manager architecture | target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions | local target secret manager architecture contract is present with targetSecretManagerApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
+| Target provider operations | target provider operations evidence is captured with provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment proof | local target provider operations contract is present without target environment evidence | blocked |
 | Target OpenAI provider account | target OpenAI provider account is approved with account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, live validation, telemetry, fallback, and renewal/review audit decisions | local target OpenAI provider account contract is present with targetOpenAIProviderApproved false | blocked |
 | Target Anthropic provider account | target Anthropic provider account is approved with account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, live validation, telemetry, fallback, and remediation audit decisions | local target Anthropic provider account contract is present with targetAnthropicProviderApproved false | blocked |
 | Target local provider architecture | target local provider architecture is approved with endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decisions | local target local provider architecture contract is present with targetLocalProviderApproved false | blocked |
@@ -103,6 +105,7 @@ npm run smoke:target-tenant-isolation-operations
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
@@ -136,6 +139,7 @@ npm run smoke:clean-deployment-release
 ## Blocking Rules
 
 - stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
+- stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence are captured
 - stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated
 - stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated
 - stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated

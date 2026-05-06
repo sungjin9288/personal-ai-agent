@@ -164,6 +164,7 @@ function renderProviderReadinessMarkdown({
 - relatedCloseout: [execution-v1-closeout.md](execution-v1-closeout.md)
 - relatedHandoff: [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
@@ -207,6 +208,7 @@ ${providerDetails}
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
+- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
 - target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements
 - target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements
 - target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements
@@ -216,12 +218,17 @@ ${providerDetails}
 
 Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner, target boundary, secret manager alias, model/endpoint pinning, quota/cost guard, archived live validation, and fallback/stop-condition evidence.
 
+## Target Provider Operations
+
+Before any provider is presented as target production-operational, the operator must verify [target-provider-operations-v1.md](target-provider-operations-v1.md) and attach provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.
+
 ## Operator Re-Run
 
 \`\`\`bash
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture

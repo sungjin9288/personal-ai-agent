@@ -58,6 +58,7 @@ for (const command of [
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
+  'npm run smoke:target-provider-operations',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-data-lifecycle',
@@ -82,7 +83,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 35,
+      commandCount: 36,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

@@ -15,6 +15,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
@@ -89,6 +90,7 @@ Current execution evidence:
 - local production retention operating rehearsal: passed, with `productionReadyClaim: false`
 - local provider readiness operating rehearsal: passed, with `productionReadyClaim: false`
 - target provider evidence intake gate: passed, with provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage route, and `productionReadyClaim: false`
+- target provider operations gate: passed, with provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, provider failure containment requirements, and `productionReadyClaim: false`
 - target OpenAI provider account gate: passed, with targetOpenAIProviderApproved false, account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, renewal/review audit requirements, and `productionReadyClaim: false`
 - target Anthropic provider account gate: passed, with targetAnthropicProviderApproved false, account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, remediation audit requirements, and `productionReadyClaim: false`
 - target local provider architecture gate: passed, with targetLocalProviderApproved false, endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, customer approval decision requirements, and `productionReadyClaim: false`
@@ -143,6 +145,7 @@ Current handoff state:
 | [production-retention-operating-v1.md](production-retention-operating-v1.md) | local-retention-operating-current | local retention/export/delete operating rehearsal and production environment gap |
 | [production-provider-readiness-v1.md](production-provider-readiness-v1.md) | local-provider-readiness-current | provider preflight and live-validation blocker rehearsal |
 | [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) | local-target-provider-evidence-intake-current | target provider account, secret injection, live validation, quota, model, and fallback evidence packet |
+| [target-provider-operations-v1.md](target-provider-operations-v1.md) | local-target-provider-operations-current | target provider operations evidence contract for account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment |
 | [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md) | local-target-openai-provider-account-current | target OpenAI provider account decision and evidence contract with targetOpenAIProviderApproved false |
 | [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md) | local-target-anthropic-provider-account-current | target Anthropic provider account decision and evidence contract with targetAnthropicProviderApproved false |
 | [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md) | local-target-local-provider-architecture-current | target local provider architecture decision and evidence contract with targetLocalProviderApproved false |
@@ -242,6 +245,7 @@ Blockers:
 
 - Anthropic, local, and Hermes live validations are not complete
 - target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated from a production-like environment
+- target provider operations evidence is not generated from a production-like environment
 - target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment
 - target local provider architecture is not approved and local provider live validation evidence is not generated from a production-like environment
 - target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment
@@ -307,6 +311,7 @@ npm run smoke:runtime-isolation
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
@@ -383,7 +388,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

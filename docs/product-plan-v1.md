@@ -90,6 +90,7 @@
 - [x] Target Anthropic provider account gate implemented
 - [x] Target local provider architecture gate implemented
 - [x] Target provider evidence intake gate implemented
+- [x] Target provider operations gate implemented
 - [x] Target Hermes provider architecture gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Target environment evidence intake gate implemented

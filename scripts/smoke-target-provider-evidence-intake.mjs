@@ -5,6 +5,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const intakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
+const targetProviderOperationsPath = path.join(docsDir, 'target-provider-operations-v1.md');
 const providerReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
 const targetOpenAIPath = path.join(docsDir, 'target-openai-provider-account-v1.md');
 const targetAnthropicPath = path.join(docsDir, 'target-anthropic-provider-account-v1.md');
@@ -19,6 +20,7 @@ const readmePath = path.join(repoDir, 'README.md');
 const packagePath = path.join(repoDir, 'package.json');
 
 const intake = readRequiredFile(intakePath);
+const targetProviderOperations = readRequiredFile(targetProviderOperationsPath);
 const providerReadiness = readRequiredFile(providerReadinessPath);
 const targetOpenAI = readRequiredFile(targetOpenAIPath);
 const targetAnthropic = readRequiredFile(targetAnthropicPath);
@@ -52,6 +54,7 @@ for (const evidenceItem of [
   'Quota and cost guard',
   'Model and endpoint pinning',
   'Failure triage route',
+  'Target provider operations',
 ]) {
   assert.match(intake, new RegExp(`\\| ${escapeRegExp(evidenceItem)} \\|`));
 }
@@ -70,12 +73,14 @@ for (const checklistItem of [
   /fallback provider or stop condition when live validation fails/,
   /account remediation note for billing, credit, region, or terms blockers/,
   /artifact hygiene result after evidence refresh/,
+  /target provider operations evidence with provider failure containment plan/,
 ]) {
   assert.match(intake, checklistItem);
 }
 
 for (const command of [
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-provider-operations',
   'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
@@ -90,6 +95,9 @@ for (const command of [
 
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
+assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
+assert.match(intake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(intake, /target provider operations evidence/);
 assert.match(targetOpenAI, /^# Target OpenAI Provider Account v1$/m);
 assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(intake, /OpenAI provider account approval/);
@@ -117,12 +125,12 @@ assert.match(readme, /npm run smoke:target-provider-evidence-intake/);
 console.log(
   JSON.stringify(
     {
-      evidenceItemCount: 6,
+      evidenceItemCount: 7,
       mode: 'target-provider-evidence-intake',
       ok: true,
       path: 'docs/target-provider-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 9,
+      requiredCommandCount: 10,
     },
     null,
     2,

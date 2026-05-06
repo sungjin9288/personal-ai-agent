@@ -57,6 +57,7 @@ for (const checklistItem of [
   /target Anthropic provider account approval when Anthropic is included/,
   /target local provider architecture approval when local provider is included/,
   /target Hermes provider architecture approval when Hermes is included/,
+  /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
   /identity provider, role owner, session policy, and permission audit evidence/,
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
   /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
@@ -74,6 +75,7 @@ for (const checklistItem of [
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:target-identity-session-operations',
+  'npm run smoke:target-provider-operations',
   'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
@@ -101,6 +103,7 @@ for (const command of [
 
 assert.match(targetContract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
+assert.match(intake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
@@ -135,7 +138,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 23,
+      requiredCommandCount: 24,
     },
     null,
     2,

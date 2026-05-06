@@ -58,6 +58,7 @@ for (const command of [
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
+  'npm run smoke:target-provider-operations',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:retention-delete-policy',
   'npm run smoke:production-retention-operating',
@@ -77,6 +78,7 @@ for (const command of [
 for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated/,
+  /target provider operations evidence is not generated/,
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated/,
   /target local provider architecture is not approved and local provider live validation evidence is not generated/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated/,
@@ -111,7 +113,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 44,
+      commandCount: 45,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

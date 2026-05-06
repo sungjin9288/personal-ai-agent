@@ -1,0 +1,150 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const repoDir = process.cwd();
+const docsDir = path.join(repoDir, 'docs');
+const targetProviderOperationsPath = path.join(docsDir, 'target-provider-operations-v1.md');
+const targetProviderEvidenceIntakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
+const productionProviderReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
+const targetEnvironmentPath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
+const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
+const securityPath = path.join(docsDir, 'security-model-v1.md');
+const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
+const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
+const readmePath = path.join(repoDir, 'README.md');
+const packagePath = path.join(repoDir, 'package.json');
+
+const targetProviderOperations = readRequiredFile(targetProviderOperationsPath);
+const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
+const productionProviderReadiness = readRequiredFile(productionProviderReadinessPath);
+const targetContract = readRequiredFile(targetContractPath);
+const targetEnvironment = readRequiredFile(targetEnvironmentPath);
+const releaseReadiness = readRequiredFile(releaseReadinessPath);
+const security = readRequiredFile(securityPath);
+const deployment = readRequiredFile(deploymentPath);
+const productPlan = readRequiredFile(productPlanPath);
+const readme = readRequiredFile(readmePath);
+const packageJson = JSON.parse(readRequiredFile(packagePath));
+
+assert.equal(packageJson.scripts['smoke:target-provider-operations'], 'node scripts/smoke-target-provider-operations.mjs');
+
+assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
+assert.match(targetProviderOperations, /^- status: local-target-provider-operations-current$/m);
+assert.match(targetProviderOperations, /^- productionReadyClaim: false$/m);
+assert.match(targetProviderOperations, /not provider account approval/);
+assert.match(targetProviderOperations, /not target-boundary live validation proof/);
+assert.match(targetProviderOperations, /not billing or quota proof/);
+assert.match(targetProviderOperations, /not runtime endpoint approval/);
+assert.match(targetProviderOperations, /not production traffic proof/);
+assert.match(targetProviderOperations, /not permission to claim `production-ready`/);
+assert.match(targetProviderOperations, /Target provider operations remain blocked for production-ready claims/);
+
+for (const heading of [
+  '## Decision Boundary',
+  '## Provider Operation Controls',
+  '## Provider Operations Evidence Packet',
+  '## Provider Operation Rules',
+  '## Required Commands',
+  '## Acceptance Rule',
+  '## Production Gap',
+]) {
+  assert.match(targetProviderOperations, new RegExp(`^${escapeRegExp(heading)}$`, 'm'));
+}
+
+for (const control of [
+  'Provider account approval',
+  'Target secret injection',
+  'Target-boundary live validation',
+  'Model and endpoint pinning',
+  'Quota, cost, and resource guard',
+  'Fallback and disable path',
+  'Provider telemetry',
+  'Provider incident triage',
+  'Data and transcript handling',
+  'Remediation and renewal review',
+]) {
+  assert.match(targetProviderOperations, new RegExp(`\\| ${escapeRegExp(control)} \\|`));
+}
+
+for (const packetItem of [
+  /provider inventory with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer\/workspace approval, account or architecture record, and operating decision/,
+  /provider account approval proof with billing\/credit\/quota state, provider terms, model access, and renewal owner for each included provider/,
+  /target secret injection proof with secret manager alias, rotation owner, access policy, redaction result, break-glass path, and revocation evidence/,
+  /target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner/,
+  /model and endpoint pinning proof with model id, endpoint\/base URL alias, retry policy, concurrency limit, fallback route, and approval owner/,
+  /quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route/,
+  /fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision/,
+  /provider telemetry proof with health signal, latency\/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner/,
+  /provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes/,
+  /data and transcript handling proof with data classification, provider transcript policy, retention class, export\/delete handling, redaction rule, and post-delete absence requirement/,
+  /remediation and renewal review proof with billing\/credit remediation, endpoint\/model renewal, key rotation, provider terms review, accepted-risk owner, and next review date/,
+  /artifact hygiene and production readiness gate result/,
+  /residual risk, decision owner, next review date, and provider failure containment plan/,
+]) {
+  assert.match(targetProviderOperations, packetItem);
+}
+
+for (const command of [
+  'npm run smoke:target-provider-operations',
+  'npm run smoke:target-provider-evidence-intake',
+  'npm run rehearsal:production-provider-readiness',
+  'npm run smoke:production-provider-readiness',
+  'npm run smoke:target-openai-provider-account',
+  'npm run smoke:target-anthropic-provider-account',
+  'npm run smoke:target-local-provider-architecture',
+  'npm run smoke:target-hermes-provider-architecture',
+  'npm run smoke:target-secret-manager',
+  'npm run smoke:target-observability-operations',
+  'npm run smoke:target-deployment-contract',
+  'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:production-readiness-gate',
+  'npm run smoke:release-artifact-hygiene',
+]) {
+  assert.match(targetProviderOperations, new RegExp(escapeRegExp(command)));
+}
+
+assert.match(targetProviderEvidenceIntake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(targetProviderEvidenceIntake, /target provider operations evidence/);
+assert.match(productionProviderReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(productionProviderReadiness, /target provider operations contract remains the gate/);
+assert.match(targetContract, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(targetContract, /target provider operations evidence is captured/);
+assert.match(targetEnvironment, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(targetEnvironment, /target provider operations evidence/);
+assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(releaseReadiness, /target provider operations gate: passed/);
+assert.match(security, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(deployment, /## Target Provider Operations/);
+assert.match(deployment, /npm run smoke:target-provider-operations/);
+assert.match(productPlan, /\[x\] Target provider operations gate implemented/);
+assert.match(readme, /docs\/target-provider-operations-v1\.md/);
+assert.match(readme, /npm run smoke:target-provider-operations/);
+
+console.log(
+  JSON.stringify(
+    {
+      controlCount: 10,
+      mode: 'target-provider-operations',
+      ok: true,
+      path: 'docs/target-provider-operations-v1.md',
+      productionReadyClaim: false,
+      providerPacketItemCount: 15,
+      requiredCommandCount: 14,
+    },
+    null,
+    2,
+  ),
+);
+
+function readRequiredFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`required file not found: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

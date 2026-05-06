@@ -5,6 +5,7 @@
 - scope: target provider account, environment, live validation, quota, and recovery evidence intake contract
 - productionReadyClaim: false
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
@@ -20,6 +21,8 @@ It is not provider account remediation proof, not live-provider-complete evidenc
 
 Production-ready remains blocked until every provider included in the target release has approved account status, target secret injection, target-boundary live validation, quota/cost guard evidence, and rollback/fallback evidence.
 
+Target provider operations evidence remains the runtime operations gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment.
+
 ## Required Evidence Packet
 
 | Evidence Item | Required Proof | Current Local Evidence | Status |
@@ -30,6 +33,7 @@ Production-ready remains blocked until every provider included in the target rel
 | Quota and cost guard | quota, concurrency, timeout, spend owner, and retry guard are documented before live use | provider preflight and telemetry smoke exist locally | blocked |
 | Model and endpoint pinning | provider model, endpoint/base URL, timeout, and fallback route are recorded without secrets | provider readiness matrix lists env keys and commands | blocked |
 | Failure triage route | account failure, missing env, live runtime failure, and fallback decision have named owners | release readiness and handoff list current blockers | blocked |
+| Target provider operations | provider runtime operation evidence covers model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
 
 ## Provider Intake Checklist
 
@@ -48,12 +52,14 @@ Every provider promoted into a target release must record:
 - fallback provider or stop condition when live validation fails
 - account remediation note for billing, credit, region, or terms blockers
 - artifact hygiene result after evidence refresh
+- target provider operations evidence with provider failure containment plan
 - productionReadyClaim remains false unless every mandatory target deployment control also has target evidence
 
 ## Required Commands
 
 ```bash
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
@@ -66,6 +72,6 @@ npm run smoke:release-artifact-hygiene
 
 ## Production Gap
 
-This is a local target provider evidence intake contract. It does not prove target OpenAI provider account approval, Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target secret manager injection, target-boundary live validation, quota enforcement, or production fallback execution.
+This is a local target provider evidence intake contract. It does not prove target OpenAI provider account approval, Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target provider operations execution, target secret manager injection, target-boundary live validation, quota enforcement, or production fallback execution.
 
 Target provider readiness remains blocked for production-ready claims until each provider in the production claim has a complete evidence packet and successful target-boundary live validation archived from the approved production-like or hosted environment.

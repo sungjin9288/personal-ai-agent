@@ -55,6 +55,7 @@
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",
     "smoke:target-identity-session-operations": "node scripts/smoke-target-identity-session-operations.mjs",
     "smoke:target-provider-evidence-intake": "node scripts/smoke-target-provider-evidence-intake.mjs",
+    "smoke:target-provider-operations": "node scripts/smoke-target-provider-operations.mjs",
     "smoke:target-openai-provider-account": "node scripts/smoke-target-openai-provider-account.mjs",
     "smoke:target-anthropic-provider-account": "node scripts/smoke-target-anthropic-provider-account.mjs",
     "smoke:target-local-provider-architecture": "node scripts/smoke-target-local-provider-architecture.mjs",

@@ -8,6 +8,7 @@
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
+- relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
 - relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
@@ -40,7 +41,7 @@ Production-ready remains blocked until every target environment domain below has
 | Deployment boundary | target environment name, owner, deployment profile, network boundary, runtime root, and rollback owner are recorded | target deployment contract and clean local rehearsal exist | blocked |
 | Identity and sessions | user lifecycle, session lifecycle, role assignment/revocation, logout/revocation behavior, audit trail, target identity session operations evidence, and customer IdP proof are proven | local identity, OIDC/JWKS, shared-secret, RBAC, hosted identity architecture, and target identity session operations gates pass | blocked |
 | Tenant storage and encryption | tenant partitioning, tenant admin workflow, per-tenant encryption/key policy, backup/restore isolation, cross-tenant denial, target tenant isolation operations evidence, and tenant data containment proof are proven | tenant storage admin, tenant lifecycle, runtime isolation, hosted tenant architecture, and target tenant isolation operations gates pass locally | blocked |
-| Provider and secret manager | provider account approval, OpenAI provider account approval when OpenAI is included, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, Hermes provider architecture approval when Hermes is included, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
+| Provider and secret manager | provider account approval, OpenAI provider account approval when OpenAI is included, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, Hermes provider architecture approval when Hermes is included, target provider operations evidence, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
 | Observability and SLO/SLA | target SLO architecture approval, target SLO operations evidence, telemetry backend approval, telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | target SLO architecture, target SLO operations, observability telemetry, target observability architecture, target observability operations, incident policy, and SLO rehearsal pass locally | blocked |
 | Retention, export, delete, and backup | data lifecycle architecture approval, customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target data lifecycle architecture, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
 | Support operations | target support architecture approval, support owner, staffed coverage, support queue routing, customer communication, ticket audit history, escalation review, and on-call handoff are proven | support operations, support escalation review, target support architecture, and target support gates pass locally | blocked |
@@ -60,6 +61,7 @@ Every target environment review must record:
 - target Hermes provider architecture approval when Hermes is included
 - identity provider, role owner, session policy, and permission audit evidence
 - tenant storage boundary, encryption/key policy, backup/restore isolation, and tenant admin evidence
+- target provider operations evidence for account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment
 - target secret manager aliases, rotation evidence, revocation path, and break-glass approval
 - target SLO/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record
 - target SLO operations evidence for customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment
@@ -75,6 +77,7 @@ Every target environment review must record:
 ```bash
 npm run smoke:target-environment-evidence-intake
 npm run smoke:target-identity-session-operations
+npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture

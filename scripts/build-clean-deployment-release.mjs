@@ -117,6 +117,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:target-hermes-provider-architecture',
   },
   {
+    command: 'npm run smoke:target-provider-operations',
+    script: 'smoke:target-provider-operations',
+  },
+  {
     command: 'npm run smoke:target-deployment-contract',
     script: 'smoke:target-deployment-contract',
   },
@@ -349,6 +353,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-hermes-provider-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetHermesProviderApproved']);
+  }
+  if (script === 'smoke:target-provider-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'providerPacketItemCount']);
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);
