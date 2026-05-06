@@ -51,6 +51,7 @@ assert.match(contract, /blocked by unapproved ADR/);
 
 for (const control of [
   'Hosted SaaS architecture decision',
+  'Hosted identity session architecture',
   'Hosted tenant isolation architecture',
   'Target provider validation',
   'Identity-backed RBAC and session administration',
@@ -69,6 +70,7 @@ for (const command of [
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
   'npm run smoke:hosted-saas-architecture-decision',
+  'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-provider-readiness',
@@ -97,6 +99,7 @@ for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
   /stop production-ready claims if the target environment evidence intake packet is incomplete/,
   /stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated/,
+  /stop hosted identity-backed RBAC claims until the hosted identity session architecture record is approved and target identity\/session evidence is generated/,
   /stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated/,
   /stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist/,
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
@@ -113,6 +116,7 @@ assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-de
 assert.match(contract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(contract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(contract, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
+assert.match(contract, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(contract, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target deployment contract gate: passed/);
 assert.match(security, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
@@ -125,7 +129,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 11,
+      controlCount: 12,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

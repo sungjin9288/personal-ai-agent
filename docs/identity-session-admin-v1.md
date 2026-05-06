@@ -7,6 +7,7 @@
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
@@ -59,6 +60,7 @@ Every identity/session administration change must include:
 
 ```bash
 npm run smoke:identity-session-admin
+npm run smoke:hosted-identity-session-architecture
 npm run smoke:web-auth-rbac
 npm run smoke:web-oidc-rbac
 npm run smoke:web-tenant-isolation

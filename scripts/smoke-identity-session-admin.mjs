@@ -69,6 +69,7 @@ for (const packetItem of [
 
 for (const command of [
   'npm run smoke:identity-session-admin',
+  'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:web-auth-rbac',
   'npm run smoke:web-oidc-rbac',
   'npm run smoke:web-tenant-isolation',
@@ -79,6 +80,7 @@ for (const command of [
 }
 
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
+assert.match(identity, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local identity session administration gate: passed/);
 assert.match(targetContract, /local identity session administration, shared-secret, OIDC\/JWKS, and RBAC gates pass/);
 assert.match(targetContract, /npm run smoke:identity-session-admin/);

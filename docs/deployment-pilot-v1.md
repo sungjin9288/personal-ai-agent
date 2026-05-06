@@ -13,6 +13,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
+- relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
@@ -310,6 +311,28 @@ npm run smoke:hosted-saas-architecture-decision
 ```
 
 The source of record is [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md). It requires tenant model, control plane, identity, storage/encryption, provider/secrets, billing, observability/support, data lifecycle, deployment, compliance, migration, and stop-condition decisions while keeping `hostedSaasApproved: false`.
+
+## Hosted Identity Session Architecture
+
+Before implementing or claiming hosted identity-backed RBAC or session administration for another company, verify the identity/session architecture boundary:
+
+```bash
+npm run smoke:hosted-identity-session-architecture
+```
+
+The source of record is [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md). It requires customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention, migration, rollback, and access containment decisions while keeping `hostedIdentitySessionApproved: false`.
+
+Acceptance:
+
+- customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decision areas are documented
+- required hosted identity evidence packet items are explicit before any hosted identity-backed RBAC claim
+- the architecture record keeps `productionReadyClaim: false` and `hostedIdentitySessionApproved: false`
+- target environment evidence remains required before changing the release label
+
+Stop condition:
+
+- if hosted identity session architecture is not approved, do not claim hosted identity-backed RBAC or session administration
+- if target customer IdP, persistent role administration, logout/revocation, audit, break-glass, support access, and retention evidence is missing, treat the gate as architecture boundary evidence only
 
 ## Hosted Tenant Isolation Architecture
 
@@ -834,6 +857,7 @@ Export package should include:
 - `docs/production-provider-readiness-v1.md`
 - `docs/target-provider-evidence-intake-v1.md`
 - `docs/hosted-saas-architecture-decision-v1.md`
+- `docs/hosted-identity-session-architecture-v1.md`
 - `docs/hosted-tenant-isolation-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`

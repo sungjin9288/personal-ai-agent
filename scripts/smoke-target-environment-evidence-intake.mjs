@@ -66,6 +66,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
@@ -78,6 +79,7 @@ for (const command of [
 }
 
 assert.match(targetContract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
+assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:target-environment-evidence-intake/);
 assert.match(targetContract, /target environment evidence intake packet/);
@@ -98,7 +100,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 8,
+      requiredCommandCount: 9,
     },
     null,
     2,

@@ -11,6 +11,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
+- relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
@@ -49,6 +50,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Control | Required Production Evidence | Current Local Evidence | Current Status |
 | --- | --- | --- | --- |
 | Hosted SaaS architecture decision | hosted SaaS architecture decision is approved with tenant model, control plane, identity, storage, provider, billing, observability, lifecycle, deployment, and compliance decisions | local hosted SaaS architecture decision contract is present with hostedSaasApproved false | blocked |
+| Hosted identity session architecture | hosted identity session architecture is approved with customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decisions | local hosted identity session architecture contract is present with hostedIdentitySessionApproved false | blocked |
 | Hosted tenant isolation architecture | hosted tenant isolation architecture is approved with tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, and lifecycle decisions | local hosted tenant isolation architecture contract is present with hostedTenantIsolationApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
@@ -66,6 +68,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:hosted-saas-architecture-decision
+npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
@@ -93,6 +96,7 @@ npm run smoke:clean-deployment-release
 - stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
 - stop production-ready claims if the target environment evidence intake packet is incomplete
 - stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated
+- stop hosted identity-backed RBAC claims until the hosted identity session architecture record is approved and target identity/session evidence is generated
 - stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested

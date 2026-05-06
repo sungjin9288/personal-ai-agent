@@ -15,6 +15,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:identity-session-admin',
   },
   {
+    command: 'npm run smoke:hosted-identity-session-architecture',
+    script: 'smoke:hosted-identity-session-architecture',
+  },
+  {
     command: 'npm run smoke:tenant-storage-admin',
     script: 'smoke:tenant-storage-admin',
   },
@@ -203,6 +207,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:identity-session-admin') {
     return pick(parsed, ['auditPacketItemCount', 'controlCount', 'mode', 'productionReadyClaim', 'sessionEventCount']);
+  }
+  if (script === 'smoke:hosted-identity-session-architecture') {
+    return pick(parsed, ['areaCount', 'hostedIdentitySessionApproved', 'mode', 'productionReadyClaim']);
   }
   if (script === 'smoke:tenant-storage-admin') {
     return pick(parsed, ['auditPacketItemCount', 'controlCount', 'mode', 'operationCount', 'productionReadyClaim']);
