@@ -18,6 +18,7 @@
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -464,6 +465,28 @@ Stop condition:
 - if the rehearsal fails, do not present enterprise controls readiness in a pilot review until the failed gate is fixed
 - if the rehearsal passes, treat it only as local enterprise controls evidence, not identity-backed hosted RBAC/session administration or hosted tenant isolation
 
+## Target Tenant Isolation Operations
+
+Before presenting hosted multi-tenant isolation, tenant-scoped storage, or per-tenant encryption as target-production evidence, verify the target tenant isolation operations evidence packet:
+
+```bash
+npm run smoke:target-tenant-isolation-operations
+```
+
+The source of record is [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md). It requires tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, tenant data containment, required commands, and keeps `productionReadyClaim: false`.
+
+Acceptance:
+
+- tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, and lifecycle isolation controls are documented
+- tenant evidence packets include deployment boundary, tenant identity source, authorization policy, storage partition proof, encryption/key evidence, backup/restore proof, tenant admin audit, cross-tenant denial matrix, support/observability isolation, lifecycle evidence, hygiene, residual risk, and decision owner
+- the generated target tenant isolation operations gate keeps `productionReadyClaim: false`
+- target environment evidence remains required before changing the release label
+
+Stop condition:
+
+- if target tenant isolation operations evidence is missing, do not present hosted multi-tenant isolation or tenant-scoped storage as target-production evidence
+- if the gate passes, treat it only as a local target tenant isolation operations evidence contract, not hosted multi-tenant proof, per-tenant encryption proof, tenant-scoped backup proof, centralized tenant administration proof, or target environment production evidence
+
 ## Target Deployment Contract
 
 Before describing the system as production-ready for another company or as hosted SaaS, verify the target deployment contract:
@@ -477,7 +500,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
+- target provider validation, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, identity-backed RBAC/session administration, hosted tenant isolation, target tenant isolation operations, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 
@@ -845,7 +868,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, identity/session administration gate, hosted identity architecture gate, target identity/session operations gate, customer support operations gate, support escalation review gate, target support architecture gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, identity/session administration gate, hosted identity architecture gate, target identity/session operations gate, hosted tenant isolation architecture gate, target tenant isolation operations gate, customer support operations gate, support escalation review gate, target support architecture gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -938,7 +961,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, identity/session administration gate, target identity/session operations gate, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, identity/session administration gate, target identity/session operations gate, tenant storage administration gate, hosted tenant isolation architecture gate, target tenant isolation operations gate, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

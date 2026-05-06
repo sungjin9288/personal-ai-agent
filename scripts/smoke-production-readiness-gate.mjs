@@ -25,6 +25,7 @@ const hostedSaasArchitectureDecisionPath = path.join(docsDir, 'hosted-saas-archi
 const hostedIdentitySessionArchitecturePath = path.join(docsDir, 'hosted-identity-session-architecture-v1.md');
 const targetIdentitySessionOperationsPath = path.join(docsDir, 'target-identity-session-operations-v1.md');
 const hostedTenantIsolationArchitecturePath = path.join(docsDir, 'hosted-tenant-isolation-architecture-v1.md');
+const targetTenantIsolationOperationsPath = path.join(docsDir, 'target-tenant-isolation-operations-v1.md');
 const targetEnvironmentEvidenceIntakePath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const identitySessionAdminPath = path.join(docsDir, 'identity-session-admin-v1.md');
@@ -69,6 +70,7 @@ const hostedSaasArchitectureDecision = readRequiredFile(hostedSaasArchitectureDe
 const hostedIdentitySessionArchitecture = readRequiredFile(hostedIdentitySessionArchitecturePath);
 const targetIdentitySessionOperations = readRequiredFile(targetIdentitySessionOperationsPath);
 const hostedTenantIsolationArchitecture = readRequiredFile(hostedTenantIsolationArchitecturePath);
+const targetTenantIsolationOperations = readRequiredFile(targetTenantIsolationOperationsPath);
 const targetEnvironmentEvidenceIntake = readRequiredFile(targetEnvironmentEvidenceIntakePath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const identitySessionAdmin = readRequiredFile(identitySessionAdminPath);
@@ -125,6 +127,7 @@ for (const blocker of [
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence is not generated from a production-like environment/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
+  /target tenant isolation operations evidence is not generated from a production-like environment/,
   /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
@@ -156,6 +159,7 @@ assert.match(releaseReadiness, /\[hosted-saas-architecture-decision-v1\.md\]\(ho
 assert.match(releaseReadiness, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
@@ -290,6 +294,12 @@ assert.match(hostedTenantIsolationArchitecture, /^- hostedTenantIsolationApprove
 assert.match(hostedTenantIsolationArchitecture, /npm run smoke:hosted-tenant-isolation-architecture/);
 assert.match(hostedTenantIsolationArchitecture, /not hosted tenant isolation implementation/);
 assert.match(hostedTenantIsolationArchitecture, /Hosted multi-tenant isolation remains blocked/);
+assert.match(targetTenantIsolationOperations, /^# Target Tenant Isolation Operations v1$/m);
+assert.match(targetTenantIsolationOperations, /^- status: local-target-tenant-isolation-operations-current$/m);
+assert.match(targetTenantIsolationOperations, /^- productionReadyClaim: false$/m);
+assert.match(targetTenantIsolationOperations, /npm run smoke:target-tenant-isolation-operations/);
+assert.match(targetTenantIsolationOperations, /not target tenant isolation evidence/);
+assert.match(targetTenantIsolationOperations, /Target tenant isolation operations remain blocked for production-ready claims/);
 assert.match(targetEnvironmentEvidenceIntake, /^# Target Environment Evidence Intake v1$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- status: local-target-environment-evidence-intake-current$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m);
@@ -428,7 +438,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -496,6 +506,7 @@ console.log(
       pilotHostedIdentitySessionArchitecture: 'present',
       pilotTargetIdentitySessionOperations: 'present',
       pilotHostedTenantIsolationArchitecture: 'present',
+      pilotTargetTenantIsolationOperations: 'present',
       pilotTargetEnvironmentEvidenceIntake: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,

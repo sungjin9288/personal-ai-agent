@@ -18,6 +18,7 @@
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -64,6 +65,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Hosted identity session architecture | hosted identity session architecture is approved with customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decisions | local hosted identity session architecture contract is present with hostedIdentitySessionApproved false | blocked |
 | Target identity session operations | target identity session operations evidence is captured with customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention proof | local target identity session operations contract is present without target environment evidence | blocked |
 | Hosted tenant isolation architecture | hosted tenant isolation architecture is approved with tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, and lifecycle decisions | local hosted tenant isolation architecture contract is present with hostedTenantIsolationApproved false | blocked |
+| Target tenant isolation operations | target tenant isolation operations evidence is captured with tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof | local target tenant isolation operations contract is present without target environment evidence | blocked |
 | Target secret manager architecture | target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions | local target secret manager architecture contract is present with targetSecretManagerApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
@@ -93,6 +95,7 @@ npm run smoke:hosted-saas-architecture-decision
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:target-identity-session-operations
 npm run smoke:hosted-tenant-isolation-architecture
+npm run smoke:target-tenant-isolation-operations
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
@@ -136,6 +139,7 @@ npm run smoke:clean-deployment-release
 - stop hosted identity-backed RBAC claims until the hosted identity session architecture record is approved and target identity/session evidence is generated
 - stop target identity/session operations claims until customer IdP integration, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, and customer access containment evidence are captured
 - stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated
+- stop target tenant isolation operations claims until tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence are captured
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested
 - stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated

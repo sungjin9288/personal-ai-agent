@@ -7,6 +7,7 @@ const docsDir = path.join(repoDir, 'docs');
 const decisionPath = path.join(docsDir, 'hosted-tenant-isolation-architecture-v1.md');
 const hostedSaasPath = path.join(docsDir, 'hosted-saas-architecture-decision-v1.md');
 const tenantStoragePath = path.join(docsDir, 'tenant-storage-admin-v1.md');
+const targetTenantPath = path.join(docsDir, 'target-tenant-isolation-operations-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const securityPath = path.join(docsDir, 'security-model-v1.md');
@@ -18,6 +19,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const decision = readRequiredFile(decisionPath);
 const hostedSaas = readRequiredFile(hostedSaasPath);
 const tenantStorage = readRequiredFile(tenantStoragePath);
+const targetTenant = readRequiredFile(targetTenantPath);
 const targetContract = readRequiredFile(targetContractPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const security = readRequiredFile(securityPath);
@@ -75,6 +77,7 @@ for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:hosted-saas-architecture-decision',
   'npm run smoke:tenant-storage-admin',
+  'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-readiness-gate',
@@ -85,6 +88,8 @@ for (const command of [
 
 assert.match(hostedSaas, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(tenantStorage, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
+assert.match(targetTenant, /^# Target Tenant Isolation Operations v1$/m);
+assert.match(decision, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(targetContract, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(targetContract, /hosted tenant isolation architecture is approved/);
 assert.match(targetContract, /npm run smoke:hosted-tenant-isolation-architecture/);
@@ -106,7 +111,7 @@ console.log(
       ok: true,
       path: 'docs/hosted-tenant-isolation-architecture-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 7,
+      requiredCommandCount: 8,
     },
     null,
     2,

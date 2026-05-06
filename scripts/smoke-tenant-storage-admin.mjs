@@ -70,6 +70,7 @@ for (const packetItem of [
 for (const command of [
   'npm run smoke:tenant-storage-admin',
   'npm run smoke:hosted-tenant-isolation-architecture',
+  'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:web-tenant-isolation',
   'npm run smoke:tenant-data-lifecycle',
   'npm run smoke:runtime-isolation',
@@ -81,6 +82,7 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[tenant-storage-admin-v1\.md\]\(tenant-storage-admin-v1\.md\)/);
 assert.match(tenant, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
+assert.match(tenant, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(releaseReadiness, /local tenant storage administration gate: passed/);
 assert.match(targetContract, /local tenant storage administration, OIDC tenant API isolation, tenant lifecycle, and runtime isolation gates pass/);
 assert.match(targetContract, /npm run smoke:tenant-storage-admin/);

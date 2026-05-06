@@ -35,6 +35,7 @@ for (const command of [
   'npm run smoke:identity-session-admin',
   'npm run smoke:target-identity-session-operations',
   'npm run smoke:tenant-storage-admin',
+  'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:target-support-architecture',
@@ -79,7 +80,7 @@ assert.match(readme, /npm run smoke:clean-deployment-release/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 32,
+      commandCount: 33,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',

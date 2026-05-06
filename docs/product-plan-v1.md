@@ -97,6 +97,7 @@
 - [x] Hosted identity session architecture gate implemented
 - [x] Target identity session operations gate implemented
 - [x] Hosted tenant isolation architecture gate implemented
+- [x] Target tenant isolation operations gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived
 - [ ] Live Anthropic validation archived

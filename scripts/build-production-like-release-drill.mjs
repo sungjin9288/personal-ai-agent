@@ -31,6 +31,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:hosted-tenant-isolation-architecture',
   },
   {
+    command: 'npm run smoke:target-tenant-isolation-operations',
+    script: 'smoke:target-tenant-isolation-operations',
+  },
+  {
     command: 'npm run smoke:customer-support-operations',
     script: 'smoke:customer-support-operations',
   },
@@ -263,6 +267,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:hosted-tenant-isolation-architecture') {
     return pick(parsed, ['areaCount', 'hostedTenantIsolationApproved', 'mode', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:target-tenant-isolation-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'tenantPacketItemCount']);
   }
   if (script === 'smoke:customer-support-operations') {
     return pick(parsed, ['intakeClassCount', 'mode', 'productionReadyClaim', 'supportRoleCount']);

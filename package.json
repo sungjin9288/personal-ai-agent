@@ -24,6 +24,7 @@
     "smoke:hosted-saas-architecture-decision": "node scripts/smoke-hosted-saas-architecture-decision.mjs",
     "smoke:hosted-identity-session-architecture": "node scripts/smoke-hosted-identity-session-architecture.mjs",
     "smoke:hosted-tenant-isolation-architecture": "node scripts/smoke-hosted-tenant-isolation-architecture.mjs",
+    "smoke:target-tenant-isolation-operations": "node scripts/smoke-target-tenant-isolation-operations.mjs",
     "smoke:identity-session-admin": "node scripts/smoke-identity-session-admin.mjs",
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:web-auth-rbac": "node scripts/smoke-web-auth-rbac.mjs",

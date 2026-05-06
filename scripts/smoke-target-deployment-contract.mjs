@@ -54,6 +54,7 @@ for (const control of [
   'Hosted identity session architecture',
   'Target identity session operations',
   'Hosted tenant isolation architecture',
+  'Target tenant isolation operations',
   'Target secret manager architecture',
   'Target provider validation',
   'Target OpenAI provider account',
@@ -84,6 +85,7 @@ for (const command of [
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:target-identity-session-operations',
   'npm run smoke:hosted-tenant-isolation-architecture',
+  'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-provider-evidence-intake',
@@ -128,6 +130,7 @@ for (const blocker of [
   /stop hosted identity-backed RBAC claims until the hosted identity session architecture record is approved and target identity\/session evidence is generated/,
   /stop target identity\/session operations claims until customer IdP integration, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, and customer access containment evidence are captured/,
   /stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated/,
+  /stop target tenant isolation operations claims until tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment evidence are captured/,
   /stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist/,
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
   /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,
@@ -157,6 +160,7 @@ assert.match(contract, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saa
 assert.match(contract, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(contract, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(contract, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
+assert.match(contract, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(contract, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(contract, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(contract, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
@@ -174,7 +178,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 23,
+      controlCount: 24,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

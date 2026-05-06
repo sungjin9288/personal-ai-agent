@@ -24,6 +24,7 @@
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
@@ -97,6 +98,7 @@ Current execution evidence:
 - hosted identity session architecture gate: passed, with hostedIdentitySessionApproved false, customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention decision requirements, and `productionReadyClaim: false`
 - target identity session operations gate: passed, with customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, customer access containment requirements, and `productionReadyClaim: false`
 - hosted tenant isolation architecture gate: passed, with hostedTenantIsolationApproved false, tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, lifecycle decision requirements, and `productionReadyClaim: false`
+- target tenant isolation operations gate: passed, with tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, tenant data containment requirements, and `productionReadyClaim: false`
 - target environment evidence intake gate: passed, with deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene requirements, and `productionReadyClaim: false`
 - target secret manager architecture gate: passed, with targetSecretManagerApproved false, platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target secret manager gate: passed, with secret manager controls, rotation evidence packet, break-glass rules, and `productionReadyClaim: false`
@@ -149,6 +151,7 @@ Current handoff state:
 | [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md) | local-hosted-identity-session-architecture-current | hosted identity-backed RBAC and session architecture decision contract with hostedIdentitySessionApproved false |
 | [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md) | local-target-identity-session-operations-current | target identity/session operations evidence contract for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention, and customer access containment |
 | [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md) | local-hosted-tenant-isolation-architecture-current | hosted tenant isolation architecture decision and target evidence contract with hostedTenantIsolationApproved false |
+| [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md) | local-target-tenant-isolation-operations-current | target tenant isolation operations evidence contract for tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment |
 | [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) | local-target-environment-evidence-intake-current | target environment deployment, identity, tenant, provider, secret, telemetry, retention, backup, support, clean release, and artifact evidence packet |
 | [backup-restore-drill-v1.md](backup-restore-drill-v1.md) | local-backup-restore-current | local runtime backup manifest, restore integrity, and tenant-isolated recovery drill |
 | [customer-support-operations-v1.md](customer-support-operations-v1.md) | local-support-operations-current | local support roles, intake routing, escalation, communication, and handoff checklist |
@@ -239,6 +242,7 @@ Blockers:
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
 - target identity/session operations evidence is not generated from a production-like environment
 - hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated
+- target tenant isolation operations evidence is not generated from a production-like environment
 - target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment
 - target observability architecture is not approved and target observability evidence is not generated from a production-like environment
 - target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment
@@ -303,6 +307,7 @@ npm run smoke:hosted-saas-architecture-decision
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:target-identity-session-operations
 npm run smoke:hosted-tenant-isolation-architecture
+npm run smoke:target-tenant-isolation-operations
 npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
@@ -368,7 +373,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

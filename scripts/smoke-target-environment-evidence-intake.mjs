@@ -51,6 +51,7 @@ for (const domain of [
 for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
   /target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention/,
+  /target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment/,
   /selected production providers and completed provider evidence intake references/,
   /target OpenAI provider account approval when OpenAI is included/,
   /target Anthropic provider account approval when Anthropic is included/,
@@ -78,6 +79,7 @@ for (const command of [
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-tenant-isolation-architecture',
+  'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-observability-architecture',
   'npm run smoke:target-slo-architecture',
@@ -102,6 +104,7 @@ assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-her
 assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(intake, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
+assert.match(intake, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
@@ -127,7 +130,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 20,
+      requiredCommandCount: 21,
     },
     null,
     2,

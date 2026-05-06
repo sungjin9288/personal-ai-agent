@@ -9,6 +9,7 @@
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
@@ -61,6 +62,7 @@ Every tenant administration action must include:
 ```bash
 npm run smoke:tenant-storage-admin
 npm run smoke:hosted-tenant-isolation-architecture
+npm run smoke:target-tenant-isolation-operations
 npm run smoke:web-tenant-isolation
 npm run smoke:tenant-data-lifecycle
 npm run smoke:runtime-isolation
@@ -74,6 +76,6 @@ This gate is acceptable only when tenant storage controls, tenant admin operatio
 
 ## Production Gap
 
-This is local pilot tenant storage and administration evidence. It does not prove hosted tenant storage, per-tenant encryption, centralized tenant administration, shared SaaS control-plane isolation, encrypted backup partitioning, or production tenant lifecycle audit history.
+This is local pilot tenant storage and administration evidence. It does not prove hosted tenant storage, per-tenant encryption, centralized tenant administration, shared SaaS control-plane isolation, encrypted backup partitioning, production tenant lifecycle audit history, or target tenant isolation operations evidence.
 
 Hosted tenant isolation remains blocked for production-ready claims until tenant storage, encryption, backup/restore isolation, tenant administration, and cross-tenant denial evidence are captured from the approved production-like or hosted target environment.

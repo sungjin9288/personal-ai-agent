@@ -8,6 +8,7 @@
 - hostedTenantIsolationApproved: false
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
@@ -58,6 +59,7 @@ Any future hosted tenant isolation approval must include:
 npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:hosted-saas-architecture-decision
 npm run smoke:tenant-storage-admin
+npm run smoke:target-tenant-isolation-operations
 npm run smoke:target-deployment-contract
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-readiness-gate

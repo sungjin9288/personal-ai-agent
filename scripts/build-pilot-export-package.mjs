@@ -51,6 +51,7 @@ const BASE_PACKAGE_FILES = [
   'docs/hosted-identity-session-architecture-v1.md',
   'docs/target-identity-session-operations-v1.md',
   'docs/hosted-tenant-isolation-architecture-v1.md',
+  'docs/target-tenant-isolation-operations-v1.md',
   'docs/target-secret-manager-architecture-v1.md',
   'docs/target-environment-evidence-intake-v1.md',
   'docs/release-readiness-v1.md',
@@ -196,6 +197,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetTenantIsolationOperations: [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 
