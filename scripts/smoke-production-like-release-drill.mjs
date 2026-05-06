@@ -29,6 +29,7 @@ for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:identity-session-admin',
   'npm run smoke:hosted-identity-session-architecture',
+  'npm run smoke:target-identity-session-operations',
   'npm run smoke:tenant-storage-admin',
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:customer-support-operations',
@@ -77,6 +78,7 @@ for (const blocker of [
   /target local provider architecture is not approved and local provider live validation evidence is not generated/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
+  /target identity\/session operations evidence is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
   /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
@@ -103,7 +105,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 40,
+      commandCount: 41,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

@@ -7,6 +7,7 @@
 - productionReadyClaim: false
 - hostedIdentitySessionApproved: false
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
+- relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
@@ -58,6 +59,7 @@ Any future hosted identity/session approval must include:
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-saas-architecture-decision
 npm run smoke:identity-session-admin
+npm run smoke:target-identity-session-operations
 npm run smoke:target-deployment-contract
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-readiness-gate

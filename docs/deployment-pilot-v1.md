@@ -16,6 +16,7 @@
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
+- relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
@@ -414,6 +415,28 @@ Stop condition:
 
 - if hosted tenant isolation architecture is not approved, do not claim hosted multi-tenant isolation
 - if target tenant identity, storage, encryption, backup/restore, administration, and cross-tenant denial evidence is missing, treat the gate as architecture boundary evidence only
+
+## Target Identity Session Operations
+
+Before presenting hosted identity-backed RBAC or session administration as target-production evidence, verify the target identity/session operations evidence packet:
+
+```bash
+npm run smoke:target-identity-session-operations
+```
+
+The source of record is [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md). It requires customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, customer access containment, required commands, and keeps `productionReadyClaim: false`.
+
+Acceptance:
+
+- customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention operation controls are documented
+- identity evidence packets include deployment boundary, IdP metadata, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, retention, hygiene, residual risk, and review owner
+- the generated target identity/session operations gate keeps `productionReadyClaim: false`
+- target environment evidence remains required before changing the release label
+
+Stop condition:
+
+- if target identity/session operations evidence is missing, do not present hosted identity-backed RBAC or session administration as target-production evidence
+- if the gate passes, treat it only as a local target identity/session operations evidence contract, not customer SSO production proof, logout/revocation proof, persistent role administration proof, immutable audit export proof, or target environment production evidence
 
 ## Production Enterprise Controls Rehearsal
 
@@ -822,7 +845,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, target support architecture gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, identity/session administration gate, hosted identity architecture gate, target identity/session operations gate, customer support operations gate, support escalation review gate, target support architecture gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -915,7 +938,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, identity/session administration gate, target identity/session operations gate, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 

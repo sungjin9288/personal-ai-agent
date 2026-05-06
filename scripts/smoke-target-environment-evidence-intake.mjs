@@ -50,6 +50,7 @@ for (const domain of [
 
 for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
+  /target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention/,
   /selected production providers and completed provider evidence intake references/,
   /target OpenAI provider account approval when OpenAI is included/,
   /target Anthropic provider account approval when Anthropic is included/,
@@ -70,6 +71,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:target-identity-session-operations',
   'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
@@ -98,6 +100,7 @@ assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthr
 assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
+assert.match(intake, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
@@ -124,7 +127,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 19,
+      requiredCommandCount: 20,
     },
     null,
     2,

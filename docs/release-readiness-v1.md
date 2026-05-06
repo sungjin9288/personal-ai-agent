@@ -22,6 +22,7 @@
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
+- relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
@@ -94,6 +95,7 @@ Current execution evidence:
 - target deployment contract gate: passed, with hosted production/SaaS mandatory controls explicitly blocked until target evidence exists
 - hosted SaaS architecture decision gate: passed, with hostedSaasApproved false, tenant model, control plane, identity, storage, provider, billing, observability, data lifecycle, deployment, compliance decision requirements, and `productionReadyClaim: false`
 - hosted identity session architecture gate: passed, with hostedIdentitySessionApproved false, customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention decision requirements, and `productionReadyClaim: false`
+- target identity session operations gate: passed, with customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, customer access containment requirements, and `productionReadyClaim: false`
 - hosted tenant isolation architecture gate: passed, with hostedTenantIsolationApproved false, tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, lifecycle decision requirements, and `productionReadyClaim: false`
 - target environment evidence intake gate: passed, with deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene requirements, and `productionReadyClaim: false`
 - target secret manager architecture gate: passed, with targetSecretManagerApproved false, platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery decision requirements, and `productionReadyClaim: false`
@@ -145,6 +147,7 @@ Current handoff state:
 | [target-deployment-contract-v1.md](target-deployment-contract-v1.md) | target-contract-current | mandatory hosted/production-like deployment controls and blocking rules |
 | [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md) | local-hosted-saas-architecture-decision-current | hosted SaaS and hybrid control-plane architecture decision contract with hostedSaasApproved false |
 | [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md) | local-hosted-identity-session-architecture-current | hosted identity-backed RBAC and session architecture decision contract with hostedIdentitySessionApproved false |
+| [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md) | local-target-identity-session-operations-current | target identity/session operations evidence contract for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention, and customer access containment |
 | [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md) | local-hosted-tenant-isolation-architecture-current | hosted tenant isolation architecture decision and target evidence contract with hostedTenantIsolationApproved false |
 | [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) | local-target-environment-evidence-intake-current | target environment deployment, identity, tenant, provider, secret, telemetry, retention, backup, support, clean release, and artifact evidence packet |
 | [backup-restore-drill-v1.md](backup-restore-drill-v1.md) | local-backup-restore-current | local runtime backup manifest, restore integrity, and tenant-isolated recovery drill |
@@ -234,6 +237,7 @@ Blockers:
 - target local provider architecture is not approved and local provider live validation evidence is not generated from a production-like environment
 - target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
+- target identity/session operations evidence is not generated from a production-like environment
 - hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated
 - target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment
 - target observability architecture is not approved and target observability evidence is not generated from a production-like environment
@@ -297,6 +301,7 @@ npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 npm run smoke:hosted-saas-architecture-decision
 npm run smoke:hosted-identity-session-architecture
+npm run smoke:target-identity-session-operations
 npm run smoke:hosted-tenant-isolation-architecture
 npm run rehearsal:production-enterprise-controls
 npm run smoke:production-enterprise-controls
@@ -363,7 +368,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

@@ -51,6 +51,7 @@
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",
+    "smoke:target-identity-session-operations": "node scripts/smoke-target-identity-session-operations.mjs",
     "smoke:target-provider-evidence-intake": "node scripts/smoke-target-provider-evidence-intake.mjs",
     "smoke:target-openai-provider-account": "node scripts/smoke-target-openai-provider-account.mjs",
     "smoke:target-anthropic-provider-account": "node scripts/smoke-target-anthropic-provider-account.mjs",

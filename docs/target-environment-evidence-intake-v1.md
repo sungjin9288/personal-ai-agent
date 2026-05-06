@@ -13,6 +13,7 @@
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
+- relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
@@ -34,7 +35,7 @@ Production-ready remains blocked until every target environment domain below has
 | Domain | Required Proof | Current Local Evidence | Status |
 | --- | --- | --- | --- |
 | Deployment boundary | target environment name, owner, deployment profile, network boundary, runtime root, and rollback owner are recorded | target deployment contract and clean local rehearsal exist | blocked |
-| Identity and sessions | user lifecycle, session lifecycle, role assignment/revocation, logout/revocation behavior, and audit trail are proven | local identity, OIDC/JWKS, shared-secret, and RBAC gates pass | blocked |
+| Identity and sessions | user lifecycle, session lifecycle, role assignment/revocation, logout/revocation behavior, audit trail, target identity session operations evidence, and customer IdP proof are proven | local identity, OIDC/JWKS, shared-secret, RBAC, hosted identity architecture, and target identity session operations gates pass | blocked |
 | Tenant storage and encryption | tenant partitioning, tenant admin workflow, per-tenant encryption/key policy, backup/restore isolation, and cross-tenant denial are proven | tenant storage admin, tenant lifecycle, and runtime isolation gates pass locally | blocked |
 | Provider and secret manager | provider account approval, OpenAI provider account approval when OpenAI is included, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, Hermes provider architecture approval when Hermes is included, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
 | Observability and SLO/SLA | target SLO architecture approval, telemetry backend approval, telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | target SLO architecture, observability telemetry, target observability architecture, target observability operations, incident policy, and SLO rehearsal pass locally | blocked |
@@ -47,6 +48,7 @@ Production-ready remains blocked until every target environment domain below has
 Every target environment review must record:
 
 - target environment name, owner, profile, and deployment boundary
+- target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention
 - selected production providers and completed provider evidence intake references
 - target OpenAI provider account approval when OpenAI is included
 - target Anthropic provider account approval when Anthropic is included
@@ -67,6 +69,7 @@ Every target environment review must record:
 
 ```bash
 npm run smoke:target-environment-evidence-intake
+npm run smoke:target-identity-session-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture

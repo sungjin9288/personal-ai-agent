@@ -8,6 +8,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
+- relatedTargetIdentitySessionOperations: [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
@@ -61,6 +62,7 @@ Every identity/session administration change must include:
 ```bash
 npm run smoke:identity-session-admin
 npm run smoke:hosted-identity-session-architecture
+npm run smoke:target-identity-session-operations
 npm run smoke:web-auth-rbac
 npm run smoke:web-oidc-rbac
 npm run smoke:web-tenant-isolation
@@ -74,6 +76,6 @@ This gate is acceptable only when identity controls, session lifecycle, audit pa
 
 ## Production Gap
 
-This is local pilot identity/session administration evidence. It does not prove hosted identity provider integration, customer SSO readiness, persistent user directory lifecycle, central role administration, production logout/revocation behavior, or audited permission history from a target deployment.
+This is local pilot identity/session administration evidence. It does not prove hosted identity provider integration, customer SSO readiness, persistent user directory lifecycle, central role administration, production logout/revocation behavior, audited permission history, or target identity/session operations evidence from a target deployment.
 
 Identity-backed RBAC and session administration remain blocked for production-ready claims until identity lifecycle and permission audit evidence are captured from the approved production-like or hosted target environment.

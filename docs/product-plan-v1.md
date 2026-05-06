@@ -95,6 +95,7 @@
 - [x] Target environment evidence intake gate implemented
 - [x] Hosted SaaS architecture decision gate implemented
 - [x] Hosted identity session architecture gate implemented
+- [x] Target identity session operations gate implemented
 - [x] Hosted tenant isolation architecture gate implemented
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived

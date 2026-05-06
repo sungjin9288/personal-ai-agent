@@ -7,6 +7,7 @@ const docsDir = path.join(repoDir, 'docs');
 const decisionPath = path.join(docsDir, 'hosted-identity-session-architecture-v1.md');
 const hostedSaasPath = path.join(docsDir, 'hosted-saas-architecture-decision-v1.md');
 const identityAdminPath = path.join(docsDir, 'identity-session-admin-v1.md');
+const targetIdentityPath = path.join(docsDir, 'target-identity-session-operations-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const securityPath = path.join(docsDir, 'security-model-v1.md');
@@ -18,6 +19,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const decision = readRequiredFile(decisionPath);
 const hostedSaas = readRequiredFile(hostedSaasPath);
 const identityAdmin = readRequiredFile(identityAdminPath);
+const targetIdentity = readRequiredFile(targetIdentityPath);
 const targetContract = readRequiredFile(targetContractPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const security = readRequiredFile(securityPath);
@@ -75,6 +77,7 @@ for (const command of [
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-saas-architecture-decision',
   'npm run smoke:identity-session-admin',
+  'npm run smoke:target-identity-session-operations',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-readiness-gate',
@@ -85,6 +88,8 @@ for (const command of [
 
 assert.match(hostedSaas, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(identityAdmin, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
+assert.match(targetIdentity, /^# Target Identity Session Operations v1$/m);
+assert.match(decision, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(targetContract, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(targetContract, /hosted identity session architecture is approved/);
 assert.match(targetContract, /npm run smoke:hosted-identity-session-architecture/);
@@ -106,7 +111,7 @@ console.log(
       ok: true,
       path: 'docs/hosted-identity-session-architecture-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 7,
+      requiredCommandCount: 8,
     },
     null,
     2,
