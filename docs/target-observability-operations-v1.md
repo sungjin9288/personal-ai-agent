@@ -8,6 +8,7 @@
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
@@ -62,6 +63,7 @@ npm run smoke:target-observability-operations
 npm run smoke:target-observability-architecture
 npm run smoke:observability-telemetry
 npm run smoke:production-slo-operating
+npm run smoke:target-slo-architecture
 npm run smoke:release-artifact-hygiene
 npm run smoke:production-readiness-gate
 ```

@@ -62,6 +62,7 @@ for (const command of [
   'npm run smoke:target-observability-architecture',
   'npm run smoke:observability-telemetry',
   'npm run smoke:production-slo-operating',
+  'npm run smoke:target-slo-architecture',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:production-readiness-gate',
 ]) {
@@ -73,7 +74,7 @@ assert.match(targetObservability, /\[target-observability-architecture-v1\.md\]\
 assert.match(releaseReadiness, /local target observability operations gate: passed/);
 assert.match(
   targetContract,
-  /local SLO operating, observability telemetry, target observability architecture, and target observability operations gates pass/,
+  /local SLO operating, observability telemetry, target observability architecture, target observability operations, and target SLO architecture gates pass/,
 );
 assert.match(targetContract, /npm run smoke:target-observability-operations/);
 assert.match(deployment, /## Target Observability Operations Gate/);

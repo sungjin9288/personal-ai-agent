@@ -53,6 +53,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:target-observability-operations',
   },
   {
+    command: 'npm run smoke:target-slo-architecture',
+    script: 'smoke:target-slo-architecture',
+  },
+  {
     command: 'npm run smoke:target-data-lifecycle-architecture',
     script: 'smoke:target-data-lifecycle-architecture',
   },
@@ -263,6 +267,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-observability-operations') {
     return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:target-slo-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetSloApproved']);
   }
   if (script === 'smoke:target-data-lifecycle-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetDataLifecycleApproved']);

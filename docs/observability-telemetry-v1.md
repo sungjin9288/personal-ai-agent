@@ -9,6 +9,7 @@
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -44,6 +45,7 @@ Production-ready remains blocked until the approved target environment provides 
 ```bash
 npm run smoke:observability-telemetry
 npm run smoke:target-observability-architecture
+npm run smoke:target-slo-architecture
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:production-provider-readiness

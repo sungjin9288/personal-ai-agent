@@ -29,6 +29,7 @@ for (const command of [
   'npm run smoke:production-readiness-gate',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:runtime-data-lifecycle',
+  'npm run smoke:target-slo-architecture',
   'node src/cli.mjs action inbox --overdue',
   'node src/cli.mjs action log-overdue',
 ]) {
@@ -38,6 +39,7 @@ for (const command of [
 assert.match(policy, /credential leak, customer data exposure, destructive action without approval/);
 assert.match(policy, /runtime data export\/delete verification fails/);
 assert.match(policy, /production SLO\/SLA operating evidence is generated from the target deployment model/);
+assert.match(policy, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
 assert.match(releaseReadiness, /production SLO\/SLA operating evidence is not generated from a production-like environment/);

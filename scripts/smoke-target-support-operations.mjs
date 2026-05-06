@@ -60,6 +60,7 @@ for (const command of [
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:production-slo-operating',
+  'npm run smoke:target-slo-architecture',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:production-readiness-gate',
 ]) {

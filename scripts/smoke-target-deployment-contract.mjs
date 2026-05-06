@@ -59,6 +59,7 @@ for (const control of [
   'Hosted tenant isolation',
   'Secret management',
   'Target observability architecture',
+  'Target SLO architecture',
   'Target data lifecycle architecture',
   'Retention, export, delete',
   'SLO/SLA operations',
@@ -94,6 +95,7 @@ for (const command of [
   'npm run smoke:observability-telemetry',
   'npm run smoke:target-observability-architecture',
   'npm run smoke:target-observability-operations',
+  'npm run smoke:target-slo-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:production-slo-operating',
   'npm run smoke:clean-deployment-release',
@@ -112,10 +114,11 @@ for (const blocker of [
   /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,
   /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop target observability claims until the target observability architecture record is approved and target observability evidence is generated/,
+  /stop target SLO\/SLA claims until the target SLO architecture record is approved and target SLO evidence is generated/,
   /stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated/,
   /stop retention\/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured/,
   /stop observability claims until target observability telemetry, alert delivery, log\/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured/,
-  /stop SLO\/SLA claims until target telemetry, alerting, on-call, and incident response evidence exist/,
+  /stop SLO\/SLA claims until target telemetry, alerting, on-call, incident response, customer SLO terms, error budget, and service credit evidence exist/,
   /stop customer support claims until staffed ownership, support queue routing, customer communication route, ticket audit history, on-call handoff, and incident review cadence are proven in the target environment/,
 ]) {
   assert.match(contract, blocker);
@@ -129,6 +132,7 @@ assert.match(contract, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-
 assert.match(contract, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(contract, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(contract, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
+assert.match(contract, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(contract, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target deployment contract gate: passed/);
 assert.match(security, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
@@ -141,7 +145,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 15,
+      controlCount: 16,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

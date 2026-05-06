@@ -21,6 +21,7 @@
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
@@ -92,6 +93,7 @@ Production gap:
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 - [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, disaster recovery, and the remaining target evidence gap
 - [target-observability-operations-v1.md](target-observability-operations-v1.md) defines the local target observability operations evidence contract for telemetry pipeline, alert delivery, retention, on-call routing, customer status communication, incident review history, and the remaining target operations gap
+- [target-slo-architecture-v1.md](target-slo-architecture-v1.md) defines the target SLO/SLA architecture contract for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and the remaining target evidence gap
 
 ## RBAC Matrix
 
@@ -221,6 +223,7 @@ Current status:
 - [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) defines the local target environment evidence intake contract for deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene, and the remaining target environment production gap
 - [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract while keeping targetSecretManagerApproved false and target secret manager readiness blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
+- [target-slo-architecture-v1.md](target-slo-architecture-v1.md) defines the target SLO/SLA architecture contract while keeping targetSloApproved false and target SLO readiness blocked
 - `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers
 - [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract while keeping targetObservabilityApproved false and target observability readiness blocked
 

@@ -8,6 +8,7 @@
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
@@ -62,6 +63,7 @@ npm run smoke:target-support-operations
 npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
 npm run smoke:production-slo-operating
+npm run smoke:target-slo-architecture
 npm run smoke:release-artifact-hygiene
 npm run smoke:production-readiness-gate
 ```

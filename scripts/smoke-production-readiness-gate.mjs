@@ -33,6 +33,7 @@ const targetSecretManagerPath = path.join(docsDir, 'target-secret-manager-v1.md'
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
 const targetObservabilityArchitecturePath = path.join(docsDir, 'target-observability-architecture-v1.md');
 const targetObservabilityOperationsPath = path.join(docsDir, 'target-observability-operations-v1.md');
+const targetSloArchitecturePath = path.join(docsDir, 'target-slo-architecture-v1.md');
 const targetDataLifecycleArchitecturePath = path.join(docsDir, 'target-data-lifecycle-architecture-v1.md');
 const targetRetentionOperationsPath = path.join(docsDir, 'target-retention-operations-v1.md');
 const targetBackupOperationsPath = path.join(docsDir, 'target-backup-operations-v1.md');
@@ -69,6 +70,7 @@ const targetSecretManager = readRequiredFile(targetSecretManagerPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
 const targetObservabilityArchitecture = readRequiredFile(targetObservabilityArchitecturePath);
 const targetObservabilityOperations = readRequiredFile(targetObservabilityOperationsPath);
+const targetSloArchitecture = readRequiredFile(targetSloArchitecturePath);
 const targetDataLifecycleArchitecture = readRequiredFile(targetDataLifecycleArchitecturePath);
 const targetRetentionOperations = readRequiredFile(targetRetentionOperationsPath);
 const targetBackupOperations = readRequiredFile(targetBackupOperationsPath);
@@ -108,6 +110,7 @@ for (const blocker of [
   /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
+  /target SLO architecture is not approved and target SLO\/SLA evidence is not generated from a production-like environment/,
   /target data lifecycle architecture is not approved and target data lifecycle evidence is not generated from a production-like environment/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
@@ -145,6 +148,10 @@ assert.match(
 assert.match(
   releaseReadiness,
   /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/,
+);
+assert.match(
+  releaseReadiness,
+  /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/,
 );
 assert.match(
   releaseReadiness,
@@ -288,6 +295,13 @@ assert.match(targetObservabilityOperations, /^- status: local-target-observabili
 assert.match(targetObservabilityOperations, /^- productionReadyClaim: false$/m);
 assert.match(targetObservabilityOperations, /not target observability evidence/);
 assert.match(targetObservabilityOperations, /Target observability operations remain blocked for production-ready claims/);
+assert.match(targetSloArchitecture, /^# Target SLO Architecture v1$/m);
+assert.match(targetSloArchitecture, /^- status: local-target-slo-architecture-current$/m);
+assert.match(targetSloArchitecture, /^- productionReadyClaim: false$/m);
+assert.match(targetSloArchitecture, /^- targetSloApproved: false$/m);
+assert.match(targetSloArchitecture, /npm run smoke:target-slo-architecture/);
+assert.match(targetSloArchitecture, /not contractual SLA approval/);
+assert.match(targetSloArchitecture, /Target SLO readiness remains blocked/);
 assert.match(targetDataLifecycleArchitecture, /^# Target Data Lifecycle Architecture v1$/m);
 assert.match(targetDataLifecycleArchitecture, /^- status: local-target-data-lifecycle-architecture-current$/m);
 assert.match(targetDataLifecycleArchitecture, /^- productionReadyClaim: false$/m);
@@ -336,7 +350,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability architecture\/operations, target data lifecycle architecture, target retention operations, target backup operations, target support operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -382,6 +396,7 @@ console.log(
       pilotObservabilityTelemetry: 'present',
       pilotTargetObservabilityArchitecture: 'present',
       pilotTargetObservabilityOperations: 'present',
+      pilotTargetSloArchitecture: 'present',
       pilotTargetDataLifecycleArchitecture: 'present',
       pilotTargetRetentionOperations: 'present',
       pilotTargetBackupOperations: 'present',

@@ -30,6 +30,7 @@
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
@@ -48,7 +49,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability/on-call operations, target retention operations, target backup operations, target support operations, SLO/SLA, and clean production-like evidence.
+It is not `production-ready` because Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability/on-call operations, target SLO architecture, target retention operations, target backup operations, target support operations, SLO/SLA, and clean production-like evidence.
 
 ## Evidence Summary
 
@@ -90,6 +91,7 @@ Current execution evidence:
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 - target observability architecture gate: passed, with targetObservabilityApproved false, telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target observability operations gate: passed, with telemetry pipeline, alert delivery, log/trace retention, on-call routing, customer status communication, incident review history, and `productionReadyClaim: false`
+- target SLO architecture gate: passed, with targetSloApproved false, customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit decision requirements, and `productionReadyClaim: false`
 - target data lifecycle architecture gate: passed, with targetDataLifecycleApproved false, customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target retention operations gate: passed, with customer-approved data classes, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and `productionReadyClaim: false`
 - local target backup operations gate: passed, with backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery rules, and `productionReadyClaim: false`
@@ -141,6 +143,7 @@ Current handoff state:
 | [observability-telemetry-v1.md](observability-telemetry-v1.md) | local-observability-telemetry-current | local telemetry signals, alert triggers, handoff requirements, and production telemetry gap |
 | [target-observability-architecture-v1.md](target-observability-architecture-v1.md) | local-target-observability-architecture-current | target observability architecture decision and evidence contract with targetObservabilityApproved false |
 | [target-observability-operations-v1.md](target-observability-operations-v1.md) | local-target-observability-operations-current | target observability operation controls, operations evidence packet, on-call rules, and production target gap |
+| [target-slo-architecture-v1.md](target-slo-architecture-v1.md) | local-target-slo-architecture-current | target SLO/SLA architecture decision and evidence contract with targetSloApproved false |
 | [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md) | local-target-data-lifecycle-architecture-current | target data lifecycle architecture decision and evidence contract with targetDataLifecycleApproved false |
 | [target-retention-operations-v1.md](target-retention-operations-v1.md) | local-target-retention-operations-current | target retention operation controls, retention evidence packet, data lifecycle rules, and production target gap |
 | [target-backup-operations-v1.md](target-backup-operations-v1.md) | local-target-backup-operations-current | target backup operation controls, recovery evidence packet, disaster recovery rules, and production target gap |
@@ -216,6 +219,7 @@ Blockers:
 - target observability architecture is not approved and target observability evidence is not generated from a production-like environment
 - target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
+- target SLO architecture is not approved and target SLO/SLA evidence is not generated from a production-like environment
 - target data lifecycle architecture is not approved and target data lifecycle evidence is not generated from a production-like environment
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
 - production SLO/SLA operating evidence is not generated from a production-like environment
@@ -285,6 +289,7 @@ npm run smoke:target-secret-manager
 npm run smoke:observability-telemetry
 npm run smoke:target-observability-architecture
 npm run smoke:target-observability-operations
+npm run smoke:target-slo-architecture
 npm run smoke:target-data-lifecycle-architecture
 npm run smoke:target-retention-operations
 npm run smoke:target-backup-operations
@@ -330,7 +335,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability architecture/operations, target data lifecycle architecture, target retention operations, target backup operations, target support operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout

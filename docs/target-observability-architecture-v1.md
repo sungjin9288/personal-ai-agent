@@ -9,6 +9,7 @@
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
@@ -60,6 +61,7 @@ npm run smoke:target-observability-architecture
 npm run smoke:target-observability-operations
 npm run smoke:observability-telemetry
 npm run smoke:production-slo-operating
+npm run smoke:target-slo-architecture
 npm run smoke:target-deployment-contract
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-readiness-gate

@@ -54,7 +54,7 @@ for (const checklistItem of [
   /identity provider, role owner, session policy, and permission audit evidence/,
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
   /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
-  /telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
+  /target SLO\/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
   /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
   /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
   /support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
@@ -70,6 +70,7 @@ for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-observability-architecture',
+  'npm run smoke:target-slo-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
@@ -86,6 +87,7 @@ assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-id
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
+assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(intake, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:target-environment-evidence-intake/);
 assert.match(targetContract, /target environment evidence intake packet/);
@@ -106,7 +108,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 12,
+      requiredCommandCount: 13,
     },
     null,
     2,
