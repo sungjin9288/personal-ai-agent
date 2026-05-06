@@ -55,6 +55,7 @@ for (const control of [
   'Hosted tenant isolation architecture',
   'Target secret manager architecture',
   'Target provider validation',
+  'Target OpenAI provider account',
   'Target Anthropic provider account',
   'Target local provider architecture',
   'Target Hermes provider architecture',
@@ -84,6 +85,7 @@ for (const command of [
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
@@ -115,6 +117,7 @@ for (const command of [
 
 for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
+  /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
   /stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated/,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and Hermes live validation evidence is generated/,
@@ -142,6 +145,7 @@ for (const blocker of [
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(contract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(contract, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(contract, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(contract, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(contract, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
@@ -166,7 +170,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 21,
+      controlCount: 22,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

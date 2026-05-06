@@ -6,6 +6,7 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const intakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
 const providerReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const targetOpenAIPath = path.join(docsDir, 'target-openai-provider-account-v1.md');
 const targetAnthropicPath = path.join(docsDir, 'target-anthropic-provider-account-v1.md');
 const targetLocalPath = path.join(docsDir, 'target-local-provider-architecture-v1.md');
 const targetHermesPath = path.join(docsDir, 'target-hermes-provider-architecture-v1.md');
@@ -19,6 +20,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const intake = readRequiredFile(intakePath);
 const providerReadiness = readRequiredFile(providerReadinessPath);
+const targetOpenAI = readRequiredFile(targetOpenAIPath);
 const targetAnthropic = readRequiredFile(targetAnthropicPath);
 const targetLocal = readRequiredFile(targetLocalPath);
 const targetHermes = readRequiredFile(targetHermesPath);
@@ -56,6 +58,7 @@ for (const evidenceItem of [
 
 for (const checklistItem of [
   /provider owner and customer\/account approval/,
+  /OpenAI provider account approval when OpenAI is included in the target provider claim/,
   /Anthropic provider account approval when Anthropic is included in the target provider claim/,
   /local provider architecture approval when local provider is included in the target provider claim/,
   /Hermes provider architecture approval when Hermes is included in the target provider claim/,
@@ -73,6 +76,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
@@ -86,6 +90,9 @@ for (const command of [
 
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
+assert.match(targetOpenAI, /^# Target OpenAI Provider Account v1$/m);
+assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
+assert.match(intake, /OpenAI provider account approval/);
 assert.match(targetAnthropic, /^# Target Anthropic Provider Account v1$/m);
 assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(intake, /Anthropic provider account approval/);
@@ -115,7 +122,7 @@ console.log(
       ok: true,
       path: 'docs/target-provider-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 8,
+      requiredCommandCount: 9,
     },
     null,
     2,

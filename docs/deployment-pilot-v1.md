@@ -285,6 +285,7 @@ Before expanding the pilot beyond the archived OpenAI provider path, replay the 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
@@ -301,6 +302,18 @@ npm run smoke:target-provider-evidence-intake
 ```
 
 The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
+
+## Target OpenAI Provider Account
+
+Before presenting OpenAI as a target production provider or fallback provider, verify the target OpenAI provider account decision contract:
+
+```bash
+npm run smoke:target-openai-provider-account
+```
+
+The source of record is [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md). It proves account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, renewal/review audit, required commands, and the OpenAI provider production gap are present.
+
+Do not present archived OpenAI pilot live validation as target production provider approval. Do not include OpenAI in a target production provider claim until the target OpenAI provider account is approved and `npm run live:execution-v1:openai` passes from the approved production-like or hosted target environment.
 
 ## Target Anthropic Provider Account
 
@@ -346,7 +359,7 @@ Before presenting a deployment as production-ready for another company, verify t
 npm run smoke:target-environment-evidence-intake
 ```
 
-The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/Anthropic/local/Hermes/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
+The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/OpenAI/Anthropic/local/Hermes/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
 
 ## Hosted SaaS Architecture Decision
 

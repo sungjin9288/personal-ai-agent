@@ -41,6 +41,7 @@ const BASE_PACKAGE_FILES = [
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
   'docs/target-provider-evidence-intake-v1.md',
+  'docs/target-openai-provider-account-v1.md',
   'docs/target-anthropic-provider-account-v1.md',
   'docs/target-local-provider-architecture-v1.md',
   'docs/target-hermes-provider-architecture-v1.md',
@@ -184,6 +185,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)

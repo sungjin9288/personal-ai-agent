@@ -5,6 +5,7 @@
 - scope: target provider account, environment, live validation, quota, and recovery evidence intake contract
 - productionReadyClaim: false
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
@@ -23,7 +24,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Evidence Item | Required Proof | Current Local Evidence | Status |
 | --- | --- | --- | --- |
-| Provider account approval | account owner, billing/credit status, allowed workspace/customer, provider terms, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, and Hermes provider architecture approval when Hermes is included | OpenAI archived pass exists; Anthropic account execution remains failed; target Anthropic provider account contract is present with targetAnthropicProviderApproved false; local/Hermes require configuration; target local provider architecture contract is present with targetLocalProviderApproved false; target Hermes provider architecture contract is present with targetHermesProviderApproved false | blocked |
+| Provider account approval | account owner, billing/credit status, allowed workspace/customer, provider terms, OpenAI provider account approval when OpenAI is included, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, and Hermes provider architecture approval when Hermes is included | OpenAI archived pass exists only for the local-first pilot; target OpenAI provider account contract is present with targetOpenAIProviderApproved false; Anthropic account execution remains failed; target Anthropic provider account contract is present with targetAnthropicProviderApproved false; local/Hermes require configuration; target local provider architecture contract is present with targetLocalProviderApproved false; target Hermes provider architecture contract is present with targetHermesProviderApproved false | blocked |
 | Target secret injection | provider credentials are injected through the approved target secret manager and are absent from logs/artifacts | local secret management and target secret manager gates pass | blocked |
 | Target live validation | `live:execution-v1:<provider>` succeeds from the approved deployment boundary and is archived in execution-v1 evidence | OpenAI local-first live validation is archived; Anthropic/local/Hermes are not complete | blocked |
 | Quota and cost guard | quota, concurrency, timeout, spend owner, and retry guard are documented before live use | provider preflight and telemetry smoke exist locally | blocked |
@@ -35,6 +36,7 @@ Production-ready remains blocked until every provider included in the target rel
 Every provider promoted into a target release must record:
 
 - provider owner and customer/account approval
+- OpenAI provider account approval when OpenAI is included in the target provider claim
 - Anthropic provider account approval when Anthropic is included in the target provider claim
 - local provider architecture approval when local provider is included in the target provider claim
 - Hermes provider architecture approval when Hermes is included in the target provider claim
@@ -52,6 +54,7 @@ Every provider promoted into a target release must record:
 
 ```bash
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
 npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
@@ -63,6 +66,6 @@ npm run smoke:release-artifact-hygiene
 
 ## Production Gap
 
-This is a local target provider evidence intake contract. It does not prove Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target secret manager injection, target-boundary live validation, quota enforcement, or production fallback execution.
+This is a local target provider evidence intake contract. It does not prove target OpenAI provider account approval, Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target secret manager injection, target-boundary live validation, quota enforcement, or production fallback execution.
 
 Target provider readiness remains blocked for production-ready claims until each provider in the production claim has a complete evidence packet and successful target-boundary live validation archived from the approved production-like or hosted environment.

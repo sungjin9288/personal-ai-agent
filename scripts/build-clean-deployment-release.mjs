@@ -85,6 +85,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:target-openai-provider-account',
+    script: 'smoke:target-openai-provider-account',
+  },
+  {
     command: 'npm run smoke:target-anthropic-provider-account',
     script: 'smoke:target-anthropic-provider-account',
   },
@@ -305,6 +309,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-backup-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'recoveryPacketItemCount']);
+  }
+  if (script === 'smoke:target-openai-provider-account') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetOpenAIProviderApproved']);
   }
   if (script === 'smoke:target-anthropic-provider-account') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetAnthropicProviderApproved']);

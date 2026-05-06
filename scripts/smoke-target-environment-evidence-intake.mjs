@@ -51,6 +51,7 @@ for (const domain of [
 for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
   /selected production providers and completed provider evidence intake references/,
+  /target OpenAI provider account approval when OpenAI is included/,
   /target Anthropic provider account approval when Anthropic is included/,
   /target local provider architecture approval when local provider is included/,
   /target Hermes provider architecture approval when Hermes is included/,
@@ -69,6 +70,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
@@ -91,6 +93,7 @@ for (const command of [
 }
 
 assert.match(targetContract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
+assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
@@ -121,7 +124,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 18,
+      requiredCommandCount: 19,
     },
     null,
     2,

@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-06T08:21:59.591Z
+- generatedAt: 2026-05-06T08:36:08.596Z
 - verifiedCommit: cf04d0ce4ee95190063fa6309c0ee49c445ded62
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 196de2b17762be6cf840405a0f9b0b4f9d32ad29f23ed561c4bd9bed443b7630
-- fileCount: 51
+- bundleSha256: 4bbb61fb3b5c3075754f378dd3b6287d1832a816bd379107f1d45d8e7d49bb07
+- fileCount: 52
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -34,6 +34,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
@@ -57,11 +58,11 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 172191 | `f099bebd740c97cd5bdca1c0c569fa887a5cb7533fe6492aa4008fad822e33a1` |
-| `docs/product-plan-v1.md` | 12809 | `9c7d769a5c54280362aed75ee63d8b19af5fb2a4e20961747da351a4770a6803` |
-| `docs/security-model-v1.md` | 31674 | `aa3d0261ef5735da382aa382b4f56d0ff5dc558ec85be568b8a3893c4a711b72` |
+| `README.md` | 172736 | `f4618ddf2e577f03c349dc2c641dff58d40decdd8d4fcb2742fb7421a2b36cc5` |
+| `docs/product-plan-v1.md` | 12863 | `c3f53f9472bab835d8a61854cbaebc5355d18dd9284e235f7f148c8e9fd3093d` |
+| `docs/security-model-v1.md` | 32023 | `5f391ce0de644d1b0049ee9d481f1a83adcac4d2a290a2fbc8717190b5cb1cd4` |
 | `docs/operator-runbook-v1.md` | 12410 | `87bd028d346de2b7bd506301554bc6ffab74afa92ad632e12ed1b052ec8ec2d1` |
-| `docs/deployment-pilot-v1.md` | 60234 | `3228580938a8e8a5806f2788ca68d30d775583e3a0d6a7f0cee3bb70e96f34e9` |
+| `docs/deployment-pilot-v1.md` | 61189 | `f114b72afede319ecb3c51ebefee449e1c0247c1d9789f1b162b8e60b694517e` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
 | `docs/incident-slo-v1.md` | 5760 | `66baa00da71aee1a2b9062c3501f485468ac6a2e1b3c4f6dbe1c6a00bc2d3f64` |
@@ -84,23 +85,24 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-backup-operations-v1.md` | 5365 | `7e495e2b86760b8f83b73e98f2074b365c4c1d37d774a122fcc8ea3b69482a83` |
 | `docs/identity-session-admin-v1.md` | 4817 | `3c2c72168aa7bd6302f4b7e1cdd3666adebcdaeddf7709f1e13c702c11cd61d4` |
 | `docs/tenant-storage-admin-v1.md` | 5044 | `e76454f983e0796ba10753189b07b6ce38480d002ecfc757ab125840dba64288` |
-| `docs/clean-deployment-release-v1.md` | 9871 | `bc808ace6c718573165c5eb109178826dfb23ef7cd5a9c8728ef97d1f38444af` |
+| `docs/clean-deployment-release-v1.md` | 10152 | `d2b1a5e6233067726fe6eaf107e6fea72d5bf5e33f0b342097e7741d5c6d2a7f` |
 | `docs/production-slo-operating-v1.md` | 8157 | `13b63f1a71404be77804ad72604142ec20ab7811861a9a251b34aa5266a88b5b` |
 | `docs/production-retention-operating-v1.md` | 7279 | `76df11f1fb91e906e8b35ab6e4813dc49d2a3745e00bbbe5866c033f9583fa3d` |
-| `docs/production-provider-readiness-v1.md` | 7823 | `162f5d526a5a52cdc601d0f10d2062e0fda143502d36103a799a0fbc99a33474` |
-| `docs/target-provider-evidence-intake-v1.md` | 5487 | `1b395f1092335a61e3f00759f1678bdb02dd3a375495d6ba3c06cb4c411786ff` |
+| `docs/production-provider-readiness-v1.md` | 8222 | `af129f4608ad188185653fc75382e4e34c9374253efd1e54e9e6eaff720ce2e1` |
+| `docs/target-provider-evidence-intake-v1.md` | 5957 | `7f56615d63750acad38ad0aa53ba870dc25e10771a954640aff282f54ed912e2` |
+| `docs/target-openai-provider-account-v1.md` | 7612 | `1a2d38e69f28c7c54149e1736073cd31b2486e9ca61e342d9c4878da0416adba` |
 | `docs/target-anthropic-provider-account-v1.md` | 7554 | `0a5d168389648e3ce065cfcf6572e3bae20f85cac7a81261dcae06425055d4a7` |
 | `docs/target-local-provider-architecture-v1.md` | 7647 | `1c3e40ff1aaba558888f94c7ec0b73c127cd615debdeec2474e8c75df77dda75` |
 | `docs/target-hermes-provider-architecture-v1.md` | 7338 | `28ce1d5a13736f47ea11fd4d8440b6e01490735ffa65aa5016093075cb117af0` |
 | `docs/production-enterprise-controls-v1.md` | 7002 | `a4b911e1e91216b585beb4f19556cfefcfca7246ba531f60f251f53a05e2b6ef` |
-| `docs/target-deployment-contract-v1.md` | 18029 | `04963ebccba206339a1c8ccc7b0533deb15711c70e9d3321e2ec256c7caa16c0` |
+| `docs/target-deployment-contract-v1.md` | 18723 | `8cfbf1961670ca3f7a8867032068338dda5f1b3abc06539d974a0321813e4e61` |
 | `docs/hosted-saas-architecture-decision-v1.md` | 5871 | `1da26fed1ef1ff84f9e0ea6fd9adfab39175d0f489b41bb34b89475f44aecd8c` |
 | `docs/hosted-identity-session-architecture-v1.md` | 6387 | `771a895cff02ee4e7bcba087555686f1162738e6f566e22e61a4b07688689229` |
 | `docs/hosted-tenant-isolation-architecture-v1.md` | 6305 | `a715fc5d62517a40c3f4c447a471bed364dd6b7960ecff66f69565079e1cc892` |
 | `docs/target-secret-manager-architecture-v1.md` | 6224 | `889b5ab3c5ba2dd58874391c538cbe910470e84d8770fb4b3d1469f65a127e3f` |
-| `docs/target-environment-evidence-intake-v1.md` | 8620 | `acdef303e480d67a9633be3bb41b7f514fbb77818a3798281c2665abb5df9cc4` |
-| `docs/release-readiness-v1.md` | 32416 | `9283cabf0af94172e37cdfda8963c91c1c3d9c5136af300de9eb0722eb602448` |
-| `docs/production-like-release-drill-v1.md` | 16436 | `0890cd6d61f715d3be1f90e044ce3f502a96ba75aaa58d426aba374d97893a70` |
+| `docs/target-environment-evidence-intake-v1.md` | 8936 | `20d2fe012a91bdf218fda4e1ad58fe2d21b86dee8226ea1b523468b58bea868d` |
+| `docs/release-readiness-v1.md` | 33416 | `b02953869633bcb53fc0c8239350ffc04eab3ac319f255355fe8f2eca89b8149` |
+| `docs/production-like-release-drill-v1.md` | 16993 | `cd5a72b7b50150ea69b1a55a6cffe5da2dcc6c27617117d522b0d67b5e0ec9ca` |
 | `docs/execution-v1-evidence.md` | 10169 | `aa7cb7b00346d7c2e998e1bceff5b82200378422538bb5280c258ba6f32fbdc5` |
 | `docs/execution-v1-closeout.md` | 3351 | `3f1249a8d2020a507901e73cb4212b00157297f0803fbdb613efb08a3b031b69` |
 | `docs/execution-v1-handoff.md` | 5241 | `0c261b85a478d655052f219a8ef830792c62ce3c610c8f64e7c79034d99ab23e` |

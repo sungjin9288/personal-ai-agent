@@ -103,6 +103,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:production-provider-readiness',
   },
   {
+    command: 'npm run smoke:target-openai-provider-account',
+    script: 'smoke:target-openai-provider-account',
+  },
+  {
     command: 'npm run smoke:target-anthropic-provider-account',
     script: 'smoke:target-anthropic-provider-account',
   },
@@ -310,6 +314,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:production-provider-readiness') {
     return pick(parsed, ['mode', 'productionReadyClaim', 'providerCount']);
   }
+  if (script === 'smoke:target-openai-provider-account') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetOpenAIProviderApproved']);
+  }
   if (script === 'smoke:target-anthropic-provider-account') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetAnthropicProviderApproved']);
   }
@@ -435,6 +442,7 @@ function renderDrillMarkdown({
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetOpenAIProviderAccount: [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md)
 - relatedTargetAnthropicProviderAccount: [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md)
 - relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
