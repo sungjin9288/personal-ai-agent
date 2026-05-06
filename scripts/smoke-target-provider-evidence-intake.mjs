@@ -6,6 +6,7 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const intakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
 const providerReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const targetAnthropicPath = path.join(docsDir, 'target-anthropic-provider-account-v1.md');
 const targetLocalPath = path.join(docsDir, 'target-local-provider-architecture-v1.md');
 const targetHermesPath = path.join(docsDir, 'target-hermes-provider-architecture-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
@@ -18,6 +19,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const intake = readRequiredFile(intakePath);
 const providerReadiness = readRequiredFile(providerReadinessPath);
+const targetAnthropic = readRequiredFile(targetAnthropicPath);
 const targetLocal = readRequiredFile(targetLocalPath);
 const targetHermes = readRequiredFile(targetHermesPath);
 const targetContract = readRequiredFile(targetContractPath);
@@ -54,6 +56,7 @@ for (const evidenceItem of [
 
 for (const checklistItem of [
   /provider owner and customer\/account approval/,
+  /Anthropic provider account approval when Anthropic is included in the target provider claim/,
   /local provider architecture approval when local provider is included in the target provider claim/,
   /Hermes provider architecture approval when Hermes is included in the target provider claim/,
   /target environment name and deployment boundary/,
@@ -70,6 +73,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:production-provider-readiness',
@@ -82,6 +86,9 @@ for (const command of [
 
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
+assert.match(targetAnthropic, /^# Target Anthropic Provider Account v1$/m);
+assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
+assert.match(intake, /Anthropic provider account approval/);
 assert.match(targetLocal, /^# Target Local Provider Architecture v1$/m);
 assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(intake, /local provider architecture approval/);
@@ -108,7 +115,7 @@ console.log(
       ok: true,
       path: 'docs/target-provider-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 7,
+      requiredCommandCount: 8,
     },
     null,
     2,

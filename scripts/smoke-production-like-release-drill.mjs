@@ -50,6 +50,7 @@ for (const command of [
   'npm run smoke:web-auth-rbac',
   'npm run smoke:production-enterprise-controls',
   'npm run smoke:production-provider-readiness',
+  'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:target-deployment-contract',
@@ -70,6 +71,7 @@ for (const command of [
 
 for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
+  /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated/,
   /target local provider architecture is not approved and local provider live validation evidence is not generated/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
@@ -99,7 +101,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 38,
+      commandCount: 39,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

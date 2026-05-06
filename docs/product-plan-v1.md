@@ -86,6 +86,7 @@
 - [x] Deterministic evidence and snapshot artifacts implemented
 - [x] Provider preflight distinguishes missing configuration from code readiness
 - [x] Production provider readiness rehearsal gate implemented
+- [x] Target Anthropic provider account gate implemented
 - [x] Target local provider architecture gate implemented
 - [x] Target provider evidence intake gate implemented
 - [x] Target Hermes provider architecture gate implemented

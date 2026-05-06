@@ -18,6 +18,7 @@ assert.equal(result.scannedFiles.includes('docs/production-slo-operating-v1.md')
 assert.equal(result.scannedFiles.includes('docs/production-retention-operating-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-provider-readiness-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-provider-evidence-intake-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-anthropic-provider-account-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-local-provider-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-hermes-provider-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-enterprise-controls-v1.md'), true);

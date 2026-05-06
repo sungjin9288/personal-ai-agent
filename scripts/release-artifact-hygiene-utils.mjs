@@ -51,6 +51,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
   'docs/target-provider-evidence-intake-v1.md',
+  'docs/target-anthropic-provider-account-v1.md',
   'docs/target-local-provider-architecture-v1.md',
   'docs/target-hermes-provider-architecture-v1.md',
   'docs/production-enterprise-controls-v1.md',

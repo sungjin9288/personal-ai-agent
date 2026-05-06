@@ -15,6 +15,7 @@ const productionSloOperatingPath = path.join(docsDir, 'production-slo-operating-
 const productionRetentionOperatingPath = path.join(docsDir, 'production-retention-operating-v1.md');
 const productionProviderReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
 const targetProviderEvidenceIntakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
+const targetAnthropicProviderAccountPath = path.join(docsDir, 'target-anthropic-provider-account-v1.md');
 const targetLocalProviderArchitecturePath = path.join(docsDir, 'target-local-provider-architecture-v1.md');
 const targetHermesProviderArchitecturePath = path.join(docsDir, 'target-hermes-provider-architecture-v1.md');
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
@@ -56,6 +57,7 @@ const productionSloOperating = readRequiredFile(productionSloOperatingPath);
 const productionRetentionOperating = readRequiredFile(productionRetentionOperatingPath);
 const productionProviderReadiness = readRequiredFile(productionProviderReadinessPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
+const targetAnthropicProviderAccount = readRequiredFile(targetAnthropicProviderAccountPath);
 const targetLocalProviderArchitecture = readRequiredFile(targetLocalProviderArchitecturePath);
 const targetHermesProviderArchitecture = readRequiredFile(targetHermesProviderArchitecturePath);
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
@@ -112,6 +114,7 @@ assert.match(productionReadySection, /Production-ready must not be claimed from 
 
 for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
+  /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment/,
   /target local provider architecture is not approved and local provider live validation evidence is not generated from a production-like environment/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
@@ -137,6 +140,7 @@ assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
@@ -203,6 +207,7 @@ assert.match(productionProviderReadiness, /^- status: local-provider-readiness-c
 assert.match(productionProviderReadiness, /^- productionReadyClaim: false$/m);
 assert.match(productionProviderReadiness, /npm run smoke:production-provider-readiness/);
 assert.match(productionProviderReadiness, /not live-provider-complete evidence/);
+assert.match(productionProviderReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(targetProviderEvidenceIntake, /^# Target Provider Evidence Intake v1$/m);
@@ -211,6 +216,12 @@ assert.match(targetProviderEvidenceIntake, /^- productionReadyClaim: false$/m);
 assert.match(targetProviderEvidenceIntake, /npm run smoke:target-provider-evidence-intake/);
 assert.match(targetProviderEvidenceIntake, /not provider account remediation proof/);
 assert.match(targetProviderEvidenceIntake, /Target provider readiness remains blocked for production-ready claims/);
+assert.match(targetAnthropicProviderAccount, /^# Target Anthropic Provider Account v1$/m);
+assert.match(targetAnthropicProviderAccount, /^- status: local-target-anthropic-provider-account-current$/m);
+assert.match(targetAnthropicProviderAccount, /^- productionReadyClaim: false$/m);
+assert.match(targetAnthropicProviderAccount, /^- targetAnthropicProviderApproved: false$/m);
+assert.match(targetAnthropicProviderAccount, /not Anthropic live validation proof/);
+assert.match(targetAnthropicProviderAccount, /Anthropic provider readiness remains blocked/);
 assert.match(targetLocalProviderArchitecture, /^# Target Local Provider Architecture v1$/m);
 assert.match(targetLocalProviderArchitecture, /^- status: local-target-local-provider-architecture-current$/m);
 assert.match(targetLocalProviderArchitecture, /^- productionReadyClaim: false$/m);
@@ -396,7 +407,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -450,6 +461,7 @@ console.log(
       pilotTargetBackupOperations: 'present',
       pilotProductionEnterpriseControls: 'present',
       pilotProductionProviderReadiness: 'present',
+      pilotTargetAnthropicProviderAccount: 'present',
       pilotTargetLocalProviderArchitecture: 'present',
       pilotTargetHermesProviderArchitecture: 'present',
       pilotProductionRetentionOperating: 'present',

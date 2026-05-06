@@ -51,6 +51,7 @@ for (const domain of [
 for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
   /selected production providers and completed provider evidence intake references/,
+  /target Anthropic provider account approval when Anthropic is included/,
   /target local provider architecture approval when local provider is included/,
   /target Hermes provider architecture approval when Hermes is included/,
   /identity provider, role owner, session policy, and permission audit evidence/,
@@ -68,6 +69,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:hosted-identity-session-architecture',
@@ -89,6 +91,7 @@ for (const command of [
 }
 
 assert.match(targetContract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
+assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
@@ -118,7 +121,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 17,
+      requiredCommandCount: 18,
     },
     null,
     2,

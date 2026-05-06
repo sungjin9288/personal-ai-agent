@@ -85,6 +85,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:target-anthropic-provider-account',
+    script: 'smoke:target-anthropic-provider-account',
+  },
+  {
     command: 'npm run smoke:target-local-provider-architecture',
     script: 'smoke:target-local-provider-architecture',
   },
@@ -301,6 +305,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-backup-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'recoveryPacketItemCount']);
+  }
+  if (script === 'smoke:target-anthropic-provider-account') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetAnthropicProviderApproved']);
   }
   if (script === 'smoke:target-local-provider-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetLocalProviderApproved']);
