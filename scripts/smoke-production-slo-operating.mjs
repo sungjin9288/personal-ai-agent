@@ -33,6 +33,7 @@ assert.match(rehearsal, /Production-ready remains blocked/);
 for (const command of [
   'npm run smoke:incident-slo-policy',
   'npm run smoke:observability-telemetry',
+  'npm run smoke:target-observability-architecture',
   'npm run smoke:target-observability-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:target-support-operations',
@@ -48,6 +49,7 @@ for (const command of [
 for (const phrase of [
   /deterministic release status and snapshot integrity/,
   /observability telemetry/,
+  /target observability architecture/,
   /target observability operations/,
   /support escalation review/,
   /target support operations/,
@@ -59,6 +61,7 @@ for (const phrase of [
 }
 
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
+assert.match(rehearsal, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local production SLO operating rehearsal: passed/);
 assert.match(incidentSlo, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(deployment, /## Production SLO Operating Rehearsal/);
@@ -71,7 +74,7 @@ assert.match(readme, /npm run smoke:production-slo-operating/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 10,
+      commandCount: 11,
       mode: 'production-slo-operating',
       ok: true,
       path: 'docs/production-slo-operating-v1.md',

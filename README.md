@@ -72,6 +72,7 @@ The local secret management gate is [docs/secret-management-v1.md](docs/secret-m
 The target secret manager architecture gate is [docs/target-secret-manager-architecture-v1.md](docs/target-secret-manager-architecture-v1.md).
 The local target secret manager gate is [docs/target-secret-manager-v1.md](docs/target-secret-manager-v1.md).
 The local observability telemetry gate is [docs/observability-telemetry-v1.md](docs/observability-telemetry-v1.md).
+The target observability architecture gate is [docs/target-observability-architecture-v1.md](docs/target-observability-architecture-v1.md).
 The local target observability operations gate is [docs/target-observability-operations-v1.md](docs/target-observability-operations-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
@@ -111,6 +112,7 @@ Current planning status:
 - target secret manager architecture evidence can be verified with `npm run smoke:target-secret-manager-architecture`; it proves platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decision requirements are present, but it keeps `targetSecretManagerApproved: false`
 - local target secret manager evidence can be verified with `npm run smoke:target-secret-manager`; it proves secret manager controls, rotation evidence packet, break-glass rules, and production target secret manager gaps are present, but it does not provide target secret manager injection or rotation proof
 - local observability telemetry evidence can be verified with `npm run smoke:observability-telemetry`; it proves local telemetry signals, alert triggers, and handoff requirements are present, but it does not provide hosted telemetry, alert delivery, or staffed on-call proof
+- target observability architecture evidence can be verified with `npm run smoke:target-observability-architecture`; it proves telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, and disaster recovery decision requirements are present, but it keeps `targetObservabilityApproved: false`
 - local target observability operations evidence can be verified with `npm run smoke:target-observability-operations`; it proves target telemetry, alert delivery, on-call, status communication, and incident review evidence requirements are present, but it does not provide production telemetry backend or staffed on-call proof
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -238,6 +240,12 @@ Observability telemetry gate:
 
 ```bash
 npm run smoke:observability-telemetry
+```
+
+Target observability architecture gate:
+
+```bash
+npm run smoke:target-observability-architecture
 ```
 
 Target observability operations gate:

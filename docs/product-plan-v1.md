@@ -110,6 +110,7 @@
 - [x] Secret handling policy documented
 - [x] Target secret manager architecture gate implemented
 - [x] Target secret manager gate implemented
+- [x] Target observability architecture gate implemented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Target observability operations gate implemented
 - [x] Audit log retention policy documented

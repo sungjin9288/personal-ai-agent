@@ -1,14 +1,15 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-05T16:01:29.120Z
+- generatedAt: 2026-05-06T03:05:32.266Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: a9f532d190db65dddc1a20db7e439974aaff9027
+- sourceCommit: d4c5c3218384ccddf79ee1d656ad5afd052d43ca
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
@@ -16,7 +17,7 @@
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability operations, support escalation review, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that observability telemetry, target observability architecture, target observability operations, support escalation review, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim `production-ready`.
 
@@ -26,16 +27,17 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 122 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 122 | 5s | yes |
-| `npm run smoke:target-observability-operations` | pass | 0 | 123 | 5s | yes |
-| `npm run smoke:support-escalation-review` | pass | 0 | 123 | 5s | yes |
-| `npm run smoke:target-support-operations` | pass | 0 | 123 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 399 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 150 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 126 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 308 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 497 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 830 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 405 | 5s | yes |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 363 | 5s | yes |
+| `npm run smoke:target-observability-operations` | pass | 0 | 408 | 5s | yes |
+| `npm run smoke:support-escalation-review` | pass | 0 | 455 | 5s | yes |
+| `npm run smoke:target-support-operations` | pass | 0 | 376 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 1152 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 713 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 450 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 1652 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 2384 | 10s | yes |
 
 ## Key Signals
 
@@ -56,6 +58,17 @@ Production-ready remains blocked until the approved target environment provides 
     "mode": "observability-telemetry",
     "productionReadyClaim": false,
     "telemetrySignalCount": 6
+  }
+```
+
+### npm run smoke:target-observability-architecture
+
+```json
+{
+    "areaCount": 9,
+    "mode": "target-observability-architecture",
+    "productionReadyClaim": false,
+    "targetObservabilityApproved": false
   }
 ```
 
@@ -97,11 +110,11 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
     "deterministic": "8/8",
     "runtimeRows": 8,
-    "snapshotCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "snapshotCommit": "05728ad677e20f434f058874ed884ad215e71b57"
   }
 ```
 
@@ -109,10 +122,10 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "verifiedCommit": "05728ad677e20f434f058874ed884ad215e71b57"
   }
 ```
 
@@ -121,9 +134,9 @@ Production-ready remains blocked until the approved target environment provides 
 ```json
 {
     "machinePathFindingCount": 0,
-    "scannedFileCount": 31,
+    "scannedFileCount": 35,
     "secretFindingCount": 0,
-    "verifiedCommit": "a9f532d190db65dddc1a20db7e439974aaff9027"
+    "verifiedCommit": "05728ad677e20f434f058874ed884ad215e71b57"
   }
 ```
 
@@ -155,6 +168,7 @@ Production-ready remains blocked until the approved target environment provides 
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
+- target observability architecture remains the gate for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, and disaster recovery decisions
 - target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 - target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements

@@ -20,6 +20,7 @@
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
+- relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -87,6 +88,7 @@ Production gap:
 - [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract for platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery, and the remaining target evidence gap
 - [target-secret-manager-v1.md](target-secret-manager-v1.md) defines the local target secret manager evidence contract for secret manager controls, rotation evidence packets, break-glass rules, and the remaining target injection/audit gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
+- [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, disaster recovery, and the remaining target evidence gap
 - [target-observability-operations-v1.md](target-observability-operations-v1.md) defines the local target observability operations evidence contract for telemetry pipeline, alert delivery, retention, on-call routing, customer status communication, incident review history, and the remaining target operations gap
 
 ## RBAC Matrix
@@ -218,6 +220,7 @@ Current status:
 - [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract while keeping targetSecretManagerApproved false and target secret manager readiness blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
 - `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers
+- [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract while keeping targetObservabilityApproved false and target observability readiness blocked
 
 ## Retention, Export, And Delete
 

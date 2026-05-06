@@ -55,6 +55,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:observability-telemetry',
   },
   {
+    command: 'npm run smoke:target-observability-architecture',
+    script: 'smoke:target-observability-architecture',
+  },
+  {
     command: 'npm run smoke:target-observability-operations',
     script: 'smoke:target-observability-operations',
   },
@@ -242,6 +246,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
   }
+  if (script === 'smoke:target-observability-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetObservabilityApproved']);
+  }
   if (script === 'smoke:target-observability-operations') {
     return pick(parsed, ['controlCount', 'mode', 'operationsPacketItemCount', 'productionReadyClaim']);
   }
@@ -303,6 +310,7 @@ function extractKeySignals(script, parsed) {
       'pilotSecretManagement',
       'pilotTargetSecretManager',
       'pilotObservabilityTelemetry',
+      'pilotTargetObservabilityArchitecture',
       'pilotTargetObservabilityOperations',
       'pilotTargetRetentionOperations',
       'pilotTargetBackupOperations',

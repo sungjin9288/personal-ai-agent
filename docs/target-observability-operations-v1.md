@@ -5,6 +5,7 @@
 - scope: target observability, alert delivery, on-call, and incident review evidence contract
 - productionReadyClaim: false
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
@@ -58,6 +59,7 @@ Every target observability operations review must include:
 
 ```bash
 npm run smoke:target-observability-operations
+npm run smoke:target-observability-architecture
 npm run smoke:observability-telemetry
 npm run smoke:production-slo-operating
 npm run smoke:release-artifact-hygiene

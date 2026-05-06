@@ -31,6 +31,7 @@ const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
 const targetSecretManagerArchitecturePath = path.join(docsDir, 'target-secret-manager-architecture-v1.md');
 const targetSecretManagerPath = path.join(docsDir, 'target-secret-manager-v1.md');
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
+const targetObservabilityArchitecturePath = path.join(docsDir, 'target-observability-architecture-v1.md');
 const targetObservabilityOperationsPath = path.join(docsDir, 'target-observability-operations-v1.md');
 const targetRetentionOperationsPath = path.join(docsDir, 'target-retention-operations-v1.md');
 const targetBackupOperationsPath = path.join(docsDir, 'target-backup-operations-v1.md');
@@ -65,6 +66,7 @@ const secretManagement = readRequiredFile(secretManagementPath);
 const targetSecretManagerArchitecture = readRequiredFile(targetSecretManagerArchitecturePath);
 const targetSecretManager = readRequiredFile(targetSecretManagerPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
+const targetObservabilityArchitecture = readRequiredFile(targetObservabilityArchitecturePath);
 const targetObservabilityOperations = readRequiredFile(targetObservabilityOperationsPath);
 const targetRetentionOperations = readRequiredFile(targetRetentionOperationsPath);
 const targetBackupOperations = readRequiredFile(targetBackupOperationsPath);
@@ -101,6 +103,7 @@ for (const blocker of [
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
   /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
+  /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment/,
@@ -132,6 +135,10 @@ assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-
 assert.match(releaseReadiness, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-secret-manager-v1\.md\]\(target-secret-manager-v1\.md\)/);
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
+assert.match(
+  releaseReadiness,
+  /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/,
+);
 assert.match(
   releaseReadiness,
   /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/,
@@ -262,6 +269,13 @@ assert.match(observabilityTelemetry, /^- status: local-observability-telemetry-c
 assert.match(observabilityTelemetry, /^- productionReadyClaim: false$/m);
 assert.match(observabilityTelemetry, /not hosted telemetry evidence/);
 assert.match(observabilityTelemetry, /Observability and telemetry remain blocked for production-ready claims/);
+assert.match(targetObservabilityArchitecture, /^# Target Observability Architecture v1$/m);
+assert.match(targetObservabilityArchitecture, /^- status: local-target-observability-architecture-current$/m);
+assert.match(targetObservabilityArchitecture, /^- productionReadyClaim: false$/m);
+assert.match(targetObservabilityArchitecture, /^- targetObservabilityApproved: false$/m);
+assert.match(targetObservabilityArchitecture, /npm run smoke:target-observability-architecture/);
+assert.match(targetObservabilityArchitecture, /not target telemetry implementation/);
+assert.match(targetObservabilityArchitecture, /Target observability readiness remains blocked/);
 assert.match(targetObservabilityOperations, /^# Target Observability Operations v1$/m);
 assert.match(targetObservabilityOperations, /^- status: local-target-observability-operations-current$/m);
 assert.match(targetObservabilityOperations, /^- productionReadyClaim: false$/m);
@@ -308,7 +322,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability operations, target retention operations, target backup operations, target support operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability architecture\/operations, target retention operations, target backup operations, target support operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -352,6 +366,7 @@ console.log(
       pilotTargetSecretManagerArchitecture: 'present',
       pilotTargetSecretManager: 'present',
       pilotObservabilityTelemetry: 'present',
+      pilotTargetObservabilityArchitecture: 'present',
       pilotTargetObservabilityOperations: 'present',
       pilotTargetRetentionOperations: 'present',
       pilotTargetBackupOperations: 'present',

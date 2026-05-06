@@ -28,6 +28,7 @@
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
+- relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
@@ -86,6 +87,7 @@ Current execution evidence:
 - target secret manager architecture gate: passed, with targetSecretManagerApproved false, platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target secret manager gate: passed, with secret manager controls, rotation evidence packet, break-glass rules, and `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
+- target observability architecture gate: passed, with targetObservabilityApproved false, telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target observability operations gate: passed, with telemetry pipeline, alert delivery, log/trace retention, on-call routing, customer status communication, incident review history, and `productionReadyClaim: false`
 - local target retention operations gate: passed, with customer-approved data classes, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and `productionReadyClaim: false`
 - local target backup operations gate: passed, with backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery rules, and `productionReadyClaim: false`
@@ -135,6 +137,7 @@ Current handoff state:
 | [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) | local-target-secret-manager-architecture-current | target secret manager architecture decision and evidence contract with targetSecretManagerApproved false |
 | [target-secret-manager-v1.md](target-secret-manager-v1.md) | local-target-secret-manager-current | target secret manager controls, rotation evidence packet, break-glass rules, and production target gap |
 | [observability-telemetry-v1.md](observability-telemetry-v1.md) | local-observability-telemetry-current | local telemetry signals, alert triggers, handoff requirements, and production telemetry gap |
+| [target-observability-architecture-v1.md](target-observability-architecture-v1.md) | local-target-observability-architecture-current | target observability architecture decision and evidence contract with targetObservabilityApproved false |
 | [target-observability-operations-v1.md](target-observability-operations-v1.md) | local-target-observability-operations-current | target observability operation controls, operations evidence packet, on-call rules, and production target gap |
 | [target-retention-operations-v1.md](target-retention-operations-v1.md) | local-target-retention-operations-current | target retention operation controls, retention evidence packet, data lifecycle rules, and production target gap |
 | [target-backup-operations-v1.md](target-backup-operations-v1.md) | local-target-backup-operations-current | target backup operation controls, recovery evidence packet, disaster recovery rules, and production target gap |
@@ -207,6 +210,7 @@ Blockers:
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
 - hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated
 - target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment
+- target observability architecture is not approved and target observability evidence is not generated from a production-like environment
 - target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
@@ -275,6 +279,7 @@ npm run smoke:secret-management
 npm run smoke:target-secret-manager-architecture
 npm run smoke:target-secret-manager
 npm run smoke:observability-telemetry
+npm run smoke:target-observability-architecture
 npm run smoke:target-observability-operations
 npm run smoke:target-retention-operations
 npm run smoke:target-backup-operations
@@ -320,7 +325,7 @@ Next review date:
 - Anthropic live validation is blocked by provider account billing/credit
 - local provider live validation is blocked by missing approved endpoint/model runtime configuration
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
-- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability operations, target retention operations, target backup operations, target support operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
+- target deployment contract is blocked until hosted identity/session administration, tenant storage/encryption, target secret manager injection/audit, target observability architecture/operations, target retention operations, target backup operations, target support operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified
 
 ## Current Closeout
