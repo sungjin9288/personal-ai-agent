@@ -26,6 +26,7 @@ const identitySessionAdminPath = path.join(docsDir, 'identity-session-admin-v1.m
 const tenantStorageAdminPath = path.join(docsDir, 'tenant-storage-admin-v1.md');
 const customerSupportOperationsPath = path.join(docsDir, 'customer-support-operations-v1.md');
 const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-review-v1.md');
+const targetSupportArchitecturePath = path.join(docsDir, 'target-support-architecture-v1.md');
 const targetSupportOperationsPath = path.join(docsDir, 'target-support-operations-v1.md');
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
 const targetSecretManagerArchitecturePath = path.join(docsDir, 'target-secret-manager-architecture-v1.md');
@@ -64,6 +65,7 @@ const identitySessionAdmin = readRequiredFile(identitySessionAdminPath);
 const tenantStorageAdmin = readRequiredFile(tenantStorageAdminPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
+const targetSupportArchitecture = readRequiredFile(targetSupportArchitecturePath);
 const targetSupportOperations = readRequiredFile(targetSupportOperationsPath);
 const secretManagement = readRequiredFile(secretManagementPath);
 const targetSecretManagerArchitecture = readRequiredFile(targetSecretManagerArchitecturePath);
@@ -116,6 +118,7 @@ for (const blocker of [
   /target data lifecycle architecture is not approved and target data lifecycle evidence is not generated from a production-like environment/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
+  /target support architecture is not approved and target support evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment/,
   /target clean deployment architecture is not approved and target clean deployment evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
@@ -139,6 +142,7 @@ assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-sess
 assert.match(releaseReadiness, /\[tenant-storage-admin-v1\.md\]\(tenant-storage-admin-v1\.md\)/);
 assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-support-operations-v1\.md\]\(target-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
@@ -263,6 +267,12 @@ assert.match(supportEscalationReview, /^- status: local-support-escalation-revie
 assert.match(supportEscalationReview, /^- productionReadyClaim: false$/m);
 assert.match(supportEscalationReview, /not staffed production support evidence/);
 assert.match(supportEscalationReview, /Support escalation and incident review remain blocked for production-ready claims/);
+assert.match(targetSupportArchitecture, /^# Target Support Architecture v1$/m);
+assert.match(targetSupportArchitecture, /^- status: local-target-support-architecture-current$/m);
+assert.match(targetSupportArchitecture, /^- productionReadyClaim: false$/m);
+assert.match(targetSupportArchitecture, /^- targetSupportApproved: false$/m);
+assert.match(targetSupportArchitecture, /not staffed support implementation/);
+assert.match(targetSupportArchitecture, /Target support readiness remains blocked/);
 assert.match(targetSupportOperations, /^# Target Support Operations v1$/m);
 assert.match(targetSupportOperations, /^- status: local-target-support-operations-current$/m);
 assert.match(targetSupportOperations, /^- productionReadyClaim: false$/m);
@@ -364,7 +374,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, tenant storage\/encryption, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -401,6 +411,7 @@ console.log(
       pilotTenantStorageAdmin: 'present',
       pilotCustomerSupportOperations: 'present',
       pilotSupportEscalationReview: 'present',
+      pilotTargetSupportArchitecture: 'present',
       pilotTargetSupportOperations: 'present',
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',

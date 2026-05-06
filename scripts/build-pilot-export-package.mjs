@@ -19,6 +19,7 @@ const BASE_PACKAGE_FILES = [
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
   'docs/support-escalation-review-v1.md',
+  'docs/target-support-architecture-v1.md',
   'docs/target-support-operations-v1.md',
   'docs/secret-management-v1.md',
   'docs/target-secret-manager-v1.md',
@@ -160,6 +161,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportArchitecture: [target-support-architecture-v1.md](target-support-architecture-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)

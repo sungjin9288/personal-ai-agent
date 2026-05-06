@@ -6,6 +6,7 @@
 - productionReadyClaim: false
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportArchitecture: [target-support-architecture-v1.md](target-support-architecture-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
@@ -18,7 +19,7 @@ This document defines the evidence required before a target deployment can claim
 
 It proves that staffed coverage, support queue routing, ticket audit history, customer communication, escalation ownership, incident review cadence, and closure evidence requirements are explicitly documented before a production-like handoff.
 
-It is not staffed target support evidence, not a support ticketing export, not 24/7 coverage proof, not contractual SLA evidence, and not permission to claim `production-ready`.
+It is not target support architecture approval, not staffed target support evidence, not a support ticketing export, not 24/7 coverage proof, not contractual SLA evidence, and not permission to claim `production-ready`.
 
 Production-ready remains blocked until the approved target environment proves staffed support coverage, customer-approved communication routes, ticket queue audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence.
 
@@ -60,6 +61,7 @@ Every target support operations review must include:
 
 ```bash
 npm run smoke:target-support-operations
+npm run smoke:target-support-architecture
 npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
 npm run smoke:production-slo-operating
@@ -74,6 +76,6 @@ This gate is acceptable only when support operation controls, support evidence p
 
 ## Production Gap
 
-This is a local target support operations evidence contract. It does not prove that a staffed support rota exists, that customer ticket routing is operated, that ticket audit history exists, that on-call handoff is staffed, or that incident reviews are governed from a target deployment.
+This is a local target support operations evidence contract. It does not approve target support architecture, prove that a staffed support rota exists, prove that customer ticket routing is operated, prove that ticket audit history exists, prove that on-call handoff is staffed, or prove that incident reviews are governed from a target deployment.
 
 Target support operations remain blocked for production-ready claims until staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, on-call handoff, and closure evidence are captured from the approved production-like or hosted target environment.

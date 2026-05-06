@@ -5,6 +5,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const targetSupportPath = path.join(docsDir, 'target-support-operations-v1.md');
+const targetSupportArchitecturePath = path.join(docsDir, 'target-support-architecture-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
@@ -14,6 +15,7 @@ const readmePath = path.join(repoDir, 'README.md');
 const packagePath = path.join(repoDir, 'package.json');
 
 const targetSupport = readRequiredFile(targetSupportPath);
+const targetSupportArchitecture = readRequiredFile(targetSupportArchitecturePath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const targetContract = readRequiredFile(targetContractPath);
 const deployment = readRequiredFile(deploymentPath);
@@ -27,6 +29,7 @@ assert.equal(packageJson.scripts['smoke:target-support-operations'], 'node scrip
 assert.match(targetSupport, /^# Target Support Operations v1$/m);
 assert.match(targetSupport, /^- status: local-target-support-operations-current$/m);
 assert.match(targetSupport, /^- productionReadyClaim: false$/m);
+assert.match(targetSupport, /not target support architecture approval/);
 assert.match(targetSupport, /not staffed target support evidence/);
 assert.match(targetSupport, /not a support ticketing export/);
 assert.match(targetSupport, /not permission to claim `production-ready`/);
@@ -57,6 +60,7 @@ for (const control of [
 
 for (const command of [
   'npm run smoke:target-support-operations',
+  'npm run smoke:target-support-architecture',
   'npm run smoke:customer-support-operations',
   'npm run smoke:support-escalation-review',
   'npm run smoke:production-slo-operating',
@@ -69,10 +73,14 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[target-support-operations-v1\.md\]\(target-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /local target support operations gate: passed/);
-assert.match(targetContract, /local support operations, support escalation review, and target support operations gates pass/);
+assert.match(targetSupportArchitecture, /^# Target Support Architecture v1$/m);
+assert.match(targetContract, /local support operations, support escalation review, target support architecture, and target support operations gates pass/);
 assert.match(targetContract, /npm run smoke:target-support-operations/);
+assert.match(targetContract, /npm run smoke:target-support-architecture/);
 assert.match(deployment, /## Target Support Operations Gate/);
 assert.match(deployment, /npm run smoke:target-support-operations/);
+assert.match(deployment, /## Target Support Architecture/);
+assert.match(deployment, /npm run smoke:target-support-architecture/);
 assert.match(security, /\[target-support-operations-v1\.md\]\(target-support-operations-v1\.md\)/);
 assert.match(productPlan, /\[x\] Target support operations gate implemented/);
 assert.match(readme, /npm run smoke:target-support-operations/);

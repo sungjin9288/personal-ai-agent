@@ -35,6 +35,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:support-escalation-review',
   },
   {
+    command: 'npm run smoke:target-support-architecture',
+    script: 'smoke:target-support-architecture',
+  },
+  {
     command: 'npm run smoke:target-support-operations',
     script: 'smoke:target-support-operations',
   },
@@ -242,6 +246,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:support-escalation-review') {
     return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
+  }
+  if (script === 'smoke:target-support-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetSupportApproved']);
   }
   if (script === 'smoke:target-support-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'supportPacketItemCount']);

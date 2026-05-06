@@ -32,6 +32,10 @@ const SLO_COMMANDS = [
     script: 'smoke:support-escalation-review',
   },
   {
+    command: 'npm run smoke:target-support-architecture',
+    script: 'smoke:target-support-architecture',
+  },
+  {
     command: 'npm run smoke:target-support-operations',
     script: 'smoke:target-support-operations',
   },
@@ -144,6 +148,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:support-escalation-review') {
     return pick(parsed, ['auditPacketItemCount', 'escalationRouteCount', 'mode', 'productionReadyClaim', 'reviewCadenceCount']);
   }
+  if (script === 'smoke:target-support-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetSupportApproved']);
+  }
   if (script === 'smoke:target-support-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'supportPacketItemCount']);
   }
@@ -207,12 +214,13 @@ function renderSloOperatingMarkdown({
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportArchitecture: [target-support-architecture-v1.md](target-support-architecture-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that target SLO architecture, observability telemetry, target observability architecture, target observability operations, support escalation review, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that target SLO architecture, observability telemetry, target observability architecture, target observability operations, support escalation review, target support architecture, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
@@ -239,6 +247,7 @@ ${keySignalRows}
 - target observability architecture remains the gate for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, and disaster recovery decisions
 - target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
+- target support architecture remains the gate for staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decision requirements
 - target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements
 
 ## Operator Re-Run

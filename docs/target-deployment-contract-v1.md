@@ -20,6 +20,7 @@
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
+- relatedTargetSupportArchitecture: [target-support-architecture-v1.md](target-support-architecture-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
 - relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
@@ -65,12 +66,13 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management, target secret manager contract, and release artifact hygiene pass | blocked |
 | Target observability architecture | target observability architecture is approved with telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, and disaster recovery decisions | local target observability architecture contract is present with targetObservabilityApproved false | blocked |
 | Target SLO architecture | target SLO architecture is approved with customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decisions | local target SLO architecture contract is present with targetSloApproved false | blocked |
+| Target support architecture | target support architecture is approved with staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decisions | local target support architecture contract is present with targetSupportApproved false | blocked |
 | Target data lifecycle architecture | target data lifecycle architecture is approved with customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, and disaster recovery decisions | local target data lifecycle architecture contract is present with targetDataLifecycleApproved false | blocked |
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, target data lifecycle architecture, target retention operations, backup/restore drill, and target backup operations gates pass | blocked |
 | SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating, observability telemetry, target observability architecture, target observability operations, and target SLO architecture gates pass | blocked |
 | Target clean deployment architecture | target clean deployment architecture is approved with source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, and release approval decisions | local target clean deployment architecture contract is present with targetCleanDeploymentApproved false | blocked |
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
-| Customer support operations | escalation route, support owner, incident communications, customer handoff process, audit history, and incident review cadence are proven | pilot runbook, incident policy, and local support operations, support escalation review, and target support operations gates pass | blocked |
+| Customer support operations | escalation route, support owner, incident communications, customer handoff process, audit history, and incident review cadence are proven | pilot runbook, incident policy, and local support operations, support escalation review, target support architecture, and target support operations gates pass | blocked |
 
 ## Required Commands
 
@@ -92,6 +94,7 @@ npm run smoke:target-retention-operations
 npm run smoke:target-backup-operations
 npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
+npm run smoke:target-support-architecture
 npm run smoke:target-support-operations
 npm run smoke:secret-management
 npm run smoke:target-secret-manager-architecture
@@ -119,6 +122,7 @@ npm run smoke:clean-deployment-release
 - stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured
 - stop target observability claims until the target observability architecture record is approved and target observability evidence is generated
 - stop target SLO/SLA claims until the target SLO architecture record is approved and target SLO evidence is generated
+- stop target support claims until the target support architecture record is approved and target support evidence is generated
 - stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated
 - stop retention/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured
 - stop observability claims until target observability telemetry, alert delivery, log/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured

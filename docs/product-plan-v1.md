@@ -124,6 +124,7 @@
 - [x] Target retention operations gate implemented
 - [x] Target backup operations gate implemented
 - [x] Target support operations gate implemented
+- [x] Target support architecture gate implemented
 - [x] Retention/delete policy gate implemented
 - [x] Production retention operating rehearsal gate implemented
 - [x] Production SLO operating rehearsal gate implemented

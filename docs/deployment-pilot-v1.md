@@ -305,7 +305,7 @@ Before presenting a deployment as production-ready for another company, verify t
 npm run smoke:target-environment-evidence-intake
 ```
 
-The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
+The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
 
 ## Hosted SaaS Architecture Decision
 
@@ -400,7 +400,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support operations, and support escalation review all have explicit target-environment evidence
+- target provider validation, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 
@@ -725,6 +725,18 @@ Stop condition:
 - if audit packet requirements or incident review cadence are missing, do not share an escalated customer support update
 - if the gate passes, treat it only as local pilot support escalation evidence, not staffed production support audit history or on-call proof
 
+## Target Support Architecture
+
+Before presenting a production-like deployment as support-ready, verify the target support architecture decision contract:
+
+```bash
+npm run smoke:target-support-architecture
+```
+
+The source of record is [target-support-architecture-v1.md](target-support-architecture-v1.md). It proves staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, incident review governance, required commands, and the target support architecture production gap are present.
+
+Do not claim target support readiness until target support architecture is approved and target support evidence is generated from the approved production-like or hosted target environment.
+
 ## Target Support Operations Gate
 
 Before presenting a production-like deployment as support-ready, verify the target support operations evidence contract:
@@ -756,7 +768,7 @@ npm run drill:production-like-release
 npm run smoke:production-like-release-drill
 ```
 
-The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
+The drill replays the incident/SLO policy gate, customer support operations gate, support escalation review gate, target support architecture gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target data lifecycle architecture gate, target backup operations gate, target deployment contract, execution-v1 status and snapshot gates, production readiness blocker gate, release artifact hygiene, runtime data lifecycle export/delete smoke, backup/restore drill, and self-hosted runtime isolation smoke.
 
 Acceptance:
 
@@ -780,7 +792,7 @@ npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 ```
 
-The rehearsal runs the incident/SLO policy gate, target SLO architecture gate, observability telemetry gate, target observability architecture gate, target observability operations gate, support escalation review gate, target support operations gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
+The rehearsal runs the incident/SLO policy gate, target SLO architecture gate, observability telemetry gate, target observability architecture gate, target observability operations gate, support escalation review gate, target support architecture gate, target support operations gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
 
 Acceptance:
 
@@ -849,7 +861,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 
