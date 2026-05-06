@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-06T03:06:02.785Z
+- generatedAt: 2026-05-06T03:27:28.444Z
 - branch: codex/managed-multi-agent-v1-foundation
-- verifiedCommit: d4c5c3218384ccddf79ee1d656ad5afd052d43ca
+- verifiedCommit: 3a0be66cedbb1cd4288b45d728bf9e9710b8f000
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -29,38 +29,38 @@ Production-ready remains blocked until the target deployment model produces clea
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 1778 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 2532 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 1105 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 2060 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 1662 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 1048 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 940 |
-| `npm run smoke:target-support-operations` | pass | 0 | 1597 |
-| `npm run smoke:secret-management` | pass | 0 | 1019 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 1038 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 859 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 913 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 1734 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 1043 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 1050 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 999 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 1650 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 4885 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 1123 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 1507 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 1049 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 890 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 930 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 806 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 3398 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 4822 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 1919 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 2205 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 5027 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 1659 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 1379 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 2792 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 638 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 647 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 592 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 821 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 729 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 803 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 455 |
+| `npm run smoke:target-support-operations` | pass | 0 | 374 |
+| `npm run smoke:secret-management` | pass | 0 | 423 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 473 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 847 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 641 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 559 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 417 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 320 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 382 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 378 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 2248 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 325 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 350 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 314 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 351 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 423 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 351 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 868 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 517 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 350 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 468 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 955 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 404 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 572 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 1760 |
 
 ## Key Signals
 
@@ -331,13 +331,13 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactState": "artifact-sync-current",
-    "artifactSyncCommit": true,
+    "artifactState": "local-current",
+    "artifactSyncCommit": false,
     "branch": "codex/managed-multi-agent-v1-foundation",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "05728ad677e20f434f058874ed884ad215e71b57"
+    "snapshotCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
@@ -345,10 +345,10 @@ Production-ready remains blocked until the target deployment model produces clea
 
 ```json
 {
-    "artifactSyncCommit": true,
+    "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "05728ad677e20f434f058874ed884ad215e71b57"
+    "verifiedCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
@@ -392,7 +392,7 @@ Production-ready remains blocked until the target deployment model produces clea
     "machinePathFindingCount": 0,
     "scannedFileCount": 35,
     "secretFindingCount": 0,
-    "verifiedCommit": "05728ad677e20f434f058874ed884ad215e71b57"
+    "verifiedCommit": "3a0be66cedbb1cd4288b45d728bf9e9710b8f000"
   }
 ```
 
