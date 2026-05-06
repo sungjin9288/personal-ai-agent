@@ -55,6 +55,7 @@ for (const control of [
   'Hosted tenant isolation architecture',
   'Target secret manager architecture',
   'Target provider validation',
+  'Target local provider architecture',
   'Target Hermes provider architecture',
   'Identity-backed RBAC and session administration',
   'Hosted tenant isolation',
@@ -82,6 +83,7 @@ for (const command of [
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:production-enterprise-controls',
   'npm run smoke:identity-session-admin',
@@ -111,6 +113,7 @@ for (const command of [
 
 for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
+  /stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated/,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and Hermes live validation evidence is generated/,
   /stop production-ready claims if the target environment evidence intake packet is incomplete/,
   /stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated/,
@@ -136,6 +139,7 @@ for (const blocker of [
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(contract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(contract, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(contract, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(contract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(contract, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
@@ -158,7 +162,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 19,
+      controlCount: 20,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

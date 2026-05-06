@@ -54,6 +54,7 @@ The local SLO operating rehearsal is [docs/production-slo-operating-v1.md](docs/
 The local retention operating rehearsal is [docs/production-retention-operating-v1.md](docs/production-retention-operating-v1.md).
 The local provider readiness rehearsal is [docs/production-provider-readiness-v1.md](docs/production-provider-readiness-v1.md).
 The local target provider evidence intake gate is [docs/target-provider-evidence-intake-v1.md](docs/target-provider-evidence-intake-v1.md).
+The target local provider architecture gate is [docs/target-local-provider-architecture-v1.md](docs/target-local-provider-architecture-v1.md).
 The target Hermes provider architecture gate is [docs/target-hermes-provider-architecture-v1.md](docs/target-hermes-provider-architecture-v1.md).
 The local enterprise controls rehearsal is [docs/production-enterprise-controls-v1.md](docs/production-enterprise-controls-v1.md).
 The local identity session administration gate is [docs/identity-session-admin-v1.md](docs/identity-session-admin-v1.md).
@@ -99,6 +100,7 @@ Current planning status:
 - local retention operating rehearsal evidence can be regenerated with `npm run rehearsal:production-retention-operating` and verified with `npm run smoke:production-retention-operating`, but it intentionally keeps `productionReadyClaim: false`
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence requirements are present, but it does not provide target provider account remediation or production live validation proof
+- target local provider architecture evidence can be verified with `npm run smoke:target-local-provider-architecture`; it proves endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, and fallback/customer approval decision requirements are present, but it keeps `targetLocalProviderApproved: false`
 - target Hermes provider architecture evidence can be verified with `npm run smoke:target-hermes-provider-architecture`; it proves endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements are present, but it keeps `targetHermesProviderApproved: false`
 - local enterprise controls rehearsal evidence can be regenerated with `npm run rehearsal:production-enterprise-controls` and verified with `npm run smoke:production-enterprise-controls`, but it intentionally keeps `productionReadyClaim: false`
 - local identity session administration evidence can be verified with `npm run smoke:identity-session-admin`; it proves identity controls, session lifecycle, role change audit packet requirements, and production identity gap are present, but it does not provide hosted identity/session administration proof
@@ -166,6 +168,7 @@ Production provider readiness rehearsal:
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 npm run smoke:hosted-saas-architecture-decision
 npm run smoke:hosted-identity-session-architecture

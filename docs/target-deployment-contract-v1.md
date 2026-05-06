@@ -9,6 +9,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
@@ -62,6 +63,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Target secret manager architecture | target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions | local target secret manager architecture contract is present with targetSecretManagerApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
+| Target local provider architecture | target local provider architecture is approved with endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decisions | local target local provider architecture contract is present with targetLocalProviderApproved false | blocked |
 | Target Hermes provider architecture | target Hermes provider architecture is approved with endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decisions | local target Hermes provider architecture contract is present with targetHermesProviderApproved false | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
 | Hosted tenant isolation | tenant identity, authorization, storage partitioning, tenant admin, per-tenant encryption, backup/restore isolation, and cross-tenant denial are proven | local tenant storage administration, OIDC tenant API isolation, tenant lifecycle, and runtime isolation gates pass | blocked |
@@ -87,6 +89,7 @@ npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 npm run smoke:production-enterprise-controls
 npm run smoke:identity-session-admin
@@ -115,6 +118,7 @@ npm run smoke:clean-deployment-release
 ## Blocking Rules
 
 - stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence
+- stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated
 - stop Hermes provider claims until the target Hermes provider architecture record is approved and Hermes live validation evidence is generated
 - stop production-ready claims if the target environment evidence intake packet is incomplete
 - stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated

@@ -8,6 +8,7 @@
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
+- relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
@@ -33,7 +34,7 @@ Production-ready remains blocked until every target environment domain below has
 | Deployment boundary | target environment name, owner, deployment profile, network boundary, runtime root, and rollback owner are recorded | target deployment contract and clean local rehearsal exist | blocked |
 | Identity and sessions | user lifecycle, session lifecycle, role assignment/revocation, logout/revocation behavior, and audit trail are proven | local identity, OIDC/JWKS, shared-secret, and RBAC gates pass | blocked |
 | Tenant storage and encryption | tenant partitioning, tenant admin workflow, per-tenant encryption/key policy, backup/restore isolation, and cross-tenant denial are proven | tenant storage admin, tenant lifecycle, and runtime isolation gates pass locally | blocked |
-| Provider and secret manager | provider account approval, Hermes provider architecture approval when Hermes is included, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, target Hermes provider architecture, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
+| Provider and secret manager | provider account approval, local provider architecture approval when local provider is included, Hermes provider architecture approval when Hermes is included, target secret manager injection, rotation, break-glass, revocation, and live validation are proven | target provider intake, target local provider architecture, target Hermes provider architecture, secret management, target secret manager, and artifact hygiene gates pass locally | blocked |
 | Observability and SLO/SLA | target SLO architecture approval, telemetry backend approval, telemetry ingestion, alert delivery, log/trace retention, staffed on-call routing, incident review, and customer SLO/SLA review are proven | target SLO architecture, observability telemetry, target observability architecture, target observability operations, incident policy, and SLO rehearsal pass locally | blocked |
 | Retention, export, delete, and backup | data lifecycle architecture approval, customer-approved data classes, export approval, delete workflow, provider transcript policy, post-delete absence, backup expiry, restore validation, and DR runbook are proven | retention/delete, target data lifecycle architecture, target retention, backup/restore, target backup, and retention operating gates pass locally | blocked |
 | Support operations | target support architecture approval, support owner, staffed coverage, support queue routing, customer communication, ticket audit history, escalation review, and on-call handoff are proven | support operations, support escalation review, target support architecture, and target support gates pass locally | blocked |
@@ -45,6 +46,7 @@ Every target environment review must record:
 
 - target environment name, owner, profile, and deployment boundary
 - selected production providers and completed provider evidence intake references
+- target local provider architecture approval when local provider is included
 - target Hermes provider architecture approval when Hermes is included
 - identity provider, role owner, session policy, and permission audit evidence
 - tenant storage boundary, encryption/key policy, backup/restore isolation, and tenant admin evidence
@@ -61,6 +63,7 @@ Every target environment review must record:
 
 ```bash
 npm run smoke:target-environment-evidence-intake
+npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-tenant-isolation-architecture

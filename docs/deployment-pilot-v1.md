@@ -11,6 +11,7 @@
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
@@ -283,6 +284,7 @@ Before expanding the pilot beyond the archived OpenAI provider path, replay the 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 ```
 
@@ -297,6 +299,18 @@ npm run smoke:target-provider-evidence-intake
 ```
 
 The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
+
+## Target Local Provider Architecture
+
+Before presenting local provider operation as a target production provider, verify the target local provider architecture decision contract:
+
+```bash
+npm run smoke:target-local-provider-architecture
+```
+
+The source of record is [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md). It proves endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, customer approval, required commands, and the local provider production gap are present.
+
+Do not include local provider operation in a target provider claim until the target local provider architecture is approved and `npm run live:execution-v1:local` passes from the approved production-like or hosted target environment.
 
 ## Target Hermes Provider Architecture
 
@@ -318,7 +332,7 @@ Before presenting a deployment as production-ready for another company, verify t
 npm run smoke:target-environment-evidence-intake
 ```
 
-The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/Hermes/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
+The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/local/Hermes/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
 
 ## Hosted SaaS Architecture Decision
 
@@ -413,7 +427,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, target Hermes provider architecture, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
+- target provider validation, target local provider architecture, target Hermes provider architecture, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 

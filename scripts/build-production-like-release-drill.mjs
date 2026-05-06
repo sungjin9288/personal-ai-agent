@@ -103,6 +103,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:production-provider-readiness',
   },
   {
+    command: 'npm run smoke:target-local-provider-architecture',
+    script: 'smoke:target-local-provider-architecture',
+  },
+  {
     command: 'npm run smoke:target-hermes-provider-architecture',
     script: 'smoke:target-hermes-provider-architecture',
   },
@@ -302,6 +306,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:production-provider-readiness') {
     return pick(parsed, ['mode', 'productionReadyClaim', 'providerCount']);
   }
+  if (script === 'smoke:target-local-provider-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetLocalProviderApproved']);
+  }
   if (script === 'smoke:target-hermes-provider-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetHermesProviderApproved']);
   }
@@ -421,6 +428,7 @@ function renderDrillMarkdown({
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
+- relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)

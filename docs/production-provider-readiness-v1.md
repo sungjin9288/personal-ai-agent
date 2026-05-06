@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-06T07:11:24.648Z
+- generatedAt: 2026-05-06T07:36:13.702Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: c36025b279d46e82e8bfc175e639e4bedf3edb00
+- sourceCommit: 2f0405a6a1716ce3ab2aea815d4dbb492b1dc4df
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -12,6 +12,7 @@
 - relatedCloseout: [execution-v1-closeout.md](execution-v1-closeout.md)
 - relatedHandoff: [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetLocalProviderArchitecture: [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md)
 - relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 
 ## Decision Boundary
@@ -26,7 +27,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 15424 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 14573 |
 
 ## Key Signals
 
@@ -102,6 +103,7 @@ Production-ready remains blocked until every provider included in the target rel
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
+- target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements
 - target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements
 
 ## Target Provider Evidence Intake
@@ -114,6 +116,7 @@ Before any provider is included in a production claim, the operator must verify 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-local-provider-architecture
 npm run smoke:target-hermes-provider-architecture
 ```
 

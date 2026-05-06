@@ -6,6 +6,7 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const intakePath = path.join(docsDir, 'target-provider-evidence-intake-v1.md');
 const providerReadinessPath = path.join(docsDir, 'production-provider-readiness-v1.md');
+const targetLocalPath = path.join(docsDir, 'target-local-provider-architecture-v1.md');
 const targetHermesPath = path.join(docsDir, 'target-hermes-provider-architecture-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
@@ -17,6 +18,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const intake = readRequiredFile(intakePath);
 const providerReadiness = readRequiredFile(providerReadinessPath);
+const targetLocal = readRequiredFile(targetLocalPath);
 const targetHermes = readRequiredFile(targetHermesPath);
 const targetContract = readRequiredFile(targetContractPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
@@ -52,6 +54,7 @@ for (const evidenceItem of [
 
 for (const checklistItem of [
   /provider owner and customer\/account approval/,
+  /local provider architecture approval when local provider is included in the target provider claim/,
   /Hermes provider architecture approval when Hermes is included in the target provider claim/,
   /target environment name and deployment boundary/,
   /secret manager path or key alias, never the secret value/,
@@ -67,6 +70,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:target-local-provider-architecture',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-deployment-contract',
@@ -78,6 +82,9 @@ for (const command of [
 
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
+assert.match(targetLocal, /^# Target Local Provider Architecture v1$/m);
+assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
+assert.match(intake, /local provider architecture approval/);
 assert.match(targetHermes, /^# Target Hermes Provider Architecture v1$/m);
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(intake, /target Hermes provider architecture approval/);
@@ -101,7 +108,7 @@ console.log(
       ok: true,
       path: 'docs/target-provider-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 6,
+      requiredCommandCount: 7,
     },
     null,
     2,
