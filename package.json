@@ -64,6 +64,7 @@
     "smoke:retention-delete-policy": "node scripts/smoke-retention-delete-policy.mjs",
     "smoke:target-data-lifecycle-architecture": "node scripts/smoke-target-data-lifecycle-architecture.mjs",
     "smoke:target-clean-deployment-architecture": "node scripts/smoke-target-clean-deployment-architecture.mjs",
+    "smoke:target-clean-deployment-operations": "node scripts/smoke-target-clean-deployment-operations.mjs",
     "smoke:clean-deployment-release": "node scripts/smoke-clean-deployment-release.mjs",
     "smoke:production-like-release-drill": "node scripts/smoke-production-like-release-drill.mjs",
     "smoke:pilot-export-package": "node scripts/smoke-pilot-export-package.mjs",

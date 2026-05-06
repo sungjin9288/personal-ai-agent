@@ -44,6 +44,7 @@ const targetSloArchitecturePath = path.join(docsDir, 'target-slo-architecture-v1
 const targetSloOperationsPath = path.join(docsDir, 'target-slo-operations-v1.md');
 const targetDataLifecycleArchitecturePath = path.join(docsDir, 'target-data-lifecycle-architecture-v1.md');
 const targetCleanDeploymentArchitecturePath = path.join(docsDir, 'target-clean-deployment-architecture-v1.md');
+const targetCleanDeploymentOperationsPath = path.join(docsDir, 'target-clean-deployment-operations-v1.md');
 const targetRetentionOperationsPath = path.join(docsDir, 'target-retention-operations-v1.md');
 const targetBackupOperationsPath = path.join(docsDir, 'target-backup-operations-v1.md');
 const pilotExportPackagePath = path.join(docsDir, 'pilot-export-package-v1.md');
@@ -90,6 +91,7 @@ const targetSloArchitecture = readRequiredFile(targetSloArchitecturePath);
 const targetSloOperations = readRequiredFile(targetSloOperationsPath);
 const targetDataLifecycleArchitecture = readRequiredFile(targetDataLifecycleArchitecturePath);
 const targetCleanDeploymentArchitecture = readRequiredFile(targetCleanDeploymentArchitecturePath);
+const targetCleanDeploymentOperations = readRequiredFile(targetCleanDeploymentOperationsPath);
 const targetRetentionOperations = readRequiredFile(targetRetentionOperationsPath);
 const targetBackupOperations = readRequiredFile(targetBackupOperationsPath);
 const pilotExportPackage = readRequiredFile(pilotExportPackagePath);
@@ -142,6 +144,7 @@ for (const blocker of [
   /target support architecture is not approved and target support evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment/,
   /target clean deployment architecture is not approved and target clean deployment evidence is not generated from a production-like environment/,
+  /target clean deployment operations evidence is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(productionReadySection, blocker);
@@ -198,6 +201,10 @@ assert.match(
 assert.match(
   releaseReadiness,
   /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/,
+);
+assert.match(
+  releaseReadiness,
+  /\[target-clean-deployment-operations-v1\.md\]\(target-clean-deployment-operations-v1\.md\)/,
 );
 assert.match(releaseReadiness, /\[target-retention-operations-v1\.md\]\(target-retention-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-backup-operations-v1\.md\]\(target-backup-operations-v1\.md\)/);
@@ -410,6 +417,12 @@ assert.match(targetCleanDeploymentArchitecture, /^- targetCleanDeploymentApprove
 assert.match(targetCleanDeploymentArchitecture, /npm run smoke:target-clean-deployment-architecture/);
 assert.match(targetCleanDeploymentArchitecture, /not target deployment execution/);
 assert.match(targetCleanDeploymentArchitecture, /Target clean deployment readiness remains blocked/);
+assert.match(targetCleanDeploymentOperations, /^# Target Clean Deployment Operations v1$/m);
+assert.match(targetCleanDeploymentOperations, /^- status: local-target-clean-deployment-operations-current$/m);
+assert.match(targetCleanDeploymentOperations, /^- productionReadyClaim: false$/m);
+assert.match(targetCleanDeploymentOperations, /npm run smoke:target-clean-deployment-operations/);
+assert.match(targetCleanDeploymentOperations, /not target deployment execution/);
+assert.match(targetCleanDeploymentOperations, /Target clean deployment operations remain blocked for production-ready claims/);
 assert.match(targetRetentionOperations, /^# Target Retention Operations v1$/m);
 assert.match(targetRetentionOperations, /^- status: local-target-retention-operations-current$/m);
 assert.match(targetRetentionOperations, /^- productionReadyClaim: false$/m);
@@ -451,7 +464,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -502,6 +515,7 @@ console.log(
       pilotTargetSloOperations: 'present',
       pilotTargetDataLifecycleArchitecture: 'present',
       pilotTargetCleanDeploymentArchitecture: 'present',
+      pilotTargetCleanDeploymentOperations: 'present',
       pilotTargetRetentionOperations: 'present',
       pilotTargetBackupOperations: 'present',
       pilotProductionEnterpriseControls: 'present',

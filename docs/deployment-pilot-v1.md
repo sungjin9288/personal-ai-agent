@@ -34,6 +34,7 @@
 - relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
+- relatedTargetCleanDeploymentOperations: [target-clean-deployment-operations-v1.md](target-clean-deployment-operations-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Deployment Position
@@ -974,6 +975,27 @@ Stop condition:
 - if target clean deployment architecture approval or target evidence is missing, do not present production-like clean deployment readiness
 - if the gate passes, treat it only as a local target clean deployment architecture contract, not target deployment execution, artifact registry proof, dependency reproducibility proof, target secret injection, rollback proof, or release approval
 
+## Target Clean Deployment Operations
+
+Before presenting a production-like deployment as clean-deployment-operational, verify the target clean deployment operations evidence contract:
+
+```bash
+npm run smoke:target-clean-deployment-operations
+```
+
+The source of record is [target-clean-deployment-operations-v1.md](target-clean-deployment-operations-v1.md). It requires source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke and health verification, rollback and recovery, release approval, evidence retention, failed-deployment containment, required commands, and keeps `productionReadyClaim: false`.
+
+Acceptance:
+
+- target clean deployment operation controls cover source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, and release approval
+- clean deployment evidence packets include branch, commit, deployment boundary, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, migration/data readiness proof, smoke/health proof, rollback proof, release approval proof, hygiene result, residual risk, and failed-deployment containment
+- the generated target clean deployment operations gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target clean deployment operations evidence is missing, do not present production-like clean deployment operational readiness
+- if the gate passes, treat it only as a local target clean deployment operations evidence contract, not target deployment execution, artifact registry proof, dependency reproducibility proof, runtime bootstrap proof, target secret injection proof, rollback execution proof, or release approval proof
+
 ## Clean Deployment Release Rehearsal
 
 Before treating a release pack as portable, replay core release gates from a clean tracked-file checkout:
@@ -983,7 +1005,7 @@ npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 ```
 
-The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, identity/session administration gate, target identity/session operations gate, tenant storage administration gate, hosted tenant isolation architecture gate, target tenant isolation operations gate, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
+The rehearsal copies tracked files into an isolated temporary checkout and excludes `var/`, `output/playwright/`, `node_modules/`, and `.git/`. It then runs the incident/SLO policy, identity/session administration gate, target identity/session operations gate, tenant storage administration gate, hosted tenant isolation architecture gate, target tenant isolation operations gate, customer support operations gate, support escalation review gate, target support architecture gate, target support operations gate, secret management gate, target secret manager gate, observability telemetry gate, target observability architecture gate, target observability operations gate, target SLO architecture gate, target data lifecycle architecture gate, target clean deployment architecture gate, target clean deployment operations gate, target retention operations gate, target backup operations gate, retention/delete policy, target deployment contract, release artifact hygiene, runtime data lifecycle, tenant data lifecycle, backup/restore drill, runtime isolation, pilot export package regeneration, and pilot export package checks.
 
 Acceptance:
 
@@ -1097,6 +1119,7 @@ Export package should include:
 - `docs/target-slo-architecture-v1.md`
 - `docs/target-slo-operations-v1.md`
 - `docs/target-clean-deployment-architecture-v1.md`
+- `docs/target-clean-deployment-operations-v1.md`
 - `docs/target-data-lifecycle-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`

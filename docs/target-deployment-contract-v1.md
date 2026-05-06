@@ -39,6 +39,7 @@
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
+- relatedTargetCleanDeploymentOperations: [target-clean-deployment-operations-v1.md](target-clean-deployment-operations-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 
 ## Decision Boundary
@@ -85,6 +86,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, target data lifecycle architecture, target retention operations, backup/restore drill, and target backup operations gates pass | blocked |
 | SLO/SLA operations | target telemetry, alerting, staffed on-call, incident trail, and customer SLO/SLA review are proven | local SLO operating, observability telemetry, target observability architecture, target observability operations, and target SLO architecture gates pass | blocked |
 | Target clean deployment architecture | target clean deployment architecture is approved with source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, and release approval decisions | local target clean deployment architecture contract is present with targetCleanDeploymentApproved false | blocked |
+| Target clean deployment operations | target clean deployment operations evidence is captured with source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, and evidence retention proof | local target clean deployment operations contract is present without target environment evidence | blocked |
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
 | Customer support operations | escalation route, support owner, incident communications, customer handoff process, audit history, and incident review cadence are proven | pilot runbook, incident policy, and local support operations, support escalation review, target support architecture, and target support operations gates pass | blocked |
 
@@ -126,6 +128,7 @@ npm run smoke:target-slo-architecture
 npm run smoke:target-slo-operations
 npm run smoke:target-data-lifecycle-architecture
 npm run smoke:target-clean-deployment-architecture
+npm run smoke:target-clean-deployment-operations
 npm run smoke:production-slo-operating
 npm run smoke:clean-deployment-release
 ```
@@ -156,6 +159,7 @@ npm run smoke:clean-deployment-release
 - stop observability claims until target observability telemetry, alert delivery, log/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured
 - stop SLO/SLA claims until target telemetry, alerting, on-call, incident response, customer SLO terms, error budget, and service credit evidence exist
 - stop target clean deployment claims until the target clean deployment architecture record is approved and target clean deployment evidence is generated
+- stop target clean deployment operations claims until source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, evidence retention, and failed-deployment containment evidence are captured
 - stop clean deployment claims until source provenance, artifact registry, dependency install, runtime bootstrap, secret injection, environment boundary, smoke/health, rollback, and release approval evidence are captured
 - stop customer support claims until staffed ownership, support queue routing, customer communication route, ticket audit history, on-call handoff, and incident review cadence are proven in the target environment
 - stop external handoff if artifact hygiene finds credentials or machine-local paths

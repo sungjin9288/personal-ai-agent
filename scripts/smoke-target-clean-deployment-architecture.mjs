@@ -75,6 +75,7 @@ for (const packetItem of [
 
 for (const command of [
   'npm run smoke:target-clean-deployment-architecture',
+  'npm run smoke:target-clean-deployment-operations',
   'npm run rehearsal:clean-deployment-release',
   'npm run smoke:clean-deployment-release',
   'npm run drill:production-like-release',
@@ -111,7 +112,7 @@ console.log(
       ok: true,
       path: 'docs/target-clean-deployment-architecture-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 11,
+      requiredCommandCount: 12,
       targetCleanDeploymentApproved: false,
     },
     null,

@@ -91,6 +91,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:target-clean-deployment-architecture',
   },
   {
+    command: 'npm run smoke:target-clean-deployment-operations',
+    script: 'smoke:target-clean-deployment-operations',
+  },
+  {
     command: 'npm run smoke:target-retention-operations',
     script: 'smoke:target-retention-operations',
   },
@@ -317,6 +321,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:target-clean-deployment-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetCleanDeploymentApproved']);
   }
+  if (script === 'smoke:target-clean-deployment-operations') {
+    return pick(parsed, ['controlCount', 'deploymentPacketItemCount', 'mode', 'productionReadyClaim']);
+  }
   if (script === 'smoke:target-retention-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'retentionPacketItemCount']);
   }
@@ -393,6 +400,7 @@ function extractKeySignals(script, parsed) {
       'pilotTargetDataLifecycleArchitecture',
       'pilotTargetRetentionOperations',
       'pilotTargetBackupOperations',
+      'pilotTargetCleanDeploymentOperations',
       'pilotProductionEnterpriseControls',
       'pilotIncidentSloPolicy',
       'pilotProductionProviderReadiness',
@@ -472,6 +480,7 @@ function renderDrillMarkdown({
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
+- relatedTargetCleanDeploymentOperations: [target-clean-deployment-operations-v1.md](target-clean-deployment-operations-v1.md)
 
 ## Decision Boundary
 
@@ -479,7 +488,7 @@ This drill proves that the release gate can be replayed in a local deterministic
 
 It is not production deployment evidence, not customer production SLO/SLA evidence, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the target deployment model produces clean deployment release evidence, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
+Production-ready remains blocked until the target deployment model produces target clean deployment operations evidence, clean deployment release evidence, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
 
 ## Command Matrix
 

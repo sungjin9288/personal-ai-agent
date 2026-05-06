@@ -65,7 +65,7 @@ for (const checklistItem of [
   /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
   /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
   /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
-  /clean deployment architecture approval, clean deployment run, rollback proof, release snapshot, export package, and artifact hygiene result/,
+  /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
   /accepted risks, decision owner, and next review date/,
 ]) {
   assert.match(intake, checklistItem);
@@ -88,6 +88,7 @@ for (const command of [
   'npm run smoke:target-support-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-clean-deployment-architecture',
+  'npm run smoke:target-clean-deployment-operations',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:production-readiness-gate',
   'npm run smoke:clean-deployment-release',
@@ -114,6 +115,7 @@ assert.match(intake, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1
 assert.match(intake, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(intake, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(intake, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
+assert.match(intake, /\[target-clean-deployment-operations-v1\.md\]\(target-clean-deployment-operations-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:target-environment-evidence-intake/);
 assert.match(targetContract, /target environment evidence intake packet/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
@@ -133,7 +135,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 22,
+      requiredCommandCount: 23,
     },
     null,
     2,

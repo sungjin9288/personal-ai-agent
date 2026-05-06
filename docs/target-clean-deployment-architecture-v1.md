@@ -7,6 +7,7 @@
 - productionReadyClaim: false
 - targetCleanDeploymentApproved: false
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
+- relatedTargetCleanDeploymentOperations: [target-clean-deployment-operations-v1.md](target-clean-deployment-operations-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
@@ -57,6 +58,7 @@ Any future target clean deployment approval must include:
 
 ```bash
 npm run smoke:target-clean-deployment-architecture
+npm run smoke:target-clean-deployment-operations
 npm run rehearsal:clean-deployment-release
 npm run smoke:clean-deployment-release
 npm run drill:production-like-release
