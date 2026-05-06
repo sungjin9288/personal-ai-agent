@@ -111,7 +111,7 @@ Commands:
 
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>] [--attachment <path>]
   mission list
-  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>]
+  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>] [--fallback-provider <stub|openai|anthropic|local|hermes>[,...]]
   mission show <missionId> [--provider-since <iso-timestamp>]
   mission timeline <missionId> [--provider-since <iso-timestamp>]
   mission execution preflight <missionId> [--request-approval]
@@ -456,12 +456,21 @@ async function main() {
   if (group === 'mission' && command === 'run') {
     const missionId = rest[0];
     const provider = readOption(rest, '--provider', '');
+    const fallbackProvider = readOption(rest, '--fallback-provider', '');
+    const commandParts = ['mission', 'run', missionId];
+    if (provider) {
+      commandParts.push('--provider', provider);
+    }
+    if (fallbackProvider) {
+      commandParts.push('--fallback-provider', fallbackProvider);
+    }
     const result = await service.runMission(missionId, {
+      fallbackProvider,
       provider,
       providerSpecified: hasOption(rest, '--provider'),
       sourceContext: {
         channel: 'cli',
-        command: `mission run ${missionId}`,
+        command: commandParts.join(' '),
         sourceType: 'cli',
       },
     });
@@ -471,6 +480,7 @@ async function main() {
       artifactPath: result.artifactPath,
       missionId: result.mission.id,
       provider: result.provider,
+      providerFallback: result.providerFallback || null,
       reviewerVerdict: result.reviewerVerdict,
       sessionId: result.session.id,
       status: result.mission.status,

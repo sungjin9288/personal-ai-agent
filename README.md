@@ -565,6 +565,7 @@ Run and inspect missions:
 node src/cli.mjs mission list
 node src/cli.mjs mission run mission_xxx
 node src/cli.mjs mission run mission_xxx --provider stub
+node src/cli.mjs mission run mission_xxx --provider anthropic --fallback-provider stub
 OPENAI_API_KEY=... node src/cli.mjs mission run mission_xxx --provider openai
 ANTHROPIC_API_KEY=... node src/cli.mjs mission run mission_xxx --provider anthropic
 LOCAL_PROVIDER_MODEL=llama3.1 LOCAL_PROVIDER_BASE_URL=http://127.0.0.1:11434/v1 node src/cli.mjs mission run mission_xxx --provider local
@@ -598,6 +599,8 @@ node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 ```
 
 `mission run mission_xxx` without `--provider` now resolves to `openai` when `OPENAI_API_KEY` is present. If OpenAI is not configured, it falls back to `stub` so local smoke runs and bootstrap still work without external credentials. Use `--provider anthropic` for side-by-side comparison or fallback experiments rather than the default execution path.
+
+`mission run mission_xxx --provider anthropic --fallback-provider stub` enables explicit mission-level failover. The fallback path only retries when the failed attempt has normalized provider failure metadata, so deterministic reviewer failures, approval gates, and specialist quality gates do not get hidden by provider fallback. CLI output includes `providerFallback` with attempted providers, selected provider, fallback usage, session ids, and the first provider failure summary.
 
 운영 콘솔에서도 같은 정책이 적용됩니다. UI에서 provider를 비워 두고 실행하면 현재 런타임 기본 provider 정책을 그대로 따릅니다.
 
@@ -763,6 +766,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.
 - `smoke:provider-retry-telemetry` locks successful retry, retry-exhausted execution failure, pending provider attention retry metadata, and mission or workspace or global retry-summary propagation in one deterministic local scenario.
+- `smoke:provider-fallback-policy` locks explicit `--fallback-provider` mission failover, including provider failure retry to `stub` and non-retry behavior for deterministic reviewer failures.
 - `stub` remains the deterministic default for local development and smoke coverage.
 - `openai` now uses the OpenAI Responses API and reads:
   - `OPENAI_API_KEY` required
@@ -866,6 +870,7 @@ npm run smoke:provider-activity
 npm run smoke:provider-events
 npm run smoke:provider-hardening
 npm run smoke:provider-telemetry
+npm run smoke:provider-fallback-policy
 npm run smoke:provider-action-inbox
 npm run smoke:provider-attention-lifecycle
 npm run smoke:provider-attention-recovery

@@ -91,6 +91,7 @@
 - [x] Target local provider architecture gate implemented
 - [x] Target provider evidence intake gate implemented
 - [x] Target provider operations gate implemented
+- [x] Mission-level provider fallback policy implemented
 - [x] Target Hermes provider architecture gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Target environment evidence intake gate implemented

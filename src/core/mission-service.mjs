@@ -1294,7 +1294,7 @@ function formatAgentInputSummary({ role, mission, providerId }) {
 
 function normalizeSessionSourceContext(value = {}) {
   const sourceType = normalizeText(value.sourceType, 'service');
-  return {
+  const sourceContext = {
     channel: normalizeText(value.channel) || sourceType,
     command: normalizeText(value.command),
     requestId: normalizeText(value.requestId),
@@ -1302,6 +1302,23 @@ function normalizeSessionSourceContext(value = {}) {
     sourceType,
     startedBy: normalizeText(value.startedBy),
   };
+
+  if (value.providerFallbackRequested) {
+    return {
+      ...sourceContext,
+      providerFallbackAttempt: Number.isFinite(Number(value.providerFallbackAttempt))
+        ? Number(value.providerFallbackAttempt)
+        : null,
+      providerFallbackAttemptCount: Number.isFinite(Number(value.providerFallbackAttemptCount))
+        ? Number(value.providerFallbackAttemptCount)
+        : null,
+      providerFallbackFallbacks: ensureArray(value.providerFallbackFallbacks).map((providerId) => normalizeText(providerId)),
+      providerFallbackPrimary: normalizeText(value.providerFallbackPrimary),
+      providerFallbackRequested: true,
+    };
+  }
+
+  return sourceContext;
 }
 
 function formatApprovalResolution(decision, reason) {
@@ -7020,7 +7037,88 @@ function summarizeProviderExecutions(executions) {
     }
   }
 
-  async function runMission(missionId, options = {}) {
+  function normalizeProviderFallbackIds(value) {
+    const rawItems = Array.isArray(value) ? value : String(value || '').split(',');
+    return rawItems.map((providerId) => normalizeText(providerId)).filter(Boolean);
+  }
+
+  function resolveMissionProviderFallbackPlan(options = {}) {
+    const primaryProviderId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
+    const requestedFallbackProviderIds = normalizeProviderFallbackIds(
+      options.fallbackProvider || options.fallbackProviders || options.providerFallback,
+    );
+    const providerIds = [];
+
+    for (const providerId of [primaryProviderId, ...requestedFallbackProviderIds]) {
+      const provider = providerRegistry.getProvider(providerId);
+      if (!provider.implemented) {
+        throw new Error(`Provider not implemented yet: ${providerId}. Use --provider stub for the current milestone.`);
+      }
+      if (!providerIds.includes(providerId)) {
+        providerIds.push(providerId);
+      }
+    }
+
+    return {
+      enabled: providerIds.length > 1,
+      fallbackProviderIds: providerIds.slice(1),
+      primaryProviderId,
+      providerIds,
+    };
+  }
+
+  function getSessionProviderFailureSummary(sessionId) {
+    const failedRuns = store
+      .listAgentRunsBySession(sessionId)
+      .filter((run) => normalizeAgentRunStatus(run.status) === 'failed')
+      .filter((run) => normalizeText(run.metadata?.failureKind || run.failureKind));
+    const latestFailedRun = failedRuns.at(-1) || null;
+
+    if (!latestFailedRun) {
+      return null;
+    }
+
+    return {
+      attemptCount: Number.isFinite(Number(latestFailedRun.metadata?.attemptCount || latestFailedRun.attemptCount))
+        ? Number(latestFailedRun.metadata?.attemptCount || latestFailedRun.attemptCount)
+        : 1,
+      failureKind: normalizeProviderFailureKind(latestFailedRun.metadata?.failureKind || latestFailedRun.failureKind),
+      httpStatus: Number.isFinite(Number(latestFailedRun.metadata?.httpStatus || latestFailedRun.httpStatus))
+        ? Number(latestFailedRun.metadata?.httpStatus || latestFailedRun.httpStatus)
+        : null,
+      rawMessage: normalizeText(
+        latestFailedRun.metadata?.rawMessage || latestFailedRun.rawMessage || latestFailedRun.outputSummary,
+      ),
+      recoverable:
+        typeof latestFailedRun.metadata?.recoverable === 'boolean'
+          ? latestFailedRun.metadata.recoverable
+          : typeof latestFailedRun.recoverable === 'boolean'
+            ? latestFailedRun.recoverable
+            : null,
+      retryCount: Number.isFinite(Number(latestFailedRun.metadata?.retryCount || latestFailedRun.retryCount))
+        ? Number(latestFailedRun.metadata?.retryCount || latestFailedRun.retryCount)
+        : 0,
+      role: normalizeText(latestFailedRun.role),
+      runId: latestFailedRun.id,
+      timedOut: Boolean(latestFailedRun.metadata?.timedOut || latestFailedRun.timedOut),
+    };
+  }
+
+  function buildProviderFallbackSummary({ attempts, fallbackProviderIds, primaryProviderId, result }) {
+    const selectedProviderId = normalizeText(result?.provider);
+    return {
+      attemptedProviderIds: attempts.map((attempt) => attempt.providerId),
+      attempts,
+      enabled: fallbackProviderIds.length > 0,
+      fallbackProviderIds,
+      fallbackUsed: selectedProviderId !== primaryProviderId,
+      finalStatus: normalizeText(result?.mission?.status),
+      primaryProviderId,
+      selectedProviderId,
+    };
+  }
+
+  async function runMissionAttempt(missionId, options = {}) {
     const mission = getMission(missionId);
     const workspace = getWorkspace(mission.workspaceId);
     const providerId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
@@ -7491,6 +7589,69 @@ function summarizeProviderExecutions(executions) {
       provider: providerId,
       reviewerVerdict: reviewerStage.output.verdict,
       session: store.getSession(session.id),
+    };
+  }
+
+  async function runMission(missionId, options = {}) {
+    const fallbackPlan = resolveMissionProviderFallbackPlan(options);
+
+    if (!fallbackPlan.enabled) {
+      return runMissionAttempt(missionId, {
+        ...options,
+        provider: fallbackPlan.primaryProviderId,
+      });
+    }
+
+    const attempts = [];
+    let latestResult = null;
+
+    for (const [index, providerId] of fallbackPlan.providerIds.entries()) {
+      const result = await runMissionAttempt(missionId, {
+        ...options,
+        provider: providerId,
+        providerSpecified: true,
+        sourceContext: {
+          ...options.sourceContext,
+          providerFallbackAttempt: index + 1,
+          providerFallbackAttemptCount: fallbackPlan.providerIds.length,
+          providerFallbackFallbacks: fallbackPlan.fallbackProviderIds,
+          providerFallbackPrimary: fallbackPlan.primaryProviderId,
+          providerFallbackRequested: true,
+        },
+      });
+      const providerFailure = getSessionProviderFailureSummary(result.session.id);
+
+      latestResult = result;
+      attempts.push({
+        fallbackAttempt: index + 1,
+        missionStatus: normalizeText(result.mission?.status),
+        providerFailure,
+        providerId,
+        sessionId: result.session.id,
+        status: normalizeText(result.session?.status),
+      });
+
+      if (normalizeText(result.mission?.status) !== 'failed' || !providerFailure) {
+        return {
+          ...result,
+          providerFallback: buildProviderFallbackSummary({
+            attempts,
+            fallbackProviderIds: fallbackPlan.fallbackProviderIds,
+            primaryProviderId: fallbackPlan.primaryProviderId,
+            result,
+          }),
+        };
+      }
+    }
+
+    return {
+      ...latestResult,
+      providerFallback: buildProviderFallbackSummary({
+        attempts,
+        fallbackProviderIds: fallbackPlan.fallbackProviderIds,
+        primaryProviderId: fallbackPlan.primaryProviderId,
+        result: latestResult,
+      }),
     };
   }
 
