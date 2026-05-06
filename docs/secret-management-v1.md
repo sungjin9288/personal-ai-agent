@@ -8,6 +8,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -56,6 +57,7 @@ Production-ready remains blocked until the approved target environment proves se
 
 ```bash
 npm run smoke:secret-management
+npm run smoke:target-secret-manager-architecture
 npm run smoke:release-artifact-hygiene
 npm run smoke:production-readiness-gate
 ```

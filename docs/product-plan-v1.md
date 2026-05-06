@@ -108,6 +108,7 @@
 - [x] Identity session administration gate implemented
 - [x] Production enterprise controls rehearsal gate implemented
 - [x] Secret handling policy documented
+- [x] Target secret manager architecture gate implemented
 - [x] Target secret manager gate implemented
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Target observability operations gate implemented

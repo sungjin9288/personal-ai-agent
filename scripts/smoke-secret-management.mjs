@@ -56,6 +56,7 @@ for (const secretClass of [
 
 for (const command of [
   'npm run smoke:secret-management',
+  'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:production-readiness-gate',
 ]) {
@@ -63,6 +64,7 @@ for (const command of [
 }
 
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
+assert.match(secretManagement, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local secret management gate: passed/);
 assert.match(targetContract, /local secret management, target secret manager contract, and release artifact hygiene pass/);
 assert.match(targetContract, /npm run smoke:secret-management/);

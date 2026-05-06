@@ -21,6 +21,7 @@
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
@@ -52,6 +53,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Hosted SaaS architecture decision | hosted SaaS architecture decision is approved with tenant model, control plane, identity, storage, provider, billing, observability, lifecycle, deployment, and compliance decisions | local hosted SaaS architecture decision contract is present with hostedSaasApproved false | blocked |
 | Hosted identity session architecture | hosted identity session architecture is approved with customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decisions | local hosted identity session architecture contract is present with hostedIdentitySessionApproved false | blocked |
 | Hosted tenant isolation architecture | hosted tenant isolation architecture is approved with tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, and lifecycle decisions | local hosted tenant isolation architecture contract is present with hostedTenantIsolationApproved false | blocked |
+| Target secret manager architecture | target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions | local target secret manager architecture contract is present with targetSecretManagerApproved false | blocked |
 | Target environment evidence intake | deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, and artifact hygiene evidence packet is complete | local target environment evidence intake contract is present | blocked |
 | Target provider validation | every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence | OpenAI live evidence is archived; Anthropic/local/Hermes blockers are explicit; target provider evidence intake contract is present | blocked |
 | Identity-backed RBAC and session administration | persistent users, sessions, role assignment, token rotation, logout/revocation, and audit trail are proven | local identity session administration, shared-secret, OIDC/JWKS, and RBAC gates pass | blocked |
@@ -84,6 +86,7 @@ npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
 npm run smoke:target-support-operations
 npm run smoke:secret-management
+npm run smoke:target-secret-manager-architecture
 npm run smoke:target-secret-manager
 npm run smoke:observability-telemetry
 npm run smoke:target-observability-operations
@@ -100,6 +103,7 @@ npm run smoke:clean-deployment-release
 - stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated
 - stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist
 - stop enterprise RBAC claims until identity-backed user/session lifecycle and persistent role administration are implemented and tested
+- stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated
 - stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured
 - stop retention/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured
 - stop observability claims until target observability telemetry, alert delivery, log/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured

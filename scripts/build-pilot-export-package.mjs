@@ -41,6 +41,7 @@ const BASE_PACKAGE_FILES = [
   'docs/hosted-saas-architecture-decision-v1.md',
   'docs/hosted-identity-session-architecture-v1.md',
   'docs/hosted-tenant-isolation-architecture-v1.md',
+  'docs/target-secret-manager-architecture-v1.md',
   'docs/target-environment-evidence-intake-v1.md',
   'docs/release-readiness-v1.md',
   'docs/production-like-release-drill-v1.md',
@@ -175,6 +176,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 
 ## Decision Boundary

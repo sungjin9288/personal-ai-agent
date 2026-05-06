@@ -5,6 +5,7 @@
 - scope: target secret manager evidence contract for self-hosted pilot to production-like handoff
 - productionReadyClaim: false
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
@@ -58,6 +59,7 @@ Every target secret rotation or revocation must include:
 
 ```bash
 npm run smoke:target-secret-manager
+npm run smoke:target-secret-manager-architecture
 npm run smoke:secret-management
 npm run smoke:release-artifact-hygiene
 npm run smoke:production-readiness-gate

@@ -43,6 +43,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:secret-management',
   },
   {
+    command: 'npm run smoke:target-secret-manager-architecture',
+    script: 'smoke:target-secret-manager-architecture',
+  },
+  {
     command: 'npm run smoke:target-secret-manager',
     script: 'smoke:target-secret-manager',
   },
@@ -228,6 +232,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:secret-management') {
     return pick(parsed, ['injectionRuleCount', 'mode', 'productionReadyClaim', 'secretClassCount']);
+  }
+  if (script === 'smoke:target-secret-manager-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetSecretManagerApproved']);
   }
   if (script === 'smoke:target-secret-manager') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'rotationPacketItemCount']);

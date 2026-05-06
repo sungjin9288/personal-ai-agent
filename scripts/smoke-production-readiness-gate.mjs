@@ -28,6 +28,7 @@ const customerSupportOperationsPath = path.join(docsDir, 'customer-support-opera
 const supportEscalationReviewPath = path.join(docsDir, 'support-escalation-review-v1.md');
 const targetSupportOperationsPath = path.join(docsDir, 'target-support-operations-v1.md');
 const secretManagementPath = path.join(docsDir, 'secret-management-v1.md');
+const targetSecretManagerArchitecturePath = path.join(docsDir, 'target-secret-manager-architecture-v1.md');
 const targetSecretManagerPath = path.join(docsDir, 'target-secret-manager-v1.md');
 const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v1.md');
 const targetObservabilityOperationsPath = path.join(docsDir, 'target-observability-operations-v1.md');
@@ -61,6 +62,7 @@ const customerSupportOperations = readRequiredFile(customerSupportOperationsPath
 const supportEscalationReview = readRequiredFile(supportEscalationReviewPath);
 const targetSupportOperations = readRequiredFile(targetSupportOperationsPath);
 const secretManagement = readRequiredFile(secretManagementPath);
+const targetSecretManagerArchitecture = readRequiredFile(targetSecretManagerArchitecturePath);
 const targetSecretManager = readRequiredFile(targetSecretManagerPath);
 const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
 const targetObservabilityOperations = readRequiredFile(targetObservabilityOperationsPath);
@@ -98,7 +100,7 @@ for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
-  /target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment/,
+  /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment/,
@@ -127,6 +129,7 @@ assert.match(releaseReadiness, /\[customer-support-operations-v1\.md\]\(customer
 assert.match(releaseReadiness, /\[support-escalation-review-v1\.md\]\(support-escalation-review-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-support-operations-v1\.md\]\(target-support-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[secret-management-v1\.md\]\(secret-management-v1\.md\)/);
+assert.match(releaseReadiness, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-secret-manager-v1\.md\]\(target-secret-manager-v1\.md\)/);
 assert.match(releaseReadiness, /\[observability-telemetry-v1\.md\]\(observability-telemetry-v1\.md\)/);
 assert.match(
@@ -242,6 +245,13 @@ assert.match(secretManagement, /^- status: local-secret-management-current$/m);
 assert.match(secretManagement, /^- productionReadyClaim: false$/m);
 assert.match(secretManagement, /not target secret manager evidence/);
 assert.match(secretManagement, /Secret management remains blocked for production-ready claims/);
+assert.match(targetSecretManagerArchitecture, /^# Target Secret Manager Architecture v1$/m);
+assert.match(targetSecretManagerArchitecture, /^- status: local-target-secret-manager-architecture-current$/m);
+assert.match(targetSecretManagerArchitecture, /^- productionReadyClaim: false$/m);
+assert.match(targetSecretManagerArchitecture, /^- targetSecretManagerApproved: false$/m);
+assert.match(targetSecretManagerArchitecture, /npm run smoke:target-secret-manager-architecture/);
+assert.match(targetSecretManagerArchitecture, /not target secret manager implementation/);
+assert.match(targetSecretManagerArchitecture, /Target secret manager readiness remains blocked/);
 assert.match(targetSecretManager, /^# Target Secret Manager v1$/m);
 assert.match(targetSecretManager, /^- status: local-target-secret-manager-current$/m);
 assert.match(targetSecretManager, /^- productionReadyClaim: false$/m);
@@ -339,6 +349,7 @@ console.log(
       pilotExportPackage: 'present',
       pilotIncidentSloPolicy: 'present',
       pilotSecretManagement: 'present',
+      pilotTargetSecretManagerArchitecture: 'present',
       pilotTargetSecretManager: 'present',
       pilotObservabilityTelemetry: 'present',
       pilotTargetObservabilityOperations: 'present',

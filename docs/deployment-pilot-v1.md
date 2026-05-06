@@ -22,6 +22,7 @@
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedSupportEscalationReview: [support-escalation-review-v1.md](support-escalation-review-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
@@ -481,6 +482,16 @@ npm run smoke:target-secret-manager
 
 The source of record is [target-secret-manager-v1.md](target-secret-manager-v1.md). It proves secret manager controls, rotation evidence packet, break-glass rules, required commands, and the target secret manager production gap are present.
 
+## Target Secret Manager Architecture
+
+Before implementing or claiming target secret manager readiness, verify the target secret manager architecture boundary:
+
+```bash
+npm run smoke:target-secret-manager-architecture
+```
+
+The source of record is [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md). It requires secret manager platform, secret classes, injection path, access policy, rotation/revocation, audit/monitoring, break-glass, leakage controls, disaster recovery, migration, rollback, and credential containment decisions while keeping `targetSecretManagerApproved: false`.
+
 Acceptance:
 
 - secret injection, access policy, rotation cadence, audit trail, break-glass, and leakage review controls are documented
@@ -859,6 +870,7 @@ Export package should include:
 - `docs/hosted-saas-architecture-decision-v1.md`
 - `docs/hosted-identity-session-architecture-v1.md`
 - `docs/hosted-tenant-isolation-architecture-v1.md`
+- `docs/target-secret-manager-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`

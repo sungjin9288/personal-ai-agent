@@ -19,6 +19,7 @@
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedRuntimeIsolation: [runtime-isolation-v1.md](runtime-isolation-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedCleanDeploymentRelease: [clean-deployment-release-v1.md](clean-deployment-release-v1.md)
@@ -83,6 +84,7 @@ Production gap:
 - [target-backup-operations-v1.md](target-backup-operations-v1.md) defines the local target backup operations evidence contract for backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery runbook, and the remaining target backup production gap
 - [target-support-operations-v1.md](target-support-operations-v1.md) defines the local target support operations evidence contract for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, on-call handoff, and the remaining target support production gap
 - [secret-management-v1.md](secret-management-v1.md) defines the local secret-management gate for secret classes, injection rules, redaction/hygiene rules, rotation checklist, and the remaining production secret manager gap
+- [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract for platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery, and the remaining target evidence gap
 - [target-secret-manager-v1.md](target-secret-manager-v1.md) defines the local target secret manager evidence contract for secret manager controls, rotation evidence packets, break-glass rules, and the remaining target injection/audit gap
 - [observability-telemetry-v1.md](observability-telemetry-v1.md) defines the local observability telemetry gate for release status, snapshot integrity, provider readiness, artifact hygiene, runtime lifecycle, incident queue signals, and the remaining hosted telemetry gap
 - [target-observability-operations-v1.md](target-observability-operations-v1.md) defines the local target observability operations evidence contract for telemetry pipeline, alert delivery, retention, on-call routing, customer status communication, incident review history, and the remaining target operations gap
@@ -213,6 +215,7 @@ Current status:
 - [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md) defines the hosted identity/session architecture contract while keeping hostedIdentitySessionApproved false and hosted identity-backed RBAC blocked
 - [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md) defines the hosted tenant isolation architecture contract while keeping hostedTenantIsolationApproved false and hosted multi-tenant isolation blocked
 - [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) defines the local target environment evidence intake contract for deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene, and the remaining target environment production gap
+- [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract while keeping targetSecretManagerApproved false and target secret manager readiness blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
 - `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers
 

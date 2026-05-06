@@ -35,6 +35,7 @@ for (const command of [
   'npm run smoke:support-escalation-review',
   'npm run smoke:target-support-operations',
   'npm run smoke:secret-management',
+  'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-secret-manager',
   'npm run smoke:observability-telemetry',
   'npm run smoke:target-observability-operations',
@@ -64,6 +65,7 @@ for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
+  /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated/,
@@ -83,7 +85,7 @@ assert.match(readme, /productionReadyClaim: false/);
 console.log(
   JSON.stringify(
     {
-      commandCount: 30,
+      commandCount: 31,
       mode: 'production-like-release-drill',
       ok: true,
       path: 'docs/production-like-release-drill-v1.md',

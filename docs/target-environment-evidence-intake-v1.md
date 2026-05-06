@@ -10,6 +10,7 @@
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedHostedIdentitySessionArchitecture: [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md)
 - relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -55,6 +56,7 @@ Every target environment review must record:
 npm run smoke:target-environment-evidence-intake
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-tenant-isolation-architecture
+npm run smoke:target-secret-manager-architecture
 npm run smoke:target-deployment-contract
 npm run smoke:production-readiness-gate
 npm run smoke:clean-deployment-release

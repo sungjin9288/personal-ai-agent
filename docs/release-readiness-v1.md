@@ -25,6 +25,7 @@
 - relatedCustomerSupportOperations: [customer-support-operations-v1.md](customer-support-operations-v1.md)
 - relatedTargetSupportOperations: [target-support-operations-v1.md](target-support-operations-v1.md)
 - relatedSecretManagement: [secret-management-v1.md](secret-management-v1.md)
+- relatedTargetSecretManagerArchitecture: [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md)
 - relatedTargetSecretManager: [target-secret-manager-v1.md](target-secret-manager-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
@@ -82,6 +83,7 @@ Current execution evidence:
 - hosted identity session architecture gate: passed, with hostedIdentitySessionApproved false, customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention decision requirements, and `productionReadyClaim: false`
 - hosted tenant isolation architecture gate: passed, with hostedTenantIsolationApproved false, tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, lifecycle decision requirements, and `productionReadyClaim: false`
 - target environment evidence intake gate: passed, with deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene requirements, and `productionReadyClaim: false`
+- target secret manager architecture gate: passed, with targetSecretManagerApproved false, platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery decision requirements, and `productionReadyClaim: false`
 - local target secret manager gate: passed, with secret manager controls, rotation evidence packet, break-glass rules, and `productionReadyClaim: false`
 - local web auth plus RBAC gate: passed for shared-secret API auth and role enforcement, without hosted identity/session claims
 - local target observability operations gate: passed, with telemetry pipeline, alert delivery, log/trace retention, on-call routing, customer status communication, incident review history, and `productionReadyClaim: false`
@@ -130,6 +132,7 @@ Current handoff state:
 | [support-escalation-review-v1.md](support-escalation-review-v1.md) | local-support-escalation-review-current | local support escalation routes, audit packet requirements, incident review cadence, and customer update rules |
 | [target-support-operations-v1.md](target-support-operations-v1.md) | local-target-support-operations-current | target support operation controls, support evidence packet, customer support rules, and production target gap |
 | [secret-management-v1.md](secret-management-v1.md) | local-secret-management-current | local secret classes, injection, redaction, hygiene, rotation, and production gap |
+| [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) | local-target-secret-manager-architecture-current | target secret manager architecture decision and evidence contract with targetSecretManagerApproved false |
 | [target-secret-manager-v1.md](target-secret-manager-v1.md) | local-target-secret-manager-current | target secret manager controls, rotation evidence packet, break-glass rules, and production target gap |
 | [observability-telemetry-v1.md](observability-telemetry-v1.md) | local-observability-telemetry-current | local telemetry signals, alert triggers, handoff requirements, and production telemetry gap |
 | [target-observability-operations-v1.md](target-observability-operations-v1.md) | local-target-observability-operations-current | target observability operation controls, operations evidence packet, on-call rules, and production target gap |
@@ -203,7 +206,7 @@ Blockers:
 - Anthropic, local, and Hermes live validations are not complete
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
 - hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated
-- target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment
+- target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment
 - target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment
 - target deployment contract is not satisfied by target-environment evidence
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
@@ -269,6 +272,7 @@ npm run smoke:customer-support-operations
 npm run smoke:support-escalation-review
 npm run smoke:target-support-operations
 npm run smoke:secret-management
+npm run smoke:target-secret-manager-architecture
 npm run smoke:target-secret-manager
 npm run smoke:observability-telemetry
 npm run smoke:target-observability-operations

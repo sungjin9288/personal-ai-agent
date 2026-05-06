@@ -23,6 +23,7 @@ assert.equal(result.scannedFiles.includes('docs/target-deployment-contract-v1.md
 assert.equal(result.scannedFiles.includes('docs/hosted-saas-architecture-decision-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/hosted-identity-session-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/hosted-tenant-isolation-architecture-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-secret-manager-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-environment-evidence-intake-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/backup-restore-drill-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-retention-operations-v1.md'), true);

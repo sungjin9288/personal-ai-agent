@@ -56,6 +56,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/hosted-saas-architecture-decision-v1.md',
   'docs/hosted-identity-session-architecture-v1.md',
   'docs/hosted-tenant-isolation-architecture-v1.md',
+  'docs/target-secret-manager-architecture-v1.md',
   'docs/target-environment-evidence-intake-v1.md',
   'docs/backup-restore-drill-v1.md',
   'docs/target-retention-operations-v1.md',
