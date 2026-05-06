@@ -283,6 +283,7 @@ Before expanding the pilot beyond the archived OpenAI provider path, replay the 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-hermes-provider-architecture
 ```
 
 The rehearsal runs aggregate provider preflight and records OpenAI, Anthropic, local, and Hermes env readiness, deterministic checks, archived live status, and next live-validation commands into [production-provider-readiness-v1.md](production-provider-readiness-v1.md).
@@ -297,6 +298,18 @@ npm run smoke:target-provider-evidence-intake
 
 The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
 
+## Target Hermes Provider Architecture
+
+Before presenting Hermes as a target production provider, verify the Hermes-compatible provider architecture decision contract:
+
+```bash
+npm run smoke:target-hermes-provider-architecture
+```
+
+The source of record is [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md). It proves endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, required commands, and the Hermes provider production gap are present.
+
+Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and `npm run live:execution-v1:hermes` passes from the approved production-like or hosted target environment.
+
 ## Target Environment Evidence Intake
 
 Before presenting a deployment as production-ready for another company, verify the target environment evidence packet:
@@ -305,7 +318,7 @@ Before presenting a deployment as production-ready for another company, verify t
 npm run smoke:target-environment-evidence-intake
 ```
 
-The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
+The source of record is [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md). It requires deployment boundary, identity/session administration, tenant storage/encryption, provider/Hermes/secrets, observability/SLO, retention/backup, support architecture, support operations, clean release, artifact hygiene, accepted risks, decision owner, next review date, and keeps `productionReadyClaim: false`.
 
 ## Hosted SaaS Architecture Decision
 
@@ -400,7 +413,7 @@ The source of record is [target-deployment-contract-v1.md](target-deployment-con
 
 Acceptance:
 
-- target provider validation, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
+- target provider validation, target Hermes provider architecture, identity-backed RBAC/session administration, hosted tenant isolation, secret management, retention/delete, SLO/SLA, clean deployment, target support architecture, target support operations, and support escalation review all have explicit target-environment evidence
 - hosted SaaS claims have a separate approved architecture decision record
 - the release label remains scoped to OpenAI-backed local-first pilot operation until all target controls pass
 

@@ -87,6 +87,7 @@
 - [x] Provider preflight distinguishes missing configuration from code readiness
 - [x] Production provider readiness rehearsal gate implemented
 - [x] Target provider evidence intake gate implemented
+- [x] Target Hermes provider architecture gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Target environment evidence intake gate implemented
 - [x] Hosted SaaS architecture decision gate implemented

@@ -51,6 +51,7 @@ for (const domain of [
 for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
   /selected production providers and completed provider evidence intake references/,
+  /target Hermes provider architecture approval when Hermes is included/,
   /identity provider, role owner, session policy, and permission audit evidence/,
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
   /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
@@ -66,6 +67,7 @@ for (const checklistItem of [
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-secret-manager-architecture',
@@ -85,6 +87,7 @@ for (const command of [
 }
 
 assert.match(targetContract, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
+assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
@@ -112,7 +115,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 15,
+      requiredCommandCount: 16,
     },
     null,
     2,

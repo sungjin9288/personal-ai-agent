@@ -52,6 +52,7 @@
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",
     "smoke:target-provider-evidence-intake": "node scripts/smoke-target-provider-evidence-intake.mjs",
+    "smoke:target-hermes-provider-architecture": "node scripts/smoke-target-hermes-provider-architecture.mjs",
     "smoke:target-environment-evidence-intake": "node scripts/smoke-target-environment-evidence-intake.mjs",
     "smoke:production-enterprise-controls": "node scripts/smoke-production-enterprise-controls.mjs",
     "smoke:retention-delete-policy": "node scripts/smoke-retention-delete-policy.mjs",

@@ -85,6 +85,10 @@ const CLEAN_REHEARSAL_COMMANDS = [
     script: 'smoke:web-auth-rbac',
   },
   {
+    command: 'npm run smoke:target-hermes-provider-architecture',
+    script: 'smoke:target-hermes-provider-architecture',
+  },
+  {
     command: 'npm run smoke:target-deployment-contract',
     script: 'smoke:target-deployment-contract',
   },
@@ -293,6 +297,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:target-backup-operations') {
     return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'recoveryPacketItemCount']);
+  }
+  if (script === 'smoke:target-hermes-provider-architecture') {
+    return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetHermesProviderApproved']);
   }
   if (script === 'smoke:retention-delete-policy') {
     return pick(parsed, ['dataClassCount', 'mode', 'productionReadyClaim']);

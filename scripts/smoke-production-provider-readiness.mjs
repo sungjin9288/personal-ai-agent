@@ -35,6 +35,7 @@ assert.match(readiness, /not target production provider validation/);
 assert.match(readiness, /not permission to claim `production-ready`/);
 assert.match(readiness, /Production-ready remains blocked/);
 assert.match(readiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(readiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(readiness, /\| `npm run preflight:execution-v1:all` \| pass \| 0 \|/);
 assert.match(readiness, /"blockedCount": 0/);
 
@@ -56,6 +57,7 @@ for (const phrase of [
   /Hermes remains blocked/,
   /deterministic provider preflight passing is necessary but not sufficient/,
   /target provider evidence intake contract remains the gate/,
+  /target Hermes provider architecture remains the gate/,
 ]) {
   assert.match(readiness, phrase);
 }
@@ -68,8 +70,10 @@ assert.match(deployment, /## Target Provider Evidence Intake/);
 assert.match(deployment, /npm run rehearsal:production-provider-readiness/);
 assert.match(deployment, /npm run smoke:production-provider-readiness/);
 assert.match(deployment, /npm run smoke:target-provider-evidence-intake/);
+assert.match(deployment, /npm run smoke:target-hermes-provider-architecture/);
 assert.match(productPlan, /\[x\] Production provider readiness rehearsal gate implemented/);
 assert.match(productPlan, /\[x\] Target provider evidence intake gate implemented/);
+assert.match(productPlan, /\[x\] Target Hermes provider architecture gate implemented/);
 assert.match(readme, /npm run rehearsal:production-provider-readiness/);
 assert.match(readme, /npm run smoke:production-provider-readiness/);
 assert.match(readme, /npm run smoke:target-provider-evidence-intake/);

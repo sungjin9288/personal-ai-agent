@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-05T16:01:15.187Z
+- generatedAt: 2026-05-06T06:52:39.250Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: a9f532d190db65dddc1a20db7e439974aaff9027
+- sourceCommit: 367e9e0defdbb674b2edcfa03ae8c90363a8aca5
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -12,6 +12,7 @@
 - relatedCloseout: [execution-v1-closeout.md](execution-v1-closeout.md)
 - relatedHandoff: [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -25,7 +26,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 4850 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 12784 |
 
 ## Key Signals
 
@@ -101,6 +102,7 @@ Production-ready remains blocked until every provider included in the target rel
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
+- target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements
 
 ## Target Provider Evidence Intake
 
@@ -112,6 +114,7 @@ Before any provider is included in a production claim, the operator must verify 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-hermes-provider-architecture
 ```
 
 ## Acceptance Rule

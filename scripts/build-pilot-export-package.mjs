@@ -41,6 +41,7 @@ const BASE_PACKAGE_FILES = [
   'docs/production-retention-operating-v1.md',
   'docs/production-provider-readiness-v1.md',
   'docs/target-provider-evidence-intake-v1.md',
+  'docs/target-hermes-provider-architecture-v1.md',
   'docs/production-enterprise-controls-v1.md',
   'docs/target-deployment-contract-v1.md',
   'docs/hosted-saas-architecture-decision-v1.md',
@@ -181,6 +182,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedProductionRetentionOperating: [production-retention-operating-v1.md](production-retention-operating-v1.md)
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)

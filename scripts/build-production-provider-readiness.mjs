@@ -164,6 +164,7 @@ function renderProviderReadinessMarkdown({
 - relatedCloseout: [execution-v1-closeout.md](execution-v1-closeout.md)
 - relatedHandoff: [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
+- relatedTargetHermesProviderArchitecture: [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md)
 
 ## Decision Boundary
 
@@ -203,6 +204,7 @@ ${providerDetails}
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
+- target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements
 
 ## Target Provider Evidence Intake
 
@@ -214,6 +216,7 @@ Before any provider is included in a production claim, the operator must verify 
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
+npm run smoke:target-hermes-provider-architecture
 \`\`\`
 
 ## Acceptance Rule
