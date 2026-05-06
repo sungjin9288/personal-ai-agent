@@ -68,6 +68,7 @@ for (const packetItem of [
 
 for (const command of [
   'npm run smoke:hosted-saas-architecture-decision',
+  'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-deployment-contract',
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:production-readiness-gate',
@@ -77,6 +78,7 @@ for (const command of [
 }
 
 assert.match(targetContract, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
+assert.match(decision, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:hosted-saas-architecture-decision/);
 assert.match(targetContract, /hosted SaaS architecture decision is approved/);
 assert.match(releaseReadiness, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
@@ -97,7 +99,7 @@ console.log(
       ok: true,
       path: 'docs/hosted-saas-architecture-decision-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 5,
+      requiredCommandCount: 6,
     },
     null,
     2,

@@ -13,6 +13,7 @@
 - relatedTargetProviderEvidenceIntake: [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
+- relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedIdentitySessionAdmin: [identity-session-admin-v1.md](identity-session-admin-v1.md)
 - relatedTenantStorageAdmin: [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md)
@@ -310,17 +311,27 @@ npm run smoke:hosted-saas-architecture-decision
 
 The source of record is [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md). It requires tenant model, control plane, identity, storage/encryption, provider/secrets, billing, observability/support, data lifecycle, deployment, compliance, migration, and stop-condition decisions while keeping `hostedSaasApproved: false`.
 
+## Hosted Tenant Isolation Architecture
+
+Before implementing or claiming hosted tenant isolation for a multi-tenant SaaS deployment, verify the tenant isolation architecture boundary:
+
+```bash
+npm run smoke:hosted-tenant-isolation-architecture
+```
+
+The source of record is [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md). It requires tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial testing, observability/support isolation, data lifecycle isolation, migration, rollback, and containment decisions while keeping `hostedTenantIsolationApproved: false`.
+
 Acceptance:
 
-- aggregate preflight reports `blockedCount: 0`
-- every supported provider appears in the provider matrix
-- missing env and provider account blockers remain explicit
-- the generated rehearsal keeps `productionReadyClaim: false`
+- tenant identity, authorization boundary, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, and lifecycle decision areas are documented
+- required hosted tenant evidence packet items are explicit before any hosted multi-tenant claim
+- the architecture record keeps `productionReadyClaim: false` and `hostedTenantIsolationApproved: false`
+- target environment evidence remains required before changing the release label
 
 Stop condition:
 
-- if deterministic provider preflight is blocked, do not run live validation until the failed smoke is fixed
-- if a provider has missing env or account-level failure, do not expand the release label to that provider until live validation is archived
+- if hosted tenant isolation architecture is not approved, do not claim hosted multi-tenant isolation
+- if target tenant identity, storage, encryption, backup/restore, administration, and cross-tenant denial evidence is missing, treat the gate as architecture boundary evidence only
 
 ## Production Enterprise Controls Rehearsal
 
@@ -823,6 +834,7 @@ Export package should include:
 - `docs/production-provider-readiness-v1.md`
 - `docs/target-provider-evidence-intake-v1.md`
 - `docs/hosted-saas-architecture-decision-v1.md`
+- `docs/hosted-tenant-isolation-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`
 - `docs/production-enterprise-controls-v1.md`
 - `docs/clean-deployment-release-v1.md`

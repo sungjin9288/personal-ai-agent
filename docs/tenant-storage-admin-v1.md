@@ -8,6 +8,7 @@
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedRetentionDelete: [retention-delete-v1.md](retention-delete-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
+- relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
 ## Decision Boundary
@@ -59,6 +60,7 @@ Every tenant administration action must include:
 
 ```bash
 npm run smoke:tenant-storage-admin
+npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:web-tenant-isolation
 npm run smoke:tenant-data-lifecycle
 npm run smoke:runtime-isolation

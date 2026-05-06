@@ -12,6 +12,7 @@
 - relatedProductionEnterpriseControls: [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md)
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedHostedSaasArchitectureDecision: [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md)
+- relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
@@ -73,6 +74,7 @@ Production gap:
 - API tenant/workspace binding is available only behind `PERSONAL_AI_AGENT_TENANT_MODE=enforce` and OIDC tenant claims; per-tenant encryption, separate auth realms, backup isolation, and centralized tenant administration are out of v1 scope
 - cloud SaaS mode requires a separate architecture decision record before implementation
 - [target-deployment-contract-v1.md](target-deployment-contract-v1.md) defines the mandatory target evidence for hosted identity, tenant storage, encryption, target secret manager, target retention operations, backup, SLO/SLA, clean deployment, target support operations, and support escalation review before any hosted production claim
+- [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md) defines the hosted tenant isolation architecture contract for tenant identity, authorization, storage partitioning, encryption, backup/restore, administration, cross-tenant denial, observability/support, lifecycle, and the remaining target evidence gap
 - [identity-session-admin-v1.md](identity-session-admin-v1.md) defines the local identity/session administration gate for identity controls, session lifecycle, role assignment/revocation audit packets, and the remaining hosted identity production gap
 - [tenant-storage-admin-v1.md](tenant-storage-admin-v1.md) defines the local tenant storage administration gate for tenant storage controls, tenant admin operations, backup/restore isolation requirements, and the remaining hosted tenant isolation production gap
 - [target-retention-operations-v1.md](target-retention-operations-v1.md) defines the local target retention operations evidence contract for customer-approved data classes, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and the remaining target lifecycle production gap
@@ -206,6 +208,7 @@ Current status:
 - [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) defines the target provider evidence intake contract for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, fallback route, and the remaining provider production gap
 - [production-enterprise-controls-v1.md](production-enterprise-controls-v1.md) records local enterprise controls evidence while identity-backed hosted RBAC, session lifecycle, centralized permission administration, and hosted tenant isolation remain blocked
 - [hosted-saas-architecture-decision-v1.md](hosted-saas-architecture-decision-v1.md) defines the hosted SaaS and hybrid control-plane architecture decision contract while keeping hostedSaasApproved false and hosted implementation blocked
+- [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md) defines the hosted tenant isolation architecture contract while keeping hostedTenantIsolationApproved false and hosted multi-tenant isolation blocked
 - [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md) defines the local target environment evidence intake contract for deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene, and the remaining target environment production gap
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
 - `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers

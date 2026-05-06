@@ -22,6 +22,7 @@
     "smoke:production-readiness-gate": "node scripts/smoke-production-readiness-gate.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
     "smoke:hosted-saas-architecture-decision": "node scripts/smoke-hosted-saas-architecture-decision.mjs",
+    "smoke:hosted-tenant-isolation-architecture": "node scripts/smoke-hosted-tenant-isolation-architecture.mjs",
     "smoke:identity-session-admin": "node scripts/smoke-identity-session-admin.mjs",
     "smoke:web-rbac": "node scripts/smoke-web-rbac.mjs",
     "smoke:web-auth-rbac": "node scripts/smoke-web-auth-rbac.mjs",

@@ -19,6 +19,10 @@ const DRILL_COMMANDS = [
     script: 'smoke:tenant-storage-admin',
   },
   {
+    command: 'npm run smoke:hosted-tenant-isolation-architecture',
+    script: 'smoke:hosted-tenant-isolation-architecture',
+  },
+  {
     command: 'npm run smoke:customer-support-operations',
     script: 'smoke:customer-support-operations',
   },
@@ -202,6 +206,9 @@ function extractKeySignals(script, parsed) {
   }
   if (script === 'smoke:tenant-storage-admin') {
     return pick(parsed, ['auditPacketItemCount', 'controlCount', 'mode', 'operationCount', 'productionReadyClaim']);
+  }
+  if (script === 'smoke:hosted-tenant-isolation-architecture') {
+    return pick(parsed, ['areaCount', 'hostedTenantIsolationApproved', 'mode', 'productionReadyClaim']);
   }
   if (script === 'smoke:customer-support-operations') {
     return pick(parsed, ['intakeClassCount', 'mode', 'productionReadyClaim', 'supportRoleCount']);

@@ -18,6 +18,7 @@ const targetProviderEvidenceIntakePath = path.join(docsDir, 'target-provider-evi
 const productionEnterpriseControlsPath = path.join(docsDir, 'production-enterprise-controls-v1.md');
 const targetDeploymentContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
 const hostedSaasArchitectureDecisionPath = path.join(docsDir, 'hosted-saas-architecture-decision-v1.md');
+const hostedTenantIsolationArchitecturePath = path.join(docsDir, 'hosted-tenant-isolation-architecture-v1.md');
 const targetEnvironmentEvidenceIntakePath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
 const backupRestoreDrillPath = path.join(docsDir, 'backup-restore-drill-v1.md');
 const identitySessionAdminPath = path.join(docsDir, 'identity-session-admin-v1.md');
@@ -49,6 +50,7 @@ const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceInta
 const productionEnterpriseControls = readRequiredFile(productionEnterpriseControlsPath);
 const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const hostedSaasArchitectureDecision = readRequiredFile(hostedSaasArchitectureDecisionPath);
+const hostedTenantIsolationArchitecture = readRequiredFile(hostedTenantIsolationArchitecturePath);
 const targetEnvironmentEvidenceIntake = readRequiredFile(targetEnvironmentEvidenceIntakePath);
 const backupRestoreDrill = readRequiredFile(backupRestoreDrillPath);
 const identitySessionAdmin = readRequiredFile(identitySessionAdminPath);
@@ -93,7 +95,7 @@ assert.match(productionReadySection, /Production-ready must not be claimed from 
 for (const blocker of [
   /Anthropic, local, and Hermes live validations are not complete/,
   /identity-backed hosted RBAC\/session administration is not implemented/,
-  /hosted tenant isolation is out of v1 scope/,
+  /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
   /target secret manager injection, rotation, access policy, break-glass, revocation, and audit evidence is not generated from a production-like environment/,
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
@@ -113,6 +115,7 @@ assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(targ
 assert.match(releaseReadiness, /\[production-enterprise-controls-v1\.md\]\(production-enterprise-controls-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(releaseReadiness, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
+assert.match(releaseReadiness, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
@@ -181,6 +184,13 @@ assert.match(hostedSaasArchitectureDecision, /^- hostedSaasApproved: false$/m);
 assert.match(hostedSaasArchitectureDecision, /npm run smoke:hosted-saas-architecture-decision/);
 assert.match(hostedSaasArchitectureDecision, /not hosted SaaS implementation/);
 assert.match(hostedSaasArchitectureDecision, /Hosted SaaS and hybrid control-plane readiness remain blocked/);
+assert.match(hostedTenantIsolationArchitecture, /^# Hosted Tenant Isolation Architecture v1$/m);
+assert.match(hostedTenantIsolationArchitecture, /^- status: local-hosted-tenant-isolation-architecture-current$/m);
+assert.match(hostedTenantIsolationArchitecture, /^- productionReadyClaim: false$/m);
+assert.match(hostedTenantIsolationArchitecture, /^- hostedTenantIsolationApproved: false$/m);
+assert.match(hostedTenantIsolationArchitecture, /npm run smoke:hosted-tenant-isolation-architecture/);
+assert.match(hostedTenantIsolationArchitecture, /not hosted tenant isolation implementation/);
+assert.match(hostedTenantIsolationArchitecture, /Hosted multi-tenant isolation remains blocked/);
 assert.match(targetEnvironmentEvidenceIntake, /^# Target Environment Evidence Intake v1$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- status: local-target-environment-evidence-intake-current$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m);
@@ -333,6 +343,7 @@ console.log(
       pilotRuntimeIsolation: 'present',
       pilotTargetDeploymentContract: 'present',
       pilotHostedSaasArchitectureDecision: 'present',
+      pilotHostedTenantIsolationArchitecture: 'present',
       pilotTargetEnvironmentEvidenceIntake: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,

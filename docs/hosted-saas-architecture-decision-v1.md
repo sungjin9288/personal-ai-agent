@@ -8,6 +8,7 @@
 - hostedSaasApproved: false
 - relatedTargetDeploymentContract: [target-deployment-contract-v1.md](target-deployment-contract-v1.md)
 - relatedTargetEnvironmentEvidenceIntake: [target-environment-evidence-intake-v1.md](target-environment-evidence-intake-v1.md)
+- relatedHostedTenantIsolationArchitecture: [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 
@@ -23,7 +24,7 @@ The current approved path remains OpenAI-scoped self-hosted/local-first pilot. H
 
 | Area | Required Decision Before Hosted SaaS | Current Position | Status |
 | --- | --- | --- | --- |
-| Tenant model | tenant identity source, org/user model, tenant isolation boundary, and tenant administration owner | local tenant claim and runtime isolation gates exist only for pilot boundary | blocked |
+| Tenant model | tenant identity source, org/user model, tenant isolation boundary, and tenant administration owner | local tenant claim and runtime isolation gates exist only for pilot boundary; hosted tenant isolation architecture remains unapproved | blocked |
 | Control plane | hosted control plane ownership, agent registration, job dispatch, policy distribution, and remote execution boundary | no hosted control plane is approved in v1 | blocked |
 | Identity and authorization | customer IdP integration, session administration, role lifecycle, audit trail, and emergency access are designed | local OIDC/JWKS and RBAC gates exist only as pilot controls | blocked |
 | Storage and encryption | hosted storage partitioning, per-tenant encryption/key ownership, backup isolation, restore isolation, and data residency are designed | local tenant storage and backup gates are not hosted storage evidence | blocked |
@@ -54,6 +55,7 @@ Any future hosted SaaS or hybrid control-plane proposal must include:
 
 ```bash
 npm run smoke:hosted-saas-architecture-decision
+npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:target-deployment-contract
 npm run smoke:target-environment-evidence-intake
 npm run smoke:production-readiness-gate
