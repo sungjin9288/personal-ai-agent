@@ -66,6 +66,7 @@ for (const control of [
   'Secret management',
   'Target observability architecture',
   'Target SLO architecture',
+  'Target SLO operations',
   'Target support architecture',
   'Target data lifecycle architecture',
   'Target clean deployment architecture',
@@ -111,6 +112,7 @@ for (const command of [
   'npm run smoke:target-observability-architecture',
   'npm run smoke:target-observability-operations',
   'npm run smoke:target-slo-architecture',
+  'npm run smoke:target-slo-operations',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-clean-deployment-architecture',
   'npm run smoke:production-slo-operating',
@@ -137,6 +139,7 @@ for (const blocker of [
   /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop target observability claims until the target observability architecture record is approved and target observability evidence is generated/,
   /stop target SLO\/SLA claims until the target SLO architecture record is approved and target SLO evidence is generated/,
+  /stop target SLO operations claims until customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment evidence are captured/,
   /stop target support claims until the target support architecture record is approved and target support evidence is generated/,
   /stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated/,
   /stop retention\/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured/,
@@ -164,6 +167,7 @@ assert.match(contract, /\[target-tenant-isolation-operations-v1\.md\]\(target-te
 assert.match(contract, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(contract, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(contract, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
+assert.match(contract, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(contract, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(contract, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(contract, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
@@ -178,7 +182,7 @@ assert.match(readme, /npm run smoke:target-deployment-contract/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 24,
+      controlCount: 25,
       mode: 'target-deployment-contract',
       ok: true,
       path: 'docs/target-deployment-contract-v1.md',

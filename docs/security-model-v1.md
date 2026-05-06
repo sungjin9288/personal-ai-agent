@@ -96,6 +96,7 @@ Production gap:
 - [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, disaster recovery, and the remaining target evidence gap
 - [target-observability-operations-v1.md](target-observability-operations-v1.md) defines the local target observability operations evidence contract for telemetry pipeline, alert delivery, retention, on-call routing, customer status communication, incident review history, and the remaining target operations gap
 - [target-slo-architecture-v1.md](target-slo-architecture-v1.md) defines the target SLO/SLA architecture contract for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and the remaining target evidence gap
+- [target-slo-operations-v1.md](target-slo-operations-v1.md) defines the target SLO operations evidence contract for customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and missed-SLO containment while keeping production SLO/SLA claims blocked
 - [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md) defines the target clean deployment architecture contract for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, release approval, and the remaining target evidence gap
 
 ## RBAC Matrix
@@ -233,6 +234,7 @@ Current status:
 - [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md) defines the target secret manager architecture contract while keeping targetSecretManagerApproved false and target secret manager readiness blocked
 - [production-slo-operating-v1.md](production-slo-operating-v1.md) records local operating rehearsal evidence while the production telemetry, staffed on-call, and customer SLO/SLA gap remains blocked
 - [target-slo-architecture-v1.md](target-slo-architecture-v1.md) defines the target SLO/SLA architecture contract while keeping targetSloApproved false and target SLO readiness blocked
+- [target-slo-operations-v1.md](target-slo-operations-v1.md) defines the target SLO/SLA operations evidence contract while keeping customer production SLO/SLA readiness blocked
 - `smoke:observability-telemetry` verifies local telemetry signal coverage while keeping production log aggregation, alert delivery, on-call routing, and incident review evidence as production blockers
 - [target-observability-architecture-v1.md](target-observability-architecture-v1.md) defines the target observability architecture contract while keeping targetObservabilityApproved false and target observability readiness blocked
 

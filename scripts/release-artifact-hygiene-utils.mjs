@@ -80,6 +80,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/target-observability-architecture-v1.md',
   'docs/target-observability-operations-v1.md',
   'docs/target-slo-architecture-v1.md',
+  'docs/target-slo-operations-v1.md',
   'docs/target-backup-operations-v1.md',
 ];
 

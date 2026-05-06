@@ -27,6 +27,7 @@ const BASE_PACKAGE_FILES = [
   'docs/target-observability-architecture-v1.md',
   'docs/target-observability-operations-v1.md',
   'docs/target-slo-architecture-v1.md',
+  'docs/target-slo-operations-v1.md',
   'docs/runtime-isolation-v1.md',
   'docs/retention-delete-v1.md',
   'docs/backup-restore-drill-v1.md',
@@ -175,6 +176,7 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedBackupRestoreDrill: [backup-restore-drill-v1.md](backup-restore-drill-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)

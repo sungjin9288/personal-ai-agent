@@ -8,6 +8,7 @@
 - targetSloApproved: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
@@ -61,6 +62,7 @@ Any future target SLO approval must include:
 
 ```bash
 npm run smoke:target-slo-architecture
+npm run smoke:target-slo-operations
 npm run smoke:incident-slo-policy
 npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating

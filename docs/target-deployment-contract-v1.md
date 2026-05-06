@@ -34,6 +34,7 @@
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetRetentionOperations: [target-retention-operations-v1.md](target-retention-operations-v1.md)
 - relatedTargetBackupOperations: [target-backup-operations-v1.md](target-backup-operations-v1.md)
@@ -78,6 +79,7 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Secret management | provider credentials are injected through target secret manager and never appear in logs or artifacts | local secret management, target secret manager contract, and release artifact hygiene pass | blocked |
 | Target observability architecture | target observability architecture is approved with telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, and disaster recovery decisions | local target observability architecture contract is present with targetObservabilityApproved false | blocked |
 | Target SLO architecture | target SLO architecture is approved with customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decisions | local target SLO architecture contract is present with targetSloApproved false | blocked |
+| Target SLO operations | target SLO operations evidence is captured with customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and evidence retention proof | local target SLO operations contract is present without target environment evidence | blocked |
 | Target support architecture | target support architecture is approved with staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decisions | local target support architecture contract is present with targetSupportApproved false | blocked |
 | Target data lifecycle architecture | target data lifecycle architecture is approved with customer data classes, retention enforcement, export boundary, delete workflow, provider transcript handling, post-delete absence, backup architecture, restore isolation, key ownership, and disaster recovery decisions | local target data lifecycle architecture contract is present with targetDataLifecycleApproved false | blocked |
 | Retention, export, delete | customer-approved retention classes, export package, delete request workflow, provider transcript policy, backup expiry, and post-delete absence are proven | local retention, tenant lifecycle, target data lifecycle architecture, target retention operations, backup/restore drill, and target backup operations gates pass | blocked |
@@ -121,6 +123,7 @@ npm run smoke:observability-telemetry
 npm run smoke:target-observability-architecture
 npm run smoke:target-observability-operations
 npm run smoke:target-slo-architecture
+npm run smoke:target-slo-operations
 npm run smoke:target-data-lifecycle-architecture
 npm run smoke:target-clean-deployment-architecture
 npm run smoke:production-slo-operating
@@ -146,6 +149,7 @@ npm run smoke:clean-deployment-release
 - stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured
 - stop target observability claims until the target observability architecture record is approved and target observability evidence is generated
 - stop target SLO/SLA claims until the target SLO architecture record is approved and target SLO evidence is generated
+- stop target SLO operations claims until customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment evidence are captured
 - stop target support claims until the target support architecture record is approved and target support evidence is generated
 - stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated
 - stop retention/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured

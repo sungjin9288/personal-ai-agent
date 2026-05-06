@@ -120,6 +120,7 @@
 - [x] Release artifact credential/path hygiene gate implemented
 - [x] Target observability operations gate implemented
 - [x] Target SLO architecture gate implemented
+- [x] Target SLO operations gate implemented
 - [x] Target clean deployment architecture gate implemented
 - [x] Audit log retention policy documented
 - [x] Data export/delete policy documented

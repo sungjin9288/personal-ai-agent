@@ -83,6 +83,7 @@ The local observability telemetry gate is [docs/observability-telemetry-v1.md](d
 The target observability architecture gate is [docs/target-observability-architecture-v1.md](docs/target-observability-architecture-v1.md).
 The local target observability operations gate is [docs/target-observability-operations-v1.md](docs/target-observability-operations-v1.md).
 The target SLO architecture gate is [docs/target-slo-architecture-v1.md](docs/target-slo-architecture-v1.md).
+The local target SLO operations gate is [docs/target-slo-operations-v1.md](docs/target-slo-operations-v1.md).
 The target clean deployment architecture gate is [docs/target-clean-deployment-architecture-v1.md](docs/target-clean-deployment-architecture-v1.md).
 The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md).
 
@@ -133,6 +134,7 @@ Current planning status:
 - target observability architecture evidence can be verified with `npm run smoke:target-observability-architecture`; it proves telemetry backend, signal taxonomy, alert routing, on-call staffing, log/trace retention, customer communication, incident response, audit, and disaster recovery decision requirements are present, but it keeps `targetObservabilityApproved: false`
 - local target observability operations evidence can be verified with `npm run smoke:target-observability-operations`; it proves target telemetry, alert delivery, on-call, status communication, and incident review evidence requirements are present, but it does not provide production telemetry backend or staffed on-call proof
 - target SLO architecture evidence can be verified with `npm run smoke:target-slo-architecture`; it proves customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decision requirements are present, but it keeps `targetSloApproved: false`
+- local target SLO operations evidence can be verified with `npm run smoke:target-slo-operations`; it proves customer-approved SLO/SLA terms, error budget policy, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment requirements are present, but it does not provide customer production SLO/SLA proof
 - target clean deployment architecture evidence can be verified with `npm run smoke:target-clean-deployment-architecture`; it proves source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback, and release approval decision requirements are present, but it keeps `targetCleanDeploymentApproved: false`
 - OIDC/JWKS web auth can be verified with `npm run smoke:web-oidc-rbac`; it validates RS256 bearer token issuer/audience/expiry and token role claims, but it does not provide hosted session administration by itself
 - OIDC tenant-claim API isolation can be verified with `npm run smoke:web-tenant-isolation`; it binds workspace/mission API access to token tenant claims, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
@@ -294,6 +296,12 @@ Target SLO architecture gate:
 
 ```bash
 npm run smoke:target-slo-architecture
+```
+
+Target SLO operations gate:
+
+```bash
+npm run smoke:target-slo-operations
 ```
 
 Target clean deployment architecture gate:
@@ -919,7 +927,7 @@ fixture나 임시 경로에서 handoff 생성기를 검증할 때는 `node scrip
 `npm run smoke:tenant-data-lifecycle`는 하나의 isolated temp runtime 안에서 tenant A/B state와 mission artifact를 만든 뒤, tenant A export가 tenant B state/artifact를 포함하지 않고, exact tenant confirmation token 없이는 delete가 실패하며, tenant A 삭제 후 tenant B state hash와 artifact가 유지되는지 검증합니다.
 `npm run smoke:runtime-isolation`은 두 개의 isolated temp runtime을 만들어 각각 workspace, memory, mission, session, artifact, export를 생성하고, 한쪽 runtime 삭제가 다른 runtime state hash와 `var/` 존재 여부를 바꾸지 않는지 검증합니다.
 `npm run smoke:retention-delete-policy`는 [retention-delete-v1.md](docs/retention-delete-v1.md)의 data class retention table, export checklist, delete checklist, required commands, stop conditions, production gap, 그리고 release/security/deployment/product/README 연결 상태를 검증합니다. 이 gate는 pilot lifecycle evidence이며 `productionReadyClaim: false`를 유지합니다.
-`npm run rehearsal:production-slo-operating`은 incident/SLO policy, execution-v1 status/snapshot, release artifact hygiene, clean deployment rehearsal, runtime data lifecycle, runtime isolation gate를 함께 재생해 [production-slo-operating-v1.md](docs/production-slo-operating-v1.md)에 기록합니다. `npm run smoke:production-slo-operating`은 이 문서가 local SLO operating evidence와 production gap을 동시에 유지하는지 검증합니다.
+`npm run rehearsal:production-slo-operating`은 incident/SLO policy, target SLO architecture/operations, execution-v1 status/snapshot, release artifact hygiene, clean deployment rehearsal, runtime data lifecycle, runtime isolation gate를 함께 재생해 [production-slo-operating-v1.md](docs/production-slo-operating-v1.md)에 기록합니다. `npm run smoke:production-slo-operating`은 이 문서가 local SLO operating evidence와 production gap을 동시에 유지하는지 검증합니다.
 `npm run rehearsal:clean-deployment-release`는 tracked files만 임시 clean checkout으로 복사하고 `var/`, `output/playwright/`, `node_modules/`, `.git/` 없이 핵심 release gates를 재실행해 [clean-deployment-release-v1.md](docs/clean-deployment-release-v1.md)에 기록합니다. `npm run smoke:clean-deployment-release`는 이 문서가 clean checkout command matrix와 production gap을 유지하는지 검증합니다.
 `npm run smoke:incident-slo-policy`는 [incident-slo-v1.md](docs/incident-slo-v1.md)의 SEV1-SEV4 severity table, pilot SLO targets, incident entry criteria, required triage commands, evidence requirements, production gap wording이 release-readiness/security/product planning 문서와 일치하는지 검증합니다.
 `npm run smoke:pilot-export-package`는 [pilot-export-package-v1.md](docs/pilot-export-package-v1.md)가 planning pack, release evidence, production-like drill, immutable snapshot을 repository-relative path와 sha256 digest로 묶고 `productionReadyClaim: false`를 유지하는지 검증합니다.

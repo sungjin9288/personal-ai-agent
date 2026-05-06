@@ -49,6 +49,7 @@
     "smoke:target-observability-architecture": "node scripts/smoke-target-observability-architecture.mjs",
     "smoke:target-observability-operations": "node scripts/smoke-target-observability-operations.mjs",
     "smoke:target-slo-architecture": "node scripts/smoke-target-slo-architecture.mjs",
+    "smoke:target-slo-operations": "node scripts/smoke-target-slo-operations.mjs",
     "smoke:production-slo-operating": "node scripts/smoke-production-slo-operating.mjs",
     "smoke:production-retention-operating": "node scripts/smoke-production-retention-operating.mjs",
     "smoke:production-provider-readiness": "node scripts/smoke-production-provider-readiness.mjs",

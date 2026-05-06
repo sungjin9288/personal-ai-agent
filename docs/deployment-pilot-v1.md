@@ -31,6 +31,7 @@
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedTargetDataLifecycleArchitecture: [target-data-lifecycle-architecture-v1.md](target-data-lifecycle-architecture-v1.md)
 - relatedTargetCleanDeploymentArchitecture: [target-clean-deployment-architecture-v1.md](target-clean-deployment-architecture-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
@@ -694,6 +695,27 @@ Stop condition:
 - if target SLO architecture approval or target evidence is missing, do not present production-like SLO/SLA readiness
 - if the gate passes, treat it only as a local target SLO architecture contract, not contractual SLA approval, target telemetry measurement, staffed on-call, customer status, incident review history, or service credit approval
 
+## Target SLO Operations
+
+Before presenting a production-like deployment as SLO/SLA-operational, verify the target SLO operations evidence contract:
+
+```bash
+npm run smoke:target-slo-operations
+```
+
+The source of record is [target-slo-operations-v1.md](target-slo-operations-v1.md). It requires customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, missed-SLO containment, required commands, and keeps `productionReadyClaim: false`.
+
+Acceptance:
+
+- target SLO operation controls cover customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit escalation
+- SLO evidence packets include branch, commit, deployment boundary, approved terms, error budget policy, measurement proof, alert acknowledgement proof, on-call proof, customer communication proof, incident review proof, provider outage proof, maintenance proof, service credit proof, artifact hygiene, residual risk, and missed-SLO containment
+- the generated target SLO operations gate keeps `productionReadyClaim: false`
+
+Stop condition:
+
+- if target SLO operations evidence is missing, do not present production-like SLO/SLA operational readiness
+- if the gate passes, treat it only as a local target SLO operations evidence contract, not contractual SLA approval, target telemetry proof, staffed on-call history, customer status page operation, incident review history, or service credit policy approval
+
 ## Backup Restore Drill
 
 Before treating runtime backup or restore behavior as part of a pilot review, run the local backup/restore drill:
@@ -892,7 +914,7 @@ npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 ```
 
-The rehearsal runs the incident/SLO policy gate, target SLO architecture gate, observability telemetry gate, target observability architecture gate, target observability operations gate, support escalation review gate, target support architecture gate, target support operations gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
+The rehearsal runs the incident/SLO policy gate, target SLO architecture gate, target SLO operations gate, observability telemetry gate, target observability architecture gate, target observability operations gate, support escalation review gate, target support architecture gate, target support operations gate, execution-v1 status and snapshot gates, release artifact hygiene, runtime data lifecycle, and runtime isolation checks into [production-slo-operating-v1.md](production-slo-operating-v1.md).
 
 Acceptance:
 
@@ -1073,6 +1095,7 @@ Export package should include:
 - `docs/target-secret-manager-architecture-v1.md`
 - `docs/target-observability-architecture-v1.md`
 - `docs/target-slo-architecture-v1.md`
+- `docs/target-slo-operations-v1.md`
 - `docs/target-clean-deployment-architecture-v1.md`
 - `docs/target-data-lifecycle-architecture-v1.md`
 - `docs/target-environment-evidence-intake-v1.md`

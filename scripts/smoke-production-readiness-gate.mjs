@@ -41,6 +41,7 @@ const observabilityTelemetryPath = path.join(docsDir, 'observability-telemetry-v
 const targetObservabilityArchitecturePath = path.join(docsDir, 'target-observability-architecture-v1.md');
 const targetObservabilityOperationsPath = path.join(docsDir, 'target-observability-operations-v1.md');
 const targetSloArchitecturePath = path.join(docsDir, 'target-slo-architecture-v1.md');
+const targetSloOperationsPath = path.join(docsDir, 'target-slo-operations-v1.md');
 const targetDataLifecycleArchitecturePath = path.join(docsDir, 'target-data-lifecycle-architecture-v1.md');
 const targetCleanDeploymentArchitecturePath = path.join(docsDir, 'target-clean-deployment-architecture-v1.md');
 const targetRetentionOperationsPath = path.join(docsDir, 'target-retention-operations-v1.md');
@@ -86,6 +87,7 @@ const observabilityTelemetry = readRequiredFile(observabilityTelemetryPath);
 const targetObservabilityArchitecture = readRequiredFile(targetObservabilityArchitecturePath);
 const targetObservabilityOperations = readRequiredFile(targetObservabilityOperationsPath);
 const targetSloArchitecture = readRequiredFile(targetSloArchitecturePath);
+const targetSloOperations = readRequiredFile(targetSloOperationsPath);
 const targetDataLifecycleArchitecture = readRequiredFile(targetDataLifecycleArchitecturePath);
 const targetCleanDeploymentArchitecture = readRequiredFile(targetCleanDeploymentArchitecturePath);
 const targetRetentionOperations = readRequiredFile(targetRetentionOperationsPath);
@@ -133,6 +135,7 @@ for (const blocker of [
   /target observability telemetry, alert delivery, on-call routing, retention, customer communication, and incident review evidence is not generated from a production-like environment/,
   /target deployment contract is not satisfied by target-environment evidence/,
   /target SLO architecture is not approved and target SLO\/SLA evidence is not generated from a production-like environment/,
+  /target SLO operations evidence is not generated from a production-like environment/,
   /target data lifecycle architecture is not approved and target data lifecycle evidence is not generated from a production-like environment/,
   /target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment/,
   /production SLO\/SLA operating evidence is not generated from a production-like environment/,
@@ -183,6 +186,10 @@ assert.match(
 assert.match(
   releaseReadiness,
   /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/,
+);
+assert.match(
+  releaseReadiness,
+  /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/,
 );
 assert.match(
   releaseReadiness,
@@ -383,6 +390,12 @@ assert.match(targetSloArchitecture, /^- targetSloApproved: false$/m);
 assert.match(targetSloArchitecture, /npm run smoke:target-slo-architecture/);
 assert.match(targetSloArchitecture, /not contractual SLA approval/);
 assert.match(targetSloArchitecture, /Target SLO readiness remains blocked/);
+assert.match(targetSloOperations, /^# Target SLO Operations v1$/m);
+assert.match(targetSloOperations, /^- status: local-target-slo-operations-current$/m);
+assert.match(targetSloOperations, /^- productionReadyClaim: false$/m);
+assert.match(targetSloOperations, /npm run smoke:target-slo-operations/);
+assert.match(targetSloOperations, /not contractual SLA approval/);
+assert.match(targetSloOperations, /Target SLO operations remain blocked for production-ready claims/);
 assert.match(targetDataLifecycleArchitecture, /^# Target Data Lifecycle Architecture v1$/m);
 assert.match(targetDataLifecycleArchitecture, /^- status: local-target-data-lifecycle-architecture-current$/m);
 assert.match(targetDataLifecycleArchitecture, /^- productionReadyClaim: false$/m);
@@ -438,7 +451,7 @@ for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /local provider live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
-  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
+  /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
@@ -486,6 +499,7 @@ console.log(
       pilotTargetObservabilityArchitecture: 'present',
       pilotTargetObservabilityOperations: 'present',
       pilotTargetSloArchitecture: 'present',
+      pilotTargetSloOperations: 'present',
       pilotTargetDataLifecycleArchitecture: 'present',
       pilotTargetCleanDeploymentArchitecture: 'present',
       pilotTargetRetentionOperations: 'present',

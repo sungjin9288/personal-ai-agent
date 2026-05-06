@@ -81,6 +81,7 @@ for (const packetItem of [
 
 for (const command of [
   'npm run smoke:target-slo-architecture',
+  'npm run smoke:target-slo-operations',
   'npm run smoke:incident-slo-policy',
   'npm run rehearsal:production-slo-operating',
   'npm run smoke:production-slo-operating',
@@ -124,7 +125,7 @@ console.log(
       ok: true,
       path: 'docs/target-slo-architecture-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 13,
+      requiredCommandCount: 14,
       targetSloApproved: false,
     },
     null,

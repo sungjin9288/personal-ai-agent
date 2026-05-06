@@ -47,6 +47,7 @@ assert.equal(result.scannedFiles.includes('docs/observability-telemetry-v1.md'),
 assert.equal(result.scannedFiles.includes('docs/target-observability-architecture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-observability-operations-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-slo-architecture-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/target-slo-operations-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/target-backup-operations-v1.md'), true);
 assert.equal(Boolean(result.verifiedCommit), true);
 assert.equal(

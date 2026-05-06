@@ -61,6 +61,7 @@ for (const checklistItem of [
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
   /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
   /target SLO\/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
+  /target SLO operations evidence for customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment/,
   /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
   /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
   /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
@@ -83,6 +84,7 @@ for (const command of [
   'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-observability-architecture',
   'npm run smoke:target-slo-architecture',
+  'npm run smoke:target-slo-operations',
   'npm run smoke:target-support-architecture',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:target-clean-deployment-architecture',
@@ -108,6 +110,7 @@ assert.match(intake, /\[target-tenant-isolation-operations-v1\.md\]\(target-tena
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
+assert.match(intake, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(intake, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(intake, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
 assert.match(intake, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
@@ -130,7 +133,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 21,
+      requiredCommandCount: 22,
     },
     null,
     2,

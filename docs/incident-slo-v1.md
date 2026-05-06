@@ -8,6 +8,7 @@
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 
 ## Policy Position
@@ -81,6 +82,7 @@ Production-like SLO operating rehearsal:
 npm run rehearsal:production-slo-operating
 npm run smoke:production-slo-operating
 npm run smoke:target-slo-architecture
+npm run smoke:target-slo-operations
 ```
 
 Provider scope:
@@ -135,4 +137,4 @@ This policy is a pilot operating policy. It does not yet provide:
 
 Therefore production-ready must remain blocked until production SLO/SLA operating evidence is generated from the target deployment model.
 
-The current local rehearsal evidence is tracked in [production-slo-operating-v1.md](production-slo-operating-v1.md), and the target SLO approval boundary is tracked in [target-slo-architecture-v1.md](target-slo-architecture-v1.md). They prove that pilot SLO operating checks and target SLO/SLA decision requirements are replayable locally, but they are not customer production SLO/SLA evidence.
+The current local rehearsal evidence is tracked in [production-slo-operating-v1.md](production-slo-operating-v1.md), the target SLO approval boundary is tracked in [target-slo-architecture-v1.md](target-slo-architecture-v1.md), and the target SLO operations evidence contract is tracked in [target-slo-operations-v1.md](target-slo-operations-v1.md). They prove that pilot SLO operating checks, target SLO/SLA decision requirements, and target SLO/SLA operating evidence requirements are replayable locally, but they are not customer production SLO/SLA evidence.

@@ -16,6 +16,10 @@ const SLO_COMMANDS = [
     script: 'smoke:target-slo-architecture',
   },
   {
+    command: 'npm run smoke:target-slo-operations',
+    script: 'smoke:target-slo-operations',
+  },
+  {
     command: 'npm run smoke:observability-telemetry',
     script: 'smoke:observability-telemetry',
   },
@@ -136,6 +140,9 @@ function extractKeySignals(script, parsed) {
   if (script === 'smoke:target-slo-architecture') {
     return pick(parsed, ['areaCount', 'mode', 'productionReadyClaim', 'targetSloApproved']);
   }
+  if (script === 'smoke:target-slo-operations') {
+    return pick(parsed, ['controlCount', 'mode', 'productionReadyClaim', 'sloPacketItemCount']);
+  }
   if (script === 'smoke:observability-telemetry') {
     return pick(parsed, ['alertTriggerCount', 'mode', 'productionReadyClaim', 'telemetrySignalCount']);
   }
@@ -210,6 +217,7 @@ function renderSloOperatingMarkdown({
 - productionReadyClaim: false
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
+- relatedTargetSloOperations: [target-slo-operations-v1.md](target-slo-operations-v1.md)
 - relatedObservabilityTelemetry: [observability-telemetry-v1.md](observability-telemetry-v1.md)
 - relatedTargetObservabilityArchitecture: [target-observability-architecture-v1.md](target-observability-architecture-v1.md)
 - relatedTargetObservabilityOperations: [target-observability-operations-v1.md](target-observability-operations-v1.md)
@@ -220,11 +228,11 @@ function renderSloOperatingMarkdown({
 
 ## Decision Boundary
 
-This rehearsal proves that pilot SLO operating checks can be replayed locally and that target SLO architecture, observability telemetry, target observability architecture, target observability operations, support escalation review, target support architecture, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
+This rehearsal proves that pilot SLO operating checks can be replayed locally and that target SLO architecture, target SLO operations, observability telemetry, target observability architecture, target observability operations, support escalation review, target support architecture, target support operations, release, artifact hygiene, runtime lifecycle, and runtime isolation signals remain measurable together.
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the approved target environment provides approved target SLO/SLA architecture, production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, and provider/deployment evidence.
+Production-ready remains blocked until the approved target environment provides approved target SLO/SLA architecture, target SLO operations evidence, production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, and provider/deployment evidence.
 
 ## Command Matrix
 
@@ -243,6 +251,7 @@ ${keySignalRows}
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
 - target SLO architecture remains the gate for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decision requirements
+- target SLO operations remains the gate for customer-approved SLO/SLA terms, error budget, target telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and missed-SLO containment evidence requirements
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 - target observability architecture remains the gate for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, and disaster recovery decisions
 - target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
@@ -261,7 +270,7 @@ npm run smoke:production-slo-operating
 
 The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, and artifact hygiene reports zero credential and machine-local path findings.
 
-The rehearsal must keep \`productionReadyClaim: false\` until the target SLO architecture is approved and the same operating evidence is generated from the approved production-like or production target environment.
+The rehearsal must keep \`productionReadyClaim: false\` until the target SLO architecture is approved, target SLO operations evidence is captured, and the same operating evidence is generated from the approved production-like or production target environment.
 `;
 }
 
