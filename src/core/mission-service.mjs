@@ -3721,6 +3721,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
     }
 
+    if (step.operation === 'delete') {
+      if (!existedBefore) {
+        throw new Error(`text-delete-file requires an existing file ${step.filePath}`);
+      }
+      return '';
+    }
+
     if (step.operation === 'write') {
       if (existedBefore && step.mutationTemplate === 'text-write-new') {
         throw new Error(`text-write-new refuses to overwrite existing file ${step.filePath}`);
@@ -3740,6 +3747,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function buildRollbackPreview({ afterContent, beforeContent, existedBefore, step }) {
+    if (step.mutationTemplate === 'text-delete-file' && existedBefore) {
+      return {
+        action: 'restore-deleted-file',
+        expectedCurrentExists: false,
+        ready: true,
+        restoreSha256: hashTextContent(beforeContent),
+      };
+    }
+
     if (step.mutationTemplate === 'text-write-new' && !existedBefore) {
       return {
         action: 'delete-created-file',
@@ -3801,6 +3817,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const afterBytes = Buffer.byteLength(afterContent, 'utf8');
       const beforeLineCount = countTextLines(beforeContent);
       const afterLineCount = countTextLines(afterContent);
+      const existsAfter = !predictionError && step.operation !== 'delete';
 
       return {
         afterBytes,
@@ -3811,6 +3828,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         beforeSha256: hashTextContent(beforeContent),
         byteDelta: afterBytes - beforeBytes,
         existedBefore,
+        existsAfter,
         filePath: step.filePath || '',
         id: step.id,
         lineDelta: afterLineCount - beforeLineCount,
@@ -4028,6 +4046,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     filePath,
     mutationTemplate,
     operation,
+    existsAfter = true,
     rollbackAction = '',
     rollbackSnapshotPath = '',
   }) {
@@ -4046,7 +4065,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       byteDelta: afterBytes - beforeBytes,
       changed: beforeContent !== afterContent,
       existedBefore,
-      existsAfter: true,
+      existsAfter: Boolean(existsAfter),
       filePath,
       lineDelta: afterLineCount - beforeLineCount,
       mutationTemplate: mutationTemplate || '',
@@ -4106,11 +4125,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const nextContent = buildNextEditContent(step, existingContent, existedBefore);
 
-    fs.writeFileSync(targetPath, nextContent, 'utf8');
+    const existsAfter = step.operation !== 'delete';
+    if (existsAfter) {
+      fs.writeFileSync(targetPath, nextContent, 'utf8');
+    } else {
+      fs.rmSync(targetPath, { force: true });
+    }
     return buildMutationAudit({
       afterContent: nextContent,
       beforeContent: existingContent,
       existedBefore,
+      existsAfter,
       filePath: step.filePath,
       mutationTemplate: step.mutationTemplate,
       operation: step.operation,
@@ -4175,6 +4200,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const pathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
       const action = normalizeText(audit.rollbackAction, audit.existedBefore ? 'restore-snapshot' : 'delete-created-file');
       const expectedCurrentSha256 = normalizeText(audit.afterSha256);
+      const expectedCurrentExists = audit.existsAfter !== false;
       const targetKey = path.resolve(targetPath);
       const currentState = simulatedTargetStates.has(targetKey)
         ? simulatedTargetStates.get(targetKey)
@@ -4189,9 +4215,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         reason = `Rollback target escapes selected workspace: ${targetPath}`;
       } else if (!expectedCurrentSha256) {
         reason = `Mutation audit is missing afterSha256 for ${audit.filePath}`;
-      } else if (!currentState.exists) {
+      } else if (expectedCurrentExists && !currentState.exists) {
         reason = `Rollback target is missing before rollback: ${audit.filePath}`;
-      } else if (currentState.sha256 !== expectedCurrentSha256) {
+      } else if (!expectedCurrentExists && currentState.exists) {
+        reason = `Rollback target unexpectedly exists before rollback: ${audit.filePath}`;
+      } else if (expectedCurrentExists && currentState.sha256 !== expectedCurrentSha256) {
         reason = `Rollback hash guard failed for ${audit.filePath}`;
       } else if (action === 'delete-created-file') {
         ready = true;
@@ -4231,6 +4259,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         auditIndex: mutationAudits.length - index - 1,
         beforeSha256: normalizeText(audit.beforeSha256),
         expectedCurrentSha256,
+        expectedCurrentExists,
         existsBeforeRollback: currentState.exists,
         filePath: audit.filePath,
         mutationTemplate: normalizeText(audit.mutationTemplate),
@@ -4331,7 +4360,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     for (const item of plan.items) {
       const currentState = readRollbackTargetState(item.targetPath);
-      if (!currentState.exists || currentState.sha256 !== item.expectedCurrentSha256) {
+      if (item.expectedCurrentExists && (!currentState.exists || currentState.sha256 !== item.expectedCurrentSha256)) {
+        throw new Error(`Rollback hash guard changed during rollback for ${item.filePath}`);
+      }
+      if (!item.expectedCurrentExists && currentState.exists) {
         throw new Error(`Rollback hash guard changed during rollback for ${item.filePath}`);
       }
 

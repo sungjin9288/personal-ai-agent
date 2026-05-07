@@ -59,7 +59,7 @@ const INLINE_EVALUATOR_FLAGS = new Map([
   ['perl', new Set(['-e'])],
 ]);
 
-const APPROVED_MUTATION_TEMPLATES = new Set(['text-append', 'text-replace', 'text-write-new']);
+const APPROVED_MUTATION_TEMPLATES = new Set(['text-append', 'text-replace', 'text-write-new', 'text-delete-file']);
 
 function stableStringify(value) {
   if (Array.isArray(value)) {
@@ -397,12 +397,15 @@ export function buildExecutionCommandSpawnSpec(command) {
 
 function normalizeEditOperation(value) {
   const normalized = normalizeText(value, 'replace');
-  return ['append', 'replace', 'write'].includes(normalized) ? normalized : 'replace';
+  return ['append', 'delete', 'replace', 'write'].includes(normalized) ? normalized : 'replace';
 }
 
 function inferMutationTemplate(operation) {
   if (operation === 'append') {
     return 'text-append';
+  }
+  if (operation === 'delete') {
+    return 'text-delete-file';
   }
   if (operation === 'write') {
     return 'text-write-new';
@@ -467,6 +470,15 @@ function validateEditStepPolicy({ step, stepLabel, targetPath }) {
     }
     if (!normalizeText(step.content)) {
       blockedReasons.push(`${stepLabel}: text-write-new template에는 content가 필요합니다.`);
+    }
+  }
+
+  if (mutationTemplate === 'text-delete-file') {
+    if (operation !== 'delete') {
+      blockedReasons.push(`${stepLabel}: text-delete-file template은 delete operation만 허용합니다.`);
+    }
+    if (!exists) {
+      blockedReasons.push(`${stepLabel}: text-delete-file 대상 파일이 존재하지 않습니다 (${step.filePath}).`);
     }
   }
 
@@ -817,6 +829,9 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
         }
         if (step.mutationTemplate === 'text-replace') {
           return Boolean(step.findText) && typeof step.replaceText === 'string';
+        }
+        if (step.mutationTemplate === 'text-delete-file') {
+          return step.operation === 'delete';
         }
         return !isPlaceholderContent(step.content);
       }
