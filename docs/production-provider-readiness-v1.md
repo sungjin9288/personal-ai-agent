@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-07T06:46:58.308Z
+- generatedAt: 2026-05-07T07:32:22.704Z
 - sourceBranch: codex/managed-multi-agent-v1-foundation
-- sourceCommit: 9ddfd8b15f9a5dc4ba3da5e3f249f2ea00ddd4a6
+- sourceCommit: a74333ebfcf330317a674f1da0a26f9942eb4c06
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 7608 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 19247 |
 
 ## Key Signals
 
