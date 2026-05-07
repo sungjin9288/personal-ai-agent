@@ -85,7 +85,7 @@ function classifyApiRoute({ method, pathname }) {
     };
   }
 
-  if (/^\/api\/missions\/[^/]+\/execution\/(?:preflight|start|stop)$/.test(normalizedPathname)) {
+  if (/^\/api\/missions\/[^/]+\/execution\/(?:preflight|start|stop|rollback)$/.test(normalizedPathname)) {
     return {
       action: 'mission-execution-control',
       requiredRole: 'operator',

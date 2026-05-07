@@ -2862,6 +2862,16 @@ function wireQuickActions(scope = document) {
 
       if (action === 'execution-stop') {
         void handleExecutionStop();
+        return;
+      }
+
+      if (action === 'execution-rollback-preview') {
+        void handleExecutionRollback({ dryRun: true });
+        return;
+      }
+
+      if (action === 'execution-rollback') {
+        void handleExecutionRollback();
       }
     });
   });
@@ -5320,6 +5330,24 @@ function renderExecutionConsole() {
   const reviewSessionId = execution?.reviewSessionId || '-';
   const policy = execution?.policy || { allowedCount: 0, warningCount: 0, blockedCount: 0 };
   const verification = executionSession?.verification || null;
+  const rollback = executionSession?.rollback || null;
+  const mutationAuditCount = Array.isArray(executionSession?.mutationAudits) ? executionSession.mutationAudits.length : 0;
+  const rollbackAvailable = Boolean(
+    executionSession?.id &&
+    mutationAuditCount > 0 &&
+    !['pending', 'running'].includes(executionSession.status) &&
+    rollback?.status !== 'completed',
+  );
+  const rollbackActions = rollbackAvailable
+    ? `
+      <div class="action-row">
+        <button class="ghost-button" type="button" data-ui-action="execution-rollback-preview">rollback preview</button>
+        <button class="danger-button" type="button" data-ui-action="execution-rollback">rollback 실행</button>
+      </div>
+    `
+    : rollback?.status
+      ? `<p class="summary-note">${escapeHtml(rollback.summary || `rollback ${rollback.status}`)}</p>`
+      : '';
   const primaryAction = execution?.currentLease
     ? '<button class="primary-button" type="button" data-ui-action="execution-start">실행 시작</button>'
     : execution?.latestApproval?.status === 'pending'
@@ -5385,6 +5413,7 @@ function renderExecutionConsole() {
           <div class="definition-item"><span>현재 step</span><strong>${escapeHtml(executionSession?.steps?.[executionSession?.currentStepIndex]?.title || '-')}</strong></div>
           <div class="definition-item"><span>검증</span><strong>${escapeHtml(getDisplayLabel(verification?.status, verification?.status || 'pending'))}</strong></div>
           <div class="definition-item"><span>변경 파일</span><strong>${escapeHtml(String(executionSession?.changedFiles?.length || 0))}건</strong></div>
+          <div class="definition-item"><span>rollback</span><strong>${escapeHtml(rollback?.status ? getDisplayLabel(rollback.status, rollback.status) : mutationAuditCount ? `${mutationAuditCount}건 가능` : '-')}</strong></div>
           <div class="definition-item"><span>종료 코드</span><strong>${escapeHtml(executionSession?.exitCode === null || executionSession?.exitCode === undefined ? '-' : String(executionSession.exitCode))}</strong></div>
         </div>
         ${
@@ -5402,6 +5431,7 @@ function renderExecutionConsole() {
             ? `<div class="execution-inline-list">${changedFiles.map((file) => `<span class="tag">${escapeHtml(file)}</span>`).join('')}</div>`
             : ''
         }
+        ${rollbackActions}
         <pre class="execution-log-surface">${escapeHtml(logs.slice(-24).join('\n') || '실행 로그가 아직 없습니다.')}</pre>
       </section>
     </div>
@@ -9905,6 +9935,44 @@ async function handleExecutionStop() {
     setUiNotice('실행 세션 중단을 요청했습니다.');
   } catch (error) {
     window.alert(error.message || '실행 중단에 실패했습니다.');
+  }
+}
+
+async function handleExecutionRollback({ dryRun = false } = {}) {
+  if (!state.selectedMissionId || !isExecutionMissionSelected()) {
+    return;
+  }
+
+  const executionSession = getExecutionStatusPayload()?.latestExecutionSession || null;
+  if (!executionSession?.id) {
+    return;
+  }
+
+  if (!dryRun && !window.confirm('현재 execution session의 승인된 mutation을 rollback할까요? 현재 파일 hash가 실행 직후 상태와 다르면 중단됩니다.')) {
+    return;
+  }
+
+  try {
+    const payload = await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/execution/rollback`, {
+      body: JSON.stringify({
+        dryRun,
+        executionId: executionSession.id,
+      }),
+      method: 'POST',
+    });
+    await Promise.all([loadMissions(), loadApprovals()]);
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+    setActiveStep('step-run', { syncDetailTab: false });
+    setActiveDetailTab('runs');
+
+    if (payload.rollback?.status === 'preview') {
+      setUiNotice(payload.rollback.ready ? 'rollback preview가 준비됐습니다.' : 'rollback preview에서 차단 항목이 발견됐습니다.');
+      return;
+    }
+
+    setUiNotice(payload.rollback?.summary || 'rollback 명령을 실행했습니다.');
+  } catch (error) {
+    window.alert(error.message || 'rollback 실행에 실패했습니다.');
   }
 }
 

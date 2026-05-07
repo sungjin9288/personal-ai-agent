@@ -2537,6 +2537,24 @@ async function handleApi(request, response, url) {
   }
 
   if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'missions' &&
+    pathParts[2] &&
+    pathParts[3] === 'execution' &&
+    pathParts[4] === 'rollback'
+  ) {
+    const missionId = decodePathSegment(pathParts[2]);
+    const body = await readJsonBody(request);
+    const result = service.rollbackExecution(missionId, {
+      dryRun: Boolean(body.dryRun),
+      executionId: decodePathSegment(body.executionId || ''),
+    });
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
     request.method === 'GET' &&
     pathParts[0] === 'api' &&
     pathParts[1] === 'missions' &&

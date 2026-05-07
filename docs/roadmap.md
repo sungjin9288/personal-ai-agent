@@ -224,6 +224,7 @@
 - local and Hermes provider validation remain blocked until approved runtime endpoint and model environment are injected
 - pilot deployment, onboarding, demo, security, operator runbook, evidence, closeout, handoff, and snapshot artifacts are aligned for an OpenAI-backed local-first pilot
 - foreground execution approvals now include operator-reviewed mutation bundles with rollback previews, predicted sha/byte/line deltas, template counts, and target file lists before a lease is approved
+- approved mutation executions now preserve rollback snapshots and expose explicit rollback commands with hash guards, dry-run previews, CLI/API/UI controls, and per-session rollback audit state
 
 ## Next Milestone Scope
 
@@ -231,7 +232,7 @@
 - inject approved local and Hermes runtime endpoint/model configuration, rerun live validation, and archive updated evidence
 - add production deployment controls for authenticated RBAC, tenant isolation, centralized secret handling, retention/export/delete verification, incident/SLO evidence, and production-like clean-environment release generation
 - deepen provider failover, policy-aware retries, and operator remediation automation using the existing provider attention and maintenance surfaces
-- add explicit rollback execution commands for approved mutation bundles before allowing broader repo mutation
+- add broader repo mutation templates only after rollback command evidence is captured across replace, append, and generated-file scenarios
 - add provider-side usage/cost variants and stronger deliverable-specific reviewer rubrics after provider coverage is unblocked
 
 ## Deferred

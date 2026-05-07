@@ -117,6 +117,7 @@ Commands:
   mission execution preflight <missionId> [--request-approval]
   mission execution start <missionId>
   mission execution stop <missionId>
+  mission execution rollback <missionId> [--execution <executionSessionId>] [--dry-run]
   mission execution status <missionId>
   mission execution logs <missionId> [--execution <executionSessionId>]
 
@@ -525,6 +526,16 @@ async function main() {
 
     if (subcommand === 'stop') {
       printJson(service.stopExecution(missionId));
+      return;
+    }
+
+    if (subcommand === 'rollback') {
+      printJson(
+        service.rollbackExecution(missionId, {
+          dryRun: hasOption(executionRest, '--dry-run'),
+          executionId: readOption(executionRest, '--execution', ''),
+        }),
+      );
       return;
     }
 

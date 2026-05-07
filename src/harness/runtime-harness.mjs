@@ -234,6 +234,7 @@ export function createRuntimeHarness({ store }) {
       mutationBundle,
       provider,
       reviewSessionId,
+      rollback: null,
       startedAt: null,
       status: 'pending',
       stopRequested: false,

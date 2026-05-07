@@ -812,7 +812,13 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
     })
     .filter((step) => {
       if (step.kind === 'edit') {
-        return step.filePath && !isPlaceholderFilePath(step.filePath) && !isPlaceholderContent(step.content);
+        if (!step.filePath || isPlaceholderFilePath(step.filePath)) {
+          return false;
+        }
+        if (step.mutationTemplate === 'text-replace') {
+          return Boolean(step.findText) && typeof step.replaceText === 'string';
+        }
+        return !isPlaceholderContent(step.content);
       }
       return step.kind === 'artifact' || Boolean(step.command);
     });

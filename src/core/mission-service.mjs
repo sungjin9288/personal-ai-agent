@@ -3599,6 +3599,28 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return executionDir;
   }
 
+  function getExecutionRollbackDir(missionId, executionSessionId) {
+    return path.join(ensureExecutionDir(missionId, executionSessionId), 'rollback');
+  }
+
+  function buildRollbackSnapshotPath({ executionSessionId, filePath, missionId, stepId }) {
+    const rollbackDir = getExecutionRollbackDir(missionId, executionSessionId);
+    fs.mkdirSync(rollbackDir, { recursive: true });
+    const safeStepId = normalizeText(stepId, 'step').replace(/[^A-Za-z0-9_.-]/g, '-').slice(0, 64) || 'step';
+    const filePathDigest = hashTextContent(filePath).slice(0, 16);
+    return path.join(rollbackDir, `${safeStepId}-${filePathDigest}.before.txt`);
+  }
+
+  function isSafeRollbackSnapshotPath(executionSession, snapshotPath) {
+    const normalizedSnapshotPath = normalizeText(snapshotPath);
+    if (!normalizedSnapshotPath) {
+      return false;
+    }
+
+    const rollbackDir = getExecutionRollbackDir(executionSession.missionId, executionSession.id);
+    return isPathInsideRoot(rollbackDir, path.resolve(normalizedSnapshotPath));
+  }
+
   function isExecutionCapableWorkspace(workspace) {
     return isPathInsideRoot(executionWorkspaceRoot, path.resolve(workspace.path));
   }
@@ -3999,7 +4021,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return value.endsWith('\n') ? value.split('\n').length - 1 : value.split('\n').length;
   }
 
-  function buildMutationAudit({ afterContent, beforeContent, existedBefore, filePath, mutationTemplate, operation }) {
+  function buildMutationAudit({
+    afterContent,
+    beforeContent,
+    existedBefore,
+    filePath,
+    mutationTemplate,
+    operation,
+    rollbackAction = '',
+    rollbackSnapshotPath = '',
+  }) {
     const beforeBytes = Buffer.byteLength(beforeContent, 'utf8');
     const afterBytes = Buffer.byteLength(afterContent, 'utf8');
     const beforeLineCount = countTextLines(beforeContent);
@@ -4020,6 +4051,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       lineDelta: afterLineCount - beforeLineCount,
       mutationTemplate: mutationTemplate || '',
       operation,
+      rollbackAction: rollbackAction || (existedBefore ? 'restore-snapshot' : 'delete-created-file'),
+      rollbackReady: existedBefore ? Boolean(rollbackSnapshotPath) : true,
+      rollbackSnapshotPath,
     };
   }
 
@@ -4047,7 +4081,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function applyEditStep(step, workspacePath) {
+  function applyEditStep(step, executionSession) {
+    const workspacePath = executionSession.workspacePath;
     const workspaceRoot = path.resolve(workspacePath);
     const targetPath = path.resolve(workspacePath, step.filePath || '');
     if (!isPathInsideRoot(workspaceRoot, targetPath)) {
@@ -4056,6 +4091,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const existedBefore = fs.existsSync(targetPath);
     const existingContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
+    const rollbackSnapshotPath = existedBefore
+      ? buildRollbackSnapshotPath({
+          executionSessionId: executionSession.id,
+          filePath: step.filePath,
+          missionId: executionSession.missionId,
+          stepId: step.id,
+        })
+      : '';
+    if (rollbackSnapshotPath) {
+      fs.writeFileSync(rollbackSnapshotPath, existingContent, 'utf8');
+    }
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
     const nextContent = buildNextEditContent(step, existingContent, existedBefore);
@@ -4068,7 +4114,269 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       filePath: step.filePath,
       mutationTemplate: step.mutationTemplate,
       operation: step.operation,
+      rollbackAction: existedBefore ? 'restore-snapshot' : 'delete-created-file',
+      rollbackSnapshotPath,
     });
+  }
+
+  function resolveRollbackExecutionSession(missionId, executionId = '') {
+    const mission = getMission(missionId);
+    const workspace = getWorkspace(mission.workspaceId);
+    const normalizedExecutionId = normalizeText(executionId);
+    const executionSession = normalizedExecutionId
+      ? store.getExecutionSession(normalizedExecutionId)
+      : [...store.listExecutionSessions({ missionId: mission.id })]
+          .reverse()
+          .find((session) => ensureArray(session.mutationAudits).length > 0);
+
+    if (!executionSession) {
+      throw new Error(normalizedExecutionId ? `Execution session not found: ${normalizedExecutionId}` : 'No rollback-capable execution session found.');
+    }
+    if (executionSession.missionId !== mission.id) {
+      throw new Error(`Execution session ${executionSession.id} does not belong to mission ${mission.id}.`);
+    }
+    if (['pending', 'running'].includes(normalizeText(executionSession.status))) {
+      throw new Error(`Execution session ${executionSession.id} is still ${executionSession.status}; rollback requires a finished session.`);
+    }
+
+    return {
+      executionSession,
+      mission,
+      workspace,
+    };
+  }
+
+  function readRollbackTargetState(targetPath) {
+    if (!fs.existsSync(targetPath)) {
+      return {
+        content: '',
+        exists: false,
+        sha256: '',
+      };
+    }
+
+    const content = fs.readFileSync(targetPath, 'utf8');
+    return {
+      content,
+      exists: true,
+      sha256: hashTextContent(content),
+    };
+  }
+
+  function buildExecutionRollbackPlan(executionSession) {
+    const workspaceRoot = path.resolve(executionSession.workspacePath);
+    const simulatedTargetStates = new Map();
+    const mutationAudits = ensureArray(executionSession.mutationAudits)
+      .filter((audit) => normalizeText(audit.filePath))
+      .reverse();
+
+    const items = mutationAudits.map((audit, index) => {
+      const targetPath = path.resolve(workspaceRoot, audit.filePath || '');
+      const pathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
+      const action = normalizeText(audit.rollbackAction, audit.existedBefore ? 'restore-snapshot' : 'delete-created-file');
+      const expectedCurrentSha256 = normalizeText(audit.afterSha256);
+      const targetKey = path.resolve(targetPath);
+      const currentState = simulatedTargetStates.has(targetKey)
+        ? simulatedTargetStates.get(targetKey)
+        : readRollbackTargetState(targetPath);
+      let restoreContent = '';
+      let restoreSha256 = '';
+      let rollbackSnapshotReady = !audit.existedBefore;
+      let ready = false;
+      let reason = '';
+
+      if (!pathInsideWorkspace) {
+        reason = `Rollback target escapes selected workspace: ${targetPath}`;
+      } else if (!expectedCurrentSha256) {
+        reason = `Mutation audit is missing afterSha256 for ${audit.filePath}`;
+      } else if (!currentState.exists) {
+        reason = `Rollback target is missing before rollback: ${audit.filePath}`;
+      } else if (currentState.sha256 !== expectedCurrentSha256) {
+        reason = `Rollback hash guard failed for ${audit.filePath}`;
+      } else if (action === 'delete-created-file') {
+        ready = true;
+        simulatedTargetStates.set(targetKey, {
+          content: '',
+          exists: false,
+          sha256: '',
+        });
+      } else {
+        const snapshotPath = normalizeText(audit.rollbackSnapshotPath);
+        if (!snapshotPath) {
+          reason = `Rollback snapshot is missing for ${audit.filePath}`;
+        } else if (!isSafeRollbackSnapshotPath(executionSession, snapshotPath)) {
+          reason = `Rollback snapshot path is outside the execution rollback directory for ${audit.filePath}`;
+        } else if (!fs.existsSync(snapshotPath)) {
+          reason = `Rollback snapshot file does not exist for ${audit.filePath}`;
+        } else {
+          restoreContent = fs.readFileSync(snapshotPath, 'utf8');
+          restoreSha256 = hashTextContent(restoreContent);
+          rollbackSnapshotReady = restoreSha256 === normalizeText(audit.beforeSha256);
+          if (!rollbackSnapshotReady) {
+            reason = `Rollback snapshot hash does not match beforeSha256 for ${audit.filePath}`;
+          } else {
+            ready = true;
+            simulatedTargetStates.set(targetKey, {
+              content: restoreContent,
+              exists: true,
+              sha256: restoreSha256,
+            });
+          }
+        }
+      }
+
+      return {
+        action,
+        actualCurrentSha256: currentState.sha256,
+        auditIndex: mutationAudits.length - index - 1,
+        beforeSha256: normalizeText(audit.beforeSha256),
+        expectedCurrentSha256,
+        existsBeforeRollback: currentState.exists,
+        filePath: audit.filePath,
+        mutationTemplate: normalizeText(audit.mutationTemplate),
+        pathInsideWorkspace,
+        ready,
+        reason,
+        restoreSha256,
+        rollbackSnapshotPath: normalizeText(audit.rollbackSnapshotPath),
+        rollbackSnapshotReady,
+        targetPath,
+      };
+    });
+
+    const ready = items.length > 0 && items.every((item) => item.ready);
+    return {
+      blockedCount: items.filter((item) => !item.ready).length,
+      deleteCount: items.filter((item) => item.action === 'delete-created-file').length,
+      executionSessionId: executionSession.id,
+      itemCount: items.length,
+      items,
+      ready,
+      restoreCount: items.filter((item) => item.action !== 'delete-created-file').length,
+      workspacePath: executionSession.workspacePath,
+    };
+  }
+
+  function rollbackExecution(missionId, { dryRun = false, executionId = '' } = {}) {
+    const { executionSession, mission, workspace } = resolveRollbackExecutionSession(missionId, executionId);
+    const requestedAt = now();
+    const plan = buildExecutionRollbackPlan(executionSession);
+    const baseRollback = {
+      id: createId('rollback'),
+      dryRun: Boolean(dryRun),
+      executionSessionId: executionSession.id,
+      missionId: mission.id,
+      requestedAt,
+      ...plan,
+    };
+
+    if (dryRun) {
+      return {
+        execution: executionSession,
+        mission,
+        rollback: {
+          ...baseRollback,
+          status: 'preview',
+          summary: plan.ready
+            ? `Rollback preview is ready for ${plan.itemCount} mutation item(s).`
+            : `Rollback preview found ${plan.blockedCount} blocked mutation item(s).`,
+        },
+        workspace,
+      };
+    }
+
+    if (!plan.itemCount) {
+      const skippedRollback = {
+        ...baseRollback,
+        completedAt: now(),
+        status: 'skipped',
+        summary: 'No mutation audit entries are available for rollback.',
+      };
+      const updatedSession = store.updateExecutionSession(executionSession.id, (session) => ({
+        ...session,
+        rollback: skippedRollback,
+        updatedAt: now(),
+      }));
+      return {
+        execution: updatedSession,
+        mission,
+        rollback: skippedRollback,
+        workspace,
+      };
+    }
+
+    if (!plan.ready) {
+      const blockedRollback = {
+        ...baseRollback,
+        completedAt: now(),
+        status: 'blocked',
+        summary: `Rollback blocked by ${plan.blockedCount} hash/snapshot guard failure(s).`,
+      };
+      const updatedSession = store.updateExecutionSession(executionSession.id, (session) => ({
+        ...session,
+        rollback: blockedRollback,
+        updatedAt: now(),
+      }));
+      appendExecutionLog(executionSession.id, `[${now()}] rollback blocked :: ${blockedRollback.summary}`);
+      return {
+        execution: updatedSession,
+        mission,
+        rollback: blockedRollback,
+        workspace,
+      };
+    }
+
+    appendExecutionLog(executionSession.id, `[${now()}] rollback started :: ${plan.itemCount} mutation item(s)`);
+    const appliedItems = [];
+
+    for (const item of plan.items) {
+      const currentState = readRollbackTargetState(item.targetPath);
+      if (!currentState.exists || currentState.sha256 !== item.expectedCurrentSha256) {
+        throw new Error(`Rollback hash guard changed during rollback for ${item.filePath}`);
+      }
+
+      if (item.action === 'delete-created-file') {
+        fs.rmSync(item.targetPath, { force: true });
+        appliedItems.push({
+          ...item,
+          status: 'deleted',
+        });
+        appendExecutionLog(executionSession.id, `[${now()}] rollback delete-created-file :: ${item.filePath}`);
+        continue;
+      }
+
+      const restoreContent = fs.readFileSync(item.rollbackSnapshotPath, 'utf8');
+      fs.writeFileSync(item.targetPath, restoreContent, 'utf8');
+      appliedItems.push({
+        ...item,
+        status: 'restored',
+      });
+      appendExecutionLog(executionSession.id, `[${now()}] rollback restore-snapshot :: ${item.filePath}`);
+    }
+
+    const completedRollback = {
+      ...baseRollback,
+      completedAt: now(),
+      deletedCount: appliedItems.filter((item) => item.status === 'deleted').length,
+      items: appliedItems,
+      restoredCount: appliedItems.filter((item) => item.status === 'restored').length,
+      status: 'completed',
+      summary: `Rollback completed for ${appliedItems.length} mutation item(s).`,
+    };
+    const updatedSession = store.updateExecutionSession(executionSession.id, (session) => ({
+      ...session,
+      changedFiles: captureChangedFiles(session.workspacePath),
+      rollback: completedRollback,
+      updatedAt: now(),
+    }));
+    appendExecutionLog(executionSession.id, `[${now()}] rollback completed`);
+
+    return {
+      execution: updatedSession,
+      mission: getMission(mission.id),
+      rollback: completedRollback,
+      workspace,
+    };
   }
 
   function startExecutionRunner(executionSessionId) {
@@ -4125,7 +4433,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           try {
             let mutationAudit = null;
             if (step.kind === 'edit') {
-              mutationAudit = applyEditStep(step, latestSession.workspacePath);
+              mutationAudit = applyEditStep(step, latestSession);
               appendExecutionLog(
                 executionSessionId,
                 `[${now()}] ${step.id} edit applied :: ${step.filePath} (${mutationAudit.mutationTemplate}, bytes ${mutationAudit.byteDelta >= 0 ? '+' : ''}${mutationAudit.byteDelta}, lines ${mutationAudit.lineDelta >= 0 ? '+' : ''}${mutationAudit.lineDelta})`,
@@ -15613,6 +15921,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     remediateSpecialistFollowUp,
     runMission,
     preflightExecution,
+    rollbackExecution,
     showMission,
     showSession,
     startExecution,

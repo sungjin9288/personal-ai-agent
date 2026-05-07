@@ -176,6 +176,21 @@ try {
   );
   assert.equal(approverApprovalResolve.approval.status, 'approved');
 
+  const viewerRollback = await fetchJson(
+    `${baseUrl}/api/missions/${encodeURIComponent(mission.id)}/execution/rollback`,
+    {
+      body: JSON.stringify({ dryRun: true }),
+      headers: {
+        'content-type': 'application/json',
+        'x-personal-ai-agent-role': 'viewer',
+      },
+      method: 'POST',
+    },
+    { expectOk: false },
+  );
+  assert.equal(viewerRollback.status, 403);
+  assert.equal(viewerRollback.body.rbac.requiredRole, 'operator');
+
   console.log(
     JSON.stringify(
       {
@@ -185,6 +200,7 @@ try {
         roleChecks: {
           adminOnlySnapshotBlockedForOperator: true,
           approverResolvedApproval: true,
+          executionRollbackBlockedForViewer: true,
           operatorMissionCreated: true,
           viewerMutationBlocked: true,
         },
