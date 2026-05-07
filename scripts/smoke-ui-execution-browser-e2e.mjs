@@ -75,6 +75,10 @@ const emitFullReportStdout = ['1', 'true', 'yes'].includes(
   String(process.env.PERSONAL_AI_AGENT_BROWSER_E2E_FULL_STDOUT || '').toLowerCase(),
 );
 const browserGuardTimeoutMs = parsePositiveIntegerEnv('PERSONAL_AI_AGENT_BROWSER_GUARD_TIMEOUT_MS', 120_000);
+const releaseHandoffCopyStateTimeoutMs = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_RELEASE_HANDOFF_COPY_STATE_TIMEOUT_MS',
+  180_000,
+);
 
 process.once('SIGINT', () => {
   restoreArtifactsFromBackup(artifactBackups);
@@ -5234,7 +5238,10 @@ const currentPreviewDetailPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCop
         labelsAfterCurrentPreviewCopy,
       };
     }`,
-  ]);
+  ], {
+    label: 'release-handoff-structured-summary-copy-state',
+    timeoutMs: releaseHandoffCopyStateTimeoutMs,
+  });
   assert.equal(
     handoffStructuredSummaryCopyState.directCardFallback.clipboardText,
     '',
