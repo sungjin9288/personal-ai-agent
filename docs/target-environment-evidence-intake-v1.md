@@ -61,7 +61,7 @@ Every target environment review must record:
 - target Hermes provider architecture approval when Hermes is included
 - identity provider, role owner, session policy, and permission audit evidence
 - tenant storage boundary, encryption/key policy, backup/restore isolation, and tenant admin evidence
-- target provider operations evidence for account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment
+- target provider operations evidence for account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment
 - target secret manager aliases, rotation evidence, revocation path, and break-glass approval
 - target SLO/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record
 - target SLO operations evidence for customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment

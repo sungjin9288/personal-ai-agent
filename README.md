@@ -107,7 +107,7 @@ Current planning status:
 - local retention operating rehearsal evidence can be regenerated with `npm run rehearsal:production-retention-operating` and verified with `npm run smoke:production-retention-operating`, but it intentionally keeps `productionReadyClaim: false`
 - local provider readiness rehearsal evidence can be regenerated with `npm run rehearsal:production-provider-readiness` and verified with `npm run smoke:production-provider-readiness`, but it intentionally keeps `productionReadyClaim: false`
 - local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and fallback evidence requirements are present, but it does not provide target provider account remediation or production live validation proof
-- local target provider operations can be verified with `npm run smoke:target-provider-operations`; it proves provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, and evidence retention requirements are present, but it does not provide target provider production operations proof
+- local target provider operations can be verified with `npm run smoke:target-provider-operations`; it proves provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, and evidence retention requirements are present, but it does not provide target provider production operations proof
 - target OpenAI provider account evidence can be verified with `npm run smoke:target-openai-provider-account`; it proves account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements are present, but it keeps `targetOpenAIProviderApproved: false`
 - target Anthropic provider account evidence can be verified with `npm run smoke:target-anthropic-provider-account`; it proves account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, live validation, telemetry, fallback, and remediation audit requirements are present, but it keeps `targetAnthropicProviderApproved: false`
 - target local provider architecture evidence can be verified with `npm run smoke:target-local-provider-architecture`; it proves endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, and fallback/customer approval decision requirements are present, but it keeps `targetLocalProviderApproved: false`
@@ -768,6 +768,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.
 - `smoke:provider-retry-telemetry` locks successful retry, retry-exhausted execution failure, pending provider attention retry metadata, and mission or workspace or global retry-summary propagation in one deterministic local scenario.
 - `smoke:provider-fallback-policy` locks explicit `--fallback-provider` mission failover, including provider failure retry to `stub` and non-retry behavior for deterministic reviewer failures.
+- `smoke:target-provider-operations` now requires provider fallback runtime audit coverage from `mission run --fallback-provider`, mission/workspace/operator timelines, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider` before a target provider operations claim can advance.
 - `stub` remains the deterministic default for local development and smoke coverage.
 - `openai` now uses the OpenAI Responses API and reads:
   - `OPENAI_API_KEY` required
@@ -872,6 +873,7 @@ npm run smoke:provider-events
 npm run smoke:provider-hardening
 npm run smoke:provider-telemetry
 npm run smoke:provider-fallback-policy
+npm run smoke:target-provider-operations
 npm run smoke:provider-action-inbox
 npm run smoke:provider-attention-lifecycle
 npm run smoke:provider-attention-recovery

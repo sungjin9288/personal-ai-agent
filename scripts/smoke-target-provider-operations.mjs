@@ -29,6 +29,11 @@ const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packagePath));
 
 assert.equal(packageJson.scripts['smoke:target-provider-operations'], 'node scripts/smoke-target-provider-operations.mjs');
+assert.equal(packageJson.scripts['smoke:provider-fallback-policy'], 'node scripts/smoke-provider-fallback-policy.mjs');
+assert.equal(packageJson.scripts['smoke:provider-events'], 'node scripts/smoke-provider-events.mjs');
+assert.equal(packageJson.scripts['smoke:provider-attention-remediation'], 'node scripts/smoke-provider-attention-remediation.mjs');
+assert.equal(packageJson.scripts['smoke:mission-timeline'], 'node scripts/smoke-mission-timeline.mjs');
+assert.equal(packageJson.scripts['smoke:operator-timeline'], 'node scripts/smoke-operator-timeline.mjs');
 
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
 assert.match(targetProviderOperations, /^- status: local-target-provider-operations-current$/m);
@@ -60,6 +65,7 @@ for (const control of [
   'Model and endpoint pinning',
   'Quota, cost, and resource guard',
   'Fallback and disable path',
+  'Provider fallback runtime audit',
   'Provider telemetry',
   'Provider incident triage',
   'Data and transcript handling',
@@ -76,6 +82,7 @@ for (const packetItem of [
   /model and endpoint pinning proof with model id, endpoint\/base URL alias, retry policy, concurrency limit, fallback route, and approval owner/,
   /quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route/,
   /fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision/,
+  /provider fallback runtime audit proof with `mission run --fallback-provider`, `mission timeline`, `workspace timeline`, `overview operator-timeline`, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider` evidence/,
   /provider telemetry proof with health signal, latency\/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner/,
   /provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes/,
   /data and transcript handling proof with data classification, provider transcript policy, retention class, export\/delete handling, redaction rule, and post-delete absence requirement/,
@@ -89,6 +96,11 @@ for (const packetItem of [
 for (const command of [
   'npm run smoke:target-provider-operations',
   'npm run smoke:target-provider-evidence-intake',
+  'npm run smoke:provider-fallback-policy',
+  'npm run smoke:provider-events',
+  'npm run smoke:provider-attention-remediation',
+  'npm run smoke:mission-timeline',
+  'npm run smoke:operator-timeline',
   'npm run rehearsal:production-provider-readiness',
   'npm run smoke:production-provider-readiness',
   'npm run smoke:target-openai-provider-account',
@@ -125,13 +137,13 @@ assert.match(readme, /npm run smoke:target-provider-operations/);
 console.log(
   JSON.stringify(
     {
-      controlCount: 10,
+      controlCount: 11,
       mode: 'target-provider-operations',
       ok: true,
       path: 'docs/target-provider-operations-v1.md',
       productionReadyClaim: false,
-      providerPacketItemCount: 15,
-      requiredCommandCount: 14,
+      providerPacketItemCount: 16,
+      requiredCommandCount: 19,
     },
     null,
     2,

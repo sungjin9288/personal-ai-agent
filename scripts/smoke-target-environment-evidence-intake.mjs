@@ -57,7 +57,7 @@ for (const checklistItem of [
   /target Anthropic provider account approval when Anthropic is included/,
   /target local provider architecture approval when local provider is included/,
   /target Hermes provider architecture approval when Hermes is included/,
-  /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
+  /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
   /identity provider, role owner, session policy, and permission audit evidence/,
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
   /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,

@@ -315,7 +315,7 @@ The source of record is [target-provider-evidence-intake-v1.md](target-provider-
 npm run smoke:target-provider-operations
 ```
 
-The source of record is [target-provider-operations-v1.md](target-provider-operations-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, provider failure containment, and keeps `productionReadyClaim: false`.
+The source of record is [target-provider-operations-v1.md](target-provider-operations-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, provider failure containment, and keeps `productionReadyClaim: false`.
 
 ## Target OpenAI Provider Account
 

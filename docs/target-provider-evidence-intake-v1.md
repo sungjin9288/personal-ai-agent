@@ -21,7 +21,7 @@ It is not provider account remediation proof, not live-provider-complete evidenc
 
 Production-ready remains blocked until every provider included in the target release has approved account status, target secret injection, target-boundary live validation, quota/cost guard evidence, and rollback/fallback evidence.
 
-Target provider operations evidence remains the runtime operations gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment.
+Target provider operations evidence remains the runtime operations gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment.
 
 ## Required Evidence Packet
 
@@ -33,7 +33,7 @@ Target provider operations evidence remains the runtime operations gate for mode
 | Quota and cost guard | quota, concurrency, timeout, spend owner, and retry guard are documented before live use | provider preflight and telemetry smoke exist locally | blocked |
 | Model and endpoint pinning | provider model, endpoint/base URL, timeout, and fallback route are recorded without secrets | provider readiness matrix lists env keys and commands | blocked |
 | Failure triage route | account failure, missing env, live runtime failure, and fallback decision have named owners | release readiness and handoff list current blockers | blocked |
-| Target provider operations | provider runtime operation evidence covers model/endpoint pinning, quota/cost/resource guard, fallback/disable path, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
+| Target provider operations | provider runtime operation evidence covers model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
 
 ## Provider Intake Checklist
 

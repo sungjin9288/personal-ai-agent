@@ -127,7 +127,7 @@ for (const command of [
 
 for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
-  /stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment evidence are captured/,
+  /stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment evidence are captured/,
   /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
   /stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated/,
