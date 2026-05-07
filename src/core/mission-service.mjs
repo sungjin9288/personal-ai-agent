@@ -2456,17 +2456,34 @@ function summarizeSpecialistFollowUpItems(items) {
 function summarizeOperatorTimeline(events) {
   const eventCounts = {};
   const workspaceCounts = {};
+  const providerFallbackEvents = [];
+  const providerFallbackUsedEvents = [];
 
   for (const event of events) {
     eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
     if (event.workspaceId) {
       workspaceCounts[event.workspaceId] = (workspaceCounts[event.workspaceId] || 0) + 1;
     }
+    if (event.kind === 'provider-fallback-attempted' || event.kind === 'provider-fallback-used') {
+      providerFallbackEvents.push(event);
+    }
+    if (event.kind === 'provider-fallback-used') {
+      providerFallbackUsedEvents.push(event);
+    }
   }
 
   return {
     eventCounts,
     latestEvent: events.at(-1) || null,
+    latestProviderFallbackEvent: getLatestItem(providerFallbackEvents, 'at'),
+    providerFallbackAttemptCount: providerFallbackEvents.length,
+    providerFallbackPrimaryProviderIds: [
+      ...new Set(providerFallbackEvents.map((event) => event.primaryProviderId).filter(Boolean)),
+    ],
+    providerFallbackUsedCount: providerFallbackUsedEvents.length,
+    providerFallbackUsedProviderIds: [
+      ...new Set(providerFallbackUsedEvents.map((event) => event.providerId).filter(Boolean)),
+    ],
     total: events.length,
     workspaceCounts,
   };
@@ -14484,6 +14501,43 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: event.workspaceId || null,
         workspaceName: event.workspaceName || null,
       });
+    }
+
+    for (const mission of store.listMissions()) {
+      const workspace = workspaceById.get(mission.workspaceId);
+      if (!workspace) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+      if (filter.missionId && mission.id !== filter.missionId) {
+        continue;
+      }
+
+      for (const event of buildProviderFallbackTimelineEvents({
+        mission,
+        sessions: store.listSessionsByMission(mission.id),
+      })) {
+        events.push({
+          at: event.at,
+          attempt: event.attempt,
+          attemptCount: event.attemptCount,
+          detail: event.detail,
+          fallbackProviderIds: event.fallbackProviderIds,
+          kind: event.kind,
+          missionId: mission.id,
+          missionTitle: mission.title,
+          primaryProviderId: event.primaryProviderId,
+          providerFailure: event.providerFailure,
+          providerFailureKind: event.providerFailureKind,
+          providerId: event.providerId,
+          sessionId: event.sessionId || null,
+          status: event.status || null,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        });
+      }
     }
 
     for (const escalation of store.listEscalations()) {

@@ -89,6 +89,27 @@ assert.equal(
   true,
 );
 
+const workspaceTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['workspace', 'timeline', workspace.id],
+});
+
+assert.equal(workspaceTimeline.summary.providerFallbackAttemptCount, 2);
+assert.equal(workspaceTimeline.summary.providerFallbackUsedCount, 1);
+assert.deepEqual(workspaceTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic']);
+assert.deepEqual(workspaceTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
+assert.equal(workspaceTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 1);
+assert.equal(workspaceTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
+assert.equal(
+  workspaceTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-used' &&
+      event.missionId === fallbackMission.id &&
+      event.workspaceId === workspace.id,
+  ),
+  true,
+);
+
 const deterministicFailureMission = service.createMission({
   workspaceId: workspace.id,
   mode: 'knowledge',
@@ -131,6 +152,18 @@ assert.equal(
   ),
   true,
 );
+
+const operatorTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'operator-timeline'],
+});
+
+assert.equal(operatorTimeline.summary.providerFallbackAttemptCount, 3);
+assert.equal(operatorTimeline.summary.providerFallbackUsedCount, 1);
+assert.deepEqual(operatorTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic', 'stub']);
+assert.deepEqual(operatorTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
+assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 2);
+assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
 
 console.log(
   JSON.stringify(
