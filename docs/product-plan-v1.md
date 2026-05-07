@@ -93,6 +93,7 @@
 - [x] Target provider operations gate implemented
 - [x] Mission-level provider fallback policy implemented
 - [x] Provider attention fallback remediation path implemented
+- [x] Provider attention fallback command guidance implemented
 - [x] Target Hermes provider architecture gate implemented
 - [x] Target deployment contract gate implemented
 - [x] Target environment evidence intake gate implemented

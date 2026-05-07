@@ -71,6 +71,8 @@ try {
   });
 
   assert.equal(anthropicPending.items.length, 1);
+  assert.match(anthropicPending.items[0].recommendedCommand, /provider probe anthropic/);
+  assert.match(anthropicPending.items[0].inspectCommand, /provider history --provider anthropic --ok false/);
 
   fetchState.anthropicMode = 'success';
 
@@ -106,6 +108,9 @@ try {
   });
 
   assert.equal(stubPending.items.length, 1);
+  assert.match(stubPending.items[0].recommendedCommand, /action remediate-provider-attention/);
+  assert.equal(stubPending.items[0].fallbackRecommendedCommand, null);
+  assert.match(stubPending.items[0].inspectCommand, /provider activity --provider stub --status failed/);
 
   store.updateMission(failedMission.id, (current) => ({
     ...current,
@@ -172,6 +177,10 @@ try {
   });
 
   assert.equal(anthropicExecutionPending.items.length, 1);
+  assert.match(anthropicExecutionPending.items[0].recommendedCommand, /action remediate-provider-attention/);
+  assert.match(anthropicExecutionPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.equal(anthropicExecutionPending.items[0].fallbackProviderId, 'stub');
+  assert.match(anthropicExecutionPending.items[0].inspectCommand, /provider activity --provider anthropic --status failed/);
 
   const fallbackRemediation = runCli({
     rootDir: tempRoot,

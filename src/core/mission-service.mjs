@@ -1533,6 +1533,9 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
       `[${item.actionClass}/${item.priority}] ${item.title} | workspace=${item.workspaceName} | mission=${item.missionId} | owner=${item.recommendedOwner} | dueAt=${item.dueAt}`,
     );
     lines.push(`command: ${item.recommendedCommand}`);
+    if (item.actionClass === 'provider-attention-required' && item.fallbackRecommendedCommand) {
+      lines.push(`fallback: ${item.fallbackRecommendedCommand}`);
+    }
     if (item.actionClass === 'specialist-follow-up-required' && item.remediationRoute) {
       lines.push(
         `route: type=${item.remediationRoute.routeType} urgency=${item.remediationRoute.routeUrgency} reason=${item.remediationRoute.routeReason}`,
@@ -10141,13 +10144,20 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           return null;
         }
 
+        const actionId = buildProviderAttentionActionId(latestEvent);
+        const remediationCommand = `node src/cli.mjs action remediate-provider-attention ${actionId}`;
+        const fallbackProviderId = latestEvent.eventFamily === 'execution' && provider.id !== 'stub' ? 'stub' : '';
+        const fallbackRecommendedCommand = fallbackProviderId
+          ? `${remediationCommand} --fallback-provider ${fallbackProviderId}`
+          : null;
+        const inspectCommand =
+          latestEvent.eventFamily === 'execution'
+            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
+            : `node src/cli.mjs provider history --provider ${provider.id} --ok false`;
         const recommendedOwner =
           latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
         const recommendedCommand =
-          latestEvent.eventFamily === 'execution'
-            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
-            : `node src/cli.mjs provider probe ${provider.id}`;
-        const actionId = buildProviderAttentionActionId(latestEvent);
+          latestEvent.eventFamily === 'execution' ? remediationCommand : `node src/cli.mjs provider probe ${provider.id}`;
         const baseItem = addOperationalMetadata(
           addDispatchMetadata(
             {
@@ -10160,9 +10170,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               eventFamily: latestEvent.eventFamily,
               eventKind: latestEvent.eventKind,
               eventRefId: getProviderAttentionEventRefId(latestEvent),
+              fallbackProviderId: fallbackProviderId || null,
+              fallbackRecommendedCommand,
+              inspectCommand,
               missionId: latestEvent.missionId || null,
               providerDisplayName: provider.displayName,
               providerId: provider.id,
+              remediationCommand,
               reason: latestEvent.detail,
               sessionId: latestEvent.sessionId || null,
               status: 'pending',
