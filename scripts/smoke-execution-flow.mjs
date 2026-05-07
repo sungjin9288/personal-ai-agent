@@ -23,6 +23,7 @@ fs.mkdirSync(path.join(siblingWorkspaceDir, 'src'), { recursive: true });
 fs.writeFileSync(path.join(siblingWorkspaceDir, 'src', 'cli.mjs'), "console.log('external workspace smoke');\n", 'utf8');
 fs.writeFileSync(path.join(siblingWorkspaceDir, 'notes.md'), "initial note\n", 'utf8');
 fs.writeFileSync(path.join(siblingWorkspaceDir, 'obsolete.md'), "obsolete note\n", 'utf8');
+fs.writeFileSync(path.join(siblingWorkspaceDir, 'rename-me.md'), "move me\n", 'utf8');
 execFileSync('git', ['init'], { cwd: siblingWorkspaceDir, stdio: 'ignore' });
 
 const workspace = runCli({
@@ -265,6 +266,16 @@ const safeEditPolicy = evaluateExecutionPolicy({
         operation: 'delete',
         cwd: '.',
       },
+      {
+        id: 'edit-safe-05',
+        kind: 'edit',
+        title: 'Move generated note',
+        filePath: 'rename-me.md',
+        targetPath: 'renamed/safe-moved-note.md',
+        mutationTemplate: 'file-move',
+        operation: 'move',
+        cwd: '.',
+      },
     ],
   },
   rootDir: siblingWorkspaceDir,
@@ -276,6 +287,7 @@ assert.equal(safeEditPolicy.allowedItems.some((item) => /text-append/.test(item)
 assert.equal(safeEditPolicy.allowedItems.some((item) => /text-replace/.test(item)), true);
 assert.equal(safeEditPolicy.allowedItems.some((item) => /text-write-new/.test(item)), true);
 assert.equal(safeEditPolicy.allowedItems.some((item) => /text-delete-file/.test(item)), true);
+assert.equal(safeEditPolicy.allowedItems.some((item) => /file-move/.test(item)), true);
 
 const unsafePolicy = evaluateExecutionPolicy({
   manifest: {
@@ -564,6 +576,20 @@ store.updateAgentRun(siblingExecutorRun.id, (current) => ({
       },
       {
         id: 'step-06',
+        kind: 'edit',
+        title: 'Move approved note',
+        filePath: 'rename-me.md',
+        targetPath: 'renamed/moved-note.md',
+        mutationTemplate: 'file-move',
+        operation: 'move',
+        cwd: '.',
+        expectedOutputs: ['rename-me.md is moved to renamed/moved-note.md'],
+        reason: 'Exercise approved move template and rollback restoration path for renamed files.',
+        riskClassification: 'medium',
+        verificationTarget: 'mutation audit captures restore rollback for moved files',
+      },
+      {
+        id: 'step-07',
         kind: 'test',
         title: 'Sibling syntax verification',
         command: 'node --check src/cli.mjs',
@@ -580,15 +606,17 @@ store.updateAgentRun(siblingExecutorRun.id, (current) => ({
 const siblingPreflight = service.preflightExecution(siblingMission.id, { requestApproval: true });
 assert.equal(siblingPreflight.execution.supported, true);
 assert.equal(siblingPreflight.execution.eligibility, 'pending-approval');
-assert.equal(siblingPreflight.execution.mutationBundle.itemCount, 4);
-assert.equal(siblingPreflight.execution.mutationBundle.fileCount, 4);
+assert.equal(siblingPreflight.execution.mutationBundle.itemCount, 5);
+assert.equal(siblingPreflight.execution.mutationBundle.fileCount, 6);
 assert.equal(siblingPreflight.execution.mutationBundle.rollbackPreviewReady, true);
 assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.action, 'restore-previous-content');
 assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.ready, true);
 assert.equal(siblingPreflight.execution.mutationBundle.items[1].rollbackPreview.action, 'reverse-text-replace');
 assert.equal(siblingPreflight.execution.mutationBundle.items[2].rollbackPreview.action, 'delete-created-file');
 assert.equal(siblingPreflight.execution.mutationBundle.items[3].rollbackPreview.action, 'restore-deleted-file');
-assert.equal(siblingPreflight.approval.metadata.mutationBundle.itemCount, 4);
+assert.equal(siblingPreflight.execution.mutationBundle.items[4].rollbackPreview.action, 'restore-moved-file');
+assert.equal(siblingPreflight.execution.mutationBundle.items[4].targetFilePath, 'renamed/moved-note.md');
+assert.equal(siblingPreflight.approval.metadata.mutationBundle.itemCount, 5);
 assert.equal(siblingPreflight.approval.metadata.mutationBundle.totalLineDelta, 1);
 assert.equal(siblingPreflight.approval.kind, 'execution_lease');
 
@@ -596,12 +624,12 @@ const siblingApprovalResolution = service.resolveApproval(siblingPreflight.appro
   decision: 'approve',
   reason: 'Sibling workspace execution flow smoke approves one bounded execution session.',
 });
-assert.equal(siblingApprovalResolution.lease.mutationBundle.itemCount, 4);
-assert.equal(siblingApprovalResolution.lease.mutationBundle.rollbackReadyCount, 4);
+assert.equal(siblingApprovalResolution.lease.mutationBundle.itemCount, 5);
+assert.equal(siblingApprovalResolution.lease.mutationBundle.rollbackReadyCount, 5);
 
 const siblingStartResult = service.startExecution(siblingMission.id);
 assert.equal(siblingStartResult.execution.status, 'running');
-assert.equal(siblingStartResult.execution.mutationBundle.itemCount, 4);
+assert.equal(siblingStartResult.execution.mutationBundle.itemCount, 5);
 
 let siblingFinalStatus = service.getExecutionStatus(siblingMission.id);
 for (let index = 0; index < 40; index += 1) {
@@ -617,9 +645,9 @@ assert.ok(siblingExecutionSession);
 assert.equal(siblingExecutionSession.status, 'completed');
 assert.equal(siblingExecutionSession.verification.status, 'passed');
 assert.equal(siblingFinalStatus.mission.status, 'completed');
-assert.equal(siblingExecutionSession.mutationBundle.itemCount, 4);
+assert.equal(siblingExecutionSession.mutationBundle.itemCount, 5);
 assert.equal(siblingExecutionSession.mutationBundle.items[0].filePath, 'notes.md');
-assert.equal(siblingExecutionSession.mutationAudits.length, 4);
+assert.equal(siblingExecutionSession.mutationAudits.length, 5);
 assert.equal(siblingExecutionSession.mutationAudits[0].filePath, 'notes.md');
 assert.equal(siblingExecutionSession.mutationAudits[0].mutationTemplate, 'text-append');
 assert.equal(siblingExecutionSession.mutationAudits[0].lineDelta, 1);
@@ -631,6 +659,11 @@ assert.equal(siblingExecutionSession.mutationAudits[2].existedBefore, false);
 assert.equal(siblingExecutionSession.mutationAudits[3].filePath, 'obsolete.md');
 assert.equal(siblingExecutionSession.mutationAudits[3].mutationTemplate, 'text-delete-file');
 assert.equal(siblingExecutionSession.mutationAudits[3].existsAfter, false);
+assert.equal(siblingExecutionSession.mutationAudits[4].filePath, 'rename-me.md');
+assert.equal(siblingExecutionSession.mutationAudits[4].targetFilePath, 'renamed/moved-note.md');
+assert.equal(siblingExecutionSession.mutationAudits[4].mutationTemplate, 'file-move');
+assert.equal(siblingExecutionSession.mutationAudits[4].existsAfter, false);
+assert.equal(siblingExecutionSession.mutationAudits[4].targetExistsAfter, true);
 assert.equal(
   siblingExecutionSession.steps.some(
     (step) =>
@@ -645,6 +678,8 @@ assert.match(fs.readFileSync(path.join(siblingWorkspaceDir, 'notes.md'), 'utf8')
 assert.match(fs.readFileSync(path.join(siblingWorkspaceDir, 'src', 'cli.mjs'), 'utf8'), /external workspace smoke updated/);
 assert.equal(fs.existsSync(path.join(siblingWorkspaceDir, 'generated-rollback-note.md')), true);
 assert.equal(fs.existsSync(path.join(siblingWorkspaceDir, 'obsolete.md')), false);
+assert.equal(fs.existsSync(path.join(siblingWorkspaceDir, 'rename-me.md')), false);
+assert.equal(fs.readFileSync(path.join(siblingWorkspaceDir, 'renamed', 'moved-note.md'), 'utf8'), "move me\n");
 
 const siblingExecutionLogs = service.getExecutionLogs(siblingMission.id, { executionId: siblingExecutionSession.id });
 assert.match(siblingExecutionLogs.lines.join('\n'), /edit applied :: notes\.md \(text-append, bytes \+\d+, lines \+1\)/);
@@ -656,12 +691,16 @@ const siblingRollbackPreview = runCli({
 
 assert.equal(siblingRollbackPreview.rollback.status, 'preview');
 assert.equal(siblingRollbackPreview.rollback.ready, true);
-assert.equal(siblingRollbackPreview.rollback.itemCount, 4);
-assert.equal(siblingRollbackPreview.rollback.restoreCount, 3);
+assert.equal(siblingRollbackPreview.rollback.itemCount, 5);
+assert.equal(siblingRollbackPreview.rollback.restoreCount, 4);
 assert.equal(siblingRollbackPreview.rollback.deleteCount, 1);
 assert.equal(siblingRollbackPreview.rollback.items.every((item) => item.ready), true);
 assert.equal(
   siblingRollbackPreview.rollback.items.some((item) => item.action === 'delete-created-file'),
+  true,
+);
+assert.equal(
+  siblingRollbackPreview.rollback.items.some((item) => item.action === 'restore-moved-file'),
   true,
 );
 assert.match(fs.readFileSync(path.join(siblingWorkspaceDir, 'notes.md'), 'utf8'), /approved mutation audit line/);
@@ -672,14 +711,16 @@ const siblingRollback = runCli({
 });
 
 assert.equal(siblingRollback.rollback.status, 'completed');
-assert.equal(siblingRollback.rollback.itemCount, 4);
-assert.equal(siblingRollback.rollback.restoredCount, 3);
+assert.equal(siblingRollback.rollback.itemCount, 5);
+assert.equal(siblingRollback.rollback.restoredCount, 4);
 assert.equal(siblingRollback.rollback.deletedCount, 1);
 assert.equal(siblingRollback.execution.rollback.status, 'completed');
 assert.equal(fs.readFileSync(path.join(siblingWorkspaceDir, 'notes.md'), 'utf8'), "initial note\n");
 assert.match(fs.readFileSync(path.join(siblingWorkspaceDir, 'src', 'cli.mjs'), 'utf8'), /external workspace smoke'\);/);
 assert.equal(fs.existsSync(path.join(siblingWorkspaceDir, 'generated-rollback-note.md')), false);
 assert.equal(fs.readFileSync(path.join(siblingWorkspaceDir, 'obsolete.md'), 'utf8'), "obsolete note\n");
+assert.equal(fs.readFileSync(path.join(siblingWorkspaceDir, 'rename-me.md'), 'utf8'), "move me\n");
+assert.equal(fs.existsSync(path.join(siblingWorkspaceDir, 'renamed', 'moved-note.md')), false);
 
 const siblingRollbackLogs = runCli({
   rootDir: tempRoot,

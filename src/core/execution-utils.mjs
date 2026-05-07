@@ -59,7 +59,13 @@ const INLINE_EVALUATOR_FLAGS = new Map([
   ['perl', new Set(['-e'])],
 ]);
 
-const APPROVED_MUTATION_TEMPLATES = new Set(['text-append', 'text-replace', 'text-write-new', 'text-delete-file']);
+const APPROVED_MUTATION_TEMPLATES = new Set([
+  'file-move',
+  'text-append',
+  'text-replace',
+  'text-write-new',
+  'text-delete-file',
+]);
 
 function stableStringify(value) {
   if (Array.isArray(value)) {
@@ -397,7 +403,7 @@ export function buildExecutionCommandSpawnSpec(command) {
 
 function normalizeEditOperation(value) {
   const normalized = normalizeText(value, 'replace');
-  return ['append', 'delete', 'replace', 'write'].includes(normalized) ? normalized : 'replace';
+  return ['append', 'delete', 'move', 'replace', 'write'].includes(normalized) ? normalized : 'replace';
 }
 
 function inferMutationTemplate(operation) {
@@ -406,6 +412,9 @@ function inferMutationTemplate(operation) {
   }
   if (operation === 'delete') {
     return 'text-delete-file';
+  }
+  if (operation === 'move') {
+    return 'file-move';
   }
   if (operation === 'write') {
     return 'text-write-new';
@@ -418,12 +427,13 @@ function normalizeMutationTemplate(value, operation) {
   return APPROVED_MUTATION_TEMPLATES.has(normalized) ? normalized : '';
 }
 
-function validateEditStepPolicy({ step, stepLabel, targetPath }) {
+function validateEditStepPolicy({ step, stepLabel, targetPath, moveTargetPath = '' }) {
   const blockedReasons = [];
   const warningReasons = [];
   const operation = normalizeEditOperation(step.operation);
   const mutationTemplate = normalizeMutationTemplate(step.mutationTemplate, operation);
   const exists = fs.existsSync(targetPath);
+  const moveTargetExists = moveTargetPath ? fs.existsSync(moveTargetPath) : false;
   const existingContent = exists ? fs.readFileSync(targetPath, 'utf8') : '';
 
   if (!mutationTemplate) {
@@ -433,6 +443,9 @@ function validateEditStepPolicy({ step, stepLabel, targetPath }) {
 
   if (isSecretLikePath(step.filePath || '')) {
     blockedReasons.push(`${stepLabel}: secret-like path는 edit step 대상이 될 수 없습니다 (${step.filePath}).`);
+  }
+  if (step.targetPath && isSecretLikePath(step.targetPath)) {
+    blockedReasons.push(`${stepLabel}: secret-like path는 move 대상이 될 수 없습니다 (${step.targetPath}).`);
   }
 
   if (mutationTemplate === 'text-append') {
@@ -479,6 +492,24 @@ function validateEditStepPolicy({ step, stepLabel, targetPath }) {
     }
     if (!exists) {
       blockedReasons.push(`${stepLabel}: text-delete-file 대상 파일이 존재하지 않습니다 (${step.filePath}).`);
+    }
+  }
+
+  if (mutationTemplate === 'file-move') {
+    if (operation !== 'move') {
+      blockedReasons.push(`${stepLabel}: file-move template은 move operation만 허용합니다.`);
+    }
+    if (!exists) {
+      blockedReasons.push(`${stepLabel}: file-move source 파일이 존재하지 않습니다 (${step.filePath}).`);
+    }
+    if (!normalizeText(step.targetPath)) {
+      blockedReasons.push(`${stepLabel}: file-move template에는 targetPath가 필요합니다.`);
+    }
+    if (moveTargetPath && path.resolve(targetPath) === path.resolve(moveTargetPath)) {
+      blockedReasons.push(`${stepLabel}: file-move source와 targetPath가 같습니다 (${step.filePath}).`);
+    }
+    if (moveTargetExists) {
+      blockedReasons.push(`${stepLabel}: file-move targetPath가 이미 존재합니다 (${step.targetPath}).`);
     }
   }
 
@@ -802,6 +833,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
       const kind = inferVerificationKind(normalizeStepKind(step.kind), command);
       const cwd = sanitizeRelativePath(step.cwd || '.');
       const relativeFilePath = sanitizeRelativePath(step.filePath || step.path || '');
+      const relativeTargetPath = sanitizeRelativePath(step.targetPath || step.toPath || step.destinationPath || '');
       const content = typeof step.content === 'string' ? step.content : '';
       const operation = normalizeEditOperation(step.operation);
       return {
@@ -818,6 +850,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
         reason: normalizeText(step.reason, '실행 단계 이유가 제공되지 않았습니다.'),
         replaceText: typeof step.replaceText === 'string' ? step.replaceText : '',
         riskClassification: normalizeText(step.riskClassification, kind === 'edit' ? 'medium' : 'low'),
+        targetPath: relativeTargetPath,
         title: normalizeText(step.title, `${index + 1}단계 실행`),
         verificationTarget: normalizeText(step.verificationTarget),
       };
@@ -832,6 +865,9 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
         }
         if (step.mutationTemplate === 'text-delete-file') {
           return step.operation === 'delete';
+        }
+        if (step.mutationTemplate === 'file-move') {
+          return step.operation === 'move' && Boolean(step.targetPath) && !isPlaceholderFilePath(step.targetPath);
         }
         return !isPlaceholderContent(step.content);
       }
@@ -909,13 +945,18 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
         blockedItems.push(`${stepLabel}: edit step에 filePath가 없습니다.`);
         continue;
       }
-      const editPolicy = validateEditStepPolicy({ step, stepLabel, targetPath });
+      const moveTargetPath = step.targetPath ? path.resolve(workspacePath, step.targetPath) : '';
+      if (moveTargetPath && !isInsideRoot(rootDir, moveTargetPath)) {
+        blockedItems.push(`${stepLabel}: move 대상 파일이 현재 워크스페이스 밖에 있습니다 (${moveTargetPath}).`);
+        continue;
+      }
+      const editPolicy = validateEditStepPolicy({ moveTargetPath, step, stepLabel, targetPath });
       if (editPolicy.blockedReasons.length) {
         blockedItems.push(...editPolicy.blockedReasons);
         continue;
       }
       warningItems.push(...editPolicy.warningReasons);
-      allowedItems.push(`${stepLabel}: edit ${step.mutationTemplate} ${step.filePath}`);
+      allowedItems.push(`${stepLabel}: edit ${step.mutationTemplate} ${step.filePath}${step.targetPath ? ` -> ${step.targetPath}` : ''}`);
       continue;
     }
 

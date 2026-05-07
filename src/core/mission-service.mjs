@@ -3721,6 +3721,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
     }
 
+    if (step.operation === 'move') {
+      if (!existedBefore) {
+        throw new Error(`file-move requires an existing source file ${step.filePath}`);
+      }
+      return existingContent;
+    }
+
     if (step.operation === 'delete') {
       if (!existedBefore) {
         throw new Error(`text-delete-file requires an existing file ${step.filePath}`);
@@ -3747,6 +3754,17 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function buildRollbackPreview({ afterContent, beforeContent, existedBefore, step }) {
+    if (step.mutationTemplate === 'file-move' && existedBefore) {
+      return {
+        action: 'restore-moved-file',
+        expectedCurrentFilePath: step.targetPath || '',
+        expectedCurrentSha256: hashTextContent(afterContent),
+        ready: true,
+        restoreFilePath: step.filePath || '',
+        restoreSha256: hashTextContent(beforeContent),
+      };
+    }
+
     if (step.mutationTemplate === 'text-delete-file' && existedBefore) {
       return {
         action: 'restore-deleted-file',
@@ -3797,27 +3815,40 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const editSteps = ensureArray(manifest?.steps).filter((step) => step.kind === 'edit');
     const items = editSteps.map((step) => {
       const targetPath = path.resolve(workspaceRoot, step.filePath || '');
-      const pathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
+      const moveTargetPath = step.targetPath ? path.resolve(workspaceRoot, step.targetPath) : '';
+      const sourcePathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
+      const targetPathInsideWorkspace = !moveTargetPath || isPathInsideRoot(workspaceRoot, moveTargetPath);
+      const pathInsideWorkspace = sourcePathInsideWorkspace && targetPathInsideWorkspace;
       const existedBefore = pathInsideWorkspace && fs.existsSync(targetPath);
+      const moveTargetExistsBefore = pathInsideWorkspace && moveTargetPath ? fs.existsSync(moveTargetPath) : false;
       const beforeContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
       let afterContent = beforeContent;
       let predictionError = '';
 
       if (pathInsideWorkspace) {
         try {
+          if (step.operation === 'move' && !step.targetPath) {
+            throw new Error(`file-move requires targetPath for ${step.title}`);
+          }
+          if (step.operation === 'move' && moveTargetExistsBefore) {
+            throw new Error(`file-move targetPath already exists ${step.targetPath}`);
+          }
           afterContent = buildNextEditContent(step, beforeContent, existedBefore);
         } catch (error) {
           predictionError = error instanceof Error ? error.message : String(error);
         }
-      } else {
+      } else if (!sourcePathInsideWorkspace) {
         predictionError = `Edit path escapes selected workspace: ${targetPath}`;
+      } else {
+        predictionError = `file-move targetPath escapes selected workspace: ${moveTargetPath}`;
       }
 
       const beforeBytes = Buffer.byteLength(beforeContent, 'utf8');
       const afterBytes = Buffer.byteLength(afterContent, 'utf8');
       const beforeLineCount = countTextLines(beforeContent);
       const afterLineCount = countTextLines(afterContent);
-      const existsAfter = !predictionError && step.operation !== 'delete';
+      const existsAfter = !predictionError && !['delete', 'move'].includes(step.operation);
+      const targetExistsAfter = !predictionError && step.operation === 'move';
 
       return {
         afterBytes,
@@ -3848,6 +3879,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               existedBefore,
               step,
             }),
+        targetExistsAfter,
+        targetFilePath: step.targetPath || '',
+        targetPathInsideWorkspace,
         title: step.title,
       };
     });
@@ -3855,7 +3889,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       counts[item.mutationTemplate] = (counts[item.mutationTemplate] || 0) + 1;
       return counts;
     }, {});
-    const filePaths = [...new Set(items.map((item) => item.filePath).filter(Boolean))];
+    const filePaths = [
+      ...new Set(
+        items
+          .flatMap((item) => [item.filePath, item.targetFilePath])
+          .filter(Boolean),
+      ),
+    ];
     const rollbackReadyCount = items.filter((item) => item.rollbackPreview?.ready === true).length;
 
     return {
@@ -4049,6 +4089,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     existsAfter = true,
     rollbackAction = '',
     rollbackSnapshotPath = '',
+    targetExistsAfter = false,
+    targetFilePath = '',
   }) {
     const beforeBytes = Buffer.byteLength(beforeContent, 'utf8');
     const afterBytes = Buffer.byteLength(afterContent, 'utf8');
@@ -4063,7 +4105,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       beforeLineCount,
       beforeSha256: hashTextContent(beforeContent),
       byteDelta: afterBytes - beforeBytes,
-      changed: beforeContent !== afterContent,
+      changed: beforeContent !== afterContent || Boolean(targetFilePath) || Boolean(existedBefore) !== Boolean(existsAfter),
       existedBefore,
       existsAfter: Boolean(existsAfter),
       filePath,
@@ -4073,6 +4115,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       rollbackAction: rollbackAction || (existedBefore ? 'restore-snapshot' : 'delete-created-file'),
       rollbackReady: existedBefore ? Boolean(rollbackSnapshotPath) : true,
       rollbackSnapshotPath,
+      targetExistsAfter: Boolean(targetExistsAfter),
+      targetFilePath,
     };
   }
 
@@ -4121,9 +4165,42 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (rollbackSnapshotPath) {
       fs.writeFileSync(rollbackSnapshotPath, existingContent, 'utf8');
     }
-    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
     const nextContent = buildNextEditContent(step, existingContent, existedBefore);
+
+    if (step.operation === 'move') {
+      if (!step.targetPath) {
+        throw new Error(`file-move requires targetPath for ${step.filePath}`);
+      }
+      const moveTargetPath = path.resolve(workspaceRoot, step.targetPath);
+      if (!isPathInsideRoot(workspaceRoot, moveTargetPath)) {
+        throw new Error(`file-move targetPath escapes selected workspace: ${moveTargetPath}`);
+      }
+      if (path.resolve(targetPath) === path.resolve(moveTargetPath)) {
+        throw new Error(`file-move source and targetPath are identical for ${step.filePath}`);
+      }
+      if (fs.existsSync(moveTargetPath)) {
+        throw new Error(`file-move targetPath already exists: ${step.targetPath}`);
+      }
+
+      fs.mkdirSync(path.dirname(moveTargetPath), { recursive: true });
+      fs.renameSync(targetPath, moveTargetPath);
+      return buildMutationAudit({
+        afterContent: nextContent,
+        beforeContent: existingContent,
+        existedBefore,
+        existsAfter: false,
+        filePath: step.filePath,
+        mutationTemplate: step.mutationTemplate,
+        operation: step.operation,
+        rollbackAction: 'restore-moved-file',
+        rollbackSnapshotPath,
+        targetExistsAfter: true,
+        targetFilePath: step.targetPath,
+      });
+    }
+
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
     const existsAfter = step.operation !== 'delete';
     if (existsAfter) {
@@ -4194,17 +4271,28 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const mutationAudits = ensureArray(executionSession.mutationAudits)
       .filter((audit) => normalizeText(audit.filePath))
       .reverse();
-
-    const items = mutationAudits.map((audit, index) => {
-      const targetPath = path.resolve(workspaceRoot, audit.filePath || '');
-      const pathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
-      const action = normalizeText(audit.rollbackAction, audit.existedBefore ? 'restore-snapshot' : 'delete-created-file');
-      const expectedCurrentSha256 = normalizeText(audit.afterSha256);
-      const expectedCurrentExists = audit.existsAfter !== false;
+    const readSimulatedOrCurrentState = (targetPath) => {
       const targetKey = path.resolve(targetPath);
-      const currentState = simulatedTargetStates.has(targetKey)
+      return simulatedTargetStates.has(targetKey)
         ? simulatedTargetStates.get(targetKey)
         : readRollbackTargetState(targetPath);
+    };
+
+    const items = mutationAudits.map((audit, index) => {
+      const action = normalizeText(audit.rollbackAction, audit.existedBefore ? 'restore-snapshot' : 'delete-created-file');
+      const isMoveRestore = action === 'restore-moved-file';
+      const sourcePath = path.resolve(workspaceRoot, audit.filePath || '');
+      const moveTargetRelativePath = normalizeText(audit.targetFilePath);
+      const targetPath = isMoveRestore ? path.resolve(workspaceRoot, moveTargetRelativePath || '') : sourcePath;
+      const sourcePathInsideWorkspace = isPathInsideRoot(workspaceRoot, sourcePath);
+      const targetPathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
+      const pathInsideWorkspace = targetPathInsideWorkspace && (!isMoveRestore || sourcePathInsideWorkspace);
+      const expectedCurrentSha256 = normalizeText(audit.afterSha256);
+      const expectedCurrentExists = isMoveRestore ? audit.targetExistsAfter !== false : audit.existsAfter !== false;
+      const targetKey = path.resolve(targetPath);
+      const sourceKey = path.resolve(sourcePath);
+      const currentState = readSimulatedOrCurrentState(targetPath);
+      const sourceState = isMoveRestore ? readSimulatedOrCurrentState(sourcePath) : null;
       let restoreContent = '';
       let restoreSha256 = '';
       let rollbackSnapshotReady = !audit.existedBefore;
@@ -4212,7 +4300,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       let reason = '';
 
       if (!pathInsideWorkspace) {
-        reason = `Rollback target escapes selected workspace: ${targetPath}`;
+        reason = isMoveRestore
+          ? `Rollback move source or target escapes selected workspace: ${audit.filePath} -> ${moveTargetRelativePath}`
+          : `Rollback target escapes selected workspace: ${targetPath}`;
+      } else if (isMoveRestore && !moveTargetRelativePath) {
+        reason = `Rollback move audit is missing targetFilePath for ${audit.filePath}`;
       } else if (!expectedCurrentSha256) {
         reason = `Mutation audit is missing afterSha256 for ${audit.filePath}`;
       } else if (expectedCurrentExists && !currentState.exists) {
@@ -4221,6 +4313,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         reason = `Rollback target unexpectedly exists before rollback: ${audit.filePath}`;
       } else if (expectedCurrentExists && currentState.sha256 !== expectedCurrentSha256) {
         reason = `Rollback hash guard failed for ${audit.filePath}`;
+      } else if (isMoveRestore && sourceState?.exists) {
+        reason = `Rollback move source path already exists before rollback: ${audit.filePath}`;
       } else if (action === 'delete-created-file') {
         ready = true;
         simulatedTargetStates.set(targetKey, {
@@ -4244,11 +4338,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             reason = `Rollback snapshot hash does not match beforeSha256 for ${audit.filePath}`;
           } else {
             ready = true;
-            simulatedTargetStates.set(targetKey, {
-              content: restoreContent,
-              exists: true,
-              sha256: restoreSha256,
-            });
+            if (isMoveRestore) {
+              simulatedTargetStates.set(targetKey, {
+                content: '',
+                exists: false,
+                sha256: '',
+              });
+              simulatedTargetStates.set(sourceKey, {
+                content: restoreContent,
+                exists: true,
+                sha256: restoreSha256,
+              });
+            } else {
+              simulatedTargetStates.set(targetKey, {
+                content: restoreContent,
+                exists: true,
+                sha256: restoreSha256,
+              });
+            }
           }
         }
       }
@@ -4269,7 +4376,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         restoreSha256,
         rollbackSnapshotPath: normalizeText(audit.rollbackSnapshotPath),
         rollbackSnapshotReady,
+        sourceExistsBeforeRollback: sourceState?.exists ?? null,
+        sourcePath: isMoveRestore ? sourcePath : '',
+        sourcePathInsideWorkspace,
+        targetFilePath: moveTargetRelativePath,
         targetPath,
+        targetPathInsideWorkspace,
       };
     });
 
@@ -4374,6 +4486,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           status: 'deleted',
         });
         appendExecutionLog(executionSession.id, `[${now()}] rollback delete-created-file :: ${item.filePath}`);
+        continue;
+      }
+
+      if (item.action === 'restore-moved-file') {
+        const sourceState = readRollbackTargetState(item.sourcePath);
+        if (sourceState.exists) {
+          throw new Error(`Rollback move source path changed during rollback for ${item.filePath}`);
+        }
+        fs.mkdirSync(path.dirname(item.sourcePath), { recursive: true });
+        fs.renameSync(item.targetPath, item.sourcePath);
+        appliedItems.push({
+          ...item,
+          status: 'restored',
+        });
+        appendExecutionLog(
+          executionSession.id,
+          `[${now()}] rollback restore-moved-file :: ${item.targetFilePath} -> ${item.filePath}`,
+        );
         continue;
       }
 
