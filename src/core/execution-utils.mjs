@@ -59,7 +59,12 @@ const INLINE_EVALUATOR_FLAGS = new Map([
   ['perl', new Set(['-e'])],
 ]);
 
+const DIRECTORY_MOVE_MAX_BYTES = 1_000_000;
+const DIRECTORY_MOVE_MAX_ENTRIES = 300;
+const DIRECTORY_MOVE_MAX_FILES = 200;
+
 const APPROVED_MUTATION_TEMPLATES = new Set([
+  'directory-move',
   'file-move',
   'text-append',
   'text-replace',
@@ -231,6 +236,10 @@ function isSecretLikePath(value) {
     basename === 'id_ecdsa' ||
     basename === 'id_ed25519' ||
     /\.(?:key|pem|p12|pfx)$/.test(basename) ||
+    normalized === '.git' ||
+    normalized.startsWith('.git/') ||
+    normalized === '.ssh' ||
+    normalized.startsWith('.ssh/') ||
     normalized.includes('/.ssh/') ||
     normalized.includes('/.git/')
   );
@@ -427,14 +436,87 @@ function normalizeMutationTemplate(value, operation) {
   return APPROVED_MUTATION_TEMPLATES.has(normalized) ? normalized : '';
 }
 
+function isPathInsideCandidateRoot(rootPath, candidatePath) {
+  const relativePath = path.relative(rootPath, candidatePath);
+  return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+}
+
+function scanDirectoryMovePolicy(sourcePath, stepLabel) {
+  const blockedReasons = [];
+  let blockedForBytes = false;
+  let blockedForEntryCount = false;
+  let blockedForFileCount = false;
+  let entryCount = 0;
+  let fileCount = 0;
+  let totalBytes = 0;
+
+  function walk(currentPath) {
+    const entries = fs.readdirSync(currentPath, { withFileTypes: true })
+      .sort((left, right) => left.name.localeCompare(right.name));
+
+    for (const entry of entries) {
+      const childPath = path.join(currentPath, entry.name);
+      const relativePath = path.relative(sourcePath, childPath).replaceAll(path.sep, '/');
+      entryCount += 1;
+
+      if (entryCount > DIRECTORY_MOVE_MAX_ENTRIES && !blockedForEntryCount) {
+        blockedForEntryCount = true;
+        blockedReasons.push(`${stepLabel}: directory-move source 항목 수가 한도를 초과했습니다 (${entryCount}/${DIRECTORY_MOVE_MAX_ENTRIES}).`);
+      }
+
+      if (isSecretLikePath(relativePath)) {
+        blockedReasons.push(`${stepLabel}: directory-move source에 secret-like descendant가 포함되어 있습니다 (${relativePath}).`);
+        continue;
+      }
+
+      if (entry.isSymbolicLink()) {
+        blockedReasons.push(`${stepLabel}: directory-move source에 symbolic link가 포함되어 있습니다 (${relativePath}).`);
+        continue;
+      }
+
+      if (entry.isDirectory()) {
+        walk(childPath);
+        continue;
+      }
+
+      if (!entry.isFile()) {
+        blockedReasons.push(`${stepLabel}: directory-move source에 regular file이 아닌 항목이 포함되어 있습니다 (${relativePath}).`);
+        continue;
+      }
+
+      const stat = fs.statSync(childPath);
+      fileCount += 1;
+      totalBytes += stat.size;
+      if (fileCount > DIRECTORY_MOVE_MAX_FILES && !blockedForFileCount) {
+        blockedForFileCount = true;
+        blockedReasons.push(`${stepLabel}: directory-move source 파일 수가 한도를 초과했습니다 (${fileCount}/${DIRECTORY_MOVE_MAX_FILES}).`);
+      }
+      if (totalBytes > DIRECTORY_MOVE_MAX_BYTES && !blockedForBytes) {
+        blockedForBytes = true;
+        blockedReasons.push(`${stepLabel}: directory-move source byte 크기가 한도를 초과했습니다 (${totalBytes}/${DIRECTORY_MOVE_MAX_BYTES}).`);
+      }
+    }
+  }
+
+  walk(sourcePath);
+
+  return {
+    blockedReasons,
+    fileCount,
+    totalBytes,
+  };
+}
+
 function validateEditStepPolicy({ step, stepLabel, targetPath, moveTargetPath = '' }) {
   const blockedReasons = [];
   const warningReasons = [];
   const operation = normalizeEditOperation(step.operation);
   const mutationTemplate = normalizeMutationTemplate(step.mutationTemplate, operation);
   const exists = fs.existsSync(targetPath);
+  const targetStat = exists ? fs.statSync(targetPath) : null;
+  const targetIsDirectory = Boolean(targetStat?.isDirectory());
   const moveTargetExists = moveTargetPath ? fs.existsSync(moveTargetPath) : false;
-  const existingContent = exists ? fs.readFileSync(targetPath, 'utf8') : '';
+  const existingContent = exists && !targetIsDirectory ? fs.readFileSync(targetPath, 'utf8') : '';
 
   if (!mutationTemplate) {
     blockedReasons.push(`${stepLabel}: approved mutation template이 필요합니다.`);
@@ -502,6 +584,9 @@ function validateEditStepPolicy({ step, stepLabel, targetPath, moveTargetPath = 
     if (!exists) {
       blockedReasons.push(`${stepLabel}: file-move source 파일이 존재하지 않습니다 (${step.filePath}).`);
     }
+    if (targetIsDirectory) {
+      blockedReasons.push(`${stepLabel}: file-move source는 regular file이어야 합니다 (${step.filePath}).`);
+    }
     if (!normalizeText(step.targetPath)) {
       blockedReasons.push(`${stepLabel}: file-move template에는 targetPath가 필요합니다.`);
     }
@@ -510,6 +595,32 @@ function validateEditStepPolicy({ step, stepLabel, targetPath, moveTargetPath = 
     }
     if (moveTargetExists) {
       blockedReasons.push(`${stepLabel}: file-move targetPath가 이미 존재합니다 (${step.targetPath}).`);
+    }
+  }
+
+  if (mutationTemplate === 'directory-move') {
+    if (operation !== 'move') {
+      blockedReasons.push(`${stepLabel}: directory-move template은 move operation만 허용합니다.`);
+    }
+    if (!exists) {
+      blockedReasons.push(`${stepLabel}: directory-move source 디렉터리가 존재하지 않습니다 (${step.filePath}).`);
+    } else if (!targetIsDirectory) {
+      blockedReasons.push(`${stepLabel}: directory-move source는 directory여야 합니다 (${step.filePath}).`);
+    }
+    if (!normalizeText(step.targetPath)) {
+      blockedReasons.push(`${stepLabel}: directory-move template에는 targetPath가 필요합니다.`);
+    }
+    if (moveTargetPath && path.resolve(targetPath) === path.resolve(moveTargetPath)) {
+      blockedReasons.push(`${stepLabel}: directory-move source와 targetPath가 같습니다 (${step.filePath}).`);
+    }
+    if (moveTargetPath && isPathInsideCandidateRoot(targetPath, moveTargetPath)) {
+      blockedReasons.push(`${stepLabel}: directory-move targetPath는 source 내부일 수 없습니다 (${step.targetPath}).`);
+    }
+    if (moveTargetExists) {
+      blockedReasons.push(`${stepLabel}: directory-move targetPath가 이미 존재합니다 (${step.targetPath}).`);
+    }
+    if (exists && targetIsDirectory && !blockedReasons.length) {
+      blockedReasons.push(...scanDirectoryMovePolicy(targetPath, stepLabel).blockedReasons);
     }
   }
 
@@ -867,6 +978,9 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
           return step.operation === 'delete';
         }
         if (step.mutationTemplate === 'file-move') {
+          return step.operation === 'move' && Boolean(step.targetPath) && !isPlaceholderFilePath(step.targetPath);
+        }
+        if (step.mutationTemplate === 'directory-move') {
           return step.operation === 'move' && Boolean(step.targetPath) && !isPlaceholderFilePath(step.targetPath);
         }
         return !isPlaceholderContent(step.content);

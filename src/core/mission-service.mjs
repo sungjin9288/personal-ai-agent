@@ -100,6 +100,9 @@ function normalizeStringList(items) {
   return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
 }
 
+const DIRECTORY_MOVE_MAX_BYTES = 1_000_000;
+const DIRECTORY_MOVE_MAX_ENTRIES = 300;
+const DIRECTORY_MOVE_MAX_FILES = 200;
 const MISSION_ATTACHMENT_MAX_CONTENT_CHARS = 12_000;
 const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
@@ -3587,6 +3590,31 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
   }
 
+  function isPathInsideCandidateRoot(rootPath, candidatePath) {
+    const relativePath = path.relative(rootPath, candidatePath);
+    return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+  }
+
+  function isSecretLikeMutationPath(value) {
+    const normalized = normalizeText(value).replaceAll('\\', '/').toLowerCase();
+    const basename = path.basename(normalized);
+    return (
+      basename === '.env' ||
+      basename.startsWith('.env.') ||
+      basename === 'id_rsa' ||
+      basename === 'id_dsa' ||
+      basename === 'id_ecdsa' ||
+      basename === 'id_ed25519' ||
+      /\.(?:key|pem|p12|pfx)$/.test(basename) ||
+      normalized === '.git' ||
+      normalized.startsWith('.git/') ||
+      normalized === '.ssh' ||
+      normalized.startsWith('.ssh/') ||
+      normalized.includes('/.ssh/') ||
+      normalized.includes('/.git/')
+    );
+  }
+
   docService.ensureDocs();
 
   function getExecutionDir(missionId, executionSessionId) {
@@ -3819,9 +3847,95 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const sourcePathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
       const targetPathInsideWorkspace = !moveTargetPath || isPathInsideRoot(workspaceRoot, moveTargetPath);
       const pathInsideWorkspace = sourcePathInsideWorkspace && targetPathInsideWorkspace;
+      const isDirectoryMove = step.mutationTemplate === 'directory-move';
+
+      if (isDirectoryMove) {
+        let predictionError = '';
+        let beforeState = buildEmptyMutationPathState();
+
+        if (pathInsideWorkspace) {
+          try {
+            if (isSecretLikeMutationPath(step.filePath) || isSecretLikeMutationPath(step.targetPath)) {
+              throw new Error(`directory-move refuses secret-like source or target path for ${step.title}`);
+            }
+            if (!step.targetPath) {
+              throw new Error(`directory-move requires targetPath for ${step.title}`);
+            }
+            if (fs.existsSync(moveTargetPath)) {
+              throw new Error(`directory-move targetPath already exists ${step.targetPath}`);
+            }
+            if (path.resolve(targetPath) === path.resolve(moveTargetPath)) {
+              throw new Error(`directory-move source and targetPath are identical for ${step.filePath}`);
+            }
+            if (isPathInsideCandidateRoot(targetPath, moveTargetPath)) {
+              throw new Error(`directory-move targetPath cannot be inside source ${step.targetPath}`);
+            }
+            if (!fs.existsSync(targetPath)) {
+              throw new Error(`directory-move source directory does not exist ${step.filePath}`);
+            }
+            const sourceStat = fs.lstatSync(targetPath);
+            if (!sourceStat.isDirectory()) {
+              throw new Error(`directory-move source is not a directory ${step.filePath}`);
+            }
+            beforeState = collectDirectoryMoveState(targetPath);
+          } catch (error) {
+            predictionError = error instanceof Error ? error.message : String(error);
+          }
+        } else if (!sourcePathInsideWorkspace) {
+          predictionError = `Edit path escapes selected workspace: ${targetPath}`;
+        } else {
+          predictionError = `directory-move targetPath escapes selected workspace: ${moveTargetPath}`;
+        }
+
+        const existsAfter = false;
+        const targetExistsAfter = !predictionError;
+
+        return {
+          afterBytes: beforeState.bytes,
+          afterLineCount: beforeState.lineCount,
+          afterSha256: beforeState.sha256,
+          beforeBytes: beforeState.bytes,
+          beforeLineCount: beforeState.lineCount,
+          beforeSha256: beforeState.sha256,
+          byteDelta: 0,
+          directoryEntryCount: beforeState.entryCount,
+          directoryFileCount: beforeState.fileCount,
+          existedBefore: beforeState.exists,
+          existsAfter,
+          filePath: step.filePath || '',
+          id: step.id,
+          lineDelta: 0,
+          mutationTemplate: step.mutationTemplate || '',
+          operation: step.operation || '',
+          pathInsideWorkspace,
+          pathKind: beforeState.kind,
+          predictionError,
+          rollbackPreview: predictionError
+            ? {
+                action: 'manual-review-required',
+                ready: false,
+                reason: predictionError,
+              }
+            : {
+                action: 'restore-moved-file',
+                expectedCurrentFilePath: step.targetPath || '',
+                expectedCurrentSha256: beforeState.sha256,
+                ready: true,
+                restoreFilePath: step.filePath || '',
+                restoreSha256: beforeState.sha256,
+                restoreStrategy: 'rename-directory-back',
+              },
+          targetExistsAfter,
+          targetFilePath: step.targetPath || '',
+          targetPathInsideWorkspace,
+          title: step.title,
+        };
+      }
+
       const existedBefore = pathInsideWorkspace && fs.existsSync(targetPath);
       const moveTargetExistsBefore = pathInsideWorkspace && moveTargetPath ? fs.existsSync(moveTargetPath) : false;
-      const beforeContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
+      const targetStat = existedBefore ? fs.lstatSync(targetPath) : null;
+      const beforeContent = existedBefore && !targetStat?.isDirectory() ? fs.readFileSync(targetPath, 'utf8') : '';
       let afterContent = beforeContent;
       let predictionError = '';
 
@@ -4079,6 +4193,164 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return value.endsWith('\n') ? value.split('\n').length - 1 : value.split('\n').length;
   }
 
+  function hashBufferContent(content) {
+    return crypto.createHash('sha256').update(content).digest('hex');
+  }
+
+  function collectDirectoryMoveState(directoryPath) {
+    const rootPath = path.resolve(directoryPath);
+    const digestEntries = [];
+    let directoryCount = 0;
+    let fileCount = 0;
+    let totalBytes = 0;
+
+    function walk(currentPath) {
+      const entries = fs.readdirSync(currentPath, { withFileTypes: true })
+        .sort((left, right) => left.name.localeCompare(right.name));
+
+      for (const entry of entries) {
+        const childPath = path.join(currentPath, entry.name);
+        const relativePath = path.relative(rootPath, childPath).replaceAll(path.sep, '/');
+
+        if (isSecretLikeMutationPath(relativePath)) {
+          throw new Error(`directory-move source contains a secret-like descendant: ${relativePath}`);
+        }
+        if (entry.isSymbolicLink()) {
+          throw new Error(`directory-move source contains a symbolic link: ${relativePath}`);
+        }
+        if (entry.isDirectory()) {
+          directoryCount += 1;
+          digestEntries.push({
+            bytes: 0,
+            kind: 'directory',
+            relativePath,
+            sha256: '',
+          });
+          if (digestEntries.length > DIRECTORY_MOVE_MAX_ENTRIES) {
+            throw new Error(`directory-move source entry count exceeds ${DIRECTORY_MOVE_MAX_ENTRIES}`);
+          }
+          walk(childPath);
+          continue;
+        }
+        if (!entry.isFile()) {
+          throw new Error(`directory-move source contains a non-regular file: ${relativePath}`);
+        }
+
+        const content = fs.readFileSync(childPath);
+        const bytes = content.byteLength;
+        fileCount += 1;
+        totalBytes += bytes;
+        digestEntries.push({
+          bytes,
+          kind: 'file',
+          relativePath,
+          sha256: hashBufferContent(content),
+        });
+
+        if (fileCount > DIRECTORY_MOVE_MAX_FILES) {
+          throw new Error(`directory-move source file count exceeds ${DIRECTORY_MOVE_MAX_FILES}`);
+        }
+        if (digestEntries.length > DIRECTORY_MOVE_MAX_ENTRIES) {
+          throw new Error(`directory-move source entry count exceeds ${DIRECTORY_MOVE_MAX_ENTRIES}`);
+        }
+        if (totalBytes > DIRECTORY_MOVE_MAX_BYTES) {
+          throw new Error(`directory-move source byte size exceeds ${DIRECTORY_MOVE_MAX_BYTES}`);
+        }
+      }
+    }
+
+    walk(rootPath);
+
+    const digest = crypto.createHash('sha256');
+    for (const entry of digestEntries) {
+      digest.update(entry.kind);
+      digest.update('\0');
+      digest.update(entry.relativePath);
+      digest.update('\0');
+      digest.update(String(entry.bytes));
+      digest.update('\0');
+      digest.update(entry.sha256);
+      digest.update('\n');
+    }
+
+    return {
+      bytes: totalBytes,
+      content: '',
+      directoryCount,
+      entryCount: digestEntries.length,
+      exists: true,
+      fileCount,
+      kind: 'directory',
+      lineCount: 0,
+      sha256: digest.digest('hex'),
+    };
+  }
+
+  function buildEmptyMutationPathState() {
+    return {
+      bytes: 0,
+      content: '',
+      directoryCount: 0,
+      entryCount: 0,
+      exists: false,
+      fileCount: 0,
+      kind: 'missing',
+      lineCount: 0,
+      reason: '',
+      sha256: '',
+    };
+  }
+
+  function readMutationPathState(targetPath) {
+    if (!fs.existsSync(targetPath)) {
+      return buildEmptyMutationPathState();
+    }
+
+    try {
+      const stat = fs.lstatSync(targetPath);
+      if (stat.isSymbolicLink()) {
+        return {
+          ...buildEmptyMutationPathState(),
+          exists: true,
+          kind: 'unsupported',
+          reason: `Rollback target is a symbolic link: ${targetPath}`,
+        };
+      }
+      if (stat.isDirectory()) {
+        return collectDirectoryMoveState(targetPath);
+      }
+      if (!stat.isFile()) {
+        return {
+          ...buildEmptyMutationPathState(),
+          exists: true,
+          kind: 'unsupported',
+          reason: `Rollback target is not a regular file or directory: ${targetPath}`,
+        };
+      }
+
+      const content = fs.readFileSync(targetPath, 'utf8');
+      return {
+        bytes: Buffer.byteLength(content, 'utf8'),
+        content,
+        directoryCount: 0,
+        entryCount: 1,
+        exists: true,
+        fileCount: 1,
+        kind: 'file',
+        lineCount: countTextLines(content),
+        reason: '',
+        sha256: hashTextContent(content),
+      };
+    } catch (error) {
+      return {
+        ...buildEmptyMutationPathState(),
+        exists: true,
+        kind: 'unsupported',
+        reason: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
   function buildMutationAudit({
     afterContent,
     beforeContent,
@@ -4152,7 +4424,69 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       throw new Error(`Edit path escapes selected workspace: ${targetPath}`);
     }
 
+    if (step.mutationTemplate === 'directory-move') {
+      if (!step.targetPath) {
+        throw new Error(`directory-move requires targetPath for ${step.filePath}`);
+      }
+      if (isSecretLikeMutationPath(step.filePath) || isSecretLikeMutationPath(step.targetPath)) {
+        throw new Error(`directory-move refuses secret-like source or target path for ${step.filePath}`);
+      }
+      const moveTargetPath = path.resolve(workspaceRoot, step.targetPath);
+      if (!isPathInsideRoot(workspaceRoot, moveTargetPath)) {
+        throw new Error(`directory-move targetPath escapes selected workspace: ${moveTargetPath}`);
+      }
+      if (path.resolve(targetPath) === path.resolve(moveTargetPath)) {
+        throw new Error(`directory-move source and targetPath are identical for ${step.filePath}`);
+      }
+      if (isPathInsideCandidateRoot(targetPath, moveTargetPath)) {
+        throw new Error(`directory-move targetPath cannot be inside source: ${step.targetPath}`);
+      }
+      if (fs.existsSync(moveTargetPath)) {
+        throw new Error(`directory-move targetPath already exists: ${step.targetPath}`);
+      }
+      if (!fs.existsSync(targetPath)) {
+        throw new Error(`directory-move source directory does not exist: ${step.filePath}`);
+      }
+      const sourceStat = fs.lstatSync(targetPath);
+      if (!sourceStat.isDirectory()) {
+        throw new Error(`directory-move source is not a directory: ${step.filePath}`);
+      }
+
+      const beforeState = collectDirectoryMoveState(targetPath);
+      fs.mkdirSync(path.dirname(moveTargetPath), { recursive: true });
+      fs.renameSync(targetPath, moveTargetPath);
+      return {
+        afterBytes: beforeState.bytes,
+        afterLineCount: beforeState.lineCount,
+        afterSha256: beforeState.sha256,
+        beforeBytes: beforeState.bytes,
+        beforeLineCount: beforeState.lineCount,
+        beforeSha256: beforeState.sha256,
+        byteDelta: 0,
+        changed: true,
+        directoryEntryCount: beforeState.entryCount,
+        directoryFileCount: beforeState.fileCount,
+        existedBefore: true,
+        existsAfter: false,
+        filePath: step.filePath,
+        lineDelta: 0,
+        mutationTemplate: step.mutationTemplate,
+        operation: step.operation,
+        pathKind: 'directory',
+        rollbackAction: 'restore-moved-file',
+        rollbackReady: true,
+        rollbackSnapshotPath: '',
+        targetExistsAfter: true,
+        targetFilePath: step.targetPath,
+        targetPathKind: 'directory',
+      };
+    }
+
     const existedBefore = fs.existsSync(targetPath);
+    const targetStat = existedBefore ? fs.lstatSync(targetPath) : null;
+    if (targetStat?.isDirectory()) {
+      throw new Error(`Edit source is a directory and requires directory-move template: ${step.filePath}`);
+    }
     const existingContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
     const rollbackSnapshotPath = existedBefore
       ? buildRollbackSnapshotPath({
@@ -4249,20 +4583,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function readRollbackTargetState(targetPath) {
-    if (!fs.existsSync(targetPath)) {
-      return {
-        content: '',
-        exists: false,
-        sha256: '',
-      };
-    }
-
-    const content = fs.readFileSync(targetPath, 'utf8');
-    return {
-      content,
-      exists: true,
-      sha256: hashTextContent(content),
-    };
+    return readMutationPathState(targetPath);
   }
 
   function buildExecutionRollbackPlan(executionSession) {
@@ -4307,6 +4628,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         reason = `Rollback move audit is missing targetFilePath for ${audit.filePath}`;
       } else if (!expectedCurrentSha256) {
         reason = `Mutation audit is missing afterSha256 for ${audit.filePath}`;
+      } else if (expectedCurrentExists && currentState.reason) {
+        reason = `Rollback target cannot be hashed for ${audit.filePath}: ${currentState.reason}`;
       } else if (expectedCurrentExists && !currentState.exists) {
         reason = `Rollback target is missing before rollback: ${audit.filePath}`;
       } else if (!expectedCurrentExists && currentState.exists) {
@@ -4315,11 +4638,43 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         reason = `Rollback hash guard failed for ${audit.filePath}`;
       } else if (isMoveRestore && sourceState?.exists) {
         reason = `Rollback move source path already exists before rollback: ${audit.filePath}`;
+      } else if (
+        isMoveRestore &&
+        normalizeText(audit.beforeSha256) &&
+        normalizeText(audit.beforeSha256) !== expectedCurrentSha256
+      ) {
+        reason = `Rollback move before/after hash mismatch for ${audit.filePath}`;
+      } else if (isMoveRestore) {
+        ready = true;
+        restoreSha256 = normalizeText(audit.beforeSha256);
+        rollbackSnapshotReady = true;
+        simulatedTargetStates.set(targetKey, {
+          content: '',
+          directoryCount: 0,
+          entryCount: 0,
+          exists: false,
+          fileCount: 0,
+          kind: 'missing',
+          sha256: '',
+        });
+        simulatedTargetStates.set(sourceKey, {
+          content: currentState.content || '',
+          directoryCount: currentState.directoryCount || 0,
+          entryCount: currentState.entryCount || 0,
+          exists: true,
+          fileCount: currentState.fileCount || 0,
+          kind: currentState.kind || 'file',
+          sha256: restoreSha256 || currentState.sha256,
+        });
       } else if (action === 'delete-created-file') {
         ready = true;
         simulatedTargetStates.set(targetKey, {
           content: '',
+          directoryCount: 0,
+          entryCount: 0,
           exists: false,
+          fileCount: 0,
+          kind: 'missing',
           sha256: '',
         });
       } else {
@@ -4338,24 +4693,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             reason = `Rollback snapshot hash does not match beforeSha256 for ${audit.filePath}`;
           } else {
             ready = true;
-            if (isMoveRestore) {
-              simulatedTargetStates.set(targetKey, {
-                content: '',
-                exists: false,
-                sha256: '',
-              });
-              simulatedTargetStates.set(sourceKey, {
-                content: restoreContent,
-                exists: true,
-                sha256: restoreSha256,
-              });
-            } else {
-              simulatedTargetStates.set(targetKey, {
-                content: restoreContent,
-                exists: true,
-                sha256: restoreSha256,
-              });
-            }
+            simulatedTargetStates.set(targetKey, {
+              content: restoreContent,
+              directoryCount: 0,
+              entryCount: 1,
+              exists: true,
+              fileCount: 1,
+              kind: 'file',
+              sha256: restoreSha256,
+            });
           }
         }
       }
