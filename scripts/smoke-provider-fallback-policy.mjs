@@ -58,6 +58,37 @@ assert.equal(fallbackSessions.length, 2);
 assert.equal(fallbackSessions.find((session) => session.provider === 'anthropic')?.status, 'failed');
 assert.equal(fallbackSessions.find((session) => session.provider === 'stub')?.status, 'completed');
 
+const fallbackTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', fallbackMission.id],
+});
+
+assert.equal(fallbackTimeline.summary.providerFallbackRequested, true);
+assert.equal(fallbackTimeline.summary.providerFallbackAttemptCount, 2);
+assert.equal(fallbackTimeline.summary.providerFallbackUsedCount, 1);
+assert.deepEqual(fallbackTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic']);
+assert.deepEqual(fallbackTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
+assert.equal(fallbackTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 1);
+assert.equal(fallbackTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
+assert.equal(
+  fallbackTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-attempted' &&
+      event.providerFailureKind === 'config' &&
+      event.primaryProviderId === 'anthropic',
+  ),
+  true,
+);
+assert.equal(
+  fallbackTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-used' &&
+      event.providerId === 'stub' &&
+      event.primaryProviderId === 'anthropic',
+  ),
+  true,
+);
+
 const deterministicFailureMission = service.createMission({
   workspaceId: workspace.id,
   mode: 'knowledge',
@@ -82,6 +113,24 @@ assert.equal(deterministicFailureResult.providerFallback.fallbackUsed, false);
 assert.deepEqual(deterministicFailureResult.providerFallback.attemptedProviderIds, ['stub']);
 assert.equal(deterministicFailureResult.providerFallback.attempts.length, 1);
 assert.equal(deterministicFailureResult.providerFallback.attempts[0].providerFailure, null);
+
+const deterministicFailureTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', deterministicFailureMission.id],
+});
+
+assert.equal(deterministicFailureTimeline.summary.providerFallbackRequested, true);
+assert.equal(deterministicFailureTimeline.summary.providerFallbackAttemptCount, 1);
+assert.equal(deterministicFailureTimeline.summary.providerFallbackUsedCount, 0);
+assert.equal(
+  deterministicFailureTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-attempted' &&
+      event.providerFailureKind === null &&
+      /fallback stopped because no provider failure metadata was detected/.test(event.detail),
+  ),
+  true,
+);
 
 console.log(
   JSON.stringify(

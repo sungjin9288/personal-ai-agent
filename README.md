@@ -600,7 +600,7 @@ node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 
 `mission run mission_xxx` without `--provider` now resolves to `openai` when `OPENAI_API_KEY` is present. If OpenAI is not configured, it falls back to `stub` so local smoke runs and bootstrap still work without external credentials. Use `--provider anthropic` for side-by-side comparison or fallback experiments rather than the default execution path.
 
-`mission run mission_xxx --provider anthropic --fallback-provider stub` enables explicit mission-level failover. The fallback path only retries when the failed attempt has normalized provider failure metadata, so deterministic reviewer failures, approval gates, and specialist quality gates do not get hidden by provider fallback. CLI output includes `providerFallback` with attempted providers, selected provider, fallback usage, session ids, and the first provider failure summary.
+`mission run mission_xxx --provider anthropic --fallback-provider stub` enables explicit mission-level failover. The fallback path only retries when the failed attempt has normalized provider failure metadata, so deterministic reviewer failures, approval gates, and specialist quality gates do not get hidden by provider fallback. CLI output includes `providerFallback` with attempted providers, selected provider, fallback usage, session ids, and the first provider failure summary. `mission timeline` and `mission show` summary also expose provider fallback attempt and used counts, primary provider ids, selected fallback provider ids, and timeline events so failover remains auditable after the run output is gone.
 
 운영 콘솔에서도 같은 정책이 적용됩니다. UI에서 provider를 비워 두고 실행하면 현재 런타임 기본 provider 정책을 그대로 따릅니다.
 

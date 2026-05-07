@@ -92,6 +92,7 @@
 - [x] Target provider evidence intake gate implemented
 - [x] Target provider operations gate implemented
 - [x] Mission-level provider fallback policy implemented
+- [x] Mission-level provider fallback audit timeline implemented
 - [x] Provider attention fallback remediation path implemented
 - [x] Provider attention fallback command guidance implemented
 - [x] Target Hermes provider architecture gate implemented

@@ -7885,6 +7885,7 @@ function summarizeProviderExecutions(executions) {
   function summarizeMission(mission, filter = {}) {
     const parallelPlan = resolveMissionParallelPlan(mission);
     const sessions = listSessions(mission.id);
+    const rawSessions = store.listSessionsByMission(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
     const providerActivity = summarizeMissionProviderActivity(mission.id);
@@ -8084,6 +8085,7 @@ function summarizeProviderExecutions(executions) {
       providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
       providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
       providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
+      ...summarizeMissionProviderFallback({ mission, sessions: rawSessions }),
       specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
       specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
       specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
@@ -13869,8 +13871,73 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
   }
 
+  function buildProviderFallbackTimelineEvents({ mission, sessions }) {
+    return sessions
+      .filter((session) => session.sourceContext?.providerFallbackRequested)
+      .map((session) => {
+        const sourceContext = session.sourceContext || {};
+        const attempt = Number.isFinite(Number(sourceContext.providerFallbackAttempt))
+          ? Number(sourceContext.providerFallbackAttempt)
+          : 1;
+        const attemptCount = Number.isFinite(Number(sourceContext.providerFallbackAttemptCount))
+          ? Number(sourceContext.providerFallbackAttemptCount)
+          : 1;
+        const primaryProviderId = normalizeText(sourceContext.providerFallbackPrimary) || session.provider;
+        const fallbackProviderIds = ensureArray(sourceContext.providerFallbackFallbacks)
+          .map((providerId) => normalizeText(providerId))
+          .filter(Boolean);
+        const providerFailure = getSessionProviderFailureSummary(session.id);
+        const isFallbackAttempt = attempt > 1;
+        const noProviderFailureSuffix =
+          !isFallbackAttempt && session.status === 'failed' && !providerFailure
+            ? ' fallback stopped because no provider failure metadata was detected.'
+            : '';
+        const providerFailureSuffix = providerFailure
+          ? ` providerFailure=${providerFailure.failureKind}; role=${providerFailure.role || 'unknown'}.`
+          : '';
+
+        return {
+          at: session.endedAt || session.startedAt,
+          attempt,
+          attemptCount,
+          detail: isFallbackAttempt
+            ? `Provider fallback attempt ${attempt}/${attemptCount} used ${session.provider} after primary ${primaryProviderId}; status=${session.status}.${providerFailureSuffix}`
+            : `Provider fallback primary attempt ${attempt}/${attemptCount} used ${session.provider}; status=${session.status}.${providerFailureSuffix}${noProviderFailureSuffix}`,
+          fallbackProviderIds,
+          kind: isFallbackAttempt ? 'provider-fallback-used' : 'provider-fallback-attempted',
+          missionId: mission.id,
+          primaryProviderId,
+          providerFailure,
+          providerFailureKind: providerFailure?.failureKind || null,
+          providerId: session.provider,
+          sessionId: session.id,
+          status: session.status,
+          workspaceId: mission.workspaceId || null,
+        };
+      })
+      .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+  }
+
+  function summarizeMissionProviderFallback({ mission, sessions }) {
+    const events = buildProviderFallbackTimelineEvents({
+      mission,
+      sessions,
+    });
+    const usedEvents = events.filter((event) => event.kind === 'provider-fallback-used');
+
+    return {
+      latestProviderFallbackEvent: getLatestItem(events, 'at'),
+      providerFallbackAttemptCount: events.length,
+      providerFallbackPrimaryProviderIds: [...new Set(events.map((event) => event.primaryProviderId).filter(Boolean))],
+      providerFallbackRequested: events.length > 0,
+      providerFallbackUsedCount: usedEvents.length,
+      providerFallbackUsedProviderIds: [...new Set(usedEvents.map((event) => event.providerId).filter(Boolean))],
+    };
+  }
+
   function buildMissionTimeline(mission) {
     const sessions = listSessions(mission.id);
+    const rawSessions = store.listSessionsByMission(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
     const escalations = store.listEscalations({ missionId: mission.id });
     const reviewerFollowUps = listReviewerFollowUpRecords({ missionId: mission.id });
@@ -14049,6 +14116,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: event.workspaceId || mission.workspaceId,
         workspaceName: event.workspaceName || null,
       });
+    }
+
+    for (const event of buildProviderFallbackTimelineEvents({ mission, sessions: rawSessions })) {
+      timeline.push(event);
     }
 
     for (const event of buildSpecialistTimelineEvents({ missionId: mission.id })) {
