@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -32,8 +33,8 @@ assert.match(manifest, /not permission to claim `production-ready`/);
 
 const verifiedCommit = extractBulletValue(manifest, 'verifiedCommit');
 assert.match(verifiedCommit, /^[a-f0-9]{40}$/);
-
-for (const requiredPath of [
+const manifestEntries = parseManifestEntries(manifest);
+const requiredPaths = [
   'README.md',
   'docs/product-plan-v1.md',
   'docs/security-model-v1.md',
@@ -91,10 +92,26 @@ for (const requiredPath of [
   `docs/releases/execution-v1/${verifiedCommit}/execution-v1-closeout.md`,
   `docs/releases/execution-v1/${verifiedCommit}/execution-v1-handoff.md`,
   `docs/releases/execution-v1/${verifiedCommit}/snapshot.json`,
-]) {
-  assert.equal(fs.existsSync(path.join(repoDir, requiredPath)), true, requiredPath);
+];
+const expectedEntries = requiredPaths.map(buildFileEntry);
+
+assert.equal(Number(extractBulletValue(manifest, 'fileCount')), expectedEntries.length);
+assert.equal(manifestEntries.size, expectedEntries.length);
+
+for (const expectedEntry of expectedEntries) {
+  const requiredPath = expectedEntry.path;
   assert.match(manifest, new RegExp(`\\| \`${escapeRegExp(requiredPath)}\` \\| \\d+ \\| \`[a-f0-9]{64}\` \\|`));
+  assert.deepEqual(manifestEntries.get(requiredPath), {
+    bytes: expectedEntry.bytes,
+    sha256: expectedEntry.sha256,
+  }, requiredPath);
 }
+
+const expectedBundleSha256 = crypto
+  .createHash('sha256')
+  .update(expectedEntries.map((entry) => `${entry.path}\0${entry.sha256}\0${entry.bytes}`).join('\n'))
+  .digest('hex');
+assert.equal(extractBulletValue(manifest, 'bundleSha256'), expectedBundleSha256);
 
 assert.doesNotMatch(manifest, /\/Users\/|\/private\/var\/folders\/|\/var\/folders\//);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
@@ -130,6 +147,30 @@ function readRequiredFile(filePath) {
 function extractBulletValue(markdown, label) {
   const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
   return match ? String(match[1] || '').trim() : '';
+}
+
+function buildFileEntry(relativePath) {
+  const absolutePath = path.join(repoDir, relativePath);
+  assert.equal(fs.existsSync(absolutePath), true, relativePath);
+  const content = fs.readFileSync(absolutePath);
+  return {
+    bytes: content.byteLength,
+    path: relativePath,
+    sha256: crypto.createHash('sha256').update(content).digest('hex'),
+  };
+}
+
+function parseManifestEntries(markdown) {
+  const entries = new Map();
+  const rowPattern = /^\| `([^`]+)` \| (\d+) \| `([a-f0-9]{64})` \|$/gm;
+  let match;
+  while ((match = rowPattern.exec(String(markdown || ''))) !== null) {
+    entries.set(match[1], {
+      bytes: Number(match[2]),
+      sha256: match[3],
+    });
+  }
+  return entries;
 }
 
 function escapeRegExp(value) {
