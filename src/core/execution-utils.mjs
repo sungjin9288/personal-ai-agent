@@ -19,6 +19,46 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+const ALLOWED_EXECUTABLES = new Set([
+  'find',
+  'git',
+  'head',
+  'ls',
+  'node',
+  'npm',
+  'pnpm',
+  'pwd',
+  'python',
+  'python3',
+  'rg',
+  'sed',
+  'tail',
+  'wc',
+  'yarn',
+]);
+
+const FILESYSTEM_MUTATION_EXECUTABLES = new Set([
+  'chmod',
+  'chown',
+  'cp',
+  'ln',
+  'mkdir',
+  'mv',
+  'rm',
+  'rmdir',
+  'tee',
+  'touch',
+  'truncate',
+]);
+
+const INLINE_EVALUATOR_FLAGS = new Map([
+  ['node', new Set(['-e', '--eval', '-p', '--print'])],
+  ['python', new Set(['-c'])],
+  ['python3', new Set(['-c'])],
+  ['ruby', new Set(['-e'])],
+  ['perl', new Set(['-e'])],
+]);
+
 function stableStringify(value) {
   if (Array.isArray(value)) {
     return `[${value.map((item) => stableStringify(item)).join(',')}]`;
@@ -42,7 +82,210 @@ function isInsideRoot(rootDir, candidatePath) {
   return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
 }
 
-function classifyCommandRisk(command) {
+function parseExecutionCommand(command) {
+  const value = normalizeText(command);
+  const tokens = [];
+  let current = '';
+  let quote = '';
+  let escaped = false;
+
+  if (!value) {
+    return {
+      args: [],
+      env: {},
+      error: '실행 명령이 비어 있습니다.',
+      executable: '',
+      tokens: [],
+    };
+  }
+
+  for (const char of value) {
+    if (escaped) {
+      current += char;
+      escaped = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escaped = true;
+      continue;
+    }
+
+    if (quote) {
+      if (char === quote) {
+        quote = '';
+      } else {
+        current += char;
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+
+    if (/\s/.test(char)) {
+      if (current) {
+        tokens.push(current);
+        current = '';
+      }
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (escaped) {
+    return {
+      args: [],
+      env: {},
+      error: '명령 끝에 escape 문자가 남아 있습니다.',
+      executable: '',
+      tokens: [],
+    };
+  }
+
+  if (quote) {
+    return {
+      args: [],
+      env: {},
+      error: '닫히지 않은 quote가 포함되어 있습니다.',
+      executable: '',
+      tokens: [],
+    };
+  }
+
+  if (current) {
+    tokens.push(current);
+  }
+
+  const env = {};
+  let commandIndex = 0;
+  while (commandIndex < tokens.length) {
+    const envMatch = tokens[commandIndex].match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!envMatch) {
+      break;
+    }
+    env[envMatch[1]] = envMatch[2];
+    commandIndex += 1;
+  }
+
+  const executable = tokens[commandIndex] || '';
+
+  return {
+    args: executable ? tokens.slice(commandIndex + 1) : [],
+    env,
+    error: executable ? '' : '실행 파일을 찾을 수 없습니다.',
+    executable,
+    tokens,
+  };
+}
+
+function getExecutableName(executable) {
+  return path.basename(normalizeText(executable));
+}
+
+function hasShellMetaSyntax(value) {
+  return /[\n\r]|&&|\|\||;|\||`|\$\(|[<>]/.test(value);
+}
+
+function isUrlToken(value) {
+  return /^[A-Za-z][A-Za-z0-9+.-]*:\/\//.test(normalizeText(value));
+}
+
+function isPathLikeToken(value) {
+  const normalized = normalizeText(value);
+  if (!normalized) {
+    return false;
+  }
+
+  return (
+    normalized === '.' ||
+    normalized === '..' ||
+    normalized.startsWith('./') ||
+    normalized.startsWith('../') ||
+    normalized.startsWith('/') ||
+    normalized.startsWith('~/') ||
+    normalized.includes('/') ||
+    isSecretLikePath(normalized)
+  );
+}
+
+function isSecretLikePath(value) {
+  const normalized = normalizeText(value).replaceAll('\\', '/').toLowerCase();
+  const basename = path.basename(normalized);
+  return (
+    basename === '.env' ||
+    basename.startsWith('.env.') ||
+    basename === 'id_rsa' ||
+    basename === 'id_dsa' ||
+    basename === 'id_ecdsa' ||
+    basename === 'id_ed25519' ||
+    /\.(?:key|pem|p12|pfx)$/.test(basename) ||
+    normalized.includes('/.ssh/') ||
+    normalized.includes('/.git/')
+  );
+}
+
+function getPathCandidateFromToken(token) {
+  const normalized = normalizeText(token);
+  if (!normalized) {
+    return '';
+  }
+
+  if (normalized.startsWith('--') && normalized.includes('=')) {
+    return normalized.slice(normalized.indexOf('=') + 1);
+  }
+
+  return normalized;
+}
+
+function collectPathPolicyFindings({ args, executable, rootDir, resolvedCwd }) {
+  const blockedReasons = [];
+  const warningReasons = [];
+  const candidates = [executable, ...args].map(getPathCandidateFromToken).filter(Boolean);
+
+  for (const candidate of candidates) {
+    if (isUrlToken(candidate)) {
+      blockedReasons.push(`remote URL token은 v1 실행 정책에서 차단됩니다 (${candidate}).`);
+      continue;
+    }
+
+    if (!isPathLikeToken(candidate)) {
+      continue;
+    }
+
+    if (/^(?:~(?:\/|$)|\/)/.test(candidate)) {
+      blockedReasons.push(`절대 경로 또는 홈 디렉터리 경로 token은 차단됩니다 (${candidate}).`);
+      continue;
+    }
+
+    const resolvedPath = path.resolve(resolvedCwd, candidate);
+    if (!isInsideRoot(rootDir, resolvedPath)) {
+      blockedReasons.push(`path token이 현재 워크스페이스 밖을 가리킵니다 (${candidate}).`);
+      continue;
+    }
+
+    if (isSecretLikePath(candidate)) {
+      blockedReasons.push(`secret-like path token은 실행 command에서 직접 참조할 수 없습니다 (${candidate}).`);
+      continue;
+    }
+
+    if (!fs.existsSync(resolvedPath)) {
+      warningReasons.push(`path token이 현재 워크스페이스 안에 있지만 아직 존재하지 않습니다 (${candidate}).`);
+    }
+  }
+
+  return { blockedReasons, warningReasons };
+}
+
+function hasInlineEvaluator({ args, executableName }) {
+  const blockedFlags = INLINE_EVALUATOR_FLAGS.get(executableName);
+  return Boolean(blockedFlags && args.some((arg) => blockedFlags.has(arg)));
+}
+
+function classifyCommandRisk(command, { rootDir = '', resolvedCwd = '' } = {}) {
   const value = normalizeText(command);
   const blockedReasons = [];
   const warningReasons = [];
@@ -52,11 +295,31 @@ function classifyCommandRisk(command) {
     return { blockedReasons, warningReasons };
   }
 
-  if (/[\n\r]|&&|\|\||;|\||`|\$\(|[<>]/.test(value)) {
+  if (hasShellMetaSyntax(value)) {
     blockedReasons.push('shell chaining, pipe, redirection, command substitution은 v1 실행 정책에서 차단됩니다.');
   }
-  if (/(^|\s)(?:~(?:\/|\s|$)|\/[^\s]+)/.test(value)) {
-    blockedReasons.push('절대 경로 또는 홈 디렉터리 경로를 직접 참조하는 명령은 차단됩니다.');
+
+  const parsed = parseExecutionCommand(value);
+  if (parsed.error) {
+    blockedReasons.push(parsed.error);
+    return { blockedReasons, warningReasons };
+  }
+
+  const executableName = getExecutableName(parsed.executable);
+  if (parsed.executable.includes('/') || parsed.executable.startsWith('.')) {
+    blockedReasons.push('workspace script 또는 relative executable 직접 실행은 v1에서 차단되며 허용된 runner를 사용해야 합니다.');
+  }
+  if (FILESYSTEM_MUTATION_EXECUTABLES.has(executableName)) {
+    blockedReasons.push('shell filesystem mutation 명령은 v1 실행 정책에서 차단되며 manifest edit step으로만 파일을 변경해야 합니다.');
+  }
+  if (!ALLOWED_EXECUTABLES.has(executableName)) {
+    blockedReasons.push(`허용되지 않는 실행 파일입니다 (${executableName || parsed.executable}).`);
+  }
+  if (hasInlineEvaluator({ args: parsed.args, executableName })) {
+    blockedReasons.push('inline code evaluator 플래그는 workspace path policy를 우회할 수 있어 차단됩니다.');
+  }
+  if (/\b(?:bash|sh|zsh)\s+-c\b/i.test(value)) {
+    blockedReasons.push('shell interpreter -c 실행은 v1 실행 정책에서 차단됩니다.');
   }
   if (/\bsudo\b/i.test(value)) {
     blockedReasons.push('sudo 명령은 v1 실행 정책에서 차단됩니다.');
@@ -96,20 +359,38 @@ function classifyCommandRisk(command) {
   ) {
     blockedReasons.push('deploy, release, external platform mutation 명령은 v1 실행 정책에서 차단됩니다.');
   }
-  if (/\bgit\s+clean\b/i.test(value)) {
+  if (/\bgit\s+clean\b/i.test(value) && !/\s(?:-n|--dry-run)(?:\s|$)/.test(value)) {
+    blockedReasons.push('git clean은 dry-run 외에는 v1 실행 정책에서 차단됩니다.');
+  }
+  if (/\bgit\s+clean\b/i.test(value) && /\s(?:-n|--dry-run)(?:\s|$)/.test(value)) {
     warningReasons.push('git clean 계열 명령은 주의가 필요합니다.');
   }
-  if (/\brm\s+/i.test(value) && !/\brm\s+-rf\b/i.test(value)) {
-    warningReasons.push('파일 삭제 명령이 포함되어 있습니다.');
-  }
-  if (/\bmv\s+/i.test(value)) {
-    warningReasons.push('파일 이동 명령이 포함되어 있습니다.');
-  }
-  if (/\.\./.test(value)) {
-    warningReasons.push('상위 경로 참조(..)가 포함되어 있어 현재 워크스페이스 범위를 다시 확인해야 합니다.');
+
+  if (rootDir && resolvedCwd) {
+    const pathPolicy = collectPathPolicyFindings({
+      args: parsed.args,
+      executable: parsed.executable,
+      resolvedCwd,
+      rootDir,
+    });
+    blockedReasons.push(...pathPolicy.blockedReasons);
+    warningReasons.push(...pathPolicy.warningReasons);
   }
 
   return { blockedReasons, warningReasons };
+}
+
+export function buildExecutionCommandSpawnSpec(command) {
+  const parsed = parseExecutionCommand(command);
+  if (parsed.error) {
+    throw new Error(parsed.error);
+  }
+
+  return {
+    args: parsed.args,
+    command: parsed.executable,
+    env: parsed.env,
+  };
 }
 
 function normalizeEditOperation(value) {
@@ -535,7 +816,10 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
       continue;
     }
 
-    const { blockedReasons, warningReasons } = classifyCommandRisk(step.command);
+    const { blockedReasons, warningReasons } = classifyCommandRisk(step.command, {
+      resolvedCwd,
+      rootDir: path.resolve(rootDir),
+    });
     if (blockedReasons.length) {
       blockedItems.push(...blockedReasons.map((reason) => `${stepLabel}: ${reason}`));
       continue;

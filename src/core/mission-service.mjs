@@ -37,6 +37,7 @@ import {
 import { createDocService } from './doc-service.mjs';
 import {
   buildFallbackExecutionManifest,
+  buildExecutionCommandSpawnSpec,
   evaluateExecutionPolicy,
   getCurrentGitBranch,
   hashExecutionManifest,
@@ -3954,10 +3955,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             } else if (step.kind === 'artifact') {
               appendExecutionLog(executionSessionId, `[${now()}] ${step.id} artifact noted`);
             } else {
+              const spawnSpec = buildExecutionCommandSpawnSpec(step.command);
               await new Promise((resolve, reject) => {
-                const child = spawn(step.command, {
+                const child = spawn(spawnSpec.command, spawnSpec.args, {
                   cwd: resolveExecutionStepCwd(latestSession.workspacePath, step.cwd),
-                  shell: true,
+                  env: {
+                    ...process.env,
+                    ...spawnSpec.env,
+                  },
+                  shell: false,
                   stdio: ['ignore', 'pipe', 'pipe'],
                 });
                 runtimeState.currentChild = child;

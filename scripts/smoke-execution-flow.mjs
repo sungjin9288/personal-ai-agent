@@ -6,6 +6,7 @@ import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import {
+  buildExecutionCommandSpawnSpec,
   buildFallbackExecutionManifest,
   evaluateExecutionPolicy,
   normalizeExecutionManifest,
@@ -199,6 +200,13 @@ const safePolicy = evaluateExecutionPolicy({
         command: 'node --check src/cli.mjs',
         cwd: '.',
       },
+      {
+        id: 'safe-03',
+        kind: 'test',
+        title: 'Safe env-scoped syntax check',
+        command: 'NODE_ENV=test node --check src/cli.mjs',
+        cwd: '.',
+      },
     ],
   },
   rootDir: repoDir,
@@ -207,6 +215,10 @@ const safePolicy = evaluateExecutionPolicy({
 
 assert.equal(safePolicy.allowed, true);
 assert.equal(safePolicy.blockedItems.length, 0);
+const safeSpawnSpec = buildExecutionCommandSpawnSpec('NODE_ENV=test node --check src/cli.mjs');
+assert.equal(safeSpawnSpec.command, 'node');
+assert.deepEqual(safeSpawnSpec.args, ['--check', 'src/cli.mjs']);
+assert.equal(safeSpawnSpec.env.NODE_ENV, 'test');
 
 const unsafePolicy = evaluateExecutionPolicy({
   manifest: {
@@ -262,6 +274,34 @@ const unsafePolicy = evaluateExecutionPolicy({
         content: 'outside',
         cwd: '.',
       },
+      {
+        id: 'unsafe-08',
+        kind: 'test',
+        title: 'Inline node evaluator',
+        command: 'node -e "console.log(1)"',
+        cwd: '.',
+      },
+      {
+        id: 'unsafe-09',
+        kind: 'command',
+        title: 'Secret path read',
+        command: 'rg token .env',
+        cwd: '.',
+      },
+      {
+        id: 'unsafe-10',
+        kind: 'command',
+        title: 'Path escape option',
+        command: 'rg --files ../outside',
+        cwd: '.',
+      },
+      {
+        id: 'unsafe-11',
+        kind: 'command',
+        title: 'Filesystem mutation shell command',
+        command: 'touch generated.txt',
+        cwd: '.',
+      },
     ],
   },
   rootDir: repoDir,
@@ -276,29 +316,19 @@ assert.equal(unsafePolicy.blockedItems.some((item) => /git remote/.test(item)), 
 assert.equal(unsafePolicy.blockedItems.some((item) => /절대 경로/.test(item)), true);
 assert.equal(unsafePolicy.blockedItems.some((item) => /command substitution/.test(item)), true);
 assert.equal(unsafePolicy.blockedItems.some((item) => /수정 대상 파일이 현재 워크스페이스 밖/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /inline code evaluator/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /secret-like path/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /path token이 현재 워크스페이스 밖/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /shell filesystem mutation/.test(item)), true);
 
 const cautionPolicy = evaluateExecutionPolicy({
   manifest: {
     steps: [
       {
         id: 'warn-01',
-        kind: 'command',
-        title: 'Non-recursive delete warning',
-        command: 'rm temp.txt',
-        cwd: '.',
-      },
-      {
-        id: 'warn-02',
-        kind: 'command',
-        title: 'Move warning',
-        command: 'mv source.txt target.txt',
-        cwd: '.',
-      },
-      {
-        id: 'warn-03',
-        kind: 'command',
-        title: 'Parent reference warning',
-        command: 'rg ../docs',
+        kind: 'inspect',
+        title: 'Git clean dry-run warning',
+        command: 'git clean -n',
         cwd: '.',
       },
     ],
@@ -308,9 +338,7 @@ const cautionPolicy = evaluateExecutionPolicy({
 });
 
 assert.equal(cautionPolicy.allowed, true);
-assert.equal(cautionPolicy.warningItems.some((item) => /파일 삭제/.test(item)), true);
-assert.equal(cautionPolicy.warningItems.some((item) => /파일 이동/.test(item)), true);
-assert.equal(cautionPolicy.warningItems.some((item) => /상위 경로/.test(item)), true);
+assert.equal(cautionPolicy.warningItems.some((item) => /git clean/.test(item)), true);
 
 const runResult = runCli({
   rootDir: tempRoot,
