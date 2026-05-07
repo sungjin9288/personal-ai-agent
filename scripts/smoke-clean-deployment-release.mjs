@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,12 +18,19 @@ const deployment = readRequiredFile(deploymentPath);
 const productPlan = readRequiredFile(productPlanPath);
 const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packagePath));
+const currentCommit = runGit(['rev-parse', 'HEAD']);
+const sourceCommit = extractBulletValue(rehearsal, 'sourceCommit');
 
 assert.equal(packageJson.scripts['rehearsal:clean-deployment-release'], 'node scripts/build-clean-deployment-release.mjs');
 assert.equal(packageJson.scripts['smoke:clean-deployment-release'], 'node scripts/smoke-clean-deployment-release.mjs');
 
 assert.match(rehearsal, /^# Clean Deployment Release Rehearsal v1$/m);
 assert.match(rehearsal, /^- status: clean-local-rehearsal-current$/m);
+assertArtifactCommitFresh({
+  artifactCommit: sourceCommit,
+  currentCommit,
+  label: 'clean-deployment-release sourceCommit',
+});
 assert.match(rehearsal, /^- cleanCheckoutMode: tracked-files-only$/m);
 assert.match(rehearsal, /^- cleanCheckoutFileCount: [1-9]\d*$/m);
 assert.match(rehearsal, /^- excludedRuntimeState: var\/, output\/playwright\/, node_modules\/, \.git\/$/m);
@@ -84,10 +92,12 @@ console.log(
   JSON.stringify(
     {
       commandCount: 36,
+      artifactSyncCommit: sourceCommit !== currentCommit,
       mode: 'clean-deployment-release',
       ok: true,
       path: 'docs/clean-deployment-release-v1.md',
       productionReadyClaim: false,
+      sourceCommit,
     },
     null,
     2,
@@ -99,6 +109,56 @@ function readRequiredFile(filePath) {
     throw new Error(`required file not found: ${filePath}`);
   }
   return fs.readFileSync(filePath, 'utf8');
+}
+
+function assertArtifactCommitFresh({ artifactCommit, currentCommit, label }) {
+  assert.match(artifactCommit, /^[a-f0-9]{40}$/i, `${label}: invalid artifact commit`);
+  assert.match(currentCommit, /^[a-f0-9]{40}$/i, `${label}: invalid current commit`);
+  if (artifactCommit === currentCommit) {
+    return;
+  }
+
+  const changedPaths = runGit(['diff', '--name-only', `${artifactCommit}..${currentCommit}`])
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  assert.equal(changedPaths.length > 0, true, `${label}: no changed paths between artifact and current commit`);
+  assert.equal(
+    changedPaths.every(isReleaseArtifactSyncPath),
+    true,
+    JSON.stringify({ artifactCommit, changedPaths, currentCommit, label }, null, 2),
+  );
+}
+
+function extractBulletValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function isReleaseArtifactSyncPath(filePath) {
+  const relativePath = String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '');
+  return [
+    'docs/clean-deployment-release-v1.md',
+    'docs/execution-v1-closeout.md',
+    'docs/execution-v1-evidence.md',
+    'docs/execution-v1-handoff.md',
+    'docs/pilot-export-package-v1.md',
+    'docs/production-enterprise-controls-v1.md',
+    'docs/production-like-release-drill-v1.md',
+    'docs/production-provider-readiness-v1.md',
+    'docs/production-retention-operating-v1.md',
+    'docs/production-slo-operating-v1.md',
+    'docs/release-readiness-v1.md',
+  ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
+}
+
+function runGit(args) {
+  const result = spawnSync('git', args, {
+    cwd: repoDir,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  return result.status === 0 ? String(result.stdout || '').trim() : '';
 }
 
 function escapeRegExp(value) {
