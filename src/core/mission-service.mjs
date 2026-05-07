@@ -5152,6 +5152,7 @@ function summarizeProviderExecutions(executions) {
       latestAttentionRequiredEvent: getLatestItem(attentionEvents, 'at'),
       latestAttentionEvent: eventSummary.latestAttentionEvent,
       latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFallbackEvent: eventSummary.latestFallbackEvent,
       latestProbe: probes.at(-1) || null,
       latestProbeFailureCount: latestProbeFailureProviderIds.length,
       latestProbeFailureProviderIds,
@@ -5680,6 +5681,10 @@ function summarizeProviderExecutions(executions) {
       );
     }
 
+    if (!family || family === 'fallback') {
+      events.push(...buildProviderFallbackEventTimeline(filter));
+    }
+
     return sortTimelineEvents(events);
   }
 
@@ -5754,7 +5759,7 @@ function summarizeProviderExecutions(executions) {
 
   function summarizeProviderEvents(events) {
     const eventCounts = {};
-    const familyCounts = { attention: 0, execution: 0, probe: 0 };
+    const familyCounts = { attention: 0, execution: 0, fallback: 0, probe: 0 };
     const providerCounts = {};
     const executionEvents = events.filter((event) => event.eventFamily === 'execution');
     const probeEvents = events.filter((event) => event.eventFamily === 'probe');
@@ -5825,6 +5830,11 @@ function summarizeProviderExecutions(executions) {
         continue;
       }
 
+      if (event.eventFamily === 'fallback') {
+        familyCounts.fallback += 1;
+        continue;
+      }
+
       familyCounts.execution += 1;
       executionStatusCounts.total += 1;
       if (executionStatusCounts[event.executionStatus] !== undefined) {
@@ -5866,6 +5876,7 @@ function summarizeProviderExecutions(executions) {
       latestAttentionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'attention'),
       latestEvent: events.at(-1) || null,
       latestExecutionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'execution'),
+      latestFallbackEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'fallback'),
       latestProbeEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'probe'),
       probeAttemptedCount,
       probeAverageDurationMs: probeDurationSummary.averageDurationMs,
@@ -5927,6 +5938,7 @@ function summarizeProviderExecutions(executions) {
         ...overviewSummary,
         latestRecentProviderEvent: recentWindow?.latestEvent || null,
         latestRecentProviderExecution: recentWindow?.latestExecution || null,
+        latestRecentProviderFallbackEvent: recentWindow?.latestFallbackEvent || null,
         latestRecentProviderProbe: recentWindow?.latestProbe || null,
         providerHealthDriftAttentionNeedsReminderCount: healthDrift.attentionNeedsReminderCount,
         providerHealthDriftAttentionOverdueCount: healthDrift.attentionOverdueCount,
@@ -5945,7 +5957,8 @@ function summarizeProviderExecutions(executions) {
           healthDrift.recentExecutionPreviousMonthStartDate,
         providerHealthDriftStatus: healthDrift.status,
         providerRecentEventCount: recentWindow?.eventTotal || 0,
-        providerRecentEventFamilyCounts: recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentEventFamilyCounts:
+          recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
         providerRecentExecutionCount: recentWindow?.executionTotal || 0,
         providerRecentExecutionEstimatedCostUsdTotal: recentWindow?.executionEstimatedCostUsdTotal || 0,
         providerRecentExecutionLatestMonthlyBucketDelta:
@@ -6403,6 +6416,7 @@ function summarizeProviderExecutions(executions) {
       latestEvent: eventSummary.latestEvent,
       latestExecution: executionSummary.latestExecution,
       latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFallbackEvent: eventSummary.latestFallbackEvent,
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
       touchedProviderCount: touchedProviderIds.length,
@@ -8047,7 +8061,7 @@ function summarizeProviderExecutions(executions) {
       providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
       providerRecentEventCount: providerRecentWindow?.eventCount || 0,
       providerRecentEventFamilyCounts:
-        providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+        providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
       providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
       providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
       providerRecentExecutionLatestMonthlyBucketDelta:
@@ -8994,7 +9008,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
         providerRecentEventCount: providerRecentWindow?.eventCount || 0,
         providerRecentEventFamilyCounts:
-          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
         providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
         providerRecentExecutionLatestMonthlyBucketDelta:
@@ -12680,7 +12694,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerCount: providerOverview.summary.total,
         providerRecentEventCount: providerOverview.recentWindow?.eventTotal || 0,
         providerRecentEventFamilyCounts:
-          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
         providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
         providerRecentExecutionLatestMonthlyBucketDelta:
           providerOverview.recentWindow?.executionLatestMonthlyBucketDelta || null,
@@ -13935,6 +13949,36 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
   }
 
+  function buildProviderFallbackEventTimeline(filter = {}) {
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+
+    return store
+      .listMissions()
+      .filter((mission) => !filter.missionId || mission.id === filter.missionId)
+      .filter((mission) => !filter.workspaceId || mission.workspaceId === filter.workspaceId)
+      .flatMap((mission) => {
+        const workspace = workspaceById.get(mission.workspaceId) || null;
+        return buildProviderFallbackTimelineEvents({
+          mission,
+          sessions: store.listSessionsByMission(mission.id),
+        }).map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'fallback',
+          eventKind: event.kind,
+          executionStatus: null,
+          missionTitle: mission.title,
+          ok: event.kind === 'provider-fallback-used' ? true : null,
+          probeId: null,
+          role: null,
+          runId: null,
+          workspaceName: workspace?.name || null,
+        }));
+      })
+      .filter((event) => !filter.providerId || event.providerId === filter.providerId)
+      .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+  }
+
   function summarizeMissionProviderFallback({ mission, sessions }) {
     const events = buildProviderFallbackTimelineEvents({
       mission,
@@ -14816,7 +14860,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
         providerRecentEventCount: providerRecentWindow?.eventCount || 0,
         providerRecentEventFamilyCounts:
-          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
         providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
         providerRecentExecutionLatestMonthlyBucketDelta:
@@ -14893,7 +14937,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
         providerRecentEventCount: providerOverview.recentWindow?.eventTotal || 0,
         providerRecentEventFamilyCounts:
-          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, probe: 0 },
+          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
         providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
         providerRecentExecutionEstimatedCostUsdTotal: providerOverview.recentWindow?.executionEstimatedCostUsdTotal || 0,
         providerRecentExecutionLatestMonthlyBucketDelta:

@@ -21,6 +21,7 @@
 - mission-level provider fallback now supports explicit `--fallback-provider` failover, with retry limited to normalized provider failures and audit summary returned on the mission run result
 - mission timeline and mission summary now expose provider fallback attempt and used counts plus timeline events, so failover evidence remains auditable after the original run output
 - workspace timeline and global operator timeline now also expose provider fallback attempt and used counts plus failover events, so cross-mission operator chronology carries the same fallback audit evidence
+- provider events and provider overview now include fallback audit events as a first-class `fallback` family, so provider-scoped chronology can slice failover evidence without reopening mission or workspace timelines
 - provider cost telemetry now supports adapter-level pricing envs plus normalized `estimatedCostUsd`, and propagates estimated execution spend through provider check, provider activity/events, provider overview, provider attention failure context, and mission/workspace/global summaries
 - provider cost telemetry now also includes provider-level and role-level estimated cost breakdowns so spend attribution is queryable from the existing execution, event, and overview read-models
 - provider execution history now exposes daily cost buckets and latest bucket delta so recent spend trend can be inspected without introducing a separate reporting endpoint

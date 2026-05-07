@@ -98,7 +98,7 @@ Commands:
   provider check <stub|openai|anthropic|local|hermes>
   provider activity [--provider <stub|openai|anthropic|local|hermes>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
   provider activity-timeline [--provider <stub|openai|anthropic|local|hermes>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
-  provider events [--provider <stub|openai|anthropic|local|hermes>] [--family <probe|execution|attention>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
+  provider events [--provider <stub|openai|anthropic|local|hermes>] [--family <probe|execution|attention|fallback>] [--ok <true|false>] [--attempted <true|false>] [--role <manager|planner|executor|reviewer|specialist>] [--status <running|blocked|failed|completed|merged|abandoned>] [--since <iso-timestamp>]
   provider probe <stub|openai|anthropic|local|hermes>
   provider history [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]
   provider timeline [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]

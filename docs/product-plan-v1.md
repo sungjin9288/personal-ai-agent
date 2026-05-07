@@ -94,6 +94,7 @@
 - [x] Mission-level provider fallback policy implemented
 - [x] Mission-level provider fallback audit timeline implemented
 - [x] Workspace/operator provider fallback audit timeline implemented
+- [x] Provider-scoped fallback audit event surface implemented
 - [x] Provider attention fallback remediation path implemented
 - [x] Provider attention fallback command guidance implemented
 - [x] Target Hermes provider architecture gate implemented

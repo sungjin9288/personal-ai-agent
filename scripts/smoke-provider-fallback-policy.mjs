@@ -165,6 +165,42 @@ assert.deepEqual(operatorTimeline.summary.providerFallbackUsedProviderIds, ['stu
 assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 2);
 assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
 
+const providerFallbackEvents = runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'events', '--family', 'fallback'],
+});
+
+assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 3);
+assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 2);
+assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-used'], 1);
+assert.equal(providerFallbackEvents.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
+assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 3);
+
+const anthropicFallbackEvents = runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'events', '--provider', 'anthropic', '--family', 'fallback'],
+});
+
+assert.equal(anthropicFallbackEvents.summary.familyCounts.fallback, 1);
+assert.equal(anthropicFallbackEvents.timeline[0].providerId, 'anthropic');
+assert.equal(anthropicFallbackEvents.timeline[0].providerFailureKind, 'config');
+
+const stubFallbackEvents = runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'events', '--provider', 'stub', '--family', 'fallback'],
+});
+
+assert.equal(stubFallbackEvents.summary.familyCounts.fallback, 2);
+assert.equal(stubFallbackEvents.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
+
+const providerOverview = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'providers'],
+});
+
+assert.equal(providerOverview.summary.eventFamilyCounts.fallback, 3);
+assert.equal(providerOverview.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
+
 console.log(
   JSON.stringify(
     {
