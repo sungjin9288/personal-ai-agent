@@ -216,6 +216,76 @@ try {
   assert.equal(fallbackRemediation.postAttention.status, 'pending');
   assert.equal(fallbackRemediation.postAttention.pendingCount, 1);
 
+  const recoverablePolicyMission = service.createMission({
+    workspaceId: workspace.id,
+    mode: 'knowledge',
+    deliverableType: 'checklist',
+    title: 'Provider attention recoverable-only fallback remediation mission',
+    objective: 'Verify provider attention fallback remediation stops on non-recoverable provider failures.',
+    constraints: [],
+  });
+
+  const failedRecoverablePolicyRun = runCli({
+    rootDir: tempRoot,
+    env: {
+      ANTHROPIC_API_KEY: '',
+      ANTHROPIC_BASE_URL: '',
+      ANTHROPIC_MODEL: '',
+    },
+    args: ['mission', 'run', recoverablePolicyMission.id, '--provider', 'anthropic'],
+  });
+
+  assert.equal(failedRecoverablePolicyRun.status, 'failed');
+  assert.equal(failedRecoverablePolicyRun.provider, 'anthropic');
+
+  const recoverablePolicyPending = service.getProviderAttentionInbox({
+    missionId: recoverablePolicyMission.id,
+    providerId: 'anthropic',
+    workspaceId: workspace.id,
+  });
+
+  assert.equal(recoverablePolicyPending.items.length, 1);
+  assert.match(recoverablePolicyPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.deepEqual(recoverablePolicyPending.items[0].fallbackPolicyOptions, [
+    'provider-failure-only',
+    'recoverable-provider-failure-only',
+  ]);
+
+  const recoverablePolicyRemediation = runCli({
+    rootDir: tempRoot,
+    env: {
+      ANTHROPIC_API_KEY: '',
+      ANTHROPIC_BASE_URL: '',
+      ANTHROPIC_MODEL: '',
+    },
+    args: [
+      'action',
+      'remediate-provider-attention',
+      recoverablePolicyPending.items[0].actionId,
+      '--fallback-provider',
+      'stub',
+      '--fallback-policy',
+      'recoverable-provider-failure-only',
+    ],
+  });
+
+  assert.equal(recoverablePolicyRemediation.fallbackPolicy, 'recoverable-provider-failure-only');
+  assert.equal(recoverablePolicyRemediation.remediationKind, 'mission-fallback-rerun');
+  assert.equal(recoverablePolicyRemediation.primaryProviderId, 'anthropic');
+  assert.equal(recoverablePolicyRemediation.result.missionStatus, 'failed');
+  assert.equal(recoverablePolicyRemediation.result.provider, 'anthropic');
+  assert.equal(recoverablePolicyRemediation.result.providerFallback.policyId, 'recoverable-provider-failure-only');
+  assert.equal(recoverablePolicyRemediation.result.providerFallback.fallbackUsed, false);
+  assert.deepEqual(recoverablePolicyRemediation.result.providerFallback.attemptedProviderIds, ['anthropic']);
+  assert.equal(recoverablePolicyRemediation.result.providerFallback.attempts[0].fallbackEligible, false);
+  assert.equal(
+    recoverablePolicyRemediation.result.providerFallback.attempts[0].fallbackStopReason,
+    'non-recoverable-provider-failure',
+  );
+  assert.equal(recoverablePolicyRemediation.result.providerFallback.attempts[0].providerFailure.failureKind, 'config');
+  assert.equal(recoverablePolicyRemediation.postAttention.status, 'pending');
+  assert.equal(recoverablePolicyRemediation.postAttention.pendingCount, 1);
+
   console.log(
     JSON.stringify(
       {
@@ -224,6 +294,8 @@ try {
         fallbackRemediationUsed: fallbackRemediation.result.providerFallback.fallbackUsed,
         mode: 'provider-attention-remediation',
         ok: true,
+        recoverablePolicyRemediationStatus: recoverablePolicyRemediation.result.missionStatus,
+        recoverablePolicyRemediationUsed: recoverablePolicyRemediation.result.providerFallback.fallbackUsed,
         stubExecutionRemediationStatus: executionRemediation.result.missionStatus,
       },
       null,
