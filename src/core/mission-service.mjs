@@ -3838,6 +3838,54 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function buildMutationBatchSummary({ filePaths, items, rollbackReadyCount, templateCounts }) {
+    const rollbackActionCounts = items.reduce((counts, item) => {
+      const action = normalizeText(item.rollbackPreview?.action, 'manual-review-required');
+      counts[action] = (counts[action] || 0) + 1;
+      return counts;
+    }, {});
+    const mutationSetFingerprint = items.map((item) => ({
+      afterSha256: normalizeText(item.afterSha256),
+      beforeSha256: normalizeText(item.beforeSha256),
+      filePath: normalizeText(item.filePath),
+      id: normalizeText(item.id),
+      mutationTemplate: normalizeText(item.mutationTemplate),
+      rollbackAction: normalizeText(item.rollbackPreview?.action),
+      rollbackReady: item.rollbackPreview?.ready === true,
+      targetFilePath: normalizeText(item.targetFilePath),
+    }));
+    const mutationSetSha256 = hashTextContent(JSON.stringify(mutationSetFingerprint));
+    const riskRank = new Map([
+      ['low', 1],
+      ['medium', 2],
+      ['high', 3],
+      ['critical', 4],
+    ]);
+    const maxRiskClassification = items.reduce((current, item) => {
+      const nextRisk = normalizeText(item.riskClassification, 'medium');
+      return (riskRank.get(nextRisk) || 0) > (riskRank.get(current) || 0) ? nextRisk : current;
+    }, 'low');
+
+    return {
+      executionOrder: items.map((item) => item.id).filter(Boolean),
+      fileCount: filePaths.length,
+      id: `mutation-batch-${mutationSetSha256.slice(0, 16)}`,
+      itemCount: items.length,
+      maxRiskClassification,
+      mutationSetSha256,
+      pathCount: filePaths.length,
+      ready: items.length > 0 && rollbackReadyCount === items.length,
+      rollbackActionCounts,
+      rollbackOrder: [...items].reverse().map((item) => item.id).filter(Boolean),
+      rollbackPreviewReady: rollbackReadyCount === items.length,
+      rollbackReadyCount,
+      template: 'ordered-mutation-batch-v1',
+      templateCounts,
+      totalByteDelta: items.reduce((total, item) => total + item.byteDelta, 0),
+      totalLineDelta: items.reduce((total, item) => total + item.lineDelta, 0),
+    };
+  }
+
   function buildMutationBundle(manifest, workspacePath) {
     const workspaceRoot = path.resolve(workspacePath);
     const editSteps = ensureArray(manifest?.steps).filter((step) => step.kind === 'edit');
@@ -3910,6 +3958,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           pathInsideWorkspace,
           pathKind: beforeState.kind,
           predictionError,
+          riskClassification: step.riskClassification || '',
           rollbackPreview: predictionError
             ? {
                 action: 'manual-review-required',
@@ -3981,6 +4030,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         operation: step.operation || '',
         pathInsideWorkspace,
         predictionError,
+        riskClassification: step.riskClassification || '',
         rollbackPreview: predictionError
           ? {
               action: 'manual-review-required',
@@ -4011,8 +4061,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ),
     ];
     const rollbackReadyCount = items.filter((item) => item.rollbackPreview?.ready === true).length;
+    const batch = buildMutationBatchSummary({
+      filePaths,
+      items,
+      rollbackReadyCount,
+      templateCounts,
+    });
 
     return {
+      batch,
       fileCount: filePaths.length,
       filePaths,
       itemCount: items.length,
@@ -4398,6 +4455,53 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .filter((audit) => normalizeText(audit.filePath));
   }
 
+  function buildExecutionMutationBatchAudit({ mutationAudits, mutationBundle }) {
+    const audits = ensureArray(mutationAudits);
+    const templateCounts = audits.reduce((counts, audit) => {
+      const template = normalizeText(audit.mutationTemplate, 'unknown');
+      counts[template] = (counts[template] || 0) + 1;
+      return counts;
+    }, {});
+    const rollbackActionCounts = audits.reduce((counts, audit) => {
+      const action = normalizeText(audit.rollbackAction, 'unknown');
+      counts[action] = (counts[action] || 0) + 1;
+      return counts;
+    }, {});
+    const filePaths = [
+      ...new Set(
+        audits
+          .flatMap((audit) => [audit.filePath, audit.targetFilePath])
+          .map((item) => normalizeText(item))
+          .filter(Boolean),
+      ),
+    ];
+    const mutationSetFingerprint = audits.map((audit) => ({
+      afterSha256: normalizeText(audit.afterSha256),
+      beforeSha256: normalizeText(audit.beforeSha256),
+      filePath: normalizeText(audit.filePath),
+      mutationTemplate: normalizeText(audit.mutationTemplate),
+      rollbackAction: normalizeText(audit.rollbackAction),
+      rollbackReady: audit.rollbackReady === true,
+      targetFilePath: normalizeText(audit.targetFilePath),
+    }));
+    const mutationSetSha256 = hashTextContent(JSON.stringify(mutationSetFingerprint));
+
+    return {
+      batchId: normalizeText(mutationBundle?.batch?.id),
+      completedItemCount: audits.length,
+      expectedItemCount: Number(mutationBundle?.itemCount || 0),
+      fileCount: filePaths.length,
+      mutationSetSha256,
+      rollbackActionCounts,
+      rollbackOrder: [...audits].reverse().map((audit) => normalizeText(audit.filePath)).filter(Boolean),
+      rollbackReady: audits.length > 0 && audits.every((audit) => audit.rollbackReady === true),
+      sourceMutationSetSha256: normalizeText(mutationBundle?.batch?.mutationSetSha256),
+      status: audits.length === Number(mutationBundle?.itemCount || 0) ? 'complete' : 'partial',
+      template: 'ordered-mutation-batch-v1',
+      templateCounts,
+    };
+  }
+
   function computeExecutionVerification(steps) {
     const verificationSteps = ensureArray(steps).filter((step) => ['test', 'build'].includes(step.kind));
     if (!verificationSteps.length) {
@@ -4732,7 +4836,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
 
     const ready = items.length > 0 && items.every((item) => item.ready);
+    const rollbackActionCounts = items.reduce((counts, item) => {
+      counts[item.action] = (counts[item.action] || 0) + 1;
+      return counts;
+    }, {});
+    const rollbackBatch = {
+      itemCount: items.length,
+      mutationSetSha256: normalizeText(executionSession.mutationBatchAudit?.mutationSetSha256),
+      ready,
+      rollbackActionCounts,
+      rollbackOrder: items.map((item) => item.filePath).filter(Boolean),
+      template: 'ordered-rollback-batch-v1',
+    };
     return {
+      batch: rollbackBatch,
       blockedCount: items.filter((item) => !item.ready).length,
       deleteCount: items.filter((item) => item.action === 'delete-created-file').length,
       executionSessionId: executionSession.id,
@@ -5009,14 +5126,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           }
         }
 
-        const completedSession = store.updateExecutionSession(executionSessionId, (current) => ({
-          ...current,
-          changedFiles: captureChangedFiles(current.workspacePath),
-          endedAt: now(),
-          mutationAudits: collectExecutionMutationAudits(current.steps),
-          status: 'completed',
-          verification: computeExecutionVerification(current.steps),
-        }));
+        const completedSession = store.updateExecutionSession(executionSessionId, (current) => {
+          const mutationAudits = collectExecutionMutationAudits(current.steps);
+          return {
+            ...current,
+            changedFiles: captureChangedFiles(current.workspacePath),
+            endedAt: now(),
+            mutationAudits,
+            mutationBatchAudit: buildExecutionMutationBatchAudit({
+              mutationAudits,
+              mutationBundle: current.mutationBundle,
+            }),
+            status: 'completed',
+            verification: computeExecutionVerification(current.steps),
+          };
+        });
         harness.updateExecutionLease(completedSession.leaseId, {
           status: 'used',
           usedAt: now(),
@@ -5026,15 +5150,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       } catch (error) {
         const current = store.getExecutionSession(executionSessionId);
         const finalStatus = runtimeState.stopRequested ? 'stopped' : 'failed';
-        store.updateExecutionSession(executionSessionId, (session) => ({
-          ...session,
-          blockedReasons: finalStatus === 'failed' ? [error instanceof Error ? error.message : String(error)] : [],
-          changedFiles: captureChangedFiles(session.workspacePath),
-          endedAt: now(),
-          mutationAudits: collectExecutionMutationAudits(session.steps),
-          status: finalStatus,
-          verification: computeExecutionVerification(session.steps),
-        }));
+        store.updateExecutionSession(executionSessionId, (session) => {
+          const mutationAudits = collectExecutionMutationAudits(session.steps);
+          return {
+            ...session,
+            blockedReasons: finalStatus === 'failed' ? [error instanceof Error ? error.message : String(error)] : [],
+            changedFiles: captureChangedFiles(session.workspacePath),
+            endedAt: now(),
+            mutationAudits,
+            mutationBatchAudit: buildExecutionMutationBatchAudit({
+              mutationAudits,
+              mutationBundle: session.mutationBundle,
+            }),
+            status: finalStatus,
+            verification: computeExecutionVerification(session.steps),
+          };
+        });
         if (current?.leaseId) {
           harness.updateExecutionLease(current.leaseId, {
             status: 'used',

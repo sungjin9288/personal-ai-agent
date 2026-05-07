@@ -636,6 +636,13 @@ assert.equal(siblingPreflight.execution.supported, true);
 assert.equal(siblingPreflight.execution.eligibility, 'pending-approval');
 assert.equal(siblingPreflight.execution.mutationBundle.itemCount, 6);
 assert.equal(siblingPreflight.execution.mutationBundle.fileCount, 8);
+assert.equal(siblingPreflight.execution.mutationBundle.batch.template, 'ordered-mutation-batch-v1');
+assert.equal(siblingPreflight.execution.mutationBundle.batch.itemCount, 6);
+assert.equal(siblingPreflight.execution.mutationBundle.batch.pathCount, 8);
+assert.equal(siblingPreflight.execution.mutationBundle.batch.rollbackPreviewReady, true);
+assert.equal(siblingPreflight.execution.mutationBundle.batch.executionOrder[0], 'step-02');
+assert.equal(siblingPreflight.execution.mutationBundle.batch.rollbackOrder[0], 'step-07');
+assert.match(siblingPreflight.execution.mutationBundle.batch.mutationSetSha256, /^[a-f0-9]{64}$/);
 assert.equal(siblingPreflight.execution.mutationBundle.rollbackPreviewReady, true);
 assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.action, 'restore-previous-content');
 assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.ready, true);
@@ -657,6 +664,7 @@ const siblingApprovalResolution = service.resolveApproval(siblingPreflight.appro
   reason: 'Sibling workspace execution flow smoke approves one bounded execution session.',
 });
 assert.equal(siblingApprovalResolution.lease.mutationBundle.itemCount, 6);
+assert.equal(siblingApprovalResolution.lease.mutationBundle.batch.template, 'ordered-mutation-batch-v1');
 assert.equal(siblingApprovalResolution.lease.mutationBundle.rollbackReadyCount, 6);
 
 const siblingStartResult = service.startExecution(siblingMission.id);
@@ -678,6 +686,13 @@ assert.equal(siblingExecutionSession.status, 'completed');
 assert.equal(siblingExecutionSession.verification.status, 'passed');
 assert.equal(siblingFinalStatus.mission.status, 'completed');
 assert.equal(siblingExecutionSession.mutationBundle.itemCount, 6);
+assert.equal(siblingExecutionSession.mutationBatchAudit.template, 'ordered-mutation-batch-v1');
+assert.equal(siblingExecutionSession.mutationBatchAudit.expectedItemCount, 6);
+assert.equal(siblingExecutionSession.mutationBatchAudit.completedItemCount, 6);
+assert.equal(siblingExecutionSession.mutationBatchAudit.status, 'complete');
+assert.equal(siblingExecutionSession.mutationBatchAudit.rollbackReady, true);
+assert.equal(siblingExecutionSession.mutationBatchAudit.rollbackOrder[0], 'move-dir');
+assert.match(siblingExecutionSession.mutationBatchAudit.mutationSetSha256, /^[a-f0-9]{64}$/);
 assert.equal(siblingExecutionSession.mutationBundle.items[0].filePath, 'notes.md');
 assert.equal(siblingExecutionSession.mutationAudits.length, 6);
 assert.equal(siblingExecutionSession.mutationAudits[0].filePath, 'notes.md');
@@ -734,6 +749,10 @@ const siblingRollbackPreview = runCli({
 assert.equal(siblingRollbackPreview.rollback.status, 'preview');
 assert.equal(siblingRollbackPreview.rollback.ready, true);
 assert.equal(siblingRollbackPreview.rollback.itemCount, 6);
+assert.equal(siblingRollbackPreview.rollback.batch.template, 'ordered-rollback-batch-v1');
+assert.equal(siblingRollbackPreview.rollback.batch.itemCount, 6);
+assert.equal(siblingRollbackPreview.rollback.batch.ready, true);
+assert.equal(siblingRollbackPreview.rollback.batch.rollbackOrder[0], 'move-dir');
 assert.equal(siblingRollbackPreview.rollback.restoreCount, 5);
 assert.equal(siblingRollbackPreview.rollback.deleteCount, 1);
 assert.equal(siblingRollbackPreview.rollback.items.every((item) => item.ready), true);
@@ -760,6 +779,8 @@ const siblingRollback = runCli({
 
 assert.equal(siblingRollback.rollback.status, 'completed');
 assert.equal(siblingRollback.rollback.itemCount, 6);
+assert.equal(siblingRollback.rollback.batch.template, 'ordered-rollback-batch-v1');
+assert.equal(siblingRollback.rollback.batch.ready, true);
 assert.equal(siblingRollback.rollback.restoredCount, 5);
 assert.equal(siblingRollback.rollback.deletedCount, 1);
 assert.equal(siblingRollback.execution.rollback.status, 'completed');

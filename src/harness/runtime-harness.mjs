@@ -231,6 +231,7 @@ export function createRuntimeHarness({ store }) {
       manifestHash,
       missionId,
       mutationAudits: [],
+      mutationBatchAudit: null,
       mutationBundle,
       provider,
       reviewSessionId,

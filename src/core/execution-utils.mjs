@@ -62,6 +62,8 @@ const INLINE_EVALUATOR_FLAGS = new Map([
 const DIRECTORY_MOVE_MAX_BYTES = 1_000_000;
 const DIRECTORY_MOVE_MAX_ENTRIES = 300;
 const DIRECTORY_MOVE_MAX_FILES = 200;
+const MUTATION_BATCH_MAX_ITEMS = 20;
+const MUTATION_BATCH_MAX_PATHS = 40;
 
 const APPROVED_MUTATION_TEMPLATES = new Set([
   'directory-move',
@@ -1039,6 +1041,22 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
   const blockedItems = [];
   const warningItems = [];
   const allowedItems = [];
+  const editSteps = ensureArray(manifest?.steps).filter((step) => step.kind === 'edit');
+  const mutationBatchPaths = [
+    ...new Set(
+      editSteps
+        .flatMap((step) => [step.filePath, step.targetPath])
+        .map((item) => normalizeText(item))
+        .filter(Boolean),
+    ),
+  ];
+
+  if (editSteps.length > MUTATION_BATCH_MAX_ITEMS) {
+    blockedItems.push(`mutation batch: edit step 수가 한도를 초과했습니다 (${editSteps.length}/${MUTATION_BATCH_MAX_ITEMS}).`);
+  }
+  if (mutationBatchPaths.length > MUTATION_BATCH_MAX_PATHS) {
+    blockedItems.push(`mutation batch: 대상 path 수가 한도를 초과했습니다 (${mutationBatchPaths.length}/${MUTATION_BATCH_MAX_PATHS}).`);
+  }
 
   for (const step of ensureArray(manifest?.steps)) {
     const stepLabel = `${step.id} · ${step.title}`;
@@ -1095,7 +1113,12 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
 
   return {
     allowed: blockedItems.length === 0,
-    allowedItems,
+    allowedItems: editSteps.length && !blockedItems.length
+      ? [
+          `mutation batch: ordered-mutation-batch-v1 ${editSteps.length} edit step(s), ${mutationBatchPaths.length} path(s)`,
+          ...allowedItems,
+        ]
+      : allowedItems,
     blockedItems,
     warningItems,
   };
