@@ -422,6 +422,8 @@ const service = createMissionService({ rootDir: tempRoot, store });
 const preflight = service.preflightExecution(mission.id, { requestApproval: true });
 assert.equal(preflight.execution.supported, true);
 assert.equal(preflight.execution.eligibility, 'pending-approval');
+assert.equal(preflight.execution.mutationBundle.itemCount, 0);
+assert.equal(preflight.approval.metadata.mutationBundle.itemCount, 0);
 assert.equal(preflight.approval.kind, 'execution_lease');
 assert.equal(preflight.approval.status, 'pending');
 
@@ -525,15 +527,25 @@ store.updateAgentRun(siblingExecutorRun.id, (current) => ({
 const siblingPreflight = service.preflightExecution(siblingMission.id, { requestApproval: true });
 assert.equal(siblingPreflight.execution.supported, true);
 assert.equal(siblingPreflight.execution.eligibility, 'pending-approval');
+assert.equal(siblingPreflight.execution.mutationBundle.itemCount, 1);
+assert.equal(siblingPreflight.execution.mutationBundle.fileCount, 1);
+assert.equal(siblingPreflight.execution.mutationBundle.rollbackPreviewReady, true);
+assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.action, 'restore-previous-content');
+assert.equal(siblingPreflight.execution.mutationBundle.items[0].rollbackPreview.ready, true);
+assert.equal(siblingPreflight.approval.metadata.mutationBundle.itemCount, 1);
+assert.equal(siblingPreflight.approval.metadata.mutationBundle.totalLineDelta, 1);
 assert.equal(siblingPreflight.approval.kind, 'execution_lease');
 
-service.resolveApproval(siblingPreflight.approval.id, {
+const siblingApprovalResolution = service.resolveApproval(siblingPreflight.approval.id, {
   decision: 'approve',
   reason: 'Sibling workspace execution flow smoke approves one bounded execution session.',
 });
+assert.equal(siblingApprovalResolution.lease.mutationBundle.itemCount, 1);
+assert.equal(siblingApprovalResolution.lease.mutationBundle.rollbackReadyCount, 1);
 
 const siblingStartResult = service.startExecution(siblingMission.id);
 assert.equal(siblingStartResult.execution.status, 'running');
+assert.equal(siblingStartResult.execution.mutationBundle.itemCount, 1);
 
 let siblingFinalStatus = service.getExecutionStatus(siblingMission.id);
 for (let index = 0; index < 40; index += 1) {
@@ -549,6 +561,8 @@ assert.ok(siblingExecutionSession);
 assert.equal(siblingExecutionSession.status, 'completed');
 assert.equal(siblingExecutionSession.verification.status, 'passed');
 assert.equal(siblingFinalStatus.mission.status, 'completed');
+assert.equal(siblingExecutionSession.mutationBundle.itemCount, 1);
+assert.equal(siblingExecutionSession.mutationBundle.items[0].filePath, 'notes.md');
 assert.equal(siblingExecutionSession.mutationAudits.length, 1);
 assert.equal(siblingExecutionSession.mutationAudits[0].filePath, 'notes.md');
 assert.equal(siblingExecutionSession.mutationAudits[0].mutationTemplate, 'text-append');

@@ -3694,6 +3694,143 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function buildNextEditContent(step, existingContent, existedBefore) {
+    if (step.operation === 'append') {
+      return existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
+    }
+
+    if (step.operation === 'write') {
+      if (existedBefore && step.mutationTemplate === 'text-write-new') {
+        throw new Error(`text-write-new refuses to overwrite existing file ${step.filePath}`);
+      }
+      return `${step.content}`;
+    }
+
+    if (!step.findText) {
+      throw new Error(`Replace operation requires findText for ${step.title}`);
+    }
+
+    if (!existingContent.includes(step.findText)) {
+      throw new Error(`Replace target not found in ${step.filePath}`);
+    }
+
+    return existingContent.replace(step.findText, step.replaceText);
+  }
+
+  function buildRollbackPreview({ afterContent, beforeContent, existedBefore, step }) {
+    if (step.mutationTemplate === 'text-write-new' && !existedBefore) {
+      return {
+        action: 'delete-created-file',
+        ready: true,
+        reason: 'new file can be removed to restore the pre-execution state',
+      };
+    }
+
+    if (step.mutationTemplate === 'text-replace') {
+      return {
+        action: 'reverse-text-replace',
+        expectedCurrentSha256: hashTextContent(afterContent),
+        ready: true,
+        restoreSha256: hashTextContent(beforeContent),
+        reverseFindTextSha256: hashTextContent(step.replaceText),
+        reverseReplaceTextSha256: hashTextContent(step.findText),
+      };
+    }
+
+    if (step.mutationTemplate === 'text-append') {
+      return {
+        action: 'restore-previous-content',
+        expectedCurrentSha256: hashTextContent(afterContent),
+        ready: true,
+        restoreSha256: hashTextContent(beforeContent),
+        restoreStrategy: existedBefore ? 'rewrite-existing-file' : 'remove-created-file',
+      };
+    }
+
+    return {
+      action: 'manual-review-required',
+      ready: false,
+      reason: 'unsupported mutation template',
+    };
+  }
+
+  function buildMutationBundle(manifest, workspacePath) {
+    const workspaceRoot = path.resolve(workspacePath);
+    const editSteps = ensureArray(manifest?.steps).filter((step) => step.kind === 'edit');
+    const items = editSteps.map((step) => {
+      const targetPath = path.resolve(workspaceRoot, step.filePath || '');
+      const pathInsideWorkspace = isPathInsideRoot(workspaceRoot, targetPath);
+      const existedBefore = pathInsideWorkspace && fs.existsSync(targetPath);
+      const beforeContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
+      let afterContent = beforeContent;
+      let predictionError = '';
+
+      if (pathInsideWorkspace) {
+        try {
+          afterContent = buildNextEditContent(step, beforeContent, existedBefore);
+        } catch (error) {
+          predictionError = error instanceof Error ? error.message : String(error);
+        }
+      } else {
+        predictionError = `Edit path escapes selected workspace: ${targetPath}`;
+      }
+
+      const beforeBytes = Buffer.byteLength(beforeContent, 'utf8');
+      const afterBytes = Buffer.byteLength(afterContent, 'utf8');
+      const beforeLineCount = countTextLines(beforeContent);
+      const afterLineCount = countTextLines(afterContent);
+
+      return {
+        afterBytes,
+        afterLineCount,
+        afterSha256: hashTextContent(afterContent),
+        beforeBytes,
+        beforeLineCount,
+        beforeSha256: hashTextContent(beforeContent),
+        byteDelta: afterBytes - beforeBytes,
+        existedBefore,
+        filePath: step.filePath || '',
+        id: step.id,
+        lineDelta: afterLineCount - beforeLineCount,
+        mutationTemplate: step.mutationTemplate || '',
+        operation: step.operation || '',
+        pathInsideWorkspace,
+        predictionError,
+        rollbackPreview: predictionError
+          ? {
+              action: 'manual-review-required',
+              ready: false,
+              reason: predictionError,
+            }
+          : buildRollbackPreview({
+              afterContent,
+              beforeContent,
+              existedBefore,
+              step,
+            }),
+        title: step.title,
+      };
+    });
+    const templateCounts = items.reduce((counts, item) => {
+      counts[item.mutationTemplate] = (counts[item.mutationTemplate] || 0) + 1;
+      return counts;
+    }, {});
+    const filePaths = [...new Set(items.map((item) => item.filePath).filter(Boolean))];
+    const rollbackReadyCount = items.filter((item) => item.rollbackPreview?.ready === true).length;
+
+    return {
+      fileCount: filePaths.length,
+      filePaths,
+      itemCount: items.length,
+      items,
+      rollbackPreviewReady: rollbackReadyCount === items.length,
+      rollbackReadyCount,
+      templateCounts,
+      totalByteDelta: items.reduce((total, item) => total + item.byteDelta, 0),
+      totalLineDelta: items.reduce((total, item) => total + item.lineDelta, 0),
+    };
+  }
+
   function buildExecutionContext(missionId) {
     const mission = getMission(missionId);
     const workspace = getWorkspace(mission.workspaceId);
@@ -3719,6 +3856,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         })
       : null;
     const manifestHash = manifest ? hashExecutionManifest(manifest) : '';
+    const mutationBundle = manifest ? buildMutationBundle(manifest, workspace.path) : null;
     const policy = manifest
       ? evaluateExecutionPolicy({
           manifest,
@@ -3772,6 +3910,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       manifest,
       manifestHash,
       mission,
+      mutationBundle,
       policy: buildExecutionPolicySummary(policy),
       reviewSession,
       workspace,
@@ -3919,21 +4058,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const existingContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
-    let nextContent = '';
-    if (step.operation === 'append') {
-      nextContent = existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
-    } else if (step.operation === 'write') {
-      if (existedBefore && step.mutationTemplate === 'text-write-new') {
-        throw new Error(`text-write-new refuses to overwrite existing file ${step.filePath}`);
-      }
-      nextContent = `${step.content}`;
-    } else if (!step.findText) {
-      throw new Error(`Replace operation requires findText for ${step.title}`);
-    } else if (!existingContent.includes(step.findText)) {
-      throw new Error(`Replace target not found in ${step.filePath}`);
-    } else {
-      nextContent = existingContent.replace(step.findText, step.replaceText);
-    }
+    const nextContent = buildNextEditContent(step, existingContent, existedBefore);
 
     fs.writeFileSync(targetPath, nextContent, 'utf8');
     return buildMutationAudit({
@@ -7774,6 +7899,7 @@ function summarizeProviderExecutions(executions) {
       metadata: {
         gitBranch: getCurrentGitBranch(context.workspace.path),
         manifestHash: context.manifestHash,
+        mutationBundle: context.mutationBundle,
         reviewSessionId: context.reviewSession.id,
         stepCount: context.manifest.steps.length,
         workspacePath: context.workspace.path,
@@ -7812,6 +7938,7 @@ function summarizeProviderExecutions(executions) {
         latestExecutionSession: context.latestExecutionSession,
         manifest: context.manifest,
         manifestHash: context.manifestHash,
+        mutationBundle: context.mutationBundle,
         policy: context.policy,
         reviewSessionId: context.reviewSession?.id || null,
         supported: context.executionSupported,
@@ -7841,6 +7968,7 @@ function summarizeProviderExecutions(executions) {
         latestExecutionSession: context.latestExecutionSession,
         manifest: context.manifest,
         manifestHash: context.manifestHash,
+        mutationBundle: context.mutationBundle,
         policy: context.policy,
         reviewSessionId: context.reviewSession?.id || null,
         supported: context.executionSupported,
@@ -7877,6 +8005,7 @@ function summarizeProviderExecutions(executions) {
       leaseId: context.activeLease.id,
       manifest: context.manifest,
       manifestHash: context.manifestHash,
+      mutationBundle: context.mutationBundle,
       missionId: context.mission.id,
       provider: context.reviewSession?.provider || 'stub',
       reviewSessionId: context.reviewSession?.id || null,
@@ -15119,6 +15248,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           gitBranch: normalizeText(metadata.gitBranch, getCurrentGitBranch(workspace.path)),
           manifestHash: normalizeText(metadata.manifestHash),
           missionId: mission.id,
+          mutationBundle: ensureObject(metadata.mutationBundle),
           provider: session.provider,
           sessionId: session.id,
           workspacePath: workspace.path,

@@ -169,12 +169,22 @@ export function createRuntimeHarness({ store }) {
     }));
   }
 
-  function issueExecutionLease({ approvalId, manifestHash, missionId, provider, sessionId, workspacePath, gitBranch }) {
+  function issueExecutionLease({
+    approvalId,
+    gitBranch,
+    manifestHash,
+    missionId,
+    mutationBundle = null,
+    provider,
+    sessionId,
+    workspacePath,
+  }) {
     return store.saveExecutionLease({
       id: createId('lease'),
       approvalId,
       manifestHash,
       missionId,
+      mutationBundle,
       provider,
       sessionId,
       status: 'active',
@@ -200,6 +210,7 @@ export function createRuntimeHarness({ store }) {
     manifest,
     manifestHash,
     missionId,
+    mutationBundle = null,
     provider,
     reviewSessionId,
     workspaceId,
@@ -220,6 +231,7 @@ export function createRuntimeHarness({ store }) {
       manifestHash,
       missionId,
       mutationAudits: [],
+      mutationBundle,
       provider,
       reviewSessionId,
       startedAt: null,

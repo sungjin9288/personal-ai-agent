@@ -223,6 +223,7 @@
 - Anthropic live validation reaches the provider API but is blocked by account credit/billing, so its failure is treated as a provider-account blocker rather than a harness runtime failure
 - local and Hermes provider validation remain blocked until approved runtime endpoint and model environment are injected
 - pilot deployment, onboarding, demo, security, operator runbook, evidence, closeout, handoff, and snapshot artifacts are aligned for an OpenAI-backed local-first pilot
+- foreground execution approvals now include operator-reviewed mutation bundles with rollback previews, predicted sha/byte/line deltas, template counts, and target file lists before a lease is approved
 
 ## Next Milestone Scope
 
@@ -230,7 +231,7 @@
 - inject approved local and Hermes runtime endpoint/model configuration, rerun live validation, and archive updated evidence
 - add production deployment controls for authenticated RBAC, tenant isolation, centralized secret handling, retention/export/delete verification, incident/SLO evidence, and production-like clean-environment release generation
 - deepen provider failover, policy-aware retries, and operator remediation automation using the existing provider attention and maintenance surfaces
-- add operator-reviewed mutation bundles with rollback previews before allowing broader repo mutation
+- add explicit rollback execution commands for approved mutation bundles before allowing broader repo mutation
 - add provider-side usage/cost variants and stronger deliverable-specific reviewer rubrics after provider coverage is unblocked
 
 ## Deferred
