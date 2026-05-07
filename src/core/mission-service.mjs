@@ -588,6 +588,16 @@ function normalizeProviderFailureKind(value) {
   return PROVIDER_FAILURE_KINDS.includes(normalized) ? normalized : 'unknown';
 }
 
+function normalizeProviderFallbackPolicy(value) {
+  const normalized = normalizeText(value, 'provider-failure-only');
+  if (normalized === 'provider-failure-only' || normalized === 'recoverable-provider-failure-only') {
+    return normalized;
+  }
+  throw new Error(
+    `Unsupported provider fallback policy: ${normalized}. Use provider-failure-only or recoverable-provider-failure-only.`,
+  );
+}
+
 function summarizeFailureKinds(items) {
   const counts = Object.fromEntries(PROVIDER_FAILURE_KINDS.map((kind) => [kind, 0]));
 
@@ -1318,6 +1328,7 @@ function normalizeSessionSourceContext(value = {}) {
         ? Number(value.providerFallbackAttemptCount)
         : null,
       providerFallbackFallbacks: ensureArray(value.providerFallbackFallbacks).map((providerId) => normalizeText(providerId)),
+      providerFallbackPolicy: normalizeProviderFallbackPolicy(value.providerFallbackPolicy),
       providerFallbackPrimary: normalizeText(value.providerFallbackPrimary),
       providerFallbackRequested: true,
     };
@@ -2460,6 +2471,8 @@ function summarizeSpecialistFollowUpItems(items) {
 
 function summarizeOperatorTimeline(events) {
   const eventCounts = {};
+  const providerFallbackPolicyCounts = {};
+  const providerFallbackStopReasonCounts = {};
   const workspaceCounts = {};
   const providerFallbackEvents = [];
   const providerFallbackUsedEvents = [];
@@ -2471,6 +2484,15 @@ function summarizeOperatorTimeline(events) {
     }
     if (event.kind === 'provider-fallback-attempted' || event.kind === 'provider-fallback-used') {
       providerFallbackEvents.push(event);
+      const fallbackPolicy = normalizeText(event.fallbackPolicy);
+      if (fallbackPolicy) {
+        providerFallbackPolicyCounts[fallbackPolicy] = (providerFallbackPolicyCounts[fallbackPolicy] || 0) + 1;
+      }
+      const fallbackStopReason = normalizeText(event.fallbackStopReason);
+      if (fallbackStopReason) {
+        providerFallbackStopReasonCounts[fallbackStopReason] =
+          (providerFallbackStopReasonCounts[fallbackStopReason] || 0) + 1;
+      }
     }
     if (event.kind === 'provider-fallback-used') {
       providerFallbackUsedEvents.push(event);
@@ -2482,9 +2504,11 @@ function summarizeOperatorTimeline(events) {
     latestEvent: events.at(-1) || null,
     latestProviderFallbackEvent: getLatestItem(providerFallbackEvents, 'at'),
     providerFallbackAttemptCount: providerFallbackEvents.length,
+    providerFallbackPolicyCounts,
     providerFallbackPrimaryProviderIds: [
       ...new Set(providerFallbackEvents.map((event) => event.primaryProviderId).filter(Boolean)),
     ],
+    providerFallbackStopReasonCounts,
     providerFallbackUsedCount: providerFallbackUsedEvents.length,
     providerFallbackUsedProviderIds: [
       ...new Set(providerFallbackUsedEvents.map((event) => event.providerId).filter(Boolean)),
@@ -6273,6 +6297,8 @@ function summarizeProviderExecutions(executions) {
       executionTotalRetryCount: executionSummary.totalRetryCount,
       executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
       eventTotal: eventSummary.total,
+      fallbackPolicyCounts: eventSummary.fallbackPolicyCounts,
+      fallbackStopReasonCounts: eventSummary.fallbackStopReasonCounts,
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestEvent: eventSummary.latestEvent,
@@ -6368,6 +6394,8 @@ function summarizeProviderExecutions(executions) {
     return {
       eventFamilyCounts: eventSummary.familyCounts,
       eventTotal: eventSummary.total,
+      fallbackPolicyCounts: eventSummary.fallbackPolicyCounts,
+      fallbackStopReasonCounts: eventSummary.fallbackStopReasonCounts,
       executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
       executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
       executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
@@ -6399,6 +6427,7 @@ function summarizeProviderExecutions(executions) {
       latestEvent: eventSummary.latestEvent,
       latestExecution: executionSummary.latestExecution,
       latestExecutionEvent: eventSummary.latestExecutionEvent,
+      latestFallbackEvent: eventSummary.latestFallbackEvent,
       latestFailedExecution: executionSummary.latestFailedExecution,
       latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
       latestProbe: probes.at(-1) || null,
@@ -6894,6 +6923,8 @@ function summarizeProviderExecutions(executions) {
   function summarizeProviderEvents(events) {
     const eventCounts = {};
     const familyCounts = { attention: 0, execution: 0, fallback: 0, probe: 0 };
+    const fallbackPolicyCounts = {};
+    const fallbackStopReasonCounts = {};
     const providerCounts = {};
     const executionEvents = events.filter((event) => event.eventFamily === 'execution');
     const probeEvents = events.filter((event) => event.eventFamily === 'probe');
@@ -6966,6 +6997,14 @@ function summarizeProviderExecutions(executions) {
 
       if (event.eventFamily === 'fallback') {
         familyCounts.fallback += 1;
+        const fallbackPolicy = normalizeText(event.fallbackPolicy);
+        if (fallbackPolicy) {
+          fallbackPolicyCounts[fallbackPolicy] = (fallbackPolicyCounts[fallbackPolicy] || 0) + 1;
+        }
+        const fallbackStopReason = normalizeText(event.fallbackStopReason);
+        if (fallbackStopReason) {
+          fallbackStopReasonCounts[fallbackStopReason] = (fallbackStopReasonCounts[fallbackStopReason] || 0) + 1;
+        }
         continue;
       }
 
@@ -7007,6 +7046,8 @@ function summarizeProviderExecutions(executions) {
         (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
       ).length,
       familyCounts,
+      fallbackPolicyCounts,
+      fallbackStopReasonCounts,
       latestAttentionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'attention'),
       latestEvent: events.at(-1) || null,
       latestExecutionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'execution'),
@@ -8212,6 +8253,7 @@ function summarizeProviderExecutions(executions) {
 
   function resolveMissionProviderFallbackPlan(options = {}) {
     const primaryProviderId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
+    const policyId = normalizeProviderFallbackPolicy(options.fallbackPolicy || options.providerFallbackPolicy);
     const requestedFallbackProviderIds = normalizeProviderFallbackIds(
       options.fallbackProvider || options.fallbackProviders || options.providerFallback,
     );
@@ -8230,8 +8272,52 @@ function summarizeProviderExecutions(executions) {
     return {
       enabled: providerIds.length > 1,
       fallbackProviderIds: providerIds.slice(1),
+      policyId,
       primaryProviderId,
       providerIds,
+    };
+  }
+
+  function evaluateProviderFallbackPolicy({ isLastAttempt = false, missionStatus, policyId, providerFailure }) {
+    const normalizedPolicyId = normalizeProviderFallbackPolicy(policyId);
+    const normalizedMissionStatus = normalizeText(missionStatus);
+
+    if (normalizedMissionStatus !== 'failed') {
+      return {
+        eligible: false,
+        policyId: normalizedPolicyId,
+        reason: `mission-status-${normalizedMissionStatus || 'unknown'}`,
+      };
+    }
+
+    if (!providerFailure) {
+      return {
+        eligible: false,
+        policyId: normalizedPolicyId,
+        reason: 'no-provider-failure-metadata',
+      };
+    }
+
+    if (isLastAttempt) {
+      return {
+        eligible: false,
+        policyId: normalizedPolicyId,
+        reason: 'fallback-provider-exhausted',
+      };
+    }
+
+    if (normalizedPolicyId === 'recoverable-provider-failure-only' && providerFailure.recoverable !== true) {
+      return {
+        eligible: false,
+        policyId: normalizedPolicyId,
+        reason: 'non-recoverable-provider-failure',
+      };
+    }
+
+    return {
+      eligible: true,
+      policyId: normalizedPolicyId,
+      reason: 'eligible-provider-failure',
     };
   }
 
@@ -8272,15 +8358,25 @@ function summarizeProviderExecutions(executions) {
     };
   }
 
-  function buildProviderFallbackSummary({ attempts, fallbackProviderIds, primaryProviderId, result }) {
+  function buildProviderFallbackSummary({ attempts, fallbackProviderIds, policyId, primaryProviderId, result }) {
     const selectedProviderId = normalizeText(result?.provider);
+    const stopReasonCounts = {};
+    for (const attempt of attempts) {
+      const stopReason = normalizeText(attempt.fallbackStopReason);
+      if (stopReason) {
+        stopReasonCounts[stopReason] = (stopReasonCounts[stopReason] || 0) + 1;
+      }
+    }
+
     return {
       attemptedProviderIds: attempts.map((attempt) => attempt.providerId),
       attempts,
       enabled: fallbackProviderIds.length > 0,
       fallbackProviderIds,
+      fallbackStopReasonCounts: stopReasonCounts,
       fallbackUsed: selectedProviderId !== primaryProviderId,
       finalStatus: normalizeText(result?.mission?.status),
+      policyId: normalizeProviderFallbackPolicy(policyId),
       primaryProviderId,
       selectedProviderId,
     };
@@ -8783,28 +8879,44 @@ function summarizeProviderExecutions(executions) {
           providerFallbackAttempt: index + 1,
           providerFallbackAttemptCount: fallbackPlan.providerIds.length,
           providerFallbackFallbacks: fallbackPlan.fallbackProviderIds,
+          providerFallbackPolicy: fallbackPlan.policyId,
           providerFallbackPrimary: fallbackPlan.primaryProviderId,
           providerFallbackRequested: true,
         },
       });
       const providerFailure = getSessionProviderFailureSummary(result.session.id);
+      const missionStatus = normalizeText(result.mission?.status);
+      const fallbackPolicyDecision = evaluateProviderFallbackPolicy({
+        isLastAttempt: index >= fallbackPlan.providerIds.length - 1,
+        missionStatus,
+        policyId: fallbackPlan.policyId,
+        providerFailure,
+      });
 
       latestResult = result;
       attempts.push({
+        fallbackEligible: fallbackPolicyDecision.eligible,
         fallbackAttempt: index + 1,
-        missionStatus: normalizeText(result.mission?.status),
+        fallbackPolicy: fallbackPolicyDecision.policyId,
+        fallbackStopReason: fallbackPolicyDecision.reason,
+        missionStatus,
+        nextProviderId:
+          fallbackPolicyDecision.eligible && fallbackPlan.providerIds[index + 1]
+            ? fallbackPlan.providerIds[index + 1]
+            : null,
         providerFailure,
         providerId,
         sessionId: result.session.id,
         status: normalizeText(result.session?.status),
       });
 
-      if (normalizeText(result.mission?.status) !== 'failed' || !providerFailure) {
+      if (!fallbackPolicyDecision.eligible) {
         return {
           ...result,
           providerFallback: buildProviderFallbackSummary({
             attempts,
             fallbackProviderIds: fallbackPlan.fallbackProviderIds,
+            policyId: fallbackPlan.policyId,
             primaryProviderId: fallbackPlan.primaryProviderId,
             result,
           }),
@@ -8817,6 +8929,7 @@ function summarizeProviderExecutions(executions) {
       providerFallback: buildProviderFallbackSummary({
         attempts,
         fallbackProviderIds: fallbackPlan.fallbackProviderIds,
+        policyId: fallbackPlan.policyId,
         primaryProviderId: fallbackPlan.primaryProviderId,
         result: latestResult,
       }),
@@ -11315,6 +11428,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           return null;
         }
 
+        const fallbackPolicyId = 'provider-failure-only';
         const actionId = buildProviderAttentionActionId(latestEvent);
         const remediationCommand = `node src/cli.mjs action remediate-provider-attention ${actionId}`;
         const fallbackProviderId = latestEvent.eventFamily === 'execution' && provider.id !== 'stub' ? 'stub' : '';
@@ -11341,6 +11455,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               eventFamily: latestEvent.eventFamily,
               eventKind: latestEvent.eventKind,
               eventRefId: getProviderAttentionEventRefId(latestEvent),
+              fallbackPolicyId,
+              fallbackPolicyOptions: ['provider-failure-only', 'recoverable-provider-failure-only'],
               fallbackProviderId: fallbackProviderId || null,
               fallbackRecommendedCommand,
               inspectCommand,
@@ -13427,12 +13543,18 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     const attentionItem = actionState.item;
     const fallbackProvider = normalizeText(options.fallbackProvider);
+    const fallbackPolicy = normalizeProviderFallbackPolicy(
+      options.fallbackPolicy || attentionItem.fallbackPolicyId || 'provider-failure-only',
+    );
     let remediationKind = '';
     let result = null;
 
     if (attentionItem.eventFamily === 'probe') {
       if (fallbackProvider) {
         throw new Error('--fallback-provider is only supported for provider execution attention remediation.');
+      }
+      if (normalizeText(options.fallbackPolicy)) {
+        throw new Error('--fallback-policy is only supported for provider execution attention remediation.');
       }
 
       remediationKind = 'probe';
@@ -13456,6 +13578,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       remediationKind = fallbackProvider ? 'mission-fallback-rerun' : 'mission-rerun';
       const rerun = await runMission(attentionItem.missionId, {
         fallbackProvider,
+        fallbackPolicy,
         provider: attentionItem.providerId,
         providerSpecified: true,
       });
@@ -13476,6 +13599,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     return {
       actionId,
       eventFamily: attentionItem.eventFamily,
+      fallbackPolicy: attentionItem.eventFamily === 'execution' ? fallbackPolicy : null,
       missionId: attentionItem.missionId || null,
       postAttention: summarizeProviderAttentionScopedState({
         missionId: attentionItem.missionId || null,
@@ -15052,15 +15176,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           ? Number(sourceContext.providerFallbackAttemptCount)
           : 1;
         const primaryProviderId = normalizeText(sourceContext.providerFallbackPrimary) || session.provider;
+        const fallbackPolicy = normalizeProviderFallbackPolicy(sourceContext.providerFallbackPolicy);
         const fallbackProviderIds = ensureArray(sourceContext.providerFallbackFallbacks)
           .map((providerId) => normalizeText(providerId))
           .filter(Boolean);
         const providerFailure = getSessionProviderFailureSummary(session.id);
         const isFallbackAttempt = attempt > 1;
-        const noProviderFailureSuffix =
-          !isFallbackAttempt && session.status === 'failed' && !providerFailure
-            ? ' fallback stopped because no provider failure metadata was detected.'
-            : '';
+        const policyDecision = evaluateProviderFallbackPolicy({
+          isLastAttempt: attempt >= attemptCount,
+          missionStatus: session.status,
+          policyId: fallbackPolicy,
+          providerFailure,
+        });
+        const stopReasonSuffix = !policyDecision.eligible
+          ? ` fallbackStopReason=${policyDecision.reason}.`
+          : ` fallbackPolicy=${policyDecision.policyId}; next provider eligible.`;
         const providerFailureSuffix = providerFailure
           ? ` providerFailure=${providerFailure.failureKind}; role=${providerFailure.role || 'unknown'}.`
           : '';
@@ -15070,9 +15200,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           attempt,
           attemptCount,
           detail: isFallbackAttempt
-            ? `Provider fallback attempt ${attempt}/${attemptCount} used ${session.provider} after primary ${primaryProviderId}; status=${session.status}.${providerFailureSuffix}`
-            : `Provider fallback primary attempt ${attempt}/${attemptCount} used ${session.provider}; status=${session.status}.${providerFailureSuffix}${noProviderFailureSuffix}`,
+            ? `Provider fallback attempt ${attempt}/${attemptCount} used ${session.provider} after primary ${primaryProviderId}; status=${session.status}; policy=${fallbackPolicy}.${providerFailureSuffix}${stopReasonSuffix}`
+            : `Provider fallback primary attempt ${attempt}/${attemptCount} used ${session.provider}; status=${session.status}; policy=${fallbackPolicy}.${providerFailureSuffix}${stopReasonSuffix}`,
+          fallbackEligible: policyDecision.eligible,
+          fallbackPolicy,
           fallbackProviderIds,
+          fallbackStopReason: policyDecision.reason,
           kind: isFallbackAttempt ? 'provider-fallback-used' : 'provider-fallback-attempted',
           missionId: mission.id,
           primaryProviderId,
@@ -15123,12 +15256,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       sessions,
     });
     const usedEvents = events.filter((event) => event.kind === 'provider-fallback-used');
+    const fallbackPolicyCounts = {};
+    const fallbackStopReasonCounts = {};
+
+    for (const event of events) {
+      if (event.fallbackPolicy) {
+        fallbackPolicyCounts[event.fallbackPolicy] = (fallbackPolicyCounts[event.fallbackPolicy] || 0) + 1;
+      }
+      if (event.fallbackStopReason) {
+        fallbackStopReasonCounts[event.fallbackStopReason] =
+          (fallbackStopReasonCounts[event.fallbackStopReason] || 0) + 1;
+      }
+    }
 
     return {
       latestProviderFallbackEvent: getLatestItem(events, 'at'),
       providerFallbackAttemptCount: events.length,
+      providerFallbackPolicyCounts: fallbackPolicyCounts,
       providerFallbackPrimaryProviderIds: [...new Set(events.map((event) => event.primaryProviderId).filter(Boolean))],
       providerFallbackRequested: events.length > 0,
+      providerFallbackStopReasonCounts: fallbackStopReasonCounts,
       providerFallbackUsedCount: usedEvents.length,
       providerFallbackUsedProviderIds: [...new Set(usedEvents.map((event) => event.providerId).filter(Boolean))],
     };
@@ -15706,7 +15853,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           attempt: event.attempt,
           attemptCount: event.attemptCount,
           detail: event.detail,
+          fallbackEligible: event.fallbackEligible,
+          fallbackPolicy: event.fallbackPolicy,
           fallbackProviderIds: event.fallbackProviderIds,
+          fallbackStopReason: event.fallbackStopReason,
           kind: event.kind,
           missionId: mission.id,
           missionTitle: mission.title,

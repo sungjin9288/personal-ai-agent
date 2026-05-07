@@ -92,6 +92,7 @@
 - [x] Target provider evidence intake gate implemented
 - [x] Target provider operations gate implemented
 - [x] Mission-level provider fallback policy implemented
+- [x] Policy-aware provider fallback stop conditions implemented
 - [x] Mission-level provider fallback audit timeline implemented
 - [x] Workspace/operator provider fallback audit timeline implemented
 - [x] Provider-scoped fallback audit event surface implemented

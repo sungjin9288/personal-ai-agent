@@ -179,6 +179,11 @@ try {
   assert.equal(anthropicExecutionPending.items.length, 1);
   assert.match(anthropicExecutionPending.items[0].recommendedCommand, /action remediate-provider-attention/);
   assert.match(anthropicExecutionPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.equal(anthropicExecutionPending.items[0].fallbackPolicyId, 'provider-failure-only');
+  assert.deepEqual(anthropicExecutionPending.items[0].fallbackPolicyOptions, [
+    'provider-failure-only',
+    'recoverable-provider-failure-only',
+  ]);
   assert.equal(anthropicExecutionPending.items[0].fallbackProviderId, 'stub');
   assert.match(anthropicExecutionPending.items[0].inspectCommand, /provider activity --provider anthropic --status failed/);
 
@@ -195,14 +200,18 @@ try {
       anthropicExecutionPending.items[0].actionId,
       '--fallback-provider',
       'stub',
+      '--fallback-policy',
+      'provider-failure-only',
     ],
   });
 
+  assert.equal(fallbackRemediation.fallbackPolicy, 'provider-failure-only');
   assert.equal(fallbackRemediation.remediationKind, 'mission-fallback-rerun');
   assert.equal(fallbackRemediation.primaryProviderId, 'anthropic');
   assert.equal(fallbackRemediation.result.missionStatus, 'completed');
   assert.equal(fallbackRemediation.result.provider, 'stub');
   assert.equal(fallbackRemediation.result.providerFallback.fallbackUsed, true);
+  assert.equal(fallbackRemediation.result.providerFallback.policyId, 'provider-failure-only');
   assert.deepEqual(fallbackRemediation.result.providerFallback.attemptedProviderIds, ['anthropic', 'stub']);
   assert.equal(fallbackRemediation.postAttention.status, 'pending');
   assert.equal(fallbackRemediation.postAttention.pendingCount, 1);

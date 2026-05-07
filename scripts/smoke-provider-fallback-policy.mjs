@@ -42,6 +42,7 @@ const fallbackResult = runCli({
 assert.equal(fallbackResult.status, 'completed');
 assert.equal(fallbackResult.provider, 'stub');
 assert.equal(fallbackResult.providerFallback.enabled, true);
+assert.equal(fallbackResult.providerFallback.policyId, 'provider-failure-only');
 assert.equal(fallbackResult.providerFallback.primaryProviderId, 'anthropic');
 assert.deepEqual(fallbackResult.providerFallback.fallbackProviderIds, ['stub']);
 assert.deepEqual(fallbackResult.providerFallback.attemptedProviderIds, ['anthropic', 'stub']);
@@ -49,8 +50,13 @@ assert.equal(fallbackResult.providerFallback.fallbackUsed, true);
 assert.equal(fallbackResult.providerFallback.selectedProviderId, 'stub');
 assert.equal(fallbackResult.providerFallback.attempts.length, 2);
 assert.equal(fallbackResult.providerFallback.attempts[0].providerId, 'anthropic');
+assert.equal(fallbackResult.providerFallback.attempts[0].fallbackEligible, true);
+assert.equal(fallbackResult.providerFallback.attempts[0].fallbackPolicy, 'provider-failure-only');
+assert.equal(fallbackResult.providerFallback.attempts[0].fallbackStopReason, 'eligible-provider-failure');
+assert.equal(fallbackResult.providerFallback.attempts[0].nextProviderId, 'stub');
 assert.equal(fallbackResult.providerFallback.attempts[0].providerFailure.failureKind, 'config');
 assert.equal(fallbackResult.providerFallback.attempts[1].providerId, 'stub');
+assert.equal(fallbackResult.providerFallback.attempts[1].fallbackStopReason, 'mission-status-completed');
 assert.equal(fallbackResult.providerFallback.attempts[1].providerFailure, null);
 
 const fallbackSessions = createStore({ rootDir: tempRoot }).listSessionsByMission(fallbackMission.id);
@@ -65,7 +71,10 @@ const fallbackTimeline = runCli({
 
 assert.equal(fallbackTimeline.summary.providerFallbackRequested, true);
 assert.equal(fallbackTimeline.summary.providerFallbackAttemptCount, 2);
+assert.equal(fallbackTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 2);
 assert.equal(fallbackTimeline.summary.providerFallbackUsedCount, 1);
+assert.equal(fallbackTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'], 1);
+assert.equal(fallbackTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'], 1);
 assert.deepEqual(fallbackTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic']);
 assert.deepEqual(fallbackTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
 assert.equal(fallbackTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 1);
@@ -75,6 +84,8 @@ assert.equal(
     (event) =>
       event.kind === 'provider-fallback-attempted' &&
       event.providerFailureKind === 'config' &&
+      event.fallbackPolicy === 'provider-failure-only' &&
+      event.fallbackEligible === true &&
       event.primaryProviderId === 'anthropic',
   ),
   true,
@@ -95,7 +106,10 @@ const workspaceTimeline = runCli({
 });
 
 assert.equal(workspaceTimeline.summary.providerFallbackAttemptCount, 2);
+assert.equal(workspaceTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 2);
 assert.equal(workspaceTimeline.summary.providerFallbackUsedCount, 1);
+assert.equal(workspaceTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'], 1);
+assert.equal(workspaceTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'], 1);
 assert.deepEqual(workspaceTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic']);
 assert.deepEqual(workspaceTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
 assert.equal(workspaceTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 1);
@@ -130,9 +144,11 @@ const deterministicFailureResult = runCli({
 assert.equal(deterministicFailureResult.status, 'failed');
 assert.equal(deterministicFailureResult.provider, 'stub');
 assert.equal(deterministicFailureResult.providerFallback.enabled, true);
+assert.equal(deterministicFailureResult.providerFallback.policyId, 'provider-failure-only');
 assert.equal(deterministicFailureResult.providerFallback.fallbackUsed, false);
 assert.deepEqual(deterministicFailureResult.providerFallback.attemptedProviderIds, ['stub']);
 assert.equal(deterministicFailureResult.providerFallback.attempts.length, 1);
+assert.equal(deterministicFailureResult.providerFallback.attempts[0].fallbackStopReason, 'no-provider-failure-metadata');
 assert.equal(deterministicFailureResult.providerFallback.attempts[0].providerFailure, null);
 
 const deterministicFailureTimeline = runCli({
@@ -142,27 +158,86 @@ const deterministicFailureTimeline = runCli({
 
 assert.equal(deterministicFailureTimeline.summary.providerFallbackRequested, true);
 assert.equal(deterministicFailureTimeline.summary.providerFallbackAttemptCount, 1);
+assert.equal(deterministicFailureTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 1);
 assert.equal(deterministicFailureTimeline.summary.providerFallbackUsedCount, 0);
+assert.equal(
+  deterministicFailureTimeline.summary.providerFallbackStopReasonCounts['no-provider-failure-metadata'],
+  1,
+);
 assert.equal(
   deterministicFailureTimeline.timeline.some(
     (event) =>
       event.kind === 'provider-fallback-attempted' &&
       event.providerFailureKind === null &&
-      /fallback stopped because no provider failure metadata was detected/.test(event.detail),
+      event.fallbackStopReason === 'no-provider-failure-metadata',
   ),
   true,
 );
+
+const recoverablePolicyMission = service.createMission({
+  workspaceId: workspace.id,
+  mode: 'knowledge',
+  deliverableType: 'checklist',
+  title: 'Recoverable-only policy does not fallback on config failure',
+  objective: 'Verify non-recoverable provider failures stop policy-aware fallback.',
+  constraints: [],
+});
+
+const recoverablePolicyResult = runCli({
+  rootDir: tempRoot,
+  env: {
+    ANTHROPIC_API_KEY: '',
+    ANTHROPIC_BASE_URL: '',
+    ANTHROPIC_MODEL: '',
+  },
+  args: [
+    'mission',
+    'run',
+    recoverablePolicyMission.id,
+    '--provider',
+    'anthropic',
+    '--fallback-provider',
+    'stub',
+    '--fallback-policy',
+    'recoverable-provider-failure-only',
+  ],
+});
+
+assert.equal(recoverablePolicyResult.status, 'failed');
+assert.equal(recoverablePolicyResult.provider, 'anthropic');
+assert.equal(recoverablePolicyResult.providerFallback.policyId, 'recoverable-provider-failure-only');
+assert.equal(recoverablePolicyResult.providerFallback.fallbackUsed, false);
+assert.deepEqual(recoverablePolicyResult.providerFallback.attemptedProviderIds, ['anthropic']);
+assert.equal(recoverablePolicyResult.providerFallback.attempts[0].fallbackEligible, false);
+assert.equal(recoverablePolicyResult.providerFallback.attempts[0].fallbackStopReason, 'non-recoverable-provider-failure');
+assert.equal(recoverablePolicyResult.providerFallback.attempts[0].providerFailure.failureKind, 'config');
+
+const recoverablePolicyTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', recoverablePolicyMission.id],
+});
+
+assert.equal(recoverablePolicyTimeline.summary.providerFallbackAttemptCount, 1);
+assert.equal(recoverablePolicyTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(
+  recoverablePolicyTimeline.summary.providerFallbackStopReasonCounts['non-recoverable-provider-failure'],
+  1,
+);
+assert.equal(recoverablePolicyTimeline.summary.providerFallbackUsedCount, 0);
 
 const operatorTimeline = runCli({
   rootDir: tempRoot,
   args: ['overview', 'operator-timeline'],
 });
 
-assert.equal(operatorTimeline.summary.providerFallbackAttemptCount, 3);
+assert.equal(operatorTimeline.summary.providerFallbackAttemptCount, 4);
+assert.equal(operatorTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 3);
+assert.equal(operatorTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'], 1);
 assert.equal(operatorTimeline.summary.providerFallbackUsedCount, 1);
+assert.equal(operatorTimeline.summary.providerFallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
 assert.deepEqual(operatorTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic', 'stub']);
 assert.deepEqual(operatorTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
-assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 2);
+assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 3);
 assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
 
 const providerFallbackEvents = runCli({
@@ -170,20 +245,24 @@ const providerFallbackEvents = runCli({
   args: ['provider', 'events', '--family', 'fallback'],
 });
 
-assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 3);
-assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 2);
+assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 4);
+assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 3);
 assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-used'], 1);
 assert.equal(providerFallbackEvents.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
-assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 3);
+assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['provider-failure-only'], 3);
+assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 4);
 
 const anthropicFallbackEvents = runCli({
   rootDir: tempRoot,
   args: ['provider', 'events', '--provider', 'anthropic', '--family', 'fallback'],
 });
 
-assert.equal(anthropicFallbackEvents.summary.familyCounts.fallback, 1);
+assert.equal(anthropicFallbackEvents.summary.familyCounts.fallback, 2);
 assert.equal(anthropicFallbackEvents.timeline[0].providerId, 'anthropic');
 assert.equal(anthropicFallbackEvents.timeline[0].providerFailureKind, 'config');
+assert.equal(anthropicFallbackEvents.timeline.at(-1).fallbackStopReason, 'non-recoverable-provider-failure');
 
 const stubFallbackEvents = runCli({
   rootDir: tempRoot,
@@ -198,7 +277,9 @@ const providerOverview = runCli({
   args: ['overview', 'providers'],
 });
 
-assert.equal(providerOverview.summary.eventFamilyCounts.fallback, 3);
+assert.equal(providerOverview.summary.eventFamilyCounts.fallback, 4);
+assert.equal(providerOverview.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(providerOverview.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
 assert.equal(providerOverview.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
 
 console.log(
@@ -208,6 +289,7 @@ console.log(
       fallbackUsed: fallbackResult.providerFallback.fallbackUsed,
       mode: 'provider-fallback-policy',
       ok: true,
+      recoverablePolicyFallbackUsed: recoverablePolicyResult.providerFallback.fallbackUsed,
     },
     null,
     2,

@@ -566,6 +566,7 @@ node src/cli.mjs mission list
 node src/cli.mjs mission run mission_xxx
 node src/cli.mjs mission run mission_xxx --provider stub
 node src/cli.mjs mission run mission_xxx --provider anthropic --fallback-provider stub
+node src/cli.mjs mission run mission_xxx --provider anthropic --fallback-provider stub --fallback-policy recoverable-provider-failure-only
 OPENAI_API_KEY=... node src/cli.mjs mission run mission_xxx --provider openai
 ANTHROPIC_API_KEY=... node src/cli.mjs mission run mission_xxx --provider anthropic
 LOCAL_PROVIDER_MODEL=llama3.1 LOCAL_PROVIDER_BASE_URL=http://127.0.0.1:11434/v1 node src/cli.mjs mission run mission_xxx --provider local
@@ -600,7 +601,7 @@ node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 
 `mission run mission_xxx` without `--provider` now resolves to `openai` when `OPENAI_API_KEY` is present. If OpenAI is not configured, it falls back to `stub` so local smoke runs and bootstrap still work without external credentials. Use `--provider anthropic` for side-by-side comparison or fallback experiments rather than the default execution path.
 
-`mission run mission_xxx --provider anthropic --fallback-provider stub` enables explicit mission-level failover. The fallback path only retries when the failed attempt has normalized provider failure metadata, so deterministic reviewer failures, approval gates, and specialist quality gates do not get hidden by provider fallback. CLI output includes `providerFallback` with attempted providers, selected provider, fallback usage, session ids, and the first provider failure summary. `mission timeline`, `mission show`, `workspace timeline`, and `overview operator-timeline` also expose provider fallback attempt and used counts, primary provider ids, selected fallback provider ids, and timeline events so failover remains auditable after the run output is gone.
+`mission run mission_xxx --provider anthropic --fallback-provider stub` enables explicit mission-level failover. The default `--fallback-policy provider-failure-only` retries only when the failed attempt has normalized provider failure metadata, so deterministic reviewer failures, approval gates, and specialist quality gates do not get hidden by provider fallback. Use `--fallback-policy recoverable-provider-failure-only` when fallback must be limited to recoverable transport/timeout/rate-limit style provider failures and must stop on non-recoverable config, schema, or deterministic output failures. CLI output includes `providerFallback` with attempted providers, selected provider, fallback usage, policy id, stop-reason counts, session ids, and provider failure summaries. `mission timeline`, `mission show`, `workspace timeline`, `overview operator-timeline`, `provider events`, and `overview providers` also expose fallback policy and stop-reason metadata so failover remains auditable after the run output is gone.
 
 운영 콘솔에서도 같은 정책이 적용됩니다. UI에서 provider를 비워 두고 실행하면 현재 런타임 기본 provider 정책을 그대로 따릅니다.
 
@@ -676,6 +677,7 @@ node src/cli.mjs action remind-owner-handoffs --due --note "Follow up with the h
 node src/cli.mjs action remind-provider-attention --due --note "Re-check the pending provider failure and confirm remediation"
 node src/cli.mjs action remediate-provider-attention provider-attention:stub:execution:agentrun_xxx
 node src/cli.mjs action remediate-provider-attention provider-attention:anthropic:execution:agentrun_xxx --fallback-provider stub
+node src/cli.mjs action remediate-provider-attention provider-attention:anthropic:execution:agentrun_xxx --fallback-provider stub --fallback-policy recoverable-provider-failure-only
 node src/cli.mjs action acknowledge-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe failure acknowledged"
 node src/cli.mjs action resolve-provider-attention provider-attention:anthropic:probe:provider-probe_xxx --note "Anthropic probe recovered"
 node src/cli.mjs action acknowledge-owner-handoff escalation_xxx --note "Human approver acknowledged the ownership handoff"
@@ -744,7 +746,7 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `action log-overdue` now also accepts `provider-health-drift-required`, so overdue residual drift follow-up can be promoted into the incident trail instead of staying only in queue state.
 - `action inbox` and `action log-overdue` now also accept `--provider <stub|openai|anthropic|local|hermes>`, so provider-specific attention or drift work can be sliced directly from the generic control-plane surface.
 - `action inbox` summary now also exposes `providerCounts`, so provider-scoped backlog can be read directly from the generic queue summary without dropping into provider-only surfaces.
-- `action remediate-provider-attention <actionId>` now provides a local-first remediation path for current provider failures: probe attention reruns provider probe, execution attention reruns the same mission with the same provider, and execution attention can also accept `--fallback-provider` so the mission can recover through explicit failover while the original provider attention remains visible until the primary provider itself recovers or is acknowledged. Provider execution attention items now surface the remediation command directly, keep `inspectCommand` for failed activity review, and expose `fallbackRecommendedCommand` for non-stub providers.
+- `action remediate-provider-attention <actionId>` now provides a local-first remediation path for current provider failures: probe attention reruns provider probe, execution attention reruns the same mission with the same provider, and execution attention can also accept `--fallback-provider` plus `--fallback-policy` so the mission can recover through explicit failover while preserving whether the operator allowed any normalized provider failure or only recoverable provider failures. Provider execution attention items now surface the remediation command directly, keep `inspectCommand` for failed activity review, and expose `fallbackRecommendedCommand`, `fallbackPolicyId`, and `fallbackPolicyOptions` for non-stub providers.
 - `overview global` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so the top-level control-plane can show overall system state and recent provider health together.
 - `overview operator-timeline` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so operator chronology and recent provider execution or attention trend can be inspected from one surface.
 - `workspace overview` now also accepts `--provider-since` and returns `providerRecentWindow` plus recent provider summary linkage, so a workspace owner can inspect current workspace state and recent provider execution or attention activity together.
@@ -767,8 +769,8 @@ Engineering mode intentionally stops at proposal quality. It does not mutate reg
 - `provider history` shows persisted probe runs and supports `--provider`, `--ok`, and `--attempted` filtering.
 - `provider timeline` turns persisted probe runs into chronological events so recent success, failure, and skipped checks can be inspected as a time axis.
 - `smoke:provider-retry-telemetry` locks successful retry, retry-exhausted execution failure, pending provider attention retry metadata, and mission or workspace or global retry-summary propagation in one deterministic local scenario.
-- `smoke:provider-fallback-policy` locks explicit `--fallback-provider` mission failover, including provider failure retry to `stub` and non-retry behavior for deterministic reviewer failures.
-- `smoke:target-provider-operations` now requires provider fallback runtime audit coverage from `mission run --fallback-provider`, mission/workspace/operator timelines, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider` before a target provider operations claim can advance.
+- `smoke:provider-fallback-policy` locks explicit `--fallback-provider` mission failover, including provider failure retry to `stub`, non-retry behavior for deterministic reviewer failures, and `recoverable-provider-failure-only` stop-condition behavior for non-recoverable provider failures.
+- `smoke:target-provider-operations` now requires provider fallback runtime audit coverage from `mission run --fallback-provider --fallback-policy`, mission/workspace/operator timelines, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider --fallback-policy` before a target provider operations claim can advance.
 - `stub` remains the deterministic default for local development and smoke coverage.
 - `openai` now uses the OpenAI Responses API and reads:
   - `OPENAI_API_KEY` required

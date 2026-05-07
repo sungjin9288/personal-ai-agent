@@ -332,6 +332,7 @@ Provider attention:
 ```bash
 node src/cli.mjs action provider-attention --overdue
 node src/cli.mjs action remediate-provider-attention action_xxx
+node src/cli.mjs action remediate-provider-attention action_xxx --fallback-provider stub --fallback-policy recoverable-provider-failure-only
 node src/cli.mjs action acknowledge-provider-attention action_xxx --note "Operator acknowledged provider issue"
 node src/cli.mjs action resolve-provider-attention action_xxx --note "Provider recovered after validation"
 ```
