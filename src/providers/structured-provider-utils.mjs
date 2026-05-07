@@ -370,6 +370,7 @@ Artifact rules:
         "cwd": ".",
         "command": "workspace-local shell command for inspect/command/test/build steps",
         "filePath": "relative/path for edit steps",
+        "mutationTemplate": "text-append | text-replace | text-write-new for edit steps",
         "operation": "append | replace | write",
         "findText": "required when operation is replace",
         "replaceText": "required when operation is replace",
@@ -389,6 +390,7 @@ Artifact rules:
 - include section Mission Quality Gate with Success Criteria, Assumptions, Minimal Change, and Verification
 - Next Action must name the next owner or the next review step
 - executionManifest is required for engineering mode and must stay workspace-local
+- edit steps must use approved mutation templates: text-append for additive text, text-replace for exact bounded replacement, or text-write-new for new files only
 - do not include sudo, destructive git reset/checkout, repo-external paths, or background daemon commands`;
   }
 

@@ -164,6 +164,7 @@
 - first-class runtime entities in `var/state.json`
 - approval gate for risky engineering execution proposals
 - foreground execution now runs manifest commands through tokenized `spawn` instead of `shell: true`, and preflight blocks workspace-escape path tokens, secret-like file references, inline evaluators, shell filesystem mutation commands, and unapproved executables before a lease can start
+- foreground execution edit steps now require approved workspace mutation templates (`text-append`, `text-replace`, `text-write-new`) and persist per-step mutation audit diffs with before/after sha256, byte delta, and line delta evidence
 - approval approve/reject both leave deterministic handoff evidence
 - deliverable-aware reviewer rubric checks
 - mission-scoped decision memory persists reviewer and approval outcomes across reruns
@@ -229,7 +230,7 @@
 - inject approved local and Hermes runtime endpoint/model configuration, rerun live validation, and archive updated evidence
 - add production deployment controls for authenticated RBAC, tenant isolation, centralized secret handling, retention/export/delete verification, incident/SLO evidence, and production-like clean-environment release generation
 - deepen provider failover, policy-aware retries, and operator remediation automation using the existing provider attention and maintenance surfaces
-- extend the path-level execution policy with approved workspace mutation templates and per-step audit diffs before allowing broader repo mutation
+- add operator-reviewed mutation bundles with rollback previews before allowing broader repo mutation
 - add provider-side usage/cost variants and stronger deliverable-specific reviewer rubrics after provider coverage is unblocked
 
 ## Deferred

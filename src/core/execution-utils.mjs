@@ -59,6 +59,8 @@ const INLINE_EVALUATOR_FLAGS = new Map([
   ['perl', new Set(['-e'])],
 ]);
 
+const APPROVED_MUTATION_TEMPLATES = new Set(['text-append', 'text-replace', 'text-write-new']);
+
 function stableStringify(value) {
   if (Array.isArray(value)) {
     return `[${value.map((item) => stableStringify(item)).join(',')}]`;
@@ -398,6 +400,83 @@ function normalizeEditOperation(value) {
   return ['append', 'replace', 'write'].includes(normalized) ? normalized : 'replace';
 }
 
+function inferMutationTemplate(operation) {
+  if (operation === 'append') {
+    return 'text-append';
+  }
+  if (operation === 'write') {
+    return 'text-write-new';
+  }
+  return 'text-replace';
+}
+
+function normalizeMutationTemplate(value, operation) {
+  const normalized = normalizeText(value, inferMutationTemplate(operation));
+  return APPROVED_MUTATION_TEMPLATES.has(normalized) ? normalized : '';
+}
+
+function validateEditStepPolicy({ step, stepLabel, targetPath }) {
+  const blockedReasons = [];
+  const warningReasons = [];
+  const operation = normalizeEditOperation(step.operation);
+  const mutationTemplate = normalizeMutationTemplate(step.mutationTemplate, operation);
+  const exists = fs.existsSync(targetPath);
+  const existingContent = exists ? fs.readFileSync(targetPath, 'utf8') : '';
+
+  if (!mutationTemplate) {
+    blockedReasons.push(`${stepLabel}: approved mutation template이 필요합니다.`);
+    return { blockedReasons, warningReasons };
+  }
+
+  if (isSecretLikePath(step.filePath || '')) {
+    blockedReasons.push(`${stepLabel}: secret-like path는 edit step 대상이 될 수 없습니다 (${step.filePath}).`);
+  }
+
+  if (mutationTemplate === 'text-append') {
+    if (operation !== 'append') {
+      blockedReasons.push(`${stepLabel}: text-append template은 append operation만 허용합니다.`);
+    }
+    if (!normalizeText(step.content)) {
+      blockedReasons.push(`${stepLabel}: text-append template에는 content가 필요합니다.`);
+    }
+  }
+
+  if (mutationTemplate === 'text-replace') {
+    if (operation !== 'replace') {
+      blockedReasons.push(`${stepLabel}: text-replace template은 replace operation만 허용합니다.`);
+    }
+    if (!exists) {
+      blockedReasons.push(`${stepLabel}: text-replace 대상 파일이 존재하지 않습니다 (${step.filePath}).`);
+    }
+    if (!step.findText) {
+      blockedReasons.push(`${stepLabel}: text-replace template에는 findText가 필요합니다.`);
+    } else if (exists && !existingContent.includes(step.findText)) {
+      blockedReasons.push(`${stepLabel}: text-replace findText가 대상 파일에 없습니다 (${step.filePath}).`);
+    }
+    if (typeof step.replaceText !== 'string') {
+      blockedReasons.push(`${stepLabel}: text-replace template에는 replaceText가 필요합니다.`);
+    }
+  }
+
+  if (mutationTemplate === 'text-write-new') {
+    if (operation !== 'write') {
+      blockedReasons.push(`${stepLabel}: text-write-new template은 write operation만 허용합니다.`);
+    }
+    if (exists) {
+      blockedReasons.push(`${stepLabel}: text-write-new template은 기존 파일 overwrite를 허용하지 않습니다 (${step.filePath}).`);
+    }
+    if (!normalizeText(step.content)) {
+      blockedReasons.push(`${stepLabel}: text-write-new template에는 content가 필요합니다.`);
+    }
+  }
+
+  if (!blockedReasons.length && !exists) {
+    warningReasons.push(`${stepLabel}: edit 대상 파일이 새로 생성됩니다 (${step.filePath}).`);
+  }
+
+  return { blockedReasons, warningReasons };
+}
+
 function normalizeStepKind(value) {
   const normalized = normalizeText(value, 'command');
   return ['inspect', 'edit', 'command', 'test', 'build', 'artifact'].includes(normalized) ? normalized : 'command';
@@ -712,6 +791,7 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
       const cwd = sanitizeRelativePath(step.cwd || '.');
       const relativeFilePath = sanitizeRelativePath(step.filePath || step.path || '');
       const content = typeof step.content === 'string' ? step.content : '';
+      const operation = normalizeEditOperation(step.operation);
       return {
         command,
         content,
@@ -721,7 +801,8 @@ export function normalizeExecutionManifest(input, { workspacePath }) {
         findText: typeof step.findText === 'string' ? step.findText : '',
         id: normalizeText(step.id, createStepId(index)),
         kind,
-        operation: normalizeEditOperation(step.operation),
+        mutationTemplate: normalizeMutationTemplate(step.mutationTemplate, operation),
+        operation,
         reason: normalizeText(step.reason, '실행 단계 이유가 제공되지 않았습니다.'),
         replaceText: typeof step.replaceText === 'string' ? step.replaceText : '',
         riskClassification: normalizeText(step.riskClassification, kind === 'edit' ? 'medium' : 'low'),
@@ -807,7 +888,13 @@ export function evaluateExecutionPolicy({ manifest, rootDir, workspacePath }) {
         blockedItems.push(`${stepLabel}: edit step에 filePath가 없습니다.`);
         continue;
       }
-      allowedItems.push(`${stepLabel}: edit ${step.operation} ${step.filePath}`);
+      const editPolicy = validateEditStepPolicy({ step, stepLabel, targetPath });
+      if (editPolicy.blockedReasons.length) {
+        blockedItems.push(...editPolicy.blockedReasons);
+        continue;
+      }
+      warningItems.push(...editPolicy.warningReasons);
+      allowedItems.push(`${stepLabel}: edit ${step.mutationTemplate} ${step.filePath}`);
       continue;
     }
 

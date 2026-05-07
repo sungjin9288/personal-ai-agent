@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -3847,6 +3848,48 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
   }
 
+  function hashTextContent(content) {
+    return crypto.createHash('sha256').update(String(content || '')).digest('hex');
+  }
+
+  function countTextLines(content) {
+    const value = String(content || '');
+    if (!value) {
+      return 0;
+    }
+    return value.endsWith('\n') ? value.split('\n').length - 1 : value.split('\n').length;
+  }
+
+  function buildMutationAudit({ afterContent, beforeContent, existedBefore, filePath, mutationTemplate, operation }) {
+    const beforeBytes = Buffer.byteLength(beforeContent, 'utf8');
+    const afterBytes = Buffer.byteLength(afterContent, 'utf8');
+    const beforeLineCount = countTextLines(beforeContent);
+    const afterLineCount = countTextLines(afterContent);
+
+    return {
+      afterBytes,
+      afterLineCount,
+      afterSha256: hashTextContent(afterContent),
+      beforeBytes,
+      beforeLineCount,
+      beforeSha256: hashTextContent(beforeContent),
+      byteDelta: afterBytes - beforeBytes,
+      changed: beforeContent !== afterContent,
+      existedBefore,
+      existsAfter: true,
+      filePath,
+      lineDelta: afterLineCount - beforeLineCount,
+      mutationTemplate: mutationTemplate || '',
+      operation,
+    };
+  }
+
+  function collectExecutionMutationAudits(steps) {
+    return ensureArray(steps)
+      .map((step) => ensureObject(step.mutationAudit))
+      .filter((audit) => normalizeText(audit.filePath));
+  }
+
   function computeExecutionVerification(steps) {
     const verificationSteps = ensureArray(steps).filter((step) => ['test', 'build'].includes(step.kind));
     if (!verificationSteps.length) {
@@ -3872,29 +3915,35 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       throw new Error(`Edit path escapes selected workspace: ${targetPath}`);
     }
 
-    const existingContent = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, 'utf8') : '';
+    const existedBefore = fs.existsSync(targetPath);
+    const existingContent = existedBefore ? fs.readFileSync(targetPath, 'utf8') : '';
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
+    let nextContent = '';
     if (step.operation === 'append') {
-      const payload = existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
-      fs.writeFileSync(targetPath, payload, 'utf8');
-      return;
-    }
-
-    if (step.operation === 'write') {
-      fs.writeFileSync(targetPath, `${step.content}`, 'utf8');
-      return;
-    }
-
-    if (!step.findText) {
+      nextContent = existingContent ? `${existingContent.replace(/\s*$/, '')}\n${step.content}\n` : `${step.content}\n`;
+    } else if (step.operation === 'write') {
+      if (existedBefore && step.mutationTemplate === 'text-write-new') {
+        throw new Error(`text-write-new refuses to overwrite existing file ${step.filePath}`);
+      }
+      nextContent = `${step.content}`;
+    } else if (!step.findText) {
       throw new Error(`Replace operation requires findText for ${step.title}`);
-    }
-
-    if (!existingContent.includes(step.findText)) {
+    } else if (!existingContent.includes(step.findText)) {
       throw new Error(`Replace target not found in ${step.filePath}`);
+    } else {
+      nextContent = existingContent.replace(step.findText, step.replaceText);
     }
 
-    fs.writeFileSync(targetPath, existingContent.replace(step.findText, step.replaceText), 'utf8');
+    fs.writeFileSync(targetPath, nextContent, 'utf8');
+    return buildMutationAudit({
+      afterContent: nextContent,
+      beforeContent: existingContent,
+      existedBefore,
+      filePath: step.filePath,
+      mutationTemplate: step.mutationTemplate,
+      operation: step.operation,
+    });
   }
 
   function startExecutionRunner(executionSessionId) {
@@ -3949,9 +3998,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           appendExecutionLog(executionSessionId, `[${now()}] ${step.id} start :: ${step.title}`);
 
           try {
+            let mutationAudit = null;
             if (step.kind === 'edit') {
-              applyEditStep(step, latestSession.workspacePath);
-              appendExecutionLog(executionSessionId, `[${now()}] ${step.id} edit applied :: ${step.filePath}`);
+              mutationAudit = applyEditStep(step, latestSession.workspacePath);
+              appendExecutionLog(
+                executionSessionId,
+                `[${now()}] ${step.id} edit applied :: ${step.filePath} (${mutationAudit.mutationTemplate}, bytes ${mutationAudit.byteDelta >= 0 ? '+' : ''}${mutationAudit.byteDelta}, lines ${mutationAudit.lineDelta >= 0 ? '+' : ''}${mutationAudit.lineDelta})`,
+              );
             } else if (step.kind === 'artifact') {
               appendExecutionLog(executionSessionId, `[${now()}] ${step.id} artifact noted`);
             } else {
@@ -4000,6 +4053,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               ...current,
               endedAt: now(),
               exitCode: 0,
+              mutationAudit: mutationAudit || current.mutationAudit || null,
               status: 'completed',
             }));
           } catch (error) {
@@ -4018,6 +4072,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           ...current,
           changedFiles: captureChangedFiles(current.workspacePath),
           endedAt: now(),
+          mutationAudits: collectExecutionMutationAudits(current.steps),
           status: 'completed',
           verification: computeExecutionVerification(current.steps),
         }));
@@ -4035,6 +4090,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           blockedReasons: finalStatus === 'failed' ? [error instanceof Error ? error.message : String(error)] : [],
           changedFiles: captureChangedFiles(session.workspacePath),
           endedAt: now(),
+          mutationAudits: collectExecutionMutationAudits(session.steps),
           status: finalStatus,
           verification: computeExecutionVerification(session.steps),
         }));

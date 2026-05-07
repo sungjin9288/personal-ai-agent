@@ -21,6 +21,7 @@ const siblingWorkspaceDir = fs.mkdtempSync(path.join(path.dirname(repoDir), 'per
 
 fs.mkdirSync(path.join(siblingWorkspaceDir, 'src'), { recursive: true });
 fs.writeFileSync(path.join(siblingWorkspaceDir, 'src', 'cli.mjs'), "console.log('external workspace smoke');\n", 'utf8');
+fs.writeFileSync(path.join(siblingWorkspaceDir, 'notes.md'), "initial note\n", 'utf8');
 execFileSync('git', ['init'], { cwd: siblingWorkspaceDir, stdio: 'ignore' });
 
 const workspace = runCli({
@@ -220,6 +221,51 @@ assert.equal(safeSpawnSpec.command, 'node');
 assert.deepEqual(safeSpawnSpec.args, ['--check', 'src/cli.mjs']);
 assert.equal(safeSpawnSpec.env.NODE_ENV, 'test');
 
+const safeEditPolicy = evaluateExecutionPolicy({
+  manifest: {
+    steps: [
+      {
+        id: 'edit-safe-01',
+        kind: 'edit',
+        title: 'Append bounded note',
+        filePath: 'notes.md',
+        mutationTemplate: 'text-append',
+        operation: 'append',
+        content: 'approved append line',
+        cwd: '.',
+      },
+      {
+        id: 'edit-safe-02',
+        kind: 'edit',
+        title: 'Replace bounded source text',
+        filePath: 'src/cli.mjs',
+        mutationTemplate: 'text-replace',
+        operation: 'replace',
+        findText: 'external workspace smoke',
+        replaceText: 'external workspace smoke updated',
+        cwd: '.',
+      },
+      {
+        id: 'edit-safe-03',
+        kind: 'edit',
+        title: 'Write new generated note',
+        filePath: 'generated-notes.md',
+        mutationTemplate: 'text-write-new',
+        operation: 'write',
+        content: '# Generated Notes\n',
+        cwd: '.',
+      },
+    ],
+  },
+  rootDir: siblingWorkspaceDir,
+  workspacePath: siblingWorkspaceDir,
+});
+
+assert.equal(safeEditPolicy.allowed, true);
+assert.equal(safeEditPolicy.allowedItems.some((item) => /text-append/.test(item)), true);
+assert.equal(safeEditPolicy.allowedItems.some((item) => /text-replace/.test(item)), true);
+assert.equal(safeEditPolicy.allowedItems.some((item) => /text-write-new/.test(item)), true);
+
 const unsafePolicy = evaluateExecutionPolicy({
   manifest: {
     steps: [
@@ -302,10 +348,30 @@ const unsafePolicy = evaluateExecutionPolicy({
         command: 'touch generated.txt',
         cwd: '.',
       },
+      {
+        id: 'unsafe-12',
+        kind: 'edit',
+        title: 'Overwrite existing file through new-file template',
+        filePath: 'src/cli.mjs',
+        mutationTemplate: 'text-write-new',
+        operation: 'write',
+        content: "console.log('overwrite');\n",
+        cwd: '.',
+      },
+      {
+        id: 'unsafe-13',
+        kind: 'edit',
+        title: 'Edit secret env file',
+        filePath: '.env',
+        mutationTemplate: 'text-append',
+        operation: 'append',
+        content: 'TOKEN=value',
+        cwd: '.',
+      },
     ],
   },
-  rootDir: repoDir,
-  workspacePath: repoDir,
+  rootDir: siblingWorkspaceDir,
+  workspacePath: siblingWorkspaceDir,
 });
 
 assert.equal(unsafePolicy.allowed, false);
@@ -320,6 +386,8 @@ assert.equal(unsafePolicy.blockedItems.some((item) => /inline code evaluator/.te
 assert.equal(unsafePolicy.blockedItems.some((item) => /secret-like path/.test(item)), true);
 assert.equal(unsafePolicy.blockedItems.some((item) => /path token이 현재 워크스페이스 밖/.test(item)), true);
 assert.equal(unsafePolicy.blockedItems.some((item) => /shell filesystem mutation/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /기존 파일 overwrite를 허용하지 않습니다/.test(item)), true);
+assert.equal(unsafePolicy.blockedItems.some((item) => /secret-like path는 edit step 대상/.test(item)), true);
 
 const cautionPolicy = evaluateExecutionPolicy({
   manifest: {
@@ -403,6 +471,57 @@ const siblingRunResult = runCli({
 
 assert.equal(siblingRunResult.status, 'reviewed');
 
+const siblingReviewSession = store.listSessionsByMission(siblingMission.id).at(-1);
+const siblingExecutorRun = store
+  .listAgentRunsBySession(siblingReviewSession.id)
+  .filter((run) => run.role === 'executor')
+  .at(-1);
+
+store.updateAgentRun(siblingExecutorRun.id, (current) => ({
+  ...current,
+  executionManifest: {
+    summary: 'Sibling workspace mutation audit smoke manifest',
+    steps: [
+      {
+        id: 'step-01',
+        kind: 'inspect',
+        title: 'Inspect sibling workspace',
+        command: 'git status --short',
+        cwd: '.',
+        expectedOutputs: ['workspace status captured'],
+        reason: 'Capture baseline before the approved mutation template executes.',
+        riskClassification: 'low',
+        verificationTarget: 'workspace status command succeeds',
+      },
+      {
+        id: 'step-02',
+        kind: 'edit',
+        title: 'Append approved note',
+        filePath: 'notes.md',
+        mutationTemplate: 'text-append',
+        operation: 'append',
+        content: 'approved mutation audit line',
+        cwd: '.',
+        expectedOutputs: ['notes.md contains the appended audit line'],
+        reason: 'Exercise approved workspace mutation template and per-step audit diff capture.',
+        riskClassification: 'medium',
+        verificationTarget: 'mutation audit captures byte and line delta for notes.md',
+      },
+      {
+        id: 'step-03',
+        kind: 'test',
+        title: 'Sibling syntax verification',
+        command: 'node --check src/cli.mjs',
+        cwd: '.',
+        expectedOutputs: ['node --check success'],
+        reason: 'Verify the sibling workspace remains runnable after the approved edit.',
+        riskClassification: 'low',
+        verificationTarget: 'node syntax check passes',
+      },
+    ],
+  },
+}));
+
 const siblingPreflight = service.preflightExecution(siblingMission.id, { requestApproval: true });
 assert.equal(siblingPreflight.execution.supported, true);
 assert.equal(siblingPreflight.execution.eligibility, 'pending-approval');
@@ -430,6 +549,24 @@ assert.ok(siblingExecutionSession);
 assert.equal(siblingExecutionSession.status, 'completed');
 assert.equal(siblingExecutionSession.verification.status, 'passed');
 assert.equal(siblingFinalStatus.mission.status, 'completed');
+assert.equal(siblingExecutionSession.mutationAudits.length, 1);
+assert.equal(siblingExecutionSession.mutationAudits[0].filePath, 'notes.md');
+assert.equal(siblingExecutionSession.mutationAudits[0].mutationTemplate, 'text-append');
+assert.equal(siblingExecutionSession.mutationAudits[0].lineDelta, 1);
+assert.equal(
+  siblingExecutionSession.steps.some(
+    (step) =>
+      step.kind === 'edit' &&
+      step.mutationAudit?.filePath === 'notes.md' &&
+      step.mutationAudit?.changed === true &&
+      step.mutationAudit?.byteDelta > 0,
+  ),
+  true,
+);
+assert.match(fs.readFileSync(path.join(siblingWorkspaceDir, 'notes.md'), 'utf8'), /approved mutation audit line/);
+
+const siblingExecutionLogs = service.getExecutionLogs(siblingMission.id, { executionId: siblingExecutionSession.id });
+assert.match(siblingExecutionLogs.lines.join('\n'), /edit applied :: notes\.md \(text-append, bytes \+\d+, lines \+1\)/);
 
 fs.rmSync(siblingWorkspaceDir, { recursive: true, force: true });
 

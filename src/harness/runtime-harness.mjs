@@ -219,6 +219,7 @@ export function createRuntimeHarness({ store }) {
       manifest,
       manifestHash,
       missionId,
+      mutationAudits: [],
       provider,
       reviewSessionId,
       startedAt: null,
