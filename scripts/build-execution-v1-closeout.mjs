@@ -94,10 +94,10 @@ const liveAnthropicRequested = process.argv.includes('--live-anthropic');
 const liveLocalRequested = process.argv.includes('--live-local');
 const liveHermesRequested = process.argv.includes('--live-hermes');
 
-const liveOpenAIStatus = getLiveStatus(evidenceBody, 'openai', liveOpenAIRequested, process.env.OPENAI_API_KEY);
-const liveAnthropicStatus = getLiveStatus(evidenceBody, 'anthropic', liveAnthropicRequested, process.env.ANTHROPIC_API_KEY);
-const liveLocalStatus = getLiveStatus(evidenceBody, 'local', liveLocalRequested, process.env.LOCAL_PROVIDER_MODEL);
-const liveHermesStatus = getLiveStatus(evidenceBody, 'hermes', liveHermesRequested, process.env.HERMES_PROVIDER_MODEL);
+const liveOpenAIStatus = getLiveStatus(evidenceBody, 'openai', liveOpenAIRequested, process.env.OPENAI_API_KEY, 'OPENAI_API_KEY');
+const liveAnthropicStatus = getLiveStatus(evidenceBody, 'anthropic', liveAnthropicRequested, process.env.ANTHROPIC_API_KEY, 'ANTHROPIC_API_KEY');
+const liveLocalStatus = getLiveStatus(evidenceBody, 'local', liveLocalRequested, process.env.LOCAL_PROVIDER_MODEL, 'LOCAL_PROVIDER_MODEL');
+const liveHermesStatus = getLiveStatus(evidenceBody, 'hermes', liveHermesRequested, process.env.HERMES_PROVIDER_MODEL, 'HERMES_PROVIDER_MODEL');
 const liveProviderStatuses = [
   {
     displayName: 'OpenAI',
@@ -242,10 +242,10 @@ console.log(
   ),
 );
 
-function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
+function getLiveStatus(evidenceMarkdown, provider, requested, envValue, envKey) {
   const passedPattern = new RegExp(`- ${provider}: passed`);
   const failedPattern = new RegExp(`- ${provider}: failed(?: \\((.+)\\))?`);
-  const skippedPattern = new RegExp(`- ${provider}: skipped`);
+  const skippedPattern = new RegExp(`- ${provider}: skipped(?: \\((.+)\\))?`);
 
   if (passedPattern.test(evidenceMarkdown)) {
     return { checked: true, label: 'passed' };
@@ -260,7 +260,11 @@ function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
     };
   }
 
-  if (skippedPattern.test(evidenceMarkdown)) {
+  const skippedMatch = evidenceMarkdown.match(skippedPattern);
+  if (skippedMatch) {
+    if (isMissingEnvSkip(skippedMatch[1] || '', envKey, envValue)) {
+      return { checked: false, label: 'missing-env' };
+    }
     return { checked: false, label: 'skipped' };
   }
 
@@ -269,6 +273,14 @@ function getLiveStatus(evidenceMarkdown, provider, requested, envValue) {
   }
 
   return { checked: false, label: 'requested-but-not-passed' };
+}
+
+function isMissingEnvSkip(reason, envKey, envValue) {
+  const normalizedReason = String(reason || '').trim();
+  if (normalizedReason === `Missing ${envKey}`) {
+    return true;
+  }
+  return !envValue && (normalizedReason === '' || /^Missing [A-Z0-9_]+$/.test(normalizedReason));
 }
 
 function escapeRegExp(value) {

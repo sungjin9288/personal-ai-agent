@@ -27,8 +27,12 @@ assert.equal(readyResult.checklistPath, readyCloseoutPath);
 const readyCloseout = fs.readFileSync(readyCloseoutPath, 'utf8');
 assert.match(readyCloseout, /- \[x\] deterministic runtime summary evidence 기록/);
 assert.match(readyCloseout, /- deterministic runtime summary: ready/);
+assert.match(readyCloseout, /- openai live validation: missing-env/);
+assert.match(readyCloseout, /- anthropic live validation: missing-env/);
+assert.match(readyCloseout, /- local live validation: missing-env/);
 assert.match(readyCloseout, /- \[ \] Hermes live validation/);
 assert.match(readyCloseout, /- hermes live validation: missing-env/);
+assert.doesNotMatch(readyCloseout, /live validation: skipped/);
 assert.match(readyCloseout, /- `npm run preflight:execution-v1:all`로 provider별 env\/readiness 상태를 먼저 확인할 것/);
 assert.match(readyCloseout, /- OpenAI: `export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="\.\.\." && npm run live:execution-v1:openai` 실행할 것/);
 assert.match(readyCloseout, /- Anthropic: `export ANTHROPIC_API_KEY="\.\.\." && npm run live:execution-v1:anthropic` 실행할 것/);
@@ -130,9 +134,9 @@ function buildEvidenceMarkdown({ includeReferenceRuntime }) {
     '',
     '## Live Validation',
     '',
-    '- openai: skipped',
-    '- anthropic: skipped',
-    '- local: skipped',
+    '- openai: skipped (Missing OPENAI_API_KEY)',
+    '- anthropic: skipped (Missing ANTHROPIC_API_KEY)',
+    '- local: skipped (Missing LOCAL_PROVIDER_MODEL)',
     '',
   ].join('\n')}`;
 }
