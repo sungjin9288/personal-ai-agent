@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-08T17:59:58.324Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-08T17:59:58.284Z
 - localDate: 2026-05-09
 - branch: codex/execution-v1-artifact-refresh-command
 - commit: d10937f8aad1a3c0a12b169130abd546d55e8e46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46](releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46](docs/releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46)
 - visualArtifactSetSha256: 005ae8667e891dbf3b795a0016d99b82b943743a2c74b73b0a985eba983b0404
 - commitPushStatus: not pushed, origin/codex/execution-v1-artifact-refresh-command not found
 
