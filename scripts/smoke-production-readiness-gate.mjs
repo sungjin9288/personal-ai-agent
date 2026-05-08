@@ -489,7 +489,7 @@ assert.equal(currentStatus.get('hermes live validation'), 'missing-env');
 
 assert.equal(operationalState.get('OpenAI live validation'), 'passed');
 assert.match(operationalState.get('Anthropic live validation') || '', /^failed /);
-assert.equal(operationalState.get('local provider live validation'), 'blocked by missing `LOCAL_PROVIDER_BASE_URL`');
+assert.equal(operationalState.get('local provider live validation'), 'blocked by missing `LOCAL_PROVIDER_MODEL`');
 assert.equal(operationalState.get('Hermes live validation'), 'blocked by missing `HERMES_PROVIDER_MODEL`');
 assert.match(handoff, /Execution v1 is provider-scoped pilot ready/);
 assert.match(handoff, /It is not production-ready or live-provider-complete/);

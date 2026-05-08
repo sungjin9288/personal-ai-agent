@@ -349,7 +349,7 @@ const liveValidationProviders = [
   {
     command: 'npm run live:execution-v1:local',
     evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-local',
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    envKey: 'LOCAL_PROVIDER_MODEL',
     label: 'Local provider',
     provider: 'local',
   },

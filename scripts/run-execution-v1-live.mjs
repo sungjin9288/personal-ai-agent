@@ -12,7 +12,7 @@ const providerConfig = {
     flag: '--live-anthropic',
   },
   local: {
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    envKey: 'LOCAL_PROVIDER_MODEL',
     flag: '--live-local',
   },
   hermes: {

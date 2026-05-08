@@ -32,7 +32,7 @@ assert.match(readyCloseout, /- hermes live validation: missing-env/);
 assert.match(readyCloseout, /- `npm run preflight:execution-v1:all`로 provider별 env\/readiness 상태를 먼저 확인할 것/);
 assert.match(readyCloseout, /- OpenAI: `export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="\.\.\." && npm run live:execution-v1:openai` 실행할 것/);
 assert.match(readyCloseout, /- Anthropic: `export ANTHROPIC_API_KEY="\.\.\." && npm run live:execution-v1:anthropic` 실행할 것/);
-assert.match(readyCloseout, /- Local provider: `export LOCAL_PROVIDER_BASE_URL="\.\.\." && npm run live:execution-v1:local` 실행할 것/);
+assert.match(readyCloseout, /- Local provider: `export LOCAL_PROVIDER_MODEL="\.\.\." && npm run live:execution-v1:local` 실행할 것/);
 assert.match(readyCloseout, /- Hermes: `export HERMES_PROVIDER_MODEL="\.\.\." && npm run live:execution-v1:hermes` 실행할 것/);
 assert.match(readyCloseout, new RegExp(`- evidence: \\[${path.basename(readyEvidencePath)}\\]\\(${escapeRegExp(path.basename(readyEvidencePath))}\\)`));
 

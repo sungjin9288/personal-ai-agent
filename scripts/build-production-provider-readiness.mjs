@@ -204,7 +204,7 @@ ${providerDetails}
 
 - OpenAI remains the only archived passed live provider in the current release evidence
 - Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
-- local provider remains blocked until an approved \`LOCAL_PROVIDER_BASE_URL\` and model runtime are configured
+- local provider remains blocked until an approved \`LOCAL_PROVIDER_MODEL\` and endpoint/runtime configuration are provided
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence

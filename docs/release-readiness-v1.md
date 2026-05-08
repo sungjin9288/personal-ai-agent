@@ -127,7 +127,7 @@ Current handoff state:
 - snapshot portability: ready
 - OpenAI live validation: passed
 - Anthropic live validation: failed with HTTP 400 account billing/credit blocker
-- local provider live validation: blocked by missing `LOCAL_PROVIDER_BASE_URL`
+- local provider live validation: blocked by missing `LOCAL_PROVIDER_MODEL`
 - Hermes live validation: blocked by missing `HERMES_PROVIDER_MODEL`
 
 ## Planning Pack Status
@@ -232,7 +232,7 @@ Validated scope:
 Remaining blockers outside this scope:
 
 - Anthropic live validation is blocked by provider account billing/credit
-- local provider live validation is blocked by missing `LOCAL_PROVIDER_BASE_URL`
+- local provider live validation is blocked by missing `LOCAL_PROVIDER_MODEL`
 - Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`
 
 Pilot-ready can be claimed only for the validated provider and approved deployment boundary.
@@ -283,7 +283,7 @@ Live validation:
 ```bash
 export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai
 export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic
-export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local
+export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local
 export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes
 ```
 

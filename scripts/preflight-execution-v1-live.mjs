@@ -9,7 +9,7 @@ const providerConfig = {
     smokeScripts: ['smoke:execution-flow'],
   },
   local: {
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    envKey: 'LOCAL_PROVIDER_MODEL',
     liveCommand: 'npm run live:execution-v1:local',
     smokeScripts: ['smoke:execution-flow'],
   },

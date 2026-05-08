@@ -366,7 +366,7 @@ try {
     [
       ['openai', 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai'],
       ['anthropic', 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic'],
-      ['local', 'ready-but-missing-env', 'export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local'],
+      ['local', 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local'],
       ['hermes', 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes'],
     ],
   );
