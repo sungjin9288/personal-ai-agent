@@ -1,0 +1,24 @@
+## Summary
+
+- Describe the change in one or two bullets.
+
+## Impact
+
+- Runtime behavior:
+- Provider fallback or attention surfaces:
+- Documentation or operator workflow:
+
+## Verification
+
+- [ ] `npm run smoke:provider-fallback-policy`
+- [ ] `npm run smoke:provider-attention-remediation`
+- [ ] `npm run smoke:provider-capability-rate-guard`
+- [ ] `npm run smoke:provider-action-inbox`
+- [ ] `npm run smoke:provider-events`
+- [ ] `npm run smoke:provider-overview`
+- [ ] `npm run smoke:target-provider-operations`
+- [ ] GitHub Actions `Provider fallback and attention smoke`
+
+## Notes
+
+- Add follow-up work, reviewer context, or known limitations.
