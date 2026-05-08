@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-05-08T16:55:18.437Z
-- branch: codex/local-provider-live-helper-envkey
-- commit: 015baf682270c8e2d29bdd28e71f446fa8feeb6f
+- generatedAt: 2026-05-08T17:08:58.375Z
+- branch: main
+- commit: ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist

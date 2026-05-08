@@ -1,17 +1,17 @@
 # Execution v1 Handoff
 
-- archivedAt: 2026-05-08T16:55:40.568Z
+- archivedAt: 2026-05-08T17:09:25.106Z
 - sourcePath: docs/execution-v1-handoff.md
 
-- generatedAt: 2026-05-08T16:55:37.444Z
+- generatedAt: 2026-05-08T17:09:22.232Z
 - localDate: 2026-05-09
-- branch: codex/local-provider-live-helper-envkey
-- commit: 015baf682270c8e2d29bdd28e71f446fa8feeb6f
-- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f/execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f/execution-v1-closeout.md)
-- immutableSnapshot: [docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f)
-- visualArtifactSetSha256: ad1495b2910690940b7e16442020d0d645f48118aa905973185c96c6cda0a520
-- commitPushStatus: not pushed, origin/codex/local-provider-live-helper-envkey not found
+- branch: main
+- commit: ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1](docs/releases/execution-v1/ccdd96a7f6fdf2b3fc83697885fe638e5ea6e9c1)
+- visualArtifactSetSha256: 4702a5e71c1fed131a88ec177ec6e9c399e7c610a0e2224435b368aa0fdbbf52
+- commitPushStatus: pushed to origin/main
 
 ## Operational State
 
@@ -19,7 +19,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=32.9s
+- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=44.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -54,7 +54,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 15 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: ad1495b2910690940b7e16442020d0d645f48118aa905973185c96c6cda0a520
+- visual artifact set: 4702a5e71c1fed131a88ec177ec6e9c399e7c610a0e2224435b368aa0fdbbf52
 
 ## Live Provider Handoff
 
@@ -80,7 +80,7 @@ Expected pre-live state:
 1. Resolve failed provider account-level blockers, then rerun only the affected `live:execution-v1:*` commands.
 2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.
 3. Rerun `node scripts/build-execution-v1-evidence.mjs --live-<provider>`, `npm run closeout:execution-v1 -- --reuse-existing-evidence`, `npm run handoff:execution-v1`, and `npm run snapshot:execution-v1` after live validation if the release artifact must include updated live-provider proof.
-4. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+4. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 
