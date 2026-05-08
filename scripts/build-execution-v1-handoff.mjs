@@ -179,10 +179,11 @@ lines.push(
   '',
   '1. Resolve failed provider account-level blockers, then rerun only the affected `live:execution-v1:*` commands.',
   '2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.',
-  '3. Rerun `node scripts/build-execution-v1-evidence.mjs --live-<provider>`, `npm run closeout:execution-v1 -- --reuse-existing-evidence`, `npm run handoff:execution-v1`, and `npm run snapshot:execution-v1` after live validation if the release artifact must include updated live-provider proof.',
+  '3. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, and snapshot stay aligned while preserving archived live proof by default.',
+  '4. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.',
   commitPushStatus.pushed
-    ? `4. Current verified commit is already contained in \`${commitPushStatus.remoteRef}\`; only commit/push again after intentionally changing release artifacts.`
-    : '4. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.',
+    ? `5. Current verified commit is already contained in \`${commitPushStatus.remoteRef}\`; only commit/push again after intentionally changing release artifacts.`
+    : '5. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.',
   '',
   '## Completion Boundary',
   '',

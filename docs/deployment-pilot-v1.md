@@ -1060,15 +1060,15 @@ npm run live:execution-v1:hermes
 After live validation, refresh evidence with the live providers that are intentionally being rerun:
 
 ```bash
-node scripts/build-execution-v1-evidence.mjs --live-openai --live-anthropic
-npm run closeout:execution-v1 -- --reuse-existing-evidence
-npm run handoff:execution-v1
-npm run snapshot:execution-v1
+npm run refresh:execution-v1-artifacts
 ```
+
+The refresh command preserves archived live validation status by default and reuses the selected live flags already recorded in current evidence. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live proof for a selected provider.
 
 Verification:
 
 ```bash
+npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 ```
@@ -1096,12 +1096,10 @@ npm run smoke
 npm run preflight:execution-v1:all
 node src/cli.mjs action inbox
 node src/cli.mjs action maintenance
-npm run closeout:execution-v1 -- --reuse-existing-evidence
-npm run handoff:execution-v1
-npm run snapshot:execution-v1
+npm run refresh:execution-v1-artifacts
 ```
 
-If provider proof changed, run the selected live evidence refresh first, for example:
+If provider proof changed and must be replaced rather than preserved, run the selected live evidence refresh first, for example:
 
 ```bash
 node scripts/build-execution-v1-evidence.mjs --live-openai
