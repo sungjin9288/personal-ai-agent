@@ -21,8 +21,8 @@ const liveHelperProviders = [
     provider: 'anthropic',
   },
   {
-    command: 'export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local',
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    command: 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local',
+    envKey: 'LOCAL_PROVIDER_MODEL',
     preflightChecks: [
       ['smoke:execution-flow', 'passed'],
     ],
@@ -79,6 +79,7 @@ const aggregatePreflight = runJsonCommand({
     ANTHROPIC_API_KEY: '',
     HERMES_PROVIDER_MODEL: '',
     LOCAL_PROVIDER_BASE_URL: '',
+    LOCAL_PROVIDER_MODEL: '',
     OPENAI_API_KEY: '',
   },
   expectedStatus: 0,
@@ -94,7 +95,7 @@ assert.deepEqual(
   [
     ['openai', false, 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai'],
     ['anthropic', false, 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic'],
-    ['local', false, 'ready-but-missing-env', 'export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local'],
+    ['local', false, 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local'],
     ['hermes', false, 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes'],
   ],
 );
@@ -118,6 +119,7 @@ function buildMissingProviderEnv() {
     ANTHROPIC_API_KEY: '',
     HERMES_PROVIDER_MODEL: '',
     LOCAL_PROVIDER_BASE_URL: '',
+    LOCAL_PROVIDER_MODEL: '',
     OPENAI_API_KEY: '',
   };
 }

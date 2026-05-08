@@ -49,8 +49,8 @@ const liveProviders = [
     statusKey: 'anthropic live validation',
   },
   {
-    command: 'export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local',
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
+    command: 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local',
+    envKey: 'LOCAL_PROVIDER_MODEL',
     label: 'local provider',
     providerKey: 'local',
     statusKey: 'local live validation',

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-08T16:55:40.568Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-08T16:55:18.437Z
 - branch: codex/local-provider-live-helper-envkey
 - commit: 015baf682270c8e2d29bdd28e71f446fa8feeb6f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-08T16:55:40.568Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-08T16:55:37.444Z
 - localDate: 2026-05-09
 - branch: codex/local-provider-live-helper-envkey
 - commit: 015baf682270c8e2d29bdd28e71f446fa8feeb6f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f](releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f](docs/releases/execution-v1/015baf682270c8e2d29bdd28e71f446fa8feeb6f)
 - visualArtifactSetSha256: ad1495b2910690940b7e16442020d0d645f48118aa905973185c96c6cda0a520
 - commitPushStatus: not pushed, origin/codex/local-provider-live-helper-envkey not found
 

@@ -96,7 +96,7 @@ const liveHermesRequested = process.argv.includes('--live-hermes');
 
 const liveOpenAIStatus = getLiveStatus(evidenceBody, 'openai', liveOpenAIRequested, process.env.OPENAI_API_KEY);
 const liveAnthropicStatus = getLiveStatus(evidenceBody, 'anthropic', liveAnthropicRequested, process.env.ANTHROPIC_API_KEY);
-const liveLocalStatus = getLiveStatus(evidenceBody, 'local', liveLocalRequested, process.env.LOCAL_PROVIDER_BASE_URL);
+const liveLocalStatus = getLiveStatus(evidenceBody, 'local', liveLocalRequested, process.env.LOCAL_PROVIDER_MODEL);
 const liveHermesStatus = getLiveStatus(evidenceBody, 'hermes', liveHermesRequested, process.env.HERMES_PROVIDER_MODEL);
 const liveProviderStatuses = [
   {
@@ -121,11 +121,11 @@ const liveProviderStatuses = [
   },
   {
     displayName: 'Local provider',
-    envKey: 'LOCAL_PROVIDER_BASE_URL',
-    envValue: process.env.LOCAL_PROVIDER_BASE_URL,
+    envKey: 'LOCAL_PROVIDER_MODEL',
+    envValue: process.env.LOCAL_PROVIDER_MODEL,
     evidenceFlag: '--live-local',
     liveCommand: 'npm run live:execution-v1:local',
-    missingEnvCommand: 'export LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local',
+    missingEnvCommand: 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local',
     provider: 'local',
     status: liveLocalStatus,
   },

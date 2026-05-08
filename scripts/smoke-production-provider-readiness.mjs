@@ -46,7 +46,7 @@ assert.match(readiness, /"blockedCount": 0/);
 for (const [provider, envKey] of [
   ['openai', 'OPENAI_API_KEY'],
   ['anthropic', 'ANTHROPIC_API_KEY'],
-  ['local', 'LOCAL_PROVIDER_BASE_URL'],
+  ['local', 'LOCAL_PROVIDER_MODEL'],
   ['hermes', 'HERMES_PROVIDER_MODEL'],
 ]) {
   assert.match(readiness, new RegExp(`\\| ${provider} \\| .* \\| ${envKey} \\|`), provider);
