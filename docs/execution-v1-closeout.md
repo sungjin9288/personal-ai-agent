@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-05-08T19:09:18.436Z
-- branch: codex/execution-v1-refresh-runbook-alignment
-- commit: f6ebd3deed671069d9c45e7a2f35207eae5ed8f8
+- generatedAt: 2026-05-08T19:19:58.482Z
+- branch: main
+- commit: 6a7726ddeb7151a47b7c4ff4d161fc97453b3adc
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist

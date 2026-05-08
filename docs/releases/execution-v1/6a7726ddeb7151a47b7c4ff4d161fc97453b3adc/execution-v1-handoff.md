@@ -1,17 +1,17 @@
 # Execution v1 Handoff
 
-- archivedAt: 2026-05-08T19:09:24.209Z
+- archivedAt: 2026-05-08T19:20:04.042Z
 - sourcePath: docs/execution-v1-handoff.md
 
-- generatedAt: 2026-05-08T19:09:24.171Z
+- generatedAt: 2026-05-08T19:20:03.998Z
 - localDate: 2026-05-09
-- branch: codex/execution-v1-refresh-runbook-alignment
-- commit: f6ebd3deed671069d9c45e7a2f35207eae5ed8f8
-- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8/execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8/execution-v1-closeout.md)
-- immutableSnapshot: [docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8)
-- visualArtifactSetSha256: 3e62b861c85c7c4556914975ea8ac91abc0f54e20f359b147dd215f33d653abb
-- commitPushStatus: not pushed, origin/codex/execution-v1-refresh-runbook-alignment not found
+- branch: main
+- commit: 6a7726ddeb7151a47b7c4ff4d161fc97453b3adc
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6a7726ddeb7151a47b7c4ff4d161fc97453b3adc/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6a7726ddeb7151a47b7c4ff4d161fc97453b3adc/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6a7726ddeb7151a47b7c4ff4d161fc97453b3adc](docs/releases/execution-v1/6a7726ddeb7151a47b7c4ff4d161fc97453b3adc)
+- visualArtifactSetSha256: df339b0f4a1597665472d6b2996fd3e46dbedb49aeb4a80edecb41946f9002c9
+- commitPushStatus: pushed to origin/main
 
 ## Operational State
 
@@ -19,7 +19,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=32.7s
+- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=28.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -54,7 +54,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 15 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 3e62b861c85c7c4556914975ea8ac91abc0f54e20f359b147dd215f33d653abb
+- visual artifact set: df339b0f4a1597665472d6b2996fd3e46dbedb49aeb4a80edecb41946f9002c9
 
 ## Live Provider Handoff
 
@@ -81,7 +81,7 @@ Expected pre-live state:
 2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.
 3. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, and snapshot stay aligned while preserving archived live proof by default.
 4. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-5. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+5. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 
