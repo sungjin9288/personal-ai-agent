@@ -290,17 +290,15 @@ export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes
 Evidence refresh:
 
 ```bash
-node scripts/build-execution-v1-evidence.mjs --live-openai --live-anthropic
-npm run closeout:execution-v1 -- --reuse-existing-evidence
-npm run handoff:execution-v1
-npm run snapshot:execution-v1
+npm run refresh:execution-v1-artifacts
 ```
 
-Use only the live provider flags that are intentionally being refreshed. Do not run deterministic-only evidence generation when preserving archived live provider proof matters.
+`refresh:execution-v1-artifacts` is the default release artifact refresh path because it preserves archived live provider proof and reuses the current evidence document's selected `--live-*` flags. Use the lower-level `node scripts/build-execution-v1-evidence.mjs --live-<provider>` flow only when intentionally replacing live provider proof for selected providers. Do not run deterministic-only evidence generation when preserving archived live provider proof matters.
 
 Verification:
 
 ```bash
+npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff

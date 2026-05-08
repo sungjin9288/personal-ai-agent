@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-08T19:09:24.209Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-08T19:09:18.388Z
 - branch: codex/execution-v1-refresh-runbook-alignment
 - commit: f6ebd3deed671069d9c45e7a2f35207eae5ed8f8

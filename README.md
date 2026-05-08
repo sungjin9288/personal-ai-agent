@@ -921,7 +921,7 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
 
 - 기본 실행: deterministic smoke 4개, reference adoption aggregate gate, execution-v1 live helper contract, handoff generator regression 실행 후 evidence 문서 갱신
 - evidence에는 각 deterministic script의 elapsed time, stdout/stderr size, timeout budget을 담은 `Deterministic Runtime Summary`가 함께 기록됨
-- archived live provider proof를 유지해야 하는 closeout/handoff/snapshot refresh에서는 기본 evidence 명령을 다시 실행하지 말고 `npm run closeout:execution-v1 -- --reuse-existing-evidence`부터 실행
+- archived live provider proof를 유지해야 하는 release artifact refresh에서는 `npm run refresh:execution-v1-artifacts`를 기본 경로로 사용해 evidence/closeout/handoff/provider readiness/snapshot을 함께 갱신
 - 선택적 live validation 포함:
   - `node scripts/build-execution-v1-evidence.mjs --live-openai`
   - `node scripts/build-execution-v1-evidence.mjs --live-anthropic`

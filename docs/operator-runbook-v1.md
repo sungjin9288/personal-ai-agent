@@ -233,15 +233,12 @@ npm run live:execution-v1:hermes
 After live validation:
 
 ```bash
-node scripts/build-execution-v1-evidence.mjs --live-openai --live-anthropic
-npm run closeout:execution-v1 -- --reuse-existing-evidence
-npm run handoff:execution-v1
-npm run snapshot:execution-v1
+npm run refresh:execution-v1-artifacts
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 ```
 
-Use only the provider flags that are intentionally being refreshed. Do not run deterministic-only evidence generation when preserving archived live proof matters.
+`refresh:execution-v1-artifacts` preserves archived live validation status by default and reuses the live provider flags already recorded in the current evidence document. If intentionally replacing live proof for a narrower provider set, run the selected `node scripts/build-execution-v1-evidence.mjs --live-<provider>` command first, then continue with the reuse-existing-evidence closeout/handoff/snapshot flow.
 
 Do not claim expanded provider-backed readiness until the refreshed evidence records the selected live validation result.
 
@@ -250,12 +247,10 @@ Do not claim expanded provider-backed readiness until the refreshed evidence rec
 Use this sequence after material planning source-of-record changes when live evidence does not need to be replaced.
 
 ```bash
-npm run closeout:execution-v1 -- --reuse-existing-evidence
-npm run handoff:execution-v1
-npm run snapshot:execution-v1
+npm run refresh:execution-v1-artifacts
 ```
 
-Use this sequence only when intentionally refreshing live provider proof.
+The refresh command regenerates evidence, closeout, handoff, production provider readiness, and the immutable snapshot while preserving archived live validation proof. Use the lower-level sequence only when intentionally replacing live provider proof.
 
 ```bash
 node scripts/build-execution-v1-evidence.mjs --live-openai --live-anthropic
@@ -264,11 +259,12 @@ npm run handoff:execution-v1
 npm run snapshot:execution-v1
 ```
 
-For a selected-provider refresh, pass only the selected live flag and preserve existing blocker wording for providers that are not being rerun.
+For a selected-provider refresh, pass only the selected live flag and preserve existing blocker wording for providers that are not being rerun. Do not run deterministic-only evidence generation when preserving archived live proof matters.
 
 Then verify:
 
 ```bash
+npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
