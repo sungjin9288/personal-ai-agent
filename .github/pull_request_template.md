@@ -11,6 +11,7 @@
 ## Verification
 
 - [ ] `npm run smoke:provider-fallback-policy`
+- [ ] `npm run smoke:execution-v1-artifact-refresh`
 - [ ] `npm run smoke:provider-attention-remediation`
 - [ ] `npm run smoke:provider-capability-rate-guard`
 - [ ] `npm run smoke:provider-action-inbox`

@@ -30,6 +30,9 @@ jobs:
       - name: Run provider fallback policy smoke
         run: npm run smoke:provider-fallback-policy
 
+      - name: Run execution-v1 artifact refresh smoke
+        run: npm run smoke:execution-v1-artifact-refresh
+
       - name: Run provider attention remediation smoke
         run: npm run smoke:provider-attention-remediation
 
