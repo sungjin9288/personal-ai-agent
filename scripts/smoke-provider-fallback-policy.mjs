@@ -5,10 +5,11 @@ import path from 'node:path';
 
 import { createMissionService } from '../src/core/mission-service.mjs';
 import { createStore } from '../src/core/store.mjs';
-import { runCli } from './cli-test-helpers.mjs';
+import { createClosedLocalhostBaseUrl, runCli } from './cli-test-helpers.mjs';
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-provider-fallback-policy-'));
 const workspacePath = path.join(tempRoot, 'workspace');
+const recoverableFailureBaseUrl = await createClosedLocalhostBaseUrl();
 
 fs.mkdirSync(workspacePath, { recursive: true });
 
@@ -174,6 +175,83 @@ assert.equal(
   true,
 );
 
+const recoverableSuccessMission = service.createMission({
+  workspaceId: workspace.id,
+  mode: 'knowledge',
+  deliverableType: 'checklist',
+  title: 'Recoverable-only policy falls back on recoverable provider failure',
+  objective: 'Verify recoverable provider failures can fall back under recoverable-only policy.',
+  constraints: [],
+});
+
+const recoverableSuccessResult = runCli({
+  rootDir: tempRoot,
+  env: {
+    OPENAI_API_KEY: 'test-openai-key',
+    OPENAI_BASE_URL: recoverableFailureBaseUrl,
+  },
+  args: [
+    'mission',
+    'run',
+    recoverableSuccessMission.id,
+    '--provider',
+    'openai',
+    '--fallback-provider',
+    'stub',
+    '--fallback-policy',
+    'recoverable-provider-failure-only',
+  ],
+});
+
+assert.equal(recoverableSuccessResult.status, 'completed');
+assert.equal(recoverableSuccessResult.provider, 'stub');
+assert.equal(recoverableSuccessResult.providerFallback.policyId, 'recoverable-provider-failure-only');
+assert.equal(recoverableSuccessResult.providerFallback.fallbackUsed, true);
+assert.deepEqual(recoverableSuccessResult.providerFallback.attemptedProviderIds, ['openai', 'stub']);
+assert.equal(recoverableSuccessResult.providerFallback.attempts[0].fallbackEligible, true);
+assert.equal(recoverableSuccessResult.providerFallback.attempts[0].fallbackStopReason, 'eligible-provider-failure');
+assert.equal(recoverableSuccessResult.providerFallback.attempts[0].providerFailure.failureKind, 'transport');
+assert.equal(recoverableSuccessResult.providerFallback.attempts[0].providerFailure.recoverable, true);
+assert.equal(recoverableSuccessResult.providerFallback.attempts[0].nextProviderId, 'stub');
+assert.equal(recoverableSuccessResult.providerFallback.attempts[1].fallbackStopReason, 'mission-status-completed');
+
+const recoverableSuccessTimeline = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'timeline', recoverableSuccessMission.id],
+});
+
+assert.equal(recoverableSuccessTimeline.summary.providerFallbackAttemptCount, 2);
+assert.equal(
+  recoverableSuccessTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'],
+  2,
+);
+assert.equal(recoverableSuccessTimeline.summary.providerFallbackUsedCount, 1);
+assert.equal(recoverableSuccessTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'], 1);
+assert.equal(recoverableSuccessTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'], 1);
+assert.deepEqual(recoverableSuccessTimeline.summary.providerFallbackPrimaryProviderIds, ['openai']);
+assert.deepEqual(recoverableSuccessTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
+assert.equal(
+  recoverableSuccessTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-attempted' &&
+      event.providerId === 'openai' &&
+      event.providerFailureKind === 'transport' &&
+      event.fallbackPolicy === 'recoverable-provider-failure-only' &&
+      event.fallbackEligible === true &&
+      event.fallbackStopReason === 'eligible-provider-failure',
+  ),
+  true,
+);
+assert.equal(
+  recoverableSuccessTimeline.timeline.some(
+    (event) =>
+      event.kind === 'provider-fallback-used' &&
+      event.providerId === 'stub' &&
+      event.primaryProviderId === 'openai',
+  ),
+  true,
+);
+
 const recoverablePolicyMission = service.createMission({
   workspaceId: workspace.id,
   mode: 'knowledge',
@@ -230,29 +308,32 @@ const operatorTimeline = runCli({
   args: ['overview', 'operator-timeline'],
 });
 
-assert.equal(operatorTimeline.summary.providerFallbackAttemptCount, 4);
+assert.equal(operatorTimeline.summary.providerFallbackAttemptCount, 6);
 assert.equal(operatorTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 3);
-assert.equal(operatorTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'], 1);
-assert.equal(operatorTimeline.summary.providerFallbackUsedCount, 1);
+assert.equal(operatorTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'], 3);
+assert.equal(operatorTimeline.summary.providerFallbackUsedCount, 2);
+assert.equal(operatorTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'], 2);
+assert.equal(operatorTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'], 2);
 assert.equal(operatorTimeline.summary.providerFallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
-assert.deepEqual(operatorTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic', 'stub']);
+assert.deepEqual(operatorTimeline.summary.providerFallbackPrimaryProviderIds, ['anthropic', 'stub', 'openai']);
 assert.deepEqual(operatorTimeline.summary.providerFallbackUsedProviderIds, ['stub']);
-assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 3);
-assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
+assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-attempted').length, 4);
+assert.equal(operatorTimeline.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 2);
 
 const providerFallbackEvents = runCli({
   rootDir: tempRoot,
   args: ['provider', 'events', '--family', 'fallback'],
 });
 
-assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 4);
-assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 3);
-assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-used'], 1);
+assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 6);
+assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 4);
+assert.equal(providerFallbackEvents.summary.eventCounts['provider-fallback-used'], 2);
 assert.equal(providerFallbackEvents.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
 assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['provider-failure-only'], 3);
-assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 3);
 assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
-assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 4);
+assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 2);
+assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 6);
 
 const anthropicFallbackEvents = runCli({
   rootDir: tempRoot,
@@ -269,17 +350,29 @@ const stubFallbackEvents = runCli({
   args: ['provider', 'events', '--provider', 'stub', '--family', 'fallback'],
 });
 
-assert.equal(stubFallbackEvents.summary.familyCounts.fallback, 2);
-assert.equal(stubFallbackEvents.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 1);
+assert.equal(stubFallbackEvents.summary.familyCounts.fallback, 3);
+assert.equal(stubFallbackEvents.timeline.filter((event) => event.kind === 'provider-fallback-used').length, 2);
+
+const openAiFallbackEvents = runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'events', '--provider', 'openai', '--family', 'fallback'],
+});
+
+assert.equal(openAiFallbackEvents.summary.familyCounts.fallback, 1);
+assert.equal(openAiFallbackEvents.timeline[0].providerId, 'openai');
+assert.equal(openAiFallbackEvents.timeline[0].providerFailureKind, 'transport');
+assert.equal(openAiFallbackEvents.timeline[0].fallbackPolicy, 'recoverable-provider-failure-only');
+assert.equal(openAiFallbackEvents.timeline[0].fallbackStopReason, 'eligible-provider-failure');
 
 const providerOverview = runCli({
   rootDir: tempRoot,
   args: ['overview', 'providers'],
 });
 
-assert.equal(providerOverview.summary.eventFamilyCounts.fallback, 4);
-assert.equal(providerOverview.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(providerOverview.summary.eventFamilyCounts.fallback, 6);
+assert.equal(providerOverview.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 3);
 assert.equal(providerOverview.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+assert.equal(providerOverview.summary.fallbackStopReasonCounts['eligible-provider-failure'], 2);
 assert.equal(providerOverview.summary.latestFallbackEvent.eventKind, 'provider-fallback-attempted');
 
 console.log(
@@ -290,6 +383,7 @@ console.log(
       mode: 'provider-fallback-policy',
       ok: true,
       recoverablePolicyFallbackUsed: recoverablePolicyResult.providerFallback.fallbackUsed,
+      recoverablePolicyPositiveFallbackUsed: recoverableSuccessResult.providerFallback.fallbackUsed,
     },
     null,
     2,

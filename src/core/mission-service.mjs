@@ -1551,6 +1551,9 @@ function buildOverdueIncidentContent({ items, filters, summary }) {
     lines.push(`command: ${item.recommendedCommand}`);
     if (item.actionClass === 'provider-attention-required' && item.fallbackRecommendedCommand) {
       lines.push(`fallback: ${item.fallbackRecommendedCommand}`);
+      if (item.recoverableFallbackRecommendedCommand) {
+        lines.push(`fallback recoverable-only: ${item.recoverableFallbackRecommendedCommand}`);
+      }
     }
     if (item.actionClass === 'specialist-follow-up-required' && item.remediationRoute) {
       lines.push(
@@ -11435,6 +11438,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         const fallbackRecommendedCommand = fallbackProviderId
           ? `${remediationCommand} --fallback-provider ${fallbackProviderId}`
           : null;
+        const recoverableFallbackRecommendedCommand = fallbackProviderId
+          ? `${fallbackRecommendedCommand} --fallback-policy recoverable-provider-failure-only`
+          : null;
         const inspectCommand =
           latestEvent.eventFamily === 'execution'
             ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
@@ -11463,6 +11469,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               missionId: latestEvent.missionId || null,
               providerDisplayName: provider.displayName,
               providerId: provider.id,
+              recoverableFallbackRecommendedCommand,
               remediationCommand,
               reason: latestEvent.detail,
               sessionId: latestEvent.sessionId || null,

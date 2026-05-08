@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { createMissionService } from '../src/core/mission-service.mjs';
 import { createStore } from '../src/core/store.mjs';
-import { runCli } from './cli-test-helpers.mjs';
+import { createClosedLocalhostBaseUrl, runCli } from './cli-test-helpers.mjs';
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-provider-attention-remediation-'));
 const workspacePath = path.join(tempRoot, 'workspace');
@@ -19,6 +19,7 @@ const originalEnv = {
   ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL,
   ANTHROPIC_VERSION: process.env.ANTHROPIC_VERSION,
 };
+const recoverableFailureBaseUrl = await createClosedLocalhostBaseUrl();
 
 try {
   process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
@@ -110,6 +111,7 @@ try {
   assert.equal(stubPending.items.length, 1);
   assert.match(stubPending.items[0].recommendedCommand, /action remediate-provider-attention/);
   assert.equal(stubPending.items[0].fallbackRecommendedCommand, null);
+  assert.equal(stubPending.items[0].recoverableFallbackRecommendedCommand, null);
   assert.match(stubPending.items[0].inspectCommand, /provider activity --provider stub --status failed/);
 
   store.updateMission(failedMission.id, (current) => ({
@@ -179,6 +181,10 @@ try {
   assert.equal(anthropicExecutionPending.items.length, 1);
   assert.match(anthropicExecutionPending.items[0].recommendedCommand, /action remediate-provider-attention/);
   assert.match(anthropicExecutionPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.match(
+    anthropicExecutionPending.items[0].recoverableFallbackRecommendedCommand,
+    /--fallback-provider stub --fallback-policy recoverable-provider-failure-only/,
+  );
   assert.equal(anthropicExecutionPending.items[0].fallbackPolicyId, 'provider-failure-only');
   assert.deepEqual(anthropicExecutionPending.items[0].fallbackPolicyOptions, [
     'provider-failure-only',
@@ -216,6 +222,75 @@ try {
   assert.equal(fallbackRemediation.postAttention.status, 'pending');
   assert.equal(fallbackRemediation.postAttention.pendingCount, 1);
 
+  const recoverableFallbackMission = service.createMission({
+    workspaceId: workspace.id,
+    mode: 'knowledge',
+    deliverableType: 'checklist',
+    title: 'Provider attention recoverable-only fallback success mission',
+    objective: 'Create one recoverable provider execution failure and remediate it through strict fallback policy.',
+    constraints: [],
+  });
+
+  const failedRecoverableFallbackRun = runCli({
+    rootDir: tempRoot,
+    env: {
+      OPENAI_API_KEY: 'test-openai-key',
+      OPENAI_BASE_URL: recoverableFailureBaseUrl,
+    },
+    args: ['mission', 'run', recoverableFallbackMission.id, '--provider', 'openai'],
+  });
+
+  assert.equal(failedRecoverableFallbackRun.status, 'failed');
+  assert.equal(failedRecoverableFallbackRun.provider, 'openai');
+
+  const recoverableFallbackPending = service.getProviderAttentionInbox({
+    missionId: recoverableFallbackMission.id,
+    providerId: 'openai',
+    workspaceId: workspace.id,
+  });
+
+  assert.equal(recoverableFallbackPending.items.length, 1);
+  assert.match(recoverableFallbackPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.match(
+    recoverableFallbackPending.items[0].recoverableFallbackRecommendedCommand,
+    /--fallback-provider stub --fallback-policy recoverable-provider-failure-only/,
+  );
+  assert.equal(recoverableFallbackPending.items[0].failureKind, 'transport');
+  assert.equal(recoverableFallbackPending.items[0].recoverable, true);
+
+  const recoverableFallbackRemediation = runCli({
+    rootDir: tempRoot,
+    env: {
+      OPENAI_API_KEY: 'test-openai-key',
+      OPENAI_BASE_URL: recoverableFailureBaseUrl,
+    },
+    args: [
+      'action',
+      'remediate-provider-attention',
+      recoverableFallbackPending.items[0].actionId,
+      '--fallback-provider',
+      'stub',
+      '--fallback-policy',
+      'recoverable-provider-failure-only',
+    ],
+  });
+
+  assert.equal(recoverableFallbackRemediation.fallbackPolicy, 'recoverable-provider-failure-only');
+  assert.equal(recoverableFallbackRemediation.remediationKind, 'mission-fallback-rerun');
+  assert.equal(recoverableFallbackRemediation.primaryProviderId, 'openai');
+  assert.equal(recoverableFallbackRemediation.result.missionStatus, 'completed');
+  assert.equal(recoverableFallbackRemediation.result.provider, 'stub');
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.policyId, 'recoverable-provider-failure-only');
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.fallbackUsed, true);
+  assert.deepEqual(recoverableFallbackRemediation.result.providerFallback.attemptedProviderIds, ['openai', 'stub']);
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[0].fallbackEligible, true);
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[0].fallbackStopReason, 'eligible-provider-failure');
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[0].providerFailure.failureKind, 'transport');
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[0].providerFailure.recoverable, true);
+  assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[1].fallbackStopReason, 'mission-status-completed');
+  assert.equal(recoverableFallbackRemediation.postAttention.status, 'pending');
+  assert.equal(recoverableFallbackRemediation.postAttention.pendingCount, 1);
+
   const recoverablePolicyMission = service.createMission({
     workspaceId: workspace.id,
     mode: 'knowledge',
@@ -246,6 +321,10 @@ try {
 
   assert.equal(recoverablePolicyPending.items.length, 1);
   assert.match(recoverablePolicyPending.items[0].fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.match(
+    recoverablePolicyPending.items[0].recoverableFallbackRecommendedCommand,
+    /--fallback-provider stub --fallback-policy recoverable-provider-failure-only/,
+  );
   assert.deepEqual(recoverablePolicyPending.items[0].fallbackPolicyOptions, [
     'provider-failure-only',
     'recoverable-provider-failure-only',
@@ -294,6 +373,8 @@ try {
         fallbackRemediationUsed: fallbackRemediation.result.providerFallback.fallbackUsed,
         mode: 'provider-attention-remediation',
         ok: true,
+        recoverableFallbackRemediationStatus: recoverableFallbackRemediation.result.missionStatus,
+        recoverableFallbackRemediationUsed: recoverableFallbackRemediation.result.providerFallback.fallbackUsed,
         recoverablePolicyRemediationStatus: recoverablePolicyRemediation.result.missionStatus,
         recoverablePolicyRemediationUsed: recoverablePolicyRemediation.result.providerFallback.fallbackUsed,
         stubExecutionRemediationStatus: executionRemediation.result.missionStatus,

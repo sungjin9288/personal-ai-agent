@@ -156,6 +156,105 @@ assert.equal(getProviderRateGuardSnapshot('smoke-reactive', { nowMs: () => react
 
 resetProviderRateGuards();
 
+let retryExhaustedHttpCount = 0;
+await assert.rejects(
+  requestJsonWithPolicy({
+    fetchImpl: async () => {
+      retryExhaustedHttpCount += 1;
+      return {
+        ok: false,
+        status: 503,
+        async text() {
+          return 'service unavailable';
+        },
+      };
+    },
+    maxAttempts: 2,
+    providerLabel: 'Smoke',
+    url: 'https://example.invalid/retry-exhausted',
+  }),
+  (error) => {
+    assert.equal(error.failure.failureKind, 'http-status');
+    assert.equal(error.failure.httpStatus, 503);
+    assert.equal(error.failure.recoverable, true);
+    assert.equal(error.failure.retryCount, 1);
+    assert.equal(error.failure.attemptHistory.length, 2);
+    assert.equal(error.failure.attemptHistory.every((attempt) => attempt.recoverable === true), true);
+    return true;
+  },
+);
+assert.equal(retryExhaustedHttpCount, 2);
+
+let nonRetryableHttpCount = 0;
+await assert.rejects(
+  requestJsonWithPolicy({
+    fetchImpl: async () => {
+      nonRetryableHttpCount += 1;
+      return {
+        ok: false,
+        status: 400,
+        async text() {
+          return 'bad request';
+        },
+      };
+    },
+    maxAttempts: 2,
+    providerLabel: 'Smoke',
+    url: 'https://example.invalid/non-retryable-http',
+  }),
+  (error) => {
+    assert.equal(error.failure.failureKind, 'http-status');
+    assert.equal(error.failure.httpStatus, 400);
+    assert.equal(error.failure.recoverable, false);
+    assert.equal(error.failure.retryCount, 0);
+    assert.equal(error.failure.attemptHistory.length, 1);
+    return true;
+  },
+);
+assert.equal(nonRetryableHttpCount, 1);
+
+let transportFailureCount = 0;
+await assert.rejects(
+  requestJsonWithPolicy({
+    fetchImpl: async () => {
+      transportFailureCount += 1;
+      throw new Error('socket hang up');
+    },
+    maxAttempts: 2,
+    providerLabel: 'Smoke',
+    url: 'https://example.invalid/transport',
+  }),
+  (error) => {
+    assert.equal(error.failure.failureKind, 'transport');
+    assert.equal(error.failure.recoverable, true);
+    assert.equal(error.failure.retryCount, 1);
+    assert.equal(error.failure.attemptHistory.length, 2);
+    assert.equal(error.failure.attemptHistory.every((attempt) => attempt.recoverable === true), true);
+    return true;
+  },
+);
+assert.equal(transportFailureCount, 2);
+
+await assert.rejects(
+  requestJsonWithPolicy({
+    fetchImpl: async () => {
+      const error = new Error('The operation timed out.');
+      error.name = 'AbortError';
+      throw error;
+    },
+    maxAttempts: 1,
+    providerLabel: 'Smoke',
+    url: 'https://example.invalid/timeout',
+  }),
+  (error) => {
+    assert.equal(error.failure.failureKind, 'timeout');
+    assert.equal(error.failure.recoverable, true);
+    assert.equal(error.failure.timedOut, true);
+    assert.equal(error.failure.retryCount, 0);
+    return true;
+  },
+);
+
 const releaseFirst = await acquireProviderRateGuardSlot({
   maxConcurrency: 1,
   maxRequests: 0,

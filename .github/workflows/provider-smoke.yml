@@ -1,0 +1,49 @@
+name: Provider smoke
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  provider-smoke:
+    name: Provider fallback and attention smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Show Node.js version
+        run: node --version
+
+      - name: Run provider fallback policy smoke
+        run: npm run smoke:provider-fallback-policy
+
+      - name: Run provider attention remediation smoke
+        run: npm run smoke:provider-attention-remediation
+
+      - name: Run provider failure classification smoke
+        run: npm run smoke:provider-capability-rate-guard
+
+      - name: Run provider action inbox smoke
+        run: npm run smoke:provider-action-inbox
+
+      - name: Run provider events smoke
+        run: npm run smoke:provider-events
+
+      - name: Run provider overview smoke
+        run: npm run smoke:provider-overview
+
+      - name: Run target provider operations smoke
+        run: npm run smoke:target-provider-operations
