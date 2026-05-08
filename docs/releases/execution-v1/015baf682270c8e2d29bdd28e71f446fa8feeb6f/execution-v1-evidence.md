@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-08T16:55:40.568Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-08T16:55:12.015Z
 - branch: codex/local-provider-live-helper-envkey
 - commit: 015baf682270c8e2d29bdd28e71f446fa8feeb6f
