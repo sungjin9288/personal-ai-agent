@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-08T19:09:24.209Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-08T19:09:24.171Z
 - localDate: 2026-05-09
 - branch: codex/execution-v1-refresh-runbook-alignment
 - commit: f6ebd3deed671069d9c45e7a2f35207eae5ed8f8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8](releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8](docs/releases/execution-v1/f6ebd3deed671069d9c45e7a2f35207eae5ed8f8)
 - visualArtifactSetSha256: 3e62b861c85c7c4556914975ea8ac91abc0f54e20f359b147dd215f33d653abb
 - commitPushStatus: not pushed, origin/codex/execution-v1-refresh-runbook-alignment not found
 
