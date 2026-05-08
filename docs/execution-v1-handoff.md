@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-05-08T17:59:58.284Z
+- generatedAt: 2026-05-08T18:10:08.037Z
 - localDate: 2026-05-09
-- branch: codex/execution-v1-artifact-refresh-command
-- commit: d10937f8aad1a3c0a12b169130abd546d55e8e46
+- branch: main
+- commit: a904288e01ac82af8ad0554a784e02408aefef21
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46](releases/execution-v1/d10937f8aad1a3c0a12b169130abd546d55e8e46)
-- visualArtifactSetSha256: 005ae8667e891dbf3b795a0016d99b82b943743a2c74b73b0a985eba983b0404
-- commitPushStatus: not pushed, origin/codex/execution-v1-artifact-refresh-command not found
+- immutableSnapshot: [releases/execution-v1/a904288e01ac82af8ad0554a784e02408aefef21](releases/execution-v1/a904288e01ac82af8ad0554a784e02408aefef21)
+- visualArtifactSetSha256: f5ef0374055976353861a2081f9a5589246084873e1125729c2f024adbde298d
+- commitPushStatus: pushed to origin/main
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=27.8s
+- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=27.4s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 15 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 005ae8667e891dbf3b795a0016d99b82b943743a2c74b73b0a985eba983b0404
+- visual artifact set: f5ef0374055976353861a2081f9a5589246084873e1125729c2f024adbde298d
 
 ## Live Provider Handoff
 
@@ -77,7 +77,7 @@ Expected pre-live state:
 1. Resolve failed provider account-level blockers, then rerun only the affected `live:execution-v1:*` commands.
 2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.
 3. Rerun `node scripts/build-execution-v1-evidence.mjs --live-<provider>`, `npm run closeout:execution-v1 -- --reuse-existing-evidence`, `npm run handoff:execution-v1`, and `npm run snapshot:execution-v1` after live validation if the release artifact must include updated live-provider proof.
-4. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+4. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 
