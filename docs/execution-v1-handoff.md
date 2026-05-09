@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-05-09T02:28:42.167Z
+- generatedAt: 2026-05-09T03:01:01.652Z
 - localDate: 2026-05-09
-- branch: codex/execution-v1-refresh-pilot-export
-- commit: 5e34fc148c1c1b4cb8885754f3375277cf2d4d57
+- branch: main
+- commit: ed7101e19625b2989d42b646d381765190f7598a
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57](releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57)
-- visualArtifactSetSha256: d70ce2c177b1381d79bc766ac26cd75c30af7125246d0f2e85459eb0d6c20318
-- commitPushStatus: not pushed, origin/codex/execution-v1-refresh-pilot-export not found
+- immutableSnapshot: [releases/execution-v1/ed7101e19625b2989d42b646d381765190f7598a](releases/execution-v1/ed7101e19625b2989d42b646d381765190f7598a)
+- visualArtifactSetSha256: 3f801c113ab1f6b31a9780198725d4db743fd9c76445550244fa6d5b265e9354
+- commitPushStatus: pushed to origin/main
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=28.1s
+- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=30.3s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 15 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: d70ce2c177b1381d79bc766ac26cd75c30af7125246d0f2e85459eb0d6c20318
+- visual artifact set: 3f801c113ab1f6b31a9780198725d4db743fd9c76445550244fa6d5b265e9354
 
 ## Live Provider Handoff
 
@@ -78,7 +78,7 @@ Expected pre-live state:
 2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.
 3. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 4. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-5. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+5. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 

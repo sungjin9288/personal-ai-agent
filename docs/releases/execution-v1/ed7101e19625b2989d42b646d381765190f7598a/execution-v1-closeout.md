@@ -1,12 +1,12 @@
 # Execution v1 Closeout
 
-- archivedAt: 2026-05-09T02:28:42.208Z
+- archivedAt: 2026-05-09T03:01:01.699Z
 - sourcePath: docs/execution-v1-closeout.md
 
-- generatedAt: 2026-05-09T02:28:36.651Z
-- branch: codex/execution-v1-refresh-pilot-export
-- commit: 5e34fc148c1c1b4cb8885754f3375277cf2d4d57
-- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57/execution-v1-evidence.md)
+- generatedAt: 2026-05-09T03:00:56.095Z
+- branch: main
+- commit: ed7101e19625b2989d42b646d381765190f7598a
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ed7101e19625b2989d42b646d381765190f7598a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
