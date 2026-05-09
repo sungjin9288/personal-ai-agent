@@ -302,6 +302,7 @@ npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
+npm run smoke:pilot-export-package
 npm run smoke:production-readiness-gate
 npm run drill:production-like-release
 npm run smoke:production-like-release-drill

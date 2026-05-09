@@ -921,14 +921,14 @@ live validation flag를 주면 해당 provider env가 있을 때만 실제 `engi
 
 - 기본 실행: deterministic smoke 4개, reference adoption aggregate gate, execution-v1 live helper contract, handoff generator regression 실행 후 evidence 문서 갱신
 - evidence에는 각 deterministic script의 elapsed time, stdout/stderr size, timeout budget을 담은 `Deterministic Runtime Summary`가 함께 기록됨
-- archived live provider proof를 유지해야 하는 release artifact refresh에서는 `npm run refresh:execution-v1-artifacts`를 기본 경로로 사용해 evidence/closeout/handoff/provider readiness/snapshot을 함께 갱신
+- archived live provider proof를 유지해야 하는 release artifact refresh에서는 `npm run refresh:execution-v1-artifacts`를 기본 경로로 사용해 evidence/closeout/handoff/provider readiness/snapshot/pilot export manifest를 함께 갱신
 - 선택적 live validation 포함:
   - `node scripts/build-execution-v1-evidence.mjs --live-openai`
   - `node scripts/build-execution-v1-evidence.mjs --live-anthropic`
   - `node scripts/build-execution-v1-evidence.mjs --live-local`
   - `node scripts/build-execution-v1-evidence.mjs --live-hermes`
 
-`npm run refresh:execution-v1-artifacts`는 execution-v1 evidence, closeout, handoff, production provider readiness, immutable snapshot refresh 순서를 하나의 operator command로 묶습니다. 기본적으로 current evidence의 archived live validation status를 보존하고 필요한 `--live-*` flag를 자동 재사용하므로, OpenAI/Anthropic archived proof를 실수로 deterministic-only 결과로 덮어쓰지 않습니다. `npm run smoke:execution-v1-artifact-refresh`는 이 orchestration command가 package script에 등록되어 있고 dry-run에서 preserve-live flag, reuse-existing-evidence closeout, handoff, provider readiness, snapshot 순서를 유지하는지 검증합니다.
+`npm run refresh:execution-v1-artifacts`는 execution-v1 evidence, closeout, handoff, production provider readiness, immutable snapshot, pilot export package manifest refresh 순서를 하나의 operator command로 묶습니다. 기본적으로 current evidence의 archived live validation status를 보존하고 필요한 `--live-*` flag를 자동 재사용하므로, OpenAI/Anthropic archived proof를 실수로 deterministic-only 결과로 덮어쓰지 않습니다. `npm run smoke:execution-v1-artifact-refresh`는 이 orchestration command가 package script에 등록되어 있고 dry-run에서 preserve-live flag, reuse-existing-evidence closeout, handoff, provider readiness, snapshot, pilot export package 순서를 유지하는지 검증합니다.
 
 `npm run closeout:execution-v1`는 evidence를 다시 생성한 뒤 [execution-v1-closeout.md](docs/execution-v1-closeout.md)에 v1 마감 체크리스트를 기록합니다. 이 문서는 deterministic smoke 4종, reference adoption gate, deterministic runtime summary, browser interaction readiness, live validation 상태를 한눈에 보여 주는 closeout surface입니다.
 기존 evidence를 재사용해 closeout만 다시 만들려면 `npm run closeout:execution-v1 -- --reuse-existing-evidence`를 사용합니다.

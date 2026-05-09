@@ -126,6 +126,7 @@ assert.match(handoff, /^- Hermes live validation: blocked by missing `HERMES_PRO
 assert.match(handoff, new RegExp(`^- visual artifact set: ${escapeRegExp(artifactSetSha256)}$`, 'm'));
 assert.equal(handoff.includes('npm run preflight:execution-v1:all'), true);
 assert.equal(handoff.includes('npm run refresh:execution-v1-artifacts'), true);
+assert.equal(handoff.includes('pilot export package'), true);
 assert.equal(handoff.includes('node scripts/build-execution-v1-evidence.mjs --live-<provider>'), true);
 assert.equal(handoff.includes('npm run snapshot:execution-v1'), false);
 assert.equal(

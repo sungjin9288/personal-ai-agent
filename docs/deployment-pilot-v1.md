@@ -1063,7 +1063,7 @@ After live validation, refresh evidence with the live providers that are intenti
 npm run refresh:execution-v1-artifacts
 ```
 
-The refresh command preserves archived live validation status by default and reuses the selected live flags already recorded in current evidence. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live proof for a selected provider.
+The refresh command preserves archived live validation status by default and reuses the selected live flags already recorded in current evidence. It also regenerates the pilot export package manifest after the immutable snapshot is updated. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live proof for a selected provider.
 
 Verification:
 
@@ -1071,6 +1071,7 @@ Verification:
 npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
+npm run smoke:pilot-export-package
 ```
 
 Do not run deterministic-only evidence generation when preserving archived live proof matters. Do not claim live-provider-complete readiness unless all supported pilot providers have archived live validation evidence.

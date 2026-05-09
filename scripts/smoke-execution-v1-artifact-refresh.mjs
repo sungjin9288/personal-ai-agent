@@ -42,6 +42,7 @@ assert.deepEqual(
     'snapshot-before-handoff-refresh',
     'handoff-after-snapshot',
     'snapshot-final',
+    'pilot-export-package',
   ],
 );
 
@@ -56,6 +57,8 @@ assert.equal(
   payload.steps.filter((step) => /archive-execution-v1-snapshot\.mjs/.test(step.command)).length,
   2,
 );
+const pilotExportStep = payload.steps.find((step) => step.name === 'pilot-export-package');
+assert.match(pilotExportStep.command, /build-pilot-export-package\.mjs/);
 
 console.log(
   JSON.stringify(
