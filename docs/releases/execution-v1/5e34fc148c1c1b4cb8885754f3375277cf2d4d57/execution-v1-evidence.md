@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-09T02:28:42.208Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-09T02:28:36.611Z
 - branch: codex/execution-v1-refresh-pilot-export
 - commit: 5e34fc148c1c1b4cb8885754f3375277cf2d4d57

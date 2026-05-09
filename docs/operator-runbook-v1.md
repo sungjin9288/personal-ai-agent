@@ -236,6 +236,7 @@ After live validation:
 npm run refresh:execution-v1-artifacts
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
+npm run smoke:pilot-export-package
 ```
 
 `refresh:execution-v1-artifacts` preserves archived live validation status by default and reuses the live provider flags already recorded in the current evidence document. If intentionally replacing live proof for a narrower provider set, run the selected `node scripts/build-execution-v1-evidence.mjs --live-<provider>` command first, then continue with the reuse-existing-evidence closeout/handoff/snapshot flow.
@@ -250,7 +251,7 @@ Use this sequence after material planning source-of-record changes when live evi
 npm run refresh:execution-v1-artifacts
 ```
 
-The refresh command regenerates evidence, closeout, handoff, production provider readiness, and the immutable snapshot while preserving archived live validation proof. Use the lower-level sequence only when intentionally replacing live provider proof.
+The refresh command regenerates evidence, closeout, handoff, production provider readiness, the immutable snapshot, and the pilot export package manifest while preserving archived live validation proof. Use the lower-level sequence only when intentionally replacing live provider proof.
 
 ```bash
 node scripts/build-execution-v1-evidence.mjs --live-openai --live-anthropic
@@ -268,6 +269,7 @@ npm run smoke:execution-v1-artifact-refresh
 npm run smoke:execution-v1-status
 npm run smoke:execution-v1-snapshot
 npm run smoke:execution-v1-handoff
+npm run smoke:pilot-export-package
 git diff --check
 ```
 

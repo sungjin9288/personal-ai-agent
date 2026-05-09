@@ -87,6 +87,10 @@ function buildSteps({ archivedLiveFlags, preserveArchivedLiveValidation, skipEvi
       args: ['scripts/archive-execution-v1-snapshot.mjs'],
       name: 'snapshot-final',
     },
+    {
+      args: ['scripts/build-pilot-export-package.mjs'],
+      name: 'pilot-export-package',
+    },
   );
 
   return output;

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-09T02:28:42.208Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-09T02:28:42.167Z
 - localDate: 2026-05-09
 - branch: codex/execution-v1-refresh-pilot-export
 - commit: 5e34fc148c1c1b4cb8885754f3375277cf2d4d57
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57](releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57](docs/releases/execution-v1/5e34fc148c1c1b4cb8885754f3375277cf2d4d57)
 - visualArtifactSetSha256: d70ce2c177b1381d79bc766ac26cd75c30af7125246d0f2e85459eb0d6c20318
 - commitPushStatus: not pushed, origin/codex/execution-v1-refresh-pilot-export not found
 
