@@ -21,6 +21,33 @@ const workspace = service.addWorkspace({
   workspacePath,
 });
 
+const policyOnlyMission = service.createMission({
+  workspaceId: workspace.id,
+  mode: 'knowledge',
+  deliverableType: 'checklist',
+  title: 'Fallback policy without fallback provider mission',
+  objective: 'Verify fallback policy cannot be supplied without an actual fallback provider.',
+  constraints: [],
+});
+
+assert.throws(
+  () =>
+    runCli({
+      rootDir: tempRoot,
+      args: [
+        'mission',
+        'run',
+        policyOnlyMission.id,
+        '--provider',
+        'stub',
+        '--fallback-policy',
+        'recoverable-provider-failure-only',
+      ],
+    }),
+  /--fallback-policy requires --fallback-provider with at least one distinct fallback provider/,
+);
+assert.equal(createStore({ rootDir: tempRoot }).listSessionsByMission(policyOnlyMission.id).length, 0);
+
 const fallbackMission = service.createMission({
   workspaceId: workspace.id,
   mode: 'knowledge',

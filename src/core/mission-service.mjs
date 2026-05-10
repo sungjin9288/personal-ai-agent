@@ -8256,7 +8256,7 @@ function summarizeProviderExecutions(executions) {
 
   function resolveMissionProviderFallbackPlan(options = {}) {
     const primaryProviderId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
-    const policyId = normalizeProviderFallbackPolicy(options.fallbackPolicy || options.providerFallbackPolicy);
+    const explicitPolicyId = normalizeText(options.fallbackPolicy || options.providerFallbackPolicy);
     const requestedFallbackProviderIds = normalizeProviderFallbackIds(
       options.fallbackProvider || options.fallbackProviders || options.providerFallback,
     );
@@ -8271,6 +8271,12 @@ function summarizeProviderExecutions(executions) {
         providerIds.push(providerId);
       }
     }
+
+    if (explicitPolicyId && providerIds.length <= 1) {
+      throw new Error('--fallback-policy requires --fallback-provider with at least one distinct fallback provider.');
+    }
+
+    const policyId = normalizeProviderFallbackPolicy(explicitPolicyId || 'provider-failure-only');
 
     return {
       enabled: providerIds.length > 1,
@@ -13584,13 +13590,19 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         throw new Error('--fallback-policy requires --fallback-provider for provider execution attention remediation.');
       }
 
-      fallbackPolicy = normalizeProviderFallbackPolicy(
-        explicitFallbackPolicy || attentionItem.fallbackPolicyId || 'provider-failure-only',
-      );
+      if (fallbackProvider) {
+        fallbackPolicy = normalizeProviderFallbackPolicy(
+          explicitFallbackPolicy || attentionItem.fallbackPolicyId || 'provider-failure-only',
+        );
+      }
       remediationKind = fallbackProvider ? 'mission-fallback-rerun' : 'mission-rerun';
       const rerun = await runMission(attentionItem.missionId, {
-        fallbackProvider,
-        fallbackPolicy,
+        ...(fallbackProvider
+          ? {
+              fallbackProvider,
+              fallbackPolicy,
+            }
+          : {}),
         provider: attentionItem.providerId,
         providerSpecified: true,
       });
