@@ -13550,9 +13550,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     const attentionItem = actionState.item;
     const fallbackProvider = normalizeText(options.fallbackProvider);
-    const fallbackPolicy = normalizeProviderFallbackPolicy(
-      options.fallbackPolicy || attentionItem.fallbackPolicyId || 'provider-failure-only',
-    );
+    const explicitFallbackPolicy = normalizeText(options.fallbackPolicy);
+    let fallbackPolicy = null;
     let remediationKind = '';
     let result = null;
 
@@ -13560,7 +13559,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       if (fallbackProvider) {
         throw new Error('--fallback-provider is only supported for provider execution attention remediation.');
       }
-      if (normalizeText(options.fallbackPolicy)) {
+      if (explicitFallbackPolicy) {
         throw new Error('--fallback-policy is only supported for provider execution attention remediation.');
       }
 
@@ -13581,7 +13580,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       if (!attentionItem.missionId) {
         throw new Error(`Provider execution attention is missing mission context: ${actionId}`);
       }
+      if (explicitFallbackPolicy && !fallbackProvider) {
+        throw new Error('--fallback-policy requires --fallback-provider for provider execution attention remediation.');
+      }
 
+      fallbackPolicy = normalizeProviderFallbackPolicy(
+        explicitFallbackPolicy || attentionItem.fallbackPolicyId || 'provider-failure-only',
+      );
       remediationKind = fallbackProvider ? 'mission-fallback-rerun' : 'mission-rerun';
       const rerun = await runMission(attentionItem.missionId, {
         fallbackProvider,
