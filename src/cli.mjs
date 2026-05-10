@@ -111,7 +111,7 @@ Commands:
 
   mission create --workspace <workspaceId> --mode <engineering|knowledge> --title <title> [--objective <text>] [--deliverable <type>] [--constraints <text|text>] [--attachment <path>]
   mission list
-  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>] [--fallback-provider <stub|openai|anthropic|local|hermes>[,...]] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]
+  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>] [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
   mission show <missionId> [--provider-since <iso-timestamp>]
   mission timeline <missionId> [--provider-since <iso-timestamp>]
   mission execution preflight <missionId> [--request-approval]
@@ -140,7 +140,7 @@ Commands:
   action remind-provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
   action remind-specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
-  action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...]] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]
+  action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
   action remediate-specialist-follow-up <actionId>
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action acknowledge-provider-attention <actionId> [--note <text>]
