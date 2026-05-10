@@ -330,6 +330,21 @@ try {
     'recoverable-provider-failure-only',
   ]);
 
+  assert.throws(
+    () =>
+      runCli({
+        rootDir: tempRoot,
+        args: [
+          'action',
+          'remediate-provider-attention',
+          recoverablePolicyPending.items[0].actionId,
+          '--fallback-policy',
+          'recoverable-provider-failure-only',
+        ],
+      }),
+    /--fallback-policy requires --fallback-provider for provider execution attention remediation/,
+  );
+
   const recoverablePolicyRemediation = runCli({
     rootDir: tempRoot,
     env: {
