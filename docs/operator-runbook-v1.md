@@ -11,7 +11,7 @@
 
 This runbook tells an operator how to run the v1 multi-agent harness from a clean local pilot state through mission execution, provider validation, evidence regeneration, release handoff, and incident triage.
 
-The current release state is `provider-scoped pilot ready for OpenAI-backed local-first path`. OpenAI live validation is archived in the current evidence pack. The release is not production-ready or live-provider-complete because Anthropic is blocked by provider account credit/billing, and local/Hermes validation is blocked until approved runtime endpoint and model configuration are injected.
+The current release state is `provider-scoped pilot ready for OpenAI-backed local-first path`. OpenAI and local provider live validation are archived in the current evidence pack. The release is not production-ready or live-provider-complete because Anthropic is blocked by provider account credit/billing, Hermes validation is blocked until approved runtime endpoint and model configuration are injected, and target local provider architecture still requires approved target-boundary evidence.
 
 ## Operator Roles
 
@@ -240,6 +240,7 @@ npm run smoke:pilot-export-package
 ```
 
 `refresh:execution-v1-artifacts` preserves archived live validation status by default and reuses the live provider flags already recorded in the current evidence document. If intentionally replacing live proof for a narrower provider set, run the selected `node scripts/build-execution-v1-evidence.mjs --live-<provider>` command first, then continue with the reuse-existing-evidence closeout/handoff/snapshot flow.
+`npm run live:execution-v1:<provider>` also preserves archived live proof by default, so a selected-provider rerun replaces only that provider's current result while keeping the other archived pass/fail statuses visible in evidence and closeout.
 
 Do not claim expanded provider-backed readiness until the refreshed evidence records the selected live validation result.
 
@@ -413,4 +414,4 @@ Do not do:
 
 This runbook supports OpenAI-scoped controlled self-hosted pilot operation.
 
-The remaining blockers are Anthropic billing/account remediation, local/Hermes runtime configuration, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.

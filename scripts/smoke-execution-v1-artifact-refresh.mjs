@@ -31,7 +31,7 @@ const payload = JSON.parse(String(result.stdout || '{}'));
 assert.equal(payload.ok, true);
 assert.equal(payload.dryRun, true);
 assert.equal(payload.preserveArchivedLiveValidation, true);
-assert.deepEqual(payload.liveFlags, ['--live-openai', '--live-anthropic']);
+assert.deepEqual(payload.liveFlags, ['--live-openai', '--live-anthropic', '--live-local']);
 assert.deepEqual(
   payload.steps.map((step) => step.name),
   [
@@ -51,7 +51,7 @@ assert.match(evidenceStep.command, /build-execution-v1-evidence\.mjs/);
 assert.match(evidenceStep.command, /--preserve-archived-live-validation/);
 assert.match(evidenceStep.command, /--live-openai/);
 assert.match(evidenceStep.command, /--live-anthropic/);
-assert.doesNotMatch(evidenceStep.command, /--live-local/);
+assert.match(evidenceStep.command, /--live-local/);
 assert.doesNotMatch(evidenceStep.command, /--live-hermes/);
 assert.equal(
   payload.steps.filter((step) => /archive-execution-v1-snapshot\.mjs/.test(step.command)).length,

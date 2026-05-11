@@ -58,7 +58,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because the OpenAI path is approved only for the scoped self-hosted/local-first pilot, Anthropic is blocked by provider account billing/credit, local and Hermes provider validation still require runtime configuration, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target OpenAI provider account approval, target Anthropic provider account approval, target local provider architecture approval, target Hermes provider architecture approval, target secret manager injection/audit, target observability/on-call operations, target SLO architecture, target SLO operations, target retention operations, target backup operations, target support architecture, target support operations, SLO/SLA, and clean production-like evidence.
+It is not `production-ready` because the OpenAI/local path is approved only for the scoped self-hosted/local-first pilot, Anthropic is blocked by provider account billing/credit, Hermes provider validation still requires runtime configuration, target local provider architecture still lacks approved target-boundary evidence, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target OpenAI provider account approval, target Anthropic provider account approval, target local provider architecture approval, target Hermes provider architecture approval, target secret manager injection/audit, target observability/on-call operations, target SLO architecture, target SLO operations, target retention operations, target backup operations, target support architecture, target support operations, SLO/SLA, and clean production-like evidence.
 
 ## Evidence Summary
 
@@ -70,7 +70,7 @@ Current execution evidence:
 - reference adoption aggregate: ready, 15 scripts
 - handoff generator: passed
 - visual artifact set: `d58b31568fb8088dde4b8d8fa34d0af2a2f2e6012a43b1449074ab27768534ea`
-- live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local/Hermes missing runtime env
+- live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local provider passed, Hermes missing runtime env
 - local deterministic production-like release drill: passed, with `productionReadyClaim: false`
 - pilot export package manifest: passed, with repository-relative paths and `productionReadyClaim: false`
 - self-hosted runtime isolation smoke: passed, with `productionReadyClaim: false`
@@ -127,7 +127,7 @@ Current handoff state:
 - snapshot portability: ready
 - OpenAI live validation: passed
 - Anthropic live validation: failed with HTTP 400 account billing/credit blocker
-- local provider live validation: blocked by missing `LOCAL_PROVIDER_MODEL`
+- local provider live validation: passed
 - Hermes live validation: blocked by missing `HERMES_PROVIDER_MODEL`
 
 ## Planning Pack Status
@@ -224,7 +224,7 @@ Status: pass, scoped to OpenAI-backed local-first/self-hosted pilot.
 
 Validated scope:
 
-- OpenAI live validation archived in [execution-v1-evidence.md](execution-v1-evidence.md)
+- OpenAI and local provider live validation archived in [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministic execution, CLI, UI console, browser E2E, handoff, and snapshot gates passed
 - security model, operator runbook, deployment guide, onboarding guide, demo scenarios, and release decision docs exist
 - commit/push remains deferred by operator request
@@ -232,7 +232,7 @@ Validated scope:
 Remaining blockers outside this scope:
 
 - Anthropic live validation is blocked by provider account billing/credit
-- local provider live validation is blocked by missing `LOCAL_PROVIDER_MODEL`
+- target local provider architecture remains blocked until approved endpoint/model runtime configuration and target-boundary live validation evidence are recorded
 - Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`
 
 Pilot-ready can be claimed only for the validated provider and approved deployment boundary.
@@ -243,11 +243,11 @@ Status: blocked.
 
 Blockers:
 
-- Anthropic, local, and Hermes live validations are not complete
+- Anthropic and Hermes live validations are not complete
 - target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated from a production-like environment
 - target provider operations evidence is not generated from a production-like environment
 - target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment
-- target local provider architecture is not approved and local provider live validation evidence is not generated from a production-like environment
+- target local provider architecture is not approved and target-boundary local provider evidence is not generated from a production-like environment
 - target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
 - target identity/session operations evidence is not generated from a production-like environment
@@ -385,7 +385,7 @@ Next review date:
 ## Current Open Blockers
 
 - Anthropic live validation is blocked by provider account billing/credit
-- local provider live validation is blocked by missing approved endpoint/model runtime configuration
+- target local provider architecture remains blocked until approved endpoint/model runtime configuration and target-boundary live validation evidence are recorded
 - Hermes live validation is blocked by missing approved endpoint/model runtime configuration
 - target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence
 - production release label cannot be claimed until all target production providers and enterprise controls are verified

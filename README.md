@@ -92,7 +92,7 @@ The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](
 Current planning status:
 
 - execution-v1 is provider-scoped pilot-ready for OpenAI-backed local-first operation
-- OpenAI live validation is archived; Anthropic is currently blocked by provider account billing/credit, and local/Hermes still require runtime configuration
+- OpenAI and local provider live validation are archived; Anthropic is currently blocked by provider account billing/credit, Hermes still requires runtime configuration, and target local provider architecture still requires approved target-boundary evidence
 - security model documentation now covers workspace isolation policy, RBAC matrix, secret handling, audit/retention/export/delete policy, tool permission model, and threat model
 - self-hosted runtime isolation can be verified with `npm run smoke:runtime-isolation`
 - operator runbook now covers daily start, UI operation, workspace/mission flow, approval handling, live validation, evidence refresh, artifact hygiene, incident triage, and release decision gates
@@ -145,7 +145,7 @@ Current planning status:
 - tenant-scoped runtime export/delete can be verified with `npm run smoke:tenant-data-lifecycle`; it proves local tenant-filtered export and delete behavior inside one runtime root, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - clean deployment release rehearsal evidence can be regenerated with `npm run rehearsal:clean-deployment-release`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
-- the current release label should not move to `production-ready` until Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment release evidence are complete
+- the current release label should not move to `production-ready` until Anthropic/Hermes live validation, target local provider architecture evidence, enforced enterprise controls, and production-like deployment release evidence are complete
 
 ## Current Commands
 
@@ -977,6 +977,7 @@ live validation 자체가 실패하면 helper는 `status=failed`와 함께 evide
 OpenAI helper는 live validation rerun에서 planner timeout 재발을 줄이기 위해 `OPENAI_RUN_TIMEOUT_MS=60000`을 기본 child env로 자동 주입합니다. 이미 값을 export한 경우에는 사용자가 지정한 값을 그대로 우선합니다.
 운영 콘솔의 `v1 마감 상태` 탭은 evidence/closeout/handoff 문서가 현재 HEAD를 가리키는지도 같이 보여 줍니다. 현재 commit과 문서가 기록한 commit이 다르거나, 세 문서가 워크트리에서 수정된 상태면 `evidence 갱신 필요`로 표시되며 closeout ready 상태로 계산하지 않습니다.
 `npm run live:execution-v1:openai` helper는 이제 live evidence를 한 번만 생성하고, closeout은 그 evidence 파일을 재사용합니다. 즉, 성공한 first live run 뒤에 closeout 단계가 second live run을 다시 실행해 결과를 덮어쓰지 않습니다.
+모든 `npm run live:execution-v1:*` helper는 selected provider를 재검증할 때 기존 OpenAI/Anthropic/local/Hermes archived live proof를 보존한 뒤 새 selected provider 결과만 교체합니다.
 
 OpenAI live validation은 planner/executor 단계가 provider 응답 시간에 더 민감하므로 기본 `runTimeoutMs`를 45초로 맞췄습니다. 더 긴 응답 시간을 허용해야 하면 아래 env override를 같은 터미널 세션에 추가해서 rerun하면 됩니다.
 
@@ -992,7 +993,7 @@ provider-supplied execution manifest에도 같은 정리가 적용됩니다. `TB
 
 성공한 local evidence를 실제 release artifact로 남기려면 `npm run snapshot:execution-v1`를 실행합니다. 이 스크립트는 현재 [execution-v1-evidence.md](docs/execution-v1-evidence.md), [execution-v1-closeout.md](docs/execution-v1-closeout.md), [execution-v1-handoff.md](docs/execution-v1-handoff.md)를 읽어 `docs/releases/execution-v1/<verified-commit>/` 아래에 immutable snapshot을 만듭니다. current surface는 계속 dirty/local-current 상태로 유지하면서도, verified commit 기준 근거 문서는 별도 snapshot으로 커밋할 수 있습니다.
 
-`결과와 기록 > v1 마감 상태`는 이제 이 snapshot도 함께 보여 줍니다. 즉, current evidence가 현재 HEAD와 어긋나 stale하더라도 마지막으로 고정된 verified snapshot의 commit, archivedAt, evidence/closeout/handoff 경로를 같은 화면에서 바로 확인할 수 있습니다. 또한 Anthropic/local/Hermes live validation은 optional provider expansion으로 분리되어, OpenAI 기준 v1 closeout readiness를 가리는 필수 gap처럼 집계되지 않습니다.
+`결과와 기록 > v1 마감 상태`는 이제 이 snapshot도 함께 보여 줍니다. 즉, current evidence가 현재 HEAD와 어긋나 stale하더라도 마지막으로 고정된 verified snapshot의 commit, archivedAt, evidence/closeout/handoff 경로를 같은 화면에서 바로 확인할 수 있습니다. 또한 Anthropic/Hermes live validation과 target-boundary local provider architecture evidence는 optional provider expansion으로 분리되어, OpenAI/local 기준 v1 closeout readiness를 가리는 필수 gap처럼 집계되지 않습니다.
 
 current surface와 verified baseline도 분리해서 읽습니다. `summary.ready`는 현재 HEAD 기준 evidence/closeout/handoff가 fresh한지를 의미하고, `verified baseline`은 마지막 immutable snapshot 기준으로 필수 closeout이 이미 닫혔는지를 의미합니다. 그래서 current evidence가 stale하더라도 verified snapshot이 있으면 UI는 `baseline ready · current surface refresh needed`처럼 두 상태를 함께 보여 줍니다.
 

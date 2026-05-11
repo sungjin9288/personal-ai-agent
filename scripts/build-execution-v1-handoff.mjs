@@ -177,17 +177,11 @@ lines.push(
   '',
   '## Next Operator Steps',
   '',
-  '1. Resolve failed provider account-level blockers, then rerun only the affected `live:execution-v1:*` commands.',
-  '2. Inject local/Hermes runtime configuration in the target environment before claiming those provider paths.',
-  '3. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.',
-  '4. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.',
-  commitPushStatus.pushed
-    ? `5. Current verified commit is already contained in \`${commitPushStatus.remoteRef}\`; only commit/push again after intentionally changing release artifacts.`
-    : '5. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.',
+  ...buildNextOperatorSteps(liveProviderStates, commitPushStatus),
   '',
   '## Completion Boundary',
   '',
-  'Execution v1 is provider-scoped pilot ready for an OpenAI-backed bounded local-first path. It is not production-ready or live-provider-complete because Anthropic is blocked by provider account billing/credit, and local/Hermes live validation still requires target runtime configuration.',
+  buildCompletionBoundary(liveProviderStates),
   '',
 );
 
@@ -211,6 +205,79 @@ console.log(
     2,
   ),
 );
+
+function buildNextOperatorSteps(providerStates, pushStatus) {
+  const failedProviders = providerStates.filter((provider) => provider.status !== 'passed' && provider.status !== 'missing-env');
+  const missingProviders = providerStates.filter((provider) => provider.status === 'missing-env');
+  const localProvider = providerStates.find((provider) => provider.providerKey === 'local');
+  const steps = [];
+
+  steps.push(
+    failedProviders.length
+      ? `1. Resolve failed provider account-level blockers for ${formatProviderLabels(failedProviders)}, then rerun only the affected \`live:execution-v1:*\` commands.`
+      : '1. Keep archived live provider proof current when provider account or model configuration changes.',
+  );
+  steps.push(
+    missingProviders.length
+      ? `2. Inject ${formatProviderLabels(missingProviders)} runtime configuration in the target environment before claiming those provider paths.`
+      : '2. Keep target runtime configuration pinned before claiming additional provider paths.',
+  );
+  steps.push(
+    localProvider?.status === 'passed'
+      ? '3. Attach approved local provider model/endpoint, network, telemetry, and resource evidence to the target local provider architecture before adding local provider operation to a production claim.'
+      : '3. Complete target local provider architecture approval before adding local provider operation to a production claim.',
+  );
+  steps.push(
+    '4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.',
+    '5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.',
+    pushStatus.pushed
+      ? `6. Current verified commit is already contained in \`${pushStatus.remoteRef}\`; only commit/push again after intentionally changing release artifacts.`
+      : '6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.',
+  );
+
+  return steps;
+}
+
+function buildCompletionBoundary(providerStates) {
+  const passedProviders = providerStates.filter((provider) => provider.status === 'passed');
+  const anthropic = providerStates.find((provider) => provider.providerKey === 'anthropic');
+  const hermes = providerStates.find((provider) => provider.providerKey === 'hermes');
+  const localProvider = providerStates.find((provider) => provider.providerKey === 'local');
+  const blockers = [];
+
+  if (anthropic?.status !== 'passed') {
+    blockers.push('Anthropic is blocked by provider account billing/credit');
+  }
+  if (hermes?.status !== 'passed') {
+    blockers.push('Hermes live validation still requires target runtime configuration');
+  }
+  if (localProvider?.status === 'passed') {
+    blockers.push('target local provider architecture approval still requires target-boundary evidence');
+  } else {
+    blockers.push('local provider live validation still requires target runtime configuration');
+  }
+
+  return `Execution v1 is provider-scoped pilot ready for a bounded local-first path validated by ${formatProviderLabels(passedProviders)}. It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
+}
+
+function formatProviderLabels(providers) {
+  const labels = providers.map((provider) => provider.label).filter(Boolean);
+  if (!labels.length) {
+    return 'no provider';
+  }
+  return formatSentenceList(labels);
+}
+
+function formatSentenceList(items) {
+  const values = items.map((item) => String(item || '').trim()).filter(Boolean);
+  if (values.length <= 1) {
+    return values[0] || '';
+  }
+  if (values.length === 2) {
+    return `${values[0]} and ${values[1]}`;
+  }
+  return `${values.slice(0, -1).join(', ')}, and ${values.at(-1)}`;
+}
 
 function resolveArgPath(flag, fallbackPath) {
   const index = process.argv.indexOf(flag);

@@ -42,6 +42,8 @@ assert.match(readiness, /\[target-local-provider-architecture-v1\.md\]\(target-l
 assert.match(readiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(readiness, /\| `npm run preflight:execution-v1:all` \| pass \| 0 \|/);
 assert.match(readiness, /"blockedCount": 0/);
+assert.match(readiness, /"missingEnvCount": 3/);
+assert.match(readiness, /"readyForLiveCount": 1/);
 
 for (const [provider, envKey] of [
   ['openai', 'OPENAI_API_KEY'],
@@ -55,9 +57,9 @@ for (const [provider, envKey] of [
 }
 
 for (const phrase of [
-  /OpenAI remains the only archived passed live provider/,
+  /archived passed live providers in the current release evidence: OpenAI, local/,
   /Anthropic remains blocked/,
-  /local provider remains blocked/,
+  /local provider live validation is archived as passed/,
   /Hermes remains blocked/,
   /deterministic provider preflight passing is necessary but not sufficient/,
   /target provider evidence intake contract remains the gate/,
@@ -69,6 +71,9 @@ for (const phrase of [
 ]) {
   assert.match(readiness, phrase);
 }
+
+assert.match(readiness, /\| local \| ready-for-live-validation \| LOCAL_PROVIDER_MODEL \| yes \| passed \|/);
+assert.match(readiness, /target local provider architecture remains the production gate/);
 
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);

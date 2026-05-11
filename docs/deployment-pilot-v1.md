@@ -1064,6 +1064,7 @@ npm run refresh:execution-v1-artifacts
 ```
 
 The refresh command preserves archived live validation status by default and reuses the selected live flags already recorded in current evidence. It also regenerates the pilot export package manifest after the immutable snapshot is updated. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live proof for a selected provider.
+`npm run live:execution-v1:<provider>` preserves archived live validation status as well, so a selected-provider rerun keeps the other provider pass/fail statuses in evidence and closeout while replacing only the selected provider result.
 
 Verification:
 
@@ -1267,6 +1268,6 @@ OpenAI-scoped pilot readiness is accepted when archived OpenAI live validation i
 
 ## Current Status
 
-This deployment guide supports a self-hosted OpenAI-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, and local/Hermes remain blocked by missing runtime endpoint/model configuration.
+This deployment guide supports a self-hosted OpenAI/local-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, Hermes remains blocked by missing runtime endpoint/model configuration, and local provider production claims remain blocked until target-boundary architecture evidence is approved.
 
-The remaining blockers are Anthropic billing/account remediation, local/Hermes runtime configuration, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.

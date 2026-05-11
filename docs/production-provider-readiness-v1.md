@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-10T18:35:06.578Z
-- sourceBranch: main
-- sourceCommit: 712a68802605bced5e95204f44ac23f9a08b4c90
+- generatedAt: 2026-05-11T18:01:06.713Z
+- sourceBranch: codex/local-live-evidence-preservation
+- sourceCommit: bef14e30ad87ecfae6038c4560ad6df36b96ae13
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,15 +30,15 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 7397 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 5610 |
 
 ## Key Signals
 
 ```json
 {
   "blockedCount": 0,
-  "missingEnvCount": 4,
-  "readyForLiveCount": 0,
+  "missingEnvCount": 3,
+  "readyForLiveCount": 1,
   "status": "ready-but-missing-env"
 }
 ```
@@ -49,7 +49,7 @@ Production-ready remains blocked until every provider included in the target rel
 | --- | --- | --- | --- | --- | --- |
 | openai | ready-but-missing-env | OPENAI_API_KEY | no | passed | `npm run live:execution-v1:openai` |
 | anthropic | ready-but-missing-env | ANTHROPIC_API_KEY | no | failed (anthropic live mission run failed \| rootDir=<temp>/personal-ai-agent-live-anthropic-S78A4H \| workspaceId=workspace_20260505160104_ea885a \| missionId=mission_20260505160104_5c9b4f \| artifact=manager-prompt.md \| sessionId=session_20260505160104_292515 \| missionStatus=failed) | `npm run live:execution-v1:anthropic` |
-| local | ready-but-missing-env | LOCAL_PROVIDER_MODEL | no | missing-env | `npm run live:execution-v1:local` |
+| local | ready-for-live-validation | LOCAL_PROVIDER_MODEL | yes | passed | `npm run live:execution-v1:local` |
 | hermes | ready-but-missing-env | HERMES_PROVIDER_MODEL | no | missing-env | `npm run live:execution-v1:hermes` |
 
 ## Provider Details
@@ -78,12 +78,12 @@ Production-ready remains blocked until every provider included in the target rel
 
 ### local
 
-- preflightStatus: ready-but-missing-env
+- preflightStatus: ready-for-live-validation
 - envKey: LOCAL_PROVIDER_MODEL
-- envReady: false
+- envReady: true
 - deterministicChecks: smoke:execution-flow:passed
-- archivedLiveStatus: missing-env
-- operationalState: blocked by missing `LOCAL_PROVIDER_MODEL`
+- archivedLiveStatus: passed
+- operationalState: passed
 - liveCommand: `npm run live:execution-v1:local`
 - missingEnvCommand: `export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local`
 
@@ -100,9 +100,9 @@ Production-ready remains blocked until every provider included in the target rel
 
 ## Operating Interpretation
 
-- OpenAI remains the only archived passed live provider in the current release evidence
+- archived passed live providers in the current release evidence: OpenAI, local
 - Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
-- local provider remains blocked until an approved `LOCAL_PROVIDER_MODEL` and endpoint/runtime configuration are provided
+- local provider live validation is archived as passed for the configured model/endpoint used by this rehearsal, while target local provider architecture remains the production gate
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence

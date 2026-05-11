@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-11T18:01:12.426Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-11T18:01:03.256Z
 - branch: codex/local-live-evidence-preservation
 - commit: bef14e30ad87ecfae6038c4560ad6df36b96ae13
