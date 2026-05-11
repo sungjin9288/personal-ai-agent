@@ -9,12 +9,22 @@ const verifyScriptPath = path.join(repoDir, 'scripts', 'verify-execution-v1.mjs'
 const visualManifestScriptPath = path.join(repoDir, 'scripts', 'build-visual-evidence-manifest.mjs');
 const outputPath = path.join(repoDir, 'docs', 'execution-v1-evidence.md');
 const preserveArchivedLiveValidation = process.argv.includes('--preserve-archived-live-validation');
-const forwardedArgs = process.argv.slice(2).filter((arg) => arg !== '--preserve-archived-live-validation');
+const reuseExistingDeterministic = process.argv.includes('--reuse-existing-deterministic');
+const forwardedArgs = process.argv
+  .slice(2)
+  .filter((arg) => arg !== '--preserve-archived-live-validation' && arg !== '--reuse-existing-deterministic');
 const archivedEvidenceMarkdowns = preserveArchivedLiveValidation
   ? [readOptionalFile(outputPath), readGitFileAtHead('docs/execution-v1-evidence.md')].filter(Boolean)
   : [];
+const existingRawSummary = parseRawSummary(readOptionalFile(outputPath));
 
-const verifyResult = spawnSync(process.execPath, [verifyScriptPath, '--capture-live-failures', ...forwardedArgs], {
+const verifyArgs = [
+  verifyScriptPath,
+  '--capture-live-failures',
+  reuseExistingDeterministic ? '--live-only' : null,
+  ...forwardedArgs,
+].filter(Boolean);
+const verifyResult = spawnSync(process.execPath, verifyArgs, {
   cwd: repoDir,
   encoding: 'utf8',
   env: process.env,
@@ -24,7 +34,11 @@ if (verifyResult.status !== 0) {
   throw new Error(`verify-execution-v1 failed\n${verifyResult.stderr || verifyResult.stdout}`);
 }
 
-const verification = JSON.parse(String(verifyResult.stdout || '{}'));
+const verification = buildVerificationSummary({
+  existingRawSummary,
+  reuseExistingDeterministic,
+  verifyOutput: JSON.parse(String(verifyResult.stdout || '{}')),
+});
 const visualManifestResult = buildVisualEvidenceManifest();
 const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
@@ -166,6 +180,35 @@ function readGitFileAtHead(relativePath) {
     env: process.env,
   });
   return result.status === 0 ? String(result.stdout || '') : '';
+}
+
+function buildVerificationSummary({ existingRawSummary, reuseExistingDeterministic, verifyOutput }) {
+  if (!reuseExistingDeterministic) {
+    return verifyOutput;
+  }
+
+  if (!Array.isArray(existingRawSummary?.deterministic) || existingRawSummary.deterministic.length === 0) {
+    throw new Error('Cannot reuse deterministic execution-v1 evidence because the existing Raw Summary is missing deterministic results');
+  }
+
+  return {
+    ...verifyOutput,
+    deterministic: existingRawSummary.deterministic,
+    mode: existingRawSummary.mode || verifyOutput.mode || 'execution-v1-verification',
+  };
+}
+
+function parseRawSummary(markdown) {
+  const match = String(markdown || '').match(/(?:^|\n)## Raw Summary\n\n```json\n([\s\S]*?)\n```/);
+  if (!match) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return null;
+  }
 }
 
 function buildVisualEvidenceManifest() {

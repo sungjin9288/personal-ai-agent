@@ -60,7 +60,11 @@ if (!process.env[config.envKey]) {
 }
 
 const childEnv = buildChildEnv(config);
-const evidenceResult = runJsonScript(evidenceScriptPath, ['--preserve-archived-live-validation', config.flag], childEnv);
+const evidenceResult = runJsonScript(
+  evidenceScriptPath,
+  ['--preserve-archived-live-validation', '--reuse-existing-deterministic', config.flag],
+  childEnv,
+);
 const closeoutResult = runJsonScript(
   closeoutScriptPath,
   ['--reuse-existing-evidence', '--evidence-path', evidenceResult.outputPath, config.flag],

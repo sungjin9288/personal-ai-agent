@@ -53,6 +53,7 @@ const npmScriptMaxBufferBytes = parsePositiveIntegerEnv(
 
 const requestedLiveProviders = liveProviders.filter((item) => process.argv.includes(item.flag));
 const captureLiveFailures = process.argv.includes('--capture-live-failures');
+const liveOnly = process.argv.includes('--live-only');
 
 const summary = {
   deterministic: [],
@@ -61,8 +62,10 @@ const summary = {
   mode: 'execution-v1-verification',
 };
 
-for (const scriptName of deterministicScripts) {
-  summary.deterministic.push(runNpmScript(scriptName));
+if (!liveOnly) {
+  for (const scriptName of deterministicScripts) {
+    summary.deterministic.push(runNpmScript(scriptName));
+  }
 }
 
 for (const liveProvider of requestedLiveProviders) {

@@ -101,6 +101,22 @@ assert.deepEqual(
   ],
 );
 
+const liveOnlyMissingEnv = runJsonCommand({
+  args: ['scripts/verify-execution-v1.mjs', '--live-only', '--live-local'],
+  env: buildMissingProviderEnv(),
+  expectedStatus: 0,
+});
+
+assert.equal(liveOnlyMissingEnv.mode, 'execution-v1-verification');
+assert.deepEqual(liveOnlyMissingEnv.deterministic, []);
+assert.deepEqual(liveOnlyMissingEnv.liveValidation, [
+  {
+    provider: 'local',
+    reason: 'Missing LOCAL_PROVIDER_MODEL',
+    status: 'skipped',
+  },
+]);
+
 const preservedEntries = buildLiveValidationEntries(
   [
     {
@@ -146,6 +162,7 @@ console.log(
     {
       aggregateStatus: aggregatePreflight.status,
       archivedLivePreservation: true,
+      liveOnlyValidation: true,
       missingEnvCount: aggregatePreflight.missingEnvCount,
       mode: 'execution-v1-live-helpers',
       ok: true,
