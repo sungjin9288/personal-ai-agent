@@ -84,11 +84,11 @@ for (const command of [
 }
 
 for (const blocker of [
-  /Anthropic, local, and Hermes live validations are not complete/,
+  /Anthropic and Hermes live validations are not complete/,
   /target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated/,
   /target provider operations evidence is not generated/,
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated/,
-  /target local provider architecture is not approved and local provider live validation evidence is not generated/,
+  /target local provider architecture is not approved and target-boundary local provider evidence is not generated/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence is not generated/,

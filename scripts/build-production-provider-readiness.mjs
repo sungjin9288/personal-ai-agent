@@ -116,6 +116,7 @@ function renderProviderReadinessMarkdown({
   sourceCommit,
 }) {
   const status = preflightResult.ok ? 'local-provider-readiness-current' : 'local-provider-readiness-failed';
+  const operatingInterpretationRows = buildOperatingInterpretationRows(providerRows).join('\n');
   const rows = providerRows
     .map(
       (row) =>
@@ -202,17 +203,7 @@ ${providerDetails}
 
 ## Operating Interpretation
 
-- OpenAI remains the only archived passed live provider in the current release evidence
-- Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
-- local provider remains blocked until an approved \`LOCAL_PROVIDER_MODEL\` and endpoint/runtime configuration are provided
-- Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
-- deterministic provider preflight passing is necessary but not sufficient for production provider readiness
-- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
-- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
-- target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements
-- target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements
-- target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements
-- target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements
+${operatingInterpretationRows}
 
 ## Target Provider Evidence Intake
 
@@ -241,6 +232,63 @@ The rehearsal is acceptable only when aggregate preflight reports \`blockedCount
 
 The rehearsal must keep \`productionReadyClaim: false\` until target provider evidence intake is complete and live validation evidence is archived for every provider included in the target production claim.
 `;
+}
+
+function buildOperatingInterpretationRows(providerRows) {
+  const rowByProvider = new Map(providerRows.map((row) => [row.provider, row]));
+  const passedProviders = providerRows
+    .filter((row) => isPassedLiveStatus(row.archivedLiveStatus))
+    .map((row) => formatProviderDisplay(row.provider));
+  const rows = [];
+
+  rows.push(
+    passedProviders.length
+      ? `- archived passed live providers in the current release evidence: ${passedProviders.join(', ')}`
+      : '- no archived passed live providers are present in the current release evidence',
+  );
+
+  if (!isPassedLiveStatus(rowByProvider.get('anthropic')?.archivedLiveStatus)) {
+    rows.push('- Anthropic remains blocked until provider account billing or credit is remediated and live validation passes');
+  }
+
+  if (isPassedLiveStatus(rowByProvider.get('local')?.archivedLiveStatus)) {
+    rows.push('- local provider live validation is archived as passed for the configured model/endpoint used by this rehearsal, while target local provider architecture remains the production gate');
+  } else {
+    rows.push('- local provider remains blocked until an approved `LOCAL_PROVIDER_MODEL` and endpoint/runtime configuration are provided');
+  }
+
+  if (!isPassedLiveStatus(rowByProvider.get('hermes')?.archivedLiveStatus)) {
+    rows.push('- Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes');
+  }
+
+  rows.push(
+    '- deterministic provider preflight passing is necessary but not sufficient for production provider readiness',
+    '- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence',
+    '- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence',
+    '- target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements',
+    '- target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements',
+    '- target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements',
+    '- target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements',
+  );
+
+  return rows;
+}
+
+function isPassedLiveStatus(value) {
+  return /^passed\b/.test(String(value || '').trim());
+}
+
+function formatProviderDisplay(provider) {
+  if (provider === 'openai') {
+    return 'OpenAI';
+  }
+  if (provider === 'anthropic') {
+    return 'Anthropic';
+  }
+  if (provider === 'hermes') {
+    return 'Hermes';
+  }
+  return String(provider || '').trim();
 }
 
 function readRequiredFile(filePath) {

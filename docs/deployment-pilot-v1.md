@@ -1064,6 +1064,7 @@ npm run refresh:execution-v1-artifacts
 ```
 
 The refresh command preserves archived live validation status by default and reuses the selected live flags already recorded in current evidence. It also regenerates the pilot export package manifest after the immutable snapshot is updated. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live proof for a selected provider.
+`npm run live:execution-v1:<provider>` preserves archived live validation status as well, so a selected-provider rerun keeps the other provider pass/fail statuses in evidence and closeout while replacing only the selected provider result.
 
 Verification:
 

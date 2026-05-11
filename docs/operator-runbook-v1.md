@@ -240,6 +240,7 @@ npm run smoke:pilot-export-package
 ```
 
 `refresh:execution-v1-artifacts` preserves archived live validation status by default and reuses the live provider flags already recorded in the current evidence document. If intentionally replacing live proof for a narrower provider set, run the selected `node scripts/build-execution-v1-evidence.mjs --live-<provider>` command first, then continue with the reuse-existing-evidence closeout/handoff/snapshot flow.
+`npm run live:execution-v1:<provider>` also preserves archived live proof by default, so a selected-provider rerun replaces only that provider's current result while keeping the other archived pass/fail statuses visible in evidence and closeout.
 
 Do not claim expanded provider-backed readiness until the refreshed evidence records the selected live validation result.
 

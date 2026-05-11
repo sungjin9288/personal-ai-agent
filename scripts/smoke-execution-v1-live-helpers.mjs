@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { buildLiveValidationEntries } from './execution-v1-live-evidence-utils.mjs';
 
 const repoDir = process.cwd();
 const liveHelperProviders = [
@@ -100,10 +101,51 @@ assert.deepEqual(
   ],
 );
 
+const preservedEntries = buildLiveValidationEntries(
+  [
+    {
+      executionSessionId: 'execsession_new_local',
+      missionId: 'mission_new_local',
+      provider: 'local',
+      status: 'passed',
+      verificationStatus: 'passed',
+    },
+  ],
+  [
+    [
+      '# Execution v1 Evidence',
+      '',
+      '## Live Validation',
+      '',
+      '- openai: passed (missionId=mission_old_openai, executionSessionId=execsession_old_openai, verification=passed)',
+      '- anthropic: failed (anthropic live mission run failed | rootDir=<temp>/anthropic | missionId=mission_old_anthropic)',
+      '  - failure: anthropic live mission run failed',
+      '  - recoverable: false',
+      '- local: passed (missionId=mission_old_local, executionSessionId=execsession_old_local, verification=passed)',
+      '',
+      '## Raw Summary',
+    ].join('\n'),
+  ],
+);
+const preservedLines = preservedEntries.flatMap((entry) => entry.lines);
+assert.deepEqual(
+  preservedEntries.map((entry) => [entry.summary.provider, entry.status]),
+  [
+    ['openai', 'passed'],
+    ['anthropic', 'failed'],
+    ['local', 'passed'],
+  ],
+);
+assert.equal(preservedLines.some((line) => line.includes('mission_old_openai')), true);
+assert.equal(preservedLines.some((line) => line.includes('mission_old_anthropic')), true);
+assert.equal(preservedLines.some((line) => line.includes('mission_new_local')), true);
+assert.equal(preservedLines.some((line) => line.includes('mission_old_local')), false);
+
 console.log(
   JSON.stringify(
     {
       aggregateStatus: aggregatePreflight.status,
+      archivedLivePreservation: true,
       missingEnvCount: aggregatePreflight.missingEnvCount,
       mode: 'execution-v1-live-helpers',
       ok: true,
