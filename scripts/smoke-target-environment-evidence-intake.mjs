@@ -71,6 +71,7 @@ for (const checklistItem of [
   /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
   /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
   /completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register/,
+  /completed target blocker disposition register with owner, current state, required closing evidence, allowed claim impact, and next verification command/,
   /accepted risks, decision owner, and next review date/,
 ]) {
   assert.match(intake, checklistItem);
@@ -120,6 +121,44 @@ assert.match(intake, /must keep `productionReadyClaim` false unless every mandat
 assert.match(intake, /must record whether each blocker is resolved, accepted with scope, or still blocking before any release claim changes/);
 assert.match(intake, /must prove all review artifacts were regenerated after the target evidence packet was accepted/);
 assert.match(intake, /The submission packet is the review envelope for target evidence, not the evidence itself/);
+
+assert.match(intake, /## Target Blocker Disposition Register/);
+assert.match(
+  intake,
+  /do not record customer personal data, private tenant identifiers, billing identifiers, raw provider account ids, secret names that reveal credentials, raw endpoint credentials, or machine-local absolute paths/,
+);
+for (const blocker of [
+  'Anthropic billing/live validation',
+  'Hermes runtime config',
+  'target local provider approval',
+  'hosted identity/session approval',
+  'hosted tenant isolation approval',
+  'target tenant evidence',
+  'target environment evidence',
+  'customer-specific exceptions',
+]) {
+  assert.match(intake, new RegExp(`\\| ${escapeRegExp(blocker)} \\|`), blocker);
+}
+for (const state of [
+  'still-blocking',
+  'configuration-required',
+  'customer-approval-required',
+  'target-evidence-required',
+  'accepted-scope-required',
+]) {
+  assert.match(intake, new RegExp(escapeRegExp(state)), state);
+}
+assert.match(intake, /target-boundary `live:execution-v1:anthropic` pass/);
+assert.match(intake, /target-boundary `live:execution-v1:hermes` pass/);
+assert.match(intake, /negative cross-tenant test matrix/);
+assert.match(intake, /boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence/);
+assert.match(intake, /exceptions cannot convert a blocked production-ready claim into production-ready/);
+assert.match(intake, /Blocker disposition is a stop-condition input, not a waiver/);
+assert.match(intake, /allowed claim text remains narrower than `production-ready`/);
+assert.match(
+  intake,
+  /execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, and production readiness gate are regenerated/,
+);
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
@@ -203,7 +242,9 @@ console.log(
       productionReadyClaim: false,
       targetCaptureTemplate: true,
       targetSubmissionPacket: true,
+      blockerDispositionRegister: true,
       submissionPacketItemCount: 7,
+      blockerDispositionItemCount: 8,
       requiredCommandCount: 30,
     },
     null,

@@ -73,6 +73,7 @@ Every target environment review must record:
 - target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence
 - clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment
 - completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register
+- completed target blocker disposition register with owner, current state, required closing evidence, allowed claim impact, and next verification command
 - accepted risks, decision owner, and next review date
 - `productionReadyClaim` remains false unless all mandatory target deployment controls are satisfied by target evidence
 
@@ -110,6 +111,23 @@ After the target evidence capture template is filled, operators must package the
 | releaseRefreshEvidence | execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, release readiness, artifact hygiene, and production readiness gate references | must prove all review artifacts were regenerated after the target evidence packet was accepted |
 
 The submission packet is the review envelope for target evidence, not the evidence itself. A packet without target-boundary proof, rerun command evidence, reviewer decision, and release refresh evidence remains blocked.
+
+## Target Blocker Disposition Register
+
+Every target evidence submission must include a blocker disposition register. The register must use public aliases or repository-relative references only; do not record customer personal data, private tenant identifiers, billing identifiers, raw provider account ids, secret names that reveal credentials, raw endpoint credentials, or machine-local absolute paths.
+
+| Blocker | Current State | Required Closing Evidence | Claim Impact |
+| --- | --- | --- | --- |
+| Anthropic billing/live validation | still-blocking | target Anthropic provider account approval, billing/credit remediation proof, target secret injection, target-boundary `live:execution-v1:anthropic` pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts | Anthropic must not be included in a live-provider-complete or production-ready claim |
+| Hermes runtime config | configuration-required | target Hermes provider architecture approval, model/endpoint alias, runtime secret injection proof, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, and regenerated release artifacts | Hermes must remain excluded from production provider claims |
+| target local provider approval | customer-approval-required | target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance | local provider can remain pilot/local-only but cannot be production-approved |
+| hosted identity/session approval | customer-approval-required | hosted identity/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof | hosted identity/session claims remain blocked |
+| hosted tenant isolation approval | customer-approval-required | hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof | hosted multi-tenant isolation claims remain blocked |
+| target tenant evidence | target-evidence-required | completed target tenant isolation operations evidence capture template, negative cross-tenant test matrix, tenant storage/encryption proof, backup/restore non-interference proof, lifecycle proof, artifact hygiene, and production readiness gate result | tenant-isolated production claims remain blocked |
+| target environment evidence | target-evidence-required | completed target evidence capture template, sanitized submission packet, boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence, and production readiness gate result | productionReadyClaim must remain false |
+| customer-specific exceptions | accepted-scope-required | explicit exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, and release readiness note | exceptions cannot convert a blocked production-ready claim into production-ready |
+
+Blocker disposition is a stop-condition input, not a waiver. A blocker can move to `accepted-scope-required` only when the allowed claim text remains narrower than `production-ready`, the exception owner is recorded, and release readiness is regenerated. A blocker can move to `closed` only after target-boundary evidence is attached, the relevant target smoke passes, release artifact hygiene passes, and execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, and production readiness gate are regenerated.
 
 ## Required Commands
 
