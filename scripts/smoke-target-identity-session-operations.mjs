@@ -46,6 +46,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Identity Operation Controls',
   '## Identity Evidence Packet',
+  '## Target Evidence Capture Template',
   '## Identity Operation Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -69,6 +70,7 @@ for (const control of [
 }
 
 for (const packetItem of [
+  /completed target identity\/session operations evidence capture template for the approved production-like or hosted boundary/,
   /customer IdP metadata alias, owner, issuer, audience, JWKS rotation owner, and fallback owner/,
   /user lifecycle evidence for provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review/,
   /session lifecycle evidence for login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth/,
@@ -83,6 +85,34 @@ for (const packetItem of [
 ]) {
   assert.match(targetIdentity, packetItem);
 }
+
+assert.match(targetIdentity, /## Target Evidence Capture Template/);
+assert.match(
+  targetIdentity,
+  /Do not record raw tokens, private IdP credentials, customer secrets, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths/,
+);
+for (const field of [
+  'targetIdentitySessionOperationName',
+  'idpOnboardingEvidence',
+  'userLifecycleEvidence',
+  'sessionLifecycleEvidence',
+  'roleAdministrationEvidence',
+  'permissionPropagationEvidence',
+  'auditExportEvidence',
+  'breakGlassEvidence',
+  'supportImpersonationEvidence',
+  'complianceRetentionEvidence',
+  'productionReadyClaimDecision',
+]) {
+  assert.match(targetIdentity, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(targetIdentity, /must prove customer IdP onboarding is approved without recording private credentials or raw tokens/);
+assert.match(targetIdentity, /must prove session termination and stale session denial are verified from the target boundary/);
+assert.match(targetIdentity, /must prove support access is explicitly approved, scoped, denied by default, and closed/);
+assert.match(
+  targetIdentity,
+  /hosted identity session architecture approval, identity session admin evidence, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/,
+);
 
 for (const command of [
   'npm run smoke:target-identity-session-operations',
@@ -118,12 +148,13 @@ console.log(
   JSON.stringify(
     {
       controlCount: 9,
-      identityPacketItemCount: 13,
+      identityPacketItemCount: 14,
       mode: 'target-identity-session-operations',
       ok: true,
       path: 'docs/target-identity-session-operations-v1.md',
       productionReadyClaim: false,
       requiredCommandCount: 10,
+      targetCaptureTemplate: true,
     },
     null,
     2,
