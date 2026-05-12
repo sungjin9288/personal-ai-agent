@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T16:35:55.267Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T16:35:41.091Z
 - branch: codex/provider-evidence-intake-closure-link
 - commit: e223adca827e748bbc747e8cadd93fd3c59caa82
