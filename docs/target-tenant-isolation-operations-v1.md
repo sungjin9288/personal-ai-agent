@@ -40,6 +40,7 @@ Production-ready remains blocked until the approved target environment proves te
 
 Every target tenant isolation operations review must include:
 
+- completed target tenant isolation operations evidence capture template for the approved production-like or hosted boundary
 - branch and commit
 - release label and deployment boundary
 - tenant identity source, customer organization mapping, tenant lifecycle owner, and trust policy
@@ -53,6 +54,26 @@ Every target tenant isolation operations review must include:
 - retention, export, delete, provider transcript, legal hold, backup expiry, and post-delete absence evidence per tenant
 - artifact hygiene and production readiness gate result
 - residual risk, decision owner, next review date, and tenant data containment plan
+
+## Target Evidence Capture Template
+
+When an approved production-like or hosted target boundary is ready for tenant isolation operations review, fill this template with target-boundary evidence. Do not record raw tenant payloads, customer personal data, private tenant identifiers, encryption key material, customer secrets, private account identifiers, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetTenantIsolationOperationName | target environment name, company/workspace scope, deployment boundary, tenant isolation owner, storage owner, evidence owner, and review date | must identify the exact target tenant isolation boundary being evaluated |
+| tenantIdentityEvidence | tenant identity source, customer organization mapping, tenant lifecycle owner, trust policy, tenant source approval, and hosted tenant architecture reference | must prove tenant identity is customer-approved without exposing private tenant identifiers |
+| authorizationBoundaryEvidence | tenant-aware authorization policy, service-to-service tenant propagation, stale permission denial, delegated admin boundaries, and denial owner | must prove tenant authorization is enforced across API, worker, agent, and admin surfaces |
+| storagePartitioningEvidence | runtime state, artifacts, memory, search, exports, indexes, migration safety, storage owner, and partition verification result | must prove tenant data storage is partitioned without recording tenant payloads |
+| encryptionKeyEvidence | per-tenant encryption model, key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision | must prove encryption and key ownership are target-approved without exposing key material |
+| backupRestoreIsolationEvidence | tenant-scoped backup selection, restore authorization, integrity result, other-tenant non-interference, post-restore denial, and backup owner | must prove backup and restore actions cannot expose or overwrite another tenant boundary |
+| tenantAdministrationEvidence | tenant create, suspend, restore, delete, role delegation, customer approval, audit history, rollback route, and tenant admin owner | must prove every tenant administration action is approved, auditable, and reversible |
+| crossTenantDenialEvidence | negative test matrix for API, storage, memory, search, export, delete, backup, support, and observability surfaces | must prove cross-tenant reads, writes, restores, exports, and support visibility are denied |
+| observabilitySupportIsolationEvidence | tenant-scoped logs, traces, alerts, support ticket visibility, incident review, customer status routing, evidence export proof, and support owner | must prove telemetry and support operations cannot leak another tenant boundary |
+| lifecycleIsolationEvidence | per-tenant retention, export, delete, provider transcript handling, legal hold, backup expiry, post-delete absence, and lifecycle owner | must prove tenant lifecycle controls preserve isolation through retention and deletion |
+| productionReadyClaimDecision | production readiness gate result, artifact hygiene result, residual blockers, tenant data containment decision, decision owner, allowed claim text, and next review date | must keep `productionReadyClaim` false unless every tenant isolation operation control is satisfied by target evidence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with hosted tenant isolation architecture approval, tenant storage admin evidence, runtime isolation, backup/restore drill evidence, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
 ## Tenant Isolation Rules
 

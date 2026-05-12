@@ -46,6 +46,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Tenant Isolation Controls',
   '## Tenant Evidence Packet',
+  '## Target Evidence Capture Template',
   '## Tenant Isolation Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -69,6 +70,7 @@ for (const control of [
 }
 
 for (const packetItem of [
+  /completed target tenant isolation operations evidence capture template for the approved production-like or hosted boundary/,
   /tenant identity source, customer organization mapping, tenant lifecycle owner, and trust policy/,
   /tenant-aware authorization policy, service-to-service tenant propagation, stale permission denial, and delegated admin boundaries/,
   /storage partitioning evidence for runtime state, artifacts, memory, search, exports, indexes, and migration safety/,
@@ -83,6 +85,35 @@ for (const packetItem of [
 ]) {
   assert.match(targetTenant, packetItem);
 }
+
+assert.match(targetTenant, /## Target Evidence Capture Template/);
+assert.match(
+  targetTenant,
+  /Do not record raw tenant payloads, customer personal data, private tenant identifiers, encryption key material, customer secrets, private account identifiers, or machine-local absolute paths/,
+);
+for (const field of [
+  'targetTenantIsolationOperationName',
+  'tenantIdentityEvidence',
+  'authorizationBoundaryEvidence',
+  'storagePartitioningEvidence',
+  'encryptionKeyEvidence',
+  'backupRestoreIsolationEvidence',
+  'tenantAdministrationEvidence',
+  'crossTenantDenialEvidence',
+  'observabilitySupportIsolationEvidence',
+  'lifecycleIsolationEvidence',
+  'productionReadyClaimDecision',
+]) {
+  assert.match(targetTenant, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(targetTenant, /must prove tenant identity is customer-approved without exposing private tenant identifiers/);
+assert.match(targetTenant, /must prove tenant data storage is partitioned without recording tenant payloads/);
+assert.match(targetTenant, /must prove backup and restore actions cannot expose or overwrite another tenant boundary/);
+assert.match(targetTenant, /must prove cross-tenant reads, writes, restores, exports, and support visibility are denied/);
+assert.match(
+  targetTenant,
+  /hosted tenant isolation architecture approval, tenant storage admin evidence, runtime isolation, backup\/restore drill evidence, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/,
+);
 
 for (const command of [
   'npm run smoke:target-tenant-isolation-operations',
@@ -124,7 +155,8 @@ console.log(
       path: 'docs/target-tenant-isolation-operations-v1.md',
       productionReadyClaim: false,
       requiredCommandCount: 11,
-      tenantPacketItemCount: 13,
+      targetCaptureTemplate: true,
+      tenantPacketItemCount: 14,
     },
     null,
     2,
