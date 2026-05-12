@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T17:32:44.795Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T17:32:31.521Z
 - branch: codex/post-merge-release-readiness-publish-artifact-sync
 - commit: 74babecba22e554b9914ff04c7c83ec207ae5ba3
