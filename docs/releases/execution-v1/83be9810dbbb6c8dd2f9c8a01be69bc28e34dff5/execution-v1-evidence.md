@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T15:38:42.597Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T15:38:28.707Z
 - branch: codex/provider-operations-blocker-closure-link
 - commit: 83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5
