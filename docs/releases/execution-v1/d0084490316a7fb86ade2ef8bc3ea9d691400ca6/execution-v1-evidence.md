@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T14:29:41.923Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T14:29:29.443Z
 - branch: codex/release-readiness-blocker-disposition-surface
 - commit: d0084490316a7fb86ade2ef8bc3ea9d691400ca6
