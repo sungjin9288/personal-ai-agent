@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T14:34:21.776Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T14:34:21.741Z
 - localDate: 2026-05-12
 - branch: codex/post-merge-readiness-blocker-disposition-artifact-sync
 - commit: 9d4f27e23b2a83065e52c3191135ccdd9a62538d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d](releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d](docs/releases/execution-v1/9d4f27e23b2a83065e52c3191135ccdd9a62538d)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-readiness-blocker-disposition-artifact-sync not found
 
