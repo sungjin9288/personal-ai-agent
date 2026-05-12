@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T01:55:28.803Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T01:55:28.769Z
 - localDate: 2026-05-12
 - branch: codex/post-merge-hermes-artifact-sync
 - commit: 43c547238d20f63f285474b6c5d1ef58f4b4b322
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322](releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322](docs/releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-hermes-artifact-sync not found
 

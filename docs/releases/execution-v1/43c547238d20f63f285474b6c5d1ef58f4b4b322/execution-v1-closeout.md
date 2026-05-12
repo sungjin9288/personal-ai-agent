@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T01:55:28.803Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T01:55:23.625Z
 - branch: codex/post-merge-hermes-artifact-sync
 - commit: 43c547238d20f63f285474b6c5d1ef58f4b4b322
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/43c547238d20f63f285474b6c5d1ef58f4b4b322/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
