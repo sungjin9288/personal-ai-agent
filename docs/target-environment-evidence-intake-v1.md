@@ -129,6 +129,23 @@ Every target evidence submission must include a blocker disposition register. Th
 
 Blocker disposition is a stop-condition input, not a waiver. A blocker can move to `accepted-scope-required` only when the allowed claim text remains narrower than `production-ready`, the exception owner is recorded, and release readiness is regenerated. A blocker can move to `closed` only after target-boundary evidence is attached, the relevant target smoke passes, release artifact hygiene passes, and execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, and production readiness gate are regenerated.
 
+## Blocker Closure Verification Matrix
+
+Every blocker disposition change must carry a matching verification row. The verification row is the audit trail for the next command to run, the evidence packet that must be attached, and the stop-condition that remains in force when the command is missing, stale, or generated from the wrong boundary.
+
+| Blocker | Next Verification Command | Required Closing Evidence | Stop Condition |
+| --- | --- | --- | --- |
+| Anthropic billing/live validation | `npm run smoke:target-anthropic-provider-account` and target-boundary `npm run live:execution-v1:anthropic` | account approval, billing/credit remediation proof, target secret injection proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts | `anthropic-live-validation-missing-or-failed` |
+| Hermes runtime config | `npm run smoke:target-hermes-provider-architecture` and target-boundary `npm run live:execution-v1:hermes` | endpoint/model alias, runtime secret injection proof, target provider operations evidence, Hermes live validation pass, release artifact hygiene pass, and regenerated release artifacts | `hermes-runtime-config-missing` |
+| target local provider approval | `npm run smoke:target-local-provider-architecture` and target-boundary `npm run live:execution-v1:local` | customer approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and acceptance record | `target-local-provider-approval-missing` |
+| hosted identity/session approval | `npm run smoke:hosted-identity-session-architecture` and `npm run smoke:target-identity-session-operations` | hosted identity architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof | `hosted-identity-session-approval-missing` |
+| hosted tenant isolation approval | `npm run smoke:hosted-tenant-isolation-architecture` and `npm run smoke:target-tenant-isolation-operations` | hosted tenant architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and containment proof | `hosted-tenant-isolation-approval-missing` |
+| target tenant evidence | `npm run smoke:target-tenant-isolation-operations` and `npm run smoke:production-readiness-gate` | completed tenant isolation evidence capture template, negative cross-tenant test matrix, tenant storage/encryption proof, backup/restore non-interference proof, lifecycle proof, artifact hygiene pass, and production readiness gate result | `target-tenant-evidence-missing` |
+| target environment evidence | `npm run smoke:target-environment-evidence-intake` and `npm run smoke:production-readiness-gate` | completed target evidence capture template, sanitized submission packet, boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence, and production readiness gate result | `target-environment-evidence-missing` |
+| customer-specific exceptions | `npm run smoke:target-environment-evidence-intake` and `npm run smoke:release-artifact-hygiene` | exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, release readiness note, and regenerated release artifacts | `customer-exception-scope-missing` |
+
+The closure matrix is mandatory for any blocker state transition. A closure row without fresh command evidence, matching target boundary, release artifact hygiene, and regenerated release artifacts must keep `productionReadyClaim: false` and must be recorded as a stop-condition.
+
 ## Required Commands
 
 ```bash

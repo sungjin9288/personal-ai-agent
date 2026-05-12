@@ -173,6 +173,7 @@ assert.match(releaseReadiness, /\[target-tenant-isolation-operations-v1\.md\]\(t
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /target environment evidence intake gate: passed, with deployment boundary/);
 assert.match(releaseReadiness, /sanitized submission packet, blocker disposition register/);
+assert.match(releaseReadiness, /blocker closure verification matrix/);
 assert.match(releaseReadiness, /stop-condition closing evidence, and `productionReadyClaim: false`/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
@@ -333,10 +334,16 @@ assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m
 assert.match(targetEnvironmentEvidenceIntake, /npm run smoke:target-environment-evidence-intake/);
 assert.match(targetEnvironmentEvidenceIntake, /## Target Evidence Submission Packet/);
 assert.match(targetEnvironmentEvidenceIntake, /## Target Blocker Disposition Register/);
+assert.match(targetEnvironmentEvidenceIntake, /## Blocker Closure Verification Matrix/);
 assert.match(targetEnvironmentEvidenceIntake, /\| blockerDispositionRegister \|/);
 assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:anthropic` pass/);
 assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:hermes` pass/);
 assert.match(targetEnvironmentEvidenceIntake, /Blocker disposition is a stop-condition input, not a waiver/);
+assert.match(targetEnvironmentEvidenceIntake, /anthropic-live-validation-missing-or-failed/);
+assert.match(targetEnvironmentEvidenceIntake, /hermes-runtime-config-missing/);
+assert.match(targetEnvironmentEvidenceIntake, /target-environment-evidence-missing/);
+assert.match(targetEnvironmentEvidenceIntake, /customer-exception-scope-missing/);
+assert.match(targetEnvironmentEvidenceIntake, /matching target boundary, release artifact hygiene, and regenerated release artifacts/);
 assert.match(targetEnvironmentEvidenceIntake, /exceptions cannot convert a blocked production-ready claim into production-ready/);
 assert.match(targetEnvironmentEvidenceIntake, /not hosted production evidence/);
 assert.match(targetEnvironmentEvidenceIntake, /Target environment readiness remains blocked for production-ready claims/);
@@ -560,6 +567,7 @@ console.log(
       pilotTargetEnvironmentEvidenceIntake: 'present',
       pilotTargetEnvironmentSubmissionPacket: 'present',
       pilotTargetEnvironmentBlockerDisposition: 'present',
+      pilotTargetEnvironmentBlockerClosureMatrix: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
       releaseArtifactHygiene: 'passed',
