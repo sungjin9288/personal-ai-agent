@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:00:38.684Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:00:27.146Z
 - branch: codex/target-identity-session-evidence-template
 - commit: 81af2f84a4c5f84d859c44b353f0084337f4371b
