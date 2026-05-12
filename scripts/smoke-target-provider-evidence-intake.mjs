@@ -78,6 +78,7 @@ for (const checklistItem of [
   /account remediation note for billing, credit, region, or terms blockers/,
   /artifact hygiene result after evidence refresh/,
   /target provider operations evidence with provider failure containment plan/,
+  /completed target provider operations evidence capture template for every provider included in the target provider claim/,
 ]) {
   assert.match(intake, checklistItem);
 }
@@ -100,6 +101,7 @@ for (const command of [
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
+assert.match(targetProviderOperations, /## Target Evidence Capture Template/);
 assert.match(intake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(intake, /target provider operations evidence/);
 assert.match(targetOpenAI, /^# Target OpenAI Provider Account v1$/m);
