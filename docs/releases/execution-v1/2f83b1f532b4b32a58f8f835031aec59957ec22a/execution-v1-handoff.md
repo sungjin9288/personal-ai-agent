@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T15:12:59.739Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T15:12:59.697Z
 - localDate: 2026-05-13
 - branch: codex/post-merge-blocker-closure-matrix-artifact-sync
 - commit: 2f83b1f532b4b32a58f8f835031aec59957ec22a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a](releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a](docs/releases/execution-v1/2f83b1f532b4b32a58f8f835031aec59957ec22a)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-blocker-closure-matrix-artifact-sync not found
 
