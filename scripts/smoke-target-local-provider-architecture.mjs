@@ -77,6 +77,27 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /## Target Evidence Capture Template/);
+assert.match(decision, /Do not record raw API keys, tokens, private endpoint credentials, customer secrets, or machine-local absolute paths/);
+for (const field of [
+  'targetEnvironmentName',
+  'approvedBaseUrlAlias',
+  'localProviderModel',
+  'networkIsolation',
+  'credentialPolicy',
+  'runtimeLifecycle',
+  'liveValidationEvidence',
+  'dataResidencyPolicy',
+  'quotaResourceGuard',
+  'telemetryAndIncidentRoute',
+  'fallbackCustomerApproval',
+]) {
+  assert.match(decision, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
+assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
+assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+
 for (const command of [
   'npm run smoke:target-local-provider-architecture',
   'npm run smoke:local-provider',
@@ -117,6 +138,7 @@ console.log(
       ok: true,
       path: 'docs/target-local-provider-architecture-v1.md',
       productionReadyClaim: false,
+      targetCaptureTemplate: true,
       requiredCommandCount: 10,
       targetLocalProviderApproved: false,
     },

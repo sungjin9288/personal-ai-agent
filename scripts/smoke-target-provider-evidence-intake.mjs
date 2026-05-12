@@ -64,6 +64,7 @@ for (const checklistItem of [
   /OpenAI provider account approval when OpenAI is included in the target provider claim/,
   /Anthropic provider account approval when Anthropic is included in the target provider claim/,
   /local provider architecture approval when local provider is included in the target provider claim/,
+  /completed target local provider evidence capture template when local provider is included in the target provider claim/,
   /Hermes provider architecture approval when Hermes is included in the target provider claim/,
   /target environment name and deployment boundary/,
   /secret manager path or key alias, never the secret value/,
