@@ -54,6 +54,7 @@ Every target environment review must record:
 - completed target environment evidence capture template for the approved production-like or hosted boundary
 - target environment name, owner, profile, and deployment boundary
 - target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention
+- completed target identity/session operations evidence capture template for the approved production-like or hosted boundary
 - target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment
 - selected production providers and completed provider evidence intake references
 - target OpenAI provider account approval when OpenAI is included

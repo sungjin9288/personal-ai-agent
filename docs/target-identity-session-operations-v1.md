@@ -40,6 +40,7 @@ Production-ready remains blocked until the approved target environment proves cu
 
 Every target identity/session operations review must include:
 
+- completed target identity/session operations evidence capture template for the approved production-like or hosted boundary
 - branch and commit
 - release label and deployment boundary
 - customer IdP metadata alias, owner, issuer, audience, JWKS rotation owner, and fallback owner
@@ -53,6 +54,26 @@ Every target identity/session operations review must include:
 - identity retention, legal hold, audit export, privacy deletion, and customer handoff evidence
 - artifact hygiene and production readiness gate result
 - residual risk, decision owner, next review date, and customer access containment plan
+
+## Target Evidence Capture Template
+
+When an approved production-like or hosted target boundary is ready for identity/session operations review, fill this template with target-boundary evidence. Do not record raw tokens, private IdP credentials, customer secrets, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetIdentitySessionOperationName | target environment name, company/workspace scope, deployment boundary, identity owner, session owner, evidence owner, and review date | must identify the exact target identity/session boundary being evaluated |
+| idpOnboardingEvidence | customer IdP metadata alias, issuer, audience, JWKS rotation owner, onboarding approval, fallback owner, and hosted identity architecture reference | must prove customer IdP onboarding is approved without recording private credentials or raw tokens |
+| userLifecycleEvidence | provision, invitation, suspension, recovery, deprovision, tenant mapping, orphan account review, lifecycle owner, and customer approval reference | must prove user lifecycle operations are owned and auditable for the target boundary |
+| sessionLifecycleEvidence | login, refresh, expiry, logout, revocation, idle timeout, device inventory, re-auth proof, and session policy owner | must prove session termination and stale session denial are verified from the target boundary |
+| roleAdministrationEvidence | persistent role assignment, revocation, delegated admin approval, separation-of-duties evidence, rollback route, and role owner | must prove role changes are approved, reversible, and recorded with before/after state |
+| permissionPropagationEvidence | API, worker, agent, support, observability, cache invalidation, stale permission denial, and tenant-bound permission propagation proof | must prove permissions propagate across runtime and support surfaces before access is granted |
+| auditExportEvidence | immutable audit export with actor, subject, tenant, role, session, reason, before/after state, timestamp, export checksum, and retention owner | must prove identity/session actions can be exported without exposing private payloads |
+| breakGlassEvidence | break-glass owner, approver, scope, expiry, monitoring, customer notification, revocation, post-use review, and accepted-risk owner | must prove emergency access is time-bound, reviewed, and auditable |
+| supportImpersonationEvidence | support impersonation approval, scoped session, action log, customer-safe update, denial tests, expiry, closure record, and support owner | must prove support access is explicitly approved, scoped, denied by default, and closed |
+| complianceRetentionEvidence | identity log retention, legal hold, audit export, privacy deletion, customer handoff, post-delete absence, and evidence retention owner | must prove identity/session evidence follows target retention and deletion controls |
+| productionReadyClaimDecision | production readiness gate result, artifact hygiene result, residual blockers, customer access containment decision, decision owner, allowed claim text, and next review date | must keep `productionReadyClaim` false unless every identity/session operation control is satisfied by target evidence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with hosted identity session architecture approval, identity session admin evidence, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
 ## Identity Operation Rules
 

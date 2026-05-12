@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T11:00:38.684Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T11:00:32.874Z
 - branch: codex/target-identity-session-evidence-template
 - commit: 81af2f84a4c5f84d859c44b353f0084337f4371b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/81af2f84a4c5f84d859c44b353f0084337f4371b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

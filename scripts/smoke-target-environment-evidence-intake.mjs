@@ -52,6 +52,7 @@ for (const checklistItem of [
   /completed target environment evidence capture template for the approved production-like or hosted boundary/,
   /target environment name, owner, profile, and deployment boundary/,
   /target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention/,
+  /completed target identity\/session operations evidence capture template for the approved production-like or hosted boundary/,
   /target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment/,
   /selected production providers and completed provider evidence intake references/,
   /target OpenAI provider account approval when OpenAI is included/,
@@ -130,6 +131,10 @@ assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-loca
 assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(intake, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(intake, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
+assert.match(
+  readRequiredFile(path.join(docsDir, 'target-identity-session-operations-v1.md')),
+  /## Target Evidence Capture Template/,
+);
 assert.match(intake, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(intake, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(intake, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
