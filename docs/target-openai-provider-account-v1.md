@@ -52,6 +52,26 @@ Any future target OpenAI provider approval must include:
 - migration plan from OpenAI-scoped local-first pilot account usage to approved target OpenAI provider operation
 - containment plan for missing API key, revoked key, quota exhaustion, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure
 
+## Target Evidence Capture Template
+
+When a target environment is ready for OpenAI provider account approval, fill this template with target-boundary evidence. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetEnvironmentName | approved target environment name, owner, customer/workspace scope, and deployment boundary | must name the customer or production-like boundary where evidence was generated |
+| approvedAccountAlias | non-secret OpenAI organization/project alias, account owner, project/workspace alias, evidence owner, and review date | must use an alias or account label, not provider console identifiers that expose billing or private account details |
+| billingQuotaStatus | active billing plan, quota tier, payment owner, spend cap, low-balance/quota alert route, and redacted evidence summary | must prove the target account can sustain the approved usage envelope without exposing billing identifiers |
+| openaiModelAccess | `OPENAI_MODEL`, model availability, region/project access, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
+| secretInjectionPolicy | target secret manager alias, `OPENAI_API_KEY` owner, rotation path, access audit, break-glass owner, and redaction result | must prove secret values are injected and redacted through approved controls |
+| providerTermsCustomerApproval | provider terms, data-processing approval, allowed customer/workspace, transcript/retention policy, support owner, and evidence owner | must show customer-approved use of OpenAI for the target data boundary |
+| usageCostGuard | usage envelope, concurrency limit, timeout policy, retry policy, spend owner, saturation fallback, and budget review cadence | must explain how quota, spend, and rate-limit pressure are contained before fallback or stop condition |
+| liveValidationEvidence | `npm run live:execution-v1:openai` command, mission id, execution session id, provider response status, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |
+| telemetryIncidentRoute | probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner | must connect OpenAI account/provider failures to monitoring and incident triage ownership |
+| fallbackStopCondition | fallback provider or stop condition, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision | must document the customer-approved behavior when OpenAI is unavailable, quota-limited, or unsafe |
+| renewalReviewAudit | account owner recertification, quota review, model access review, artifact hygiene result, accepted risk, and next review date | must prove the target account approval has a renewal owner and review cadence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
+
 ## Required Commands
 
 ```bash

@@ -41,7 +41,9 @@ Every provider promoted into a target release must record:
 
 - provider owner and customer/account approval
 - OpenAI provider account approval when OpenAI is included in the target provider claim
+- completed target OpenAI provider account evidence capture template when OpenAI is included in the target provider claim
 - Anthropic provider account approval when Anthropic is included in the target provider claim
+- completed target Anthropic provider account evidence capture template when Anthropic is included in the target provider claim
 - local provider architecture approval when local provider is included in the target provider claim
 - completed target local provider evidence capture template when local provider is included in the target provider claim
 - Hermes provider architecture approval when Hermes is included in the target provider claim

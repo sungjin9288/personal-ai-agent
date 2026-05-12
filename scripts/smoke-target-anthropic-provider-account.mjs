@@ -77,6 +77,27 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /## Target Evidence Capture Template/);
+assert.match(decision, /Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, credit balances, or machine-local absolute paths/);
+for (const field of [
+  'targetEnvironmentName',
+  'approvedAccountAlias',
+  'billingCreditStatus',
+  'anthropicModelAccess',
+  'secretInjectionPolicy',
+  'providerTermsCustomerApproval',
+  'quotaSpendGuard',
+  'liveValidationEvidence',
+  'telemetryIncidentRoute',
+  'fallbackStopCondition',
+  'remediationReviewAudit',
+]) {
+  assert.match(decision, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(decision, /must reference a passed live validation generated from the approved target boundary after account remediation/);
+assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
+assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+
 for (const command of [
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:anthropic-provider',
@@ -117,6 +138,7 @@ console.log(
       ok: true,
       path: 'docs/target-anthropic-provider-account-v1.md',
       productionReadyClaim: false,
+      targetCaptureTemplate: true,
       requiredCommandCount: 10,
       targetAnthropicProviderApproved: false,
     },
