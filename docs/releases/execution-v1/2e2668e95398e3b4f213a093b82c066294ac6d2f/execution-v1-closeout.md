@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T15:09:14.651Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T15:09:08.558Z
 - branch: codex/target-blocker-closure-verification-matrix
 - commit: 2e2668e95398e3b4f213a093b82c066294ac6d2f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2e2668e95398e3b4f213a093b82c066294ac6d2f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
