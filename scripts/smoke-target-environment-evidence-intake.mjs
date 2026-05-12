@@ -49,6 +49,7 @@ for (const domain of [
 }
 
 for (const checklistItem of [
+  /completed target environment evidence capture template for the approved production-like or hosted boundary/,
   /target environment name, owner, profile, and deployment boundary/,
   /target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention/,
   /target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment/,
@@ -71,6 +72,26 @@ for (const checklistItem of [
 ]) {
   assert.match(intake, checklistItem);
 }
+
+assert.match(intake, /## Target Evidence Capture Template/);
+assert.match(intake, /Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, or machine-local absolute paths/);
+for (const field of [
+  'targetEnvironmentName',
+  'deploymentBoundaryEvidence',
+  'identitySessionEvidence',
+  'tenantIsolationEvidence',
+  'providerSecretEvidence',
+  'observabilitySloEvidence',
+  'retentionBackupEvidence',
+  'supportOperationsEvidence',
+  'cleanReleaseEvidence',
+  'acceptedRiskDecision',
+]) {
+  assert.match(intake, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(intake, /must reference target identity session operations evidence generated from the same boundary/);
+assert.match(intake, /must prove provider credentials and provider live validation are target-approved without exposing secret values/);
+assert.match(intake, /target deployment contract, target provider evidence intake, target provider operations, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/);
 
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
@@ -138,6 +159,7 @@ console.log(
       ok: true,
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
+      targetCaptureTemplate: true,
       requiredCommandCount: 24,
     },
     null,
