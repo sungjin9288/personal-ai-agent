@@ -50,6 +50,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Provider Operation Controls',
   '## Provider Operations Evidence Packet',
+  '## Target Evidence Capture Template',
   '## Provider Operation Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -75,6 +76,7 @@ for (const control of [
 }
 
 for (const packetItem of [
+  /completed target provider operations evidence capture template for every provider included in the target provider claim/,
   /provider inventory with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer\/workspace approval, account or architecture record, and operating decision/,
   /provider account approval proof with billing\/credit\/quota state, provider terms, model access, and renewal owner for each included provider/,
   /target secret injection proof with secret manager alias, rotation owner, access policy, redaction result, break-glass path, and revocation evidence/,
@@ -92,6 +94,41 @@ for (const packetItem of [
 ]) {
   assert.match(targetProviderOperations, packetItem);
 }
+
+assert.match(targetProviderOperations, /## Target Evidence Capture Template/);
+assert.match(
+  targetProviderOperations,
+  /Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths/,
+);
+for (const field of [
+  'targetProviderOperationName',
+  'providerInventoryDecision',
+  'accountApprovalEvidence',
+  'secretInjectionEvidence',
+  'liveValidationEvidence',
+  'modelEndpointPinning',
+  'quotaCostResourceGuard',
+  'fallbackDisableDecision',
+  'fallbackRuntimeAuditEvidence',
+  'telemetryIncidentEvidence',
+  'dataTranscriptHandling',
+  'remediationRenewalEvidence',
+  'productionReadyClaimDecision',
+]) {
+  assert.match(targetProviderOperations, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(
+  targetProviderOperations,
+  /must document the customer-approved behavior for provider outage, quota exhaustion, non-provider failure, and non-recoverable provider failure/,
+);
+assert.match(
+  targetProviderOperations,
+  /must prove provider-failure-only failover and recoverable-provider-failure-only stop conditions are archived from the target boundary/,
+);
+assert.match(
+  targetProviderOperations,
+  /target provider evidence intake, provider-specific account or architecture approvals, target secret manager evidence, target observability operations, provider fallback policy, provider events, provider attention remediation, mission timeline, operator timeline, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/,
+);
 
 for (const command of [
   'npm run smoke:target-provider-operations',
@@ -142,8 +179,9 @@ console.log(
       ok: true,
       path: 'docs/target-provider-operations-v1.md',
       productionReadyClaim: false,
-      providerPacketItemCount: 16,
+      providerPacketItemCount: 17,
       requiredCommandCount: 19,
+      targetCaptureTemplate: true,
     },
     null,
     2,

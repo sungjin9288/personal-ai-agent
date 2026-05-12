@@ -47,6 +47,7 @@ Production-ready remains blocked until the approved target environment proves pr
 
 Every target provider operations review must include:
 
+- completed target provider operations evidence capture template for every provider included in the target provider claim
 - branch and commit
 - release label and deployment boundary
 - provider inventory with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer/workspace approval, account or architecture record, and operating decision
@@ -63,6 +64,28 @@ Every target provider operations review must include:
 - remediation and renewal review proof with billing/credit remediation, endpoint/model renewal, key rotation, provider terms review, accepted-risk owner, and next review date
 - artifact hygiene and production readiness gate result
 - residual risk, decision owner, next review date, and provider failure containment plan
+
+## Target Evidence Capture Template
+
+When an approved production-like or hosted target boundary is ready for provider operations review, fill this template for every provider included in the target provider claim. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetProviderOperationName | target environment name, provider name, company/workspace scope, deployment boundary, evidence owner, provider owner, and review date | must identify one provider operation record per provider included in the target claim |
+| providerInventoryDecision | provider inclusion state, operating decision, account or architecture record, customer approval reference, allowed data boundary, and release label | must show whether the provider is approved, excluded, disabled, or blocked for the target release |
+| accountApprovalEvidence | provider account or architecture approval, billing/credit/quota state when applicable, provider terms review, model access decision, account owner, and renewal cadence | must reference the provider-specific target account or architecture evidence without exposing private account identifiers |
+| secretInjectionEvidence | target secret manager alias, secret owner, rotation owner, access policy, redaction result, break-glass path, revocation evidence, and artifact hygiene result | must prove provider credentials are injected through target-approved controls and are absent from release artifacts |
+| liveValidationEvidence | `live:execution-v1:<provider>` command, provider, model, endpoint alias, timeout, result, archived evidence commit, snapshot path, and operator owner | must reference target-boundary live validation generated from the same deployment boundary |
+| modelEndpointPinning | model id, endpoint/base URL alias, timeout, retry policy, concurrency limit, fallback route, disable switch, and approval owner | must pin provider runtime behavior without recording private URLs or credentials |
+| quotaCostResourceGuard | quota/spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope when applicable, alert threshold, and escalation route | must prove quota, spend, rate-limit, and local resource pressure are contained before fallback or stop condition |
+| fallbackDisableDecision | fallback provider, stop condition, fallback policy id, degraded mode, disable switch, customer impact rule, rollback owner, and accepted-risk decision | must document the customer-approved behavior for provider outage, quota exhaustion, non-provider failure, and non-recoverable provider failure |
+| fallbackRuntimeAuditEvidence | `mission run --fallback-provider --fallback-policy`, `mission timeline`, `workspace timeline`, `overview operator-timeline`, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider --fallback-policy` evidence with selected fallback provider, policy, stop reason, event family, and chronology | must prove provider-failure-only failover and recoverable-provider-failure-only stop conditions are archived from the target boundary |
+| telemetryIncidentEvidence | health signal, latency/error metrics, token or resource usage, quota alert, fallback event, failureKind taxonomy, alert route, incident owner, customer communication route, and review owner | must connect provider runtime failures and fallback decisions to monitoring and incident triage ownership |
+| dataTranscriptHandling | prompt/response classification, provider transcript policy, retention class, export/delete handling, redaction rule, post-delete absence requirement, and data owner | must prove provider data handling is compatible with the target customer boundary |
+| remediationRenewalEvidence | billing/credit remediation, endpoint/model renewal, key rotation, provider terms review, accepted-risk owner, evidence retention owner, next review date, and provider failure containment plan | must prove provider operations have an owner for renewal, remediation, evidence retention, and failure containment |
+| productionReadyClaimDecision | production readiness gate result, artifact hygiene result, residual blockers, decision owner, allowed claim text, evidence commit, and next review date | must keep `productionReadyClaim` false unless every provider operation control is satisfied by target evidence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, provider-specific account or architecture approvals, target secret manager evidence, target observability operations, provider fallback policy, provider events, provider attention remediation, mission timeline, operator timeline, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
 ## Provider Operation Rules
 

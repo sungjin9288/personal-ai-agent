@@ -57,6 +57,7 @@ Every provider promoted into a target release must record:
 - account remediation note for billing, credit, region, or terms blockers
 - artifact hygiene result after evidence refresh
 - target provider operations evidence with provider failure containment plan
+- completed target provider operations evidence capture template for every provider included in the target provider claim
 - productionReadyClaim remains false unless every mandatory target deployment control also has target evidence
 
 ## Required Commands
