@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T16:43:13.841Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T16:43:05.011Z
 - branch: codex/post-merge-provider-intake-closure-artifact-sync
 - commit: 0568717609f24e835e05963756a828a00f73f554
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0568717609f24e835e05963756a828a00f73f554/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
