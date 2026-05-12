@@ -70,6 +70,7 @@ for (const checklistItem of [
   /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
   /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
   /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
+  /completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register/,
   /accepted risks, decision owner, and next review date/,
 ]) {
   assert.match(intake, checklistItem);
@@ -95,9 +96,35 @@ assert.match(intake, /must reference target identity session operations evidence
 assert.match(intake, /must prove provider credentials and provider live validation are target-approved without exposing secret values/);
 assert.match(intake, /target deployment contract, target provider evidence intake, target provider operations, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/);
 
+assert.match(intake, /## Target Evidence Submission Packet/);
+assert.match(
+  intake,
+  /Do not attach raw tenant payloads, customer personal data, provider secret values, raw API tokens, private endpoint credentials, private tenant identifiers, billing identifiers, or machine-local absolute paths/,
+);
+for (const packetItem of [
+  'submissionManifest',
+  'sanitizedEvidenceRegister',
+  'boundaryConsistencyMap',
+  'commandRerunLog',
+  'reviewerDecisionRecord',
+  'blockerDispositionRegister',
+  'releaseRefreshEvidence',
+]) {
+  assert.match(intake, new RegExp(`\\| ${escapeRegExp(packetItem)} \\|`), packetItem);
+}
+assert.match(intake, /must identify the exact target boundary and artifact set under review/);
+assert.match(intake, /must prove every evidence reference is sanitized, reproducible, and free of local machine paths or secret values/);
+assert.match(intake, /must prove every evidence domain was generated from the same approved target boundary or explicitly record an accepted exception/);
+assert.match(intake, /must include fresh results for every required smoke\/release command after target evidence is attached/);
+assert.match(intake, /must keep `productionReadyClaim` false unless every mandatory target control has target-boundary evidence/);
+assert.match(intake, /must record whether each blocker is resolved, accepted with scope, or still blocking before any release claim changes/);
+assert.match(intake, /must prove all review artifacts were regenerated after the target evidence packet was accepted/);
+assert.match(intake, /The submission packet is the review envelope for target evidence, not the evidence itself/);
+
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:target-identity-session-operations',
+  'npm run smoke:target-provider-evidence-intake',
   'npm run smoke:target-provider-operations',
   'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
@@ -107,11 +134,16 @@ for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:target-tenant-isolation-operations',
   'npm run smoke:target-secret-manager-architecture',
+  'npm run smoke:target-secret-manager',
   'npm run smoke:target-observability-architecture',
+  'npm run smoke:target-observability-operations',
   'npm run smoke:target-slo-architecture',
   'npm run smoke:target-slo-operations',
   'npm run smoke:target-support-architecture',
+  'npm run smoke:target-support-operations',
   'npm run smoke:target-data-lifecycle-architecture',
+  'npm run smoke:target-retention-operations',
+  'npm run smoke:target-backup-operations',
   'npm run smoke:target-clean-deployment-architecture',
   'npm run smoke:target-clean-deployment-operations',
   'npm run smoke:target-deployment-contract',
@@ -170,7 +202,9 @@ console.log(
       path: 'docs/target-environment-evidence-intake-v1.md',
       productionReadyClaim: false,
       targetCaptureTemplate: true,
-      requiredCommandCount: 24,
+      targetSubmissionPacket: true,
+      submissionPacketItemCount: 7,
+      requiredCommandCount: 30,
     },
     null,
     2,
