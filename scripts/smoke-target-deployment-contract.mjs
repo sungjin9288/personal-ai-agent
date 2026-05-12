@@ -32,6 +32,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Target Deployment Profiles',
   '## Mandatory Controls',
+  '## Target Evidence Capture Template',
   '## Required Commands',
   '## Blocking Rules',
   '## Operator Handoff',
@@ -80,6 +81,33 @@ for (const control of [
 ]) {
   assert.match(contract, new RegExp(`\\| ${escapeRegExp(control)} \\|`));
 }
+
+assert.match(contract, /## Target Evidence Capture Template/);
+assert.match(
+  contract,
+  /Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths/,
+);
+for (const field of [
+  'targetDeploymentName',
+  'deploymentProfileDecision',
+  'mandatoryControlEvidence',
+  'providerReadinessEvidence',
+  'identityTenantEvidence',
+  'secretObservabilityEvidence',
+  'dataLifecycleSupportEvidence',
+  'cleanReleaseArtifactEvidence',
+  'stopConditionDecision',
+  'productionReadyClaimDecision',
+]) {
+  assert.match(contract, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
+}
+assert.match(contract, /must map the deployment to one target deployment profile without claiming an unapproved profile/);
+assert.match(contract, /must prove every control row was reviewed against target evidence from the same boundary/);
+assert.match(contract, /must record why `productionReadyClaim` remains false when any mandatory target evidence is missing/);
+assert.match(
+  contract,
+  /target environment evidence intake, target provider evidence intake, target provider operations, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, production-like release drill, clean deployment release, and production readiness gate evidence/,
+);
 
 for (const command of [
   'npm run smoke:target-deployment-contract',
@@ -196,6 +224,7 @@ console.log(
       path: 'docs/target-deployment-contract-v1.md',
       productionReadyClaim: false,
       profileCount: 4,
+      targetCaptureTemplate: true,
     },
     null,
     2,

@@ -92,6 +92,25 @@ The current release remains OpenAI-scoped pilot-ready only. Production-ready rem
 | Clean deployment release | the target package is deployed from a clean environment with dependency, secret, runtime, and rollback evidence | tracked-files-only clean rehearsal passes locally | blocked |
 | Customer support operations | escalation route, support owner, incident communications, customer handoff process, audit history, and incident review cadence are proven | pilot runbook, incident policy, and local support operations, support escalation review, target support architecture, and target support operations gates pass | blocked |
 
+## Target Evidence Capture Template
+
+When an approved production-like or hosted deployment boundary is ready for review, fill this template with target-boundary evidence. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetDeploymentName | approved target environment name, company/workspace scope, deployment owner, evidence owner, review date, and release label | must identify the exact target boundary and release decision being evaluated |
+| deploymentProfileDecision | selected deployment profile, approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval reference | must map the deployment to one target deployment profile without claiming an unapproved profile |
+| mandatoryControlEvidence | evidence references for every mandatory control, required command output, production readiness gate result, and unresolved blocker list | must prove every control row was reviewed against target evidence from the same boundary |
+| providerReadinessEvidence | completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection, target-boundary live validation, quota/cost/resource guard, fallback evidence, and provider failure containment proof | must prove all providers included in the target claim are approved and live-validated from the target boundary |
+| identityTenantEvidence | hosted identity/session approval, target identity/session operations, hosted tenant isolation approval, target tenant isolation operations, RBAC/session audit, tenant storage boundary, encryption/key ownership, and cross-tenant denial evidence | must prove user, session, role, tenant, storage, and key boundaries before any hosted or multi-tenant claim |
+| secretObservabilityEvidence | target secret manager approval, rotation/revocation evidence, telemetry backend, alert route, log/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence | must prove secrets and monitoring are operated through target-approved controls |
+| dataLifecycleSupportEvidence | target data lifecycle approval, retention/export/delete proof, provider transcript handling, backup/restore evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence | must prove lifecycle and support operations are staffed and auditable for the target customer boundary |
+| cleanReleaseArtifactEvidence | target clean deployment architecture, target clean deployment operations, clean deployment run, dependency/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, and failed-deployment containment | must reference passed release artifacts generated from the same target review boundary |
+| stopConditionDecision | explicit stop conditions, residual blockers, accepted risks, blocker owner, remediation owner, and next review date | must record why `productionReadyClaim` remains false when any mandatory target evidence is missing |
+| productionReadyClaimDecision | decision owner, approval or rejection summary, allowed claim text, evidence commit, snapshot path, and regeneration command references | must keep `productionReadyClaim` false unless every mandatory target deployment control is satisfied by target evidence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target environment evidence intake, target provider evidence intake, target provider operations, target identity/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, production-like release drill, clean deployment release, and production readiness gate evidence.
+
 ## Required Commands
 
 ```bash
