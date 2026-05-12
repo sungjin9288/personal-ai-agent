@@ -52,6 +52,26 @@ Any future target local provider approval must include:
 - migration plan from local provider adapter smoke to approved target local provider operation
 - containment plan for missing base URL, missing model, unavailable runtime, model mismatch, data residency gap, resource exhaustion, and fallback failure
 
+## Target Evidence Capture Template
+
+When a target environment is ready for local provider approval, fill this template with target-boundary evidence. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetEnvironmentName | approved target environment name, owner, and deployment boundary | must name the customer or production-like boundary where evidence was generated |
+| approvedBaseUrlAlias | non-secret `LOCAL_PROVIDER_BASE_URL` alias, endpoint owner, network boundary, transport, availability owner, and health check record | must use an alias or documented endpoint label, not a private URL containing credentials |
+| localProviderModel | `LOCAL_PROVIDER_MODEL`, model source/version, compatibility profile, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
+| networkIsolation | host boundary, ingress policy, egress policy, tenant/customer boundary, operator access policy, and firewall decision | must show how the local runtime is isolated from unauthorized tenants and networks |
+| credentialPolicy | auth mode, API key requirement decision, target secret manager alias when used, rotation path, redaction result, and access audit | must prove secret values are injected and redacted through approved controls |
+| runtimeLifecycle | process manager, startup command, health endpoint, restart policy, CPU/GPU/memory limits, and log retention | must identify the operational owner for start, restart, saturation, and log retention |
+| liveValidationEvidence | `npm run live:execution-v1:local` command, mission id, execution session id, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |
+| dataResidencyPolicy | prompt data class, local storage path alias, transcript retention, customer data approval, delete request route, and post-delete absence proof | must prove transcript handling and deletion are compatible with the target customer boundary |
+| quotaResourceGuard | resource envelope, concurrency limit, timeout policy, retry policy, saturation fallback, and resource owner approval | must explain how overload is contained before fallback or stop condition |
+| telemetryAndIncidentRoute | probe result, model availability, run duration, retry count, failureKind taxonomy, usage/resource metrics, alert route, and incident owner | must connect provider failures to monitoring and incident triage ownership |
+| fallbackCustomerApproval | fallback provider or stop condition, degraded mode, customer impact rule, manual approval path, local model license decision, and residual risk owner | must document the customer-approved behavior when the local provider is unavailable or unsafe |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
+
 ## Required Commands
 
 ```bash
