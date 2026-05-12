@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:42:38.617Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:42:23.798Z
 - branch: codex/target-environment-submission-packet
 - commit: e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673

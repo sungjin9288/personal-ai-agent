@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T11:42:38.617Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T11:42:38.579Z
 - localDate: 2026-05-12
 - branch: codex/target-environment-submission-packet
 - commit: e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673](releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673](docs/releases/execution-v1/e240d67ee5b4071e7ca621ddb0bbd5a17a2c5673)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/target-environment-submission-packet not found
 
