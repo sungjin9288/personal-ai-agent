@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T10:17:29.707Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T10:17:29.672Z
 - localDate: 2026-05-12
 - branch: codex/post-merge-provider-operations-artifact-sync
 - commit: 81439c79018075ad0bac741928897b3653e7e449
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449](releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449](docs/releases/execution-v1/81439c79018075ad0bac741928897b3653e7e449)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-provider-operations-artifact-sync not found
 
