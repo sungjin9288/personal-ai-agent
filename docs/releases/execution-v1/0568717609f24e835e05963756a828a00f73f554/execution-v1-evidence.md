@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T16:43:13.841Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T16:43:00.214Z
 - branch: codex/post-merge-provider-intake-closure-artifact-sync
 - commit: 0568717609f24e835e05963756a828a00f73f554

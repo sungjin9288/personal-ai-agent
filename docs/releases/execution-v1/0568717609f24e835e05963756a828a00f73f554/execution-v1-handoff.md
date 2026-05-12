@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T16:43:13.841Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T16:43:13.785Z
 - localDate: 2026-05-13
 - branch: codex/post-merge-provider-intake-closure-artifact-sync
 - commit: 0568717609f24e835e05963756a828a00f73f554
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0568717609f24e835e05963756a828a00f73f554](releases/execution-v1/0568717609f24e835e05963756a828a00f73f554)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0568717609f24e835e05963756a828a00f73f554/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0568717609f24e835e05963756a828a00f73f554/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0568717609f24e835e05963756a828a00f73f554](docs/releases/execution-v1/0568717609f24e835e05963756a828a00f73f554)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-provider-intake-closure-artifact-sync not found
 
