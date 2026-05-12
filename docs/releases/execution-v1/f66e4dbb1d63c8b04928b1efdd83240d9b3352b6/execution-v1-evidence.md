@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T17:28:46.015Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T17:28:35.287Z
 - branch: codex/release-readiness-publish-state-alignment
 - commit: f66e4dbb1d63c8b04928b1efdd83240d9b3352b6

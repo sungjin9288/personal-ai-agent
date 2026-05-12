@@ -200,7 +200,7 @@ Why:
 - planning pack exists
 - security and operator docs exist
 - known live-provider gaps are explicit
-- commit/push remains deferred by operator request
+- release artifact publishing is tracked by `smoke:execution-v1-status` and must remain `artifact-sync-current` before handoff
 
 Allowed claims:
 
@@ -227,7 +227,7 @@ Validated scope:
 - OpenAI and local provider live validation archived in [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministic execution, CLI, UI console, browser E2E, handoff, and snapshot gates passed
 - security model, operator runbook, deployment guide, onboarding guide, demo scenarios, and release decision docs exist
-- commit/push remains deferred by operator request
+- release evidence is synchronized through the current execution-v1 snapshot and `artifact-sync-current` smoke state
 
 Remaining blockers outside this scope:
 
