@@ -2,7 +2,7 @@
 
 - status: local-target-provider-evidence-intake-current
 - localDate: 2026-05-05
-- scope: target provider account, environment, live validation, quota, and recovery evidence intake contract
+- scope: target provider account, environment, live validation, quota, blocker closure, and recovery evidence intake contract
 - productionReadyClaim: false
 - relatedProductionProviderReadiness: [production-provider-readiness-v1.md](production-provider-readiness-v1.md)
 - relatedTargetProviderOperations: [target-provider-operations-v1.md](target-provider-operations-v1.md)
@@ -19,7 +19,7 @@ This gate defines the evidence packet an operator must collect before adding Ope
 
 It is not provider account remediation proof, not live-provider-complete evidence, not target deployment proof, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until every provider included in the target release has approved account status, target secret injection, target-boundary live validation, quota/cost guard evidence, and rollback/fallback evidence.
+Production-ready remains blocked until every provider included in the target release has approved account status, target secret injection, target-boundary live validation, quota/cost guard evidence, provider blocker closure verification, and rollback/fallback evidence.
 
 Target provider operations evidence remains the runtime operations gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment.
 
@@ -33,6 +33,7 @@ Target provider operations evidence remains the runtime operations gate for mode
 | Quota and cost guard | quota, concurrency, timeout, spend owner, and retry guard are documented before live use | provider preflight and telemetry smoke exist locally | blocked |
 | Model and endpoint pinning | provider model, endpoint/base URL, timeout, and fallback route are recorded without secrets | provider readiness matrix lists env keys and commands | blocked |
 | Failure triage route | account failure, missing env, live runtime failure, and fallback decision have named owners | release readiness and handoff list current blockers | blocked |
+| Provider blocker closure verification | provider-specific blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts are recorded in the target environment blocker closure verification matrix | target environment evidence intake defines the blocker closure verification matrix; provider operations requires blockerClosureVerificationEvidence | blocked |
 | Target provider operations | provider runtime operation evidence covers model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
 
 ## Provider Intake Checklist
@@ -54,10 +55,12 @@ Every provider promoted into a target release must record:
 - live validation command and archived execution-v1 evidence commit
 - quota/spend owner and expected usage envelope
 - fallback provider or stop condition when live validation fails
+- provider-specific blocker closure verification matrix row with current state, next verification command, required closing evidence, stop-condition id, artifact hygiene result, regenerated release artifact references, and decision owner
 - account remediation note for billing, credit, region, or terms blockers
 - artifact hygiene result after evidence refresh
 - target provider operations evidence with provider failure containment plan
 - completed target provider operations evidence capture template for every provider included in the target provider claim
+- blockerClosureVerificationEvidence from target provider operations for every provider included in the target provider claim
 - productionReadyClaim remains false unless every mandatory target deployment control also has target evidence
 
 ## Required Commands
@@ -77,6 +80,6 @@ npm run smoke:release-artifact-hygiene
 
 ## Production Gap
 
-This is a local target provider evidence intake contract. It does not prove target OpenAI provider account approval, Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target provider operations execution, target secret manager injection, target-boundary live validation, quota enforcement, or production fallback execution.
+This is a local target provider evidence intake contract. It does not prove target OpenAI provider account approval, Anthropic account remediation, target Anthropic provider account approval, target local provider architecture approval, local provider endpoint readiness, target Hermes provider architecture approval, Hermes runtime readiness, target provider operations execution, target secret manager injection, target-boundary live validation, quota enforcement, provider blocker closure verification, or production fallback execution.
 
 Target provider readiness remains blocked for production-ready claims until each provider in the production claim has a complete evidence packet and successful target-boundary live validation archived from the approved production-like or hosted environment.

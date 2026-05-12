@@ -63,6 +63,7 @@ for (const phrase of [
   /Hermes remains blocked/,
   /deterministic provider preflight passing is necessary but not sufficient/,
   /target provider evidence intake contract remains the gate/,
+  /provider blocker closure verification/,
   /target provider operations contract remains the gate/,
   /target blocker closure verification matrix/,
   /target OpenAI provider account remains the gate/,
@@ -75,6 +76,7 @@ for (const phrase of [
 
 assert.match(readiness, /\| local \| ready-for-live-validation \| LOCAL_PROVIDER_MODEL \| yes \| passed \|/);
 assert.match(readiness, /target local provider architecture remains the production gate/);
+assert.match(readiness, /archived live validation, provider blocker closure verification, and fallback\/stop-condition evidence/);
 assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
 
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);

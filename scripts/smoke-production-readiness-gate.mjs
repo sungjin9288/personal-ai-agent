@@ -158,6 +158,8 @@ assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
+assert.match(releaseReadiness, /target provider evidence intake gate: passed, with provider account approval/);
+assert.match(releaseReadiness, /provider blocker closure verification, and `productionReadyClaim: false`/);
 assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(releaseReadiness, /target provider operations gate: passed, with provider account approval/);
 assert.match(releaseReadiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
@@ -247,12 +249,15 @@ assert.match(productionProviderReadiness, /\[target-openai-provider-account-v1\.
 assert.match(productionProviderReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
+assert.match(productionProviderReadiness, /provider blocker closure verification/);
 assert.match(productionProviderReadiness, /target blocker closure verification matrix/);
 assert.match(targetProviderEvidenceIntake, /^# Target Provider Evidence Intake v1$/m);
 assert.match(targetProviderEvidenceIntake, /^- status: local-target-provider-evidence-intake-current$/m);
 assert.match(targetProviderEvidenceIntake, /^- productionReadyClaim: false$/m);
 assert.match(targetProviderEvidenceIntake, /npm run smoke:target-provider-evidence-intake/);
 assert.match(targetProviderEvidenceIntake, /not provider account remediation proof/);
+assert.match(targetProviderEvidenceIntake, /Provider blocker closure verification/);
+assert.match(targetProviderEvidenceIntake, /blockerClosureVerificationEvidence from target provider operations/);
 assert.match(targetProviderEvidenceIntake, /Target provider readiness remains blocked for production-ready claims/);
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
 assert.match(targetProviderOperations, /^- status: local-target-provider-operations-current$/m);
