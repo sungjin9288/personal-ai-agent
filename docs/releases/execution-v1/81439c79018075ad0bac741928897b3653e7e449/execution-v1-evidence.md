@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T10:17:29.707Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T10:17:18.982Z
 - branch: codex/post-merge-provider-operations-artifact-sync
 - commit: 81439c79018075ad0bac741928897b3653e7e449
