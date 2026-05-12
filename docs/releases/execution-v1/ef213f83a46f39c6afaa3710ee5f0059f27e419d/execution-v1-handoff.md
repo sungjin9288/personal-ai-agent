@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T11:24:05.147Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T11:24:05.103Z
 - localDate: 2026-05-12
 - branch: codex/post-merge-tenant-isolation-artifact-sync
 - commit: ef213f83a46f39c6afaa3710ee5f0059f27e419d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d](releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d](docs/releases/execution-v1/ef213f83a46f39c6afaa3710ee5f0059f27e419d)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-tenant-isolation-artifact-sync not found
 

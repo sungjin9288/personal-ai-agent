@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:24:05.147Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:23:54.112Z
 - branch: codex/post-merge-tenant-isolation-artifact-sync
 - commit: ef213f83a46f39c6afaa3710ee5f0059f27e419d
