@@ -171,6 +171,9 @@ assert.match(releaseReadiness, /\[target-identity-session-operations-v1\.md\]\(t
 assert.match(releaseReadiness, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
+assert.match(releaseReadiness, /target environment evidence intake gate: passed, with deployment boundary/);
+assert.match(releaseReadiness, /sanitized submission packet, blocker disposition register/);
+assert.match(releaseReadiness, /stop-condition closing evidence, and `productionReadyClaim: false`/);
 assert.match(releaseReadiness, /\[backup-restore-drill-v1\.md\]\(backup-restore-drill-v1\.md\)/);
 assert.match(releaseReadiness, /\[identity-session-admin-v1\.md\]\(identity-session-admin-v1\.md\)/);
 assert.match(releaseReadiness, /\[tenant-storage-admin-v1\.md\]\(tenant-storage-admin-v1\.md\)/);
@@ -328,6 +331,13 @@ assert.match(targetEnvironmentEvidenceIntake, /^# Target Environment Evidence In
 assert.match(targetEnvironmentEvidenceIntake, /^- status: local-target-environment-evidence-intake-current$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m);
 assert.match(targetEnvironmentEvidenceIntake, /npm run smoke:target-environment-evidence-intake/);
+assert.match(targetEnvironmentEvidenceIntake, /## Target Evidence Submission Packet/);
+assert.match(targetEnvironmentEvidenceIntake, /## Target Blocker Disposition Register/);
+assert.match(targetEnvironmentEvidenceIntake, /\| blockerDispositionRegister \|/);
+assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:anthropic` pass/);
+assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:hermes` pass/);
+assert.match(targetEnvironmentEvidenceIntake, /Blocker disposition is a stop-condition input, not a waiver/);
+assert.match(targetEnvironmentEvidenceIntake, /exceptions cannot convert a blocked production-ready claim into production-ready/);
 assert.match(targetEnvironmentEvidenceIntake, /not hosted production evidence/);
 assert.match(targetEnvironmentEvidenceIntake, /Target environment readiness remains blocked for production-ready claims/);
 assert.match(backupRestoreDrill, /^# Backup Restore Drill v1$/m);
@@ -548,6 +558,8 @@ console.log(
       pilotHostedTenantIsolationArchitecture: 'present',
       pilotTargetTenantIsolationOperations: 'present',
       pilotTargetEnvironmentEvidenceIntake: 'present',
+      pilotTargetEnvironmentSubmissionPacket: 'present',
+      pilotTargetEnvironmentBlockerDisposition: 'present',
       productionLikeReleaseDrill: 'present',
       productionBlockerCount: extractFollowingListItems(productionReadySection, 'Blockers:').length,
       releaseArtifactHygiene: 'passed',
