@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T04:39:48.933Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T04:39:33.948Z
 - branch: codex/post-merge-target-environment-artifact-sync
 - commit: 559e59f4e4c6102305ac033ba746812fa9ab7fb9
