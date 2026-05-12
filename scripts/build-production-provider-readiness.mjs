@@ -207,7 +207,7 @@ ${operatingInterpretationRows}
 
 ## Target Provider Evidence Intake
 
-Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner, target boundary, secret manager alias, model/endpoint pinning, quota/cost guard, archived live validation, and fallback/stop-condition evidence.
+Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner, target boundary, secret manager alias, model/endpoint pinning, quota/cost guard, archived live validation, provider blocker closure verification, and fallback/stop-condition evidence.
 
 ## Target Provider Operations
 
@@ -263,7 +263,7 @@ function buildOperatingInterpretationRows(providerRows) {
 
   rows.push(
     '- deterministic provider preflight passing is necessary but not sufficient for production provider readiness',
-    '- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence',
+    '- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage evidence, and provider blocker closure verification',
     '- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence',
     '- target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements',
     '- target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements',

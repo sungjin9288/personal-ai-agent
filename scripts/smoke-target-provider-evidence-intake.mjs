@@ -54,6 +54,7 @@ for (const evidenceItem of [
   'Quota and cost guard',
   'Model and endpoint pinning',
   'Failure triage route',
+  'Provider blocker closure verification',
   'Target provider operations',
 ]) {
   assert.match(intake, new RegExp(`\\| ${escapeRegExp(evidenceItem)} \\|`));
@@ -75,10 +76,12 @@ for (const checklistItem of [
   /live validation command and archived execution-v1 evidence commit/,
   /quota\/spend owner and expected usage envelope/,
   /fallback provider or stop condition when live validation fails/,
+  /provider-specific blocker closure verification matrix row with current state, next verification command, required closing evidence, stop-condition id, artifact hygiene result, regenerated release artifact references, and decision owner/,
   /account remediation note for billing, credit, region, or terms blockers/,
   /artifact hygiene result after evidence refresh/,
   /target provider operations evidence with provider failure containment plan/,
   /completed target provider operations evidence capture template for every provider included in the target provider claim/,
+  /blockerClosureVerificationEvidence from target provider operations for every provider included in the target provider claim/,
 ]) {
   assert.match(intake, checklistItem);
 }
@@ -102,8 +105,13 @@ assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(tar
 assert.match(providerReadiness, /target provider evidence intake contract/);
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
 assert.match(targetProviderOperations, /## Target Evidence Capture Template/);
+assert.match(targetProviderOperations, /blockerClosureVerificationEvidence/);
+assert.match(targetProviderOperations, /cannot bypass `productionReadyClaim: false` while any stop-condition remains/);
 assert.match(intake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(intake, /target provider operations evidence/);
+assert.match(intake, /Provider blocker closure verification/);
+assert.match(intake, /provider blocker closure verification/);
+assert.match(intake, /target environment blocker closure verification matrix/);
 assert.match(targetOpenAI, /^# Target OpenAI Provider Account v1$/m);
 assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(intake, /OpenAI provider account approval/);
@@ -121,6 +129,7 @@ assert.match(targetContract, /npm run smoke:target-provider-evidence-intake/);
 assert.match(targetContract, /provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /target provider evidence intake gate: passed/);
+assert.match(releaseReadiness, /provider blocker closure verification, and `productionReadyClaim: false`/);
 assert.match(security, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(deployment, /## Target Provider Evidence Intake/);
 assert.match(deployment, /npm run smoke:target-provider-evidence-intake/);
@@ -131,7 +140,7 @@ assert.match(readme, /npm run smoke:target-provider-evidence-intake/);
 console.log(
   JSON.stringify(
     {
-      evidenceItemCount: 7,
+      evidenceItemCount: 8,
       mode: 'target-provider-evidence-intake',
       ok: true,
       path: 'docs/target-provider-evidence-intake-v1.md',
