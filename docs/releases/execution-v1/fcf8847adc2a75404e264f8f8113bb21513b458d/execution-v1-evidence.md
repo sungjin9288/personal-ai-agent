@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T04:07:09.504Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T04:06:56.058Z
 - branch: codex/target-provider-account-evidence-templates
 - commit: fcf8847adc2a75404e264f8f8113bb21513b458d
