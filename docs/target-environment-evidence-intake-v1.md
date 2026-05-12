@@ -51,6 +51,7 @@ Production-ready remains blocked until every target environment domain below has
 
 Every target environment review must record:
 
+- completed target environment evidence capture template for the approved production-like or hosted boundary
 - target environment name, owner, profile, and deployment boundary
 - target identity session operations evidence for customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention
 - target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment
@@ -71,6 +72,25 @@ Every target environment review must record:
 - clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment
 - accepted risks, decision owner, and next review date
 - `productionReadyClaim` remains false unless all mandatory target deployment controls are satisfied by target evidence
+
+## Target Evidence Capture Template
+
+When a production-like or hosted target boundary is ready for review, fill this template with target-boundary evidence. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, billing identifiers, customer personal data, tenant payloads, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetEnvironmentName | approved environment name, environment owner, customer/workspace scope, deployment profile, network boundary, runtime root alias, and rollback owner | must name the exact production-like or hosted boundary where evidence was generated |
+| deploymentBoundaryEvidence | target deployment contract reference, release label, deployment run id or equivalent, runtime/dependency proof, rollback proof, and clean checkout evidence | must prove release artifacts were generated from the approved target boundary, not from an unrelated local run |
+| identitySessionEvidence | customer IdP proof, user lifecycle, session lifecycle, role assignment/revocation, permission propagation, audit export, break-glass, support impersonation, compliance, and retention evidence | must reference target identity session operations evidence generated from the same boundary |
+| tenantIsolationEvidence | tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence | must prove tenant data isolation and key ownership without exposing tenant payloads |
+| providerSecretEvidence | selected providers, completed provider evidence intake references, provider account/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence | must prove provider credentials and provider live validation are target-approved without exposing secret values |
+| observabilitySloEvidence | SLO/SLA terms, error budget owner, telemetry backend, telemetry ingestion, alert route, alert acknowledgement, on-call owner, customer status route, incident review, provider outage handling, and missed-SLO containment | must prove staffed monitoring and customer-facing SLO handling from target telemetry |
+| retentionBackupEvidence | retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence | must prove lifecycle controls and DR evidence for the target customer boundary |
+| supportOperationsEvidence | target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, customer communication, on-call handoff, and incident review cadence | must prove support ownership and escalation routing are staffed for the target release |
+| cleanReleaseEvidence | target clean deployment operations evidence, clean deployment run, dependency/runtime proof, release snapshot, pilot/export package, artifact hygiene result, rollback proof, and failed-deployment containment | must reference passed clean deployment, release drill, export package, and hygiene evidence for the same target review |
+| acceptedRiskDecision | accepted risks, residual blockers, decision owner, evidence owner, next review date, and explicit productionReadyClaim decision | must keep `productionReadyClaim` false unless every mandatory target deployment control is satisfied by target evidence |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target deployment contract, target provider evidence intake, target provider operations, target identity/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence.
 
 ## Required Commands
 
