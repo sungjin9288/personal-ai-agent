@@ -85,6 +85,7 @@ for (const packetItem of [
   /quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route/,
   /fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision/,
   /provider fallback runtime audit proof with `mission run --fallback-provider --fallback-policy`, `mission timeline`, `workspace timeline`, `overview operator-timeline`, `provider events --family fallback`, and `action remediate-provider-attention --fallback-provider --fallback-policy` evidence/,
+  /target blocker closure verification proof from \[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\) with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts for every included provider/,
   /provider telemetry proof with health signal, latency\/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner/,
   /provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes/,
   /data and transcript handling proof with data classification, provider transcript policy, retention class, export\/delete handling, redaction rule, and post-delete absence requirement/,
@@ -110,6 +111,7 @@ for (const field of [
   'quotaCostResourceGuard',
   'fallbackDisableDecision',
   'fallbackRuntimeAuditEvidence',
+  'blockerClosureVerificationEvidence',
   'telemetryIncidentEvidence',
   'dataTranscriptHandling',
   'remediationRenewalEvidence',
@@ -127,8 +129,17 @@ assert.match(
 );
 assert.match(
   targetProviderOperations,
+  /must prove provider blocker closure is tied to target-boundary command evidence and cannot bypass `productionReadyClaim: false` while any stop-condition remains/,
+);
+assert.match(
+  targetProviderOperations,
   /target provider evidence intake, provider-specific account or architecture approvals, target secret manager evidence, target observability operations, provider fallback policy, provider events, provider attention remediation, mission timeline, operator timeline, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/,
 );
+assert.match(targetProviderOperations, /target environment evidence intake, blocker closure verification matrix, production readiness gate, and artifact hygiene/);
+assert.match(targetEnvironment, /## Blocker Closure Verification Matrix/);
+assert.match(targetEnvironment, /anthropic-live-validation-missing-or-failed/);
+assert.match(targetEnvironment, /hermes-runtime-config-missing/);
+assert.match(targetEnvironment, /target-local-provider-approval-missing/);
 
 for (const command of [
   'npm run smoke:target-provider-operations',
@@ -179,7 +190,7 @@ console.log(
       ok: true,
       path: 'docs/target-provider-operations-v1.md',
       productionReadyClaim: false,
-      providerPacketItemCount: 17,
+      providerPacketItemCount: 18,
       requiredCommandCount: 19,
       targetCaptureTemplate: true,
     },

@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-12T15:12:54.048Z
-- sourceBranch: codex/post-merge-blocker-closure-matrix-artifact-sync
-- sourceCommit: 2f83b1f532b4b32a58f8f835031aec59957ec22a
+- generatedAt: 2026-05-12T15:38:34.919Z
+- sourceBranch: codex/provider-operations-blocker-closure-link
+- sourceCommit: 83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 5588 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 7562 |
 
 ## Key Signals
 
@@ -106,7 +106,7 @@ Production-ready remains blocked until every provider included in the target rel
 - Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, and failure triage evidence
-- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
+- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
 - target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements
 - target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements
 - target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements
@@ -118,7 +118,7 @@ Before any provider is included in a production claim, the operator must verify 
 
 ## Target Provider Operations
 
-Before any provider is presented as target production-operational, the operator must verify [target-provider-operations-v1.md](target-provider-operations-v1.md) and attach provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.
+Before any provider is presented as target production-operational, the operator must verify [target-provider-operations-v1.md](target-provider-operations-v1.md) and attach provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.
 
 ## Operator Re-Run
 

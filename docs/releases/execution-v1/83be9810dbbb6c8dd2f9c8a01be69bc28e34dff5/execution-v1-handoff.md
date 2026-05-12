@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T15:38:42.597Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T15:38:42.555Z
 - localDate: 2026-05-13
 - branch: codex/provider-operations-blocker-closure-link
 - commit: 83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5](releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5](docs/releases/execution-v1/83be9810dbbb6c8dd2f9c8a01be69bc28e34dff5)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/provider-operations-blocker-closure-link not found
 

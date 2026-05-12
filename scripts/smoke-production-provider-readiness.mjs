@@ -64,6 +64,7 @@ for (const phrase of [
   /deterministic provider preflight passing is necessary but not sufficient/,
   /target provider evidence intake contract remains the gate/,
   /target provider operations contract remains the gate/,
+  /target blocker closure verification matrix/,
   /target OpenAI provider account remains the gate/,
   /target Anthropic provider account remains the gate/,
   /target local provider architecture remains the gate/,
@@ -74,6 +75,7 @@ for (const phrase of [
 
 assert.match(readiness, /\| local \| ready-for-live-validation \| LOCAL_PROVIDER_MODEL \| yes \| passed \|/);
 assert.match(readiness, /target local provider architecture remains the production gate/);
+assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
 
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
