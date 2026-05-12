@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T01:49:46.769Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T01:49:23.985Z
 - branch: codex/target-hermes-provider-evidence-template
 - commit: 2f40ec1ce71dbb926d4964380ab5d88c2e85138b

@@ -52,6 +52,26 @@ Any future target Hermes provider approval must include:
 - migration plan from local Hermes adapter smoke to approved target Hermes provider operation
 - explicit containment plan for missing model, unavailable endpoint, malformed tool-call output, transcript retention gap, quota exhaustion, and fallback failure
 
+## Target Evidence Capture Template
+
+When a target environment is ready for Hermes provider approval, fill this template with target-boundary evidence. Do not record raw API keys, tokens, private endpoint credentials, customer secrets, or machine-local absolute paths.
+
+| Field | Required Value | Completion Rule |
+| --- | --- | --- |
+| targetEnvironmentName | approved target environment name, owner, and deployment boundary | must name the customer or production-like boundary where evidence was generated |
+| approvedEndpointAlias | non-secret Hermes-compatible base URL alias, endpoint owner, network boundary, transport, availability owner, and health check record | must use an alias or documented endpoint label, not a private URL containing credentials |
+| hermesProviderModel | `HERMES_PROVIDER_MODEL`, model version/source, compatibility profile, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
+| secretInjectionPolicy | API key requirement decision, target secret manager alias when used, rotation path, break-glass owner, access audit, and redaction result | must prove secret values are injected and redacted through approved controls |
+| toolCallContractEvidence | Hermes `<tool_call>` sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence | must prove target provider output is compatible with the approved tool-call parser and containment policy |
+| sessionLifecycleEvidence | mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference | must connect target Hermes responses to durable execution evidence without exposing sensitive transcripts |
+| liveValidationEvidence | `npm run live:execution-v1:hermes` command, mission id, execution session id, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |
+| transcriptRetentionPolicy | prompt data class, provider transcript retention, customer data approval, delete request route, and post-delete absence proof | must prove transcript handling and deletion are compatible with the target customer boundary |
+| quotaRateGuard | concurrency limit, timeout policy, retry policy, cost owner, usage envelope, saturation fallback, and spend review | must explain how quota or endpoint saturation is contained before fallback or stop condition |
+| telemetryAndIncidentRoute | probe result, model availability, run duration, retry count, failureKind taxonomy, usage metrics, alert route, and incident owner | must connect Hermes failures to monitoring and incident triage ownership |
+| fallbackCustomerApproval | fallback provider or stop condition, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision | must document the customer-approved behavior when Hermes is unavailable, malformed, or unsafe |
+
+The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
+
 ## Required Commands
 
 ```bash

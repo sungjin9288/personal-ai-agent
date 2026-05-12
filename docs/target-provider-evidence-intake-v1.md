@@ -45,6 +45,7 @@ Every provider promoted into a target release must record:
 - local provider architecture approval when local provider is included in the target provider claim
 - completed target local provider evidence capture template when local provider is included in the target provider claim
 - Hermes provider architecture approval when Hermes is included in the target provider claim
+- completed target Hermes provider evidence capture template when Hermes is included in the target provider claim
 - target environment name and deployment boundary
 - secret manager path or key alias, never the secret value
 - model name, endpoint/base URL alias, timeout, and retry/concurrency limits

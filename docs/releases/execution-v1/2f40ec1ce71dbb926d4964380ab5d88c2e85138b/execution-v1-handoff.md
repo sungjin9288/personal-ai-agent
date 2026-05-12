@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T01:49:46.769Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T01:49:46.731Z
 - localDate: 2026-05-12
 - branch: codex/target-hermes-provider-evidence-template
 - commit: 2f40ec1ce71dbb926d4964380ab5d88c2e85138b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b](releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b](docs/releases/execution-v1/2f40ec1ce71dbb926d4964380ab5d88c2e85138b)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/target-hermes-provider-evidence-template not found
 
