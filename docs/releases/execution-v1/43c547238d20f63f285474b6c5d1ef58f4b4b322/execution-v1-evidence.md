@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T01:55:28.803Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T01:55:07.988Z
 - branch: codex/post-merge-hermes-artifact-sync
 - commit: 43c547238d20f63f285474b6c5d1ef58f4b4b322
