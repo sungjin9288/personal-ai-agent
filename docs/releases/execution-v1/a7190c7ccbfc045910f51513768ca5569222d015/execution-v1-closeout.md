@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T11:15:35.478Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T11:15:29.551Z
 - branch: codex/target-tenant-isolation-evidence-template
 - commit: a7190c7ccbfc045910f51513768ca5569222d015
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a7190c7ccbfc045910f51513768ca5569222d015/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

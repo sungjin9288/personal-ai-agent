@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:15:35.478Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:15:17.501Z
 - branch: codex/target-tenant-isolation-evidence-template
 - commit: a7190c7ccbfc045910f51513768ca5569222d015
