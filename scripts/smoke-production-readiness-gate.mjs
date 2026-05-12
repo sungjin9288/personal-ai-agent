@@ -159,6 +159,8 @@ assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(produ
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
+assert.match(releaseReadiness, /target provider operations gate: passed, with provider account approval/);
+assert.match(releaseReadiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
 assert.match(releaseReadiness, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
@@ -245,6 +247,7 @@ assert.match(productionProviderReadiness, /\[target-openai-provider-account-v1\.
 assert.match(productionProviderReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(productionProviderReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
+assert.match(productionProviderReadiness, /target blocker closure verification matrix/);
 assert.match(targetProviderEvidenceIntake, /^# Target Provider Evidence Intake v1$/m);
 assert.match(targetProviderEvidenceIntake, /^- status: local-target-provider-evidence-intake-current$/m);
 assert.match(targetProviderEvidenceIntake, /^- productionReadyClaim: false$/m);
@@ -256,6 +259,9 @@ assert.match(targetProviderOperations, /^- status: local-target-provider-operati
 assert.match(targetProviderOperations, /^- productionReadyClaim: false$/m);
 assert.match(targetProviderOperations, /npm run smoke:target-provider-operations/);
 assert.match(targetProviderOperations, /not target-boundary live validation proof/);
+assert.match(targetProviderOperations, /target blocker closure verification proof/);
+assert.match(targetProviderOperations, /blockerClosureVerificationEvidence/);
+assert.match(targetProviderOperations, /cannot bypass `productionReadyClaim: false` while any stop-condition remains/);
 assert.match(targetProviderOperations, /Target provider operations remain blocked for production-ready claims/);
 assert.match(targetOpenAIProviderAccount, /^# Target OpenAI Provider Account v1$/m);
 assert.match(targetOpenAIProviderAccount, /^- status: local-target-openai-provider-account-current$/m);
