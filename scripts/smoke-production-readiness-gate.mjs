@@ -119,10 +119,19 @@ assert.match(decision, /do not claim production-ready/i);
 assert.doesNotMatch(releaseLabel, /production-ready/i);
 
 assert.match(internalAlphaSection, /^Status: pass\./m);
+assert.match(
+  internalAlphaSection,
+  /release artifact publishing is tracked by `smoke:execution-v1-status` and must remain `artifact-sync-current` before handoff/,
+);
 assert.match(pilotReadySection, /^Status: pass, scoped to OpenAI-backed local-first\/self-hosted pilot\./m);
+assert.match(
+  pilotReadySection,
+  /release evidence is synchronized through the current execution-v1 snapshot and `artifact-sync-current` smoke state/,
+);
 assert.match(pilotReadySection, /Pilot-ready can be claimed only for the validated provider and approved deployment boundary\./);
 assert.match(productionReadySection, /^Status: blocked\./m);
 assert.match(productionReadySection, /Production-ready must not be claimed from the current state\./);
+assert.doesNotMatch(releaseReadiness, /commit\/push remains deferred by operator request/);
 
 for (const blocker of [
   /Anthropic and Hermes live validations are not complete/,
