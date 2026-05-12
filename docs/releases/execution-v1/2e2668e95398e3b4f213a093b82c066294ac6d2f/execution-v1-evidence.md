@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T15:09:14.651Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T15:09:03.205Z
 - branch: codex/target-blocker-closure-verification-matrix
 - commit: 2e2668e95398e3b4f213a093b82c066294ac6d2f

@@ -160,6 +160,40 @@ assert.match(
   /execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, and production readiness gate are regenerated/,
 );
 
+assert.match(intake, /## Blocker Closure Verification Matrix/);
+assert.match(intake, /Every blocker disposition change must carry a matching verification row/);
+assert.match(intake, /the stop-condition that remains in force when the command is missing, stale, or generated from the wrong boundary/);
+for (const stopCondition of [
+  'anthropic-live-validation-missing-or-failed',
+  'hermes-runtime-config-missing',
+  'target-local-provider-approval-missing',
+  'hosted-identity-session-approval-missing',
+  'hosted-tenant-isolation-approval-missing',
+  'target-tenant-evidence-missing',
+  'target-environment-evidence-missing',
+  'customer-exception-scope-missing',
+]) {
+  assert.match(intake, new RegExp(`\\| \`${escapeRegExp(stopCondition)}\` \\|`), stopCondition);
+}
+for (const closureCommand of [
+  'npm run live:execution-v1:anthropic',
+  'npm run live:execution-v1:hermes',
+  'npm run live:execution-v1:local',
+  'npm run smoke:target-anthropic-provider-account',
+  'npm run smoke:target-hermes-provider-architecture',
+  'npm run smoke:target-local-provider-architecture',
+  'npm run smoke:hosted-identity-session-architecture',
+  'npm run smoke:hosted-tenant-isolation-architecture',
+  'npm run smoke:target-tenant-isolation-operations',
+  'npm run smoke:target-environment-evidence-intake',
+  'npm run smoke:production-readiness-gate',
+  'npm run smoke:release-artifact-hygiene',
+]) {
+  assert.match(intake, new RegExp(escapeRegExp(closureCommand)), closureCommand);
+}
+assert.match(intake, /matching target boundary, release artifact hygiene, and regenerated release artifacts/);
+assert.match(intake, /must keep `productionReadyClaim: false` and must be recorded as a stop-condition/);
+
 for (const command of [
   'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:target-identity-session-operations',
@@ -243,8 +277,10 @@ console.log(
       targetCaptureTemplate: true,
       targetSubmissionPacket: true,
       blockerDispositionRegister: true,
+      blockerClosureVerificationMatrix: true,
       submissionPacketItemCount: 7,
       blockerDispositionItemCount: 8,
+      blockerClosureVerificationItemCount: 8,
       requiredCommandCount: 30,
     },
     null,
