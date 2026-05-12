@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T11:58:20.785Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T11:58:15.202Z
 - branch: codex/target-environment-blocker-disposition
 - commit: aa0594dfbd4d04577e9aa5f1a223688776655245
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aa0594dfbd4d04577e9aa5f1a223688776655245/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:58:20.785Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:58:07.401Z
 - branch: codex/target-environment-blocker-disposition
 - commit: aa0594dfbd4d04577e9aa5f1a223688776655245
