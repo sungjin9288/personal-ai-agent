@@ -72,6 +72,7 @@ Every target environment review must record:
 - backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence
 - target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence
 - clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment
+- completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register
 - accepted risks, decision owner, and next review date
 - `productionReadyClaim` remains false unless all mandatory target deployment controls are satisfied by target evidence
 
@@ -94,11 +95,28 @@ When a production-like or hosted target boundary is ready for review, fill this 
 
 The completed template is still not sufficient for `production-ready` by itself. It must be paired with target deployment contract, target provider evidence intake, target provider operations, target identity/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence.
 
+## Target Evidence Submission Packet
+
+After the target evidence capture template is filled, operators must package the proof as a sanitized submission packet for review. Do not attach raw tenant payloads, customer personal data, provider secret values, raw API tokens, private endpoint credentials, private tenant identifiers, billing identifiers, or machine-local absolute paths.
+
+| Packet Item | Required Content | Completion Rule |
+| --- | --- | --- |
+| submissionManifest | packet id, target environment name, company/workspace scope, deployment boundary, evidence owner, reviewer, source commit, generated artifact commit, review date, and packet status | must identify the exact target boundary and artifact set under review |
+| sanitizedEvidenceRegister | repository-relative evidence paths, external system aliases, redaction notes, sha256 or signed export reference, evidence owner, and retention class | must prove every evidence reference is sanitized, reproducible, and free of local machine paths or secret values |
+| boundaryConsistencyMap | deployment boundary, identity/session boundary, tenant isolation boundary, provider/secret boundary, observability/SLO boundary, retention/backup boundary, support boundary, and clean release boundary | must prove every evidence domain was generated from the same approved target boundary or explicitly record an accepted exception |
+| commandRerunLog | required command list, command owner, target boundary execution date, pass/fail result, artifact path, and retry/remediation note | must include fresh results for every required smoke/release command after target evidence is attached |
+| reviewerDecisionRecord | reviewer, decision owner, accepted risks, rejected claims, residual blockers, allowed claim text, next review date, and productionReadyClaim decision | must keep `productionReadyClaim` false unless every mandatory target control has target-boundary evidence |
+| blockerDispositionRegister | Anthropic billing/live validation, Hermes runtime config, target local provider approval, hosted identity/session approval, hosted tenant isolation approval, target tenant evidence, target environment evidence, and any customer-specific exception | must record whether each blocker is resolved, accepted with scope, or still blocking before any release claim changes |
+| releaseRefreshEvidence | execution evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, release readiness, artifact hygiene, and production readiness gate references | must prove all review artifacts were regenerated after the target evidence packet was accepted |
+
+The submission packet is the review envelope for target evidence, not the evidence itself. A packet without target-boundary proof, rerun command evidence, reviewer decision, and release refresh evidence remains blocked.
+
 ## Required Commands
 
 ```bash
 npm run smoke:target-environment-evidence-intake
 npm run smoke:target-identity-session-operations
+npm run smoke:target-provider-evidence-intake
 npm run smoke:target-provider-operations
 npm run smoke:target-openai-provider-account
 npm run smoke:target-anthropic-provider-account
@@ -108,11 +126,16 @@ npm run smoke:hosted-identity-session-architecture
 npm run smoke:hosted-tenant-isolation-architecture
 npm run smoke:target-tenant-isolation-operations
 npm run smoke:target-secret-manager-architecture
+npm run smoke:target-secret-manager
 npm run smoke:target-observability-architecture
+npm run smoke:target-observability-operations
 npm run smoke:target-slo-architecture
 npm run smoke:target-slo-operations
 npm run smoke:target-support-architecture
+npm run smoke:target-support-operations
 npm run smoke:target-data-lifecycle-architecture
+npm run smoke:target-retention-operations
+npm run smoke:target-backup-operations
 npm run smoke:target-clean-deployment-architecture
 npm run smoke:target-clean-deployment-operations
 npm run smoke:target-deployment-contract
