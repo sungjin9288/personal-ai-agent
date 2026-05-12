@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T04:35:12.743Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T04:35:12.707Z
 - localDate: 2026-05-12
 - branch: codex/target-environment-evidence-template
 - commit: 966aa6a7f1c992ffd84053bdd287c62d269936a0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0](releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0](docs/releases/execution-v1/966aa6a7f1c992ffd84053bdd287c62d269936a0)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/target-environment-evidence-template not found
 
