@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-12T11:48:00.724Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-12T11:47:49.357Z
 - branch: codex/post-merge-environment-submission-artifact-sync
 - commit: aee1f0e7790c3d702902a8328bd2f249e9bd6a8a

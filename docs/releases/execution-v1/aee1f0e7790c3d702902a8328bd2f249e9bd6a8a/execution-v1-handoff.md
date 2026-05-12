@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-12T11:48:00.724Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-12T11:48:00.687Z
 - localDate: 2026-05-12
 - branch: codex/post-merge-environment-submission-artifact-sync
 - commit: aee1f0e7790c3d702902a8328bd2f249e9bd6a8a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a](releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a](docs/releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: not pushed, origin/codex/post-merge-environment-submission-artifact-sync not found
 

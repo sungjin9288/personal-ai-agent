@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-12T11:48:00.724Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-12T11:47:55.106Z
 - branch: codex/post-merge-environment-submission-artifact-sync
 - commit: aee1f0e7790c3d702902a8328bd2f249e9bd6a8a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aee1f0e7790c3d702902a8328bd2f249e9bd6a8a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
