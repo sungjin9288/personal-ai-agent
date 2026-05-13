@@ -2469,6 +2469,20 @@ async function handleApi(request, response, url) {
     request.method === 'POST' &&
     pathParts[0] === 'api' &&
     pathParts[1] === 'actions' &&
+    pathParts[2] === 'specialist-follow-ups' &&
+    pathParts[3] &&
+    pathParts[4] === 'remediate'
+  ) {
+    const actionId = decodePathSegment(pathParts[3]);
+    const result = await service.remediateSpecialistFollowUp(actionId);
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
     pathParts[2] === 'reviewer-follow-ups' &&
     pathParts[3] &&
     pathParts[4] === 'resolve'

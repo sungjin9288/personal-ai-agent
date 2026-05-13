@@ -3749,6 +3749,15 @@
 - extended runtime discovery and UI harness smokes to verify the provider-attention route, fallback policy metadata, strict non-recoverable stop behavior, and served UI remediation controls
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-05-13T00:00:00.000Z","id":"doclog_20260513000000_web_specialist_follow_up_remediation","type":"devlog","updatedAt":"2026-05-13T00:00:00.000Z"} -->
+## 2026-05-13 Web Specialist Follow-Up Remediation Pass
+
+- date: 2026-05-13T00:00:00.000Z
+- added a web API route for `specialist-follow-up` remediation so action inbox operators can call the existing `remediateSpecialistFollowUp` service path without switching to the CLI
+- surfaced dedicated specialist recovery controls plus remediation route, urgency, and retry-policy metadata on specialist follow-up action items
+- extended runtime discovery and UI harness smokes to verify the specialist follow-up route, branch-resume result, and served UI remediation controls
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_provider_capability_rate_guard","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
 ## 2026-04-27 Provider Capability Rate Guard Pass
 

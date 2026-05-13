@@ -8,6 +8,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 import { createRuntimeJobRegistry } from '../src/core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../src/core/runtime-request-registry.mjs';
+import { createStore } from '../src/core/store.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -20,6 +21,7 @@ const runtimeJobRegistryPath = path.join(tempRoot, 'var', 'runtime-jobs.json');
 const runtimeRequestRegistryPath = path.join(tempRoot, 'var', 'runtime-requests.json');
 const runtimeStatusPath = path.join(tempRoot, 'var', 'runtime-status.json');
 const serverOutput = { stderr: '', stdout: '' };
+const store = createStore({ rootDir: tempRoot });
 const malformedRegistryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-runtime-registry-malformed-'));
 
 fs.mkdirSync(path.dirname(runtimeStatusPath), { recursive: true });
@@ -376,6 +378,51 @@ try {
     recoverableRemediationResult.result.providerFallback.attempts[0].fallbackStopReason,
     'non-recoverable-provider-failure',
   );
+
+  const specialistMissionResponse = await postJson(`${discovery.url}/api/missions`, {
+    constraints: ['parallel-specialists:research,implementation', 'parallel-fail:implementation'],
+    deliverableType: 'decision-memo',
+    mode: 'knowledge',
+    objective: 'Verify specialist follow-up remediation can be triggered through the web action route.',
+    title: 'Runtime specialist follow-up remediation web mission',
+    workspaceId: workspaceResponse.workspace.id,
+  });
+  const specialistRunResult = await postJson(
+    `${discovery.url}/api/missions/${encodeURIComponent(specialistMissionResponse.mission.id)}/run`,
+    {
+      provider: 'stub',
+    },
+  );
+  assert.equal(specialistRunResult.mission.status, 'failed');
+
+  const specialistActions = await fetchJson(
+    `${discovery.url}/api/actions?missionId=${encodeURIComponent(specialistMissionResponse.mission.id)}`,
+  );
+  const specialistAction = specialistActions.items.find((item) => item.actionType === 'specialist-follow-up');
+  assert.equal(Boolean(specialistAction), true, JSON.stringify(specialistActions.items));
+  assert.equal(specialistAction.actionClass, 'specialist-follow-up-required');
+  assert.equal(specialistAction.specialistKind, 'implementation');
+  assert.equal(specialistAction.remediationRoute.routeType, 'standard-branch-remediation');
+  assert.equal(specialistAction.remediationRoute.routeUrgency, 'standard');
+  assert.match(specialistAction.recommendedCommand, /action remediate-specialist-follow-up/);
+  assert.match(specialistAction.fallbackRecommendedCommand, /mission run .* --provider stub/);
+
+  store.updateMission(specialistMissionResponse.mission.id, (current) => ({
+    ...current,
+    constraints: ['parallel-specialists:research,implementation'],
+  }));
+
+  const specialistRemediationResult = await postJson(
+    `${discovery.url}/api/actions/specialist-follow-ups/${encodeURIComponent(specialistAction.actionId)}/remediate`,
+    {},
+  );
+  assert.equal(specialistRemediationResult.remediationKind, 'mission-rerun');
+  assert.equal(specialistRemediationResult.previousStatus, 'failed');
+  assert.equal(specialistRemediationResult.providerId, 'stub');
+  assert.equal(specialistRemediationResult.specialistKind, 'implementation');
+  assert.equal(specialistRemediationResult.result.missionStatus, 'completed');
+  assert.equal(specialistRemediationResult.result.provider, 'stub');
+  assert.equal(specialistRemediationResult.postFollowUp.status, 'clear');
 
   console.log(
     JSON.stringify(

@@ -8643,6 +8643,21 @@ function getProviderAttentionRemediationPayload(item, mode = 'primary') {
   };
 }
 
+function formatSpecialistFollowUpRoute(item) {
+  const route = item?.remediationRoute || null;
+  if (!route) {
+    return '';
+  }
+
+  return [
+    route.routeType ? `route ${route.routeType}` : '',
+    route.routeUrgency ? `urgency ${route.routeUrgency}` : '',
+    item.retryPolicy ? `retry ${item.retryPolicy}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     elements.actionSummary.innerHTML = emptyStateCard({
@@ -8712,6 +8727,11 @@ function renderMissionActions() {
               ? `<div class="item-meta mono">recoverable-only: ${escapeHtml(item.recoverableFallbackRecommendedCommand)}</div>`
               : ''
           }
+          ${
+            item.actionType === 'specialist-follow-up' && formatSpecialistFollowUpRoute(item)
+              ? `<div class="item-meta mono">${escapeHtml(formatSpecialistFollowUpRoute(item))}</div>`
+              : ''
+          }
           <div class="action-row">
             ${
               item.missionId
@@ -8734,7 +8754,12 @@ function renderMissionActions() {
                 : ''
             }
             ${
-              item.missionId && item.actionType !== 'provider-attention'
+              item.actionType === 'specialist-follow-up'
+                ? `<button class="primary-button" type="button" data-specialist-follow-up-remediate="${escapeHtml(item.actionId)}">전문가 복구</button>`
+                : ''
+            }
+            ${
+              item.missionId && !['provider-attention', 'specialist-follow-up'].includes(item.actionType)
                 ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}">권장 재실행</button>`
                 : ''
             }
@@ -8815,6 +8840,31 @@ function renderMissionActions() {
 
       await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
         body: JSON.stringify(payload),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-specialist-follow-up-remediate]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const actionId = button.dataset.specialistFollowUpRemediate;
+      const item = items.find((entry) => entry.actionId === actionId);
+      if (!item) {
+        return;
+      }
+
+      const specialistLabel = item.specialistKind ? `${item.specialistKind} specialist` : 'specialist';
+      const confirmed = window.confirm(`${specialistLabel} follow-up remediation을 실행할까요?`);
+      if (!confirmed) {
+        return;
+      }
+
+      await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
         method: 'POST',
       });
 
