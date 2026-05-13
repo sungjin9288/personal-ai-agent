@@ -175,6 +175,9 @@ try {
   assert.equal(appJs.includes('getProviderAttentionRemediationPayload'), true);
   assert.equal(appJs.includes('recoverableFallbackRecommendedCommand'), true);
   assert.equal(appJs.includes('data-provider-attention-remediate'), true);
+  assert.equal(appJs.includes('/api/actions/specialist-follow-ups/'), true);
+  assert.equal(appJs.includes('formatSpecialistFollowUpRoute'), true);
+  assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
   assert.equal(appJs.includes('document-log-search'), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
   assert.equal(appJs.includes('loadRuntimeRequests'), true);

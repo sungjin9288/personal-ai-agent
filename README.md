@@ -717,6 +717,7 @@ node src/cli.mjs doc log --type devlog --title "Kickoff" --content "Started mana
 4. unresolved specialist branches surface as `specialist-follow-up-required`, and profile quality gate violations can also open the same follow-up item even when the latest branch is only `abandoned` or missing
 5. manager merge runs only after the active profile quality gate passes; when it does not, the mission stops at `specialist` with `specialist-quality-gate-blocked` evidence
 6. `action remediate-specialist-follow-up <actionId>` reruns the same mission and provider, so only unresolved or quality-gate-required specialist branches resume inside the same `parallelGroupId` lineage
+   The Web action inbox uses the same remediation service path, so operators can trigger dedicated specialist recovery from the queue instead of falling back to a generic mission rerun.
 7. `executor` writes the merged draft artifact or the standard sequential artifact and carries forward prior mission signals
 8. `reviewer` validates required sections and next action
 9. if the result is risky, an `Approval` is created and the mission stops at `awaiting_approval`
