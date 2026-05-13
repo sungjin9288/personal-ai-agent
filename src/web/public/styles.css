@@ -3847,6 +3847,24 @@ button.tag:hover {
   gap: 8px;
 }
 
+.release-evidence-doc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.release-evidence-doc-link {
+  text-decoration: none;
+}
+
+.release-evidence-doc-copy {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  line-height: 1.1;
+}
+
 .release-recommendation-card.is-active-flow {
   border-color: rgba(37, 99, 235, 0.24);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);

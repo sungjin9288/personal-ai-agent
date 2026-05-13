@@ -63,6 +63,17 @@ const executionV1MutableArtifactPaths = new Set([
   'docs/production-enterprise-controls-v1.md',
   'docs/release-readiness-v1.md',
 ]);
+const executionV1ReleaseEvidenceDocPaths = new Set([
+  ...executionV1MutableArtifactPaths,
+  'docs/target-anthropic-provider-account-v1.md',
+  'docs/target-clean-deployment-operations-v1.md',
+  'docs/target-deployment-contract-v1.md',
+  'docs/target-environment-evidence-intake-v1.md',
+  'docs/target-hermes-provider-architecture-v1.md',
+  'docs/target-local-provider-architecture-v1.md',
+  'docs/target-provider-evidence-intake-v1.md',
+  'docs/target-provider-operations-v1.md',
+]);
 const releaseHandoffStableLineCopyBaseKey =
   'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
 
@@ -739,6 +750,33 @@ function isExecutionV1ReleaseArtifactPath(filePath = '') {
     || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
+function isExecutionV1ReleaseEvidenceDocPath(filePath = '') {
+  const relativePath = normalizeRepoRelativePath(filePath);
+  return executionV1ReleaseEvidenceDocPaths.has(relativePath)
+    || relativePath.startsWith('docs/releases/execution-v1/');
+}
+
+function resolveExecutionV1ReleaseEvidenceDoc(filePath = '') {
+  const relativePath = normalizeRepoRelativePath(filePath);
+  if (!isExecutionV1ReleaseEvidenceDocPath(relativePath)) {
+    return null;
+  }
+
+  const resolvedPath = path.resolve(rootDir, relativePath);
+  const docsRoot = path.resolve(rootDir, 'docs');
+  if (!resolvedPath.startsWith(`${docsRoot}${path.sep}`) && resolvedPath !== docsRoot) {
+    return null;
+  }
+  if (!fs.existsSync(resolvedPath) || !fs.statSync(resolvedPath).isFile()) {
+    return null;
+  }
+
+  return {
+    path: resolvedPath,
+    relativePath,
+  };
+}
+
 function buildExecutionV1ArtifactSyncCommit(currentCommit = '', verifiedCommit = '') {
   if (!currentCommit || !verifiedCommit || currentCommit === verifiedCommit) {
     return {
@@ -1164,9 +1202,13 @@ function buildReleaseReadinessCommand(label, command, kind = 'verification') {
 }
 
 function buildReleaseReadinessDoc(label, path) {
+  const relativePath = normalizeRepoRelativePath(path);
+  const docRecord = resolveExecutionV1ReleaseEvidenceDoc(relativePath);
   return {
+    exists: Boolean(docRecord),
+    href: docRecord ? `/api/execution-v1/release-doc?path=${encodeURIComponent(relativePath)}` : '',
     label,
-    path,
+    path: relativePath,
   };
 }
 
@@ -2417,6 +2459,25 @@ async function handleApi(request, response, url) {
       getContentType(artifactRecord.artifactPath),
       {
         'content-disposition': `inline; filename="${path.basename(artifactRecord.artifactPath)}"`,
+      },
+    );
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/execution-v1/release-doc') {
+    const docRecord = resolveExecutionV1ReleaseEvidenceDoc(url.searchParams.get('path') || '');
+    if (!docRecord) {
+      sendNotFound(response);
+      return;
+    }
+
+    sendBuffer(
+      response,
+      200,
+      fs.readFileSync(docRecord.path),
+      getContentType(docRecord.path),
+      {
+        'content-disposition': `inline; filename="${path.basename(docRecord.path)}"`,
       },
     );
     return;
