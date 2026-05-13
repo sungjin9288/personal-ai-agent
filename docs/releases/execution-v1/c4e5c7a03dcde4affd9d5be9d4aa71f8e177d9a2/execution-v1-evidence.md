@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T12:39:24.071Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T12:39:12.510Z
 - branch: codex/post-merge-web-provider-attention-artifact-sync
 - commit: c4e5c7a03dcde4affd9d5be9d4aa71f8e177d9a2
