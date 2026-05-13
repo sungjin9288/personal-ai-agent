@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-13T00:27:10.478Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-13T00:27:01.524Z
 - branch: codex/handoff-publish-status-origin-main-fallback
 - commit: 380235e9fde8a2620e5d6525748d9613f30e47d4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/380235e9fde8a2620e5d6525748d9613f30e47d4/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

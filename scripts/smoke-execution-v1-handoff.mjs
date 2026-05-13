@@ -135,6 +135,43 @@ assert.equal(
   true,
 );
 
+const originMainCommit = runGitOptional(['rev-parse', '--verify', 'origin/main']);
+if (originMainCommit) {
+  const fallbackBranch = `codex/missing-publish-status-fixture-${process.pid}-${Date.now()}`;
+  const fallbackEvidencePath = path.join(tempRoot, 'origin-main-fallback-evidence.md');
+  const fallbackCloseoutPath = path.join(tempRoot, 'origin-main-fallback-closeout.md');
+  const fallbackHandoffPath = path.join(tempRoot, 'origin-main-fallback-handoff.md');
+  const fallbackEvidence = fs.readFileSync(evidencePath, 'utf8')
+    .replace(`- branch: ${branch}`, `- branch: ${fallbackBranch}`)
+    .replace(`- commit: ${commit}`, `- commit: ${originMainCommit}`);
+  const fallbackCloseout = fs.readFileSync(closeoutPath, 'utf8')
+    .replace(`- branch: ${branch}`, `- branch: ${fallbackBranch}`)
+    .replace(`- commit: ${commit}`, `- commit: ${originMainCommit}`);
+  fs.writeFileSync(fallbackEvidencePath, fallbackEvidence, 'utf8');
+  fs.writeFileSync(fallbackCloseoutPath, fallbackCloseout, 'utf8');
+
+  const fallbackResult = spawnSync(process.execPath, [
+    path.join(repoDir, 'scripts', 'build-execution-v1-handoff.mjs'),
+    '--evidence-path',
+    fallbackEvidencePath,
+    '--closeout-path',
+    fallbackCloseoutPath,
+    '--output-path',
+    fallbackHandoffPath,
+  ], {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  });
+
+  assert.equal(fallbackResult.status, 0, fallbackResult.stderr || fallbackResult.stdout);
+  const fallbackPayload = JSON.parse(String(fallbackResult.stdout || '{}'));
+  assert.equal(fallbackPayload.ok, true);
+  assert.equal(fallbackPayload.commitPushStatus?.pushed, true);
+  assert.equal(fallbackPayload.commitPushStatus?.remoteRef, 'origin/main');
+  assert.match(fs.readFileSync(fallbackHandoffPath, 'utf8'), /^- commitPushStatus: pushed to origin\/main$/m);
+}
+
 console.log(
   JSON.stringify(
     {
@@ -155,6 +192,17 @@ function runGit(args) {
     encoding: 'utf8',
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
+  return String(result.stdout || '').trim();
+}
+
+function runGitOptional(args) {
+  const result = spawnSync('git', args, {
+    cwd: repoDir,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) {
+    return '';
+  }
   return String(result.stdout || '').trim();
 }
 

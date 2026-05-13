@@ -400,7 +400,11 @@ function getCommitPushStatus({ branch = '', commit = '' } = {}) {
       summary: 'unknown, missing verified commit',
     };
   }
+  const mainStatus = getRemoteContainmentStatus(normalizedCommit, 'origin/main');
   if (!normalizedBranch || normalizedBranch === 'HEAD') {
+    if (mainStatus.pushed) {
+      return mainStatus;
+    }
     return {
       pushed: false,
       remoteRef: '',
@@ -409,8 +413,14 @@ function getCommitPushStatus({ branch = '', commit = '' } = {}) {
   }
 
   const remoteRef = `origin/${normalizedBranch}`;
-  const remoteCommit = runGitOptional(['rev-parse', '--verify', remoteRef]);
-  if (!remoteCommit) {
+  const branchStatus = getRemoteContainmentStatus(normalizedCommit, remoteRef);
+  if (branchStatus.pushed) {
+    return branchStatus;
+  }
+  if (mainStatus.pushed) {
+    return mainStatus;
+  }
+  if (!branchStatus.exists) {
     return {
       pushed: false,
       remoteRef,
@@ -418,25 +428,63 @@ function getCommitPushStatus({ branch = '', commit = '' } = {}) {
     };
   }
 
-  const containsResult = spawnSync('git', ['merge-base', '--is-ancestor', normalizedCommit, remoteRef], {
+  return {
+    pushed: false,
+    remoteCommit: branchStatus.remoteCommit,
+    remoteRef,
+    summary: `not pushed to ${remoteRef}`,
+  };
+}
+
+function getRemoteContainmentStatus(commit, remoteRef) {
+  const normalizedCommit = String(commit || '').trim();
+  const normalizedRemoteRef = String(remoteRef || '').trim();
+  const remoteCommit = getRemoteHeadCommit(normalizedRemoteRef);
+  if (!normalizedCommit || !remoteCommit) {
+    return {
+      exists: Boolean(remoteCommit),
+      pushed: false,
+      remoteCommit,
+      remoteRef: normalizedRemoteRef,
+    };
+  }
+
+  const containsResult = spawnSync('git', ['merge-base', '--is-ancestor', normalizedCommit, normalizedRemoteRef], {
     cwd: repoDir,
     encoding: 'utf8',
   });
   if (containsResult.status === 0) {
     return {
+      exists: true,
       pushed: true,
       remoteCommit,
-      remoteRef,
-      summary: `pushed to ${remoteRef}`,
+      remoteRef: normalizedRemoteRef,
+      summary: `pushed to ${normalizedRemoteRef}`,
     };
   }
 
   return {
+    exists: true,
     pushed: false,
     remoteCommit,
-    remoteRef,
-    summary: `not pushed to ${remoteRef}`,
+    remoteRef: normalizedRemoteRef,
   };
+}
+
+function getRemoteHeadCommit(remoteRef) {
+  const normalizedRemoteRef = String(remoteRef || '').trim();
+  const [remoteName, ...branchParts] = normalizedRemoteRef.split('/');
+  const branchName = branchParts.join('/');
+  if (remoteName && branchName) {
+    const result = spawnSync('git', ['ls-remote', '--heads', remoteName, branchName], {
+      cwd: repoDir,
+      encoding: 'utf8',
+    });
+    if (result.status === 0) {
+      return String(result.stdout || '').trim().split(/\s+/)[0] || '';
+    }
+  }
+  return runGitOptional(['rev-parse', '--verify', normalizedRemoteRef]);
 }
 
 function formatDisplayPath(filePath) {
