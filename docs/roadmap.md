@@ -26,6 +26,7 @@
 - release status now maps current open blockers to triage categories, evidence documents, owners, stop reasons, and copyable next commands, so the operator release tab can move from blocker visibility to blocker disposition without reopening the release-readiness Markdown first
 - release current open blocker rows now support `rblocker` deep links, focused blocker callouts, and row-level blocker link copy so blocker disposition can be shared without losing the release tab context
 - release current open blocker evidence docs now expose guarded open/copy links from the same blocker row, so operator handoff can jump from a stop-condition to its supporting evidence document without path reconstruction
+- release current open blocker rows now provide one-shot handoff copy text with blocker metadata, release deep link, evidence document links, and next commands so operator escalation can carry the complete disposition package
 - mission timeline and mission summary now expose provider fallback attempt and used counts plus timeline events, so failover evidence remains auditable after the original run output
 - workspace timeline and global operator timeline now also expose provider fallback attempt and used counts plus failover events, so cross-mission operator chronology carries the same fallback audit evidence
 - provider events and provider overview now include fallback audit events as a first-class `fallback` family, so provider-scoped chronology can slice failover evidence without reopening mission or workspace timelines
