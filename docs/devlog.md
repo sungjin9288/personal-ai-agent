@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Evidence Doc Link Pass
+
+- added a guarded `/api/execution-v1/release-doc` route for release blocker evidence documents, limited to known execution-v1 release evidence paths
+- enriched current open blocker `evidenceDocs` with `exists` and `href` metadata so the release tab can open the exact supporting document without reconstructing paths
+- rendered evidence doc chips as openable links with per-doc copy actions, and extended status/browser smoke coverage to verify payload metadata, route response, UI markers, and copy action wiring
+
 ## 2026-05-14 Web Release Blocker Deep Link Pass
 
 - added `rblocker` release query state so current open blocker focus survives reload and can be handed off as a direct release tab link

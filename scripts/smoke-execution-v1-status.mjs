@@ -111,17 +111,27 @@ try {
     true,
     JSON.stringify(status.releaseReadiness),
   );
-  assert.equal(
-    status.releaseReadiness.currentOpenBlockerActions.some(
-      (item) =>
-        item.category === 'provider-account' &&
-        item.owner === 'provider-ops' &&
-        item.commands.some((command) => command.command === 'npm run preflight:execution-v1:anthropic') &&
-        item.evidenceDocs.some((doc) => doc.path === 'docs/target-anthropic-provider-account-v1.md'),
-    ),
-    true,
-    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  const anthropicBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.category === 'provider-account' &&
+      item.owner === 'provider-ops' &&
+      item.commands.some((command) => command.command === 'npm run preflight:execution-v1:anthropic'),
   );
+  assert.equal(Boolean(anthropicBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  const anthropicEvidenceDoc = anthropicBlockerAction.evidenceDocs.find(
+    (doc) => doc.path === 'docs/target-anthropic-provider-account-v1.md',
+  );
+  assert.equal(Boolean(anthropicEvidenceDoc), true, JSON.stringify(anthropicBlockerAction));
+  assert.equal(anthropicEvidenceDoc.exists, true, JSON.stringify(anthropicEvidenceDoc));
+  assert.equal(
+    anthropicEvidenceDoc.href,
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-anthropic-provider-account-v1.md',
+    JSON.stringify(anthropicEvidenceDoc),
+  );
+  const anthropicEvidenceResponse = await fetch(`${baseUrl}${anthropicEvidenceDoc.href}`);
+  assert.equal(anthropicEvidenceResponse.status, 200);
+  assert.match(anthropicEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
+  assert.match(await anthropicEvidenceResponse.text(), /Target Anthropic Provider Account/i);
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(
       (item) =>

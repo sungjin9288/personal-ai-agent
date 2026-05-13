@@ -201,9 +201,12 @@ try {
   assert.equal(appJs.includes('rblocker'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-focus'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-evidence-doc'), true);
+  assert.equal(appJs.includes('data-release-evidence-doc-href'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);
   assert.equal(appJs.includes('focus-release-blocker'), true);
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
+  assert.equal(appJs.includes('copy-release-evidence-doc-link'), true);
   assert.equal(appJs.includes('clear-release-blocker-focus'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
   assert.equal(rootHtml.includes('<option value="hermes">Hermes</option>'), true);
@@ -281,6 +284,18 @@ try {
   );
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions.length, 1);
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].category, 'release-readiness');
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActions[0].evidenceDocs.some(
+      (doc) =>
+        doc.path === 'docs/release-readiness-v1.md' &&
+        doc.exists === true &&
+        doc.href === '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
+    ),
+    true,
+    JSON.stringify(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].evidenceDocs),
+  );
+  const releaseReadinessDoc = await fetchText(`${baseUrl}/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md`);
+  assert.match(releaseReadinessDoc, /Release Readiness v1/);
   assert.equal(
     executionV1Status.releaseReadiness.currentOpenBlockerActions[0].commands.some(
       (command) => command.command === 'npm run smoke:production-readiness-gate',

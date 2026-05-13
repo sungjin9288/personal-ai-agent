@@ -2828,6 +2828,14 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-evidence-doc-link') {
+        void copyReleaseEvidenceDocLink({
+          href: button.dataset.uiHref || value || '',
+          label: button.dataset.uiLabel || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-command') {
         void copyPlainTextValue(value || '', {
           promptMessage: `${button.dataset.uiLabel || 'release command'}를 복사하세요.`,
@@ -3652,6 +3660,27 @@ async function copyReleaseBlockerLink({
     historyProvider: '',
     historyScope: '',
     successNotice: successNotice || '선택한 release blocker 링크를 복사했습니다.',
+  });
+}
+
+async function copyReleaseEvidenceDocLink({
+  href = '',
+  label = '',
+} = {}) {
+  const normalizedHref = String(href || '').trim();
+  const normalizedLabel = String(label || 'release evidence doc').trim();
+  if (!normalizedHref) {
+    setUiNotice('복사할 evidence doc 링크가 없습니다.');
+    return;
+  }
+
+  const docUrl = normalizedHref.startsWith('http://') || normalizedHref.startsWith('https://')
+    ? normalizedHref
+    : `${window.location.origin}${normalizedHref.startsWith('/') ? normalizedHref : `/${normalizedHref}`}`;
+  await copyUiLink(docUrl, {
+    promptMessage: `${normalizedLabel} 링크를 복사하세요.`,
+    shownNotice: `${normalizedLabel} 링크를 표시했습니다.`,
+    successNotice: `${normalizedLabel} 링크를 복사했습니다.`,
   });
 }
 
@@ -7508,9 +7537,40 @@ function renderReleaseStatus() {
                           <div class="item-meta">${escapeHtml(item.nextEvidence || 'release-readiness current open blocker')}</div>
                           ${evidenceDocs.length
                             ? `
-                                <div class="release-history-filter-chips">
+                                <div class="release-history-filter-chips release-evidence-doc-chips">
                                   ${evidenceDocs
-                                    .map((doc) => `<span class="mini-badge status-running">${escapeHtml(doc.path || doc.label || '')}</span>`)
+                                    .map((doc) => {
+                                      const docHref = String(doc.href || '').trim();
+                                      const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+                                      const docPath = String(doc.path || '').trim();
+                                      return `
+                                        <span class="release-evidence-doc-chip" data-release-current-open-blocker-evidence-doc="${escapeHtml(actionId)}">
+                                          ${docHref
+                                            ? `
+                                                <a
+                                                  class="mini-badge status-running release-evidence-doc-link"
+                                                  href="${escapeHtml(docHref)}"
+                                                  target="_blank"
+                                                  rel="noreferrer"
+                                                  data-release-evidence-doc-href="${escapeHtml(docHref)}"
+                                                  data-release-evidence-doc-path="${escapeHtml(docPath)}"
+                                                >${escapeHtml(docPath || docLabel)}</a>
+                                              `
+                                            : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
+                                          ${docHref
+                                            ? `
+                                                <button
+                                                  class="ghost-button release-evidence-doc-copy"
+                                                  type="button"
+                                                  data-ui-action="copy-release-evidence-doc-link"
+                                                  data-ui-href="${escapeHtml(docHref)}"
+                                                  data-ui-label="${escapeHtml(docLabel)}"
+                                                >문서 링크 복사</button>
+                                              `
+                                            : ''}
+                                        </span>
+                                      `;
+                                    })
                                     .join('')}
                                 </div>
                               `
