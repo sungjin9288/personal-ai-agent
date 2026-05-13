@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-13T04:56:11.729Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-13T04:56:10.274Z
 - localDate: 2026-05-13
 - branch: codex/post-merge-fallback-policy-help-artifact-sync
 - commit: 5b0ea8d8a1132476dc85256a99647e494445bda4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4](releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4](docs/releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: pushed to origin/codex/post-merge-fallback-policy-help-artifact-sync
 

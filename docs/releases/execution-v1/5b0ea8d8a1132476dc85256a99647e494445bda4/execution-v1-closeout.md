@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-13T04:56:11.729Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-13T04:56:03.102Z
 - branch: codex/post-merge-fallback-policy-help-artifact-sync
 - commit: 5b0ea8d8a1132476dc85256a99647e494445bda4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5b0ea8d8a1132476dc85256a99647e494445bda4/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
