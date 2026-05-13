@@ -1953,6 +1953,73 @@ function getReleaseCurrentOpenBlockerAction(blockerId = '') {
   return getReleaseCurrentOpenBlockerActions().find((item) => String(item.id || '').trim() === normalizedBlockerId) || null;
 }
 
+function getAbsoluteReleaseUrl(href = '') {
+  const normalizedHref = String(href || '').trim();
+  if (!normalizedHref) {
+    return '';
+  }
+  if (normalizedHref.startsWith('http://') || normalizedHref.startsWith('https://')) {
+    return normalizedHref;
+  }
+  return `${window.location.origin}${normalizedHref.startsWith('/') ? normalizedHref : `/${normalizedHref}`}`;
+}
+
+function buildReleaseBlockerHandoffText(blockerAction = null) {
+  const actionId = String(blockerAction?.id || '').trim();
+  if (!blockerAction || !actionId) {
+    return '';
+  }
+
+  const blockerLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseFocusedBlockerId: actionId,
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const evidenceDocs = Array.isArray(blockerAction.evidenceDocs) ? blockerAction.evidenceDocs : [];
+  const commands = Array.isArray(blockerAction.commands) ? blockerAction.commands : [];
+  const lines = [
+    'Release blocker handoff',
+    `- blocker: ${String(blockerAction.blocker || blockerAction.stopReason || 'current open blocker').trim()}`,
+    `- id: ${actionId}`,
+    `- category: ${String(blockerAction.category || 'stop-condition').trim()}`,
+    `- owner: ${String(blockerAction.owner || 'release-owner').trim()}`,
+    `- status: ${String(blockerAction.status || 'blocked').trim()}`,
+    `- stopReason: ${String(blockerAction.stopReason || blockerAction.blocker || '').trim()}`,
+    `- nextEvidence: ${String(blockerAction.nextEvidence || '').trim()}`,
+    `- releaseLink: ${blockerLink}`,
+    '',
+    'Evidence docs:',
+    ...(
+      evidenceDocs.length
+        ? evidenceDocs.map((doc) => {
+            const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+            const docPath = String(doc.path || '').trim();
+            const docHref = getAbsoluteReleaseUrl(doc.href || '');
+            const availability = doc.exists === false ? 'missing' : 'available';
+            return `- ${docLabel}: ${docPath}${docHref ? ` (${docHref})` : ''} [${availability}]`;
+          })
+        : ['- none']
+    ),
+    '',
+    'Commands:',
+    ...(
+      commands.length
+        ? commands.map((command) => {
+            const commandLabel = String(command.label || 'command').trim();
+            const commandValue = String(command.command || '').trim();
+            return `- ${commandLabel}: ${commandValue}`;
+          })
+        : ['- none']
+    ),
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -2828,6 +2895,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-handoff') {
+        void copyReleaseBlockerHandoff({
+          blockerId: button.dataset.uiBlocker || value || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-evidence-doc-link') {
         void copyReleaseEvidenceDocLink({
           href: button.dataset.uiHref || value || '',
@@ -3663,6 +3737,24 @@ async function copyReleaseBlockerLink({
   });
 }
 
+async function copyReleaseBlockerHandoff({
+  blockerId = state.releaseFocusedBlockerId,
+} = {}) {
+  const normalizedBlockerId = normalizeUiParam(blockerId);
+  const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
+  const handoffText = buildReleaseBlockerHandoffText(blockerAction);
+  if (!handoffText) {
+    setUiNotice('복사할 release blocker handoff가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(handoffText, {
+    promptMessage: 'release blocker handoff를 복사하세요.',
+    shownNotice: 'release blocker handoff를 표시했습니다.',
+    successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
 async function copyReleaseEvidenceDocLink({
   href = '',
   label = '',
@@ -3674,9 +3766,7 @@ async function copyReleaseEvidenceDocLink({
     return;
   }
 
-  const docUrl = normalizedHref.startsWith('http://') || normalizedHref.startsWith('https://')
-    ? normalizedHref
-    : `${window.location.origin}${normalizedHref.startsWith('/') ? normalizedHref : `/${normalizedHref}`}`;
+  const docUrl = getAbsoluteReleaseUrl(normalizedHref);
   await copyUiLink(docUrl, {
     promptMessage: `${normalizedLabel} 링크를 복사하세요.`,
     shownNotice: `${normalizedLabel} 링크를 표시했습니다.`,
@@ -7513,6 +7603,13 @@ function renderReleaseStatus() {
                       <button
                         class="ghost-button"
                         type="button"
+                        data-release-current-open-blocker-handoff="${escapeHtml(focusedBlockerId)}"
+                        data-ui-action="copy-release-blocker-handoff"
+                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                      >handoff 복사</button>
+                      <button
+                        class="ghost-button"
+                        type="button"
                         data-ui-action="copy-release-blocker-link"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
                       >blocker 링크 복사</button>
@@ -7587,6 +7684,13 @@ function renderReleaseStatus() {
                             data-ui-blocker="${escapeHtml(actionId)}"
                             ${isFocusedBlocker ? 'disabled' : ''}
                           >${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-current-open-blocker-handoff="${escapeHtml(actionId)}"
+                            data-ui-action="copy-release-blocker-handoff"
+                            data-ui-blocker="${escapeHtml(actionId)}"
+                          >handoff 복사</button>
                           <button
                             class="ghost-button"
                             type="button"

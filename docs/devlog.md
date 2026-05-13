@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Handoff Copy Pass
+
+- added a current open blocker handoff copy action that packages blocker id, category, owner, status, stop reason, next evidence, release deep link, evidence docs, and next commands into one operator-ready text block
+- exposed the handoff copy action from both focused blocker callouts and current open blocker rows, keeping `rblocker` deep links, evidence doc links, and command handoff aligned in one surface
+- extended `smoke:ui-harness-browse` to pin the handoff copy action marker and generated handoff text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Evidence Doc Link Pass
 
 - added a guarded `/api/execution-v1/release-doc` route for release blocker evidence documents, limited to known execution-v1 release evidence paths
