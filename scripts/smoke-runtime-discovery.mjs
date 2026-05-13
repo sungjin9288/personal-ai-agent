@@ -95,6 +95,9 @@ const serverProcess = spawn(process.execPath, [serverEntry], {
   cwd: repoDir,
   env: {
     ...process.env,
+    ANTHROPIC_API_KEY: '',
+    ANTHROPIC_BASE_URL: '',
+    ANTHROPIC_MODEL: '',
     PERSONAL_AI_AGENT_ROOT: tempRoot,
     PERSONAL_AI_AGENT_UI_HOST: '127.0.0.1',
     PERSONAL_AI_AGENT_UI_PORT: String(requestedPort),
@@ -235,6 +238,69 @@ try {
   assert.equal(runResult.session.sourceContext.channel, 'web');
   assert.equal(runResult.session.sourceContext.requestId, webRunRequestId);
   assert.equal(runResult.session.sourceContext.route, `/api/missions/${missionResponse.mission.id}/run`);
+
+  const fallbackMissionResponse = await postJson(`${discovery.url}/api/missions`, {
+    deliverableType: 'decision-memo',
+    mode: 'knowledge',
+    objective: 'Verify web mission run can fall back through provider-failure-only policy.',
+    title: 'Runtime fallback web mission',
+    workspaceId: workspaceResponse.workspace.id,
+  });
+  const fallbackRunResponse = await fetch(
+    `${discovery.url}/api/missions/${encodeURIComponent(fallbackMissionResponse.mission.id)}/run`,
+    {
+      body: JSON.stringify({
+        fallbackProvider: 'stub',
+        provider: 'anthropic',
+      }),
+      headers: {
+        'content-type': 'application/json',
+        'X-Request-Id': 'runtime-web-fallback-run',
+      },
+      method: 'POST',
+    },
+  );
+  assert.equal(fallbackRunResponse.status, 200);
+  const fallbackRunResult = await fallbackRunResponse.json();
+  assert.equal(fallbackRunResult.mission.status, 'completed');
+  assert.equal(fallbackRunResult.provider, 'stub');
+  assert.equal(fallbackRunResult.providerFallback.policyId, 'provider-failure-only');
+  assert.equal(fallbackRunResult.providerFallback.fallbackUsed, true);
+  assert.deepEqual(fallbackRunResult.providerFallback.attemptedProviderIds, ['anthropic', 'stub']);
+
+  const recoverablePolicyMissionResponse = await postJson(`${discovery.url}/api/missions`, {
+    deliverableType: 'decision-memo',
+    mode: 'knowledge',
+    objective: 'Verify web mission run stops on non-recoverable failures under recoverable-only policy.',
+    title: 'Runtime recoverable-only web mission',
+    workspaceId: workspaceResponse.workspace.id,
+  });
+  const recoverablePolicyRunResponse = await fetch(
+    `${discovery.url}/api/missions/${encodeURIComponent(recoverablePolicyMissionResponse.mission.id)}/run`,
+    {
+      body: JSON.stringify({
+        fallbackPolicy: 'recoverable-provider-failure-only',
+        fallbackProvider: 'stub',
+        provider: 'anthropic',
+      }),
+      headers: {
+        'content-type': 'application/json',
+        'X-Request-Id': 'runtime-web-recoverable-policy-run',
+      },
+      method: 'POST',
+    },
+  );
+  assert.equal(recoverablePolicyRunResponse.status, 200);
+  const recoverablePolicyRunResult = await recoverablePolicyRunResponse.json();
+  assert.equal(recoverablePolicyRunResult.mission.status, 'failed');
+  assert.equal(recoverablePolicyRunResult.provider, 'anthropic');
+  assert.equal(recoverablePolicyRunResult.providerFallback.policyId, 'recoverable-provider-failure-only');
+  assert.equal(recoverablePolicyRunResult.providerFallback.fallbackUsed, false);
+  assert.deepEqual(recoverablePolicyRunResult.providerFallback.attemptedProviderIds, ['anthropic']);
+  assert.equal(
+    recoverablePolicyRunResult.providerFallback.attempts[0].fallbackStopReason,
+    'non-recoverable-provider-failure',
+  );
 
   console.log(
     JSON.stringify(
