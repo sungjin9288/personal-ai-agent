@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Deep Link Pass
+
+- added `rblocker` release query state so current open blocker focus survives reload and can be handed off as a direct release tab link
+- rendered focused current open blocker callouts plus row-level focus/link actions while preserving existing provider/history/handoff release URL state
+- extended `smoke:ui-harness-browse` to pin the blocker deep-link markers, focus actions, copy action, and clear-focus action in the web bundle
+
 ## 2026-05-13 Web Release Blocker Triage Actions Pass
 
 - added current open blocker action mapping to `/api/execution-v1/status`, covering provider account, provider architecture, target deployment, and release decision blocker categories

@@ -55,6 +55,7 @@ const state = {
   releaseLiveConfirmProvider: '',
   releaseAllPreflight: null,
   releaseExpandedHistoryId: '',
+  releaseFocusedBlockerId: '',
   releaseFocusedProvider: '',
   releaseHistoryFilterOutcome: '',
   releaseHistoryFilterProvider: '',
@@ -663,6 +664,7 @@ function parseUiStateFromUrl() {
     retrievalSourceType: getSanitizedRetrievalSourceType(params.get('hstype')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
+    releaseFocusedBlockerId: normalizeUiParam(params.get('rblocker')),
     releaseFocusedProvider: normalizeUiParam(params.get('rcard')),
     releaseFocusedHistoryId: normalizeUiParam(params.get('rhistory')),
     releaseHistoryOutcome: getSanitizedReleaseHistoryOutcome(params.get('routcome')),
@@ -705,6 +707,10 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseFocusedProvider !== undefined
       ? normalizeUiParam(overrides.releaseFocusedProvider)
       : normalizeUiParam(state.releaseFocusedProvider);
+  const releaseFocusedBlockerId =
+    overrides.releaseFocusedBlockerId !== undefined
+      ? normalizeUiParam(overrides.releaseFocusedBlockerId)
+      : normalizeUiParam(state.releaseFocusedBlockerId);
   const releaseFocusedHistoryId =
     overrides.releaseFocusedHistoryId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedHistoryId)
@@ -790,6 +796,11 @@ function buildUiStateUrl(overrides = {}) {
   }
 
   if (detailTab === 'release') {
+    if (releaseFocusedBlockerId) {
+      params.set('rblocker', releaseFocusedBlockerId);
+    } else {
+      params.delete('rblocker');
+    }
     if (releaseFocusedProvider) {
       params.set('rcard', releaseFocusedProvider);
     } else {
@@ -821,6 +832,7 @@ function buildUiStateUrl(overrides = {}) {
       params.delete('rscope');
     }
   } else {
+    params.delete('rblocker');
     params.delete('rcard');
     params.delete('rhistory');
     params.delete('rartifact');
@@ -1912,6 +1924,35 @@ function isRecommendationFlowActive({ attentionAction = null, latestAction = nul
   };
 }
 
+function getReleaseCurrentOpenBlockerActions(releaseStatus = state.releaseStatus) {
+  const releaseReadiness = releaseStatus?.releaseReadiness || {};
+  const currentOpenBlockers = Array.isArray(releaseReadiness.currentOpenBlockers)
+    ? releaseReadiness.currentOpenBlockers
+    : [];
+
+  return Array.isArray(releaseReadiness.currentOpenBlockerActions)
+    ? releaseReadiness.currentOpenBlockerActions
+    : currentOpenBlockers.map((item, index) => ({
+        blocker: item,
+        category: 'release-readiness',
+        commands: [],
+        evidenceDocs: [],
+        id: `current-open-blocker-${index + 1}`,
+        nextEvidence: '',
+        owner: 'release-owner',
+        status: 'blocked',
+        stopReason: item,
+      }));
+}
+
+function getReleaseCurrentOpenBlockerAction(blockerId = '') {
+  const normalizedBlockerId = String(blockerId || '').trim();
+  if (!normalizedBlockerId) {
+    return null;
+  }
+  return getReleaseCurrentOpenBlockerActions().find((item) => String(item.id || '').trim() === normalizedBlockerId) || null;
+}
+
 function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -1926,6 +1967,30 @@ function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scr
   }
   window.requestAnimationFrame(() => {
     const target = elements.releaseStatus.querySelector(`[data-release-history-id="${CSS.escape(normalizedHistoryId)}"]`);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  });
+}
+
+function focusReleaseBlocker(blockerId = '', { historyMode = 'replace', scroll = true } = {}) {
+  const normalizedBlockerId = String(blockerId || '').trim();
+  if (!normalizedBlockerId || !getReleaseCurrentOpenBlockerAction(normalizedBlockerId)) {
+    return;
+  }
+  state.releaseFocusedBlockerId = normalizedBlockerId;
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+  if (!scroll || !elements.releaseStatus) {
+    return;
+  }
+  window.requestAnimationFrame(() => {
+    const target = elements.releaseStatus.querySelector(
+      `[data-release-current-open-blocker-action-row="${CSS.escape(normalizedBlockerId)}"]`,
+    );
     if (target) {
       target.scrollIntoView({
         behavior: 'smooth',
@@ -1974,6 +2039,12 @@ function toggleReleaseHistoryEntry(historyId = '') {
 function clearReleaseHistoryFocus({ historyMode = 'replace' } = {}) {
   state.releaseFocusedHistoryId = '';
   state.releaseExpandedHistoryId = '';
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
+function clearReleaseBlockerFocus({ historyMode = 'replace' } = {}) {
+  state.releaseFocusedBlockerId = '';
   renderReleaseStatus();
   writeUiStateToUrl({ historyMode });
 }
@@ -2030,6 +2101,17 @@ function applyReleaseHistoryUrlState({
     : '';
   state.releaseHistoryFilterProvider = history.some((item) => String(item.provider || '').trim() === normalizedProvider)
     ? normalizedProvider
+    : '';
+  renderReleaseStatus();
+}
+
+function applyReleaseBlockerUrlState(blockerId = '') {
+  const normalizedBlockerId = String(blockerId || '').trim();
+  const currentOpenBlockerActions = getReleaseCurrentOpenBlockerActions();
+  state.releaseFocusedBlockerId = currentOpenBlockerActions.some(
+    (item) => String(item.id || '').trim() === normalizedBlockerId,
+  )
+    ? normalizedBlockerId
     : '';
   renderReleaseStatus();
 }
@@ -2673,6 +2755,12 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'focus-release-blocker') {
+        focusReleaseBlocker(button.dataset.uiBlocker || value || '', { historyMode: 'push' });
+        setUiNotice('선택한 current open blocker로 이동했습니다.');
+        return;
+      }
+
       if (action === 'focus-release-provider') {
         focusReleaseProvider(button.dataset.uiProvider || value || '', { historyMode: 'push' });
         setUiNotice('연결된 provider readiness 카드로 이동했습니다.');
@@ -2702,6 +2790,12 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'clear-release-blocker-focus') {
+        clearReleaseBlockerFocus({ historyMode: 'push' });
+        setUiNotice('current open blocker 포커스를 해제했습니다.');
+        return;
+      }
+
       if (action === 'clear-release-provider-focus') {
         clearReleaseProviderFocus({ historyMode: 'push' });
         setUiNotice('provider readiness 카드 포커스를 해제했습니다.');
@@ -2715,12 +2809,21 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-history-link') {
         void copyReleaseTriageLink({
+          focusedBlockerId: '',
           focusedProvider: '',
           focusedHistoryId: value || '',
           historyOutcome: '',
           historyProvider: '',
           historyScope: '',
           successNotice: '선택한 release 기록 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-blocker-link') {
+        void copyReleaseBlockerLink({
+          blockerId: button.dataset.uiBlocker || value || '',
+          successNotice: '선택한 release blocker 링크를 복사했습니다.',
         });
         return;
       }
@@ -2806,6 +2909,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
+          focusedBlockerId: '',
           focusedProvider: '',
           focusedHistoryId: value || '',
           historyOutcome: button.dataset.uiOutcome || '',
@@ -2818,6 +2922,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-provider-link') {
         void copyReleaseTriageLink({
+          focusedBlockerId: '',
           focusedProvider: button.dataset.uiProvider || value || '',
           focusedHistoryId: '',
           historyOutcome: '',
@@ -3505,6 +3610,7 @@ async function resetCurrentView() {
 }
 
 async function copyReleaseTriageLink({
+  focusedBlockerId = state.releaseFocusedBlockerId,
   focusedProvider = state.releaseFocusedProvider,
   focusedHistoryId = state.releaseFocusedHistoryId,
   historyOutcome = state.releaseHistoryFilterOutcome,
@@ -3514,6 +3620,7 @@ async function copyReleaseTriageLink({
 } = {}) {
   const triageUrl = `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
+    releaseFocusedBlockerId: focusedBlockerId,
     releaseFocusedProvider: focusedProvider,
     releaseFocusedHistoryId: focusedHistoryId,
     releaseHistoryOutcome: historyOutcome,
@@ -3524,6 +3631,27 @@ async function copyReleaseTriageLink({
     promptMessage: '현재 release triage 링크를 복사하세요.',
     shownNotice: '현재 release triage 링크를 표시했습니다.',
     successNotice,
+  });
+}
+
+async function copyReleaseBlockerLink({
+  blockerId = state.releaseFocusedBlockerId,
+  successNotice = '',
+} = {}) {
+  const normalizedBlockerId = normalizeUiParam(blockerId);
+  if (!getReleaseCurrentOpenBlockerAction(normalizedBlockerId)) {
+    setUiNotice('복사할 release blocker 링크가 없습니다.');
+    return;
+  }
+
+  await copyReleaseTriageLink({
+    focusedBlockerId: normalizedBlockerId,
+    focusedProvider: '',
+    focusedHistoryId: '',
+    historyOutcome: '',
+    historyProvider: '',
+    historyScope: '',
+    successNotice: successNotice || '선택한 release blocker 링크를 복사했습니다.',
   });
 }
 
@@ -6574,19 +6702,7 @@ function renderReleaseStatus() {
   const currentOpenBlockers = Array.isArray(releaseReadiness.currentOpenBlockers)
     ? releaseReadiness.currentOpenBlockers
     : [];
-  const currentOpenBlockerActions = Array.isArray(releaseReadiness.currentOpenBlockerActions)
-    ? releaseReadiness.currentOpenBlockerActions
-    : currentOpenBlockers.map((item, index) => ({
-        blocker: item,
-        category: 'release-readiness',
-        commands: [],
-        evidenceDocs: [],
-        id: `current-open-blocker-${index + 1}`,
-        nextEvidence: '',
-        owner: 'release-owner',
-        status: 'blocked',
-        stopReason: item,
-      }));
+  const currentOpenBlockerActions = getReleaseCurrentOpenBlockerActions(release);
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
@@ -6620,12 +6736,15 @@ function renderReleaseStatus() {
   const staleReasons = release.staleReasons || [];
   const localArtifactNotes = release.localArtifactNotes || [];
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
+  const focusedBlockerId = String(state.releaseFocusedBlockerId || '').trim();
   const focusedProvider = String(state.releaseFocusedProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
   const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
   const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
   const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
+  const focusedBlockerEntry =
+    currentOpenBlockerActions.find((item) => String(item.id || '').trim() === focusedBlockerId) || null;
   const coreDeterministicPassed = summary.coreDeterministicPassed ?? summary.deterministicPassed ?? 0;
   const coreDeterministicTotal = summary.coreDeterministicTotal ?? summary.deterministicTotal ?? 0;
   const referenceAdoptionPassed = Number(summary.referenceAdoptionPassed || 0);
@@ -7356,6 +7475,23 @@ function renderReleaseStatus() {
               <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
               <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
             </div>
+            ${focusedBlockerId
+              ? `
+                  <div class="harness-callout release-blocker-focus-callout" data-release-current-open-blocker-focus="${escapeHtml(focusedBlockerId)}">
+                    <strong>Focused current open blocker</strong>
+                    <p>${escapeHtml(focusedBlockerEntry?.blocker || focusedBlockerEntry?.stopReason || focusedBlockerId)}</p>
+                    <div class="release-history-focus-actions">
+                      <button
+                        class="ghost-button"
+                        type="button"
+                        data-ui-action="copy-release-blocker-link"
+                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                      >blocker 링크 복사</button>
+                      <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus">포커스 해제</button>
+                    </div>
+                  </div>
+                `
+              : ''}
             <div class="release-current-status" data-release-current-open-blocker-list="true">
               ${currentOpenBlockerActions.length
                 ? currentOpenBlockerActions
@@ -7364,8 +7500,9 @@ function renderReleaseStatus() {
                       const commands = Array.isArray(item.commands) ? item.commands.slice(0, 3) : [];
                       const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs.slice(0, 3) : [];
                       const actionId = String(item.id || '').trim();
+                      const isFocusedBlocker = Boolean(actionId) && actionId === focusedBlockerId;
                       return `
-                      <div class="harness-row" data-release-current-open-blocker-row="true" data-release-current-open-blocker-action-row="${escapeHtml(actionId)}">
+                      <div class="harness-row ${isFocusedBlocker ? 'is-focused-blocker' : ''}" data-release-current-open-blocker-row="true" data-release-current-open-blocker-action-row="${escapeHtml(actionId)}">
                         <div>
                           <div class="item-title">${escapeHtml(item.blocker || item.stopReason || 'current open blocker')}</div>
                           <div class="item-meta">${escapeHtml(item.nextEvidence || 'release-readiness current open blocker')}</div>
@@ -7383,6 +7520,19 @@ function renderReleaseStatus() {
                           <span class="mini-badge status-failed">${escapeHtml(item.category || 'stop-condition')}</span>
                           <span class="item-meta">${escapeHtml(item.owner || 'release-owner')}</span>
                           <span class="mini-badge status-failed">stop-condition</span>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-ui-action="focus-release-blocker"
+                            data-ui-blocker="${escapeHtml(actionId)}"
+                            ${isFocusedBlocker ? 'disabled' : ''}
+                          >${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-ui-action="copy-release-blocker-link"
+                            data-ui-blocker="${escapeHtml(actionId)}"
+                          >blocker 링크 복사</button>
                           ${commands
                             .map(
                               (command) => `
@@ -9642,6 +9792,7 @@ async function loadReleaseStatus({
   previewArtifactId = '',
 } = {}) {
   const previousReleaseState = {
+    focusedBlockerId: state.releaseFocusedBlockerId,
     focusedProvider: state.releaseFocusedProvider,
     focusedHistoryId: state.releaseFocusedHistoryId,
     historyFilterOutcome: state.releaseHistoryFilterOutcome,
@@ -9658,6 +9809,9 @@ async function loadReleaseStatus({
   }
   if (!payload.providerReadiness?.some((item) => String(item.provider || '').trim() === state.releaseFocusedProvider)) {
     state.releaseFocusedProvider = '';
+  }
+  if (!getReleaseCurrentOpenBlockerActions(payload).some((item) => String(item.id || '').trim() === state.releaseFocusedBlockerId)) {
+    state.releaseFocusedBlockerId = '';
   }
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
     state.releaseFocusedHistoryId = '';
@@ -9697,7 +9851,8 @@ async function loadReleaseStatus({
     await applyReleaseHandoffPreviewUrlState(targetPreviewArtifactId);
   }
   if (
-    previousReleaseState.focusedProvider !== state.releaseFocusedProvider
+    previousReleaseState.focusedBlockerId !== state.releaseFocusedBlockerId
+    || previousReleaseState.focusedProvider !== state.releaseFocusedProvider
     || previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
     || previousReleaseState.historyFilterOutcome !== state.releaseHistoryFilterOutcome
     || previousReleaseState.historyFilterProvider !== state.releaseHistoryFilterProvider
@@ -10013,10 +10168,12 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
       provider: urlState.releaseHistoryProvider,
       scope: urlState.releaseHistoryScope,
     });
+    applyReleaseBlockerUrlState(urlState.releaseFocusedBlockerId);
     applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
     await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);
   } else {
     applyReleaseHistoryUrlState();
+    applyReleaseBlockerUrlState();
     applyReleaseProviderUrlState();
     clearReleaseHandoffPreview();
     renderReleaseStatus();

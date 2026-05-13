@@ -197,8 +197,14 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);
+  assert.equal(appJs.includes('releaseFocusedBlockerId'), true);
+  assert.equal(appJs.includes('rblocker'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-focus'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);
+  assert.equal(appJs.includes('focus-release-blocker'), true);
+  assert.equal(appJs.includes('copy-release-blocker-link'), true);
+  assert.equal(appJs.includes('clear-release-blocker-focus'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
   assert.equal(rootHtml.includes('<option value="hermes">Hermes</option>'), true);
   assert.equal(appJs.includes('liveHermes'), true);
