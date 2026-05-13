@@ -193,6 +193,10 @@ try {
   assert.equal(appJs.includes('data-release-reference-adoption-row'), true);
   assert.equal(appJs.includes('Reference Adoption Aggregate'), true);
   assert.equal(appJs.includes('reference gate'), true);
+  assert.equal(appJs.includes('data-release-production-blockers'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
+  assert.equal(appJs.includes('currentOpenBlockers'), true);
+  assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
   assert.equal(rootHtml.includes('<option value="hermes">Hermes</option>'), true);
   assert.equal(appJs.includes('liveHermes'), true);
   assert.equal(appJs.includes('run-release-preflight-all'), true);
@@ -250,6 +254,21 @@ try {
   assert.equal(executionV1Status.summary.executionV1HelperPassed, 1);
   assert.equal(executionV1Status.summary.executionV1HelperTotal, 1);
   assert.equal(executionV1Status.summary.executionV1HelperReady, true);
+  assert.equal(executionV1Status.summary.productionReadyStatus, 'blocked');
+  assert.equal(executionV1Status.summary.productionReadyBlocked, true);
+  assert.equal(executionV1Status.summary.productionBlockerCount, 2);
+  assert.equal(executionV1Status.summary.currentOpenBlockerCount, 1);
+  assert.equal(executionV1Status.releaseReadiness?.productionReadyClaimAllowed, false);
+  assert.equal(
+    executionV1Status.releaseReadiness.productionBlockers.includes('fixture provider live validation is not complete'),
+    true,
+    JSON.stringify(executionV1Status.releaseReadiness),
+  );
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockers.includes('fixture provider evidence is not generated from the target boundary'),
+    true,
+    JSON.stringify(executionV1Status.releaseReadiness),
+  );
   assert.equal(appJs.includes('live helper'), true);
   assert.equal(executionV1Status.summary.executionV1HandoffPassed, 1);
   assert.equal(executionV1Status.summary.executionV1HandoffTotal, 1);

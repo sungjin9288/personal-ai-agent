@@ -132,6 +132,32 @@ export function seedExecutionV1Docs({ rootDir, repoDir = process.cwd(), evidence
     'Execution v1 fixture is deterministic-ready for UI harness validation.',
     '',
   ].join('\n'), 'utf8');
+  fs.writeFileSync(path.join(docsDir, 'release-readiness-v1.md'), [
+    '# Release Readiness v1',
+    '',
+    '- status: current-release-decision',
+    '- localDate: 2026-05-13',
+    '- releaseLabel: fixture pilot ready',
+    '- decision: fixture pilot-ready only; do not claim production-ready',
+    '',
+    '## Current Open Blockers',
+    '',
+    '- fixture provider evidence is not generated from the target boundary',
+    '',
+    '## Release Labels',
+    '',
+    '### Production Ready',
+    '',
+    'Status: blocked.',
+    '',
+    'Blockers:',
+    '',
+    '- fixture provider live validation is not complete',
+    '- fixture target deployment evidence is not generated',
+    '',
+    'Production-ready must not be claimed from the current fixture state.',
+    '',
+  ].join('\n'), 'utf8');
 
   return {
     closeoutPath: path.join(docsDir, 'execution-v1-closeout.md'),

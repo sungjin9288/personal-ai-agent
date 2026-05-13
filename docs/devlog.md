@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-13 Web Production Blocker Surface Pass
+
+- parsed [release-readiness-v1.md](release-readiness-v1.md) production-ready blockers and current open blockers into `/api/execution-v1/status` without changing the underlying production-ready decision
+- rendered production blocker count, open blocker count, production status, current open blocker rows, and production stop-condition rows in the release tab so operator triage can start from the same UI surface as release actions
+- extended `smoke:execution-v1-status` and `smoke:ui-harness-browse` fixtures to verify the blocker payload and UI markers stay aligned with release-readiness evidence
+
 ## 2026-05-05 Observability Telemetry Gate Pass
 
 - added [observability-telemetry-v1.md](observability-telemetry-v1.md) as the local pilot observability source of record for telemetry signals, alert triggers, required commands, handoff requirements, and production telemetry gap
