@@ -45,6 +45,7 @@ const snapshotScriptPath = path.join(codeRootDir, 'scripts', 'archive-execution-
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const handoffDocPath = path.join(rootDir, 'docs', 'execution-v1-handoff.md');
+const releaseReadinessDocPath = path.join(rootDir, 'docs', 'release-readiness-v1.md');
 const pilotExportPackageDocPath = path.join(rootDir, 'docs', 'pilot-export-package-v1.md');
 const productionLikeReleaseDrillDocPath = path.join(rootDir, 'docs', 'production-like-release-drill-v1.md');
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
@@ -937,6 +938,20 @@ function extractBulletValue(markdown, label) {
   return match ? String(match[1] || '').trim() : '';
 }
 
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractMarkdownSection(markdown, heading, level = 2) {
+  const normalizedLevel = Math.max(1, Math.min(Number(level) || 2, 6));
+  const headingPrefix = '#'.repeat(normalizedLevel);
+  const sectionPattern = new RegExp(
+    `(?:^|\\n)${headingPrefix} ${escapeRegExp(heading)}\\s*\\n([\\s\\S]*?)(?=\\n#{1,${normalizedLevel}}\\s|$)`,
+  );
+  const sectionMatch = String(markdown || '').match(sectionPattern);
+  return sectionMatch ? String(sectionMatch[1] || '').trim() : '';
+}
+
 function extractSectionBullets(markdown, heading) {
   const sectionPattern = new RegExp(`## ${heading}\\n([\\s\\S]*?)(?:\\n## |$)`);
   const sectionMatch = String(markdown || '').match(sectionPattern);
@@ -950,6 +965,42 @@ function extractSectionBullets(markdown, heading) {
     .filter((line) => line.startsWith('- '))
     .map((line) => line.slice(2).trim())
     .filter(Boolean);
+}
+
+function extractBulletsAfterLabel(markdown, label) {
+  const normalizedLabel = `${String(label || '').trim().replace(/:$/, '')}:`.toLowerCase();
+  const entries = [];
+  let inList = false;
+  let foundListItem = false;
+
+  for (const line of String(markdown || '').split('\n')) {
+    const trimmedLine = line.trim();
+    if (!inList && trimmedLine.toLowerCase() === normalizedLabel) {
+      inList = true;
+      continue;
+    }
+    if (!inList) {
+      continue;
+    }
+    if (!trimmedLine) {
+      continue;
+    }
+    if (!trimmedLine.startsWith('- ')) {
+      if (foundListItem) {
+        break;
+      }
+      continue;
+    }
+    entries.push(trimmedLine.slice(2).trim());
+    foundListItem = true;
+  }
+
+  return entries.filter(Boolean);
+}
+
+function extractPlainStatus(markdown) {
+  const match = String(markdown || '').match(/^Status:\s+(.+)$/m);
+  return match ? String(match[1] || '').trim().replace(/\.$/, '') : '';
 }
 
 function extractChecklistItems(markdown) {
@@ -1104,6 +1155,34 @@ function parseReferenceAdoptionScriptDetails(rawDetails = '') {
   };
 }
 
+function buildReleaseReadinessSummary(markdown = '') {
+  const productionReadySection = extractMarkdownSection(markdown, 'Production Ready', 3);
+  const productionBlockers = extractBulletsAfterLabel(productionReadySection, 'Blockers');
+  const currentOpenBlockers = extractSectionBullets(markdown, 'Current Open Blockers');
+  const productionReadyStatus = extractPlainStatus(productionReadySection) || 'not-tracked';
+  const normalizedProductionReadyStatus = productionReadyStatus.toLowerCase();
+  const productionReadyClaimAllowed = Boolean(
+    productionReadySection
+      && normalizedProductionReadyStatus !== 'blocked'
+      && normalizedProductionReadyStatus !== 'not-tracked'
+      && productionBlockers.length === 0,
+  );
+
+  return {
+    currentOpenBlockerCount: currentOpenBlockers.length,
+    currentOpenBlockers,
+    decision: extractBulletValue(markdown, 'decision'),
+    localDate: extractBulletValue(markdown, 'localDate'),
+    productionBlockerCount: productionBlockers.length,
+    productionBlockers,
+    productionReadyBlocked: !productionReadyClaimAllowed,
+    productionReadyClaimAllowed,
+    productionReadyStatus,
+    productionReadyStopReason: productionBlockers[0] || (productionReadyClaimAllowed ? '' : `Production Ready status is ${productionReadyStatus}.`),
+    releaseLabel: extractBulletValue(markdown, 'releaseLabel'),
+  };
+}
+
 function buildExecutionV1ArtifactSummary(evidenceMarkdown = '', closeoutMarkdown = '') {
   const checklist = extractChecklistItems(closeoutMarkdown);
   const deterministic = extractDeterministicItems(evidenceMarkdown);
@@ -1174,9 +1253,11 @@ function buildExecutionV1Status() {
   const evidenceMarkdown = readMarkdownFile(evidenceDocPath);
   const closeoutMarkdown = readMarkdownFile(closeoutDocPath);
   const handoffMarkdown = readMarkdownFile(handoffDocPath);
+  const releaseReadinessMarkdown = readMarkdownFile(releaseReadinessDocPath);
   const currentBranch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
   const currentCommit = runGit(['rev-parse', 'HEAD']);
   const currentArtifacts = buildExecutionV1ArtifactSummary(evidenceMarkdown, closeoutMarkdown);
+  const releaseReadiness = buildReleaseReadinessSummary(releaseReadinessMarkdown);
   const providerReadiness = liveValidationProviders.map((item) => ({
     command: item.command,
     envKey: item.envKey,
@@ -1393,6 +1474,11 @@ function buildExecutionV1Status() {
     notes: currentArtifacts.notes,
     recommendedActions,
     referenceAdoptionAggregate: currentArtifacts.referenceAdoptionAggregate,
+    releaseReadiness: {
+      ...releaseReadiness,
+      markdown: releaseReadinessMarkdown,
+      path: releaseReadinessDocPath,
+    },
     releaseActionHistory,
     runtimeJobs,
     providerReadiness,
@@ -1493,12 +1579,17 @@ function buildExecutionV1Status() {
       productionReadinessGateTotal: currentArtifacts.productionReadinessGateTotal,
       optionalBlockedItems: currentArtifacts.optionalBlockedItems,
       optionalChecklistOpen: currentArtifacts.optionalChecklistOpen,
+      productionBlockerCount: releaseReadiness.productionBlockerCount,
+      productionReadyBlocked: releaseReadiness.productionReadyBlocked,
+      productionReadyStatus: releaseReadiness.productionReadyStatus,
+      productionReadyStopReason: releaseReadiness.productionReadyStopReason,
       referenceAdoptionAggregateScriptCount: currentArtifacts.referenceAdoptionAggregate.scriptCount,
       referenceAdoptionPassed: currentArtifacts.referenceAdoptionPassed,
       referenceAdoptionReady: currentArtifacts.referenceAdoptionTotal > 0
         && currentArtifacts.referenceAdoptionPassed === currentArtifacts.referenceAdoptionTotal,
       referenceAdoptionTotal: currentArtifacts.referenceAdoptionTotal,
       ready: currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0 && !stale,
+      currentOpenBlockerCount: releaseReadiness.currentOpenBlockerCount,
       runtimeJobActiveCount: runtimeJobs.activeCount,
       runtimeJobRecentCount: runtimeJobs.recentCount,
       stale,

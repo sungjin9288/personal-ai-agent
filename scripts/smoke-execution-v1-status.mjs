@@ -88,6 +88,27 @@ try {
   assert.equal(status.summary.productionReadinessGatePassed, 1);
   assert.equal(status.summary.productionReadinessGateTotal, 1);
   assert.equal(status.summary.productionReadinessGateReady, true);
+  assert.equal(status.summary.productionReadyStatus, 'blocked');
+  assert.equal(status.summary.productionReadyBlocked, true);
+  assert.equal(status.summary.productionBlockerCount, 24);
+  assert.equal(status.summary.currentOpenBlockerCount, 5);
+  assert.equal(status.releaseReadiness?.productionReadyClaimAllowed, false);
+  assert.equal(status.releaseReadiness?.productionBlockerCount, 24);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 5);
+  assert.equal(
+    status.releaseReadiness.productionBlockers.some((item) =>
+      item.includes('Anthropic and Hermes live validations are not complete'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('production release label cannot be claimed until all target production providers'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness),
+  );
   assert.equal(status.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   assert.equal(status.baseline?.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   for (const scriptPath of requiredReferenceAdoptionSmokeScripts) {

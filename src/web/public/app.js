@@ -1327,6 +1327,9 @@ function formatByteCount(value) {
 }
 
 function isReleaseHandoffPreviewable(item = {}) {
+  if (!item || typeof item !== 'object') {
+    return false;
+  }
   const format = String(item.format || '').trim().toLowerCase();
   return Boolean(item.exists && item.href && RELEASE_HANDOFF_PREVIEWABLE_FORMATS.has(format));
 }
@@ -6564,6 +6567,25 @@ function renderReleaseStatus() {
   const values = release.values || {};
   const checklist = release.checklist || [];
   const gaps = release.gaps || [];
+  const releaseReadiness = release.releaseReadiness || {};
+  const productionBlockers = Array.isArray(releaseReadiness.productionBlockers)
+    ? releaseReadiness.productionBlockers
+    : [];
+  const currentOpenBlockers = Array.isArray(releaseReadiness.currentOpenBlockers)
+    ? releaseReadiness.currentOpenBlockers
+    : [];
+  const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
+    ? Number(summary.productionBlockerCount)
+    : productionBlockers.length;
+  const currentOpenBlockerCount = Number.isFinite(Number(summary.currentOpenBlockerCount))
+    ? Number(summary.currentOpenBlockerCount)
+    : currentOpenBlockers.length;
+  const productionReadyStatus = String(
+    summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked',
+  ).trim();
+  const productionReadyStopReason = String(
+    summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || productionBlockers[0] || '',
+  ).trim();
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const handoffArtifacts = release.handoffArtifacts || [];
@@ -6769,6 +6791,18 @@ function renderReleaseStatus() {
         <div class="summary-chip">
           <span>optional provider gap</span>
           <strong>${escapeHtml(String(summary.optionalBlockedItems || 0))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>production blockers</span>
+          <strong>${escapeHtml(String(productionBlockerCount))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>open blockers</span>
+          <strong>${escapeHtml(String(currentOpenBlockerCount))}건</strong>
+        </div>
+        <div class="summary-chip">
+          <span>production status</span>
+          <strong>${escapeHtml(productionReadyStatus)}</strong>
         </div>
         <div class="summary-chip">
           <span>evidence 상태</span>
@@ -7304,6 +7338,71 @@ function renderReleaseStatus() {
                       </div>
                     </article>
                   `)}
+            </div>
+            <div class="harness-callout" data-release-production-blockers="true">
+              <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
+              <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
+            </div>
+            <div class="release-current-status" data-release-current-open-blocker-list="true">
+              ${currentOpenBlockers.length
+                ? currentOpenBlockers
+                  .map(
+                    (item) => `
+                      <div class="harness-row" data-release-current-open-blocker-row="true">
+                        <div>
+                          <div class="item-title">${escapeHtml(item)}</div>
+                          <div class="item-meta">release-readiness current open blocker</div>
+                        </div>
+                        <div class="harness-row-meta">
+                          <span class="mini-badge status-failed">stop-condition</span>
+                        </div>
+                      </div>
+                    `,
+                  )
+                  .join('')
+                : `
+                    <article class="release-snapshot-card is-empty">
+                      <div class="item-title">current open blocker가 없습니다.</div>
+                      <p class="item-meta">release-readiness 문서의 Current Open Blockers 섹션이 비어 있습니다.</p>
+                    </article>
+                  `}
+            </div>
+            <div class="release-current-status" data-release-production-blocker-list="true">
+              ${productionBlockers.length
+                ? productionBlockers.slice(0, 8)
+                  .map(
+                    (item) => `
+                      <div class="harness-row" data-release-production-blocker-row="true">
+                        <div>
+                          <div class="item-title">${escapeHtml(item)}</div>
+                          <div class="item-meta">production-ready claim blocker</div>
+                        </div>
+                        <div class="harness-row-meta">
+                          <span class="mini-badge status-failed">blocked</span>
+                        </div>
+                      </div>
+                    `,
+                  )
+                  .join('')
+                : `
+                    <article class="release-snapshot-card is-empty">
+                      <div class="item-title">production-ready blocker가 없습니다.</div>
+                      <p class="item-meta">release-readiness 문서의 Production Ready blocker list가 비어 있습니다.</p>
+                    </article>
+                  `}
+              ${productionBlockers.length > 8
+                ? `
+                    <div class="harness-row">
+                      <div>
+                        <div class="item-title">추가 blocker ${escapeHtml(String(productionBlockers.length - 8))}건</div>
+                        <div class="item-meta">전체 목록은 docs/release-readiness-v1.md의 Production Ready 섹션을 기준으로 합니다.</div>
+                      </div>
+                      <div class="harness-row-meta">
+                        <span class="mini-badge status-running">summarized</span>
+                      </div>
+                    </div>
+                  `
+                : ''}
             </div>
             <div class="harness-callout">
               <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
