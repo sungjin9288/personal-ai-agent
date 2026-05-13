@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T04:56:11.729Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T04:55:59.540Z
 - branch: codex/post-merge-fallback-policy-help-artifact-sync
 - commit: 5b0ea8d8a1132476dc85256a99647e494445bda4
