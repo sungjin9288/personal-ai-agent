@@ -1155,10 +1155,176 @@ function parseReferenceAdoptionScriptDetails(rawDetails = '') {
   };
 }
 
+function buildReleaseReadinessCommand(label, command, kind = 'verification') {
+  return {
+    command,
+    kind,
+    label,
+  };
+}
+
+function buildReleaseReadinessDoc(label, path) {
+  return {
+    label,
+    path,
+  };
+}
+
+function buildCurrentOpenBlockerActionId(blocker = '', index = 0) {
+  const normalized = String(blocker || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64);
+  return normalized || `current-open-blocker-${index + 1}`;
+}
+
+function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
+  const normalized = String(blocker || '').toLowerCase();
+  const base = {
+    blocker: String(blocker || '').trim(),
+    category: 'release-readiness',
+    commands: [
+      buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
+    ],
+    evidenceDocs: [
+      buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+    ],
+    id: buildCurrentOpenBlockerActionId(blocker, index),
+    nextEvidence: 'Record blocker disposition, closing evidence, and release decision update before changing the release label.',
+    owner: 'release-owner',
+    priority: index + 1,
+    status: 'blocked',
+    stopReason: String(blocker || '').trim(),
+  };
+
+  if (normalized.includes('anthropic live validation')) {
+    return {
+      ...base,
+      category: 'provider-account',
+      commands: [
+        buildReleaseReadinessCommand('Anthropic preflight', 'npm run preflight:execution-v1:anthropic', 'preflight'),
+        buildReleaseReadinessCommand(
+          'Anthropic live validation',
+          'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target Anthropic account gate', 'npm run smoke:target-anthropic-provider-account'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target Anthropic provider account', 'docs/target-anthropic-provider-account-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+      ],
+      nextEvidence: 'Approved Anthropic billing/credit, target secret injection, and target-boundary Anthropic live validation evidence.',
+      owner: 'provider-ops',
+      stopReason: 'Anthropic account billing/credit and target-boundary live validation evidence are missing.',
+    };
+  }
+
+  if (
+    normalized.includes('target local provider architecture')
+      && !normalized.includes('target deployment contract')
+  ) {
+    return {
+      ...base,
+      category: 'provider-architecture',
+      commands: [
+        buildReleaseReadinessCommand('Target local provider architecture gate', 'npm run smoke:target-local-provider-architecture'),
+        buildReleaseReadinessCommand(
+          'Local provider live validation',
+          'export LOCAL_PROVIDER_MODEL="..." LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target provider operations gate', 'npm run smoke:target-provider-operations'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target local provider architecture', 'docs/target-local-provider-architecture-v1.md'),
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+        buildReleaseReadinessDoc('Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'),
+      ],
+      nextEvidence: 'Approved endpoint/model runtime configuration and target-boundary local provider validation evidence.',
+      owner: 'provider-ops',
+      stopReason: 'Target local provider architecture approval and target-boundary evidence are missing.',
+    };
+  }
+
+  if (normalized.includes('hermes live validation')) {
+    return {
+      ...base,
+      category: 'provider-architecture',
+      commands: [
+        buildReleaseReadinessCommand('Target Hermes provider architecture gate', 'npm run smoke:target-hermes-provider-architecture'),
+        buildReleaseReadinessCommand(
+          'Hermes live validation',
+          'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Provider readiness rehearsal', 'npm run rehearsal:production-provider-readiness'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target Hermes provider architecture', 'docs/target-hermes-provider-architecture-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+      ],
+      nextEvidence: 'Approved Hermes-compatible endpoint/model runtime configuration and target-boundary Hermes live validation evidence.',
+      owner: 'provider-ops',
+      stopReason: 'Hermes endpoint/model runtime configuration and target-boundary evidence are missing.',
+    };
+  }
+
+  if (normalized.includes('target deployment contract')) {
+    return {
+      ...base,
+      category: 'target-deployment',
+      commands: [
+        buildReleaseReadinessCommand('Target deployment contract gate', 'npm run smoke:target-deployment-contract'),
+        buildReleaseReadinessCommand('Target environment evidence intake gate', 'npm run smoke:target-environment-evidence-intake'),
+        buildReleaseReadinessCommand('Production-like release drill', 'npm run drill:production-like-release', 'rehearsal'),
+        buildReleaseReadinessCommand('Production-like release drill smoke', 'npm run smoke:production-like-release-drill'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target deployment contract', 'docs/target-deployment-contract-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Production-like release drill', 'docs/production-like-release-drill-v1.md'),
+      ],
+      nextEvidence: 'Target-environment evidence packet covering hosted identity/session, tenant isolation, providers, secrets, observability, SLO, data lifecycle, support, and clean deployment.',
+      owner: 'deployment-owner',
+      stopReason: 'Mandatory hosted and production-like deployment controls are not backed by target evidence.',
+    };
+  }
+
+  if (normalized.includes('production release label')) {
+    return {
+      ...base,
+      category: 'release-decision',
+      commands: [
+        buildReleaseReadinessCommand('Aggregate provider preflight', 'npm run preflight:execution-v1:all', 'preflight'),
+        buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
+        buildReleaseReadinessCommand('Production provider readiness smoke', 'npm run smoke:production-provider-readiness'),
+        buildReleaseReadinessCommand('Production enterprise controls smoke', 'npm run smoke:production-enterprise-controls'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production enterprise controls', 'docs/production-enterprise-controls-v1.md'),
+      ],
+      nextEvidence: 'All target production providers and enterprise controls verified, artifact hygiene passed, and release decision owner approval recorded.',
+      owner: 'release-owner',
+      stopReason: 'Production release label cannot be claimed until all target production providers and enterprise controls are verified.',
+    };
+  }
+
+  return base;
+}
+
 function buildReleaseReadinessSummary(markdown = '') {
   const productionReadySection = extractMarkdownSection(markdown, 'Production Ready', 3);
   const productionBlockers = extractBulletsAfterLabel(productionReadySection, 'Blockers');
   const currentOpenBlockers = extractSectionBullets(markdown, 'Current Open Blockers');
+  const currentOpenBlockerActions = currentOpenBlockers.map((blocker, index) =>
+    buildCurrentOpenBlockerAction(blocker, index),
+  );
   const productionReadyStatus = extractPlainStatus(productionReadySection) || 'not-tracked';
   const normalizedProductionReadyStatus = productionReadyStatus.toLowerCase();
   const productionReadyClaimAllowed = Boolean(
@@ -1169,6 +1335,8 @@ function buildReleaseReadinessSummary(markdown = '') {
   );
 
   return {
+    currentOpenBlockerActionCount: currentOpenBlockerActions.length,
+    currentOpenBlockerActions,
     currentOpenBlockerCount: currentOpenBlockers.length,
     currentOpenBlockers,
     decision: extractBulletValue(markdown, 'decision'),
@@ -1589,6 +1757,7 @@ function buildExecutionV1Status() {
         && currentArtifacts.referenceAdoptionPassed === currentArtifacts.referenceAdoptionTotal,
       referenceAdoptionTotal: currentArtifacts.referenceAdoptionTotal,
       ready: currentArtifacts.requiredChecklistOpen === 0 && currentArtifacts.blockedItems === 0 && !stale,
+      currentOpenBlockerActionCount: releaseReadiness.currentOpenBlockerActionCount,
       currentOpenBlockerCount: releaseReadiness.currentOpenBlockerCount,
       runtimeJobActiveCount: runtimeJobs.activeCount,
       runtimeJobRecentCount: runtimeJobs.recentCount,

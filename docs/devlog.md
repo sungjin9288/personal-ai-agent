@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-13 Web Release Blocker Triage Actions Pass
+
+- added current open blocker action mapping to `/api/execution-v1/status`, covering provider account, provider architecture, target deployment, and release decision blocker categories
+- rendered each current open blocker in the release tab with owner, stop reason category, evidence document chips, and copyable next command actions so operator triage can start from the blocker row itself
+- extended `smoke:execution-v1-status` and `smoke:ui-harness-browse` to verify blocker action payloads, UI markers, fixture fallback behavior, and command handoff coverage
+
 ## 2026-05-13 Web Production Blocker Surface Pass
 
 - parsed [release-readiness-v1.md](release-readiness-v1.md) production-ready blockers and current open blockers into `/api/execution-v1/status` without changing the underlying production-ready decision

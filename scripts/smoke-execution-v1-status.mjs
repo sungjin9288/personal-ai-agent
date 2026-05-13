@@ -92,9 +92,11 @@ try {
   assert.equal(status.summary.productionReadyBlocked, true);
   assert.equal(status.summary.productionBlockerCount, 24);
   assert.equal(status.summary.currentOpenBlockerCount, 5);
+  assert.equal(status.summary.currentOpenBlockerActionCount, 5);
   assert.equal(status.releaseReadiness?.productionReadyClaimAllowed, false);
   assert.equal(status.releaseReadiness?.productionBlockerCount, 24);
   assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 5);
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
       item.includes('Anthropic and Hermes live validations are not complete'),
@@ -108,6 +110,26 @@ try {
     ),
     true,
     JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockerActions.some(
+      (item) =>
+        item.category === 'provider-account' &&
+        item.owner === 'provider-ops' &&
+        item.commands.some((command) => command.command === 'npm run preflight:execution-v1:anthropic') &&
+        item.evidenceDocs.some((doc) => doc.path === 'docs/target-anthropic-provider-account-v1.md'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockerActions.some(
+      (item) =>
+        item.category === 'target-deployment' &&
+        item.commands.some((command) => command.command === 'npm run smoke:target-environment-evidence-intake'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
   );
   assert.equal(status.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   assert.equal(status.baseline?.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
