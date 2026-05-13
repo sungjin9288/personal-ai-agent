@@ -302,6 +302,18 @@
                     <option value="local">Local</option>
                     <option value="hermes">Hermes</option>
                   </select>
+                  <select id="run-fallback-provider-select">
+                    <option value="">Fallback 없음</option>
+                    <option value="stub">Fallback · Stub</option>
+                    <option value="openai">Fallback · OpenAI</option>
+                    <option value="anthropic">Fallback · Anthropic</option>
+                    <option value="local">Fallback · Local</option>
+                    <option value="hermes">Fallback · Hermes</option>
+                  </select>
+                  <select id="run-fallback-policy-select" disabled>
+                    <option value="provider-failure-only">Fallback policy · provider failure only</option>
+                    <option value="recoverable-provider-failure-only">Fallback policy · recoverable provider failure only</option>
+                  </select>
                   <button id="run-mission-button" class="primary-button" disabled>실행 시작</button>
                 </div>
               </section>

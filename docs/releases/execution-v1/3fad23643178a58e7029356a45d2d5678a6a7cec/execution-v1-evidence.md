@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T09:26:07.142Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T09:25:45.343Z
 - branch: codex/web-fallback-policy-run-controls
 - commit: 3fad23643178a58e7029356a45d2d5678a6a7cec

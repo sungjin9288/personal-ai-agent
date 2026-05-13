@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-13T09:26:07.142Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-13T09:26:05.581Z
 - localDate: 2026-05-13
 - branch: codex/web-fallback-policy-run-controls
 - commit: 3fad23643178a58e7029356a45d2d5678a6a7cec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec](releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec](docs/releases/execution-v1/3fad23643178a58e7029356a45d2d5678a6a7cec)
 - visualArtifactSetSha256: f41a9b558de14e9dff44bd404d18891c21d4f034328b1e6998bb2650e88eb769
 - commitPushStatus: pushed to origin/codex/web-fallback-policy-run-controls
 

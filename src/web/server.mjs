@@ -2925,7 +2925,11 @@ async function handleApi(request, response, url) {
     const missionId = decodePathSegment(pathParts[2]);
     const body = await readJsonBody(request);
     const provider = String(body.provider || '').trim();
+    const fallbackProvider = String(body.fallbackProvider || '').trim();
+    const fallbackPolicy = String(body.fallbackPolicy || '').trim();
     const result = await service.runMission(missionId, {
+      fallbackProvider,
+      fallbackPolicy,
       provider,
       providerSpecified: Boolean(provider),
       sourceContext: {

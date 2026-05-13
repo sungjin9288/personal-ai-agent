@@ -460,6 +460,8 @@ const elements = {
   releaseStatus: document.getElementById('release-status'),
   reviewReadiness: document.getElementById('review-readiness'),
   reviewReadinessDetail: document.getElementById('review-readiness-detail'),
+  runFallbackPolicySelect: document.getElementById('run-fallback-policy-select'),
+  runFallbackProviderSelect: document.getElementById('run-fallback-provider-select'),
   runMissionButton: document.getElementById('run-mission-button'),
   runProviderSelect: document.getElementById('run-provider-select'),
   reviewStageSummary: document.getElementById('review-stage-summary'),
@@ -516,6 +518,18 @@ function getSelectedWorkspaceRecord() {
     return state.workspaces[0] || null;
   }
   return state.workspaces.find((workspace) => workspace.id === workspaceId) || null;
+}
+
+function updateRunFallbackControls() {
+  if (!elements.runFallbackPolicySelect || !elements.runFallbackProviderSelect) {
+    return;
+  }
+
+  const fallbackProvider = String(elements.runFallbackProviderSelect.value || '').trim();
+  elements.runFallbackPolicySelect.disabled = !fallbackProvider;
+  if (!fallbackProvider) {
+    elements.runFallbackPolicySelect.value = 'provider-failure-only';
+  }
 }
 
 function getMissionFormMode() {
@@ -9839,12 +9853,16 @@ async function handleMissionRun() {
   }
 
   const provider = String(elements.runProviderSelect.value || '').trim();
+  const fallbackProvider = String(elements.runFallbackProviderSelect?.value || '').trim();
+  const fallbackPolicy = fallbackProvider
+    ? String(elements.runFallbackPolicySelect?.value || 'provider-failure-only').trim()
+    : '';
   elements.runMissionButton.disabled = true;
   elements.runMissionButton.textContent = '실행 중...';
 
   try {
     await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/run`, {
-      body: JSON.stringify({ provider }),
+      body: JSON.stringify({ fallbackPolicy, fallbackProvider, provider }),
       method: 'POST',
     });
     await Promise.all([loadMissions(), loadApprovals()]);
@@ -10447,6 +10465,7 @@ function attachEvents() {
       elements.runMissionButton.textContent = '이 미션 실행';
     }
   });
+  elements.runFallbackProviderSelect?.addEventListener('change', updateRunFallbackControls);
   elements.stepButtons.forEach((button) => {
     button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
   });
@@ -10467,6 +10486,7 @@ async function bootstrap() {
   renderPlaybooks();
   renderTemplates();
   renderAgentBlueprintBuilder();
+  updateRunFallbackControls();
   setActiveStep('step-setup', { syncUrl: false });
 
   try {

@@ -163,8 +163,14 @@ try {
 
   assert.equal(rootHtml.includes('data-detail-tab="harness"'), true);
   assert.equal(rootHtml.includes('data:image/svg+xml'), true);
+  assert.equal(rootHtml.includes('id="run-fallback-provider-select"'), true);
+  assert.equal(rootHtml.includes('id="run-fallback-policy-select"'), true);
+  assert.equal(rootHtml.includes('recoverable-provider-failure-only'), true);
   assert.equal(appJs.includes('renderHarnessFilterChips'), true);
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
+  assert.equal(appJs.includes('fallbackProvider'), true);
+  assert.equal(appJs.includes('fallbackPolicy'), true);
+  assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('document-log-search'), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
   assert.equal(appJs.includes('loadRuntimeRequests'), true);
