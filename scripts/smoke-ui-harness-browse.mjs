@@ -196,6 +196,9 @@ try {
   assert.equal(appJs.includes('data-release-production-blockers'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
+  assert.equal(appJs.includes('currentOpenBlockerActions'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
   assert.equal(rootHtml.includes('<option value="hermes">Hermes</option>'), true);
   assert.equal(appJs.includes('liveHermes'), true);
@@ -258,6 +261,7 @@ try {
   assert.equal(executionV1Status.summary.productionReadyBlocked, true);
   assert.equal(executionV1Status.summary.productionBlockerCount, 2);
   assert.equal(executionV1Status.summary.currentOpenBlockerCount, 1);
+  assert.equal(executionV1Status.summary.currentOpenBlockerActionCount, 1);
   assert.equal(executionV1Status.releaseReadiness?.productionReadyClaimAllowed, false);
   assert.equal(
     executionV1Status.releaseReadiness.productionBlockers.includes('fixture provider live validation is not complete'),
@@ -268,6 +272,15 @@ try {
     executionV1Status.releaseReadiness.currentOpenBlockers.includes('fixture provider evidence is not generated from the target boundary'),
     true,
     JSON.stringify(executionV1Status.releaseReadiness),
+  );
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions.length, 1);
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].category, 'release-readiness');
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActions[0].commands.some(
+      (command) => command.command === 'npm run smoke:production-readiness-gate',
+    ),
+    true,
+    JSON.stringify(executionV1Status.releaseReadiness.currentOpenBlockerActions),
   );
   assert.equal(appJs.includes('live helper'), true);
   assert.equal(executionV1Status.summary.executionV1HandoffPassed, 1);

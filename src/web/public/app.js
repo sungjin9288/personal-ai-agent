@@ -6574,6 +6574,19 @@ function renderReleaseStatus() {
   const currentOpenBlockers = Array.isArray(releaseReadiness.currentOpenBlockers)
     ? releaseReadiness.currentOpenBlockers
     : [];
+  const currentOpenBlockerActions = Array.isArray(releaseReadiness.currentOpenBlockerActions)
+    ? releaseReadiness.currentOpenBlockerActions
+    : currentOpenBlockers.map((item, index) => ({
+        blocker: item,
+        category: 'release-readiness',
+        commands: [],
+        evidenceDocs: [],
+        id: `current-open-blocker-${index + 1}`,
+        nextEvidence: '',
+        owner: 'release-owner',
+        status: 'blocked',
+        stopReason: item,
+      }));
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
@@ -7344,20 +7357,50 @@ function renderReleaseStatus() {
               <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
             </div>
             <div class="release-current-status" data-release-current-open-blocker-list="true">
-              ${currentOpenBlockers.length
-                ? currentOpenBlockers
+              ${currentOpenBlockerActions.length
+                ? currentOpenBlockerActions
                   .map(
-                    (item) => `
-                      <div class="harness-row" data-release-current-open-blocker-row="true">
+                    (item) => {
+                      const commands = Array.isArray(item.commands) ? item.commands.slice(0, 3) : [];
+                      const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs.slice(0, 3) : [];
+                      const actionId = String(item.id || '').trim();
+                      return `
+                      <div class="harness-row" data-release-current-open-blocker-row="true" data-release-current-open-blocker-action-row="${escapeHtml(actionId)}">
                         <div>
-                          <div class="item-title">${escapeHtml(item)}</div>
-                          <div class="item-meta">release-readiness current open blocker</div>
+                          <div class="item-title">${escapeHtml(item.blocker || item.stopReason || 'current open blocker')}</div>
+                          <div class="item-meta">${escapeHtml(item.nextEvidence || 'release-readiness current open blocker')}</div>
+                          ${evidenceDocs.length
+                            ? `
+                                <div class="release-history-filter-chips">
+                                  ${evidenceDocs
+                                    .map((doc) => `<span class="mini-badge status-running">${escapeHtml(doc.path || doc.label || '')}</span>`)
+                                    .join('')}
+                                </div>
+                              `
+                            : ''}
                         </div>
                         <div class="harness-row-meta">
+                          <span class="mini-badge status-failed">${escapeHtml(item.category || 'stop-condition')}</span>
+                          <span class="item-meta">${escapeHtml(item.owner || 'release-owner')}</span>
                           <span class="mini-badge status-failed">stop-condition</span>
+                          ${commands
+                            .map(
+                              (command) => `
+                                <button
+                                  class="ghost-button"
+                                  type="button"
+                                  data-release-current-open-blocker-command="${escapeHtml(actionId)}"
+                                  data-ui-action="copy-release-command"
+                                  data-ui-label="${escapeHtml(command.label || 'blocker command')}"
+                                  data-ui-value="${escapeHtml(command.command || '')}"
+                                >${escapeHtml(command.label || 'command 복사')}</button>
+                              `,
+                            )
+                            .join('')}
                         </div>
                       </div>
-                    `,
+                    `;
+                    },
                   )
                   .join('')
                 : `
