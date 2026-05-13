@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T14:42:39.174Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T14:42:23.109Z
 - branch: codex/post-merge-web-production-blocker-artifact-sync
 - commit: e14cb30199fbb0dc4f83f4c2a908af26ea156451
