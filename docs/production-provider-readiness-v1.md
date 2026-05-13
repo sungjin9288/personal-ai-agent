@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-13T15:00:51.264Z
-- sourceBranch: codex/post-merge-release-blocker-triage-artifact-sync
-- sourceCommit: 9cbad8f1b4197b678dc66c010c8e2a2726c7b88b
+- generatedAt: 2026-05-13T16:06:13.761Z
+- sourceBranch: codex/post-merge-release-blocker-deep-link-artifact-sync
+- sourceCommit: 461425c1f822168e8cb6ad823d927ca0fd1affcc
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,15 +30,15 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 5735 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 5057 |
 
 ## Key Signals
 
 ```json
 {
   "blockedCount": 0,
-  "missingEnvCount": 3,
-  "readyForLiveCount": 1,
+  "missingEnvCount": 4,
+  "readyForLiveCount": 0,
   "status": "ready-but-missing-env"
 }
 ```
@@ -49,7 +49,7 @@ Production-ready remains blocked until every provider included in the target rel
 | --- | --- | --- | --- | --- | --- |
 | openai | ready-but-missing-env | OPENAI_API_KEY | no | passed | `npm run live:execution-v1:openai` |
 | anthropic | ready-but-missing-env | ANTHROPIC_API_KEY | no | failed (anthropic live mission run failed \| rootDir=<temp>/personal-ai-agent-live-anthropic-S78A4H \| workspaceId=workspace_20260505160104_ea885a \| missionId=mission_20260505160104_5c9b4f \| artifact=manager-prompt.md \| sessionId=session_20260505160104_292515 \| missionStatus=failed) | `npm run live:execution-v1:anthropic` |
-| local | ready-for-live-validation | LOCAL_PROVIDER_MODEL | yes | passed | `npm run live:execution-v1:local` |
+| local | ready-but-missing-env | LOCAL_PROVIDER_MODEL | no | passed | `npm run live:execution-v1:local` |
 | hermes | ready-but-missing-env | HERMES_PROVIDER_MODEL | no | missing-env | `npm run live:execution-v1:hermes` |
 
 ## Provider Details
@@ -78,9 +78,9 @@ Production-ready remains blocked until every provider included in the target rel
 
 ### local
 
-- preflightStatus: ready-for-live-validation
+- preflightStatus: ready-but-missing-env
 - envKey: LOCAL_PROVIDER_MODEL
-- envReady: true
+- envReady: false
 - deterministicChecks: smoke:execution-flow:passed
 - archivedLiveStatus: passed
 - operationalState: passed
