@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T00:30:18.030Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T00:30:05.934Z
 - branch: codex/post-merge-handoff-publish-status-artifact-sync
 - commit: e3055cf69c5a2d88ead3a731d7f0b415fc03762e
