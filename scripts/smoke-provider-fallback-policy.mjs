@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -10,11 +11,41 @@ import { createClosedLocalhostBaseUrl, runCli } from './cli-test-helpers.mjs';
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-provider-fallback-policy-'));
 const workspacePath = path.join(tempRoot, 'workspace');
 const recoverableFailureBaseUrl = await createClosedLocalhostBaseUrl();
+const cliPath = path.join(process.cwd(), 'src', 'cli.mjs');
+
+function runCliText(args) {
+  const result = spawnSync(process.execPath, [cliPath, ...args], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PERSONAL_AI_AGENT_ROOT: tempRoot,
+    },
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  return String(result.stdout || '');
+}
 
 fs.mkdirSync(workspacePath, { recursive: true });
 
 const store = createStore({ rootDir: tempRoot });
 const service = createMissionService({ store, rootDir: tempRoot });
+
+const missionRunHelp = runCliText(['mission', 'run', '--help']);
+assert.match(missionRunHelp, /mission run <missionId>/);
+assert.match(missionRunHelp, /--fallback-policy <provider-failure-only\|recoverable-provider-failure-only>/);
+assert.match(missionRunHelp, /Defaults to provider-failure-only/);
+assert.match(missionRunHelp, /recoverable-provider-failure-only/);
+
+const remediateProviderAttentionHelp = runCliText(['action', 'remediate-provider-attention', '--help']);
+assert.match(remediateProviderAttentionHelp, /action remediate-provider-attention <actionId>/);
+assert.match(
+  remediateProviderAttentionHelp,
+  /--fallback-policy <provider-failure-only\|recoverable-provider-failure-only>/,
+);
+assert.match(remediateProviderAttentionHelp, /Defaults to provider-failure-only/);
+assert.match(remediateProviderAttentionHelp, /recoverable-provider-failure-only/);
 
 const workspace = service.addWorkspace({
   name: 'provider-fallback-policy-workspace',

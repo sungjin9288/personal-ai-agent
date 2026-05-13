@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-13T04:52:39.107Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-13T04:52:30.429Z
 - branch: codex/fallback-policy-subcommand-help
 - commit: 6f6c2a5d548e47d0dcea3a90131c72e9406f86cc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6f6c2a5d548e47d0dcea3a90131c72e9406f86cc/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

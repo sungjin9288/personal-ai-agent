@@ -84,6 +84,10 @@ function appendUnique(list, value) {
   return list.includes(value) ? list : [...list, value];
 }
 
+function isHelpRequest(args) {
+  return args.includes('--help') || args.includes('-h');
+}
+
 function printHelp() {
   console.log(`Personal AI Agent
 
@@ -163,6 +167,45 @@ Commands:
 `);
 }
 
+function printCommandHelp(group, command) {
+  if (group === 'mission' && command === 'run') {
+    console.log(`Personal AI Agent
+
+Usage:
+  mission run <missionId> [--provider <stub|openai|anthropic|local|hermes>] [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
+
+Options:
+  --provider <provider>             Primary provider for this mission run.
+  --fallback-provider <providers>   Comma-separated fallback providers tried after an eligible provider failure.
+  --fallback-policy <policy>        Fallback policy. Defaults to provider-failure-only.
+
+Fallback policies:
+  provider-failure-only             Fall back after any provider failure metadata is recorded.
+  recoverable-provider-failure-only Fall back only when provider failure metadata has recoverable=true.
+`);
+    return true;
+  }
+
+  if (group === 'action' && command === 'remediate-provider-attention') {
+    console.log(`Personal AI Agent
+
+Usage:
+  action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
+
+Options:
+  --fallback-provider <providers>   Comma-separated fallback providers used when remediation rerun hits an eligible provider failure.
+  --fallback-policy <policy>        Fallback policy. Defaults to provider-failure-only.
+
+Fallback policies:
+  provider-failure-only             Fall back after any provider failure metadata is recorded.
+  recoverable-provider-failure-only Fall back only when provider failure metadata has recoverable=true.
+`);
+    return true;
+  }
+
+  return false;
+}
+
 function printJson(payload) {
   console.log(JSON.stringify(payload, null, 2));
 }
@@ -230,8 +273,12 @@ async function main() {
   const args = process.argv.slice(2);
   const [group, command, ...rest] = args;
 
-  if (!group) {
+  if (!group || isHelpRequest([group])) {
     printHelp();
+    return;
+  }
+
+  if (isHelpRequest(rest) && printCommandHelp(group, command)) {
     return;
   }
 
