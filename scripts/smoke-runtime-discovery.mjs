@@ -302,6 +302,81 @@ try {
     'non-recoverable-provider-failure',
   );
 
+  const remediationActions = await fetchJson(
+    `${discovery.url}/api/actions?missionId=${encodeURIComponent(recoverablePolicyMissionResponse.mission.id)}`,
+  );
+  const remediationAction = remediationActions.items.find((item) => item.actionType === 'provider-attention');
+  assert.equal(Boolean(remediationAction), true, JSON.stringify(remediationActions.items));
+  assert.equal(remediationAction.fallbackPolicyId, 'provider-failure-only');
+  assert.deepEqual(remediationAction.fallbackPolicyOptions, [
+    'provider-failure-only',
+    'recoverable-provider-failure-only',
+  ]);
+  assert.match(remediationAction.fallbackRecommendedCommand, /--fallback-provider stub/);
+  assert.match(
+    remediationAction.recoverableFallbackRecommendedCommand,
+    /--fallback-provider stub --fallback-policy recoverable-provider-failure-only/,
+  );
+
+  const fallbackRemediationResult = await postJson(
+    `${discovery.url}/api/actions/provider-attention/${encodeURIComponent(remediationAction.actionId)}/remediate`,
+    {
+      fallbackProvider: 'stub',
+    },
+  );
+  assert.equal(fallbackRemediationResult.fallbackPolicy, 'provider-failure-only');
+  assert.equal(fallbackRemediationResult.remediationKind, 'mission-fallback-rerun');
+  assert.equal(fallbackRemediationResult.primaryProviderId, 'anthropic');
+  assert.equal(fallbackRemediationResult.result.missionStatus, 'completed');
+  assert.equal(fallbackRemediationResult.result.provider, 'stub');
+  assert.equal(fallbackRemediationResult.result.providerFallback.policyId, 'provider-failure-only');
+  assert.equal(fallbackRemediationResult.result.providerFallback.fallbackUsed, true);
+  assert.deepEqual(fallbackRemediationResult.result.providerFallback.attemptedProviderIds, ['anthropic', 'stub']);
+
+  const recoverableRemediationMissionResponse = await postJson(`${discovery.url}/api/missions`, {
+    deliverableType: 'decision-memo',
+    mode: 'knowledge',
+    objective: 'Verify provider attention remediation API stops strict fallback on non-recoverable provider failures.',
+    title: 'Runtime provider attention recoverable remediation mission',
+    workspaceId: workspaceResponse.workspace.id,
+  });
+  const recoverableRemediationRunResult = await postJson(
+    `${discovery.url}/api/missions/${encodeURIComponent(recoverableRemediationMissionResponse.mission.id)}/run`,
+    {
+      provider: 'anthropic',
+    },
+  );
+  assert.equal(recoverableRemediationRunResult.mission.status, 'failed');
+  assert.equal(recoverableRemediationRunResult.provider, 'anthropic');
+
+  const recoverableRemediationActions = await fetchJson(
+    `${discovery.url}/api/actions?missionId=${encodeURIComponent(recoverableRemediationMissionResponse.mission.id)}`,
+  );
+  const recoverableRemediationAction = recoverableRemediationActions.items.find(
+    (item) => item.actionType === 'provider-attention',
+  );
+  assert.equal(Boolean(recoverableRemediationAction), true, JSON.stringify(recoverableRemediationActions.items));
+
+  const recoverableRemediationResult = await postJson(
+    `${discovery.url}/api/actions/provider-attention/${encodeURIComponent(recoverableRemediationAction.actionId)}/remediate`,
+    {
+      fallbackPolicy: 'recoverable-provider-failure-only',
+      fallbackProvider: 'stub',
+    },
+  );
+  assert.equal(recoverableRemediationResult.fallbackPolicy, 'recoverable-provider-failure-only');
+  assert.equal(recoverableRemediationResult.remediationKind, 'mission-fallback-rerun');
+  assert.equal(recoverableRemediationResult.primaryProviderId, 'anthropic');
+  assert.equal(recoverableRemediationResult.result.missionStatus, 'failed');
+  assert.equal(recoverableRemediationResult.result.provider, 'anthropic');
+  assert.equal(recoverableRemediationResult.result.providerFallback.policyId, 'recoverable-provider-failure-only');
+  assert.equal(recoverableRemediationResult.result.providerFallback.fallbackUsed, false);
+  assert.deepEqual(recoverableRemediationResult.result.providerFallback.attemptedProviderIds, ['anthropic']);
+  assert.equal(
+    recoverableRemediationResult.result.providerFallback.attempts[0].fallbackStopReason,
+    'non-recoverable-provider-failure',
+  );
+
   console.log(
     JSON.stringify(
       {
@@ -331,6 +406,12 @@ async function postJson(url, payload) {
     method: 'POST',
   });
   assert.equal(response.status === 200 || response.status === 201, true);
+  return await response.json();
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  assert.equal(response.status, 200);
   return await response.json();
 }
 
