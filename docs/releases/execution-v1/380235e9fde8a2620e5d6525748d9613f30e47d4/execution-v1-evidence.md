@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T00:27:10.478Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T00:26:57.867Z
 - branch: codex/handoff-publish-status-origin-main-fallback
 - commit: 380235e9fde8a2620e5d6525748d9613f30e47d4
