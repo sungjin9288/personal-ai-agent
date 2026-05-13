@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T04:52:39.107Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T04:52:27.155Z
 - branch: codex/fallback-policy-subcommand-help
 - commit: 6f6c2a5d548e47d0dcea3a90131c72e9406f86cc
