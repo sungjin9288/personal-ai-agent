@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T13:52:38.487Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T13:52:24.704Z
 - branch: codex/post-merge-web-specialist-artifact-sync
 - commit: 91b6b358c15056d9d7ed49125e5dd1b80f0c1181
