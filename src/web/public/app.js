@@ -8601,9 +8601,46 @@ function renderReviewReadiness() {
   }
 }
 
-function inferProviderFromCommand(command = '') {
-  const match = String(command).match(/--provider\s+([a-z0-9-_]+)/i);
+function inferCommandOption(command = '', optionName = '') {
+  const escapedOption = String(optionName).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!escapedOption) {
+    return '';
+  }
+  const match = String(command).match(new RegExp(`${escapedOption}\\s+([^\\s]+)`, 'i'));
   return match ? match[1] : '';
+}
+
+function inferProviderFromCommand(command = '') {
+  return inferCommandOption(command, '--provider');
+}
+
+function inferFallbackProviderFromCommand(command = '') {
+  return inferCommandOption(command, '--fallback-provider');
+}
+
+function inferFallbackPolicyFromCommand(command = '') {
+  return inferCommandOption(command, '--fallback-policy');
+}
+
+function getProviderAttentionRemediationPayload(item, mode = 'primary') {
+  if (!item || mode === 'primary') {
+    return {};
+  }
+
+  const command =
+    mode === 'recoverable-fallback'
+      ? item.recoverableFallbackRecommendedCommand || item.fallbackRecommendedCommand || ''
+      : item.fallbackRecommendedCommand || item.recoverableFallbackRecommendedCommand || '';
+  const fallbackProvider = item.fallbackProviderId || inferFallbackProviderFromCommand(command);
+  const fallbackPolicy =
+    mode === 'recoverable-fallback'
+      ? 'recoverable-provider-failure-only'
+      : inferFallbackPolicyFromCommand(command) || item.fallbackPolicyId || 'provider-failure-only';
+
+  return {
+    fallbackPolicy,
+    fallbackProvider,
+  };
 }
 
 function renderMissionActions() {
@@ -8665,6 +8702,16 @@ function renderMissionActions() {
               ? `<div class="item-meta mono">${escapeHtml(item.recommendedCommand)}</div>`
               : ''
           }
+          ${
+            item.fallbackRecommendedCommand
+              ? `<div class="item-meta mono">fallback: ${escapeHtml(item.fallbackRecommendedCommand)}</div>`
+              : ''
+          }
+          ${
+            item.recoverableFallbackRecommendedCommand
+              ? `<div class="item-meta mono">recoverable-only: ${escapeHtml(item.recoverableFallbackRecommendedCommand)}</div>`
+              : ''
+          }
           <div class="action-row">
             ${
               item.missionId
@@ -8672,7 +8719,22 @@ function renderMissionActions() {
                 : ''
             }
             ${
-              item.missionId
+              item.actionType === 'provider-attention'
+                ? `<button class="primary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="primary">제공자 복구</button>`
+                : ''
+            }
+            ${
+              item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
+                ? `<button class="secondary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="fallback">fallback 복구</button>`
+                : ''
+            }
+            ${
+              item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
+                ? `<button class="ghost-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="recoverable-fallback">복구성 fallback</button>`
+                : ''
+            }
+            ${
+              item.missionId && item.actionType !== 'provider-attention'
                 ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}">권장 재실행</button>`
                 : ''
             }
@@ -8721,6 +8783,44 @@ function renderMissionActions() {
       await Promise.all([loadMissions(), loadApprovals()]);
       if (state.selectedMissionId === item.missionId) {
         await selectMission(item.missionId, { urlMode: 'replace' });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-provider-attention-remediate]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const actionId = button.dataset.providerAttentionRemediate;
+      const mode = button.dataset.providerAttentionMode || 'primary';
+      const item = items.find((entry) => entry.actionId === actionId);
+      if (!item) {
+        return;
+      }
+
+      const payload = getProviderAttentionRemediationPayload(item, mode);
+      if (mode !== 'primary' && !payload.fallbackProvider) {
+        window.alert('fallback provider를 찾을 수 없습니다.');
+        return;
+      }
+
+      const confirmed = window.confirm(
+        mode === 'recoverable-fallback'
+          ? `${item.providerDisplayName || item.providerId || 'provider'} failure가 recoverable일 때만 fallback 복구를 실행할까요?`
+          : mode === 'fallback'
+            ? `${payload.fallbackProvider} fallback provider로 provider attention 복구를 실행할까요?`
+            : `${item.providerDisplayName || item.providerId || 'provider'} remediation을 실행할까요?`,
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
+        body: JSON.stringify(payload),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
       }
     });
   });

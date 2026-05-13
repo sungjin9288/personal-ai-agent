@@ -3740,6 +3740,15 @@
 - added `smoke:output-compaction` to verify direct service compaction, CLI artifact creation, raw-path metadata retention, warning/error detection, repeated-line detection, and bounded compact output
 <!-- document-log:end -->
 
+<!-- document-log:start {"createdAt":"2026-05-13T00:00:00.000Z","id":"doclog_20260513000000_web_provider_attention_remediation","type":"devlog","updatedAt":"2026-05-13T00:00:00.000Z"} -->
+## 2026-05-13 Web Provider Attention Remediation Pass
+
+- date: 2026-05-13T00:00:00.000Z
+- added a web API route for `provider-attention` remediation so action inbox operators can call the existing `remediateProviderAttention` service path without leaving the UI
+- surfaced same-provider recovery, default fallback recovery, and `recoverable-provider-failure-only` recovery controls on provider-attention action items while preserving the CLI recommended command audit trail
+- extended runtime discovery and UI harness smokes to verify the provider-attention route, fallback policy metadata, strict non-recoverable stop behavior, and served UI remediation controls
+<!-- document-log:end -->
+
 <!-- document-log:start {"createdAt":"2026-04-27T00:00:00.000Z","id":"doclog_20260427000000_provider_capability_rate_guard","type":"devlog","updatedAt":"2026-04-27T00:00:00.000Z"} -->
 ## 2026-04-27 Provider Capability Rate Guard Pass
 

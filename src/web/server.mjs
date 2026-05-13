@@ -2451,6 +2451,24 @@ async function handleApi(request, response, url) {
     request.method === 'POST' &&
     pathParts[0] === 'api' &&
     pathParts[1] === 'actions' &&
+    pathParts[2] === 'provider-attention' &&
+    pathParts[3] &&
+    pathParts[4] === 'remediate'
+  ) {
+    const actionId = decodePathSegment(pathParts[3]);
+    const body = await readJsonBody(request);
+    const result = await service.remediateProviderAttention(actionId, {
+      fallbackPolicy: String(body.fallbackPolicy || '').trim(),
+      fallbackProvider: String(body.fallbackProvider || '').trim(),
+    });
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
     pathParts[2] === 'reviewer-follow-ups' &&
     pathParts[3] &&
     pathParts[4] === 'resolve'

@@ -171,6 +171,10 @@ try {
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
+  assert.equal(appJs.includes('/api/actions/provider-attention/'), true);
+  assert.equal(appJs.includes('getProviderAttentionRemediationPayload'), true);
+  assert.equal(appJs.includes('recoverableFallbackRecommendedCommand'), true);
+  assert.equal(appJs.includes('data-provider-attention-remediate'), true);
   assert.equal(appJs.includes('document-log-search'), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
   assert.equal(appJs.includes('loadRuntimeRequests'), true);
