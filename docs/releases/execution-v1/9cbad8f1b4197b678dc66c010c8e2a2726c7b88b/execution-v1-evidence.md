@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-13T15:00:58.786Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-13T15:00:42.863Z
 - branch: codex/post-merge-release-blocker-triage-artifact-sync
 - commit: 9cbad8f1b4197b678dc66c010c8e2a2726c7b88b
