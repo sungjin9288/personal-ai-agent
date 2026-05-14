@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-14T19:04:35.832Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-14T19:04:22.044Z
 - branch: codex/post-merge-browser-e2e-timeout-artifact-sync
 - commit: 99fa24445e9aa94e1509034f5fe85d495acdc784
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
