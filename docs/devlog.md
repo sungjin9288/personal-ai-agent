@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Slice Metrics Pass
+
+- added filtered release blocker slice metrics in the open blocker triage callout so operators can see visible blocker count, command count, deduplicated evidence doc count, and top visible blocker before copying slice handoff packages
+- reused the same visible blocker slice that powers handoff, command, and evidence copy actions so UI metrics stay aligned with the generated operator packages
+- extended `smoke:ui-harness-browse` to pin the slice metrics markers and summary helper in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Slice Evidence Copy Pass
 
 - added a release blocker slice evidence copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, deduplicated evidence docs, availability, and source blocker ids into one operator-ready evidence bundle

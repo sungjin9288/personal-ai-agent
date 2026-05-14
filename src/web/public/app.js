@@ -2041,6 +2041,41 @@ function buildReleaseBlockerSliceUrl({
   })}`;
 }
 
+function getReleaseBlockerSliceSummary({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  const evidenceDocKeys = new Set();
+  const commandCount = visibleActions.reduce((total, item) => {
+    const commands = Array.isArray(item.commands) ? item.commands : [];
+    return total + commands.filter((command) => String(command.command || '').trim()).length;
+  }, 0);
+  visibleActions.forEach((item) => {
+    const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+    evidenceDocs.forEach((doc) => {
+      const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+      const docPath = String(doc.path || '').trim();
+      const docHref = getAbsoluteReleaseUrl(doc.href || '');
+      const docKey = docHref || docPath || docLabel;
+      if (docKey) {
+        evidenceDocKeys.add(docKey);
+      }
+    });
+  });
+  const topVisibleAction = visibleActions[0] || null;
+
+  return {
+    commandCount,
+    evidenceDocCount: evidenceDocKeys.size,
+    topVisibleBlockerId: String(topVisibleAction?.id || '').trim(),
+    topVisibleBlockerLabel: String(topVisibleAction?.blocker || topVisibleAction?.stopReason || '').trim(),
+    totalCount: allActions.length,
+    visibleCount: visibleActions.length,
+  };
+}
+
 function buildReleaseBlockerHandoffText(blockerAction = null) {
   const actionId = String(blockerAction?.id || '').trim();
   if (!blockerAction || !actionId) {
@@ -7294,6 +7329,10 @@ function renderReleaseStatus() {
       owner: blockerOwnerFilter,
     }),
   );
+  const currentOpenBlockerSliceSummary = getReleaseBlockerSliceSummary({
+    blockerActions: visibleCurrentOpenBlockerActions,
+    totalActions: currentOpenBlockerActions,
+  });
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
@@ -8072,6 +8111,14 @@ function renderReleaseStatus() {
               ${hasBlockerFilter
                 ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')}</p>`
                 : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible</p>'}
+              <p class="item-meta" data-release-current-open-blocker-slice-summary="true">
+                slice metrics ·
+                <span data-release-current-open-blocker-slice-command-count="${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}">commands ${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}</span>
+                ·
+                <span data-release-current-open-blocker-slice-evidence-count="${escapeHtml(String(currentOpenBlockerSliceSummary.evidenceDocCount))}">evidence docs ${escapeHtml(String(currentOpenBlockerSliceSummary.evidenceDocCount))}</span>
+                ·
+                <span data-release-current-open-blocker-slice-top="${escapeHtml(currentOpenBlockerSliceSummary.topVisibleBlockerId || 'none')}">top ${escapeHtml(currentOpenBlockerSliceSummary.topVisibleBlockerId || 'none')}</span>
+              </p>
               <div class="release-history-filter-chips">
                 ${currentOpenBlockerCategoryEntries.length
                   ? currentOpenBlockerCategoryEntries
