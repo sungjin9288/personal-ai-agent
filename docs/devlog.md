@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Current Blocker Focus Actions Pass
+
+- added evidence document open/copy controls to the focused current open blocker callout so `rblocker` deep links can jump directly to supporting release-readiness docs without finding the row again
+- added focused current open blocker command copy actions beside the existing handoff and link controls so a shared blocker URL keeps the next command path in the same callout
+- extended `smoke:ui-harness-browse` to pin the focused blocker evidence and command markers in the served web bundle
+
 ## 2026-05-14 Web Production Blocker Package Copy Pass
 
 - added row-level production-ready blocker package copy actions so operators can copy handoff context, verification commands, and release-readiness evidence in one package for a single production stop-condition

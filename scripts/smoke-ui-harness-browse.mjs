@@ -275,6 +275,8 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-focus'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-handoff'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-focus-evidence-doc'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-focus-command'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-evidence-doc'), true);
   assert.equal(appJs.includes('data-release-evidence-doc-href'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);

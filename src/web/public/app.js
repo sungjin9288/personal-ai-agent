@@ -8046,6 +8046,12 @@ function renderReleaseStatus() {
   const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
   const focusedBlockerEntry =
     currentOpenBlockerActions.find((item) => String(item.id || '').trim() === focusedBlockerId) || null;
+  const focusedBlockerEvidenceDocs = Array.isArray(focusedBlockerEntry?.evidenceDocs)
+    ? focusedBlockerEntry.evidenceDocs.slice(0, 3)
+    : [];
+  const focusedBlockerCommands = Array.isArray(focusedBlockerEntry?.commands)
+    ? focusedBlockerEntry.commands.slice(0, 3)
+    : [];
   const coreDeterministicPassed = summary.coreDeterministicPassed ?? summary.deterministicPassed ?? 0;
   const coreDeterministicTotal = summary.coreDeterministicTotal ?? summary.deterministicTotal ?? 0;
   const referenceAdoptionPassed = Number(summary.referenceAdoptionPassed || 0);
@@ -8905,6 +8911,50 @@ function renderReleaseStatus() {
                   <div class="harness-callout release-blocker-focus-callout" data-release-current-open-blocker-focus="${escapeHtml(focusedBlockerId)}">
                     <strong>Focused current open blocker</strong>
                     <p>${escapeHtml(focusedBlockerEntry?.blocker || focusedBlockerEntry?.stopReason || focusedBlockerId)}</p>
+                    ${focusedBlockerEvidenceDocs.length
+                      ? `
+                          <div class="release-history-filter-chips release-evidence-doc-chips" data-release-current-open-blocker-focus-evidence-list="${escapeHtml(focusedBlockerId)}">
+                            ${focusedBlockerEvidenceDocs
+                              .map((doc) => {
+                                const docHref = String(doc.href || '').trim();
+                                const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+                                const docPath = String(doc.path || '').trim();
+                                return `
+                                  <span
+                                    class="release-evidence-doc-chip"
+                                    data-release-current-open-blocker-evidence-doc="${escapeHtml(focusedBlockerId)}"
+                                    data-release-current-open-blocker-focus-evidence-doc="${escapeHtml(focusedBlockerId)}"
+                                  >
+                                    ${docHref
+                                      ? `
+                                          <a
+                                            class="mini-badge status-running release-evidence-doc-link"
+                                            href="${escapeHtml(docHref)}"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            data-release-evidence-doc-href="${escapeHtml(docHref)}"
+                                            data-release-evidence-doc-path="${escapeHtml(docPath)}"
+                                          >${escapeHtml(docPath || docLabel)}</a>
+                                        `
+                                      : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
+                                    ${docHref
+                                      ? `
+                                          <button
+                                            class="ghost-button release-evidence-doc-copy"
+                                            type="button"
+                                            data-ui-action="copy-release-evidence-doc-link"
+                                            data-ui-href="${escapeHtml(docHref)}"
+                                            data-ui-label="${escapeHtml(docLabel)}"
+                                          >문서 링크 복사</button>
+                                        `
+                                      : ''}
+                                  </span>
+                                `;
+                              })
+                              .join('')}
+                          </div>
+                        `
+                      : ''}
                     <div class="release-history-focus-actions">
                       <button
                         class="ghost-button"
@@ -8919,6 +8969,21 @@ function renderReleaseStatus() {
                         data-ui-action="copy-release-blocker-link"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
                       >blocker 링크 복사</button>
+                      ${focusedBlockerCommands
+                        .map(
+                          (command) => `
+                            <button
+                              class="ghost-button"
+                              type="button"
+                              data-release-current-open-blocker-command="${escapeHtml(focusedBlockerId)}"
+                              data-release-current-open-blocker-focus-command="${escapeHtml(focusedBlockerId)}"
+                              data-ui-action="copy-release-command"
+                              data-ui-label="${escapeHtml(command.label || 'blocker command')}"
+                              data-ui-value="${escapeHtml(command.command || '')}"
+                            >${escapeHtml(command.label || 'command 복사')}</button>
+                          `,
+                        )
+                        .join('')}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus">포커스 해제</button>
                     </div>
                   </div>
