@@ -284,6 +284,10 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-handoff'), true);
   assert.equal(appJs.includes('Release blocker handoff'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerPackageText'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-package'), true);
+  assert.equal(appJs.includes('copy-release-blocker-package'), true);
+  assert.equal(appJs.includes('Release blocker package'), true);
   assert.equal(appJs.includes('copy-release-evidence-doc-link'), true);
   assert.equal(appJs.includes('clear-release-blocker-focus'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);

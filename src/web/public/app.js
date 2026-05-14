@@ -2476,6 +2476,71 @@ function buildReleaseBlockerHandoffText(blockerAction = null) {
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerPackageText(blockerAction = null) {
+  const actionId = String(blockerAction?.id || '').trim();
+  if (!blockerAction || !actionId) {
+    return '';
+  }
+
+  const blockerLabel = String(blockerAction.blocker || blockerAction.stopReason || 'current open blocker').trim();
+  const evidenceDocs = Array.isArray(blockerAction.evidenceDocs) ? blockerAction.evidenceDocs : [];
+  const commands = Array.isArray(blockerAction.commands) ? blockerAction.commands : [];
+  const commandSection = [
+    'Release blocker commands',
+    `- blocker: ${blockerLabel}`,
+    `- id: ${actionId}`,
+    `- commandCount: ${commands.length}`,
+    '',
+    'Commands:',
+    ...(
+      commands.length
+        ? commands.map((command, index) => {
+            const commandLabel = String(command.label || 'command').trim();
+            const commandValue = String(command.command || '').trim();
+            return `${index + 1}. ${commandLabel}: ${commandValue || 'command 없음'}`;
+          })
+        : ['- none']
+    ),
+  ].join('\n');
+  const evidenceSection = [
+    'Release blocker evidence',
+    `- blocker: ${blockerLabel}`,
+    `- id: ${actionId}`,
+    `- evidenceDocCount: ${evidenceDocs.length}`,
+    '',
+    'Evidence docs:',
+    ...(
+      evidenceDocs.length
+        ? evidenceDocs.map((doc, index) => {
+            const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+            const docPath = String(doc.path || '').trim();
+            const docHref = getAbsoluteReleaseUrl(doc.href || '');
+            const availability = doc.exists === false ? 'missing' : 'available';
+            return [
+              `${index + 1}. ${docLabel}`,
+              `   - path: ${docPath || 'path 없음'}`,
+              `   - link: ${docHref || 'link 없음'}`,
+              `   - availability: ${availability}`,
+            ].join('\n');
+          })
+        : ['- none']
+    ),
+  ].join('\n');
+  const sections = [
+    buildReleaseBlockerHandoffText(blockerAction),
+    commandSection,
+    evidenceSection,
+  ]
+    .map((section) => String(section || '').trim())
+    .filter(Boolean);
+
+  if (!sections.length) {
+    return '';
+  }
+
+  return `Release blocker package\n\n${sections.join('\n\n')}\n`;
+}
+
 function buildReleaseBlockerSliceHandoffText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3737,6 +3802,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-package') {
+        void copyReleaseBlockerPackage({
+          blockerId: button.dataset.uiBlocker || value || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-production-blocker-summary') {
         void copyReleaseProductionBlockerSummary();
         return;
@@ -4673,6 +4745,24 @@ async function copyReleaseBlockerHandoff({
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerPackage({
+  blockerId = state.releaseFocusedBlockerId,
+} = {}) {
+  const normalizedBlockerId = normalizeUiParam(blockerId);
+  const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
+  const packageText = buildReleaseBlockerPackageText(blockerAction);
+  if (!packageText) {
+    setUiNotice('복사할 release blocker package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'release blocker package를 복사하세요.',
+    shownNotice: 'release blocker package를 표시했습니다.',
+    successNotice: 'release blocker package를 복사했습니다.',
   });
 }
 
@@ -8966,6 +9056,13 @@ function renderReleaseStatus() {
                       <button
                         class="ghost-button"
                         type="button"
+                        data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"
+                        data-ui-action="copy-release-blocker-package"
+                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                      >package 복사</button>
+                      <button
+                        class="ghost-button"
+                        type="button"
                         data-ui-action="copy-release-blocker-link"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
                       >blocker 링크 복사</button>
@@ -9062,6 +9159,13 @@ function renderReleaseStatus() {
                             data-ui-action="copy-release-blocker-handoff"
                             data-ui-blocker="${escapeHtml(actionId)}"
                           >handoff 복사</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-current-open-blocker-package="${escapeHtml(actionId)}"
+                            data-ui-action="copy-release-blocker-package"
+                            data-ui-blocker="${escapeHtml(actionId)}"
+                          >package 복사</button>
                           <button
                             class="ghost-button"
                             type="button"
