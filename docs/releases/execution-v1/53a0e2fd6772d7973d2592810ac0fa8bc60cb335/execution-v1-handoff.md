@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-14T06:04:38.818Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-14T06:04:37.315Z
 - localDate: 2026-05-14
 - branch: codex/post-merge-production-blocker-expand-artifact-sync
 - commit: 53a0e2fd6772d7973d2592810ac0fa8bc60cb335
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335](releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335](docs/releases/execution-v1/53a0e2fd6772d7973d2592810ac0fa8bc60cb335)
 - visualArtifactSetSha256: 8f4a85500889cf2ab87303171411825dd8074f85b7c435945c0c01d6b7e92f5d
 - commitPushStatus: pushed to origin/main
 
