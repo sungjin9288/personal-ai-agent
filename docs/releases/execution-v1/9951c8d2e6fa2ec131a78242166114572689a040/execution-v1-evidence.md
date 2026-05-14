@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T15:08:46.498Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T15:08:37.187Z
 - branch: codex/post-merge-current-blocker-package-copy-artifact-sync
 - commit: 9951c8d2e6fa2ec131a78242166114572689a040
