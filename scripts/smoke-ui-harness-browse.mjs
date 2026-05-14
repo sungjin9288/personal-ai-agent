@@ -205,6 +205,11 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-overflow'), true);
   assert.equal(appJs.includes('data-release-production-blocker-toggle'), true);
   assert.equal(appJs.includes('toggle-release-production-blockers'), true);
+  assert.equal(appJs.includes('buildReleaseProductionBlockerHandoffText'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-row-index'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-handoff'), true);
+  assert.equal(appJs.includes('copy-release-production-blocker-handoff'), true);
+  assert.equal(appJs.includes('Production-ready blocker handoff'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);

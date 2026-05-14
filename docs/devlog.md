@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Row Handoff Pass
+
+- added row-level production-ready blocker handoff copy actions so operators can share one production stop-condition without copying the full blocker summary package
+- included blocker index, production status, release label, guarded release-readiness link, and verification commands in each production blocker handoff payload
+- extended `smoke:ui-harness-browse` to pin the row handoff builder, row index marker, copy action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Production Blocker Expand Toggle Pass
 
 - added an expand/collapse toggle for the release tab production-ready blocker list so operators can inspect all 24 blockers in the UI instead of only the first 8 summarized rows
