@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Triage Filter Pass
+
+- added release tab `rbcategory` and `rbowner` URL state so current open blocker triage can be narrowed by category and owner without losing reload/share context
+- converted blocker category and owner summary chips into filter actions and added a filtered-count summary plus clear-filter control for the current open blocker list
+- extended `smoke:ui-harness-browse` to pin the filter URL params, UI actions, and filter summary markers in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Triage Summary Pass
 
 - added a `currentOpenBlockerActionSummary` payload to `/api/execution-v1/status` with category, owner, status, command, evidence-doc, and top-priority blocker aggregates derived from existing current open blocker actions

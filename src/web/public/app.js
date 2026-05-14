@@ -54,6 +54,8 @@ const state = {
   releaseHandoffPreviewTruncated: false,
   releaseLiveConfirmProvider: '',
   releaseAllPreflight: null,
+  releaseBlockerCategoryFilter: '',
+  releaseBlockerOwnerFilter: '',
   releaseExpandedHistoryId: '',
   releaseFocusedBlockerId: '',
   releaseFocusedProvider: '',
@@ -664,6 +666,8 @@ function parseUiStateFromUrl() {
     retrievalSourceType: getSanitizedRetrievalSourceType(params.get('hstype')),
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
+    releaseBlockerCategoryFilter: normalizeUiParam(params.get('rbcategory')),
+    releaseBlockerOwnerFilter: normalizeUiParam(params.get('rbowner')),
     releaseFocusedBlockerId: normalizeUiParam(params.get('rblocker')),
     releaseFocusedProvider: normalizeUiParam(params.get('rcard')),
     releaseFocusedHistoryId: normalizeUiParam(params.get('rhistory')),
@@ -711,6 +715,14 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseFocusedBlockerId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedBlockerId)
       : normalizeUiParam(state.releaseFocusedBlockerId);
+  const releaseBlockerCategoryFilter =
+    overrides.releaseBlockerCategoryFilter !== undefined
+      ? normalizeUiParam(overrides.releaseBlockerCategoryFilter)
+      : normalizeUiParam(state.releaseBlockerCategoryFilter);
+  const releaseBlockerOwnerFilter =
+    overrides.releaseBlockerOwnerFilter !== undefined
+      ? normalizeUiParam(overrides.releaseBlockerOwnerFilter)
+      : normalizeUiParam(state.releaseBlockerOwnerFilter);
   const releaseFocusedHistoryId =
     overrides.releaseFocusedHistoryId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedHistoryId)
@@ -796,6 +808,16 @@ function buildUiStateUrl(overrides = {}) {
   }
 
   if (detailTab === 'release') {
+    if (releaseBlockerCategoryFilter) {
+      params.set('rbcategory', releaseBlockerCategoryFilter);
+    } else {
+      params.delete('rbcategory');
+    }
+    if (releaseBlockerOwnerFilter) {
+      params.set('rbowner', releaseBlockerOwnerFilter);
+    } else {
+      params.delete('rbowner');
+    }
     if (releaseFocusedBlockerId) {
       params.set('rblocker', releaseFocusedBlockerId);
     } else {
@@ -833,6 +855,8 @@ function buildUiStateUrl(overrides = {}) {
     }
   } else {
     params.delete('rblocker');
+    params.delete('rbcategory');
+    params.delete('rbowner');
     params.delete('rcard');
     params.delete('rhistory');
     params.delete('rartifact');
@@ -1953,6 +1977,30 @@ function getReleaseCurrentOpenBlockerAction(blockerId = '') {
   return getReleaseCurrentOpenBlockerActions().find((item) => String(item.id || '').trim() === normalizedBlockerId) || null;
 }
 
+function isReleaseBlockerActionVisibleForFilter(
+  blockerAction = null,
+  {
+    category = state.releaseBlockerCategoryFilter,
+    owner = state.releaseBlockerOwnerFilter,
+  } = {},
+) {
+  if (!blockerAction) {
+    return false;
+  }
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const actionCategory = String(blockerAction.category || '').trim();
+  const actionOwner = String(blockerAction.owner || '').trim();
+  return (!normalizedCategory || actionCategory === normalizedCategory)
+    && (!normalizedOwner || actionOwner === normalizedOwner);
+}
+
+function getFilteredReleaseCurrentOpenBlockerActions(releaseStatus = state.releaseStatus) {
+  return getReleaseCurrentOpenBlockerActions(releaseStatus).filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item),
+  );
+}
+
 function getAbsoluteReleaseUrl(href = '') {
   const normalizedHref = String(href || '').trim();
   if (!normalizedHref) {
@@ -2077,6 +2125,33 @@ function focusReleaseBlocker(blockerId = '', { historyMode = 'replace', scroll =
   });
 }
 
+function setReleaseBlockerFilter({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  historyMode = 'replace',
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const actions = getReleaseCurrentOpenBlockerActions();
+  const categoryIsValid = !normalizedCategory || actions.some((item) => String(item.category || '').trim() === normalizedCategory);
+  const ownerIsValid = !normalizedOwner || actions.some((item) => String(item.owner || '').trim() === normalizedOwner);
+
+  state.releaseBlockerCategoryFilter = categoryIsValid ? normalizedCategory : '';
+  state.releaseBlockerOwnerFilter = ownerIsValid ? normalizedOwner : '';
+
+  if (
+    state.releaseFocusedBlockerId
+    && !getFilteredReleaseCurrentOpenBlockerActions().some(
+      (item) => String(item.id || '').trim() === state.releaseFocusedBlockerId,
+    )
+  ) {
+    state.releaseFocusedBlockerId = '';
+  }
+
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
 function focusReleaseProvider(provider = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedProvider = String(provider || '').trim();
   if (!normalizedProvider) {
@@ -2122,6 +2197,13 @@ function clearReleaseHistoryFocus({ historyMode = 'replace' } = {}) {
 
 function clearReleaseBlockerFocus({ historyMode = 'replace' } = {}) {
   state.releaseFocusedBlockerId = '';
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
+function clearReleaseBlockerFilter({ historyMode = 'replace' } = {}) {
+  state.releaseBlockerCategoryFilter = '';
+  state.releaseBlockerOwnerFilter = '';
   renderReleaseStatus();
   writeUiStateToUrl({ historyMode });
 }
@@ -2184,11 +2266,27 @@ function applyReleaseHistoryUrlState({
 
 function applyReleaseBlockerUrlState(blockerId = '') {
   const normalizedBlockerId = String(blockerId || '').trim();
-  const currentOpenBlockerActions = getReleaseCurrentOpenBlockerActions();
+  const currentOpenBlockerActions = getFilteredReleaseCurrentOpenBlockerActions();
   state.releaseFocusedBlockerId = currentOpenBlockerActions.some(
     (item) => String(item.id || '').trim() === normalizedBlockerId,
   )
     ? normalizedBlockerId
+    : '';
+  renderReleaseStatus();
+}
+
+function applyReleaseBlockerFilterUrlState({
+  category = '',
+  owner = '',
+} = {}) {
+  const actions = getReleaseCurrentOpenBlockerActions();
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  state.releaseBlockerCategoryFilter = actions.some((item) => String(item.category || '').trim() === normalizedCategory)
+    ? normalizedCategory
+    : '';
+  state.releaseBlockerOwnerFilter = actions.some((item) => String(item.owner || '').trim() === normalizedOwner)
+    ? normalizedOwner
     : '';
   renderReleaseStatus();
 }
@@ -2838,6 +2936,16 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'filter-release-blockers') {
+        setReleaseBlockerFilter({
+          category: button.dataset.uiCategory || '',
+          historyMode: 'push',
+          owner: button.dataset.uiOwner || '',
+        });
+        setUiNotice('current open blocker 목록을 선택한 triage 기준으로 좁혔습니다.');
+        return;
+      }
+
       if (action === 'focus-release-provider') {
         focusReleaseProvider(button.dataset.uiProvider || value || '', { historyMode: 'push' });
         setUiNotice('연결된 provider readiness 카드로 이동했습니다.');
@@ -2870,6 +2978,12 @@ function wireQuickActions(scope = document) {
       if (action === 'clear-release-blocker-focus') {
         clearReleaseBlockerFocus({ historyMode: 'push' });
         setUiNotice('current open blocker 포커스를 해제했습니다.');
+        return;
+      }
+
+      if (action === 'clear-release-blocker-filter') {
+        clearReleaseBlockerFilter({ historyMode: 'push' });
+        setUiNotice('current open blocker triage 필터를 해제했습니다.');
         return;
       }
 
@@ -3702,6 +3816,8 @@ async function resetCurrentView() {
 }
 
 async function copyReleaseTriageLink({
+  blockerCategory = state.releaseBlockerCategoryFilter,
+  blockerOwner = state.releaseBlockerOwnerFilter,
   focusedBlockerId = state.releaseFocusedBlockerId,
   focusedProvider = state.releaseFocusedProvider,
   focusedHistoryId = state.releaseFocusedHistoryId,
@@ -3712,6 +3828,8 @@ async function copyReleaseTriageLink({
 } = {}) {
   const triageUrl = `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
+    releaseBlockerCategoryFilter: blockerCategory,
+    releaseBlockerOwnerFilter: blockerOwner,
     releaseFocusedBlockerId: focusedBlockerId,
     releaseFocusedProvider: focusedProvider,
     releaseFocusedHistoryId: focusedHistoryId,
@@ -3737,6 +3855,8 @@ async function copyReleaseBlockerLink({
   }
 
   await copyReleaseTriageLink({
+    blockerCategory: '',
+    blockerOwner: '',
     focusedBlockerId: normalizedBlockerId,
     focusedProvider: '',
     focusedHistoryId: '',
@@ -6841,6 +6961,15 @@ function renderReleaseStatus() {
       || currentOpenBlockerActionSummary.topPriorityStopReason
       || 'current open blocker',
   ).trim();
+  const blockerCategoryFilter = String(state.releaseBlockerCategoryFilter || '').trim();
+  const blockerOwnerFilter = String(state.releaseBlockerOwnerFilter || '').trim();
+  const hasBlockerFilter = Boolean(blockerCategoryFilter || blockerOwnerFilter);
+  const visibleCurrentOpenBlockerActions = currentOpenBlockerActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: blockerCategoryFilter,
+      owner: blockerOwnerFilter,
+    }),
+  );
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
@@ -7616,12 +7745,23 @@ function renderReleaseStatus() {
             <div class="harness-callout" data-release-current-open-blocker-triage="true">
               <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
               <p>${escapeHtml(topPriorityBlockerId ? `Top priority ${topPriorityBlockerId}: ${topPriorityBlockerLabel}` : 'current open blocker triage summary가 없습니다.')}</p>
+              ${hasBlockerFilter
+                ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')}</p>`
+                : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible</p>'}
               <div class="release-history-filter-chips">
                 ${currentOpenBlockerCategoryEntries.length
                   ? currentOpenBlockerCategoryEntries
                     .map(
                       ([category, count]) => `
-                        <span class="mini-badge status-failed" data-release-current-open-blocker-category-count="${escapeHtml(category)}">${escapeHtml(category)} ${escapeHtml(String(count))}</span>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-release-current-open-blocker-category-count="${escapeHtml(category)}"
+                          data-ui-action="filter-release-blockers"
+                          data-ui-category="${escapeHtml(category)}"
+                          data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                          ${blockerCategoryFilter === category ? 'disabled' : ''}
+                        >${escapeHtml(category)} ${escapeHtml(String(count))}</button>
                       `,
                     )
                     .join('')
@@ -7630,11 +7770,22 @@ function renderReleaseStatus() {
                   ? currentOpenBlockerOwnerEntries
                     .map(
                       ([owner, count]) => `
-                        <span class="mini-badge status-running" data-release-current-open-blocker-owner-count="${escapeHtml(owner)}">${escapeHtml(owner)} ${escapeHtml(String(count))}</span>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-release-current-open-blocker-owner-count="${escapeHtml(owner)}"
+                          data-ui-action="filter-release-blockers"
+                          data-ui-category="${escapeHtml(blockerCategoryFilter)}"
+                          data-ui-owner="${escapeHtml(owner)}"
+                          ${blockerOwnerFilter === owner ? 'disabled' : ''}
+                        >${escapeHtml(owner)} ${escapeHtml(String(count))}</button>
                       `,
                     )
                     .join('')
                   : '<span class="mini-badge status-running">owner 없음</span>'}
+                ${hasBlockerFilter
+                  ? '<button class="ghost-button" type="button" data-ui-action="clear-release-blocker-filter">필터 해제</button>'
+                  : ''}
               </div>
             </div>
             ${focusedBlockerId
@@ -7662,8 +7813,8 @@ function renderReleaseStatus() {
                 `
               : ''}
             <div class="release-current-status" data-release-current-open-blocker-list="true">
-              ${currentOpenBlockerActions.length
-                ? currentOpenBlockerActions
+              ${visibleCurrentOpenBlockerActions.length
+                ? visibleCurrentOpenBlockerActions
                   .map(
                     (item) => {
                       const commands = Array.isArray(item.commands) ? item.commands.slice(0, 3) : [];
@@ -7762,8 +7913,8 @@ function renderReleaseStatus() {
                   .join('')
                 : `
                     <article class="release-snapshot-card is-empty">
-                      <div class="item-title">current open blocker가 없습니다.</div>
-                      <p class="item-meta">release-readiness 문서의 Current Open Blockers 섹션이 비어 있습니다.</p>
+                      <div class="item-title">${hasBlockerFilter ? '현재 triage 필터에 맞는 blocker가 없습니다.' : 'current open blocker가 없습니다.'}</div>
+                      <p class="item-meta">${hasBlockerFilter ? 'category 또는 owner 필터를 해제해 전체 current open blocker를 확인하세요.' : 'release-readiness 문서의 Current Open Blockers 섹션이 비어 있습니다.'}</p>
                     </article>
                   `}
             </div>
@@ -9999,6 +10150,8 @@ async function loadReleaseStatus({
   previewArtifactId = '',
 } = {}) {
   const previousReleaseState = {
+    blockerCategoryFilter: state.releaseBlockerCategoryFilter,
+    blockerOwnerFilter: state.releaseBlockerOwnerFilter,
     focusedBlockerId: state.releaseFocusedBlockerId,
     focusedProvider: state.releaseFocusedProvider,
     focusedHistoryId: state.releaseFocusedHistoryId,
@@ -10018,6 +10171,30 @@ async function loadReleaseStatus({
     state.releaseFocusedProvider = '';
   }
   if (!getReleaseCurrentOpenBlockerActions(payload).some((item) => String(item.id || '').trim() === state.releaseFocusedBlockerId)) {
+    state.releaseFocusedBlockerId = '';
+  }
+  if (
+    state.releaseBlockerCategoryFilter
+    && !getReleaseCurrentOpenBlockerActions(payload).some(
+      (item) => String(item.category || '').trim() === state.releaseBlockerCategoryFilter,
+    )
+  ) {
+    state.releaseBlockerCategoryFilter = '';
+  }
+  if (
+    state.releaseBlockerOwnerFilter
+    && !getReleaseCurrentOpenBlockerActions(payload).some(
+      (item) => String(item.owner || '').trim() === state.releaseBlockerOwnerFilter,
+    )
+  ) {
+    state.releaseBlockerOwnerFilter = '';
+  }
+  if (
+    state.releaseFocusedBlockerId
+    && !getFilteredReleaseCurrentOpenBlockerActions(payload).some(
+      (item) => String(item.id || '').trim() === state.releaseFocusedBlockerId,
+    )
+  ) {
     state.releaseFocusedBlockerId = '';
   }
   if (!payload.releaseActionHistory?.some((item) => item.id === state.releaseFocusedHistoryId)) {
@@ -10059,6 +10236,8 @@ async function loadReleaseStatus({
   }
   if (
     previousReleaseState.focusedBlockerId !== state.releaseFocusedBlockerId
+    || previousReleaseState.blockerCategoryFilter !== state.releaseBlockerCategoryFilter
+    || previousReleaseState.blockerOwnerFilter !== state.releaseBlockerOwnerFilter
     || previousReleaseState.focusedProvider !== state.releaseFocusedProvider
     || previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
     || previousReleaseState.historyFilterOutcome !== state.releaseHistoryFilterOutcome
@@ -10375,11 +10554,16 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
       provider: urlState.releaseHistoryProvider,
       scope: urlState.releaseHistoryScope,
     });
+    applyReleaseBlockerFilterUrlState({
+      category: urlState.releaseBlockerCategoryFilter,
+      owner: urlState.releaseBlockerOwnerFilter,
+    });
     applyReleaseBlockerUrlState(urlState.releaseFocusedBlockerId);
     applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
     await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);
   } else {
     applyReleaseHistoryUrlState();
+    applyReleaseBlockerFilterUrlState();
     applyReleaseBlockerUrlState();
     applyReleaseProviderUrlState();
     clearReleaseHandoffPreview();
