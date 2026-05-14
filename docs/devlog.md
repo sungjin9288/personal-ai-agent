@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Slice Command Copy Pass
+
+- added a release blocker slice command copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, and blocker-scoped next commands into one operator-ready command runbook
+- exposed the command copy action beside the slice handoff action in the open blocker triage callout so operators can choose narrative handoff text or command-only execution context from the same filtered slice
+- extended `smoke:ui-harness-browse` to pin the slice command marker, action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Slice Handoff Pass
 
 - added a release blocker slice handoff copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, blocker metadata, evidence docs, and next commands into one operator-ready text block

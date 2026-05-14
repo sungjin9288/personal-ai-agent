@@ -27,6 +27,7 @@
 - release status now also summarizes current open blocker actions by category, owner, status, and top priority so operator triage can identify the dominant blocker class before opening individual rows
 - release current open blocker triage now supports category and owner filters with URL state, so blocker lists can be narrowed and shared without losing the release tab context
 - release current open blocker triage now also provides a slice-level handoff copy action, so the currently filtered category/owner blocker set can be shared with visible/total counts, release link, evidence docs, and next commands in one package
+- release current open blocker triage now also provides a slice-level command copy action, so the currently filtered blocker set can be turned into a blocker-scoped command runbook without copying row commands one by one
 - release current open blocker rows now support `rblocker` deep links, focused blocker callouts, and row-level blocker link copy so blocker disposition can be shared without losing the release tab context
 - release current open blocker evidence docs now expose guarded open/copy links from the same blocker row, so operator handoff can jump from a stop-condition to its supporting evidence document without path reconstruction
 - release current open blocker rows now provide one-shot handoff copy text with blocker metadata, release deep link, evidence document links, and next commands so operator escalation can carry the complete disposition package
