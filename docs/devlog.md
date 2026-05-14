@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Current Blocker Slice Closure Checklist Copy Pass
+
+- added a release blocker slice closure checklist copy action that turns the active category/owner filter into a closing-evidence checklist for every visible current open blocker
+- included per-blocker closing evidence, evidence docs, next commands, artifact refresh guidance, and final verification gates so filtered blocker ownership can move directly into closure execution
+- extended `smoke:ui-harness-browse` to pin the slice closure checklist builder, marker, action, and text contract in the served web bundle
+
 ## 2026-05-15 Web Current Blocker Closure Checklist Copy Pass
 
 - added single current open blocker closure checklist copy actions so operators can hand off the exact closing evidence, evidence docs, commands, artifact refresh rule, and final verification gates for one stop-condition

@@ -261,6 +261,12 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
   assert.equal(appJs.includes('Release blocker slice package'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerSliceClosureChecklistText'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-checklist'), true);
+  assert.equal(appJs.includes('copy-release-blocker-filter-closure-checklist'), true);
+  assert.equal(appJs.includes('Release blocker slice closure checklist'), true);
+  assert.equal(appJs.includes('Blocker checklist:'), true);
+  assert.equal(appJs.includes('Artifact refresh: npm run refresh:execution-v1-artifacts'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('Release blocker slice handoff'), true);
