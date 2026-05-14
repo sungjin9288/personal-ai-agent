@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T14:23:45.872Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T14:23:35.971Z
 - branch: codex/post-merge-current-blocker-focused-actions-artifact-sync
 - commit: dfc2bcf219b161bec2c45888b3217d2f90d4486c
