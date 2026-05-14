@@ -217,6 +217,10 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary-copy'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-summary'), true);
   assert.equal(appJs.includes('Release blocker slice summary'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerSlicePackageText'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
+  assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
+  assert.equal(appJs.includes('Release blocker slice package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('Release blocker slice handoff'), true);
