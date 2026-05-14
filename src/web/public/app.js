@@ -7476,6 +7476,9 @@ function renderReleaseStatus() {
       owner: blockerOwnerFilter,
     }),
   );
+  const hasEmptyBlockerFilter = hasBlockerFilter
+    && currentOpenBlockerActions.length > 0
+    && visibleCurrentOpenBlockerActions.length === 0;
   const currentOpenBlockerSliceSummary = getReleaseBlockerSliceSummary({
     blockerActions: visibleCurrentOpenBlockerActions,
     totalActions: currentOpenBlockerActions,
@@ -8258,6 +8261,9 @@ function renderReleaseStatus() {
               ${hasBlockerFilter
                 ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')}</p>`
                 : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible</p>'}
+              ${hasEmptyBlockerFilter
+                ? `<p class="item-meta" data-release-current-open-blocker-filter-empty="true">이 category/owner 조합에 해당하는 current open blocker가 없습니다. category 또는 owner 한쪽만 유지하거나 필터를 해제하세요.</p>`
+                : ''}
               <p class="item-meta" data-release-current-open-blocker-slice-summary="true">
                 slice metrics ·
                 <span data-release-current-open-blocker-slice-command-count="${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}">commands ${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}</span>
@@ -8331,8 +8337,28 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-evidence="true"
                   data-ui-action="copy-release-blocker-filter-evidence"
                 >slice 근거 복사</button>
+                ${hasEmptyBlockerFilter && blockerCategoryFilter && blockerOwnerFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-current-open-blocker-filter-empty-category="true"
+                      data-ui-action="filter-release-blockers"
+                      data-ui-category="${escapeHtml(blockerCategoryFilter)}"
+                      data-ui-owner=""
+                    >category만 유지</button>
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-current-open-blocker-filter-empty-owner="true"
+                      data-ui-action="filter-release-blockers"
+                      data-ui-category=""
+                      data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                    >owner만 유지</button>
+                  `
+                  : ''}
                 ${hasBlockerFilter
-                  ? '<button class="ghost-button" type="button" data-ui-action="clear-release-blocker-filter">필터 해제</button>'
+                  ? `<button class="ghost-button" type="button" data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}" data-ui-action="clear-release-blocker-filter">${hasEmptyBlockerFilter ? '조합 해제' : '필터 해제'}</button>`
                   : ''}
               </div>
             </div>

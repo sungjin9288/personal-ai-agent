@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Empty Filter Recovery Pass
+
+- added empty category/owner filter detection in the release blocker triage callout so impossible blocker slice combinations are called out instead of silently showing an empty list
+- added recovery actions for empty slices so operators can keep only the selected category, keep only the selected owner, or clear the filter combination from the same callout
+- extended `smoke:ui-harness-browse` to pin the empty-filter marker and recovery action markers in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Slice Package Copy Pass
 
 - added a release blocker slice package copy action that combines the active slice summary, handoff, command runbook, and evidence bundle into one operator-ready package
