@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Current Blocker Closure Checklist Copy Pass
+
+- added single current open blocker closure checklist copy actions so operators can hand off the exact closing evidence, evidence docs, commands, artifact refresh rule, and final verification gates for one stop-condition
+- exposed the same checklist copy action in focused current blocker callouts and rows so `rblocker` deep links and list triage can request closure evidence without sending the full blocker package
+- extended `smoke:ui-harness-browse` to pin the closure checklist builder, marker, copy action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Current Blocker Package Copy Pass
 
 - added single current open blocker package copy actions so operators can copy blocker handoff context, next commands, and evidence docs together without relying on the slice-level package

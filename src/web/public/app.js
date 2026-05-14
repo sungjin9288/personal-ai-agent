@@ -2476,6 +2476,83 @@ function buildReleaseBlockerHandoffText(blockerAction = null) {
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerClosureChecklistText(blockerAction = null) {
+  const actionId = String(blockerAction?.id || '').trim();
+  if (!blockerAction || !actionId) {
+    return '';
+  }
+
+  const blockerLabel = String(blockerAction.blocker || blockerAction.stopReason || 'current open blocker').trim();
+  const nextEvidence = String(blockerAction.nextEvidence || '').trim();
+  const evidenceDocs = Array.isArray(blockerAction.evidenceDocs) ? blockerAction.evidenceDocs : [];
+  const commands = Array.isArray(blockerAction.commands) ? blockerAction.commands : [];
+  const blockerLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseFocusedBlockerId: actionId,
+    releaseFocusedProductionBlockerIndex: '',
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const lines = [
+    'Release blocker closure checklist',
+    `- blocker: ${blockerLabel}`,
+    `- id: ${actionId}`,
+    `- category: ${String(blockerAction.category || 'stop-condition').trim()}`,
+    `- owner: ${String(blockerAction.owner || 'release-owner').trim()}`,
+    `- status: ${String(blockerAction.status || 'blocked').trim()}`,
+    `- stopReason: ${String(blockerAction.stopReason || blockerLabel).trim()}`,
+    `- nextEvidence: ${nextEvidence || 'not recorded'}`,
+    `- releaseLink: ${blockerLink}`,
+    '',
+    'Closure requirements:',
+    `1. Capture closing evidence for: ${nextEvidence || blockerLabel}`,
+    '2. Update or attach every evidence doc listed below before changing the release label.',
+    '3. Run the blocker-specific commands listed below and keep command output with the evidence packet.',
+    '4. Regenerate execution-v1 artifacts if live proof or any release source-of-record changes.',
+    '5. Keep productionReadyClaim=false until production readiness and artifact hygiene gates pass with no stop-condition.',
+    '',
+    'Evidence docs:',
+    ...(
+      evidenceDocs.length
+        ? evidenceDocs.map((doc, index) => {
+            const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+            const docPath = String(doc.path || '').trim();
+            const docHref = getAbsoluteReleaseUrl(doc.href || '');
+            const availability = doc.exists === false ? 'missing' : 'available';
+            return [
+              `${index + 1}. ${docLabel}`,
+              `   - path: ${docPath || 'path 없음'}`,
+              `   - link: ${docHref || 'link 없음'}`,
+              `   - availability: ${availability}`,
+            ].join('\n');
+          })
+        : ['- none']
+    ),
+    '',
+    'Commands:',
+    ...(
+      commands.length
+        ? commands.map((command, index) => {
+            const commandLabel = String(command.label || 'command').trim();
+            const commandValue = String(command.command || '').trim();
+            return `${index + 1}. ${commandLabel}: ${commandValue || 'command 없음'}`;
+          })
+        : ['- none']
+    ),
+    '',
+    'Final verification:',
+    '- Artifact refresh: npm run refresh:execution-v1-artifacts',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerPackageText(blockerAction = null) {
   const actionId = String(blockerAction?.id || '').trim();
   if (!blockerAction || !actionId) {
@@ -3802,6 +3879,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-closure-checklist') {
+        void copyReleaseBlockerClosureChecklist({
+          blockerId: button.dataset.uiBlocker || value || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-blocker-package') {
         void copyReleaseBlockerPackage({
           blockerId: button.dataset.uiBlocker || value || '',
@@ -4745,6 +4829,24 @@ async function copyReleaseBlockerHandoff({
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerClosureChecklist({
+  blockerId = state.releaseFocusedBlockerId,
+} = {}) {
+  const normalizedBlockerId = normalizeUiParam(blockerId);
+  const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
+  const checklistText = buildReleaseBlockerClosureChecklistText(blockerAction);
+  if (!checklistText) {
+    setUiNotice('복사할 release blocker closure checklist가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(checklistText, {
+    promptMessage: 'release blocker closure checklist를 복사하세요.',
+    shownNotice: 'release blocker closure checklist를 표시했습니다.',
+    successNotice: 'release blocker closure checklist를 복사했습니다.',
   });
 }
 
@@ -9056,6 +9158,13 @@ function renderReleaseStatus() {
                       <button
                         class="ghost-button"
                         type="button"
+                        data-release-current-open-blocker-closure-checklist="${escapeHtml(focusedBlockerId)}"
+                        data-ui-action="copy-release-blocker-closure-checklist"
+                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                      >closure 체크리스트 복사</button>
+                      <button
+                        class="ghost-button"
+                        type="button"
                         data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"
                         data-ui-action="copy-release-blocker-package"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
@@ -9159,6 +9268,13 @@ function renderReleaseStatus() {
                             data-ui-action="copy-release-blocker-handoff"
                             data-ui-blocker="${escapeHtml(actionId)}"
                           >handoff 복사</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-current-open-blocker-closure-checklist="${escapeHtml(actionId)}"
+                            data-ui-action="copy-release-blocker-closure-checklist"
+                            data-ui-blocker="${escapeHtml(actionId)}"
+                          >closure 체크리스트 복사</button>
                           <button
                             class="ghost-button"
                             type="button"

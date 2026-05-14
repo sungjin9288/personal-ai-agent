@@ -284,6 +284,12 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-handoff'), true);
   assert.equal(appJs.includes('Release blocker handoff'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-closure-checklist'), true);
+  assert.equal(appJs.includes('copy-release-blocker-closure-checklist'), true);
+  assert.equal(appJs.includes('Release blocker closure checklist'), true);
+  assert.equal(appJs.includes('Closure requirements:'), true);
+  assert.equal(appJs.includes('Artifact refresh: npm run refresh:execution-v1-artifacts'), true);
   assert.equal(appJs.includes('buildReleaseBlockerPackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-package'), true);
