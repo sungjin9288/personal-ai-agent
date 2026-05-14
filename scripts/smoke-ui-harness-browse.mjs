@@ -214,6 +214,9 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-command'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-commands'), true);
   assert.equal(appJs.includes('Release blocker slice commands'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-evidence'), true);
+  assert.equal(appJs.includes('copy-release-blocker-filter-evidence'), true);
+  assert.equal(appJs.includes('Release blocker slice evidence'), true);
   assert.equal(appJs.includes('releaseFocusedBlockerId'), true);
   assert.equal(appJs.includes('rblocker'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
