@@ -2605,6 +2605,7 @@ function buildReleaseBlockerPackageText(blockerAction = null) {
   ].join('\n');
   const sections = [
     buildReleaseBlockerHandoffText(blockerAction),
+    buildReleaseBlockerClosureChecklistText(blockerAction),
     commandSection,
     evidenceSection,
   ]
@@ -2915,6 +2916,7 @@ function buildReleaseBlockerSlicePackageText({
   const sections = [
     buildReleaseBlockerSliceSummaryText(buildOptions),
     buildReleaseBlockerSliceHandoffText(buildOptions),
+    buildReleaseBlockerSliceClosureChecklistText(buildOptions),
     buildReleaseBlockerSliceCommandText(buildOptions),
     buildReleaseBlockerSliceEvidenceText(buildOptions),
   ]

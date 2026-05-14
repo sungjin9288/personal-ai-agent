@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Current Blocker Package Closure Bundle Pass
+
+- added the existing single-blocker closure checklist into `blocker package 복사` output so one package now carries handoff context, closing requirements, commands, and evidence together
+- added the slice closure checklist into `slice package 복사` output so filtered category/owner packages include closure requirements before command and evidence bundles
+- extended `smoke:ui-harness-browse` to pin both package builders to their closure checklist builder calls
+
 ## 2026-05-15 Web Current Blocker Slice Closure Checklist Copy Pass
 
 - added a release blocker slice closure checklist copy action that turns the active category/owner filter into a closing-evidence checklist for every visible current open blocker

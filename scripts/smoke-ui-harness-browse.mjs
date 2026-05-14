@@ -261,6 +261,7 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
   assert.equal(appJs.includes('Release blocker slice package'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerSliceClosureChecklistText(buildOptions)'), true);
   assert.equal(appJs.includes('buildReleaseBlockerSliceClosureChecklistText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-checklist'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-closure-checklist'), true);
@@ -300,6 +301,7 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-package'), true);
   assert.equal(appJs.includes('Release blocker package'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText(blockerAction)'), true);
   assert.equal(appJs.includes('copy-release-evidence-doc-link'), true);
   assert.equal(appJs.includes('clear-release-blocker-focus'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
