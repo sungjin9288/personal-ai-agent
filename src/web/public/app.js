@@ -2078,6 +2078,77 @@ function buildReleaseBlockerHandoffText(blockerAction = null) {
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerSliceHandoffText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const sliceLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: normalizedCategory,
+    releaseBlockerOwnerFilter: normalizedOwner,
+    releaseFocusedBlockerId: '',
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const topVisibleAction = visibleActions[0] || null;
+  const formatEvidenceDoc = (doc = {}) => {
+    const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+    const docPath = String(doc.path || '').trim();
+    const docHref = getAbsoluteReleaseUrl(doc.href || '');
+    const availability = doc.exists === false ? 'missing' : 'available';
+    return `${docLabel}: ${docPath || 'path 없음'}${docHref ? ` (${docHref})` : ''} [${availability}]`;
+  };
+  const formatCommand = (command = {}) => {
+    const commandLabel = String(command.label || 'command').trim();
+    const commandValue = String(command.command || '').trim();
+    return `${commandLabel}: ${commandValue || 'command 없음'}`;
+  };
+  const blockerLines = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const actionId = String(item.id || '').trim();
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - id: ${actionId || 'unknown'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - status: ${String(item.status || 'blocked').trim()}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim()}`,
+          `   - nextEvidence: ${String(item.nextEvidence || '').trim()}`,
+          `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.map(formatEvidenceDoc).join('; ') : 'none'}`,
+          `   - commands: ${commands.length ? commands.map(formatCommand).join('; ') : 'none'}`,
+        ];
+      })
+    : ['- none'];
+  const lines = [
+    'Release blocker slice handoff',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- releaseLink: ${sliceLink}`,
+    `- topVisibleBlocker: ${topVisibleAction ? `${String(topVisibleAction.id || 'unknown').trim()}: ${String(topVisibleAction.blocker || topVisibleAction.stopReason || 'current open blocker').trim()}` : 'none'}`,
+    '',
+    'Blockers:',
+    ...blockerLines,
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -3026,6 +3097,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-handoff') {
+        void copyReleaseBlockerFilterHandoff();
+        return;
+      }
+
       if (action === 'copy-release-evidence-doc-link') {
         void copyReleaseEvidenceDocLink({
           href: button.dataset.uiHref || value || '',
@@ -3882,6 +3958,37 @@ async function copyReleaseBlockerHandoff({
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterHandoff({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const handoffText = buildReleaseBlockerSliceHandoffText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!handoffText) {
+    setUiNotice('복사할 release blocker slice handoff가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(handoffText, {
+    promptMessage: 'release blocker slice handoff를 복사하세요.',
+    shownNotice: 'release blocker slice handoff를 표시했습니다.',
+    successNotice: 'release blocker slice handoff를 복사했습니다.',
   });
 }
 
@@ -7783,6 +7890,12 @@ function renderReleaseStatus() {
                     )
                     .join('')
                   : '<span class="mini-badge status-running">owner 없음</span>'}
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-handoff="true"
+                  data-ui-action="copy-release-blocker-filter-handoff"
+                >slice handoff 복사</button>
                 ${hasBlockerFilter
                   ? '<button class="ghost-button" type="button" data-ui-action="clear-release-blocker-filter">필터 해제</button>'
                   : ''}
