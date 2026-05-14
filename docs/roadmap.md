@@ -26,6 +26,7 @@
 - release production blocker callout now provides a copyable production-ready blocker summary with status, count, stop reason, guarded release-readiness link, verification commands, and the full blocker list for operator handoff
 - release production blocker list now supports expand/collapse state, so operators can inspect all production-ready blockers in the UI while keeping the default release surface compact
 - release production blocker rows now provide row-level handoff copy actions, so one production stop-condition can be shared with status, release label, guarded release-readiness link, and verification commands without copying the full blocker list
+- release production blocker rows now also support `rpblocker` deep links, focused blocker callouts, and row-level production blocker link copy so a single production stop-condition can be reloaded and shared without losing the release tab context
 - release status now maps current open blockers to triage categories, evidence documents, owners, stop reasons, and copyable next commands, so the operator release tab can move from blocker visibility to blocker disposition without reopening the release-readiness Markdown first
 - release status now also summarizes current open blocker actions by category, owner, status, and top priority so operator triage can identify the dominant blocker class before opening individual rows
 - release current open blocker triage now supports category and owner filters with URL state, so blocker lists can be narrowed and shared without losing the release tab context

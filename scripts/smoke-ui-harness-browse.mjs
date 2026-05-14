@@ -210,6 +210,14 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-handoff'), true);
   assert.equal(appJs.includes('copy-release-production-blocker-handoff'), true);
   assert.equal(appJs.includes('Production-ready blocker handoff'), true);
+  assert.equal(appJs.includes('releaseFocusedProductionBlockerIndex'), true);
+  assert.equal(appJs.includes('rpblocker'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-focus'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-focused'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-link'), true);
+  assert.equal(appJs.includes('focus-release-production-blocker'), true);
+  assert.equal(appJs.includes('copy-release-production-blocker-link'), true);
+  assert.equal(appJs.includes('clear-release-production-blocker-focus'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);
