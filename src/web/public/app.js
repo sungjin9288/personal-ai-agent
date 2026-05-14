@@ -2277,6 +2277,74 @@ function buildReleaseProductionBlockerCommandText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseProductionBlockerPackageText({
+  blockerIndex = 0,
+  productionBlockers = getReleaseProductionBlockers(),
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const blockers = Array.isArray(productionBlockers)
+    ? productionBlockers.map((item) => String(item || '').trim()).filter(Boolean)
+    : [];
+  const normalizedIndex = Number.isFinite(Number(blockerIndex)) ? Number(blockerIndex) : 0;
+  const blocker = blockers[normalizedIndex] || '';
+  if (!blocker) {
+    return '';
+  }
+
+  const releaseFocusedProductionBlockerIndex = getValidReleaseProductionBlockerIndex(
+    normalizedIndex,
+    releaseStatus,
+  );
+  const releaseLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: '',
+    releaseBlockerOwnerFilter: '',
+    releaseFocusedBlockerId: '',
+    releaseFocusedProductionBlockerIndex,
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const releaseReadinessDocLink = getAbsoluteReleaseUrl('/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md');
+  const evidenceSection = [
+    'Production-ready blocker evidence',
+    `- blockerIndex: ${normalizedIndex + 1}/${blockers.length}`,
+    `- blocker: ${blocker}`,
+    `- releaseLink: ${releaseLink}`,
+    `- evidenceDocCount: 1`,
+    '',
+    'Evidence docs:',
+    '1. Release readiness v1',
+    '   - path: docs/release-readiness-v1.md',
+    `   - link: ${releaseReadinessDocLink}`,
+    '   - availability: available',
+    '   - source: Production Ready blocker list',
+  ].join('\n');
+  const sections = [
+    buildReleaseProductionBlockerHandoffText({
+      blockerIndex: normalizedIndex,
+      productionBlockers: blockers,
+      releaseStatus,
+    }),
+    buildReleaseProductionBlockerCommandText({
+      blockerIndex: normalizedIndex,
+      productionBlockers: blockers,
+      releaseStatus,
+    }),
+    evidenceSection,
+  ]
+    .map((section) => String(section || '').trim())
+    .filter(Boolean);
+
+  if (!sections.length) {
+    return '';
+  }
+
+  return `Production-ready blocker package\n\n${sections.join('\n\n')}\n`;
+}
+
 function getReleaseBlockerSliceSummary({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3688,6 +3756,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-production-blocker-package') {
+        void copyReleaseProductionBlockerPackage({
+          blockerIndex: button.dataset.uiIndex || value || 0,
+        });
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-summary') {
         void copyReleaseBlockerFilterSummary();
         return;
@@ -4644,6 +4719,22 @@ async function copyReleaseProductionBlockerCommands({
     promptMessage: 'production-ready blocker 검증 명령을 복사하세요.',
     shownNotice: 'production-ready blocker 검증 명령을 표시했습니다.',
     successNotice: 'production-ready blocker 검증 명령을 복사했습니다.',
+  });
+}
+
+async function copyReleaseProductionBlockerPackage({
+  blockerIndex = 0,
+} = {}) {
+  const packageText = buildReleaseProductionBlockerPackageText({ blockerIndex });
+  if (!packageText) {
+    setUiNotice('복사할 production-ready blocker package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'production-ready blocker package를 복사하세요.',
+    shownNotice: 'production-ready blocker package를 표시했습니다.',
+    successNotice: 'production-ready blocker package를 복사했습니다.',
   });
 }
 
@@ -8982,6 +9073,13 @@ function renderReleaseStatus() {
                         data-ui-action="copy-release-production-blocker-commands"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
                       >검증 명령 복사</button>
+                      <button
+                        class="ghost-button"
+                        type="button"
+                        data-release-production-blocker-package="${escapeHtml(focusedProductionBlockerIndex)}"
+                        data-ui-action="copy-release-production-blocker-package"
+                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                      >package 복사</button>
                       <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus">포커스 해제</button>
                     </div>
                   </div>
@@ -9044,6 +9142,13 @@ function renderReleaseStatus() {
                             data-ui-action="copy-release-production-blocker-commands"
                             data-ui-index="${escapeHtml(String(index))}"
                           >검증 명령 복사</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-production-blocker-package="${escapeHtml(String(index))}"
+                            data-ui-action="copy-release-production-blocker-package"
+                            data-ui-index="${escapeHtml(String(index))}"
+                          >package 복사</button>
                           <button
                             class="ghost-button"
                             type="button"
