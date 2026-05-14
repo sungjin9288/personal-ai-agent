@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Expand Toggle Pass
+
+- added an expand/collapse toggle for the release tab production-ready blocker list so operators can inspect all 24 blockers in the UI instead of only the first 8 summarized rows
+- exposed visible/total blocker state and hidden blocker count markers so the production blocker list state is auditable in the served web bundle
+- extended `smoke:ui-harness-browse` to pin the production blocker expanded-state markers and toggle action contract
+
 ## 2026-05-14 Web Production Blocker Summary Copy Pass
 
 - added a production-ready blocker summary copy action in the release tab so operators can share production status, blocker count, stop reason, release-readiness link, verification commands, and the full blocker list in one package
