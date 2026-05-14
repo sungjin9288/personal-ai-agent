@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T05:13:04.185Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T05:12:54.200Z
 - branch: codex/post-merge-release-blocker-empty-filter-recovery-artifact-sync
 - commit: 5971dc90ab743c4d01c6080312f5585f229f8d78
