@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Deep Link Pass
+
+- added `rpblocker` URL state for production-ready blockers so a production stop-condition row can survive reload/share like current open blocker deep links
+- added row-level focus, link-copy, and focused callout actions for production-ready blockers, including automatic expansion when a deep link targets a blocker beyond the default 8-row summary
+- extended `smoke:ui-harness-browse` to pin the production blocker focus state, link copy action, query param, and focused row markers in the served web bundle
+
 ## 2026-05-14 Web Production Blocker Row Handoff Pass
 
 - added row-level production-ready blocker handoff copy actions so operators can share one production stop-condition without copying the full blocker summary package
