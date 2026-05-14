@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Evidence Link Pass
+
+- added guarded release-readiness evidence document open/copy controls to each production-ready blocker row so operators can jump from a production stop-condition to the source evidence without opening the full summary package
+- exposed the same evidence document controls in the focused production blocker callout so `rpblocker` deep links carry the proof handoff path directly beside link and handoff actions
+- extended `smoke:ui-harness-browse` to pin the production blocker evidence doc markers, copy action marker, and label contract in the served web bundle
+
 ## 2026-05-14 Web Production Blocker Deep Link Pass
 
 - added `rpblocker` URL state for production-ready blockers so a production stop-condition row can survive reload/share like current open blocker deep links
