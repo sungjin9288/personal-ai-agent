@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-14T07:57:08.452Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-14T07:57:06.802Z
 - localDate: 2026-05-14
 - branch: codex/post-merge-production-blocker-deep-link-artifact-sync
 - commit: 417d0437d80eddc5de63c5df671bc6edb0c9111f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f](releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f](docs/releases/execution-v1/417d0437d80eddc5de63c5df671bc6edb0c9111f)
 - visualArtifactSetSha256: 33438e5fd48e81294c1ce7c0d202f4822c6d3e65665cb0f381238f55e3c2cad1
 - commitPushStatus: pushed to origin/main
 
