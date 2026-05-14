@@ -221,6 +221,10 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-evidence-doc'), true);
   assert.equal(appJs.includes('data-release-production-blocker-evidence-doc-copy'), true);
   assert.equal(appJs.includes('release-readiness production-ready blockers'), true);
+  assert.equal(appJs.includes('buildReleaseProductionBlockerCommandText'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-commands'), true);
+  assert.equal(appJs.includes('copy-release-production-blocker-commands'), true);
+  assert.equal(appJs.includes('Production-ready blocker verification commands'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);

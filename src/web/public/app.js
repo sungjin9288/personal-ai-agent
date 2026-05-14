@@ -2103,6 +2103,23 @@ function getValidReleaseProductionBlockerIndex(value, releaseStatus = state.rele
   return index >= 0 && index < productionBlockers.length ? String(index) : '';
 }
 
+function getReleaseProductionBlockerVerificationCommands() {
+  return [
+    {
+      command: 'npm run smoke:production-readiness-gate',
+      label: 'Production readiness gate',
+    },
+    {
+      command: 'npm run smoke:release-artifact-hygiene',
+      label: 'Release artifact hygiene',
+    },
+    {
+      command: 'npm run smoke:execution-v1-status',
+      label: 'Execution v1 status',
+    },
+  ];
+}
+
 function buildReleaseProductionBlockerSummaryText({
   productionBlockers = getReleaseProductionBlockers(),
   releaseStatus = state.releaseStatus,
@@ -2209,6 +2226,52 @@ function buildReleaseProductionBlockerHandoffText({
     '- Production readiness gate: npm run smoke:production-readiness-gate',
     '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
     '- Execution v1 status: npm run smoke:execution-v1-status',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseProductionBlockerCommandText({
+  blockerIndex = 0,
+  productionBlockers = getReleaseProductionBlockers(),
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const blockers = Array.isArray(productionBlockers)
+    ? productionBlockers.map((item) => String(item || '').trim()).filter(Boolean)
+    : [];
+  const normalizedIndex = Number.isFinite(Number(blockerIndex)) ? Number(blockerIndex) : 0;
+  const blocker = blockers[normalizedIndex] || '';
+  if (!blocker) {
+    return '';
+  }
+
+  const releaseFocusedProductionBlockerIndex = getValidReleaseProductionBlockerIndex(
+    normalizedIndex,
+    releaseStatus,
+  );
+  const releaseLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: '',
+    releaseBlockerOwnerFilter: '',
+    releaseFocusedBlockerId: '',
+    releaseFocusedProductionBlockerIndex,
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const releaseReadinessDocLink = getAbsoluteReleaseUrl('/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md');
+  const commands = getReleaseProductionBlockerVerificationCommands();
+  const lines = [
+    'Production-ready blocker verification commands',
+    `- blockerIndex: ${normalizedIndex + 1}/${blockers.length}`,
+    `- blocker: ${blocker}`,
+    `- releaseLink: ${releaseLink}`,
+    `- releaseReadinessDoc: ${releaseReadinessDocLink}`,
+    '',
+    'Commands:',
+    ...commands.map((item) => `- ${item.label}: ${item.command}`),
   ];
 
   return `${lines.join('\n')}\n`;
@@ -3618,6 +3681,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-production-blocker-commands') {
+        void copyReleaseProductionBlockerCommands({
+          blockerIndex: button.dataset.uiIndex || value || 0,
+        });
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-summary') {
         void copyReleaseBlockerFilterSummary();
         return;
@@ -4558,6 +4628,22 @@ async function copyReleaseProductionBlockerHandoff({
     promptMessage: 'production-ready blocker handoff를 복사하세요.',
     shownNotice: 'production-ready blocker handoff를 표시했습니다.',
     successNotice: 'production-ready blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseProductionBlockerCommands({
+  blockerIndex = 0,
+} = {}) {
+  const commandText = buildReleaseProductionBlockerCommandText({ blockerIndex });
+  if (!commandText) {
+    setUiNotice('복사할 production-ready blocker 검증 명령이 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(commandText, {
+    promptMessage: 'production-ready blocker 검증 명령을 복사하세요.',
+    shownNotice: 'production-ready blocker 검증 명령을 표시했습니다.',
+    successNotice: 'production-ready blocker 검증 명령을 복사했습니다.',
   });
 }
 
@@ -8889,6 +8975,13 @@ function renderReleaseStatus() {
                         data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
                         data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
                       >근거 링크 복사</button>
+                      <button
+                        class="ghost-button"
+                        type="button"
+                        data-release-production-blocker-commands="${escapeHtml(focusedProductionBlockerIndex)}"
+                        data-ui-action="copy-release-production-blocker-commands"
+                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                      >검증 명령 복사</button>
                       <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus">포커스 해제</button>
                     </div>
                   </div>
@@ -8944,6 +9037,13 @@ function renderReleaseStatus() {
                             data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
                             data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
                           >근거 링크 복사</button>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-production-blocker-commands="${escapeHtml(String(index))}"
+                            data-ui-action="copy-release-production-blocker-commands"
+                            data-ui-index="${escapeHtml(String(index))}"
+                          >검증 명령 복사</button>
                           <button
                             class="ghost-button"
                             type="button"
