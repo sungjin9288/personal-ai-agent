@@ -1964,6 +1964,16 @@ function getAbsoluteReleaseUrl(href = '') {
   return `${window.location.origin}${normalizedHref.startsWith('/') ? normalizedHref : `/${normalizedHref}`}`;
 }
 
+function getReleaseCountRecordEntries(record = {}) {
+  if (!record || typeof record !== 'object') {
+    return [];
+  }
+  return Object.entries(record)
+    .map(([key, value]) => [String(key || '').trim(), Number(value || 0)])
+    .filter(([key, value]) => Boolean(key) && value > 0)
+    .sort(([leftKey, leftValue], [rightKey, rightValue]) => rightValue - leftValue || leftKey.localeCompare(rightKey));
+}
+
 function buildReleaseBlockerHandoffText(blockerAction = null) {
   const actionId = String(blockerAction?.id || '').trim();
   if (!blockerAction || !actionId) {
@@ -6822,6 +6832,15 @@ function renderReleaseStatus() {
     ? releaseReadiness.currentOpenBlockers
     : [];
   const currentOpenBlockerActions = getReleaseCurrentOpenBlockerActions(release);
+  const currentOpenBlockerActionSummary = releaseReadiness.currentOpenBlockerActionSummary || {};
+  const currentOpenBlockerCategoryEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.categoryCounts);
+  const currentOpenBlockerOwnerEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.ownerCounts);
+  const topPriorityBlockerId = String(currentOpenBlockerActionSummary.topPriorityBlockerId || '').trim();
+  const topPriorityBlockerLabel = String(
+    currentOpenBlockerActionSummary.topPriorityBlocker
+      || currentOpenBlockerActionSummary.topPriorityStopReason
+      || 'current open blocker',
+  ).trim();
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
@@ -7593,6 +7612,30 @@ function renderReleaseStatus() {
             <div class="harness-callout" data-release-production-blockers="true">
               <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
               <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
+            </div>
+            <div class="harness-callout" data-release-current-open-blocker-triage="true">
+              <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
+              <p>${escapeHtml(topPriorityBlockerId ? `Top priority ${topPriorityBlockerId}: ${topPriorityBlockerLabel}` : 'current open blocker triage summary가 없습니다.')}</p>
+              <div class="release-history-filter-chips">
+                ${currentOpenBlockerCategoryEntries.length
+                  ? currentOpenBlockerCategoryEntries
+                    .map(
+                      ([category, count]) => `
+                        <span class="mini-badge status-failed" data-release-current-open-blocker-category-count="${escapeHtml(category)}">${escapeHtml(category)} ${escapeHtml(String(count))}</span>
+                      `,
+                    )
+                    .join('')
+                  : '<span class="mini-badge status-running">category 없음</span>'}
+                ${currentOpenBlockerOwnerEntries.length
+                  ? currentOpenBlockerOwnerEntries
+                    .map(
+                      ([owner, count]) => `
+                        <span class="mini-badge status-running" data-release-current-open-blocker-owner-count="${escapeHtml(owner)}">${escapeHtml(owner)} ${escapeHtml(String(count))}</span>
+                      `,
+                    )
+                    .join('')
+                  : '<span class="mini-badge status-running">owner 없음</span>'}
+              </div>
             </div>
             ${focusedBlockerId
               ? `

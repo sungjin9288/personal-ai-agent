@@ -97,6 +97,16 @@ try {
   assert.equal(status.releaseReadiness?.productionBlockerCount, 24);
   assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 5);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['target-deployment'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['release-decision'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 3);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['deployment-owner'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['release-owner'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityCategory, 'provider-account');
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityOwner, 'provider-ops');
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
       item.includes('Anthropic and Hermes live validations are not complete'),

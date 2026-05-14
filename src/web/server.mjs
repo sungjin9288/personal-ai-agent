@@ -1360,6 +1360,59 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
   return base;
 }
 
+function incrementCountRecord(record, key) {
+  const normalized = String(key || '').trim() || 'unassigned';
+  record[normalized] = Number(record[normalized] || 0) + 1;
+}
+
+function sortCountRecord(record = {}) {
+  return Object.fromEntries(
+    Object.entries(record).sort(
+      ([leftKey, leftCount], [rightKey, rightCount]) =>
+        Number(rightCount || 0) - Number(leftCount || 0) || leftKey.localeCompare(rightKey),
+    ),
+  );
+}
+
+function buildCurrentOpenBlockerActionSummary(actions = []) {
+  const categoryCounts = {};
+  const ownerCounts = {};
+  const statusCounts = {};
+  let commandCount = 0;
+  let evidenceDocCount = 0;
+  let topPriorityAction = null;
+  let topPriorityValue = Number.POSITIVE_INFINITY;
+
+  for (const [index, action] of actions.entries()) {
+    incrementCountRecord(categoryCounts, action?.category || 'release-readiness');
+    incrementCountRecord(ownerCounts, action?.owner || 'release-owner');
+    incrementCountRecord(statusCounts, action?.status || 'blocked');
+    commandCount += Array.isArray(action?.commands) ? action.commands.length : 0;
+    evidenceDocCount += Array.isArray(action?.evidenceDocs) ? action.evidenceDocs.length : 0;
+
+    const priority = Number.isFinite(Number(action?.priority)) ? Number(action.priority) : index + 1;
+    if (!topPriorityAction || priority < topPriorityValue) {
+      topPriorityAction = action;
+      topPriorityValue = priority;
+    }
+  }
+
+  return {
+    actionCount: actions.length,
+    categoryCounts: sortCountRecord(categoryCounts),
+    commandCount,
+    evidenceDocCount,
+    ownerCounts: sortCountRecord(ownerCounts),
+    statusCounts: sortCountRecord(statusCounts),
+    topPriorityBlocker: String(topPriorityAction?.blocker || topPriorityAction?.stopReason || '').trim(),
+    topPriorityBlockerId: String(topPriorityAction?.id || '').trim(),
+    topPriorityCategory: String(topPriorityAction?.category || '').trim(),
+    topPriorityNextEvidence: String(topPriorityAction?.nextEvidence || '').trim(),
+    topPriorityOwner: String(topPriorityAction?.owner || '').trim(),
+    topPriorityStopReason: String(topPriorityAction?.stopReason || topPriorityAction?.blocker || '').trim(),
+  };
+}
+
 function buildReleaseReadinessSummary(markdown = '') {
   const productionReadySection = extractMarkdownSection(markdown, 'Production Ready', 3);
   const productionBlockers = extractBulletsAfterLabel(productionReadySection, 'Blockers');
@@ -1367,6 +1420,7 @@ function buildReleaseReadinessSummary(markdown = '') {
   const currentOpenBlockerActions = currentOpenBlockers.map((blocker, index) =>
     buildCurrentOpenBlockerAction(blocker, index),
   );
+  const currentOpenBlockerActionSummary = buildCurrentOpenBlockerActionSummary(currentOpenBlockerActions);
   const productionReadyStatus = extractPlainStatus(productionReadySection) || 'not-tracked';
   const normalizedProductionReadyStatus = productionReadyStatus.toLowerCase();
   const productionReadyClaimAllowed = Boolean(
@@ -1378,6 +1432,7 @@ function buildReleaseReadinessSummary(markdown = '') {
 
   return {
     currentOpenBlockerActionCount: currentOpenBlockerActions.length,
+    currentOpenBlockerActionSummary,
     currentOpenBlockerActions,
     currentOpenBlockerCount: currentOpenBlockers.length,
     currentOpenBlockers,
