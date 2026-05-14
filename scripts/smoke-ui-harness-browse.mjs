@@ -208,6 +208,11 @@ try {
   assert.equal(appJs.includes('filter-release-blockers'), true);
   assert.equal(appJs.includes('clear-release-blocker-filter'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary'), true);
+  assert.equal(appJs.includes('hasEmptyBlockerFilter'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-category'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-owner'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-clear'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-summary'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-command-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-evidence-count'), true);
