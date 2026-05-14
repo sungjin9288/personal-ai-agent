@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T07:57:08.452Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T07:56:58.256Z
 - branch: codex/post-merge-production-blocker-deep-link-artifact-sync
 - commit: 417d0437d80eddc5de63c5df671bc6edb0c9111f
