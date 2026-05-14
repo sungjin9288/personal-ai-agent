@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Summary Copy Pass
+
+- added a production-ready blocker summary copy action in the release tab so operators can share production status, blocker count, stop reason, release-readiness link, verification commands, and the full blocker list in one package
+- exposed a release-readiness link copy action from the same production blocker callout so the source decision document can be handed off without reconstructing the guarded doc URL
+- extended `smoke:ui-harness-browse` to pin the production blocker summary copy marker, action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Empty Filter Recovery Pass
 
 - added empty category/owner filter detection in the release blocker triage callout so impossible blocker slice combinations are called out instead of silently showing an empty list

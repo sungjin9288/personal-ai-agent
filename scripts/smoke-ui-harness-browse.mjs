@@ -194,6 +194,11 @@ try {
   assert.equal(appJs.includes('Reference Adoption Aggregate'), true);
   assert.equal(appJs.includes('reference gate'), true);
   assert.equal(appJs.includes('data-release-production-blockers'), true);
+  assert.equal(appJs.includes('buildReleaseProductionBlockerSummaryText'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-summary-copy'), true);
+  assert.equal(appJs.includes('copy-release-production-blocker-summary'), true);
+  assert.equal(appJs.includes('Production-ready blocker summary'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-release-doc'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);

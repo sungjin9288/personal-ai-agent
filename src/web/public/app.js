@@ -2041,6 +2041,69 @@ function buildReleaseBlockerSliceUrl({
   })}`;
 }
 
+function getReleaseProductionBlockers(releaseStatus = state.releaseStatus) {
+  const releaseReadiness = releaseStatus?.releaseReadiness || {};
+  return Array.isArray(releaseReadiness.productionBlockers)
+    ? releaseReadiness.productionBlockers
+      .map((item) => String(item || '').trim())
+      .filter(Boolean)
+    : [];
+}
+
+function buildReleaseProductionBlockerSummaryText({
+  productionBlockers = getReleaseProductionBlockers(),
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const blockers = Array.isArray(productionBlockers)
+    ? productionBlockers.map((item) => String(item || '').trim()).filter(Boolean)
+    : [];
+  if (!blockers.length) {
+    return '';
+  }
+
+  const summary = releaseStatus?.summary || {};
+  const releaseReadiness = releaseStatus?.releaseReadiness || {};
+  const productionReadyStatus = String(
+    summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked',
+  ).trim();
+  const productionReadyStopReason = String(
+    summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || blockers[0] || '',
+  ).trim();
+  const releaseLabel = String(releaseReadiness.releaseLabel || summary.releaseLabel || '').trim();
+  const releaseLink = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: '',
+    releaseBlockerOwnerFilter: '',
+    releaseFocusedBlockerId: '',
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+  const releaseReadinessDocLink = getAbsoluteReleaseUrl('/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md');
+  const lines = [
+    'Production-ready blocker summary',
+    `- productionReadyStatus: ${productionReadyStatus}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${blockers.length}`,
+    `- releaseLabel: ${releaseLabel || 'not tracked'}`,
+    `- stopReason: ${productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    `- releaseReadinessDoc: ${releaseReadinessDocLink}`,
+    '',
+    'Commands:',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+    '',
+    'Blockers:',
+    ...blockers.map((item, index) => `${index + 1}. ${item}`),
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function getReleaseBlockerSliceSummary({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3352,6 +3415,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-production-blocker-summary') {
+        void copyReleaseProductionBlockerSummary();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-summary') {
         void copyReleaseBlockerFilterSummary();
         return;
@@ -4233,6 +4301,20 @@ async function copyReleaseBlockerHandoff({
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseProductionBlockerSummary() {
+  const summaryText = buildReleaseProductionBlockerSummaryText();
+  if (!summaryText) {
+    setUiNotice('복사할 production-ready blocker summary가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(summaryText, {
+    promptMessage: 'production-ready blocker summary를 복사하세요.',
+    shownNotice: 'production-ready blocker summary를 표시했습니다.',
+    successNotice: 'production-ready blocker summary를 복사했습니다.',
   });
 }
 
@@ -8254,6 +8336,23 @@ function renderReleaseStatus() {
             <div class="harness-callout" data-release-production-blockers="true">
               <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
               <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
+              <div class="release-history-filter-chips">
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-production-blocker-summary-copy="true"
+                  data-ui-action="copy-release-production-blocker-summary"
+                  ${productionBlockers.length ? '' : 'disabled'}
+                >production summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-production-blocker-release-doc="true"
+                  data-ui-action="copy-release-evidence-doc-link"
+                  data-ui-href="/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md"
+                  data-ui-label="release-readiness"
+                >release-readiness 링크 복사</button>
+              </div>
             </div>
             <div class="harness-callout" data-release-current-open-blocker-triage="true">
               <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
