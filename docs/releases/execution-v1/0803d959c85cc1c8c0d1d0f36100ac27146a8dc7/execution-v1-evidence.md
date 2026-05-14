@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T16:59:42.390Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T16:59:27.099Z
 - branch: codex/post-merge-current-blocker-slice-closure-checklist-artifact-sync
 - commit: 0803d959c85cc1c8c0d1d0f36100ac27146a8dc7
