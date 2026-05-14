@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Slice Evidence Copy Pass
+
+- added a release blocker slice evidence copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, deduplicated evidence docs, availability, and source blocker ids into one operator-ready evidence bundle
+- exposed the evidence copy action beside the slice handoff and command copy actions in the open blocker triage callout so operators can share proof links without sending the full blocker narrative or command runbook
+- extended `smoke:ui-harness-browse` to pin the slice evidence marker, action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Slice Command Copy Pass
 
 - added a release blocker slice command copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, and blocker-scoped next commands into one operator-ready command runbook

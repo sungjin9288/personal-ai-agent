@@ -2216,6 +2216,84 @@ function buildReleaseBlockerSliceCommandText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerSliceEvidenceText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const evidenceByKey = new Map();
+  visibleActions.forEach((item) => {
+    const actionId = String(item.id || '').trim();
+    const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
+    const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+    evidenceDocs.forEach((doc) => {
+      const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+      const docPath = String(doc.path || '').trim();
+      const docHref = getAbsoluteReleaseUrl(doc.href || '');
+      const docKey = docHref || docPath || docLabel;
+      if (!docKey) {
+        return;
+      }
+      if (!evidenceByKey.has(docKey)) {
+        evidenceByKey.set(docKey, {
+          availability: doc.exists === false ? 'missing' : 'available',
+          blockerIds: [],
+          blockerLabels: [],
+          href: docHref,
+          label: docLabel,
+          path: docPath,
+        });
+      }
+      const entry = evidenceByKey.get(docKey);
+      if (actionId && !entry.blockerIds.includes(actionId)) {
+        entry.blockerIds.push(actionId);
+      }
+      if (blockerLabel && !entry.blockerLabels.includes(blockerLabel)) {
+        entry.blockerLabels.push(blockerLabel);
+      }
+    });
+  });
+
+  const evidenceEntries = Array.from(evidenceByKey.values());
+  if (!evidenceEntries.length) {
+    return '';
+  }
+
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const lines = [
+    'Release blocker slice evidence',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- evidenceDocCount: ${evidenceEntries.length}`,
+    `- releaseLink: ${sliceLink}`,
+    '',
+    'Evidence docs:',
+    ...evidenceEntries.flatMap((entry, index) => [
+      `${index + 1}. ${entry.label}`,
+      `   - path: ${entry.path || 'path 없음'}`,
+      `   - link: ${entry.href || 'link 없음'}`,
+      `   - availability: ${entry.availability}`,
+      `   - blockerIds: ${entry.blockerIds.length ? entry.blockerIds.join(', ') : 'unknown'}`,
+      `   - blockers: ${entry.blockerLabels.length ? entry.blockerLabels.join(' | ') : 'unknown'}`,
+    ]),
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -3174,6 +3252,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-evidence') {
+        void copyReleaseBlockerFilterEvidence();
+        return;
+      }
+
       if (action === 'copy-release-evidence-doc-link') {
         void copyReleaseEvidenceDocLink({
           href: button.dataset.uiHref || value || '',
@@ -4092,6 +4175,37 @@ async function copyReleaseBlockerFilterCommands({
     promptMessage: 'release blocker slice command를 복사하세요.',
     shownNotice: 'release blocker slice command를 표시했습니다.',
     successNotice: 'release blocker slice command를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterEvidence({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const evidenceText = buildReleaseBlockerSliceEvidenceText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!evidenceText) {
+    setUiNotice('복사할 release blocker slice evidence가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(evidenceText, {
+    promptMessage: 'release blocker slice evidence를 복사하세요.',
+    shownNotice: 'release blocker slice evidence를 표시했습니다.',
+    successNotice: 'release blocker slice evidence를 복사했습니다.',
   });
 }
 
@@ -8005,6 +8119,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-command="true"
                   data-ui-action="copy-release-blocker-filter-commands"
                 >slice 명령 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-evidence="true"
+                  data-ui-action="copy-release-blocker-filter-evidence"
+                >slice 근거 복사</button>
                 ${hasBlockerFilter
                   ? '<button class="ghost-button" type="button" data-ui-action="clear-release-blocker-filter">필터 해제</button>'
                   : ''}
