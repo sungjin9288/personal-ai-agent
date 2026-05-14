@@ -199,6 +199,12 @@ try {
   assert.equal(appJs.includes('copy-release-production-blocker-summary'), true);
   assert.equal(appJs.includes('Production-ready blocker summary'), true);
   assert.equal(appJs.includes('data-release-production-blocker-release-doc'), true);
+  assert.equal(appJs.includes('releaseProductionBlockersExpanded'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-list-expanded'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-visible-count'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-overflow'), true);
+  assert.equal(appJs.includes('data-release-production-blocker-toggle'), true);
+  assert.equal(appJs.includes('toggle-release-production-blockers'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);

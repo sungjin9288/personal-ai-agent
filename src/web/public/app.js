@@ -64,6 +64,7 @@ const state = {
   releaseHistoryFilterScope: '',
   releaseLiveRefreshPreflight: null,
   releaseFocusedHistoryId: '',
+  releaseProductionBlockersExpanded: false,
   releaseRegenerationConfirmArmed: false,
   releaseRefreshPreflight: null,
   releasePreflightResults: {},
@@ -3332,6 +3333,17 @@ function wireQuickActions(scope = document) {
           owner: button.dataset.uiOwner || '',
         });
         setUiNotice('current open blocker 목록을 선택한 triage 기준으로 좁혔습니다.');
+        return;
+      }
+
+      if (action === 'toggle-release-production-blockers') {
+        state.releaseProductionBlockersExpanded = !state.releaseProductionBlockersExpanded;
+        renderReleaseStatus();
+        setUiNotice(
+          state.releaseProductionBlockersExpanded
+            ? 'production-ready blocker 전체 목록을 펼쳤습니다.'
+            : 'production-ready blocker 목록을 요약 보기로 접었습니다.',
+        );
         return;
       }
 
@@ -7568,6 +7580,11 @@ function renderReleaseStatus() {
   const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
     ? Number(summary.productionBlockerCount)
     : productionBlockers.length;
+  const productionBlockersExpanded = Boolean(state.releaseProductionBlockersExpanded);
+  const visibleProductionBlockers = productionBlockersExpanded
+    ? productionBlockers
+    : productionBlockers.slice(0, 8);
+  const hiddenProductionBlockerCount = Math.max(0, productionBlockers.length - visibleProductionBlockers.length);
   const currentOpenBlockerCount = Number.isFinite(Number(summary.currentOpenBlockerCount))
     ? Number(summary.currentOpenBlockerCount)
     : currentOpenBlockers.length;
@@ -8591,9 +8608,14 @@ function renderReleaseStatus() {
                     </article>
                   `}
             </div>
-            <div class="release-current-status" data-release-production-blocker-list="true">
+            <div
+              class="release-current-status"
+              data-release-production-blocker-list="true"
+              data-release-production-blocker-list-expanded="${productionBlockersExpanded ? 'true' : 'false'}"
+              data-release-production-blocker-visible-count="${escapeHtml(String(visibleProductionBlockers.length))}"
+            >
               ${productionBlockers.length
-                ? productionBlockers.slice(0, 8)
+                ? visibleProductionBlockers
                   .map(
                     (item) => `
                       <div class="harness-row" data-release-production-blocker-row="true">
@@ -8616,13 +8638,19 @@ function renderReleaseStatus() {
                   `}
               ${productionBlockers.length > 8
                 ? `
-                    <div class="harness-row">
+                    <div class="harness-row" data-release-production-blocker-overflow="true" data-release-production-blocker-hidden-count="${escapeHtml(String(hiddenProductionBlockerCount))}">
                       <div>
-                        <div class="item-title">추가 blocker ${escapeHtml(String(productionBlockers.length - 8))}건</div>
-                        <div class="item-meta">전체 목록은 docs/release-readiness-v1.md의 Production Ready 섹션을 기준으로 합니다.</div>
+                        <div class="item-title">${productionBlockersExpanded ? '전체 production-ready blocker 표시 중' : `추가 blocker ${escapeHtml(String(hiddenProductionBlockerCount))}건`}</div>
+                        <div class="item-meta">현재 ${escapeHtml(String(visibleProductionBlockers.length))}/${escapeHtml(String(productionBlockers.length))}건을 표시합니다. 전체 목록은 docs/release-readiness-v1.md의 Production Ready 섹션을 기준으로 합니다.</div>
                       </div>
                       <div class="harness-row-meta">
-                        <span class="mini-badge status-running">summarized</span>
+                        <span class="mini-badge status-running">${productionBlockersExpanded ? 'expanded' : 'summarized'}</span>
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"
+                          data-ui-action="toggle-release-production-blockers"
+                        >${productionBlockersExpanded ? '8개만 보기' : '전체 보기'}</button>
                       </div>
                     </div>
                   `
