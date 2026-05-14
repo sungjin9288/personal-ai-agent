@@ -2682,6 +2682,83 @@ function buildReleaseBlockerSliceHandoffText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerSliceClosureChecklistText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const topVisibleAction = visibleActions[0] || null;
+  const formatEvidenceDoc = (doc = {}) => {
+    const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+    const docPath = String(doc.path || '').trim();
+    const docHref = getAbsoluteReleaseUrl(doc.href || '');
+    const availability = doc.exists === false ? 'missing' : 'available';
+    return `${docLabel}: ${docPath || 'path 없음'}${docHref ? ` (${docHref})` : ''} [${availability}]`;
+  };
+  const formatCommand = (command = {}) => {
+    const commandLabel = String(command.label || 'command').trim();
+    const commandValue = String(command.command || '').trim();
+    return `${commandLabel}: ${commandValue || 'command 없음'}`;
+  };
+  const blockerLines = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const actionId = String(item.id || '').trim();
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - id: ${actionId || 'unknown'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - status: ${String(item.status || 'blocked').trim()}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim()}`,
+          `   - closingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.map(formatEvidenceDoc).join('; ') : 'none'}`,
+          `   - commands: ${commands.length ? commands.map(formatCommand).join('; ') : 'none'}`,
+        ];
+      })
+    : ['- none'];
+  const lines = [
+    'Release blocker slice closure checklist',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- releaseLink: ${sliceLink}`,
+    `- topVisibleBlocker: ${topVisibleAction ? `${String(topVisibleAction.id || 'unknown').trim()}: ${String(topVisibleAction.blocker || topVisibleAction.stopReason || 'current open blocker').trim()}` : 'none'}`,
+    '',
+    'Closure requirements:',
+    '1. Capture closing evidence for every visible blocker below.',
+    '2. Update or attach the listed evidence docs before changing the release label.',
+    '3. Run the blocker-specific commands and keep command output with the evidence packet.',
+    '4. Regenerate execution-v1 artifacts if live proof or any release source-of-record changes.',
+    '5. Keep productionReadyClaim=false until production readiness and artifact hygiene gates pass with no stop-condition.',
+    '',
+    'Blocker checklist:',
+    ...blockerLines,
+    '',
+    'Final verification:',
+    '- Artifact refresh: npm run refresh:execution-v1-artifacts',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerSliceCommandText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3929,6 +4006,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-closure-checklist') {
+        void copyReleaseBlockerFilterClosureChecklist();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-handoff') {
         void copyReleaseBlockerFilterHandoff();
         return;
@@ -4989,6 +5071,37 @@ async function copyReleaseBlockerFilterPackage({
     promptMessage: 'release blocker slice package를 복사하세요.',
     shownNotice: 'release blocker slice package를 표시했습니다.',
     successNotice: 'release blocker slice package를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterClosureChecklist({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const checklistText = buildReleaseBlockerSliceClosureChecklistText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!checklistText) {
+    setUiNotice('복사할 release blocker slice closure checklist가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(checklistText, {
+    promptMessage: 'release blocker slice closure checklist를 복사하세요.',
+    shownNotice: 'release blocker slice closure checklist를 표시했습니다.',
+    successNotice: 'release blocker slice closure checklist를 복사했습니다.',
   });
 }
 
@@ -9055,6 +9168,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-package="true"
                   data-ui-action="copy-release-blocker-filter-package"
                 >slice package 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-closure-checklist="true"
+                  data-ui-action="copy-release-blocker-filter-closure-checklist"
+                >slice closure 체크리스트 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
