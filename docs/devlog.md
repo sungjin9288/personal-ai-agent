@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Production Blocker Command Copy Pass
+
+- added row-level production-ready blocker verification command copy actions so operators can copy the exact production readiness, artifact hygiene, and execution-v1 status commands without sending the full handoff payload
+- exposed the same command runbook copy action in the focused production blocker callout so `rpblocker` deep links keep the recovery command path beside evidence and handoff actions
+- extended `smoke:ui-harness-browse` to pin the production blocker command builder, row marker, copy action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Production Blocker Evidence Link Pass
 
 - added guarded release-readiness evidence document open/copy controls to each production-ready blocker row so operators can jump from a production stop-condition to the source evidence without opening the full summary package
