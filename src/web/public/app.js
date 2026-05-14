@@ -2022,6 +2022,25 @@ function getReleaseCountRecordEntries(record = {}) {
     .sort(([leftKey, leftValue], [rightKey, rightValue]) => rightValue - leftValue || leftKey.localeCompare(rightKey));
 }
 
+function buildReleaseBlockerSliceUrl({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  return `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: normalizedCategory,
+    releaseBlockerOwnerFilter: normalizedOwner,
+    releaseFocusedBlockerId: '',
+    releaseFocusedProvider: '',
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+}
+
 function buildReleaseBlockerHandoffText(blockerAction = null) {
   const actionId = String(blockerAction?.id || '').trim();
   if (!blockerAction || !actionId) {
@@ -2092,17 +2111,10 @@ function buildReleaseBlockerSliceHandoffText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
-  const sliceLink = `${window.location.origin}${buildUiStateUrl({
-    detailTab: 'release',
-    releaseBlockerCategoryFilter: normalizedCategory,
-    releaseBlockerOwnerFilter: normalizedOwner,
-    releaseFocusedBlockerId: '',
-    releaseFocusedProvider: '',
-    releaseFocusedHistoryId: '',
-    releaseHistoryOutcome: '',
-    releaseHistoryProvider: '',
-    releaseHistoryScope: '',
-  })}`;
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
   const topVisibleAction = visibleActions[0] || null;
   const formatEvidenceDoc = (doc = {}) => {
     const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
@@ -2144,6 +2156,61 @@ function buildReleaseBlockerSliceHandoffText({
     '',
     'Blockers:',
     ...blockerLines,
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseBlockerSliceCommandText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const commandEntries = visibleActions.flatMap((item) => {
+    const actionId = String(item.id || '').trim();
+    const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
+    const commands = Array.isArray(item.commands) ? item.commands : [];
+    return commands
+      .map((command) => ({
+        blockerId: actionId,
+        blockerLabel,
+        command: String(command.command || '').trim(),
+        label: String(command.label || 'command').trim(),
+      }))
+      .filter((entry) => Boolean(entry.command));
+  });
+  if (!commandEntries.length) {
+    return '';
+  }
+
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const lines = [
+    'Release blocker slice commands',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- commandCount: ${commandEntries.length}`,
+    `- releaseLink: ${sliceLink}`,
+    '',
+    'Commands:',
+    ...commandEntries.flatMap((entry, index) => [
+      `${index + 1}. ${entry.label}`,
+      `   - blockerId: ${entry.blockerId || 'unknown'}`,
+      `   - blocker: ${entry.blockerLabel}`,
+      `   - command: ${entry.command}`,
+    ]),
   ];
 
   return `${lines.join('\n')}\n`;
@@ -3102,6 +3169,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-commands') {
+        void copyReleaseBlockerFilterCommands();
+        return;
+      }
+
       if (action === 'copy-release-evidence-doc-link') {
         void copyReleaseEvidenceDocLink({
           href: button.dataset.uiHref || value || '',
@@ -3989,6 +4061,37 @@ async function copyReleaseBlockerFilterHandoff({
     promptMessage: 'release blocker slice handoff를 복사하세요.',
     shownNotice: 'release blocker slice handoff를 표시했습니다.',
     successNotice: 'release blocker slice handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterCommands({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const commandText = buildReleaseBlockerSliceCommandText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!commandText) {
+    setUiNotice('복사할 release blocker slice command가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(commandText, {
+    promptMessage: 'release blocker slice command를 복사하세요.',
+    shownNotice: 'release blocker slice command를 표시했습니다.',
+    successNotice: 'release blocker slice command를 복사했습니다.',
   });
 }
 
@@ -7896,6 +7999,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-handoff="true"
                   data-ui-action="copy-release-blocker-filter-handoff"
                 >slice handoff 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-command="true"
+                  data-ui-action="copy-release-blocker-filter-commands"
+                >slice 명령 복사</button>
                 ${hasBlockerFilter
                   ? '<button class="ghost-button" type="button" data-ui-action="clear-release-blocker-filter">필터 해제</button>'
                   : ''}
