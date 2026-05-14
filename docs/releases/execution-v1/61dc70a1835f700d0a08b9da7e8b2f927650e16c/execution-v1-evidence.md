@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T03:50:30.637Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T03:50:22.610Z
 - branch: codex/post-merge-release-blocker-slice-summary-copy-artifact-sync
 - commit: 61dc70a1835f700d0a08b9da7e8b2f927650e16c
