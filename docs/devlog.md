@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Current Blocker Package Copy Pass
+
+- added single current open blocker package copy actions so operators can copy blocker handoff context, next commands, and evidence docs together without relying on the slice-level package
+- exposed the same package copy action in focused current blocker callouts and rows so `rblocker` deep links and list triage have the same complete handoff payload
+- extended `smoke:ui-harness-browse` to pin the current blocker package builder, marker, copy action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Current Blocker Focus Actions Pass
 
 - added evidence document open/copy controls to the focused current open blocker callout so `rblocker` deep links can jump directly to supporting release-readiness docs without finding the row again

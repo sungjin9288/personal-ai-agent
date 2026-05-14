@@ -42,6 +42,7 @@
 - release current open blocker triage now also provides a slice-level evidence copy action, so the currently filtered blocker set can be shared as a deduplicated evidence-doc bundle with source blocker ids and guarded doc links
 - release current open blocker rows now support `rblocker` deep links, focused blocker callouts, and row-level blocker link copy so blocker disposition can be shared without losing the release tab context
 - release current open blocker focused callouts now expose the same guarded evidence document links and next command copy actions as rows, so `rblocker` deep links keep the proof and recovery path in one place
+- release current open blocker rows and focused callouts now provide single-blocker package copy actions, so one stop-condition can be handed off with metadata, commands, and evidence docs without copying the active slice package
 - release current open blocker evidence docs now expose guarded open/copy links from the same blocker row, so operator handoff can jump from a stop-condition to its supporting evidence document without path reconstruction
 - release current open blocker rows now provide one-shot handoff copy text with blocker metadata, release deep link, evidence document links, and next commands so operator escalation can carry the complete disposition package
 - mission timeline and mission summary now expose provider fallback attempt and used counts plus timeline events, so failover evidence remains auditable after the original run output
