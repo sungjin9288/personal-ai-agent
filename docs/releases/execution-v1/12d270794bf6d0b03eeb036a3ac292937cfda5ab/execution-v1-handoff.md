@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-14T13:27:06.735Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-14T13:27:04.940Z
 - localDate: 2026-05-14
 - branch: codex/post-merge-production-blocker-command-copy-artifact-sync
 - commit: 12d270794bf6d0b03eeb036a3ac292937cfda5ab
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab](releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab](docs/releases/execution-v1/12d270794bf6d0b03eeb036a3ac292937cfda5ab)
 - visualArtifactSetSha256: b00cb2a8841fa5f69446ee7da79f7d88cc567aaba9ea86ac3d372876dfdf274c
 - commitPushStatus: pushed to origin/main
 
