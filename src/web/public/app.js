@@ -2368,6 +2368,42 @@ function buildReleaseBlockerSliceEvidenceText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerSlicePackageText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const buildOptions = {
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  };
+  const sections = [
+    buildReleaseBlockerSliceSummaryText(buildOptions),
+    buildReleaseBlockerSliceHandoffText(buildOptions),
+    buildReleaseBlockerSliceCommandText(buildOptions),
+    buildReleaseBlockerSliceEvidenceText(buildOptions),
+  ]
+    .map((section) => String(section || '').trim())
+    .filter(Boolean);
+
+  if (!sections.length) {
+    return '';
+  }
+
+  return `Release blocker slice package\n\n${sections.join('\n\n')}\n`;
+}
+
 function focusReleaseHistoryEntry(historyId = '', { historyMode = 'replace', scroll = true } = {}) {
   const normalizedHistoryId = String(historyId || '').trim();
   if (!normalizedHistoryId) {
@@ -3321,6 +3357,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-package') {
+        void copyReleaseBlockerFilterPackage();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-handoff') {
         void copyReleaseBlockerFilterHandoff();
         return;
@@ -4223,6 +4264,37 @@ async function copyReleaseBlockerFilterSummary({
     promptMessage: 'release blocker slice summary를 복사하세요.',
     shownNotice: 'release blocker slice summary를 표시했습니다.',
     successNotice: 'release blocker slice summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterPackage({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const packageText = buildReleaseBlockerSlicePackageText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!packageText) {
+    setUiNotice('복사할 release blocker slice package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'release blocker slice package를 복사하세요.',
+    shownNotice: 'release blocker slice package를 표시했습니다.',
+    successNotice: 'release blocker slice package를 복사했습니다.',
   });
 }
 
@@ -8235,6 +8307,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-summary-copy="true"
                   data-ui-action="copy-release-blocker-filter-summary"
                 >slice 요약 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-package="true"
+                  data-ui-action="copy-release-blocker-filter-package"
+                >slice package 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
