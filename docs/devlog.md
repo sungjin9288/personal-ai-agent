@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Slice Summary Copy Pass
+
+- added a release blocker slice summary copy action that packages the active category/owner filter, visible/total blocker count, command count, deduplicated evidence doc count, top visible blocker, and filtered release link into one short operator manifest
+- exposed the summary copy action beside the slice handoff, command, and evidence copy actions so operators can share package scope before sending a full blocker handoff bundle
+- extended `smoke:ui-harness-browse` to pin the slice summary copy marker, action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Slice Metrics Pass
 
 - added filtered release blocker slice metrics in the open blocker triage callout so operators can see visible blocker count, command count, deduplicated evidence doc count, and top visible blocker before copying slice handoff packages
