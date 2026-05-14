@@ -7837,6 +7837,8 @@ function renderReleaseStatus() {
   const productionReadyStopReason = String(
     summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || productionBlockers[0] || '',
   ).trim();
+  const productionBlockerEvidenceDocHref = '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md';
+  const productionBlockerEvidenceDocLabel = 'release-readiness production-ready blockers';
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const handoffArtifacts = release.handoffArtifacts || [];
@@ -8871,6 +8873,22 @@ function renderReleaseStatus() {
                         data-ui-action="copy-release-production-blocker-link"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
                       >blocker 링크 복사</button>
+                      <a
+                        class="ghost-button"
+                        href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                        target="_blank"
+                        rel="noreferrer"
+                        data-release-production-blocker-evidence-doc="${escapeHtml(focusedProductionBlockerIndex)}"
+                        data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                      >근거 문서 열기</a>
+                      <button
+                        class="ghost-button"
+                        type="button"
+                        data-release-production-blocker-evidence-doc-copy="${escapeHtml(focusedProductionBlockerIndex)}"
+                        data-ui-action="copy-release-evidence-doc-link"
+                        data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                        data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
+                      >근거 링크 복사</button>
                       <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus">포커스 해제</button>
                     </div>
                   </div>
@@ -8910,6 +8928,22 @@ function renderReleaseStatus() {
                             data-ui-action="copy-release-production-blocker-link"
                             data-ui-index="${escapeHtml(String(index))}"
                           >링크 복사</button>
+                          <a
+                            class="ghost-button"
+                            href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                            target="_blank"
+                            rel="noreferrer"
+                            data-release-production-blocker-evidence-doc="${escapeHtml(String(index))}"
+                            data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                          >근거 문서</a>
+                          <button
+                            class="ghost-button"
+                            type="button"
+                            data-release-production-blocker-evidence-doc-copy="${escapeHtml(String(index))}"
+                            data-ui-action="copy-release-evidence-doc-link"
+                            data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                            data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
+                          >근거 링크 복사</button>
                           <button
                             class="ghost-button"
                             type="button"
