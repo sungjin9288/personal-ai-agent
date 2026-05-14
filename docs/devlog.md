@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Triage Summary Pass
+
+- added a `currentOpenBlockerActionSummary` payload to `/api/execution-v1/status` with category, owner, status, command, evidence-doc, and top-priority blocker aggregates derived from existing current open blocker actions
+- rendered an `open blocker triage` callout in the release tab so operators can see dominant blocker categories and owners before drilling into individual stop-condition rows
+- extended `smoke:execution-v1-status` and `smoke:ui-harness-browse` to pin the API summary counts, top-priority linkage, and served UI markers
+
 ## 2026-05-14 Web Release Blocker Handoff Copy Pass
 
 - added a current open blocker handoff copy action that packages blocker id, category, owner, status, stop reason, next evidence, release deep link, evidence docs, and next commands into one operator-ready text block

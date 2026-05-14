@@ -197,6 +197,10 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-list'), true);
   assert.equal(appJs.includes('currentOpenBlockers'), true);
   assert.equal(appJs.includes('currentOpenBlockerActions'), true);
+  assert.equal(appJs.includes('currentOpenBlockerActionSummary'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-triage'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-category-count'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-owner-count'), true);
   assert.equal(appJs.includes('releaseFocusedBlockerId'), true);
   assert.equal(appJs.includes('rblocker'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
@@ -287,6 +291,21 @@ try {
   );
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions.length, 1);
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].category, 'release-readiness');
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.actionCount, 1);
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.categoryCounts['release-readiness'],
+    1,
+    JSON.stringify(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary),
+  );
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.ownerCounts['release-owner'],
+    1,
+    JSON.stringify(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary),
+  );
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.topPriorityBlockerId,
+    executionV1Status.releaseReadiness.currentOpenBlockerActions[0].id,
+  );
   assert.equal(
     executionV1Status.releaseReadiness.currentOpenBlockerActions[0].evidenceDocs.some(
       (doc) =>
