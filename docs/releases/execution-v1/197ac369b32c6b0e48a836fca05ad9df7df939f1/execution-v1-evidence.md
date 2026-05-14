@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T02:26:59.534Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T02:26:51.493Z
 - branch: codex/post-merge-release-blocker-slice-handoff-artifact-sync
 - commit: 197ac369b32c6b0e48a836fca05ad9df7df939f1
