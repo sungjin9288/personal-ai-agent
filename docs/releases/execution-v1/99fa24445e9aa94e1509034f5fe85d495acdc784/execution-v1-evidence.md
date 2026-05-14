@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T19:04:35.832Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T19:04:21.944Z
 - branch: codex/post-merge-browser-e2e-timeout-artifact-sync
 - commit: 99fa24445e9aa94e1509034f5fe85d495acdc784

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-14T19:04:35.832Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-14T19:04:34.294Z
 - localDate: 2026-05-15
 - branch: codex/post-merge-browser-e2e-timeout-artifact-sync
 - commit: 99fa24445e9aa94e1509034f5fe85d495acdc784
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784](releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784](docs/releases/execution-v1/99fa24445e9aa94e1509034f5fe85d495acdc784)
 - visualArtifactSetSha256: 23ffdff7f651b466ca380b111878313b86bac084cee7c2e9778e42091c64a6dc
 - commitPushStatus: pushed to origin/main
 
