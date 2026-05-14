@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T01:09:05.171Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T01:08:56.941Z
 - branch: codex/post-merge-release-blocker-filter-artifact-sync
 - commit: e361401ae0fa43d6976aad5347c38c65534116b9
