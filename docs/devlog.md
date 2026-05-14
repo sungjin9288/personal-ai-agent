@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Browser E2E Retrieval Handoff Focus Timeout Pass
+
+- hardened the execution browser E2E retrieval handoff session check by giving focused retrieval source restoration a longer env-configurable wait window
+- classified Playwright `TimeoutError` as a transient session failure for the existing retry path so one slow focus restoration attempt does not fail the full release evidence refresh immediately
+- kept the change scoped to browser smoke stability; release UI behavior and production readiness state are unchanged
+
 ## 2026-05-15 Web Current Blocker Package Closure Bundle Pass
 
 - added the existing single-blocker closure checklist into `blocker package 복사` output so one package now carries handoff context, closing requirements, commands, and evidence together

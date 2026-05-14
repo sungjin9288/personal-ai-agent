@@ -79,6 +79,10 @@ const releaseHandoffCopyStateTimeoutMs = parsePositiveIntegerEnv(
   'PERSONAL_AI_AGENT_RELEASE_HANDOFF_COPY_STATE_TIMEOUT_MS',
   180_000,
 );
+const retrievalHandoffFocusTimeoutMs = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_RETRIEVAL_HANDOFF_FOCUS_TIMEOUT_MS',
+  45_000,
+);
 
 process.once('SIGINT', () => {
   restoreArtifactsFromBackup(artifactBackups);
@@ -3046,7 +3050,7 @@ try {
             params.get('hsource') === sourceLabel &&
             Boolean(document.querySelector('.tag.is-active-focus'))
           );
-        }, { sourceLabel: expectedSourceLabel, sourceType: expectedSourceType }, { timeout: 15000 });
+        }, { sourceLabel: expectedSourceLabel, sourceType: expectedSourceType }, { timeout: ${retrievalHandoffFocusTimeoutMs} });
         return {
           activeChip: await page.evaluate(() => document.querySelector('.tag.is-active-focus')?.textContent || ''),
           attachmentFocused: await page.evaluate((targetSourceLabel) => {
@@ -15226,7 +15230,7 @@ function isPlaywrightTimeoutError(error) {
 }
 
 function isPlaywrightTransientSessionError(error) {
-  return /playwright-cli timed out|Page crashed|Target page, context or browser has been closed|browser has been closed|ERR_CONNECTION_REFUSED|playwright-cli failed.*\(open [^)]+\): status=1 signal= <no output>/i
+  return /playwright-cli timed out|TimeoutError|Page crashed|Target page, context or browser has been closed|browser has been closed|ERR_CONNECTION_REFUSED|playwright-cli failed.*\(open [^)]+\): status=1 signal= <no output>/i
     .test(String(error?.message || error || ''));
 }
 
