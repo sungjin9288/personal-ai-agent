@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-14T07:06:52.896Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-14T07:06:44.003Z
 - branch: codex/post-merge-production-blocker-row-handoff-artifact-sync
 - commit: 825a715b8ac664dc5b7d6ff042ef011ac1d97658
