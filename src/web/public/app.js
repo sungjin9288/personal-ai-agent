@@ -2076,6 +2076,45 @@ function getReleaseBlockerSliceSummary({
   };
 }
 
+function buildReleaseBlockerSliceSummaryText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const sliceSummary = getReleaseBlockerSliceSummary({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+  });
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const topBlockerLabel = sliceSummary.topVisibleBlockerLabel
+    ? `${sliceSummary.topVisibleBlockerId || 'unknown'}: ${sliceSummary.topVisibleBlockerLabel}`
+    : 'none';
+  const lines = [
+    'Release blocker slice summary',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
+    `- commandCount: ${sliceSummary.commandCount}`,
+    `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
+    `- topVisibleBlocker: ${topBlockerLabel}`,
+    `- releaseLink: ${sliceLink}`,
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerHandoffText(blockerAction = null) {
   const actionId = String(blockerAction?.id || '').trim();
   if (!blockerAction || !actionId) {
@@ -3277,6 +3316,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-filter-summary') {
+        void copyReleaseBlockerFilterSummary();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-handoff') {
         void copyReleaseBlockerFilterHandoff();
         return;
@@ -4148,6 +4192,37 @@ async function copyReleaseBlockerHandoff({
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterSummary({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const summaryText = buildReleaseBlockerSliceSummaryText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!summaryText) {
+    setUiNotice('복사할 release blocker slice summary가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(summaryText, {
+    promptMessage: 'release blocker slice summary를 복사하세요.',
+    shownNotice: 'release blocker slice summary를 표시했습니다.',
+    successNotice: 'release blocker slice summary를 복사했습니다.',
   });
 }
 
@@ -8154,6 +8229,12 @@ function renderReleaseStatus() {
                     )
                     .join('')
                   : '<span class="mini-badge status-running">owner 없음</span>'}
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-summary-copy="true"
+                  data-ui-action="copy-release-blocker-filter-summary"
+                >slice 요약 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
