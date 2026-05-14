@@ -201,6 +201,13 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-triage'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-category-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-owner-count'), true);
+  assert.equal(appJs.includes('releaseBlockerCategoryFilter'), true);
+  assert.equal(appJs.includes('releaseBlockerOwnerFilter'), true);
+  assert.equal(appJs.includes('rbcategory'), true);
+  assert.equal(appJs.includes('rbowner'), true);
+  assert.equal(appJs.includes('filter-release-blockers'), true);
+  assert.equal(appJs.includes('clear-release-blocker-filter'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary'), true);
   assert.equal(appJs.includes('releaseFocusedBlockerId'), true);
   assert.equal(appJs.includes('rblocker'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-action-row'), true);
