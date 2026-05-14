@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-14 Web Release Blocker Slice Handoff Pass
+
+- added a release blocker slice handoff copy action that packages the active category/owner filter, visible/total blocker count, filtered release link, blocker metadata, evidence docs, and next commands into one operator-ready text block
+- exposed the slice handoff action from the open blocker triage callout so operators can hand off the current filtered blocker set without copying each row individually
+- extended `smoke:ui-harness-browse` and README documentation to pin the slice handoff marker, action, and text contract in the served web bundle
+
 ## 2026-05-14 Web Release Blocker Triage Filter Pass
 
 - added release tab `rbcategory` and `rbowner` URL state so current open blocker triage can be narrowed by category and owner without losing reload/share context
