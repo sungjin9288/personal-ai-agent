@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T07:01:44.490Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T07:01:27.475Z
 - branch: codex/post-target-evidence-blocker-disposition-artifact-sync
 - commit: 73ddb1c07563eebbdcf62cf354d0df31cca35cd3
