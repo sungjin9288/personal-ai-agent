@@ -105,8 +105,13 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 3);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['deployment-owner'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['release-owner'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerActionCount, 3);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.anthropic, 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.local, 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.hermes, 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityCategory, 'provider-account');
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityOwner, 'provider-ops');
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityProvider, 'anthropic');
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
       item.includes('Anthropic and Hermes live validations are not complete'),
@@ -128,6 +133,7 @@ try {
       item.commands.some((command) => command.command === 'npm run preflight:execution-v1:anthropic'),
   );
   assert.equal(Boolean(anthropicBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.equal(anthropicBlockerAction.provider, 'anthropic', JSON.stringify(anthropicBlockerAction));
   const anthropicEvidenceDoc = anthropicBlockerAction.evidenceDocs.find(
     (doc) => doc.path === 'docs/target-anthropic-provider-account-v1.md',
   );
@@ -142,6 +148,26 @@ try {
   assert.equal(anthropicEvidenceResponse.status, 200);
   assert.match(anthropicEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
   assert.match(await anthropicEvidenceResponse.text(), /Target Anthropic Provider Account/i);
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockerActions.some(
+      (item) =>
+        item.provider === 'local' &&
+        item.category === 'provider-architecture' &&
+        item.commands.some((command) => command.command === 'npm run smoke:target-local-provider-architecture'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockerActions.some(
+      (item) =>
+        item.provider === 'hermes' &&
+        item.category === 'provider-architecture' &&
+        item.commands.some((command) => command.command === 'npm run smoke:target-hermes-provider-architecture'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  );
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(
       (item) =>

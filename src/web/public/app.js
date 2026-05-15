@@ -2383,6 +2383,122 @@ function getReleaseProviderReadinessEntries({
   });
 }
 
+function getReleaseProviderBlockerNeedles(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerNeedles = {
+    anthropic: ['anthropic', 'anthropic_api_key', 'target-anthropic-provider-account'],
+    hermes: ['hermes', 'hermes_provider_model', 'target-hermes-provider-architecture'],
+    local: ['local provider', 'local_provider_model', 'local_provider_base_url', 'target-local-provider-architecture'],
+    openai: ['openai', 'openai_api_key', 'target-openai-provider-account'],
+  };
+  return providerNeedles[normalizedProvider] || (normalizedProvider ? [normalizedProvider] : []);
+}
+
+function getReleaseBlockerActionSearchText(blockerAction = null) {
+  const commands = Array.isArray(blockerAction?.commands) ? blockerAction.commands : [];
+  const evidenceDocs = Array.isArray(blockerAction?.evidenceDocs) ? blockerAction.evidenceDocs : [];
+  return [
+    blockerAction?.blocker,
+    blockerAction?.category,
+    blockerAction?.id,
+    blockerAction?.nextEvidence,
+    blockerAction?.owner,
+    blockerAction?.provider,
+    blockerAction?.status,
+    blockerAction?.stopReason,
+    ...commands.flatMap((command) => [command?.command, command?.kind, command?.label]),
+    ...evidenceDocs.flatMap((doc) => [doc?.href, doc?.label, doc?.path]),
+  ]
+    .map((item) => String(item || '').toLowerCase())
+    .filter(Boolean)
+    .join(' ');
+}
+
+function doesReleaseBlockerActionMatchProvider(blockerAction = null, provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  if (!blockerAction || !normalizedProvider) {
+    return false;
+  }
+  if (String(blockerAction.provider || '').trim() === normalizedProvider) {
+    return true;
+  }
+
+  const searchText = getReleaseBlockerActionSearchText(blockerAction);
+  return getReleaseProviderBlockerNeedles(normalizedProvider).some((needle) =>
+    searchText.includes(String(needle || '').toLowerCase()),
+  );
+}
+
+function getReleaseProviderBlockerActions({
+  provider = '',
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return [];
+  }
+
+  const blockerActions = getReleaseCurrentOpenBlockerActions(releaseStatus);
+  const hasExplicitProviderMapping = blockerActions.some((item) => String(item?.provider || '').trim());
+  return blockerActions.filter((item) => {
+    if (hasExplicitProviderMapping) {
+      return String(item?.provider || '').trim() === normalizedProvider;
+    }
+    return doesReleaseBlockerActionMatchProvider(item, normalizedProvider);
+  });
+}
+
+function getUniqueReleaseProviderBlockerActions(blockerActions = []) {
+  const seen = new Set();
+  return (Array.isArray(blockerActions) ? blockerActions : []).filter((item, index) => {
+    const actionId = String(item?.id || '').trim() || `provider-blocker-${index}`;
+    if (seen.has(actionId)) {
+      return false;
+    }
+    seen.add(actionId);
+    return true;
+  });
+}
+
+function buildReleaseProviderBlockerPackageLines(blockerActions = []) {
+  const actions = getUniqueReleaseProviderBlockerActions(blockerActions);
+  if (!actions.length) {
+    return ['- none'];
+  }
+
+  return actions.map((action, index) => {
+    const actionId = String(action.id || '').trim();
+    const actionProvider = String(action.provider || '').trim();
+    const releaseLink = `${window.location.origin}${buildUiStateUrl({
+      detailTab: 'release',
+      releaseBlockerCategoryFilter: '',
+      releaseBlockerOwnerFilter: '',
+      releaseFocusedBlockerId: actionId,
+      releaseFocusedProductionBlockerIndex: '',
+      releaseFocusedProvider: actionProvider,
+      releaseFocusedHistoryId: '',
+      releaseHistoryOutcome: '',
+      releaseHistoryProvider: '',
+      releaseHistoryScope: '',
+    })}`;
+    const commands = Array.isArray(action.commands) ? action.commands : [];
+    const evidenceDocs = Array.isArray(action.evidenceDocs) ? action.evidenceDocs : [];
+    return [
+      `${index + 1}. ${String(action.blocker || action.stopReason || 'provider blocker').trim()}`,
+      `   - id: ${actionId || 'not recorded'}`,
+      `   - provider: ${actionProvider || 'inferred from blocker evidence'}`,
+      `   - category: ${String(action.category || 'stop-condition').trim()}`,
+      `   - owner: ${String(action.owner || 'release-owner').trim()}`,
+      `   - status: ${String(action.status || 'blocked').trim()}`,
+      `   - stopReason: ${String(action.stopReason || action.blocker || '').trim() || 'not recorded'}`,
+      `   - nextEvidence: ${String(action.nextEvidence || '').trim() || 'not recorded'}`,
+      `   - releaseLink: ${releaseLink}`,
+      `   - commands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+      `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+    ].join('\n');
+  });
+}
+
 function getReleaseProviderLiveStatus(provider = '', releaseStatus = state.releaseStatus) {
   const normalizedProvider = String(provider || '').trim();
   if (!normalizedProvider) {
@@ -2528,6 +2644,15 @@ function buildReleaseProviderReadinessPackageText({
         getReleaseProviderSpecificEvidenceDoc('local'),
         getReleaseProviderSpecificEvidenceDoc('hermes'),
       ].filter(Boolean));
+  const linkedProviderBlockers = getUniqueReleaseProviderBlockerActions(
+    entries.flatMap((item) =>
+      getReleaseProviderBlockerActions({
+        provider: String(item.provider || '').trim(),
+        releaseStatus,
+      }),
+    ),
+  );
+  const linkedProviderBlockerLines = buildReleaseProviderBlockerPackageLines(linkedProviderBlockers);
 
   return [
     'Provider readiness handoff package',
@@ -2544,6 +2669,9 @@ function buildReleaseProviderReadinessPackageText({
     '',
     'Provider readiness matrix:',
     ...providerLines,
+    '',
+    'Linked provider blockers:',
+    ...linkedProviderBlockerLines,
     '',
     'Commands:',
     '- Aggregate preflight: npm run preflight:execution-v1:all',
@@ -4051,6 +4179,10 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'focus-release-blocker') {
+        const providerContext = String(button.dataset.uiProvider || '').trim();
+        if (providerContext) {
+          state.releaseFocusedProvider = providerContext;
+        }
         focusReleaseBlocker(button.dataset.uiBlocker || value || '', { historyMode: 'push' });
         setUiNotice('선택한 current open blocker로 이동했습니다.');
         return;
@@ -8771,6 +8903,7 @@ function renderReleaseStatus() {
   const currentOpenBlockerActionSummary = releaseReadiness.currentOpenBlockerActionSummary || {};
   const currentOpenBlockerCategoryEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.categoryCounts);
   const currentOpenBlockerOwnerEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.ownerCounts);
+  const currentOpenBlockerProviderEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.providerCounts);
   const topPriorityBlockerId = String(currentOpenBlockerActionSummary.topPriorityBlockerId || '').trim();
   const topPriorityBlockerLabel = String(
     currentOpenBlockerActionSummary.topPriorityBlocker
@@ -8888,6 +9021,11 @@ function renderReleaseStatus() {
   const focusedProviderPreflight = focusedProviderEntry
     ? state.releasePreflightResults?.[focusedProviderEntry.provider] || null
     : null;
+  const focusedProviderBlockerActions = focusedProvider
+    ? getReleaseProviderBlockerActions({ provider: focusedProvider, releaseStatus: release })
+    : [];
+  const focusedProviderTopBlocker = focusedProviderBlockerActions[0] || null;
+  const focusedProviderTopBlockerId = String(focusedProviderTopBlocker?.id || '').trim();
   const focusedProviderHistory = focusedProvider
     ? releaseActionHistory.filter((item) => String(item.provider || '').trim() === focusedProvider)
     : [];
@@ -9659,6 +9797,18 @@ function renderReleaseStatus() {
                     )
                     .join('')
                   : '<span class="mini-badge status-running">owner 없음</span>'}
+                ${currentOpenBlockerProviderEntries.length
+                  ? currentOpenBlockerProviderEntries
+                    .map(
+                      ([provider, count]) => `
+                        <span
+                          class="mini-badge status-failed"
+                          data-release-current-open-blocker-provider-count="${escapeHtml(provider)}"
+                        >${escapeHtml(provider)} ${escapeHtml(String(count))}</span>
+                      `,
+                    )
+                    .join('')
+                  : '<span class="mini-badge status-running">provider blocker 없음</span>'}
                 <button
                   class="ghost-button"
                   type="button"
@@ -9874,6 +10024,9 @@ function renderReleaseStatus() {
                         </div>
                         <div class="harness-row-meta">
                           <span class="mini-badge status-failed">${escapeHtml(item.category || 'stop-condition')}</span>
+                          ${item.provider
+                            ? `<span class="mini-badge status-failed" data-release-current-open-blocker-provider="${escapeHtml(actionId)}">${escapeHtml(item.provider)}</span>`
+                            : ''}
                           <span class="item-meta">${escapeHtml(item.owner || 'release-owner')}</span>
                           <span class="mini-badge status-failed">stop-condition</span>
                           <button
@@ -10267,6 +10420,12 @@ function renderReleaseStatus() {
                           </div>
                         `
                       : ''}
+                    <p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(focusedProvider)}">
+                      provider blockers ${escapeHtml(String(focusedProviderBlockerActions.length))}
+                      ${focusedProviderTopBlocker
+                        ? ` · top ${escapeHtml(focusedProviderTopBlockerId || 'unknown')}: ${escapeHtml(String(focusedProviderTopBlocker.stopReason || focusedProviderTopBlocker.blocker || '').trim())}`
+                        : ''}
+                    </p>
                     ${focusedProviderLatestAction
                       ? `
                           <div class="item-meta">
@@ -10305,6 +10464,12 @@ function renderReleaseStatus() {
                             <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight))}">live 명령 복사</button>
                             <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" data-release-provider-readiness-package="true">provider package 복사</button>
+                          `
+                        : ''}
+                      ${focusedProviderTopBlocker
+                        ? `
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-blocker" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}">provider blocker 보기</button>
+                            <button class="ghost-button" type="button" data-ui-action="copy-release-blocker-package" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" data-release-provider-blocker-package="true">provider blocker package 복사</button>
                           `
                         : ''}
                       ${focusedProviderLatestAction
@@ -10355,6 +10520,12 @@ function renderReleaseStatus() {
                       const isFocusedProvider = focusedProvider === item.provider;
                       const preflightStatus = preflight?.status || 'not-run';
                       const liveCommand = getProviderLiveCommand(item, preflight);
+                      const providerBlockerActions = getReleaseProviderBlockerActions({
+                        provider: item.provider,
+                        releaseStatus: release,
+                      });
+                      const providerTopBlocker = providerBlockerActions[0] || null;
+                      const providerTopBlockerId = String(providerTopBlocker?.id || '').trim();
                       const preflightSummary = preflight
                         ? preflight.status === 'ready-for-live-validation'
                           ? `preflight 통과 · ${preflight.checks?.length || 0}개 smoke passed`
@@ -10373,6 +10544,10 @@ function renderReleaseStatus() {
                       <div class="release-provider-meta">
                         <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
                         <span class="mini-badge ${getReleaseStatusBadge(preflightStatus)}">${escapeHtml(preflightStatus)}</span>
+                        <span
+                          class="mini-badge ${providerBlockerActions.length ? 'status-failed' : 'status-completed'}"
+                          data-release-provider-blocker-count="${escapeHtml(item.provider)}"
+                        >blockers ${escapeHtml(String(providerBlockerActions.length))}</span>
                       </div>
                       <div class="release-provider-meta">
                         <button
@@ -10409,6 +10584,25 @@ function renderReleaseStatus() {
                           data-ui-provider="${escapeHtml(item.provider)}"
                           data-release-provider-readiness-package="true"
                         >provider package 복사</button>
+                        ${providerTopBlocker
+                          ? `
+                              <button
+                                class="ghost-button"
+                                type="button"
+                                data-ui-action="focus-release-blocker"
+                                data-ui-blocker="${escapeHtml(providerTopBlockerId)}"
+                                data-ui-provider="${escapeHtml(item.provider)}"
+                              >provider blocker 보기</button>
+                              <button
+                                class="ghost-button"
+                                type="button"
+                                data-ui-action="copy-release-blocker-package"
+                                data-ui-blocker="${escapeHtml(providerTopBlockerId)}"
+                                data-ui-provider="${escapeHtml(item.provider)}"
+                                data-release-provider-blocker-package="true"
+                              >blocker package 복사</button>
+                            `
+                          : ''}
                         <button
                           class="ghost-button"
                           type="button"
@@ -10433,6 +10627,9 @@ function renderReleaseStatus() {
                       </div>
                       <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${liveCommand}`)}</p>
                       <p class="item-meta">${escapeHtml(preflightSummary)}</p>
+                      ${providerTopBlocker
+                        ? `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker · ${escapeHtml(providerTopBlockerId || 'unknown')} · ${escapeHtml(String(providerTopBlocker.stopReason || providerTopBlocker.blocker || '').trim())}</p>`
+                        : `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker 없음</p>`}
                       ${liveConfirmArmed && liveRefreshPreflight
                         ? `
                             <div class="release-stale-note">

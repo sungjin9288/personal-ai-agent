@@ -1260,6 +1260,7 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       ],
       nextEvidence: 'Approved Anthropic billing/credit, target secret injection, and target-boundary Anthropic live validation evidence.',
       owner: 'provider-ops',
+      provider: 'anthropic',
       stopReason: 'Anthropic account billing/credit and target-boundary live validation evidence are missing.',
     };
   }
@@ -1287,6 +1288,7 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       ],
       nextEvidence: 'Approved endpoint/model runtime configuration and target-boundary local provider validation evidence.',
       owner: 'provider-ops',
+      provider: 'local',
       stopReason: 'Target local provider architecture approval and target-boundary evidence are missing.',
     };
   }
@@ -1311,6 +1313,7 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       ],
       nextEvidence: 'Approved Hermes-compatible endpoint/model runtime configuration and target-boundary Hermes live validation evidence.',
       owner: 'provider-ops',
+      provider: 'hermes',
       stopReason: 'Hermes endpoint/model runtime configuration and target-boundary evidence are missing.',
     };
   }
@@ -1377,6 +1380,7 @@ function sortCountRecord(record = {}) {
 function buildCurrentOpenBlockerActionSummary(actions = []) {
   const categoryCounts = {};
   const ownerCounts = {};
+  const providerCounts = {};
   const statusCounts = {};
   let commandCount = 0;
   let evidenceDocCount = 0;
@@ -1386,6 +1390,9 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
   for (const [index, action] of actions.entries()) {
     incrementCountRecord(categoryCounts, action?.category || 'release-readiness');
     incrementCountRecord(ownerCounts, action?.owner || 'release-owner');
+    if (action?.provider) {
+      incrementCountRecord(providerCounts, action.provider);
+    }
     incrementCountRecord(statusCounts, action?.status || 'blocked');
     commandCount += Array.isArray(action?.commands) ? action.commands.length : 0;
     evidenceDocCount += Array.isArray(action?.evidenceDocs) ? action.evidenceDocs.length : 0;
@@ -1403,12 +1410,15 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
     commandCount,
     evidenceDocCount,
     ownerCounts: sortCountRecord(ownerCounts),
+    providerActionCount: Object.values(providerCounts).reduce((total, value) => total + Number(value || 0), 0),
+    providerCounts: sortCountRecord(providerCounts),
     statusCounts: sortCountRecord(statusCounts),
     topPriorityBlocker: String(topPriorityAction?.blocker || topPriorityAction?.stopReason || '').trim(),
     topPriorityBlockerId: String(topPriorityAction?.id || '').trim(),
     topPriorityCategory: String(topPriorityAction?.category || '').trim(),
     topPriorityNextEvidence: String(topPriorityAction?.nextEvidence || '').trim(),
     topPriorityOwner: String(topPriorityAction?.owner || '').trim(),
+    topPriorityProvider: String(topPriorityAction?.provider || '').trim(),
     topPriorityStopReason: String(topPriorityAction?.stopReason || topPriorityAction?.blocker || '').trim(),
   };
 }

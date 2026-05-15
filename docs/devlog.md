@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Provider Blocker Readiness Linkage Pass
+
+- added provider ownership to current open provider blocker actions for Anthropic, local, and Hermes so API consumers no longer need to infer blocker-to-provider mapping from prose
+- surfaced provider blocker counts, linked blocker summaries, and blocker package copy actions directly on provider readiness cards and focused provider callouts
+- extended provider readiness handoff packages with a `Linked provider blockers` section containing stop reason, next evidence, commands, evidence docs, and deep links for closure execution
+- extended `smoke:execution-v1-status` and `smoke:ui-harness-browse` to pin the provider blocker mapping and UI handoff markers
+
 ## 2026-05-15 Web Provider Readiness Handoff Package Pass
 
 - added copyable provider readiness handoff packages to release provider cards and the aggregate provider preflight callout so env, preflight, live-validation, evidence refresh, and production blocker context can be shared together
