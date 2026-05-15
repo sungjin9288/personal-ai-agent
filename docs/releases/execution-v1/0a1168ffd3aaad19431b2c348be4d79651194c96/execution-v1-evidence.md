@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T08:41:47.664Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T08:41:36.286Z
 - branch: codex/post-target-evidence-submission-manifest-artifact-sync
 - commit: 0a1168ffd3aaad19431b2c348be4d79651194c96
