@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Blocker Disposition Register Copy Pass
+
+- added a target evidence blocker disposition register copy action to the current open blocker triage surface so reviewers can audit still-blocking, accepted-scope-required, and closed-after-evidence states separately from the full packet
+- included the canonical target blocker rows for Anthropic, Hermes, local provider, hosted identity/session, hosted tenant isolation, target tenant evidence, target environment evidence, and customer-specific exceptions with required closing evidence, stop-condition ids, claim impact, owners, reviewer placeholders, and release refresh requirements
+- embedded the blocker disposition register template inside the full target evidence intake packet so the packet carries the same disposition audit structure as the standalone register copy
+- extended `smoke:ui-harness-browse` to pin the disposition register builder, copy action marker, DOM marker, packet template section, and disposition row title
+
 ## 2026-05-15 Web Target Evidence Boundary Map Copy Pass
 
 - added a target evidence boundary consistency map copy action to the current open blocker triage surface so reviewers can verify deployment, identity/session, tenant isolation, provider/secret, observability/SLO, retention/backup, support, and clean release boundaries separately from the full packet

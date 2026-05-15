@@ -3439,6 +3439,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     owner: normalizedOwner,
     releaseStatus,
   }).trim();
+  const blockerDispositionRegister = buildReleaseTargetEvidenceBlockerDispositionRegisterText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const closureMatrix = buildReleaseBlockerClosureMatrixPackageText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3495,6 +3502,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     'Reviewer decision record template:',
     reviewerDecisionRecord || '- none',
     '',
+    'Blocker disposition register template:',
+    blockerDispositionRegister || '- none',
+    '',
     'Provider evidence references:',
     ...providerRows,
     '',
@@ -3511,6 +3521,261 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const dispositionDefinitions = [
+    {
+      id: 'anthropic-billing-live-validation',
+      blocker: 'Anthropic billing/live validation',
+      currentState: 'still-blocking',
+      requiredClosingEvidence: 'target Anthropic provider account approval, billing/credit remediation proof, target secret injection, target-boundary live:execution-v1:anthropic pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts',
+      claimImpact: 'Anthropic must not be included in a live-provider-complete or production-ready claim',
+      nextVerificationCommand: 'npm run smoke:target-anthropic-provider-account && npm run live:execution-v1:anthropic',
+      stopCondition: 'anthropic-live-validation-missing-or-failed',
+      docs: [
+        'docs/target-anthropic-provider-account-v1.md',
+        'docs/target-provider-evidence-intake-v1.md',
+        'docs/target-provider-operations-v1.md',
+        'docs/production-provider-readiness-v1.md',
+      ],
+      terms: ['anthropic', 'billing', 'credit'],
+    },
+    {
+      id: 'hermes-runtime-config',
+      blocker: 'Hermes runtime config',
+      currentState: 'configuration-required',
+      requiredClosingEvidence: 'target Hermes provider architecture approval, model/endpoint alias, runtime secret injection proof, target-boundary live:execution-v1:hermes pass, provider operations evidence, and regenerated release artifacts',
+      claimImpact: 'Hermes must remain excluded from production provider claims',
+      nextVerificationCommand: 'npm run smoke:target-hermes-provider-architecture && npm run live:execution-v1:hermes',
+      stopCondition: 'hermes-runtime-config-missing',
+      docs: [
+        'docs/target-hermes-provider-architecture-v1.md',
+        'docs/target-provider-evidence-intake-v1.md',
+        'docs/target-provider-operations-v1.md',
+        'docs/production-provider-readiness-v1.md',
+      ],
+      terms: ['hermes', 'runtime config', 'endpoint', 'model'],
+    },
+    {
+      id: 'target-local-provider-approval',
+      blocker: 'target local provider approval',
+      currentState: 'customer-approval-required',
+      requiredClosingEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+      claimImpact: 'local provider can remain pilot/local-only but cannot be production-approved',
+      nextVerificationCommand: 'npm run smoke:target-local-provider-architecture && npm run live:execution-v1:local',
+      stopCondition: 'target-local-provider-approval-missing',
+      docs: [
+        'docs/target-local-provider-architecture-v1.md',
+        'docs/target-provider-evidence-intake-v1.md',
+        'docs/target-provider-operations-v1.md',
+        'docs/production-provider-readiness-v1.md',
+      ],
+      terms: ['local provider', 'local', 'endpoint ownership'],
+    },
+    {
+      id: 'hosted-identity-session-approval',
+      blocker: 'hosted identity/session approval',
+      currentState: 'customer-approval-required',
+      requiredClosingEvidence: 'hosted identity/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof',
+      claimImpact: 'hosted identity/session claims remain blocked',
+      nextVerificationCommand: 'npm run smoke:hosted-identity-session-architecture && npm run smoke:target-identity-session-operations',
+      stopCondition: 'hosted-identity-session-approval-missing',
+      docs: [
+        'docs/hosted-identity-session-architecture-v1.md',
+        'docs/target-identity-session-operations-v1.md',
+      ],
+      terms: ['identity', 'session', 'idp', 'rbac', 'role'],
+    },
+    {
+      id: 'hosted-tenant-isolation-approval',
+      blocker: 'hosted tenant isolation approval',
+      currentState: 'customer-approval-required',
+      requiredClosingEvidence: 'hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof',
+      claimImpact: 'hosted multi-tenant isolation claims remain blocked',
+      nextVerificationCommand: 'npm run smoke:hosted-tenant-isolation-architecture && npm run smoke:target-tenant-isolation-operations',
+      stopCondition: 'hosted-tenant-isolation-approval-missing',
+      docs: [
+        'docs/hosted-tenant-isolation-architecture-v1.md',
+        'docs/target-tenant-isolation-operations-v1.md',
+      ],
+      terms: ['tenant', 'isolation', 'cross-tenant', 'storage partitioning'],
+    },
+    {
+      id: 'target-tenant-evidence',
+      blocker: 'target tenant evidence',
+      currentState: 'target-evidence-required',
+      requiredClosingEvidence: 'completed target tenant isolation operations evidence capture template, negative cross-tenant test matrix, tenant storage/encryption proof, backup/restore non-interference proof, lifecycle proof, artifact hygiene, and production readiness gate result',
+      claimImpact: 'tenant-isolated production claims remain blocked',
+      nextVerificationCommand: 'npm run smoke:target-tenant-isolation-operations && npm run smoke:production-readiness-gate',
+      stopCondition: 'target-tenant-evidence-missing',
+      docs: [
+        'docs/target-tenant-isolation-operations-v1.md',
+        'docs/hosted-tenant-isolation-architecture-v1.md',
+        'docs/release-readiness-v1.md',
+      ],
+      terms: ['target tenant', 'tenant evidence', 'cross-tenant', 'tenant isolation'],
+    },
+    {
+      id: 'target-environment-evidence',
+      blocker: 'target environment evidence',
+      currentState: 'target-evidence-required',
+      requiredClosingEvidence: 'completed target evidence capture template, sanitized submission packet, boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence, and production readiness gate result',
+      claimImpact: 'productionReadyClaim must remain false',
+      nextVerificationCommand: 'npm run smoke:target-environment-evidence-intake && npm run smoke:production-readiness-gate',
+      stopCondition: 'target-environment-evidence-missing',
+      docs: [
+        'docs/target-environment-evidence-intake-v1.md',
+        'docs/target-deployment-contract-v1.md',
+        'docs/release-readiness-v1.md',
+      ],
+      terms: ['target environment', 'target evidence', 'submission packet', 'production ready'],
+    },
+    {
+      id: 'customer-specific-exceptions',
+      blocker: 'customer-specific exceptions',
+      currentState: 'accepted-scope-required',
+      requiredClosingEvidence: 'explicit exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, and release readiness note',
+      claimImpact: 'exceptions cannot convert a blocked production-ready claim into production-ready',
+      nextVerificationCommand: 'npm run smoke:target-environment-evidence-intake && npm run smoke:release-artifact-hygiene',
+      stopCondition: 'customer-exception-scope-missing',
+      docs: [
+        'docs/target-environment-evidence-intake-v1.md',
+        'docs/release-readiness-v1.md',
+      ],
+      terms: ['customer-specific', 'exception', 'accepted scope', 'accepted risk'],
+    },
+  ];
+  const relatedActionsForDisposition = (definition) => visibleActions.filter((item) => {
+    const haystack = [
+      item.id,
+      item.blocker,
+      item.stopReason,
+      item.nextEvidence,
+      item.category,
+      item.owner,
+      item.provider,
+    ]
+      .map((value) => String(value || '').toLowerCase())
+      .join(' ');
+    return definition.terms.some((term) => haystack.includes(String(term || '').toLowerCase()));
+  });
+  const dispositionRows = dispositionDefinitions.flatMap((definition, index) => {
+    const relatedActions = relatedActionsForDisposition(definition);
+    const relatedActionIds = relatedActions
+      .map((item) => String(item.id || '').trim())
+      .filter(Boolean);
+    const relatedCommands = Array.from(new Set(relatedActions.flatMap((item) =>
+      (Array.isArray(item.commands) ? item.commands : [])
+        .map((command) => String(command.command || '').trim())
+        .filter(Boolean),
+    )));
+    const relatedEvidenceDocs = Array.from(new Set(relatedActions.flatMap((item) =>
+      (Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [])
+        .map((doc) => String(doc.path || doc.label || '').trim())
+        .filter(Boolean),
+    )));
+    return [
+      `${index + 1}. ${definition.blocker}`,
+      `   - dispositionId: ${definition.id}`,
+      `   - currentState: ${definition.currentState}`,
+      '   - proposedDisposition: still-blocking | accepted-scope-required | closed',
+      `   - requiredClosingEvidence: ${definition.requiredClosingEvidence}`,
+      `   - nextVerificationCommand: ${definition.nextVerificationCommand}`,
+      `   - stopCondition: ${definition.stopCondition}`,
+      `   - claimImpact: ${definition.claimImpact}`,
+      `   - primaryEvidenceDocs: ${definition.docs.map(docLink).join(' | ')}`,
+      `   - relatedCurrentBlockerIds: ${relatedActionIds.length ? relatedActionIds.join(', ') : 'none visible in current slice'}`,
+      `   - relatedCommands: ${relatedCommands.length ? relatedCommands.join(' | ') : 'none visible in current slice'}`,
+      `   - relatedEvidenceDocs: ${relatedEvidenceDocs.length ? relatedEvidenceDocs.join(' | ') : 'none visible in current slice'}`,
+      '   - dispositionOwner: <required accountable owner>',
+      '   - reviewer: <required reviewer or team>',
+      '   - decisionDate: <required YYYY-MM-DD>',
+      '   - acceptedScopeOrException: <required scope, exception id, or none>',
+      '   - releaseRefreshRequired: yes before any release claim changes',
+    ];
+  });
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+          `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - currentState: ${String(item.status || 'blocked').trim()}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - commands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          '   - dispositionReviewRequired: yes',
+        ];
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence blocker disposition register',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- dispositionRowCount: ${dispositionDefinitions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Disposition rows:',
+    ...dispositionRows,
+    '',
+    'Visible blocker cross-check:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Disposition register rules:',
+    '- This register records blocker state for review; it is not a waiver or production-ready approval.',
+    '- A blocker can move to accepted-scope-required only when allowed claim text remains narrower than production-ready, exception owner is recorded, and release readiness is regenerated.',
+    '- A blocker can move to closed only after target-boundary evidence is attached, matching target smoke passes, release artifact hygiene passes, execution-v1 artifacts are regenerated, and no related stop-condition remains.',
+    '- Missing disposition owner, reviewer, command evidence, boundary map, sanitized evidence register, or release refresh evidence must keep the blocker as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until blocker disposition register, boundary consistency map, sanitized evidence register, command rerun log, reviewer decision, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate all pass for the claimed scope.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -5393,6 +5658,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-blocker-disposition') {
+        void copyReleaseTargetEvidenceBlockerDispositionRegister();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-intake-packet') {
         void copyReleaseTargetEvidenceIntakePacket();
         return;
@@ -6708,6 +6978,37 @@ async function copyReleaseTargetEvidenceDecisionRecord({
     promptMessage: 'target evidence reviewer decision record를 복사하세요.',
     shownNotice: 'target evidence reviewer decision record를 표시했습니다.',
     successNotice: 'target evidence reviewer decision record를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceBlockerDispositionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const registerText = buildReleaseTargetEvidenceBlockerDispositionRegisterText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!registerText) {
+    setUiNotice('복사할 target evidence blocker disposition register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'target evidence blocker disposition register를 복사하세요.',
+    shownNotice: 'target evidence blocker disposition register를 표시했습니다.',
+    successNotice: 'target evidence blocker disposition register를 복사했습니다.',
   });
 }
 
@@ -11102,6 +11403,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-decision-record="true"
                   data-ui-action="copy-release-target-evidence-decision-record"
                 >target decision record 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-blocker-disposition="true"
+                  data-ui-action="copy-release-target-evidence-blocker-disposition"
+                >target disposition register 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

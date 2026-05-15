@@ -298,6 +298,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-decision-record'), true);
   assert.equal(appJs.includes('Reviewer decision checklist:'), true);
   assert.equal(appJs.includes('Reviewer decision record template:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceBlockerDispositionRegisterText'), true);
+  assert.equal(appJs.includes('Target evidence blocker disposition register'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-blocker-disposition'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-blocker-disposition'), true);
+  assert.equal(appJs.includes('Blocker disposition register template:'), true);
+  assert.equal(appJs.includes('Disposition rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
   assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
