@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T00:51:45.430Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T00:51:34.510Z
 - branch: codex/post-web-provider-event-filter-artifact-sync
 - commit: b1361f4b24d9263bc4862824bf1e50e44a3976be
