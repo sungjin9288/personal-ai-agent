@@ -259,6 +259,11 @@ try {
   assert.equal(appJs.includes('buildReleaseProviderReadinessPackageText'), true);
   assert.equal(appJs.includes('Provider readiness handoff package'), true);
   assert.equal(appJs.includes('Target provider evidence intake'), true);
+  assert.equal(appJs.includes('getReleaseProviderBlockerActions'), true);
+  assert.equal(appJs.includes('Linked provider blockers:'), true);
+  assert.equal(appJs.includes('data-release-provider-blocker-count'), true);
+  assert.equal(appJs.includes('data-release-provider-blocker-package'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-provider-count'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);
