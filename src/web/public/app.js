@@ -3418,6 +3418,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     owner: normalizedOwner,
     releaseStatus,
   }).trim();
+  const boundaryConsistencyMap = buildReleaseTargetEvidenceBoundaryConsistencyMapText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const commandRerunLog = buildReleaseTargetEvidenceCommandRerunLogText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3479,6 +3486,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     'Sanitized evidence register template:',
     sanitizedEvidenceRegister || '- none',
     '',
+    'Boundary consistency map template:',
+    boundaryConsistencyMap || '- none',
+    '',
     'Command rerun log template:',
     commandRerunLog || '- none',
     '',
@@ -3501,6 +3511,221 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const domainRows = [
+    {
+      key: 'deployment-boundary',
+      label: 'Deployment boundary',
+      requiredBoundary: 'target environment name, deployment profile, network boundary, runtime root alias, rollback owner, and source commit',
+      docs: [
+        'docs/target-environment-evidence-intake-v1.md',
+        'docs/target-deployment-contract-v1.md',
+        'docs/target-clean-deployment-architecture-v1.md',
+        'docs/target-clean-deployment-operations-v1.md',
+      ],
+      stopCondition: 'target-deployment-boundary-missing-or-mismatched',
+      terms: ['deployment', 'clean deployment', 'target environment', 'runtime root', 'rollback'],
+    },
+    {
+      key: 'identity-session-boundary',
+      label: 'Identity and session boundary',
+      requiredBoundary: 'customer IdP, user lifecycle, session policy, role administration, audit export, break-glass, and support impersonation scope',
+      docs: [
+        'docs/hosted-identity-session-architecture-v1.md',
+        'docs/target-identity-session-operations-v1.md',
+      ],
+      stopCondition: 'hosted-identity-session-approval-missing',
+      terms: ['identity', 'session', 'idp', 'rbac', 'role', 'permission', 'support impersonation'],
+    },
+    {
+      key: 'tenant-isolation-boundary',
+      label: 'Tenant isolation boundary',
+      requiredBoundary: 'tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, and lifecycle containment',
+      docs: [
+        'docs/hosted-tenant-isolation-architecture-v1.md',
+        'docs/target-tenant-isolation-operations-v1.md',
+      ],
+      stopCondition: 'hosted-tenant-isolation-approval-or-target-tenant-evidence-missing',
+      terms: ['tenant', 'isolation', 'storage', 'encryption', 'cross-tenant', 'containment'],
+    },
+    {
+      key: 'provider-secret-boundary',
+      label: 'Provider and secret boundary',
+      requiredBoundary: 'approved provider accounts, target secret aliases, injection proof, live validation boundary, quota guard, and fallback disable path',
+      docs: [
+        'docs/target-provider-evidence-intake-v1.md',
+        'docs/target-provider-operations-v1.md',
+        'docs/target-openai-provider-account-v1.md',
+        'docs/target-anthropic-provider-account-v1.md',
+        'docs/target-local-provider-architecture-v1.md',
+        'docs/target-hermes-provider-architecture-v1.md',
+        'docs/target-secret-manager-architecture-v1.md',
+        'docs/target-secret-manager-v1.md',
+      ],
+      stopCondition: 'target-provider-secret-boundary-missing-or-mismatched',
+      terms: ['provider', 'openai', 'anthropic', 'local', 'hermes', 'secret', 'fallback', 'live validation'],
+    },
+    {
+      key: 'observability-slo-boundary',
+      label: 'Observability and SLO boundary',
+      requiredBoundary: 'target telemetry backend, log/trace retention, alert route, staffed on-call, customer status route, SLO/SLA terms, and incident review',
+      docs: [
+        'docs/target-observability-architecture-v1.md',
+        'docs/target-observability-operations-v1.md',
+        'docs/target-slo-architecture-v1.md',
+        'docs/target-slo-operations-v1.md',
+      ],
+      stopCondition: 'target-observability-slo-boundary-missing-or-mismatched',
+      terms: ['observability', 'telemetry', 'slo', 'sla', 'alert', 'incident', 'on-call'],
+    },
+    {
+      key: 'retention-backup-boundary',
+      label: 'Retention and backup boundary',
+      requiredBoundary: 'customer-approved data classes, export/delete proof, provider transcript policy, post-delete absence, backup expiry, restore validation, and disaster recovery scope',
+      docs: [
+        'docs/target-data-lifecycle-architecture-v1.md',
+        'docs/target-retention-operations-v1.md',
+        'docs/target-backup-operations-v1.md',
+      ],
+      stopCondition: 'target-retention-backup-boundary-missing-or-mismatched',
+      terms: ['retention', 'backup', 'restore', 'delete', 'export', 'data lifecycle', 'transcript'],
+    },
+    {
+      key: 'support-boundary',
+      label: 'Support operations boundary',
+      requiredBoundary: 'support owner, staffed coverage, support queue routing, customer communication, ticket audit trail, escalation owner, and incident review cadence',
+      docs: [
+        'docs/target-support-architecture-v1.md',
+        'docs/target-support-operations-v1.md',
+      ],
+      stopCondition: 'target-support-boundary-missing-or-mismatched',
+      terms: ['support', 'escalation', 'ticket', 'customer communication', 'coverage'],
+    },
+    {
+      key: 'clean-release-boundary',
+      label: 'Clean release and artifact boundary',
+      requiredBoundary: 'clean checkout deployment, dependency/runtime proof, rollback proof, release snapshot, export package, hygiene report, and production readiness gate result',
+      docs: [
+        'docs/clean-deployment-release-v1.md',
+        'docs/production-like-release-drill-v1.md',
+        'docs/execution-v1-evidence.md',
+        'docs/execution-v1-closeout.md',
+        'docs/execution-v1-handoff.md',
+        'docs/pilot-export-package-v1.md',
+        'docs/production-provider-readiness-v1.md',
+        'docs/release-readiness-v1.md',
+      ],
+      stopCondition: 'clean-release-artifact-boundary-missing-or-stale',
+      terms: ['clean release', 'artifact', 'snapshot', 'export package', 'hygiene', 'production readiness', 'release'],
+    },
+  ];
+  const findRelatedBlockerIds = (domain) => visibleActions
+    .filter((item) => {
+      const haystack = [
+        item.id,
+        item.blocker,
+        item.stopReason,
+        item.nextEvidence,
+        item.category,
+        item.owner,
+        item.provider,
+      ]
+        .map((value) => String(value || '').toLowerCase())
+        .join(' ');
+      return domain.terms.some((term) => haystack.includes(String(term || '').toLowerCase()));
+    })
+    .map((item) => String(item.id || '').trim())
+    .filter(Boolean);
+  const consistencyRows = domainRows.flatMap((domain, index) => {
+    const relatedBlockerIds = findRelatedBlockerIds(domain);
+    return [
+      `${index + 1}. ${domain.label}`,
+      `   - boundaryDomain: ${domain.key}`,
+      `   - requiredBoundary: ${domain.requiredBoundary}`,
+      `   - primaryEvidenceDocs: ${domain.docs.map(docLink).join(' | ')}`,
+      `   - relatedCurrentBlockerIds: ${relatedBlockerIds.length ? relatedBlockerIds.join(', ') : 'none visible in current slice'}`,
+      '   - targetEnvironmentAlias: <required approved target boundary alias>',
+      '   - evidenceBoundaryAlias: <required evidence boundary alias>',
+      '   - boundaryConsistencyStatus: same-boundary | accepted-exception-required | missing',
+      `   - stopCondition: ${domain.stopCondition}`,
+      '   - exceptionOwner: <required when status is accepted-exception-required>',
+      '   - exceptionNotes: <required exception note or none>',
+    ];
+  });
+  const blockerCrossCheckRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - boundaryCrossCheckRequired: yes',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence boundary consistency map',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- boundaryDomainCount: ${domainRows.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Boundary consistency rows:',
+    ...consistencyRows,
+    '',
+    'Blocker boundary cross-check:',
+    ...blockerCrossCheckRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Boundary consistency rules:',
+    '- Every target evidence domain must name the same approved target environment alias, source commit, deployment profile, and evidence capture date unless a reviewer-approved exception is recorded.',
+    '- Accepted exceptions need an owner, allowed claim text, compensating control, expiry or next review date, and regenerated release readiness evidence.',
+    '- Missing or mismatched boundary rows must keep the related blocker as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until boundary consistency, sanitized evidence register, command rerun log, reviewer decision, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate all pass for the claimed scope.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -5153,6 +5378,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-boundary-map') {
+        void copyReleaseTargetEvidenceBoundaryMap();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-command-rerun-log') {
         void copyReleaseTargetEvidenceCommandRerunLog();
         return;
@@ -6385,6 +6615,37 @@ async function copyReleaseTargetEvidenceSanitizedRegister({
     promptMessage: 'target evidence sanitized register를 복사하세요.',
     shownNotice: 'target evidence sanitized register를 표시했습니다.',
     successNotice: 'target evidence sanitized register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceBoundaryMap({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const mapText = buildReleaseTargetEvidenceBoundaryConsistencyMapText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!mapText) {
+    setUiNotice('복사할 target evidence boundary map이 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(mapText, {
+    promptMessage: 'target evidence boundary map을 복사하세요.',
+    shownNotice: 'target evidence boundary map을 표시했습니다.',
+    successNotice: 'target evidence boundary map을 복사했습니다.',
   });
 }
 
@@ -10823,6 +11084,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-sanitized-register="true"
                   data-ui-action="copy-release-target-evidence-sanitized-register"
                 >target sanitized register 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-boundary-map="true"
+                  data-ui-action="copy-release-target-evidence-boundary-map"
+                >target boundary map 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

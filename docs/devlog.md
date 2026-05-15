@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Boundary Map Copy Pass
+
+- added a target evidence boundary consistency map copy action to the current open blocker triage surface so reviewers can verify deployment, identity/session, tenant isolation, provider/secret, observability/SLO, retention/backup, support, and clean release boundaries separately from the full packet
+- included required boundary aliases, primary evidence docs, related blocker ids, exception owner/notes placeholders, stop-condition ids, blocker cross-check rows, and residual production blockers in the copied map
+- embedded the boundary consistency map template inside the full target evidence intake packet so the packet carries the same boundary audit structure as the standalone map copy
+- extended `smoke:ui-harness-browse` to pin the boundary map builder, copy action marker, DOM marker, packet template section, and boundary row title
+
 ## 2026-05-15 Web Target Evidence Sanitized Register Copy Pass
 
 - added a target evidence sanitized register copy action to the current open blocker triage surface so reviewers can receive sanitized evidence references separately from command logs and decision records
