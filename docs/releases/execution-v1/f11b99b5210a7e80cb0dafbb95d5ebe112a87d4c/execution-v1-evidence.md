@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T05:59:02.406Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T05:58:54.192Z
 - branch: codex/post-target-evidence-sanitized-register-artifact-sync
 - commit: f11b99b5210a7e80cb0dafbb95d5ebe112a87d4c
