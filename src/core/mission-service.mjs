@@ -6856,6 +6856,11 @@ function summarizeProviderExecutions(executions) {
 
   function buildProviderEvents(filter = {}) {
     const family = normalizeText(filter.family).toLowerCase();
+    const fallbackPolicyFilter = normalizeText(filter.fallbackPolicy)
+      ? normalizeProviderFallbackPolicy(filter.fallbackPolicy)
+      : '';
+    const fallbackStopReasonFilter = normalizeText(filter.fallbackStopReason);
+    const hasFallbackScopedFilter = Boolean(fallbackPolicyFilter || fallbackStopReasonFilter);
     const normalizedSinceFilter = normalizeTimestampFilter(filter.since, 'provider event since timestamp');
     const events = [...buildProviderBaseEvents(filter)];
 
@@ -6916,6 +6921,15 @@ function summarizeProviderExecutions(executions) {
     }
 
     return sortTimelineEvents(events).filter((event) => {
+      if (hasFallbackScopedFilter && event.eventFamily !== 'fallback') {
+        return false;
+      }
+      if (fallbackPolicyFilter && event.fallbackPolicy !== fallbackPolicyFilter) {
+        return false;
+      }
+      if (fallbackStopReasonFilter && normalizeText(event.fallbackStopReason) !== fallbackStopReasonFilter) {
+        return false;
+      }
       if (!normalizedSinceFilter) {
         return true;
       }
@@ -7725,6 +7739,8 @@ function summarizeProviderExecutions(executions) {
       filters: {
         attempted: typeof filter.attempted === 'boolean' ? filter.attempted : null,
         family: filter.family || null,
+        fallbackPolicy: filter.fallbackPolicy ? normalizeProviderFallbackPolicy(filter.fallbackPolicy) : null,
+        fallbackStopReason: filter.fallbackStopReason || null,
         missionId: filter.missionId || null,
         ok: typeof filter.ok === 'boolean' ? filter.ok : null,
         providerId: filter.providerId || null,

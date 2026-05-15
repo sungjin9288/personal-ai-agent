@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Provider Fallback Event Policy Filter Pass
+
+- added `provider events --fallback-policy` and `--fallback-stop-reason` filters so fallback audit chronology can be sliced by policy and stop condition without post-processing provider event output
+- kept fallback-scoped filters constrained to fallback events, preserving existing provider probe, execution, and attention event behavior when no fallback filter is supplied
+- extended the provider fallback policy smoke to verify help text, recoverable-only policy slices, non-recoverable stop-condition slices, and combined policy plus stop-reason filtering
+
 ## 2026-05-15 Browser E2E Retrieval Handoff Focus Timeout Pass
 
 - hardened the execution browser E2E retrieval handoff session check by giving focused retrieval source restoration a longer env-configurable wait window

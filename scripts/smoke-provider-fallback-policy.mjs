@@ -47,6 +47,11 @@ assert.match(
 assert.match(remediateProviderAttentionHelp, /Defaults to provider-failure-only/);
 assert.match(remediateProviderAttentionHelp, /recoverable-provider-failure-only/);
 
+const providerEventsHelp = runCliText(['--help']);
+assert.match(providerEventsHelp, /provider events/);
+assert.match(providerEventsHelp, /--fallback-policy <provider-failure-only\|recoverable-provider-failure-only>/);
+assert.match(providerEventsHelp, /--fallback-stop-reason <reason>/);
+
 const workspace = service.addWorkspace({
   name: 'provider-fallback-policy-workspace',
   workspacePath,
@@ -392,6 +397,75 @@ assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['recoverable-pr
 assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
 assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 2);
 assert.equal(providerFallbackEvents.timeline.filter((event) => event.eventFamily === 'fallback').length, 6);
+
+const recoverableFallbackPolicyEvents = runCli({
+  rootDir: tempRoot,
+  args: [
+    'provider',
+    'events',
+    '--fallback-policy',
+    'recoverable-provider-failure-only',
+  ],
+});
+
+assert.equal(recoverableFallbackPolicyEvents.filters.fallbackPolicy, 'recoverable-provider-failure-only');
+assert.equal(recoverableFallbackPolicyEvents.filters.family, null);
+assert.equal(recoverableFallbackPolicyEvents.summary.total, 3);
+assert.equal(recoverableFallbackPolicyEvents.summary.familyCounts.fallback, 3);
+assert.equal(
+  recoverableFallbackPolicyEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'],
+  3,
+);
+assert.equal(recoverableFallbackPolicyEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 1);
+assert.equal(recoverableFallbackPolicyEvents.summary.fallbackStopReasonCounts['mission-status-completed'], 1);
+assert.equal(
+  recoverableFallbackPolicyEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'],
+  1,
+);
+assert.ok(
+  recoverableFallbackPolicyEvents.timeline.every(
+    (event) =>
+      event.eventFamily === 'fallback' &&
+      event.fallbackPolicy === 'recoverable-provider-failure-only',
+  ),
+);
+
+const nonRecoverableStopEvents = runCli({
+  rootDir: tempRoot,
+  args: ['provider', 'events', '--fallback-stop-reason', 'non-recoverable-provider-failure'],
+});
+
+assert.equal(nonRecoverableStopEvents.filters.fallbackStopReason, 'non-recoverable-provider-failure');
+assert.equal(nonRecoverableStopEvents.summary.total, 1);
+assert.equal(nonRecoverableStopEvents.summary.familyCounts.fallback, 1);
+assert.equal(nonRecoverableStopEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+assert.equal(nonRecoverableStopEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+assert.equal(nonRecoverableStopEvents.timeline[0].providerId, 'anthropic');
+assert.equal(nonRecoverableStopEvents.timeline[0].fallbackPolicy, 'recoverable-provider-failure-only');
+assert.equal(nonRecoverableStopEvents.timeline[0].fallbackStopReason, 'non-recoverable-provider-failure');
+assert.equal(nonRecoverableStopEvents.timeline[0].providerFailureKind, 'config');
+
+const providerFailureOnlyStopEvents = runCli({
+  rootDir: tempRoot,
+  args: [
+    'provider',
+    'events',
+    '--family',
+    'fallback',
+    '--fallback-policy',
+    'provider-failure-only',
+    '--fallback-stop-reason',
+    'eligible-provider-failure',
+  ],
+});
+
+assert.equal(providerFailureOnlyStopEvents.filters.family, 'fallback');
+assert.equal(providerFailureOnlyStopEvents.filters.fallbackPolicy, 'provider-failure-only');
+assert.equal(providerFailureOnlyStopEvents.filters.fallbackStopReason, 'eligible-provider-failure');
+assert.equal(providerFailureOnlyStopEvents.summary.total, 1);
+assert.equal(providerFailureOnlyStopEvents.summary.familyCounts.fallback, 1);
+assert.equal(providerFailureOnlyStopEvents.timeline[0].providerId, 'anthropic');
+assert.equal(providerFailureOnlyStopEvents.timeline[0].fallbackEligible, true);
 
 const anthropicFallbackEvents = runCli({
   rootDir: tempRoot,
