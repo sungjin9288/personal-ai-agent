@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T19:19:58.441Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T19:19:50.709Z
 - branch: codex/post-target-evidence-decision-register-artifact-refresh
 - commit: 687feb205a85416e3ed8464763c4821745fd6671
