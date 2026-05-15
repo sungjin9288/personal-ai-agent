@@ -254,6 +254,11 @@ try {
   assert.equal(appJs.includes('buildProviderFallbackEventAuditPackageText'), true);
   assert.equal(appJs.includes('Provider fallback event audit package'), true);
   assert.equal(appJs.includes('copyProviderFallbackEventAuditPackage'), true);
+  assert.equal(appJs.includes('data-release-provider-readiness-package'), true);
+  assert.equal(appJs.includes('copy-release-provider-readiness-package'), true);
+  assert.equal(appJs.includes('buildReleaseProviderReadinessPackageText'), true);
+  assert.equal(appJs.includes('Provider readiness handoff package'), true);
+  assert.equal(appJs.includes('Target provider evidence intake'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);

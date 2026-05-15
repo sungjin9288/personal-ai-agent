@@ -42,8 +42,8 @@ assert.match(readiness, /\[target-local-provider-architecture-v1\.md\]\(target-l
 assert.match(readiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(readiness, /\| `npm run preflight:execution-v1:all` \| pass \| 0 \|/);
 assert.match(readiness, /"blockedCount": 0/);
-assert.match(readiness, /"missingEnvCount": 3/);
-assert.match(readiness, /"readyForLiveCount": 1/);
+assert.match(readiness, /"missingEnvCount": 4/);
+assert.match(readiness, /"readyForLiveCount": 0/);
 
 for (const [provider, envKey] of [
   ['openai', 'OPENAI_API_KEY'],
@@ -74,7 +74,7 @@ for (const phrase of [
   assert.match(readiness, phrase);
 }
 
-assert.match(readiness, /\| local \| ready-for-live-validation \| LOCAL_PROVIDER_MODEL \| yes \| passed \|/);
+assert.match(readiness, /\| local \| ready-but-missing-env \| LOCAL_PROVIDER_MODEL \| no \| passed \|/);
 assert.match(readiness, /target local provider architecture remains the production gate/);
 assert.match(readiness, /archived live validation, provider blocker closure verification, and fallback\/stop-condition evidence/);
 assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
