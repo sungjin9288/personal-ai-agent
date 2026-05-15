@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-16 Web Target Evidence Risk Decision Register Copy Pass
+
+- added a target evidence accepted risk decision register copy action to the current open blocker triage surface so reviewers can hand off accepted risks, rejected claims, residual blockers, decision owner, evidence owner, next review date, release readiness note, and productionReadyClaim decision separately from the full packet
+- included Anthropic unavailable, Hermes runtime, local-provider pilot scope, hosted identity/session, hosted tenant isolation, target environment evidence pending, and customer-specific exception risk rows with required evidence, residual blocker ids, decision state placeholders, allowed claim text, and claim upgrade rules
+- embedded the accepted risk decision register inside the full target evidence intake packet so risk decisions stay tied to productionReadyClaim=false, command rerun evidence, artifact refresh, release artifact hygiene, and production readiness gate requirements
+- extended `smoke:ui-harness-browse` to pin the risk decision register builder, copy action marker, DOM marker, packet section, and risk row title
+
 ## 2026-05-16 Web Target Evidence Exception Register Copy Pass
 
 - added a target evidence accepted-scope exception register copy action to the current open blocker triage surface so reviewers can hand off exception scope, owner, expiry, compensating control, allowed claim text, and release readiness notes separately from the full packet

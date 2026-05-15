@@ -4276,6 +4276,166 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceRiskDecisionRegisterText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const generatedArtifactCommit = String(summary.generatedArtifactCommit || snapshot.verifiedCommit || '<required artifact refresh commit>').trim()
+    || '<required artifact refresh commit>';
+  const riskDefinitions = [
+    {
+      riskId: 'anthropic-provider-unavailable',
+      acceptedRisk: 'Anthropic is not included in the approved live provider scope until billing/credit and target-boundary live validation pass',
+      rejectedClaims: 'live-provider-complete, production-ready, Anthropic production provider readiness',
+      residualBlocker: 'anthropic-live-validation-missing-or-failed',
+      requiredEvidence: 'target Anthropic provider account approval, billing remediation, target secret injection, live validation pass, provider operations evidence, artifact hygiene, and regenerated release artifacts',
+    },
+    {
+      riskId: 'hermes-runtime-not-configured',
+      acceptedRisk: 'Hermes remains excluded from provider readiness until runtime endpoint/model config and target-boundary live validation are approved',
+      rejectedClaims: 'Hermes provider ready, live-provider-complete, production-ready',
+      residualBlocker: 'hermes-runtime-config-missing',
+      requiredEvidence: 'target Hermes provider architecture approval, endpoint/model alias, runtime secret injection, target-boundary live validation pass, provider operations evidence, and regenerated release artifacts',
+    },
+    {
+      riskId: 'local-provider-pilot-scope',
+      acceptedRisk: 'local provider can remain pilot/local-only but cannot be treated as production-approved without target architecture and customer acceptance evidence',
+      rejectedClaims: 'local provider production-approved, production-ready',
+      residualBlocker: 'target-local-provider-approval-missing',
+      requiredEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+    },
+    {
+      riskId: 'hosted-identity-session-gap',
+      acceptedRisk: 'local identity/session controls do not prove hosted identity/session administration for a customer production deployment',
+      rejectedClaims: 'hosted SaaS ready, hosted identity/session ready, production-ready',
+      residualBlocker: 'hosted-identity-session-approval-missing',
+      requiredEvidence: 'hosted identity/session architecture approval and target identity/session operations evidence',
+    },
+    {
+      riskId: 'hosted-tenant-isolation-gap',
+      acceptedRisk: 'local tenant controls do not prove hosted tenant storage, authorization, encryption, lifecycle, backup/restore, observability, or support isolation',
+      rejectedClaims: 'hosted multi-tenant isolation ready, tenant-isolated production, production-ready',
+      residualBlocker: 'hosted-tenant-isolation-approval-missing',
+      requiredEvidence: 'hosted tenant isolation architecture approval and target tenant isolation operations evidence',
+    },
+    {
+      riskId: 'target-environment-evidence-pending',
+      acceptedRisk: 'target environment evidence packet is incomplete until capture template, sanitized packet, command rerun evidence, reviewer decision, blocker disposition, and release refresh evidence are accepted',
+      rejectedClaims: 'production-ready, customer deployment complete, clean production deployment ready',
+      residualBlocker: 'target-environment-evidence-missing',
+      requiredEvidence: 'completed target evidence packet, production readiness gate result, release artifact hygiene, and regenerated execution-v1 artifacts',
+    },
+    {
+      riskId: 'customer-specific-exception-pending',
+      acceptedRisk: 'customer-specific exception can be accepted only for a narrow scoped claim with owner, expiry, compensating control, next review date, and release readiness note',
+      rejectedClaims: 'production-ready by exception, broad customer deployment approval',
+      residualBlocker: 'customer-exception-scope-missing',
+      requiredEvidence: 'exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, release readiness note, and regenerated release artifacts',
+    },
+  ];
+  const riskRows = riskDefinitions.flatMap((item, index) => [
+    `${index + 1}. ${item.riskId}`,
+    `   - acceptedRisk: ${item.acceptedRisk}`,
+    `   - rejectedClaims: ${item.rejectedClaims}`,
+    `   - residualBlocker: ${item.residualBlocker}`,
+    `   - requiredEvidence: ${item.requiredEvidence}`,
+    '   - decision: still-blocked | accepted-with-scope | rejected | closed-after-evidence',
+    '   - decisionOwner: <required accountable owner>',
+    '   - evidenceOwner: <required evidence owner>',
+    '   - reviewer: <required reviewer or approval team>',
+    '   - reviewDate: <required YYYY-MM-DD>',
+    '   - nextReviewDate: <required YYYY-MM-DD>',
+    '   - allowedClaimText: <required claim text or none>',
+    '   - releaseReadinessNote: <required docs/release-readiness-v1.md update note>',
+  ]);
+  const visibleRiskRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - currentState: ${String(item.status || 'blocked').trim()}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - acceptedRiskDecisionImpact: productionReadyClaim stays false unless this blocker is closed after target-boundary evidence and final gates pass',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+    'npm run smoke:execution-v1-snapshot',
+  ];
+  const lines = [
+    'Target evidence accepted risk decision register',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- generatedArtifactCommit: ${generatedArtifactCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- riskDecisionRowCount: ${riskDefinitions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Accepted risk decision rows:',
+    ...riskRows,
+    '',
+    'Visible blocker accepted risk cross-check:',
+    ...visibleRiskRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Required risk decision verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Production-ready claim decision:',
+    '- defaultDecision: keep productionReadyClaim=false',
+    '- allowedCurrentClaim: provider-scoped pilot ready for OpenAI-backed local-first path only when supported by current evidence',
+    '- rejectedClaims: production-ready, hosted SaaS ready, live-provider-complete, tenant-isolated production, clean production deployment ready, staffed support ready',
+    '- claimUpgradeRule: only after every target stop-condition is closed by accepted target-boundary evidence, release artifacts are regenerated, release artifact hygiene passes, and production readiness gate passes',
+    '',
+    'Accepted risk decision rules:',
+    '- This register records risk decisions and claim boundaries; it is not production-ready approval.',
+    '- accepted-with-scope requires explicit allowed claim text, decision owner, evidence owner, reviewer, review date, next review date, residual blocker list, and release readiness note.',
+    '- closed-after-evidence requires fresh target-boundary evidence, command rerun evidence, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate evidence.',
+    '- Missing, stale, ownerless, or unreviewed risk decisions keep the related blocker as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, raw provider account ids, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every mandatory target control is accepted by target-boundary evidence and final gates pass.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4365,6 +4525,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     releaseStatus,
   }).trim();
   const exceptionRegister = buildReleaseTargetEvidenceExceptionRegisterText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const riskDecisionRegister = buildReleaseTargetEvidenceRiskDecisionRegisterText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -4496,6 +4663,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '',
     'Accepted-scope exception register:',
     exceptionRegister || '- none',
+    '',
+    'Accepted risk decision register:',
+    riskDecisionRegister || '- none',
     '',
     'Provider evidence references:',
     ...providerRows,
@@ -6823,6 +6993,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-risk-decision-register') {
+        void copyReleaseTargetEvidenceRiskDecisionRegister();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -8173,6 +8348,37 @@ async function copyReleaseTargetEvidenceExceptionRegister({
     promptMessage: 'target evidence exception register를 복사하세요.',
     shownNotice: 'target evidence exception register를 표시했습니다.',
     successNotice: 'target evidence exception register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceRiskDecisionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const registerText = buildReleaseTargetEvidenceRiskDecisionRegisterText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!registerText) {
+    setUiNotice('복사할 target evidence risk decision register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'target evidence risk decision register를 복사하세요.',
+    shownNotice: 'target evidence risk decision register를 표시했습니다.',
+    successNotice: 'target evidence risk decision register를 복사했습니다.',
   });
 }
 
@@ -12784,6 +12990,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-exception-register="true"
                   data-ui-action="copy-release-target-evidence-exception-register"
                 >target exception register 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-risk-decision-register="true"
+                  data-ui-action="copy-release-target-evidence-risk-decision-register"
+                >target risk decision 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

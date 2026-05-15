@@ -298,6 +298,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-exception-register'), true);
   assert.equal(appJs.includes('Accepted-scope exception register:'), true);
   assert.equal(appJs.includes('Accepted-scope exception rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceRiskDecisionRegisterText'), true);
+  assert.equal(appJs.includes('Target evidence accepted risk decision register'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-risk-decision-register'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-risk-decision-register'), true);
+  assert.equal(appJs.includes('Accepted risk decision register:'), true);
+  assert.equal(appJs.includes('Accepted risk decision rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
