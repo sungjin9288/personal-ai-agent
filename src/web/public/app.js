@@ -3446,6 +3446,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     owner: normalizedOwner,
     releaseStatus,
   }).trim();
+  const releaseRefreshEvidence = buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const closureMatrix = buildReleaseBlockerClosureMatrixPackageText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3505,6 +3512,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     'Blocker disposition register template:',
     blockerDispositionRegister || '- none',
     '',
+    'Release refresh evidence template:',
+    releaseRefreshEvidence || '- none',
+    '',
     'Provider evidence references:',
     ...providerRows,
     '',
@@ -3521,6 +3531,179 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const artifactRows = [
+    {
+      label: 'Execution v1 evidence',
+      artifactPath: 'docs/execution-v1-evidence.md',
+      command: 'node scripts/build-execution-v1-evidence.mjs --preserve-archived-live-validation --live-openai --live-anthropic --live-local',
+      proves: 'deterministic runtime rows, archived live provider validation status, visual evidence manifest, and source commit linkage',
+      stopCondition: 'execution-v1-evidence-missing-or-stale',
+    },
+    {
+      label: 'Execution v1 closeout',
+      artifactPath: 'docs/execution-v1-closeout.md',
+      command: 'node scripts/build-execution-v1-closeout.mjs --reuse-existing-evidence',
+      proves: 'closeout checklist was regenerated from the current execution evidence',
+      stopCondition: 'execution-v1-closeout-missing-or-stale',
+    },
+    {
+      label: 'Execution v1 handoff',
+      artifactPath: 'docs/execution-v1-handoff.md',
+      command: 'node scripts/build-execution-v1-handoff.mjs',
+      proves: 'handoff packet references current evidence, closeout, commit push status, and visual artifact set',
+      stopCondition: 'execution-v1-handoff-missing-or-stale',
+    },
+    {
+      label: 'Immutable execution v1 snapshot',
+      artifactPath: 'docs/releases/execution-v1/<verified-commit>/snapshot.json',
+      command: 'node scripts/archive-execution-v1-snapshot.mjs',
+      proves: 'release evidence, closeout, handoff, and snapshot manifest were archived for the verified source commit',
+      stopCondition: 'execution-v1-snapshot-missing-or-stale',
+    },
+    {
+      label: 'Pilot export package',
+      artifactPath: 'docs/pilot-export-package-v1.md',
+      command: 'node scripts/build-pilot-export-package.mjs',
+      proves: 'export bundle inventory, bundle hash, file count, hygiene state, and verified commit were refreshed',
+      stopCondition: 'pilot-export-package-missing-or-stale',
+    },
+    {
+      label: 'Production-like release drill',
+      artifactPath: 'docs/production-like-release-drill-v1.md',
+      command: 'npm run smoke:production-like-release-drill',
+      proves: 'production-like release rehearsal remains present for the release review boundary',
+      stopCondition: 'production-like-release-drill-missing-or-failed',
+    },
+    {
+      label: 'Clean deployment release',
+      artifactPath: 'docs/clean-deployment-release-v1.md',
+      command: 'npm run smoke:clean-deployment-release',
+      proves: 'clean checkout deployment and rollback evidence remain present for release review',
+      stopCondition: 'clean-deployment-release-missing-or-failed',
+    },
+    {
+      label: 'Release readiness',
+      artifactPath: 'docs/release-readiness-v1.md',
+      command: 'npm run smoke:production-readiness-gate',
+      proves: 'release readiness keeps productionReadyClaim=false and preserves residual blocker state',
+      stopCondition: 'release-readiness-missing-or-stale',
+    },
+    {
+      label: 'Release artifact hygiene',
+      artifactPath: '<repository-relative hygiene output or external evidence alias>',
+      command: 'npm run smoke:release-artifact-hygiene',
+      proves: 'release artifacts are scanned for machine-local paths and secret-like values',
+      stopCondition: 'release-artifact-hygiene-missing-or-failed',
+    },
+    {
+      label: 'Production readiness gate',
+      artifactPath: 'docs/production-provider-readiness-v1.md',
+      command: 'npm run smoke:production-readiness-gate',
+      proves: 'production-ready claim remains blocked until target environment stop-conditions close',
+      stopCondition: 'production-readiness-gate-missing-or-failed',
+    },
+  ];
+  const artifactEvidenceRows = artifactRows.flatMap((item, index) => [
+    `${index + 1}. ${item.label}`,
+    `   - artifactPath: ${item.artifactPath}`,
+    `   - guardedLink: ${item.artifactPath.includes('<') ? '<replace after artifact refresh>' : docLink(item.artifactPath)}`,
+    `   - refreshCommand: ${item.command}`,
+    `   - proves: ${item.proves}`,
+    `   - stopCondition: ${item.stopCondition}`,
+    '   - sourceCommit: <required verified commit>',
+    '   - generatedAt: <required ISO timestamp or YYYY-MM-DD>',
+    '   - result: pass | fail | stale | not-run',
+    '   - reviewerNote: <required note or none>',
+  ]);
+  const requiredRefreshCommands = [
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+    'npm run smoke:execution-v1-snapshot',
+    'npm run smoke:production-provider-readiness',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+  ];
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - releaseRefreshRequired: yes before disposition or release claim changes',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence release refresh evidence',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- refreshArtifactCount: ${artifactRows.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Release refresh artifact rows:',
+    ...artifactEvidenceRows,
+    '',
+    'Required refresh command sequence:',
+    ...requiredRefreshCommands.map((command) => `- ${command}`),
+    '',
+    'Visible blocker refresh cross-check:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Release refresh evidence rules:',
+    '- Release refresh evidence must be regenerated after accepted target evidence, blocker disposition changes, live validation changes, or release source-of-record changes.',
+    '- Every artifact row must name the verified source commit, generated time, result, and repository-relative artifact path or sanitized external evidence alias.',
+    '- A stale, missing, failed, or locally generated-from-wrong-boundary artifact must keep the related blocker as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until release refresh evidence, blocker disposition register, boundary consistency map, sanitized evidence register, command rerun log, reviewer decision, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate all pass for the claimed scope.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -5663,6 +5846,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-release-refresh') {
+        void copyReleaseTargetEvidenceReleaseRefreshEvidence();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-intake-packet') {
         void copyReleaseTargetEvidenceIntakePacket();
         return;
@@ -7009,6 +7197,37 @@ async function copyReleaseTargetEvidenceBlockerDispositionRegister({
     promptMessage: 'target evidence blocker disposition register를 복사하세요.',
     shownNotice: 'target evidence blocker disposition register를 표시했습니다.',
     successNotice: 'target evidence blocker disposition register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceReleaseRefreshEvidence({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const evidenceText = buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!evidenceText) {
+    setUiNotice('복사할 target evidence release refresh evidence가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(evidenceText, {
+    promptMessage: 'target evidence release refresh evidence를 복사하세요.',
+    shownNotice: 'target evidence release refresh evidence를 표시했습니다.',
+    successNotice: 'target evidence release refresh evidence를 복사했습니다.',
   });
 }
 
@@ -11409,6 +11628,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-blocker-disposition="true"
                   data-ui-action="copy-release-target-evidence-blocker-disposition"
                 >target disposition register 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-release-refresh="true"
+                  data-ui-action="copy-release-target-evidence-release-refresh"
+                >target refresh evidence 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
