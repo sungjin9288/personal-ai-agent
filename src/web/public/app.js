@@ -3411,6 +3411,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
+  const sanitizedEvidenceRegister = buildReleaseTargetEvidenceSanitizedRegisterText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const commandRerunLog = buildReleaseTargetEvidenceCommandRerunLogText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3469,6 +3476,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '6. blockerDispositionRegister',
     '7. releaseRefreshEvidence',
     '',
+    'Sanitized evidence register template:',
+    sanitizedEvidenceRegister || '- none',
+    '',
     'Command rerun log template:',
     commandRerunLog || '- none',
     '',
@@ -3491,6 +3501,149 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceSanitizedRegisterText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const evidenceByKey = new Map();
+  const addEvidenceDoc = ({
+    blockerId = '',
+    blockerLabel = '',
+    doc = {},
+    source = 'blocker evidence',
+  } = {}) => {
+    const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
+    const docPath = String(doc.path || '').trim();
+    const docHref = getAbsoluteReleaseUrl(doc.href || (docPath
+      ? `/api/execution-v1/release-doc?path=${encodeURIComponent(docPath)}`
+      : ''));
+    const docKey = docHref || docPath || docLabel;
+    if (!docKey) {
+      return;
+    }
+    if (!evidenceByKey.has(docKey)) {
+      evidenceByKey.set(docKey, {
+        availability: doc.exists === false ? 'missing' : 'available',
+        blockerIds: [],
+        blockerLabels: [],
+        href: docHref,
+        label: docLabel,
+        path: docPath,
+        sources: [],
+      });
+    }
+    const entry = evidenceByKey.get(docKey);
+    if (blockerId && !entry.blockerIds.includes(blockerId)) {
+      entry.blockerIds.push(blockerId);
+    }
+    if (blockerLabel && !entry.blockerLabels.includes(blockerLabel)) {
+      entry.blockerLabels.push(blockerLabel);
+    }
+    if (source && !entry.sources.includes(source)) {
+      entry.sources.push(source);
+    }
+  };
+
+  visibleActions.forEach((item) => {
+    const blockerId = String(item.id || '').trim();
+    const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
+    const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+    evidenceDocs.forEach((doc) => addEvidenceDoc({
+      blockerId,
+      blockerLabel,
+      doc,
+      source: 'current open blocker',
+    }));
+  });
+
+  [
+    ['Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'],
+    ['Target deployment contract', 'docs/target-deployment-contract-v1.md'],
+    ['Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'],
+    ['Target provider operations', 'docs/target-provider-operations-v1.md'],
+    ['Release readiness', 'docs/release-readiness-v1.md'],
+    ['Execution v1 evidence', 'docs/execution-v1-evidence.md'],
+    ['Execution v1 closeout', 'docs/execution-v1-closeout.md'],
+    ['Execution v1 handoff', 'docs/execution-v1-handoff.md'],
+    ['Pilot export package', 'docs/pilot-export-package-v1.md'],
+    ['Production provider readiness', 'docs/production-provider-readiness-v1.md'],
+  ].forEach(([label, docPath]) => addEvidenceDoc({
+    blockerId: 'target-evidence-required',
+    blockerLabel: 'target evidence submission packet',
+    doc: {
+      label,
+      path: docPath,
+    },
+    source: 'target evidence packet requirement',
+  }));
+
+  const evidenceEntries = Array.from(evidenceByKey.values());
+  const evidenceRows = evidenceEntries.length
+    ? evidenceEntries.flatMap((entry, index) => [
+        `${index + 1}. ${entry.label || entry.path || 'evidence doc'}`,
+        `   - repositoryPath: ${entry.path || 'external evidence alias required'}`,
+        `   - guardedLink: ${entry.href || 'link 없음'}`,
+        `   - availability: ${entry.availability}`,
+        `   - sourceBlockerIds: ${entry.blockerIds.length ? entry.blockerIds.join(', ') : 'none'}`,
+        `   - sourceBlockers: ${entry.blockerLabels.length ? entry.blockerLabels.join(' | ') : 'none'}`,
+        `   - source: ${entry.sources.length ? entry.sources.join(', ') : 'target evidence packet requirement'}`,
+        '   - evidenceOwner: <required owner>',
+        '   - retentionClass: <required retention class>',
+        '   - redactionNotes: <required redaction notes or none>',
+        '   - sha256OrSignedExportRef: <required sha256, signed export reference, or not-applicable>',
+        '   - externalSystemAlias: <public alias or none>',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence sanitized register',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- evidenceRecordCount: ${evidenceEntries.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Evidence register rows:',
+    ...evidenceRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Sanitized register rules:',
+    '- Register only repository-relative evidence paths or public external evidence aliases.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Every evidence row needs an owner, retention class, redaction note, and sha256 or signed export reference before reviewer decision.',
+    '- Missing or unsanitized evidence must keep the related blocker as a stop-condition.',
+    '- Keep productionReadyClaim=false until sanitized evidence register, command rerun log, reviewer decision, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate all pass for the claimed scope.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -4995,6 +5148,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-sanitized-register') {
+        void copyReleaseTargetEvidenceSanitizedRegister();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-command-rerun-log') {
         void copyReleaseTargetEvidenceCommandRerunLog();
         return;
@@ -6196,6 +6354,37 @@ async function copyReleaseTargetEvidenceIntakeSummary({
     promptMessage: 'target evidence intake summary를 복사하세요.',
     shownNotice: 'target evidence intake summary를 표시했습니다.',
     successNotice: 'target evidence intake summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceSanitizedRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const registerText = buildReleaseTargetEvidenceSanitizedRegisterText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!registerText) {
+    setUiNotice('복사할 target evidence sanitized register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'target evidence sanitized register를 복사하세요.',
+    shownNotice: 'target evidence sanitized register를 표시했습니다.',
+    successNotice: 'target evidence sanitized register를 복사했습니다.',
   });
 }
 
@@ -10628,6 +10817,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-sanitized-register="true"
+                  data-ui-action="copy-release-target-evidence-sanitized-register"
+                >target sanitized register 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
