@@ -3344,6 +3344,138 @@ function buildReleaseBlockerClosureMatrixPackageText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceIntakePacketText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const providerReadiness = Array.isArray(releaseStatus.providerReadiness)
+    ? releaseStatus.providerReadiness
+    : [];
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
+  );
+  const targetDeploymentContractDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-deployment-contract-v1.md',
+  );
+  const targetProviderEvidenceDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-provider-evidence-intake-v1.md',
+  );
+  const targetProviderOperationsDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-provider-operations-v1.md',
+  );
+  const productionReadinessGate = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-deployment-contract',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run smoke:execution-v1-status',
+  ];
+  const providerRows = providerReadiness.length
+    ? providerReadiness.map((item, index) => {
+        const provider = String(item.provider || '').trim();
+        const linkedBlockers = getReleaseProviderBlockerActions({ provider, releaseStatus });
+        return [
+          `${index + 1}. ${String(item.label || provider || 'provider').trim()}`,
+          `   - provider: ${provider || 'unknown'}`,
+          `   - envKey: ${String(item.envKey || '').trim() || 'not recorded'}`,
+          `   - envReady: ${String(Boolean(item.ready))}`,
+          `   - readinessStatus: ${String(item.status || 'unknown').trim()}`,
+          `   - linkedCurrentBlockers: ${linkedBlockers.map((action) => String(action.id || '').trim()).filter(Boolean).join(', ') || 'none'}`,
+          `   - preflightCommand: ${String(item.preflightCommand || '').trim() || `npm run preflight:execution-v1:${provider}`}`,
+          `   - liveCommand: ${String(item.command || '').trim() || 'not recorded'}`,
+          `   - evidenceCommand: ${String(item.evidenceCommand || '').trim() || `node scripts/build-execution-v1-evidence.mjs --live-${provider}`}`,
+        ].join('\n');
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const closureMatrix = buildReleaseBlockerClosureMatrixPackageText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  }).trim();
+  const lines = [
+    'Target environment evidence intake submission packet',
+    '',
+    'Scope:',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
+    `- targetDeploymentContractDoc: ${targetDeploymentContractDoc}`,
+    `- targetProviderEvidenceIntakeDoc: ${targetProviderEvidenceDoc}`,
+    `- targetProviderOperationsDoc: ${targetProviderOperationsDoc}`,
+    '',
+    'Target evidence capture template fields:',
+    '1. targetEnvironmentName',
+    '2. deploymentBoundaryEvidence',
+    '3. identitySessionEvidence',
+    '4. tenantIsolationEvidence',
+    '5. providerSecretEvidence',
+    '6. observabilitySloEvidence',
+    '7. retentionBackupEvidence',
+    '8. supportOperationsEvidence',
+    '9. cleanReleaseEvidence',
+    '10. acceptedRiskDecision',
+    '',
+    'Submission packet checklist:',
+    '1. submissionManifest',
+    '2. sanitizedEvidenceRegister',
+    '3. boundaryConsistencyMap',
+    '4. commandRerunLog',
+    '5. reviewerDecisionRecord',
+    '6. blockerDispositionRegister',
+    '7. releaseRefreshEvidence',
+    '',
+    'Provider evidence references:',
+    ...providerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Required commands:',
+    ...productionReadinessGate.map((command) => `- ${command}`),
+    '',
+    closureMatrix,
+    '',
+    'Closure rules:',
+    '- This packet is a target evidence review envelope, not production-ready approval.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
+    '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
+    '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerSlicePackageText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4478,6 +4610,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-filter-closure-matrix') {
         void copyReleaseBlockerFilterClosureMatrixPackage();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-intake-packet') {
+        void copyReleaseTargetEvidenceIntakePacket();
         return;
       }
 
@@ -5636,6 +5773,37 @@ async function copyReleaseBlockerFilterClosureMatrixPackage({
     promptMessage: 'release blocker closure matrix package를 복사하세요.',
     shownNotice: 'release blocker closure matrix package를 표시했습니다.',
     successNotice: 'release blocker closure matrix package를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceIntakePacket({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const packetText = buildReleaseTargetEvidenceIntakePacketText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!packetText) {
+    setUiNotice('복사할 target evidence intake packet이 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packetText, {
+    promptMessage: 'target evidence intake packet을 복사하세요.',
+    shownNotice: 'target evidence intake packet을 표시했습니다.',
+    successNotice: 'target evidence intake packet을 복사했습니다.',
   });
 }
 
@@ -9969,6 +10137,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-closure-matrix="true"
                   data-ui-action="copy-release-blocker-filter-closure-matrix"
                 >closure matrix 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-intake-packet="true"
+                  data-ui-action="copy-release-target-evidence-intake-packet"
+                >target evidence packet 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
