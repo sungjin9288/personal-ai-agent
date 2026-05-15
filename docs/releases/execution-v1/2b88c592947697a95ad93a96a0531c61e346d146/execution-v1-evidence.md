@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T00:28:34.434Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T00:28:23.888Z
 - branch: codex/post-provider-fallback-event-filter-artifact-sync
 - commit: 2b88c592947697a95ad93a96a0531c61e346d146
