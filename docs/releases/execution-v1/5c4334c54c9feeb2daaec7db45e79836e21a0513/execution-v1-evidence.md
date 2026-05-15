@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T01:15:48.210Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T01:15:39.174Z
 - branch: codex/post-provider-fallback-audit-ui-artifact-sync
 - commit: 5c4334c54c9feeb2daaec7db45e79836e21a0513
