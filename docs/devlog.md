@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Intake Summary Copy Pass
+
+- added a target evidence intake summary copy action beside the full packet action so operators can share the active blocker slice manifest before sending the larger review envelope
+- included category, owner, visible blocker count, command count, evidence doc count, provider blocker counts, production stop reason, required target docs, required commands, and release link in the summary payload
+- kept the summary explicitly bounded as a triage manifest only and preserved `productionReadyClaim=false` while any target stop-condition remains open
+- extended `smoke:ui-harness-browse` to pin the summary builder, copy action marker, DOM marker, title, and handoff boundary text in the served web bundle
+
 ## 2026-05-15 Web Target Evidence Intake Packet Copy Pass
 
 - added a target evidence intake packet copy action to the current open blocker triage surface so release blockers, provider evidence references, residual production blockers, required commands, and closure matrix rows can be handed off together
