@@ -51,6 +51,80 @@ const missionRun = runCli({
 
 assert.equal(missionRun.status, 'completed');
 
+const fallbackAuditMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Provider fallback audit smoke',
+    '--objective',
+    'Seed provider fallback events for the web provider event timeline API.',
+  ],
+});
+
+const fallbackAuditRun = runCli({
+  rootDir: tempRoot,
+  env: {
+    ANTHROPIC_API_KEY: '',
+    ANTHROPIC_BASE_URL: '',
+    ANTHROPIC_MODEL: '',
+  },
+  args: ['mission', 'run', fallbackAuditMission.id, '--provider', 'anthropic', '--fallback-provider', 'stub'],
+});
+
+assert.equal(fallbackAuditRun.status, 'completed');
+assert.equal(fallbackAuditRun.providerFallback.policyId, 'provider-failure-only');
+assert.equal(fallbackAuditRun.providerFallback.fallbackUsed, true);
+
+const recoverableOnlyStopMission = runCli({
+  rootDir: tempRoot,
+  args: [
+    'mission',
+    'create',
+    '--workspace',
+    workspace.id,
+    '--mode',
+    'knowledge',
+    '--deliverable',
+    'checklist',
+    '--title',
+    'Recoverable fallback stop audit smoke',
+    '--objective',
+    'Seed recoverable-only provider fallback stop events for the web API.',
+  ],
+});
+
+const recoverableOnlyStopRun = runCli({
+  rootDir: tempRoot,
+  env: {
+    ANTHROPIC_API_KEY: '',
+    ANTHROPIC_BASE_URL: '',
+    ANTHROPIC_MODEL: '',
+  },
+  args: [
+    'mission',
+    'run',
+    recoverableOnlyStopMission.id,
+    '--provider',
+    'anthropic',
+    '--fallback-provider',
+    'stub',
+    '--fallback-policy',
+    'recoverable-provider-failure-only',
+  ],
+});
+
+assert.equal(recoverableOnlyStopRun.status, 'failed');
+assert.equal(recoverableOnlyStopRun.providerFallback.policyId, 'recoverable-provider-failure-only');
+assert.equal(recoverableOnlyStopRun.providerFallback.fallbackUsed, false);
+
 const store = createStore({ rootDir: tempRoot });
 const service = createMissionService({ rootDir: tempRoot, store });
 
@@ -328,6 +402,27 @@ try {
     runtimeJobs.jobs.recent.some((entry) => entry.id === 'runtimejob_ui_harness_fixture'),
     true,
   );
+  const providerFallbackEvents = await fetchJson(`${baseUrl}/api/providers/events?family=fallback`);
+  assert.equal(providerFallbackEvents.summary.familyCounts.fallback, 3);
+  assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['provider-failure-only'], 2);
+  assert.equal(providerFallbackEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 1);
+  assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 1);
+  assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['mission-status-completed'], 1);
+  assert.equal(providerFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+  assert.equal(providerFallbackEvents.timeline.every((event) => event.eventFamily === 'fallback'), true);
+  const recoverableFallbackEvents = await fetchJson(
+    `${baseUrl}/api/providers/events?fallbackPolicy=recoverable-provider-failure-only`,
+  );
+  assert.equal(recoverableFallbackEvents.filters.fallbackPolicy, 'recoverable-provider-failure-only');
+  assert.equal(recoverableFallbackEvents.summary.familyCounts.fallback, 1);
+  assert.equal(recoverableFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+  assert.equal(recoverableFallbackEvents.timeline[0].fallbackStopReason, 'non-recoverable-provider-failure');
+  const nonRecoverableFallbackEvents = await fetchJson(
+    `${baseUrl}/api/providers/events?fallback-stop-reason=non-recoverable-provider-failure`,
+  );
+  assert.equal(nonRecoverableFallbackEvents.filters.fallbackStopReason, 'non-recoverable-provider-failure');
+  assert.equal(nonRecoverableFallbackEvents.summary.total, 1);
+  assert.equal(nonRecoverableFallbackEvents.timeline[0].fallbackPolicy, 'recoverable-provider-failure-only');
   const executionV1Status = await fetchJson(`${baseUrl}/api/execution-v1/status`);
   assert.equal(typeof executionV1Status.handoff?.generatedAt, 'string');
   assert.equal(executionV1Status.handoff?.commit, executionV1Status.commit);

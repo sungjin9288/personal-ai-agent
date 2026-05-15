@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Provider Event Fallback Filter API Pass
+
+- added `/api/providers/events` so the operator web surface can query the same provider event timeline read-model already available from `provider events`
+- wired fallback policy and fallback stop-reason query parameters through the web route, including CLI-style hyphenated aliases for handoff compatibility
+- extended the UI harness smoke with seeded fallback events and API assertions for fallback family, recoverable-only policy, and non-recoverable stop-condition slices
+
 ## 2026-05-15 Provider Fallback Event Policy Filter Pass
 
 - added `provider events --fallback-policy` and `--fallback-stop-reason` filters so fallback audit chronology can be sliced by policy and stop condition without post-processing provider event output
