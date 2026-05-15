@@ -274,6 +274,12 @@ try {
   assert.equal(appJs.includes('copy-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('This summary is triage manifest only'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceCaptureTemplateText'), true);
+  assert.equal(appJs.includes('Target evidence capture template'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-capture-template'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-capture-template'), true);
+  assert.equal(appJs.includes('Target evidence capture template:'), true);
+  assert.equal(appJs.includes('Capture template rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);

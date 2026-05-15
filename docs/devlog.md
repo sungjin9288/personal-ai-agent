@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Capture Template Copy Pass
+
+- added a target evidence capture template copy action to the current open blocker triage surface so operators can hand off the ten target-boundary evidence fields before packaging the sanitized submission packet
+- included target environment, deployment boundary, identity/session, tenant isolation, provider/secret, observability/SLO, retention/backup, support, clean release, and accepted risk decision rows with required values, completion rules, primary evidence docs, owner/date placeholders, visible blocker scope, and residual production blockers
+- embedded the capture template body inside the full target evidence intake packet so the packet carries both target-boundary evidence intake and sanitized submission review structure
+- extended `smoke:ui-harness-browse` to pin the capture template builder, copy action marker, DOM marker, packet template section, and capture row title
+
 ## 2026-05-15 Web Target Evidence Submission Manifest Copy Pass
 
 - added a target evidence submission manifest copy action to the current open blocker triage surface so reviewers can copy the packet cover sheet separately from sanitized registers, command logs, decisions, dispositions, refresh evidence, and the full intake packet
