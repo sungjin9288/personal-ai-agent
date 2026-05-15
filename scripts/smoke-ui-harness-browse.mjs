@@ -292,6 +292,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-production-gap'), true);
   assert.equal(appJs.includes('Production gap guard:'), true);
   assert.equal(appJs.includes('Production gap rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceExceptionRegisterText'), true);
+  assert.equal(appJs.includes('Target evidence accepted-scope exception register'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-exception-register'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-exception-register'), true);
+  assert.equal(appJs.includes('Accepted-scope exception register:'), true);
+  assert.equal(appJs.includes('Accepted-scope exception rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
