@@ -269,6 +269,11 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes('targetEnvironmentEvidenceIntakeDoc'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
+  assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-intake-packet'), true);
+  assert.equal(appJs.includes('Submission packet checklist:'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);

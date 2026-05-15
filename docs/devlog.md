@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Intake Packet Copy Pass
+
+- added a target evidence intake packet copy action to the current open blocker triage surface so release blockers, provider evidence references, residual production blockers, required commands, and closure matrix rows can be handed off together
+- included target evidence capture template fields and submission packet checklist items from the target environment evidence intake contract so reviewers receive the full review envelope, not just blocker rows
+- preserved the production boundary in the package by stating that the packet is not production-ready approval and must keep `productionReadyClaim=false` while any target stop-condition remains open
+- extended `smoke:ui-harness-browse` to pin the packet builder, copy action marker, package title, submission checklist, and DOM marker
+
 ## 2026-05-15 Web Current Blocker Closure Matrix Package Pass
 
 - added a target environment blocker closure matrix package for the active current-open-blocker slice so blocker disposition rows can be copied directly into target environment evidence intake
