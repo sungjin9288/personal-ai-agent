@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T14:59:58.131Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T14:59:49.675Z
 - branch: codex/post-target-evidence-required-commands-artifact-sync
 - commit: 1ba7c4d077caac187e5a43140bd8c41f89aac764

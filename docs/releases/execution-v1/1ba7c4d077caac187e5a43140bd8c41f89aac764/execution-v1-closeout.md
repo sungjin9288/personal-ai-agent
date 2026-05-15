@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-15T14:59:58.131Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-15T14:59:49.717Z
 - branch: codex/post-target-evidence-required-commands-artifact-sync
 - commit: 1ba7c4d077caac187e5a43140bd8c41f89aac764
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ba7c4d077caac187e5a43140bd8c41f89aac764/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
