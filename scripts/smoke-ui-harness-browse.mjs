@@ -280,6 +280,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-sanitized-register'), true);
   assert.equal(appJs.includes('Sanitized evidence register template:'), true);
   assert.equal(appJs.includes('Evidence register rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceBoundaryConsistencyMapText'), true);
+  assert.equal(appJs.includes('Target evidence boundary consistency map'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-boundary-map'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-boundary-map'), true);
+  assert.equal(appJs.includes('Boundary consistency map template:'), true);
+  assert.equal(appJs.includes('Boundary consistency rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceCommandRerunLogText'), true);
   assert.equal(appJs.includes('Target evidence command rerun log'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-command-rerun-log'), true);
