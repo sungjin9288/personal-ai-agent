@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T17:40:58.207Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T17:40:49.697Z
 - branch: codex/post-target-evidence-exception-register-artifact-sync
 - commit: 7895e95061af3df8de81792e7891f675ec928efd
