@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Provider Fallback Event Audit UI Pass
+
+- added a provider fallback event audit panel to the provider configuration surface so operators can inspect fallback runtime audit evidence without leaving the web console
+- wired the panel to `/api/providers/events?family=fallback` with policy and stop-reason filters for `provider-failure-only`, `recoverable-provider-failure-only`, eligible fallback, completed fallback, non-recoverable provider failure, and missing provider-failure metadata slices
+- extended `smoke:ui-harness-browse` to pin the new audit panel markers and provider event API wiring while preserving the existing fallback policy and provider event smoke coverage
+
 ## 2026-05-15 Web Provider Event Fallback Filter API Pass
 
 - added `/api/providers/events` so the operator web surface can query the same provider event timeline read-model already available from `provider events`

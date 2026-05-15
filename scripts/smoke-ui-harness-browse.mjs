@@ -244,6 +244,13 @@ try {
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
+  assert.equal(appJs.includes('loadProviderEvents'), true);
+  assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);
+  assert.equal(appJs.includes('data-provider-fallback-event-policy-filter'), true);
+  assert.equal(appJs.includes('data-provider-fallback-event-stop-filter'), true);
+  assert.equal(appJs.includes('data-provider-fallback-policy-count'), true);
+  assert.equal(appJs.includes('data-provider-fallback-stop-reason-count'), true);
+  assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);
   assert.equal(appJs.includes('getProviderAttentionRemediationPayload'), true);

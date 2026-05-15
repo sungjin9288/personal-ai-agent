@@ -32,6 +32,9 @@ const state = {
   outputSecondaryTabsExpanded: false,
   outputSupportExpanded: false,
   outputToolbarToolsExpanded: false,
+  providerEventFallbackPolicyFilter: '',
+  providerEventFallbackStopReasonFilter: '',
+  providerEvents: null,
   providers: [],
   releaseHandoffCopiedPreviewLinkId: '',
   releaseHandoffCopiedPreviewLinkTimer: null,
@@ -90,6 +93,18 @@ const state = {
 const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
 const RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS = 20000;
 const RELEASE_HANDOFF_PREVIEW_MAX_LINES = 180;
+const PROVIDER_FALLBACK_POLICY_FILTER_OPTIONS = [
+  '',
+  'provider-failure-only',
+  'recoverable-provider-failure-only',
+];
+const PROVIDER_FALLBACK_STOP_REASON_FILTER_OPTIONS = [
+  '',
+  'eligible-provider-failure',
+  'mission-status-completed',
+  'non-recoverable-provider-failure',
+  'no-provider-failure-metadata',
+];
 const UI_TEXT_ATTACHMENT_EXTENSIONS = new Set([
   '.c',
   '.cc',
@@ -1621,6 +1636,7 @@ const DISPLAY_LABELS = {
   'execution-manifest': '실행 manifest',
   execution_ready: '실행 준비',
   execution_running: '실행 중',
+  fallback: 'fallback',
   failed: '실패',
   fact: '사실',
   high: '높음',
@@ -1635,7 +1651,11 @@ const DISPLAY_LABELS = {
   pending: '대기',
   'pending-approval': '승인 대기',
   planner: '플래너',
+  'eligible-provider-failure': 'fallback 가능 provider failure',
   prd: 'PRD',
+  'mission-status-completed': 'fallback 완료',
+  'no-provider-failure-metadata': 'provider failure metadata 없음',
+  'non-recoverable-provider-failure': '비복구 provider failure',
   queued: '대기열',
   ready: '준비됨',
   'approval-required': '승인 필요',
@@ -1646,6 +1666,10 @@ const DISPLAY_LABELS = {
   retryReady: '재실행 권장',
   reviewer: '리뷰어',
   running: '실행 중',
+  'provider-failure-only': 'provider failure only',
+  'provider-fallback-attempted': 'fallback 판정',
+  'provider-fallback-used': 'fallback 사용',
+  'recoverable-provider-failure-only': 'recoverable provider failure only',
   stopped: '중단됨',
   stable: '안정',
   stub: '스텁',
@@ -6065,8 +6089,157 @@ function renderAgentBlueprintBuilder() {
   });
 }
 
+function buildProviderEventFilterParams() {
+  const params = new URLSearchParams({ family: 'fallback' });
+  const fallbackPolicy = String(state.providerEventFallbackPolicyFilter || '').trim();
+  const fallbackStopReason = String(state.providerEventFallbackStopReasonFilter || '').trim();
+
+  if (fallbackPolicy) {
+    params.set('fallbackPolicy', fallbackPolicy);
+  }
+  if (fallbackStopReason) {
+    params.set('fallbackStopReason', fallbackStopReason);
+  }
+
+  return params;
+}
+
+function renderProviderFallbackEventSelectOptions(options = [], selectedValue = '', fallbackLabel = '전체') {
+  const selected = String(selectedValue || '').trim();
+  return options
+    .map((value) => {
+      const normalizedValue = String(value || '').trim();
+      const label = normalizedValue ? getDisplayLabel(normalizedValue, normalizedValue) : fallbackLabel;
+      return `<option value="${escapeHtml(normalizedValue)}" ${normalizedValue === selected ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+    })
+    .join('');
+}
+
+function renderProviderFallbackEventCountChips(counts = {}, marker = '') {
+  const entries = getReleaseCountRecordEntries(counts);
+  if (!entries.length) {
+    return '<span class="filter-chip"><em>count</em><strong>없음</strong></span>';
+  }
+  return entries
+    .map(
+      ([key, value]) => `
+        <span class="filter-chip" ${marker ? `${marker}="${escapeHtml(key)}"` : ''}>
+          <em>${escapeHtml(getDisplayLabel(key, key))}</em>
+          <strong>${escapeHtml(String(value))}</strong>
+        </span>
+      `,
+    )
+    .join('');
+}
+
+function renderProviderFallbackEventAudit() {
+  const payload = state.providerEvents || null;
+  const summary = payload?.summary || {};
+  const filters = payload?.filters || {};
+  const timeline = Array.isArray(payload?.timeline) ? payload.timeline : [];
+  const latestEvents = timeline.slice().reverse().slice(0, 5);
+  const filtered = Boolean(state.providerEventFallbackPolicyFilter || state.providerEventFallbackStopReasonFilter);
+
+  return `
+    <section class="provider-item provider-event-audit" data-provider-fallback-event-audit="true">
+      <div class="status-row">
+        <span class="status-badge status-running">fallback audit</span>
+        <span class="mini-badge ${filtered ? 'status-awaiting-approval' : 'status-completed'}">${escapeHtml(
+          filtered ? '필터 적용' : '전체 fallback',
+        )}</span>
+      </div>
+      <div class="item-title">Provider fallback event audit</div>
+      <div class="item-meta">policy와 stop reason 기준으로 target provider operations의 fallback runtime audit 근거를 확인합니다.</div>
+      <div class="dispatch-controls provider-event-filter-controls">
+        <select data-provider-fallback-event-policy-filter="true" aria-label="fallback policy filter">
+          ${renderProviderFallbackEventSelectOptions(
+            PROVIDER_FALLBACK_POLICY_FILTER_OPTIONS,
+            state.providerEventFallbackPolicyFilter,
+            '모든 fallback policy',
+          )}
+        </select>
+        <select data-provider-fallback-event-stop-filter="true" aria-label="fallback stop reason filter">
+          ${renderProviderFallbackEventSelectOptions(
+            PROVIDER_FALLBACK_STOP_REASON_FILTER_OPTIONS,
+            state.providerEventFallbackStopReasonFilter,
+            '모든 stop reason',
+          )}
+        </select>
+        <button class="ghost-button" type="button" data-provider-fallback-event-reset="true">필터 초기화</button>
+      </div>
+      <div class="quick-actions provider-event-counts">
+        <div class="summary-chip" data-provider-fallback-event-total="true">
+          <span>fallback events</span>
+          <strong>${escapeHtml(String(summary.familyCounts?.fallback ?? summary.total ?? 0))}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>policy filter</span>
+          <strong>${escapeHtml(filters.fallbackPolicy || 'all')}</strong>
+        </div>
+        <div class="summary-chip">
+          <span>stop filter</span>
+          <strong>${escapeHtml(filters.fallbackStopReason || 'all')}</strong>
+        </div>
+      </div>
+      <div class="release-history-filter-chips">
+        ${renderProviderFallbackEventCountChips(
+          summary.fallbackPolicyCounts,
+          'data-provider-fallback-policy-count',
+        )}
+      </div>
+      <div class="release-history-filter-chips">
+        ${renderProviderFallbackEventCountChips(
+          summary.fallbackStopReasonCounts,
+          'data-provider-fallback-stop-reason-count',
+        )}
+      </div>
+      ${
+        latestEvents.length
+          ? `<div class="provider-event-list">
+              ${latestEvents
+                .map(
+                  (event) => `
+                    <article class="provider-event-row" data-provider-fallback-event-row="${escapeHtml(event.eventKind || event.kind || '')}">
+                      <div class="status-row">
+                        <span class="mini-badge ${event.kind === 'provider-fallback-used' ? 'status-completed' : 'status-pending'}">${escapeHtml(getDisplayLabel(event.kind || event.eventKind, event.kind || event.eventKind || 'event'))}</span>
+                        <span class="mini-badge status-running">${escapeHtml(getDisplayLabel(event.fallbackPolicy, event.fallbackPolicy || '-'))}</span>
+                      </div>
+                      <div class="item-title">${escapeHtml(event.primaryProviderId || event.providerId || 'provider')} → ${escapeHtml(event.providerId || '-')}</div>
+                      <div class="item-meta">${escapeHtml(event.missionTitle || event.missionId || '-')} · ${escapeHtml(formatDate(event.at))}</div>
+                      <div class="item-meta mono">stopReason=${escapeHtml(event.fallbackStopReason || '-')}</div>
+                    </article>
+                  `,
+                )
+                .join('')}
+            </div>`
+          : '<div class="empty-state">현재 필터에 해당하는 fallback event가 없습니다.</div>'
+      }
+    </section>
+  `;
+}
+
+function wireProviderFallbackEventAuditControls() {
+  const policyFilter = elements.providerList.querySelector('[data-provider-fallback-event-policy-filter]');
+  const stopFilter = elements.providerList.querySelector('[data-provider-fallback-event-stop-filter]');
+  const resetButton = elements.providerList.querySelector('[data-provider-fallback-event-reset]');
+
+  policyFilter?.addEventListener('change', async (event) => {
+    state.providerEventFallbackPolicyFilter = String(event.target.value || '').trim();
+    await loadProviderEvents();
+  });
+  stopFilter?.addEventListener('change', async (event) => {
+    state.providerEventFallbackStopReasonFilter = String(event.target.value || '').trim();
+    await loadProviderEvents();
+  });
+  resetButton?.addEventListener('click', async () => {
+    state.providerEventFallbackPolicyFilter = '';
+    state.providerEventFallbackStopReasonFilter = '';
+    await loadProviderEvents();
+  });
+}
+
 function renderProviders() {
-  const html = state.providers
+  const providerCards = state.providers
     .map((provider) => {
       const configured = Boolean(provider.configured);
       return `
@@ -6091,7 +6264,7 @@ function renderProviders() {
     .join('');
 
   elements.providerList.innerHTML =
-    html ||
+    `${renderProviderFallbackEventAudit()}${providerCards}` ||
     emptyStateCard({
       action: 'open-create',
       actionLabel: '미션부터 시작',
@@ -6099,6 +6272,7 @@ function renderProviders() {
       message: '제공자 목록이 비어 있으면 먼저 로컬 워크스페이스와 미션 흐름부터 확인하세요.',
       title: '표시할 제공자 정보가 없습니다',
     });
+  wireProviderFallbackEventAuditControls();
   wireQuickActions(elements.providerList);
 }
 
@@ -11723,8 +11897,17 @@ async function loadWorkspaces() {
 }
 
 async function loadProviders() {
-  const payload = await api('/api/providers');
+  const [payload, providerEvents] = await Promise.all([
+    api('/api/providers'),
+    api(`/api/providers/events?${buildProviderEventFilterParams().toString()}`),
+  ]);
   state.providers = payload.providers || payload;
+  state.providerEvents = providerEvents;
+  renderProviders();
+}
+
+async function loadProviderEvents() {
+  state.providerEvents = await api(`/api/providers/events?${buildProviderEventFilterParams().toString()}`);
   renderProviders();
 }
 

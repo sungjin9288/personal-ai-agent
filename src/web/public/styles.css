@@ -2239,6 +2239,33 @@ button:disabled {
   padding: 12px;
 }
 
+.provider-event-audit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.provider-event-filter-controls {
+  margin-top: 2px;
+}
+
+.provider-event-counts {
+  margin-top: 0;
+}
+
+.provider-event-list {
+  display: grid;
+  gap: 8px;
+}
+
+.provider-event-row {
+  padding: 9px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.82);
+}
+
 .approval-list,
 .action-list {
   gap: 10px;
