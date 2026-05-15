@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T15:49:49.896Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T15:49:41.569Z
 - branch: codex/post-target-evidence-production-gap-artifact-sync
 - commit: d784012142d63d843f53806176709f8496c1e3c7
