@@ -3411,6 +3411,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
+  const reviewerDecisionRecord = buildReleaseTargetEvidenceReviewerDecisionRecordText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const closureMatrix = buildReleaseBlockerClosureMatrixPackageText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3455,6 +3462,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '6. blockerDispositionRegister',
     '7. releaseRefreshEvidence',
     '',
+    'Reviewer decision record template:',
+    reviewerDecisionRecord || '- none',
+    '',
     'Provider evidence references:',
     ...providerRows,
     '',
@@ -3471,6 +3481,124 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceReviewerDecisionRecordText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const summary = releaseStatus.summary || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
+  );
+  const releaseReadinessDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
+  );
+  const dispositionRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const actionId = String(item.id || '').trim();
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        const provider = String(item.provider || '').trim();
+        const blockerLink = `${window.location.origin}${buildUiStateUrl({
+          detailTab: 'release',
+          releaseBlockerCategoryFilter: '',
+          releaseBlockerOwnerFilter: '',
+          releaseFocusedBlockerId: actionId,
+          releaseFocusedProductionBlockerIndex: '',
+          releaseFocusedProvider: provider,
+          releaseFocusedHistoryId: '',
+          releaseHistoryOutcome: '',
+          releaseHistoryProvider: '',
+          releaseHistoryScope: '',
+        })}`;
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - blockerId: ${actionId || 'unknown'}`,
+          `   - provider: ${provider || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - currentState: ${String(item.status || 'blocked').trim()}`,
+          `   - proposedDisposition: still-blocking | accepted-scope-required | closed`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - verificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          '   - decisionEvidenceRequired: target-boundary command output, release artifact hygiene result, regenerated execution-v1 artifacts, reviewer note',
+          '   - allowedClaimImpact: keep productionReadyClaim=false unless this stop-condition is closed and final gates pass',
+          `   - releaseLink: ${blockerLink}`,
+        ];
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence reviewer decision record',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${sliceLink}`,
+    `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
+    `- releaseReadinessDoc: ${releaseReadinessDoc}`,
+    '',
+    'Reviewer decision checklist:',
+    '- reviewer: <required reviewer name or team>',
+    '- decisionOwner: <required accountable owner>',
+    '- reviewDate: <required YYYY-MM-DD>',
+    '- decision: still-blocked | accepted-with-scope | rejected | closed-after-evidence',
+    '- acceptedRisks: <required accepted risk ids or none>',
+    '- rejectedClaims: production-ready, live-provider-complete, or any broader claim missing target-boundary proof',
+    '- allowedClaimText: <required claim text; must stay narrower than production-ready while blockers remain>',
+    '- residualBlockersReviewed: yes/no',
+    '- commandRerunLogReviewed: yes/no',
+    '- releaseRefreshEvidenceReviewed: yes/no',
+    '- productionReadyClaimDecision: keep productionReadyClaim=false unless every stop-condition is closed and final gates pass',
+    '- nextReviewDate: <required YYYY-MM-DD>',
+    '',
+    'Blocker dispositions:',
+    ...dispositionRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Decision verification commands:',
+    '- Target environment evidence intake: npm run smoke:target-environment-evidence-intake',
+    '- Target provider evidence intake: npm run smoke:target-provider-evidence-intake',
+    '- Target provider operations: npm run smoke:target-provider-operations',
+    '- Artifact refresh after accepted target evidence: npm run refresh:execution-v1-artifacts',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+    '',
+    'Decision rules:',
+    '- This reviewer decision record can accept evidence for a scoped blocker disposition, but it is not production-ready approval.',
+    '- accepted-with-scope requires explicit allowed claim text, expiry or next review date, and residual blocker list.',
+    '- closed-after-evidence requires fresh target-boundary command evidence, artifact hygiene, regenerated release artifacts, and no remaining stop-condition for the closed claim.',
+    '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, clean deployment, or customer exception blocker remains open.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -4714,6 +4842,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-decision-record') {
+        void copyReleaseTargetEvidenceDecisionRecord();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-intake-packet') {
         void copyReleaseTargetEvidenceIntakePacket();
         return;
@@ -5905,6 +6038,37 @@ async function copyReleaseTargetEvidenceIntakeSummary({
     promptMessage: 'target evidence intake summary를 복사하세요.',
     shownNotice: 'target evidence intake summary를 표시했습니다.',
     successNotice: 'target evidence intake summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceDecisionRecord({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const decisionText = buildReleaseTargetEvidenceReviewerDecisionRecordText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!decisionText) {
+    setUiNotice('복사할 target evidence reviewer decision record가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(decisionText, {
+    promptMessage: 'target evidence reviewer decision record를 복사하세요.',
+    shownNotice: 'target evidence reviewer decision record를 표시했습니다.',
+    successNotice: 'target evidence reviewer decision record를 복사했습니다.',
   });
 }
 
@@ -10275,6 +10439,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-decision-record="true"
+                  data-ui-action="copy-release-target-evidence-decision-record"
+                >target decision record 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

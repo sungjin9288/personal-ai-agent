@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Decision Record Copy Pass
+
+- added a target evidence reviewer decision record copy action to the current open blocker triage surface so reviewers can record scoped accept/reject/still-blocked decisions without copying the full target evidence packet
+- included reviewer checklist fields, blocker dispositions, residual production blockers, decision verification commands, target evidence doc links, and production-ready claim boundaries in the copied record
+- embedded the reviewer decision record template inside the full target evidence intake packet so the larger review envelope carries the same decision structure
+- extended `smoke:ui-harness-browse` to pin the decision record builder, copy action marker, DOM marker, checklist title, and packet template section
+
 ## 2026-05-15 Web Target Evidence Intake Summary Copy Pass
 
 - added a target evidence intake summary copy action beside the full packet action so operators can share the active blocker slice manifest before sending the larger review envelope
