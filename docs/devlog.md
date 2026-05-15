@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-15 Web Provider Fallback Event Audit Package Copy Pass
+
+- added a copyable provider fallback event audit package to the provider configuration surface so policy, stop-reason, count, latest event, and verification command context can be handed off together
+- included target provider operations framing and production readiness boundary text so fallback runtime audit evidence does not get mistaken for a production-ready claim
+- extended `smoke:ui-harness-browse` to pin the audit package builder, copy action marker, and text contract in the served web bundle
+
 ## 2026-05-15 Web Provider Fallback Event Audit UI Pass
 
 - added a provider fallback event audit panel to the provider configuration surface so operators can inspect fallback runtime audit evidence without leaving the web console
