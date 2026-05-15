@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T02:38:47.979Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T02:38:38.487Z
 - branch: codex/post-provider-blocker-linkage-artifact-sync
 - commit: 1a95815a185c2ef8a4f21989e31abdcebfd29c82

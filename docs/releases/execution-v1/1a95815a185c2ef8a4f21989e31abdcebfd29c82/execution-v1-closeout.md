@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-15T02:38:47.979Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-15T02:38:38.536Z
 - branch: codex/post-provider-blocker-linkage-artifact-sync
 - commit: 1a95815a185c2ef8a4f21989e31abdcebfd29c82
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1a95815a185c2ef8a4f21989e31abdcebfd29c82/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
