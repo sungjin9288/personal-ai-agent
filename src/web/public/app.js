@@ -4826,6 +4826,20 @@ async function copyPlainTextValue(value, {
   }
 }
 
+async function copyProviderFallbackEventAuditPackage() {
+  const packageText = buildProviderFallbackEventAuditPackageText();
+  if (!packageText) {
+    setUiNotice('복사할 provider fallback event audit package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'provider fallback event audit package를 복사하세요.',
+    shownNotice: 'provider fallback event audit package를 표시했습니다.',
+    successNotice: 'provider fallback event audit package를 복사했습니다.',
+  });
+}
+
 async function resetCurrentView() {
   const visibleMission = filteredMissions();
   const targetMissionId =
@@ -6132,6 +6146,88 @@ function renderProviderFallbackEventCountChips(counts = {}, marker = '') {
     .join('');
 }
 
+function formatProviderFallbackEventCountLines(counts = {}, emptyLabel = 'none') {
+  const entries = getReleaseCountRecordEntries(counts);
+  if (!entries.length) {
+    return [`- ${emptyLabel}`];
+  }
+  return entries.map(([key, value]) => `- ${key}: ${value}`);
+}
+
+function buildProviderFallbackEventAuditCommand({
+  fallbackPolicy = state.providerEventFallbackPolicyFilter,
+  fallbackStopReason = state.providerEventFallbackStopReasonFilter,
+} = {}) {
+  const parts = ['node src/cli.mjs provider events --family fallback'];
+  const normalizedPolicy = String(fallbackPolicy || '').trim();
+  const normalizedStopReason = String(fallbackStopReason || '').trim();
+  if (normalizedPolicy) {
+    parts.push(`--fallback-policy ${normalizedPolicy}`);
+  }
+  if (normalizedStopReason) {
+    parts.push(`--fallback-stop-reason ${normalizedStopReason}`);
+  }
+  return parts.join(' ');
+}
+
+function buildProviderFallbackEventAuditPackageText(payload = state.providerEvents) {
+  if (!payload || typeof payload !== 'object') {
+    return '';
+  }
+
+  const summary = payload.summary || {};
+  const filters = payload.filters || {};
+  const fallbackPolicy = String(filters.fallbackPolicy || state.providerEventFallbackPolicyFilter || '').trim();
+  const fallbackStopReason = String(
+    filters.fallbackStopReason || state.providerEventFallbackStopReasonFilter || '',
+  ).trim();
+  const timeline = Array.isArray(payload.timeline) ? payload.timeline : [];
+  const latestEvents = timeline.slice().reverse().slice(0, 5);
+  const latestEventLines = latestEvents.length
+    ? latestEvents.map(
+        (event, index) =>
+          `- ${index + 1}. ${event.kind || event.eventKind || 'fallback-event'} | at=${event.at || '-'} | provider=${event.providerId || '-'} | primary=${event.primaryProviderId || '-'} | policy=${event.fallbackPolicy || '-'} | stopReason=${event.fallbackStopReason || '-'} | mission=${event.missionId || '-'}`,
+      )
+    : ['- none'];
+
+  return [
+    'Provider fallback event audit package',
+    '',
+    'Scope:',
+    '- Source: /api/providers/events?family=fallback',
+    '- Purpose: target provider operations fallback runtime audit handoff',
+    '- This package is audit evidence only and does not change production readiness.',
+    '',
+    'Filters:',
+    `- fallbackPolicy: ${fallbackPolicy || 'all'}`,
+    `- fallbackStopReason: ${fallbackStopReason || 'all'}`,
+    '',
+    'Summary:',
+    `- total events: ${summary.total ?? 0}`,
+    `- fallback events: ${summary.familyCounts?.fallback ?? summary.total ?? 0}`,
+    '',
+    'Fallback policy counts:',
+    ...formatProviderFallbackEventCountLines(summary.fallbackPolicyCounts, 'no fallback policy counts'),
+    '',
+    'Fallback stop reason counts:',
+    ...formatProviderFallbackEventCountLines(summary.fallbackStopReasonCounts, 'no fallback stop reason counts'),
+    '',
+    'Latest fallback events:',
+    ...latestEventLines,
+    '',
+    'Verification commands:',
+    `- ${buildProviderFallbackEventAuditCommand({ fallbackPolicy, fallbackStopReason })}`,
+    '- npm run smoke:provider-fallback-policy',
+    '- npm run smoke:provider-events',
+    '- npm run smoke:provider-attention-remediation',
+    '- npm run smoke:ui-harness-browse',
+    '',
+    'Production readiness boundary:',
+    '- productionReadyClaim must remain false until target provider operations evidence is approved.',
+    '- recoverable-provider-failure-only stops non-recoverable provider failures instead of silently failing over.',
+  ].join('\n');
+}
+
 function renderProviderFallbackEventAudit() {
   const payload = state.providerEvents || null;
   const summary = payload?.summary || {};
@@ -6166,6 +6262,7 @@ function renderProviderFallbackEventAudit() {
           )}
         </select>
         <button class="ghost-button" type="button" data-provider-fallback-event-reset="true">필터 초기화</button>
+        <button class="secondary-button" type="button" data-provider-fallback-event-package="true">audit package 복사</button>
       </div>
       <div class="quick-actions provider-event-counts">
         <div class="summary-chip" data-provider-fallback-event-total="true">
@@ -6222,6 +6319,7 @@ function wireProviderFallbackEventAuditControls() {
   const policyFilter = elements.providerList.querySelector('[data-provider-fallback-event-policy-filter]');
   const stopFilter = elements.providerList.querySelector('[data-provider-fallback-event-stop-filter]');
   const resetButton = elements.providerList.querySelector('[data-provider-fallback-event-reset]');
+  const packageButton = elements.providerList.querySelector('[data-provider-fallback-event-package]');
 
   policyFilter?.addEventListener('change', async (event) => {
     state.providerEventFallbackPolicyFilter = String(event.target.value || '').trim();
@@ -6235,6 +6333,9 @@ function wireProviderFallbackEventAuditControls() {
     state.providerEventFallbackPolicyFilter = '';
     state.providerEventFallbackStopReasonFilter = '';
     await loadProviderEvents();
+  });
+  packageButton?.addEventListener('click', () => {
+    void copyProviderFallbackEventAuditPackage();
   });
 }
 

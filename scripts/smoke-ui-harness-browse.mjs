@@ -250,6 +250,10 @@ try {
   assert.equal(appJs.includes('data-provider-fallback-event-stop-filter'), true);
   assert.equal(appJs.includes('data-provider-fallback-policy-count'), true);
   assert.equal(appJs.includes('data-provider-fallback-stop-reason-count'), true);
+  assert.equal(appJs.includes('data-provider-fallback-event-package'), true);
+  assert.equal(appJs.includes('buildProviderFallbackEventAuditPackageText'), true);
+  assert.equal(appJs.includes('Provider fallback event audit package'), true);
+  assert.equal(appJs.includes('copyProviderFallbackEventAuditPackage'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);
