@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-15T01:34:57.318Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-15T01:34:43.791Z
 - branch: codex/post-provider-fallback-audit-package-artifact-sync
 - commit: 73db81d93b045b38d9d9e903fb356d0b620f8cce
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/73db81d93b045b38d9d9e903fb356d0b620f8cce/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
