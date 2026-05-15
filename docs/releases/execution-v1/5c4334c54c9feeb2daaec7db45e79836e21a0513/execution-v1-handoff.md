@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-15T01:15:48.210Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-15T01:15:46.798Z
 - localDate: 2026-05-15
 - branch: codex/post-provider-fallback-audit-ui-artifact-sync
 - commit: 5c4334c54c9feeb2daaec7db45e79836e21a0513
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513](releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513](docs/releases/execution-v1/5c4334c54c9feeb2daaec7db45e79836e21a0513)
 - visualArtifactSetSha256: 36a9648330a74aea72321ad82fe07b44250d6a13bd0df5b06037cecb0906b8a1
 - commitPushStatus: pushed to origin/main
 
