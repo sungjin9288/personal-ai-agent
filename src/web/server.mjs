@@ -2072,6 +2072,20 @@ function decodePathSegment(segment = '') {
   return decodeURIComponent(String(segment || '').trim());
 }
 
+function parseOptionalBooleanQueryParam(searchParams, name) {
+  const rawValue = String(searchParams.get(name) || '').trim().toLowerCase();
+  if (!rawValue) {
+    return undefined;
+  }
+  if (rawValue === 'true') {
+    return true;
+  }
+  if (rawValue === 'false') {
+    return false;
+  }
+  return undefined;
+}
+
 function parseConstraints(value) {
   if (Array.isArray(value)) {
     return value.map((item) => String(item || '').trim()).filter(Boolean);
@@ -2485,6 +2499,31 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && pathname === '/api/providers') {
     sendJson(response, 200, service.listProviders());
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/providers/events') {
+    sendJson(
+      response,
+      200,
+      service.getProviderEventTimeline({
+        attempted: parseOptionalBooleanQueryParam(url.searchParams, 'attempted'),
+        fallbackPolicy: String(
+          url.searchParams.get('fallbackPolicy') || url.searchParams.get('fallback-policy') || '',
+        ).trim(),
+        fallbackStopReason: String(
+          url.searchParams.get('fallbackStopReason') || url.searchParams.get('fallback-stop-reason') || '',
+        ).trim(),
+        family: String(url.searchParams.get('family') || '').trim(),
+        ok: parseOptionalBooleanQueryParam(url.searchParams, 'ok'),
+        providerId: String(
+          url.searchParams.get('provider') || url.searchParams.get('providerId') || '',
+        ).trim(),
+        role: String(url.searchParams.get('role') || '').trim(),
+        since: String(url.searchParams.get('since') || '').trim(),
+        status: String(url.searchParams.get('status') || '').trim(),
+      }),
+    );
     return;
   }
 
