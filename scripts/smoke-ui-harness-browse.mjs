@@ -274,6 +274,12 @@ try {
   assert.equal(appJs.includes('copy-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('This summary is triage manifest only'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceSanitizedRegisterText'), true);
+  assert.equal(appJs.includes('Target evidence sanitized register'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-sanitized-register'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-sanitized-register'), true);
+  assert.equal(appJs.includes('Sanitized evidence register template:'), true);
+  assert.equal(appJs.includes('Evidence register rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceCommandRerunLogText'), true);
   assert.equal(appJs.includes('Target evidence command rerun log'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-command-rerun-log'), true);
