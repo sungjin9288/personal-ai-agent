@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-15T03:08:38.660Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-15T03:08:37.099Z
 - localDate: 2026-05-15
 - branch: codex/post-current-blocker-closure-matrix-artifact-sync
 - commit: c9a72d4fca89bcc505853799ecc07ce8e9d532e7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7](releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7](docs/releases/execution-v1/c9a72d4fca89bcc505853799ecc07ce8e9d532e7)
 - visualArtifactSetSha256: 7433784042fd4ac35bdde0d5f2daead41753fc5fe66c9de33dcae6bb220ebe2f
 - commitPushStatus: pushed to origin/main
 
