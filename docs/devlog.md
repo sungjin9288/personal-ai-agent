@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Release Refresh Evidence Copy Pass
+
+- added a target evidence release refresh evidence copy action to the current open blocker triage surface so reviewers can audit execution evidence, closeout, handoff, immutable snapshot, pilot export package, release drill, clean deployment release, release readiness, artifact hygiene, and production readiness gate references separately from the full packet
+- included refresh artifact paths, guarded links, refresh commands, proof intent, stop-condition ids, verified commit placeholders, result placeholders, reviewer notes, required refresh command sequence, visible blocker refresh cross-check rows, and residual production blockers in the copied evidence
+- embedded the release refresh evidence template inside the full target evidence intake packet so the packet carries the same refresh audit structure as the standalone evidence copy
+- extended `smoke:ui-harness-browse` to pin the release refresh evidence builder, copy action marker, DOM marker, packet template section, and refresh artifact row title
+
 ## 2026-05-15 Web Target Evidence Blocker Disposition Register Copy Pass
 
 - added a target evidence blocker disposition register copy action to the current open blocker triage surface so reviewers can audit still-blocking, accepted-scope-required, and closed-after-evidence states separately from the full packet

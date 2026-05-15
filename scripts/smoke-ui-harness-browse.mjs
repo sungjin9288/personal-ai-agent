@@ -304,6 +304,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-blocker-disposition'), true);
   assert.equal(appJs.includes('Blocker disposition register template:'), true);
   assert.equal(appJs.includes('Disposition rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceReleaseRefreshEvidenceText'), true);
+  assert.equal(appJs.includes('Target evidence release refresh evidence'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-release-refresh'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-release-refresh'), true);
+  assert.equal(appJs.includes('Release refresh evidence template:'), true);
+  assert.equal(appJs.includes('Release refresh artifact rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
   assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
