@@ -4125,6 +4125,157 @@ function buildReleaseTargetEvidenceProductionGapText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceExceptionRegisterText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const exceptionDefinitions = [
+    {
+      exceptionId: 'anthropic-provider-exclusion',
+      scope: 'exclude Anthropic from live-provider-complete and production-ready claims until target account billing/live validation closes',
+      requiredEvidence: 'target Anthropic provider account approval, billing/credit remediation proof, target secret injection, target-boundary live validation pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts',
+      allowedClaimText: 'OpenAI-backed local-first pilot only; Anthropic remains excluded',
+      stopCondition: 'anthropic-live-validation-missing-or-failed',
+    },
+    {
+      exceptionId: 'hermes-provider-exclusion',
+      scope: 'exclude Hermes from production provider claims until runtime config and target-boundary live validation are approved',
+      requiredEvidence: 'target Hermes provider architecture approval, endpoint/model alias, runtime secret injection proof, target-boundary live validation pass, provider operations evidence, and regenerated release artifacts',
+      allowedClaimText: 'Hermes is not included in production provider readiness',
+      stopCondition: 'hermes-runtime-config-missing',
+    },
+    {
+      exceptionId: 'local-provider-pilot-only',
+      scope: 'allow local provider only for approved pilot/local-first use while production provider approval remains blocked',
+      requiredEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+      allowedClaimText: 'local provider is pilot/local-only and not production-approved',
+      stopCondition: 'target-local-provider-approval-missing',
+    },
+    {
+      exceptionId: 'hosted-identity-session-blocked',
+      scope: 'block hosted SaaS identity/session claims until customer IdP and hosted session administration evidence are accepted',
+      requiredEvidence: 'hosted identity/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof',
+      allowedClaimText: 'local identity/session controls only; hosted identity/session claims remain blocked',
+      stopCondition: 'hosted-identity-session-approval-missing',
+    },
+    {
+      exceptionId: 'hosted-tenant-isolation-blocked',
+      scope: 'block hosted multi-tenant isolation claims until tenant storage, authorization, encryption, lifecycle, backup/restore, observability, and support isolation evidence are accepted',
+      requiredEvidence: 'hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof',
+      allowedClaimText: 'local tenant controls only; hosted multi-tenant isolation claims remain blocked',
+      stopCondition: 'hosted-tenant-isolation-approval-missing',
+    },
+    {
+      exceptionId: 'target-environment-evidence-pending',
+      scope: 'keep productionReadyClaim false until target evidence capture, submission packet, command rerun, reviewer decision, disposition, and release refresh evidence are accepted',
+      requiredEvidence: 'completed target evidence capture template, sanitized submission packet, boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence, and production readiness gate result',
+      allowedClaimText: 'provider-scoped pilot ready only; production-ready remains blocked',
+      stopCondition: 'target-environment-evidence-missing',
+    },
+    {
+      exceptionId: 'customer-specific-exception',
+      scope: '<required customer-approved scope; must be narrower than production-ready>',
+      requiredEvidence: 'explicit exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, release readiness note, and regenerated release artifacts',
+      allowedClaimText: '<required allowed claim text; cannot state or imply production-ready>',
+      stopCondition: 'customer-exception-scope-missing',
+    },
+  ];
+  const exceptionRows = exceptionDefinitions.flatMap((item, index) => [
+    `${index + 1}. ${item.exceptionId}`,
+    `   - acceptedScope: ${item.scope}`,
+    `   - requiredEvidence: ${item.requiredEvidence}`,
+    `   - allowedClaimText: ${item.allowedClaimText}`,
+    `   - stopCondition: ${item.stopCondition}`,
+    '   - exceptionOwner: <required accountable owner>',
+    '   - reviewer: <required reviewer or approval team>',
+    '   - approvalStatus: draft | submitted | accepted-with-scope | rejected | expired',
+    '   - expiryDate: <required YYYY-MM-DD>',
+    '   - nextReviewDate: <required YYYY-MM-DD>',
+    '   - compensatingControl: <required compensating control or none>',
+    '   - releaseReadinessNote: <required note for docs/release-readiness-v1.md>',
+  ]);
+  const visibleExceptionRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - currentState: ${String(item.status || 'blocked').trim()}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - exceptionDisposition: none | accepted-scope-required | rejected | expired',
+        '   - claimImpact: exception cannot broaden the claim beyond explicitly accepted scope',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+    'npm run smoke:execution-v1-snapshot',
+    'npm run smoke:production-readiness-gate',
+  ];
+  const lines = [
+    'Target evidence accepted-scope exception register',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- exceptionRowCount: ${exceptionDefinitions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Accepted-scope exception rows:',
+    ...exceptionRows,
+    '',
+    'Visible blocker exception cross-check:',
+    ...visibleExceptionRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Required exception verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Exception register rules:',
+    '- This register records accepted-scope exceptions only; it is not a waiver and not production-ready approval.',
+    '- accepted-with-scope requires exception owner, customer-approved scope, expiry date, compensating control, allowed claim text, next review date, and regenerated release readiness evidence.',
+    '- An exception cannot convert a blocked production-ready claim into production-ready and cannot remove target evidence, command rerun, release refresh, artifact hygiene, or production readiness gate requirements.',
+    '- Expired, ownerless, unreviewed, or stale exceptions must keep the related blocker as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, raw provider account ids, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every mandatory target control is accepted by target-boundary evidence and final gates pass.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4207,6 +4358,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     releaseStatus,
   }).trim();
   const productionGapGuard = buildReleaseTargetEvidenceProductionGapText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const exceptionRegister = buildReleaseTargetEvidenceExceptionRegisterText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -4335,6 +4493,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '',
     'Production gap guard:',
     productionGapGuard || '- none',
+    '',
+    'Accepted-scope exception register:',
+    exceptionRegister || '- none',
     '',
     'Provider evidence references:',
     ...providerRows,
@@ -6657,6 +6818,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-exception-register') {
+        void copyReleaseTargetEvidenceExceptionRegister();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -7976,6 +8142,37 @@ async function copyReleaseTargetEvidenceProductionGap({
     promptMessage: 'target evidence production gap을 복사하세요.',
     shownNotice: 'target evidence production gap을 표시했습니다.',
     successNotice: 'target evidence production gap을 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceExceptionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const registerText = buildReleaseTargetEvidenceExceptionRegisterText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!registerText) {
+    setUiNotice('복사할 target evidence exception register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'target evidence exception register를 복사하세요.',
+    shownNotice: 'target evidence exception register를 표시했습니다.',
+    successNotice: 'target evidence exception register를 복사했습니다.',
   });
 }
 
@@ -12581,6 +12778,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-production-gap="true"
                   data-ui-action="copy-release-target-evidence-production-gap"
                 >target production gap 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-exception-register="true"
+                  data-ui-action="copy-release-target-evidence-exception-register"
+                >target exception register 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-16 Web Target Evidence Exception Register Copy Pass
+
+- added a target evidence accepted-scope exception register copy action to the current open blocker triage surface so reviewers can hand off exception scope, owner, expiry, compensating control, allowed claim text, and release readiness notes separately from the full packet
+- included Anthropic exclusion, Hermes exclusion, local-provider pilot-only, hosted identity/session, hosted tenant isolation, target environment pending, and customer-specific exception rows with required evidence, stop-condition ids, approval status, reviewer, expiry, next review date, and claim guard fields
+- embedded the accepted-scope exception register inside the full target evidence intake packet so scoped exceptions remain tied to productionReadyClaim=false, command rerun evidence, artifact refresh, and production readiness gate requirements
+- extended `smoke:ui-harness-browse` to pin the exception register builder, copy action marker, DOM marker, packet section, and exception row title
+
 ## 2026-05-16 Web Target Evidence Production Gap Copy Pass
 
 - added a target evidence production gap copy action to the current open blocker triage surface so reviewers can hand off the claim guard separately from required commands, submission manifest, disposition register, and the full packet
