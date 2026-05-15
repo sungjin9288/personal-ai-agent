@@ -3344,6 +3344,164 @@ function buildReleaseBlockerClosureMatrixPackageText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceSubmissionManifestText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const generatedArtifactCommit = String(summary.generatedArtifactCommit || snapshot.verifiedCommit || '<required artifact refresh commit>').trim()
+    || '<required artifact refresh commit>';
+  const shortSourceCommit = sourceCommit.startsWith('<') ? '<short-source-commit>' : sourceCommit.slice(0, 12);
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const manifestFields = [
+    ['packetId', `target-evidence-manifest-<target-env>-<YYYYMMDD>-${shortSourceCommit}`],
+    ['targetEnvironmentName', '<required approved target environment name>'],
+    ['companyWorkspaceScope', '<required company/workspace scope>'],
+    ['deploymentBoundary', '<required deployment profile, network boundary, runtime root alias, and rollback owner>'],
+    ['evidenceOwner', '<required accountable evidence owner>'],
+    ['reviewer', '<required reviewer or approval team>'],
+    ['sourceCommit', sourceCommit],
+    ['generatedArtifactCommit', generatedArtifactCommit],
+    ['reviewDate', '<required YYYY-MM-DD>'],
+    ['packetStatus', 'draft | submitted | accepted-with-scope | rejected | blocked'],
+    ['productionReadyClaimDecision', 'keep productionReadyClaim=false unless every target stop-condition is closed and final gates pass'],
+  ];
+  const requiredPacketSections = [
+    {
+      name: 'submissionManifest',
+      requiredEvidence: 'packet id, target boundary, company/workspace scope, source commit, artifact commit, owner, reviewer, review date, and packet status',
+    },
+    {
+      name: 'sanitizedEvidenceRegister',
+      requiredEvidence: 'repository-relative evidence refs or sanitized external aliases with redaction notes and retention class',
+    },
+    {
+      name: 'boundaryConsistencyMap',
+      requiredEvidence: 'same target environment alias across deployment, identity/session, tenant, provider, observability, retention, support, and clean release boundaries',
+    },
+    {
+      name: 'commandRerunLog',
+      requiredEvidence: 'target-boundary command outputs, result, run date, runner, and artifact refs',
+    },
+    {
+      name: 'reviewerDecisionRecord',
+      requiredEvidence: 'reviewer decision, accepted scope, rejection reason, residual blocker state, and final verification commands',
+    },
+    {
+      name: 'blockerDispositionRegister',
+      requiredEvidence: 'still-blocking, accepted-scope-required, or closed disposition for every current target blocker',
+    },
+    {
+      name: 'releaseRefreshEvidence',
+      requiredEvidence: 'artifact refresh commit, refreshed docs, hygiene result, snapshot result, and production readiness gate result',
+    },
+  ];
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - status: ${String(item.status || 'blocked').trim()}`,
+        `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - manifestDisposition: still-blocking | accepted-scope-required | closed-after-evidence',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const requiredDocs = [
+    'docs/target-environment-evidence-intake-v1.md',
+    'docs/target-deployment-contract-v1.md',
+    'docs/target-provider-evidence-intake-v1.md',
+    'docs/target-provider-operations-v1.md',
+    'docs/release-readiness-v1.md',
+    'docs/execution-v1-evidence.md',
+  ];
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-deployment-contract',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+    'npm run smoke:execution-v1-snapshot',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+  ];
+  const lines = [
+    'Target evidence submission manifest',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Manifest fields:',
+    ...manifestFields.map(([key, value]) => `- ${key}: ${value}`),
+    '',
+    'Required packet sections:',
+    ...requiredPacketSections.flatMap((item, index) => [
+      `${index + 1}. ${item.name}`,
+      `   - requiredEvidence: ${item.requiredEvidence}`,
+      '   - includedInSubmission: yes | no',
+      '   - reviewerNote: <required note or none>',
+    ]),
+    '',
+    'Required reference docs:',
+    ...requiredDocs.map((docPath) => `- ${docLink(docPath)}`),
+    '',
+    'Required verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Visible blocker scope:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Submission manifest rules:',
+    '- This manifest is the packet cover sheet and routing control, not production-ready approval.',
+    '- The manifest must identify the exact target environment, company/workspace scope, deployment boundary, source commit, generated artifact commit, evidence owner, reviewer, review date, and packet status.',
+    '- The manifest cannot be accepted unless sanitizedEvidenceRegister, boundaryConsistencyMap, commandRerunLog, reviewerDecisionRecord, blockerDispositionRegister, and releaseRefreshEvidence are attached for the same target boundary.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every target stop-condition is closed, execution-v1 artifacts are regenerated, release artifact hygiene passes, and production readiness gate passes for the claimed scope.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3411,6 +3569,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
+  const submissionManifest = buildReleaseTargetEvidenceSubmissionManifestText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const sanitizedEvidenceRegister = buildReleaseTargetEvidenceSanitizedRegisterText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3496,6 +3661,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '5. reviewerDecisionRecord',
     '6. blockerDispositionRegister',
     '7. releaseRefreshEvidence',
+    '',
+    'Submission manifest template:',
+    submissionManifest || '- none',
     '',
     'Sanitized evidence register template:',
     sanitizedEvidenceRegister || '- none',
@@ -5821,6 +5989,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-submission-manifest') {
+        void copyReleaseTargetEvidenceSubmissionManifest();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-sanitized-register') {
         void copyReleaseTargetEvidenceSanitizedRegister();
         return;
@@ -7042,6 +7215,37 @@ async function copyReleaseTargetEvidenceIntakeSummary({
     promptMessage: 'target evidence intake summary를 복사하세요.',
     shownNotice: 'target evidence intake summary를 표시했습니다.',
     successNotice: 'target evidence intake summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceSubmissionManifest({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const manifestText = buildReleaseTargetEvidenceSubmissionManifestText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!manifestText) {
+    setUiNotice('복사할 target evidence submission manifest가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(manifestText, {
+    promptMessage: 'target evidence submission manifest를 복사하세요.',
+    shownNotice: 'target evidence submission manifest를 표시했습니다.',
+    successNotice: 'target evidence submission manifest를 복사했습니다.',
   });
 }
 
@@ -11598,6 +11802,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-submission-manifest="true"
+                  data-ui-action="copy-release-target-evidence-submission-manifest"
+                >target submission manifest 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

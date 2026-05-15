@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Submission Manifest Copy Pass
+
+- added a target evidence submission manifest copy action to the current open blocker triage surface so reviewers can copy the packet cover sheet separately from sanitized registers, command logs, decisions, dispositions, refresh evidence, and the full intake packet
+- included packet id, target environment, company/workspace scope, deployment boundary, evidence owner, reviewer, source commit, generated artifact commit, review date, packet status, production-ready claim decision, required packet sections, reference docs, verification commands, visible blocker scope, and residual production blockers in the copied manifest
+- embedded the submission manifest template inside the full target evidence intake packet so packet-level handoff carries the same routing and scope control as the standalone manifest copy
+- extended `smoke:ui-harness-browse` to pin the submission manifest builder, copy action marker, DOM marker, packet template section, and manifest field title
+
 ## 2026-05-15 Web Target Evidence Release Refresh Evidence Copy Pass
 
 - added a target evidence release refresh evidence copy action to the current open blocker triage surface so reviewers can audit execution evidence, closeout, handoff, immutable snapshot, pilot export package, release drill, clean deployment release, release readiness, artifact hygiene, and production readiness gate references separately from the full packet
