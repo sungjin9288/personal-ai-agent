@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-15T06:23:29.415Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-15T06:23:16.257Z
 - branch: codex/post-target-evidence-boundary-map-artifact-sync
 - commit: 77798fbe0a6843239d40120e8b9be0303b6bb404
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/77798fbe0a6843239d40120e8b9be0303b6bb404/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

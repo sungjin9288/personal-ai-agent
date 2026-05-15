@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T06:23:29.415Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T06:23:16.190Z
 - branch: codex/post-target-evidence-boundary-map-artifact-sync
 - commit: 77798fbe0a6843239d40120e8b9be0303b6bb404
