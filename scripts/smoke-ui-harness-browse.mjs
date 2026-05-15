@@ -264,6 +264,11 @@ try {
   assert.equal(appJs.includes('data-release-provider-blocker-count'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-count'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerClosureMatrixPackageText'), true);
+  assert.equal(appJs.includes('Target environment blocker closure matrix package'), true);
+  assert.equal(appJs.includes('copy-release-blocker-filter-closure-matrix'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-matrix'), true);
+  assert.equal(appJs.includes('targetEnvironmentEvidenceIntakeDoc'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('/api/actions/provider-attention/'), true);

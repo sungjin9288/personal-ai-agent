@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Current Blocker Closure Matrix Package Pass
+
+- added a target environment blocker closure matrix package for the active current-open-blocker slice so blocker disposition rows can be copied directly into target environment evidence intake
+- included blocker id, provider, category, owner, state, stop reason, required closing evidence, verification commands, evidence docs, claim impact, decision owner, and deep links in each matrix row
+- included the closure matrix section inside the existing slice package so complete blocker handoffs now carry target environment intake requirements without a second copy step
+- extended `smoke:ui-harness-browse` to pin the matrix builder, copy action marker, package title, and target evidence intake doc linkage
+
 ## 2026-05-15 Web Provider Blocker Readiness Linkage Pass
 
 - added provider ownership to current open provider blocker actions for Anthropic, local, and Hermes so API consumers no longer need to infer blocker-to-provider mapping from prose
