@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T07:32:42.981Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T07:32:27.114Z
 - branch: codex/post-target-evidence-release-refresh-artifact-sync
 - commit: 6c903d77969891b48c31f8954a77f6ae54b0cfdf
