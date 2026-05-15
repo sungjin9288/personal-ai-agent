@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Provider Readiness Handoff Package Pass
+
+- added copyable provider readiness handoff packages to release provider cards and the aggregate provider preflight callout so env, preflight, live-validation, evidence refresh, and production blocker context can be shared together
+- included target provider evidence intake and target provider operations closure rules so provider account/env remediation cannot be mistaken for a production-ready claim
+- extended `smoke:ui-harness-browse` to pin the provider readiness package builder, copy action marker, and handoff text contract in the served web bundle
+- aligned `smoke:production-provider-readiness` with the current artifact-sync state where all provider env vars are absent locally while OpenAI and local archived live proof remain preserved
+
 ## 2026-05-15 Web Provider Fallback Event Audit Package Copy Pass
 
 - added a copyable provider fallback event audit package to the provider configuration surface so policy, stop-reason, count, latest event, and verification command context can be handed off together

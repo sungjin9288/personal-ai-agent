@@ -2369,6 +2369,206 @@ function buildReleaseProductionBlockerPackageText({
   return `Production-ready blocker package\n\n${sections.join('\n\n')}\n`;
 }
 
+function getReleaseProviderReadinessEntries({
+  provider = '',
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const providerReadiness = Array.isArray(releaseStatus?.providerReadiness)
+    ? releaseStatus.providerReadiness
+    : [];
+  const normalizedProvider = String(provider || '').trim();
+  return providerReadiness.filter((item) => {
+    const itemProvider = String(item?.provider || '').trim();
+    return itemProvider && (!normalizedProvider || itemProvider === normalizedProvider);
+  });
+}
+
+function getReleaseProviderLiveStatus(provider = '', releaseStatus = state.releaseStatus) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return '';
+  }
+  const liveValidation = Array.isArray(releaseStatus?.liveValidation)
+    ? releaseStatus.liveValidation
+    : [];
+  const entry = liveValidation.find((item) => String(item?.provider || '').trim() === normalizedProvider);
+  return String(entry?.status || '').trim();
+}
+
+function getReleaseProviderSpecificEvidenceDoc(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerDocMap = {
+    anthropic: {
+      label: 'Target Anthropic provider account',
+      path: 'docs/target-anthropic-provider-account-v1.md',
+    },
+    hermes: {
+      label: 'Target Hermes provider architecture',
+      path: 'docs/target-hermes-provider-architecture-v1.md',
+    },
+    local: {
+      label: 'Target local provider architecture',
+      path: 'docs/target-local-provider-architecture-v1.md',
+    },
+    openai: {
+      label: 'Target OpenAI provider account',
+      path: 'docs/target-openai-provider-account-v1.md',
+    },
+  };
+  return providerDocMap[normalizedProvider] || null;
+}
+
+function buildReleaseProviderReadinessUrl(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  return `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'release',
+    releaseBlockerCategoryFilter: '',
+    releaseBlockerOwnerFilter: '',
+    releaseFocusedBlockerId: '',
+    releaseFocusedProductionBlockerIndex: '',
+    releaseFocusedProvider: normalizedProvider,
+    releaseFocusedHistoryId: '',
+    releaseHistoryOutcome: '',
+    releaseHistoryProvider: '',
+    releaseHistoryScope: '',
+  })}`;
+}
+
+function formatReleaseProviderReadinessEvidenceDocLines(docs = []) {
+  return docs.map((doc, index) => {
+    const encodedPath = encodeURIComponent(doc.path);
+    return [
+      `${index + 1}. ${doc.label}`,
+      `   - path: ${doc.path}`,
+      `   - link: ${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodedPath}`)}`,
+    ].join('\n');
+  });
+}
+
+function getReleaseProviderReadinessEvidenceDocs(provider = '') {
+  const docs = [
+    {
+      label: 'Production provider readiness',
+      path: 'docs/production-provider-readiness-v1.md',
+    },
+    {
+      label: 'Target provider evidence intake',
+      path: 'docs/target-provider-evidence-intake-v1.md',
+    },
+    {
+      label: 'Target provider operations',
+      path: 'docs/target-provider-operations-v1.md',
+    },
+  ];
+  const providerSpecificDoc = getReleaseProviderSpecificEvidenceDoc(provider);
+  if (providerSpecificDoc) {
+    docs.push(providerSpecificDoc);
+  }
+  return docs;
+}
+
+function buildReleaseProviderReadinessEvidenceDocLines(provider = '') {
+  return formatReleaseProviderReadinessEvidenceDocLines(getReleaseProviderReadinessEvidenceDocs(provider));
+}
+
+function buildReleaseProviderReadinessPackageText({
+  provider = '',
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const entries = getReleaseProviderReadinessEntries({ provider, releaseStatus });
+  if (!entries.length) {
+    return '';
+  }
+
+  const normalizedProvider = String(provider || '').trim();
+  const summary = releaseStatus?.summary || {};
+  const releaseReadiness = releaseStatus?.releaseReadiness || {};
+  const packageScope = normalizedProvider || 'all providers';
+  const releaseLink = buildReleaseProviderReadinessUrl(normalizedProvider);
+  const productionProviderReadinessDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Fproduction-provider-readiness-v1.md',
+  );
+  const releaseReadinessDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
+  );
+  const providerLines = entries.map((item, index) => {
+    const itemProvider = String(item.provider || '').trim();
+    const preflight = state.releasePreflightResults?.[itemProvider] || null;
+    const preflightStatus = String(preflight?.status || 'not-run').trim();
+    const liveStatus = getReleaseProviderLiveStatus(itemProvider, releaseStatus) || 'not archived';
+    const liveCommand = getProviderLiveCommand(item, preflight);
+    return [
+      `${index + 1}. ${item.label || itemProvider}`,
+      `   - provider: ${itemProvider}`,
+      `   - envKey: ${item.envKey || '-'}`,
+      `   - envReady: ${String(Boolean(item.ready))}`,
+      `   - readinessStatus: ${item.status || 'unknown'}`,
+      `   - preflightStatus: ${preflightStatus}`,
+      `   - archivedLiveStatus: ${liveStatus}`,
+      `   - preflightCommand: ${item.preflightCommand || `npm run preflight:execution-v1:${itemProvider}`}`,
+      `   - liveCommand: ${liveCommand || item.command || '-'}`,
+      `   - evidenceCommand: ${item.evidenceCommand || `node scripts/build-execution-v1-evidence.mjs --live-${itemProvider}`}`,
+    ].join('\n');
+  });
+  const providerSpecificCommands = entries.flatMap((item) => {
+    const itemProvider = String(item.provider || '').trim();
+    const preflight = state.releasePreflightResults?.[itemProvider] || null;
+    const liveCommand = getProviderLiveCommand(item, preflight);
+    return [
+      `- ${item.label || itemProvider} preflight: ${item.preflightCommand || `npm run preflight:execution-v1:${itemProvider}`}`,
+      `- ${item.label || itemProvider} live validation: ${liveCommand || item.command || '-'}`,
+      `- ${item.label || itemProvider} evidence refresh: ${item.evidenceCommand || `node scripts/build-execution-v1-evidence.mjs --live-${itemProvider}`}`,
+    ];
+  });
+  const evidenceDocLines = normalizedProvider
+    ? buildReleaseProviderReadinessEvidenceDocLines(normalizedProvider)
+    : formatReleaseProviderReadinessEvidenceDocLines([
+        ...getReleaseProviderReadinessEvidenceDocs('openai'),
+        getReleaseProviderSpecificEvidenceDoc('anthropic'),
+        getReleaseProviderSpecificEvidenceDoc('local'),
+        getReleaseProviderSpecificEvidenceDoc('hermes'),
+      ].filter(Boolean));
+
+  return [
+    'Provider readiness handoff package',
+    '',
+    'Scope:',
+    `- provider: ${packageScope}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? 'not tracked'}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    `- productionProviderReadinessDoc: ${productionProviderReadinessDoc}`,
+    `- releaseReadinessDoc: ${releaseReadinessDoc}`,
+    '',
+    'Provider readiness matrix:',
+    ...providerLines,
+    '',
+    'Commands:',
+    '- Aggregate preflight: npm run preflight:execution-v1:all',
+    '- Provider readiness rehearsal: npm run rehearsal:production-provider-readiness',
+    '- Provider readiness smoke: npm run smoke:production-provider-readiness',
+    ...providerSpecificCommands,
+    '- Target provider evidence intake smoke: npm run smoke:target-provider-evidence-intake',
+    '- Target provider operations smoke: npm run smoke:target-provider-operations',
+    '- Artifact refresh after accepted live proof: npm run refresh:execution-v1-artifacts',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+    '',
+    'Evidence docs:',
+    ...evidenceDocLines,
+    '',
+    'Closure rules:',
+    '- Provider env or account remediation must be completed outside this UI package before live validation can pass.',
+    '- Target provider evidence intake must include account or architecture approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, fallback route, and blocker closure verification.',
+    '- Target provider operations must include provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.',
+    '- Regenerate execution-v1 artifacts after intentional live-provider proof or source-of-record changes.',
+    '- Keep productionReadyClaim=false while any provider or target-environment stop-condition remains open.',
+  ].join('\n');
+}
+
 function getReleaseBlockerSliceSummary({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4022,6 +4222,13 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-provider-readiness-package') {
+        void copyReleaseProviderReadinessPackage({
+          provider: button.dataset.uiProvider || value || '',
+        });
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-summary') {
         void copyReleaseBlockerFilterSummary();
         return;
@@ -5049,6 +5256,25 @@ async function copyReleaseProductionBlockerPackage({
     promptMessage: 'production-ready blocker package를 복사하세요.',
     shownNotice: 'production-ready blocker package를 표시했습니다.',
     successNotice: 'production-ready blocker package를 복사했습니다.',
+  });
+}
+
+async function copyReleaseProviderReadinessPackage({
+  provider = '',
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  const packageText = buildReleaseProviderReadinessPackageText({ provider: normalizedProvider });
+  if (!packageText) {
+    setUiNotice('복사할 provider readiness handoff package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'provider readiness handoff package를 복사하세요.',
+    shownNotice: 'provider readiness handoff package를 표시했습니다.',
+    successNotice: normalizedProvider
+      ? `${normalizedProvider} provider readiness handoff package를 복사했습니다.`
+      : '전체 provider readiness handoff package를 복사했습니다.',
   });
 }
 
@@ -10078,6 +10304,7 @@ function renderReleaseStatus() {
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} preflight 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`)}">preflight 명령 복사</button>
                             <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
                             <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight))}">live 명령 복사</button>
+                            <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" data-release-provider-readiness-package="true">provider package 복사</button>
                           `
                         : ''}
                       ${focusedProviderLatestAction
@@ -10115,6 +10342,7 @@ function renderReleaseStatus() {
               <div class="release-history-focus-actions">
                 <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all">전체 preflight 실행</button>
                 <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all">전체 preflight 명령 복사</button>
+                <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-release-provider-readiness-package="true">전체 readiness package 복사</button>
               </div>
             </div>
             <div class="release-provider-grid">
@@ -10174,6 +10402,13 @@ function renderReleaseStatus() {
                           data-ui-label="${escapeHtml(`${item.label} live 명령`)}"
                           data-ui-value="${escapeHtml(liveCommand)}"
                         >live 명령 복사</button>
+                        <button
+                          class="secondary-button"
+                          type="button"
+                          data-ui-action="copy-release-provider-readiness-package"
+                          data-ui-provider="${escapeHtml(item.provider)}"
+                          data-release-provider-readiness-package="true"
+                        >provider package 복사</button>
                         <button
                           class="ghost-button"
                           type="button"
