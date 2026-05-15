@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T03:38:13.631Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T03:38:03.325Z
 - branch: codex/post-target-evidence-intake-packet-artifact-sync
 - commit: 0025274cb25a46db7697e67e57751eab583a60c6
