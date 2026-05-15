@@ -3245,6 +3245,105 @@ function buildReleaseBlockerSliceEvidenceText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseBlockerClosureMatrixPackageText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const sliceLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
+  );
+  const targetProviderOperationsDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-provider-operations-v1.md',
+  );
+  const releaseReadinessDoc = getAbsoluteReleaseUrl(
+    '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
+  );
+  const matrixRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const actionId = String(item.id || '').trim();
+        const provider = String(item.provider || '').trim();
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        const firstCommand = commands.find((command) => String(command.command || '').trim()) || null;
+        const blockerLink = `${window.location.origin}${buildUiStateUrl({
+          detailTab: 'release',
+          releaseBlockerCategoryFilter: '',
+          releaseBlockerOwnerFilter: '',
+          releaseFocusedBlockerId: actionId,
+          releaseFocusedProductionBlockerIndex: '',
+          releaseFocusedProvider: provider,
+          releaseFocusedHistoryId: '',
+          releaseHistoryOutcome: '',
+          releaseHistoryProvider: '',
+          releaseHistoryScope: '',
+        })}`;
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - blockerId: ${actionId || 'unknown'}`,
+          `   - provider: ${provider || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - currentState: ${String(item.status || 'blocked').trim()}`,
+          `   - stopConditionId: ${actionId || 'unknown'}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - nextVerificationCommand: ${String(firstCommand?.command || '').trim() || 'not recorded'}`,
+          `   - allVerificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          '   - artifactRefreshRequired: yes when live proof or release source-of-record changes',
+          '   - allowedClaimImpact: keep productionReadyClaim=false until this stop-condition is closed and final gates pass',
+          `   - decisionOwner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - releaseLink: ${blockerLink}`,
+        ];
+      })
+    : ['- none'];
+  const lines = [
+    'Target environment blocker closure matrix package',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- releaseLink: ${sliceLink}`,
+    `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
+    `- targetProviderOperationsDoc: ${targetProviderOperationsDoc}`,
+    `- releaseReadinessDoc: ${releaseReadinessDoc}`,
+    '',
+    'Closure matrix:',
+    ...matrixRows,
+    '',
+    'Target evidence intake requirements:',
+    '1. Attach target environment name, owner, profile, deployment boundary, and evidence capture date.',
+    '2. Copy every matrix row into the blocker disposition register before changing release readiness labels.',
+    '3. Pair every provider row with target provider evidence intake and target provider operations proof.',
+    '4. Keep command output, evidence doc references, reviewer decision, and residual blocker state together.',
+    '5. Regenerate execution-v1 artifacts after accepted live proof or release source-of-record changes.',
+    '',
+    'Final verification:',
+    '- Target environment evidence intake: npm run smoke:target-environment-evidence-intake',
+    '- Target provider evidence intake: npm run smoke:target-provider-evidence-intake',
+    '- Target provider operations: npm run smoke:target-provider-operations',
+    '- Artifact refresh: npm run refresh:execution-v1-artifacts',
+    '- Production readiness gate: npm run smoke:production-readiness-gate',
+    '- Release artifact hygiene: npm run smoke:release-artifact-hygiene',
+    '- Execution v1 status: npm run smoke:execution-v1-status',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerSlicePackageText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3269,6 +3368,7 @@ function buildReleaseBlockerSlicePackageText({
     buildReleaseBlockerSliceSummaryText(buildOptions),
     buildReleaseBlockerSliceHandoffText(buildOptions),
     buildReleaseBlockerSliceClosureChecklistText(buildOptions),
+    buildReleaseBlockerClosureMatrixPackageText(buildOptions),
     buildReleaseBlockerSliceCommandText(buildOptions),
     buildReleaseBlockerSliceEvidenceText(buildOptions),
   ]
@@ -4373,6 +4473,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-filter-closure-checklist') {
         void copyReleaseBlockerFilterClosureChecklist();
+        return;
+      }
+
+      if (action === 'copy-release-blocker-filter-closure-matrix') {
+        void copyReleaseBlockerFilterClosureMatrixPackage();
         return;
       }
 
@@ -5500,6 +5605,37 @@ async function copyReleaseBlockerFilterClosureChecklist({
     promptMessage: 'release blocker slice closure checklist를 복사하세요.',
     shownNotice: 'release blocker slice closure checklist를 표시했습니다.',
     successNotice: 'release blocker slice closure checklist를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerFilterClosureMatrixPackage({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const matrixText = buildReleaseBlockerClosureMatrixPackageText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!matrixText) {
+    setUiNotice('복사할 release blocker closure matrix package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(matrixText, {
+    promptMessage: 'release blocker closure matrix package를 복사하세요.',
+    shownNotice: 'release blocker closure matrix package를 표시했습니다.',
+    successNotice: 'release blocker closure matrix package를 복사했습니다.',
   });
 }
 
@@ -9827,6 +9963,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-closure-checklist="true"
                   data-ui-action="copy-release-blocker-filter-closure-checklist"
                 >slice closure 체크리스트 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-filter-closure-matrix="true"
+                  data-ui-action="copy-release-blocker-filter-closure-matrix"
+                >closure matrix 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
