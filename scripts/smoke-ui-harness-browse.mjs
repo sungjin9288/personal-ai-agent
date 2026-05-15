@@ -280,6 +280,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-capture-template'), true);
   assert.equal(appJs.includes('Target evidence capture template:'), true);
   assert.equal(appJs.includes('Capture template rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceRequiredCommandsText'), true);
+  assert.equal(appJs.includes('Target evidence required commands'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-required-commands'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
+  assert.equal(appJs.includes('Required commands package:'), true);
+  assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);

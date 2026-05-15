@@ -3677,6 +3677,283 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceRequiredCommandsText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const commandDefinitions = [
+    {
+      command: 'npm run smoke:target-environment-evidence-intake',
+      domain: 'target evidence intake',
+      proofIntent: 'completed target evidence capture template, sanitized submission packet, boundary map, command log, reviewer decision, blocker disposition, release refresh evidence, and production readiness gate references are present',
+      stopCondition: 'target-environment-evidence-missing',
+    },
+    {
+      command: 'npm run smoke:target-identity-session-operations',
+      domain: 'identity/session operations',
+      proofIntent: 'customer IdP, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention evidence are captured',
+      stopCondition: 'hosted-identity-session-approval-missing',
+    },
+    {
+      command: 'npm run smoke:target-provider-evidence-intake',
+      domain: 'provider evidence intake',
+      proofIntent: 'provider approvals, secret injection references, account ownership, live validation plan, telemetry, fallback, and renewal evidence are present for the target boundary',
+      stopCondition: 'target-provider-evidence-intake-missing',
+    },
+    {
+      command: 'npm run smoke:target-provider-operations',
+      domain: 'provider operations',
+      proofIntent: 'target provider runtime, secret rotation, revocation, live validation, fallback, outage handling, and operations evidence are captured',
+      stopCondition: 'target-provider-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-openai-provider-account',
+      domain: 'OpenAI provider account',
+      proofIntent: 'target OpenAI account ownership, billing/quota, API key injection, model access, terms, usage guard, live validation, telemetry, fallback, and review audit are captured',
+      stopCondition: 'target-openai-provider-account-approval-missing',
+    },
+    {
+      command: 'npm run smoke:target-anthropic-provider-account',
+      domain: 'Anthropic provider account',
+      proofIntent: 'target Anthropic account approval, billing/credit remediation, secret injection, model access, live validation, telemetry, and fallback evidence are captured',
+      stopCondition: 'anthropic-live-validation-missing-or-failed',
+    },
+    {
+      command: 'npm run smoke:target-local-provider-architecture',
+      domain: 'local provider architecture',
+      proofIntent: 'target local provider ownership, model pinning, network isolation, data residency, resource guard, telemetry, fallback, and customer acceptance are captured',
+      stopCondition: 'target-local-provider-approval-missing',
+    },
+    {
+      command: 'npm run smoke:target-hermes-provider-architecture',
+      domain: 'Hermes provider architecture',
+      proofIntent: 'target Hermes endpoint/model aliases, runtime config, secret injection, network boundary, live validation, telemetry, and support ownership are captured',
+      stopCondition: 'hermes-runtime-config-missing',
+    },
+    {
+      command: 'npm run smoke:hosted-identity-session-architecture',
+      domain: 'hosted identity/session architecture',
+      proofIntent: 'hosted identity architecture, customer IdP integration, user lifecycle, session controls, authorization, audit, and support boundaries are defined',
+      stopCondition: 'hosted-identity-session-approval-missing',
+    },
+    {
+      command: 'npm run smoke:hosted-tenant-isolation-architecture',
+      domain: 'hosted tenant isolation architecture',
+      proofIntent: 'hosted tenant identity, authorization, storage partitioning, encryption/key ownership, observability, support, backup/restore, and lifecycle isolation are defined',
+      stopCondition: 'hosted-tenant-isolation-approval-missing',
+    },
+    {
+      command: 'npm run smoke:target-tenant-isolation-operations',
+      domain: 'tenant isolation operations',
+      proofIntent: 'target tenant isolation tests, storage/encryption proof, backup/restore non-interference, lifecycle evidence, and negative cross-tenant checks are captured',
+      stopCondition: 'target-tenant-isolation-evidence-missing',
+    },
+    {
+      command: 'npm run smoke:target-secret-manager-architecture',
+      domain: 'secret manager architecture',
+      proofIntent: 'target secret manager ownership, aliases, access policy, rotation, revocation, break-glass, audit, and deployment injection boundaries are defined',
+      stopCondition: 'target-secret-manager-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-secret-manager',
+      domain: 'secret manager operations',
+      proofIntent: 'target secret injection, rotation proof, revocation path, audit export, and sanitized secret evidence references are captured',
+      stopCondition: 'target-secret-injection-missing',
+    },
+    {
+      command: 'npm run smoke:target-observability-architecture',
+      domain: 'observability architecture',
+      proofIntent: 'target telemetry backend, log/metric/trace boundaries, alert routing, ownership, retention, and customer status paths are defined',
+      stopCondition: 'target-observability-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-observability-operations',
+      domain: 'observability operations',
+      proofIntent: 'target telemetry ingestion, alert acknowledgement, incident handoff, customer communication, provider outage handling, and missed-alert containment are captured',
+      stopCondition: 'target-observability-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-slo-architecture',
+      domain: 'SLO architecture',
+      proofIntent: 'target SLO/SLA terms, error budget owner, customer status path, alert ownership, incident review, and operational boundary are defined',
+      stopCondition: 'target-slo-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-slo-operations',
+      domain: 'SLO operations',
+      proofIntent: 'target SLO measurements, error budget review, alert route, incident response, customer notification, and missed-SLO containment evidence are captured',
+      stopCondition: 'target-slo-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-support-architecture',
+      domain: 'support architecture',
+      proofIntent: 'target support queue, escalation policy, coverage model, ownership, customer communication, and incident review boundaries are defined',
+      stopCondition: 'target-support-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-support-operations',
+      domain: 'support operations',
+      proofIntent: 'target support staffing, ticket flow, escalation, audit trail, on-call handoff, customer communication, and incident review evidence are captured',
+      stopCondition: 'target-support-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-data-lifecycle-architecture',
+      domain: 'data lifecycle architecture',
+      proofIntent: 'target retention classes, export/delete boundaries, provider transcript policy, data residency, audit, and lifecycle controls are defined',
+      stopCondition: 'target-data-lifecycle-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-retention-operations',
+      domain: 'retention operations',
+      proofIntent: 'target retention enforcement, export approval, delete execution, post-delete absence proof, and retention audit evidence are captured',
+      stopCondition: 'target-retention-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-backup-operations',
+      domain: 'backup operations',
+      proofIntent: 'target backup schedule, restore validation, tenant isolation, expiry/deletion, disaster recovery, and backup audit evidence are captured',
+      stopCondition: 'target-backup-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-clean-deployment-architecture',
+      domain: 'clean deployment architecture',
+      proofIntent: 'target clean checkout, dependency/runtime, environment config, release snapshot, rollback, and failure containment boundaries are defined',
+      stopCondition: 'target-clean-deployment-architecture-missing',
+    },
+    {
+      command: 'npm run smoke:target-clean-deployment-operations',
+      domain: 'clean deployment operations',
+      proofIntent: 'target clean deployment run, dependency/runtime proof, release snapshot, rollback, failed-deployment containment, and run owner evidence are captured',
+      stopCondition: 'target-clean-deployment-operations-missing',
+    },
+    {
+      command: 'npm run smoke:target-deployment-contract',
+      domain: 'deployment contract',
+      proofIntent: 'target deployment boundary, runtime root alias, release label, dependency proof, rollback owner, and contract references are present',
+      stopCondition: 'target-deployment-contract-missing',
+    },
+    {
+      command: 'npm run smoke:production-readiness-gate',
+      domain: 'production readiness gate',
+      proofIntent: 'productionReadyClaim remains false until target environment, provider, identity/session, tenant, observability/SLO, retention/backup, support, and release blockers close',
+      stopCondition: 'production-readiness-gate-missing-or-failed',
+    },
+    {
+      command: 'npm run smoke:clean-deployment-release',
+      domain: 'clean deployment release',
+      proofIntent: 'clean checkout deployment, dependency proof, release snapshot, rollback, and artifact hygiene evidence remain current for the release review',
+      stopCondition: 'clean-deployment-release-missing-or-failed',
+    },
+    {
+      command: 'npm run smoke:production-like-release-drill',
+      domain: 'production-like release drill',
+      proofIntent: 'production-like release rehearsal, target gates, provider checks, snapshot, rollback, and handoff evidence remain current',
+      stopCondition: 'production-like-release-drill-missing-or-failed',
+    },
+    {
+      command: 'npm run smoke:pilot-export-package',
+      domain: 'pilot export package',
+      proofIntent: 'pilot/export package inventory, bundle hash, file count, hygiene state, and verified commit references remain current',
+      stopCondition: 'pilot-export-package-missing-or-stale',
+    },
+    {
+      command: 'npm run smoke:release-artifact-hygiene',
+      domain: 'release artifact hygiene',
+      proofIntent: 'release artifacts are scanned for machine-local paths, secret-like values, and unsupported evidence leakage before reviewer acceptance',
+      stopCondition: 'release-artifact-hygiene-missing-or-failed',
+    },
+  ];
+  const commandRows = commandDefinitions.flatMap((item, index) => [
+    `${index + 1}. ${item.command}`,
+    `   - domain: ${item.domain}`,
+    `   - proofIntent: ${item.proofIntent}`,
+    `   - stopCondition: ${item.stopCondition}`,
+    '   - result: <required pass/fail/not-run>',
+    '   - ranAt: <required ISO timestamp or YYYY-MM-DD>',
+    '   - artifactReference: <required repository-relative path or sanitized external alias>',
+    '   - reviewerNote: <required note or none>',
+  ]);
+  const commandExecutionOrder = commandDefinitions.map((item, index) => `${index + 1}. ${item.command}`);
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+          `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+          `   - blockerCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          '   - requiredCommandsImpact: keep as stop-condition until matching blocker commands and applicable target required commands pass from the same approved boundary',
+        ];
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence required commands',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- requiredCommandCount: ${commandDefinitions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Command rows:',
+    ...commandRows,
+    '',
+    'Command execution order:',
+    ...commandExecutionOrder,
+    '',
+    'Visible blocker command cross-check:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Production gap:',
+    '- This command package does not prove hosted identity/session administration, hosted tenant storage or encryption, target secret injection, target telemetry, staffed on-call, target retention enforcement, production backup execution, staffed support operations, clean production deployment, or release approval by itself.',
+    '- Target environment readiness remains blocked for production-ready claims until the evidence packet is completed from the approved production-like or hosted target environment and execution evidence, closeout, handoff, snapshot, pilot export package, production-like release drill, clean deployment release, and release readiness docs are regenerated from that evidence.',
+    '',
+    'Required command rules:',
+    '- Commands must be rerun from the approved target boundary after target evidence, blocker disposition, provider live validation, or release source-of-record changes.',
+    '- A stale, missing, failed, or not-run command keeps the related blocker as a stop-condition.',
+    '- Artifact references must be repository-relative paths or sanitized external evidence aliases.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, raw provider account ids, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every command row passes, execution-v1 artifacts are regenerated, release artifact hygiene passes, and production readiness gate passes for the claimed scope.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3745,6 +4022,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
   const targetEvidenceCaptureTemplate = buildReleaseTargetEvidenceCaptureTemplateText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const requiredCommandsPackage = buildReleaseTargetEvidenceRequiredCommandsText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -3867,6 +4151,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '',
     'Release refresh evidence template:',
     releaseRefreshEvidence || '- none',
+    '',
+    'Required commands package:',
+    requiredCommandsPackage || '- none',
     '',
     'Provider evidence references:',
     ...providerRows,
@@ -6179,6 +6466,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-required-commands') {
+        void copyReleaseTargetEvidenceRequiredCommands();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -7436,6 +7728,37 @@ async function copyReleaseTargetEvidenceCaptureTemplate({
     promptMessage: 'target evidence capture template를 복사하세요.',
     shownNotice: 'target evidence capture template를 표시했습니다.',
     successNotice: 'target evidence capture template를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceRequiredCommands({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const commandText = buildReleaseTargetEvidenceRequiredCommandsText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!commandText) {
+    setUiNotice('복사할 target evidence required commands가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(commandText, {
+    promptMessage: 'target evidence required commands를 복사하세요.',
+    shownNotice: 'target evidence required commands를 표시했습니다.',
+    successNotice: 'target evidence required commands를 복사했습니다.',
   });
 }
 
@@ -12029,6 +12352,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-capture-template="true"
                   data-ui-action="copy-release-target-evidence-capture-template"
                 >target capture template 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-required-commands="true"
+                  data-ui-action="copy-release-target-evidence-required-commands"
+                >target required commands 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

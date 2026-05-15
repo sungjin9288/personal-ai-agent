@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Required Commands Copy Pass
+
+- added a target evidence required commands copy action to the current open blocker triage surface so reviewers can copy the full target evidence command package separately from the capture template, submission manifest, command rerun log, and full packet
+- included the 30 required commands from the target environment evidence intake contract with domain, proof intent, stop-condition id, result/date/artifact placeholders, visible blocker command cross-check rows, residual production blockers, and production gap notes
+- embedded the required commands package inside the full target evidence intake packet so the review envelope carries both the standalone command package and the existing shorter final gate list
+- extended `smoke:ui-harness-browse` to pin the required commands builder, copy action marker, DOM marker, packet section, and command row title
+
 ## 2026-05-15 Web Target Evidence Capture Template Copy Pass
 
 - added a target evidence capture template copy action to the current open blocker triage surface so operators can hand off the ten target-boundary evidence fields before packaging the sanitized submission packet
