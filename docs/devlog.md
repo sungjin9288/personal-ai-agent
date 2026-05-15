@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-15 Web Target Evidence Command Rerun Log Copy Pass
+
+- added a target evidence command rerun log copy action to the current open blocker triage surface so operators can hand off target-boundary command rerun evidence separately from the full evidence packet
+- included blocker-scoped commands, required target evidence commands, command owner, blocker ids, placeholder result/date/artifact fields, residual production blockers, and sanitized evidence rules in the copied log
+- embedded the command rerun log template inside the full target evidence intake packet so the packet carries the same command evidence structure as the standalone copy action
+- extended `smoke:ui-harness-browse` to pin the rerun log builder, copy action marker, DOM marker, packet template section, and command row title
+
 ## 2026-05-15 Web Target Evidence Decision Record Copy Pass
 
 - added a target evidence reviewer decision record copy action to the current open blocker triage surface so reviewers can record scoped accept/reject/still-blocked decisions without copying the full target evidence packet
