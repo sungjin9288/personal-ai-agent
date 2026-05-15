@@ -274,6 +274,12 @@ try {
   assert.equal(appJs.includes('copy-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('This summary is triage manifest only'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceCommandRerunLogText'), true);
+  assert.equal(appJs.includes('Target evidence command rerun log'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-command-rerun-log'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-command-rerun-log'), true);
+  assert.equal(appJs.includes('Command rerun log template:'), true);
+  assert.equal(appJs.includes('Command rerun rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceReviewerDecisionRecordText'), true);
   assert.equal(appJs.includes('Target evidence reviewer decision record'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-decision-record'), true);

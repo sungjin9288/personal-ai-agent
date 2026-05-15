@@ -3411,6 +3411,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
+  const commandRerunLog = buildReleaseTargetEvidenceCommandRerunLogText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const reviewerDecisionRecord = buildReleaseTargetEvidenceReviewerDecisionRecordText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3462,6 +3469,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '6. blockerDispositionRegister',
     '7. releaseRefreshEvidence',
     '',
+    'Command rerun log template:',
+    commandRerunLog || '- none',
+    '',
     'Reviewer decision record template:',
     reviewerDecisionRecord || '- none',
     '',
@@ -3481,6 +3491,149 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
     '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
     '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
+function buildReleaseTargetEvidenceCommandRerunLogText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const commandEntriesByValue = new Map();
+  visibleActions.forEach((item) => {
+    const actionId = String(item.id || '').trim();
+    const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
+    const commands = Array.isArray(item.commands) ? item.commands : [];
+    commands.forEach((command) => {
+      const commandValue = String(command.command || '').trim();
+      if (!commandValue) {
+        return;
+      }
+      if (!commandEntriesByValue.has(commandValue)) {
+        commandEntriesByValue.set(commandValue, {
+          blockerIds: [],
+          blockers: [],
+          command: commandValue,
+          label: String(command.label || command.kind || 'blocker command').trim(),
+          owner: String(item.owner || 'release-owner').trim(),
+        });
+      }
+      const entry = commandEntriesByValue.get(commandValue);
+      if (actionId && !entry.blockerIds.includes(actionId)) {
+        entry.blockerIds.push(actionId);
+      }
+      if (blockerLabel && !entry.blockers.includes(blockerLabel)) {
+        entry.blockers.push(blockerLabel);
+      }
+    });
+  });
+  const targetCommands = [
+    {
+      command: 'npm run smoke:target-environment-evidence-intake',
+      label: 'Target environment evidence intake',
+    },
+    {
+      command: 'npm run smoke:target-deployment-contract',
+      label: 'Target deployment contract',
+    },
+    {
+      command: 'npm run smoke:target-provider-evidence-intake',
+      label: 'Target provider evidence intake',
+    },
+    {
+      command: 'npm run smoke:target-provider-operations',
+      label: 'Target provider operations',
+    },
+    {
+      command: 'npm run refresh:execution-v1-artifacts',
+      label: 'Execution v1 artifact refresh',
+    },
+    {
+      command: 'npm run smoke:production-readiness-gate',
+      label: 'Production readiness gate',
+    },
+    {
+      command: 'npm run smoke:release-artifact-hygiene',
+      label: 'Release artifact hygiene',
+    },
+    {
+      command: 'npm run smoke:execution-v1-status',
+      label: 'Execution v1 status',
+    },
+  ];
+  targetCommands.forEach((item) => {
+    const commandValue = String(item.command || '').trim();
+    if (!commandValue || commandEntriesByValue.has(commandValue)) {
+      return;
+    }
+    commandEntriesByValue.set(commandValue, {
+      blockerIds: ['target-evidence-required'],
+      blockers: ['target evidence submission packet'],
+      command: commandValue,
+      label: String(item.label || 'target evidence command').trim(),
+      owner: 'release-owner',
+    });
+  });
+  const commandEntries = Array.from(commandEntriesByValue.values());
+  const rerunRows = commandEntries.length
+    ? commandEntries.flatMap((entry, index) => [
+        `${index + 1}. ${entry.label}`,
+        `   - command: ${entry.command}`,
+        `   - commandOwner: ${entry.owner || 'release-owner'}`,
+        `   - blockerIds: ${entry.blockerIds.length ? entry.blockerIds.join(', ') : 'none'}`,
+        `   - blockers: ${entry.blockers.length ? entry.blockers.join(' | ') : 'none'}`,
+        '   - targetBoundaryExecutionDate: <required YYYY-MM-DD>',
+        '   - result: pass | fail | not-run',
+        '   - artifactPath: <repository-relative evidence path or external evidence alias>',
+        '   - retryOrRemediationNote: <required note or none>',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence command rerun log',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- commandCount: ${commandEntries.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Command rerun rows:',
+    ...rerunRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Command rerun rules:',
+    '- This log must be filled from the approved target boundary, not from an unrelated local run.',
+    '- Every failed or not-run command must keep the related blocker as a stop-condition.',
+    '- Artifact paths must be repository-relative or sanitized external evidence aliases.',
+    '- Do not include raw API keys, tokens, tenant payloads, customer personal data, billing identifiers, private endpoint credentials, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until command rerun evidence, reviewer decision, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate all pass for the claimed scope.',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -4842,6 +4995,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-command-rerun-log') {
+        void copyReleaseTargetEvidenceCommandRerunLog();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-decision-record') {
         void copyReleaseTargetEvidenceDecisionRecord();
         return;
@@ -6038,6 +6196,37 @@ async function copyReleaseTargetEvidenceIntakeSummary({
     promptMessage: 'target evidence intake summary를 복사하세요.',
     shownNotice: 'target evidence intake summary를 표시했습니다.',
     successNotice: 'target evidence intake summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceCommandRerunLog({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const rerunLogText = buildReleaseTargetEvidenceCommandRerunLogText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!rerunLogText) {
+    setUiNotice('복사할 target evidence command rerun log가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(rerunLogText, {
+    promptMessage: 'target evidence command rerun log를 복사하세요.',
+    shownNotice: 'target evidence command rerun log를 표시했습니다.',
+    successNotice: 'target evidence command rerun log를 복사했습니다.',
   });
 }
 
@@ -10439,6 +10628,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-command-rerun-log="true"
+                  data-ui-action="copy-release-target-evidence-command-rerun-log"
+                >target command log 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
