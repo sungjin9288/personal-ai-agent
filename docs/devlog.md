@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-16 Web Target Evidence Production Gap Copy Pass
+
+- added a target evidence production gap copy action to the current open blocker triage surface so reviewers can hand off the claim guard separately from required commands, submission manifest, disposition register, and the full packet
+- included hosted identity/session, hosted tenant storage/encryption, target secret injection, target telemetry, staffed on-call, retention, backup, support, clean deployment, and release approval gap rows with missing proof, required evidence, stop-condition ids, claim guard text, owner/date placeholders, visible blocker cross-checks, and residual production blockers
+- embedded the production gap guard inside the full target evidence intake packet so the packet carries explicit allowed/blocked claim language and the readiness unblock sequence
+- extended `smoke:ui-harness-browse` to pin the production gap builder, copy action marker, DOM marker, packet section, and production gap row title
+
 ## 2026-05-15 Web Target Evidence Required Commands Copy Pass
 
 - added a target evidence required commands copy action to the current open blocker triage surface so reviewers can copy the full target evidence command package separately from the capture template, submission manifest, command rerun log, and full packet

@@ -3954,6 +3954,177 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceProductionGapText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const gapDefinitions = [
+    {
+      gap: 'hosted identity/session administration',
+      missingProof: 'customer IdP administration, user lifecycle, session lifecycle, role administration, audit export, break-glass, and support impersonation evidence from the hosted target boundary',
+      requiredEvidence: 'hosted identity/session architecture approval plus target identity/session operations evidence',
+      stopCondition: 'hosted-identity-session-approval-missing',
+      claimGuard: 'do not claim hosted SaaS or production-ready identity coverage',
+    },
+    {
+      gap: 'hosted tenant storage or encryption',
+      missingProof: 'tenant storage partitioning, tenant key ownership, backup/restore isolation, tenant administration, and cross-tenant denial evidence from the hosted target boundary',
+      requiredEvidence: 'hosted tenant isolation architecture approval plus target tenant isolation operations evidence',
+      stopCondition: 'hosted-tenant-isolation-approval-missing',
+      claimGuard: 'do not claim hosted multi-tenant isolation readiness',
+    },
+    {
+      gap: 'target secret injection',
+      missingProof: 'target secret manager aliases, runtime injection, rotation, revocation, break-glass, and audit evidence without exposing secret values',
+      requiredEvidence: 'target secret manager architecture and operations evidence tied to provider runtime validation',
+      stopCondition: 'target-secret-injection-missing',
+      claimGuard: 'do not claim production provider credential readiness',
+    },
+    {
+      gap: 'target telemetry',
+      missingProof: 'target log, metric, trace, alert, incident handoff, customer status, and provider outage handling evidence from the approved target boundary',
+      requiredEvidence: 'target observability architecture and operations evidence plus SLO operations evidence',
+      stopCondition: 'target-observability-operations-missing',
+      claimGuard: 'do not claim staffed production observability or SLO operations',
+    },
+    {
+      gap: 'staffed on-call',
+      missingProof: 'named on-call owner, alert acknowledgement, escalation route, customer communication owner, missed-alert containment, and incident review cadence',
+      requiredEvidence: 'target SLO operations and support operations evidence with staffing proof',
+      stopCondition: 'target-slo-operations-missing',
+      claimGuard: 'do not claim production incident response readiness',
+    },
+    {
+      gap: 'target retention enforcement',
+      missingProof: 'target retention classes, export approval, delete execution, provider transcript policy, post-delete absence proof, and audit evidence',
+      requiredEvidence: 'target data lifecycle architecture and target retention operations evidence',
+      stopCondition: 'target-retention-operations-missing',
+      claimGuard: 'do not claim production data lifecycle compliance',
+    },
+    {
+      gap: 'production backup execution',
+      missingProof: 'target backup schedule, restore validation, tenant isolation, expiry/deletion, disaster recovery, and backup audit evidence',
+      requiredEvidence: 'target backup operations evidence generated from the approved target boundary',
+      stopCondition: 'target-backup-operations-missing',
+      claimGuard: 'do not claim production disaster recovery readiness',
+    },
+    {
+      gap: 'staffed support operations',
+      missingProof: 'support queue, coverage owner, escalation flow, ticket audit trail, customer communication, on-call handoff, and incident review evidence',
+      requiredEvidence: 'target support architecture and target support operations evidence',
+      stopCondition: 'target-support-operations-missing',
+      claimGuard: 'do not claim production customer support readiness',
+    },
+    {
+      gap: 'clean production deployment',
+      missingProof: 'clean checkout deployment, dependency/runtime proof, environment config, release snapshot, rollback proof, and failed deployment containment for the target boundary',
+      requiredEvidence: 'target clean deployment architecture and operations evidence plus clean deployment release proof',
+      stopCondition: 'target-clean-deployment-operations-missing',
+      claimGuard: 'do not claim production deployment readiness',
+    },
+    {
+      gap: 'release approval',
+      missingProof: 'accepted target evidence packet, reviewer decision, blocker disposition register, release refresh evidence, artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate result',
+      requiredEvidence: 'completed target evidence submission packet and release refresh evidence signed off for the same source commit',
+      stopCondition: 'target-environment-evidence-missing',
+      claimGuard: 'keep productionReadyClaim=false until every mandatory target control is accepted',
+    },
+  ];
+  const gapRows = gapDefinitions.flatMap((item, index) => [
+    `${index + 1}. ${item.gap}`,
+    `   - missingProof: ${item.missingProof}`,
+    `   - requiredEvidence: ${item.requiredEvidence}`,
+    `   - stopCondition: ${item.stopCondition}`,
+    `   - claimGuard: ${item.claimGuard}`,
+    '   - evidenceReference: <required repository-relative path or sanitized external alias>',
+    '   - owner: <required accountable owner>',
+    '   - nextReviewDate: <required YYYY-MM-DD>',
+  ]);
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - productionGapImpact: keep the production-ready claim blocked unless this blocker has accepted target-boundary evidence and final gate results',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const unblockSequence = [
+    'complete target evidence capture template from the approved production-like or hosted target environment',
+    'attach sanitized submission packet, boundary consistency map, command rerun log, reviewer decision, blocker disposition register, and release refresh evidence',
+    'rerun every required target smoke/release command from the same target boundary',
+    'regenerate execution-v1 evidence, closeout, handoff, immutable snapshot, pilot export package, production-like release drill, clean deployment release, and release readiness docs',
+    'pass release artifact hygiene and production readiness gate after all stop-conditions are closed',
+  ];
+  const allowedClaimLines = [
+    '- provider-scoped pilot ready for OpenAI-backed local-first path can remain if supported by current evidence',
+    '- production-ready, hosted SaaS ready, live-provider-complete, tenant-isolated production, staffed support ready, and clean production deployment ready claims remain blocked',
+  ];
+  const lines = [
+    'Target evidence production gap guard',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- productionGapCount: ${gapDefinitions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Production gap rows:',
+    ...gapRows,
+    '',
+    'Visible blocker production gap cross-check:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Readiness unblock sequence:',
+    ...unblockSequence.map((item, index) => `${index + 1}. ${item}`),
+    '',
+    'Allowed and blocked claims:',
+    ...allowedClaimLines,
+    '',
+    'Production gap rules:',
+    '- This is a claim guard for the target evidence packet, not production-ready approval.',
+    '- A local target environment evidence intake contract does not prove hosted identity/session administration, hosted tenant storage or encryption, target secret injection, target telemetry, staffed on-call, target retention enforcement, production backup execution, staffed support operations, clean production deployment, or release approval by itself.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, raw provider account ids, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every mandatory target deployment control is satisfied by accepted target evidence, regenerated release artifacts, release artifact hygiene, and production readiness gate evidence.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4029,6 +4200,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     releaseStatus,
   }).trim();
   const requiredCommandsPackage = buildReleaseTargetEvidenceRequiredCommandsText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const productionGapGuard = buildReleaseTargetEvidenceProductionGapText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -4154,6 +4332,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     '',
     'Required commands package:',
     requiredCommandsPackage || '- none',
+    '',
+    'Production gap guard:',
+    productionGapGuard || '- none',
     '',
     'Provider evidence references:',
     ...providerRows,
@@ -6471,6 +6652,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-production-gap') {
+        void copyReleaseTargetEvidenceProductionGap();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -7759,6 +7945,37 @@ async function copyReleaseTargetEvidenceRequiredCommands({
     promptMessage: 'target evidence required commands를 복사하세요.',
     shownNotice: 'target evidence required commands를 표시했습니다.',
     successNotice: 'target evidence required commands를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProductionGap({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const gapText = buildReleaseTargetEvidenceProductionGapText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!gapText) {
+    setUiNotice('복사할 target evidence production gap이 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(gapText, {
+    promptMessage: 'target evidence production gap을 복사하세요.',
+    shownNotice: 'target evidence production gap을 표시했습니다.',
+    successNotice: 'target evidence production gap을 복사했습니다.',
   });
 }
 
@@ -12358,6 +12575,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-required-commands="true"
                   data-ui-action="copy-release-target-evidence-required-commands"
                 >target required commands 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-production-gap="true"
+                  data-ui-action="copy-release-target-evidence-production-gap"
+                >target production gap 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

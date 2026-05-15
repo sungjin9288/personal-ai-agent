@@ -286,6 +286,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
+  assert.equal(appJs.includes('Target evidence production gap guard'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-production-gap'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-production-gap'), true);
+  assert.equal(appJs.includes('Production gap guard:'), true);
+  assert.equal(appJs.includes('Production gap rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
