@@ -3502,6 +3502,181 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceCaptureTemplateText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const captureFields = [
+    {
+      field: 'targetEnvironmentName',
+      requiredValue: 'approved environment name, environment owner, customer/workspace scope, deployment profile, network boundary, runtime root alias, and rollback owner',
+      completionRule: 'must name the exact production-like or hosted boundary where evidence was generated',
+      primaryDocs: ['docs/target-environment-evidence-intake-v1.md', 'docs/target-deployment-contract-v1.md'],
+    },
+    {
+      field: 'deploymentBoundaryEvidence',
+      requiredValue: 'target deployment contract reference, release label, deployment run id or equivalent, runtime/dependency proof, rollback proof, and clean checkout evidence',
+      completionRule: 'must prove release artifacts were generated from the approved target boundary, not from an unrelated local run',
+      primaryDocs: ['docs/target-deployment-contract-v1.md', 'docs/target-clean-deployment-operations-v1.md', 'docs/clean-deployment-release-v1.md'],
+    },
+    {
+      field: 'identitySessionEvidence',
+      requiredValue: 'customer IdP proof, user lifecycle, session lifecycle, role assignment/revocation, permission propagation, audit export, break-glass, support impersonation, compliance, and retention evidence',
+      completionRule: 'must reference target identity session operations evidence generated from the same boundary',
+      primaryDocs: ['docs/hosted-identity-session-architecture-v1.md', 'docs/target-identity-session-operations-v1.md'],
+    },
+    {
+      field: 'tenantIsolationEvidence',
+      requiredValue: 'tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence',
+      completionRule: 'must prove tenant data isolation and key ownership without exposing tenant payloads',
+      primaryDocs: ['docs/hosted-tenant-isolation-architecture-v1.md', 'docs/target-tenant-isolation-operations-v1.md'],
+    },
+    {
+      field: 'providerSecretEvidence',
+      requiredValue: 'selected providers, completed provider evidence intake references, provider account/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence',
+      completionRule: 'must prove provider credentials and provider live validation are target-approved without exposing secret values',
+      primaryDocs: ['docs/target-provider-evidence-intake-v1.md', 'docs/target-provider-operations-v1.md', 'docs/target-secret-manager-v1.md'],
+    },
+    {
+      field: 'observabilitySloEvidence',
+      requiredValue: 'SLO/SLA terms, error budget owner, telemetry backend, telemetry ingestion, alert route, alert acknowledgement, on-call owner, customer status route, incident review, provider outage handling, and missed-SLO containment',
+      completionRule: 'must prove staffed monitoring and customer-facing SLO handling from target telemetry',
+      primaryDocs: ['docs/target-observability-operations-v1.md', 'docs/target-slo-operations-v1.md', 'docs/production-slo-operating-v1.md'],
+    },
+    {
+      field: 'retentionBackupEvidence',
+      requiredValue: 'retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence',
+      completionRule: 'must prove lifecycle controls and DR evidence for the target customer boundary',
+      primaryDocs: ['docs/target-retention-operations-v1.md', 'docs/target-backup-operations-v1.md', 'docs/production-retention-operating-v1.md'],
+    },
+    {
+      field: 'supportOperationsEvidence',
+      requiredValue: 'target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, customer communication, on-call handoff, and incident review cadence',
+      completionRule: 'must prove support ownership and escalation routing are staffed for the target release',
+      primaryDocs: ['docs/target-support-architecture-v1.md', 'docs/target-support-operations-v1.md'],
+    },
+    {
+      field: 'cleanReleaseEvidence',
+      requiredValue: 'target clean deployment operations evidence, clean deployment run, dependency/runtime proof, release snapshot, pilot/export package, artifact hygiene result, rollback proof, and failed-deployment containment',
+      completionRule: 'must reference passed clean deployment, release drill, export package, and hygiene evidence for the same target review',
+      primaryDocs: ['docs/target-clean-deployment-operations-v1.md', 'docs/production-like-release-drill-v1.md', 'docs/pilot-export-package-v1.md'],
+    },
+    {
+      field: 'acceptedRiskDecision',
+      requiredValue: 'accepted risks, residual blockers, decision owner, evidence owner, next review date, and explicit productionReadyClaim decision',
+      completionRule: 'must keep productionReadyClaim false unless every mandatory target deployment control is satisfied by target evidence',
+      primaryDocs: ['docs/release-readiness-v1.md', 'docs/target-environment-evidence-intake-v1.md'],
+    },
+  ];
+  const captureRows = captureFields.flatMap((item, index) => [
+    `${index + 1}. ${item.field}`,
+    `   - requiredValue: ${item.requiredValue}`,
+    `   - completionRule: ${item.completionRule}`,
+    `   - primaryEvidenceDocs: ${item.primaryDocs.map(docLink).join(' | ')}`,
+    '   - evidenceReference: <required repository-relative path or sanitized external alias>',
+    '   - evidenceOwner: <required accountable owner>',
+    '   - capturedAt: <required ISO timestamp or YYYY-MM-DD>',
+    '   - reviewerNote: <required note or none>',
+  ]);
+  const requiredDocs = Array.from(new Set(captureFields.flatMap((item) => item.primaryDocs))).sort();
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-deployment-contract',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run smoke:target-identity-session-operations',
+    'npm run smoke:target-tenant-isolation-operations',
+    'npm run smoke:target-observability-operations',
+    'npm run smoke:target-slo-operations',
+    'npm run smoke:target-retention-operations',
+    'npm run smoke:target-backup-operations',
+    'npm run smoke:target-support-operations',
+    'npm run smoke:target-clean-deployment-operations',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+  ];
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => [
+        `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+        `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+        `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+        `   - category: ${String(item.category || 'stop-condition').trim()}`,
+        `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+        `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+        `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+        '   - captureTemplateImpact: keep as stop-condition until matching target-boundary field evidence is attached',
+      ])
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const lines = [
+    'Target evidence capture template',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Capture template rows:',
+    ...captureRows,
+    '',
+    'Required reference docs:',
+    ...requiredDocs.map((docPath) => `- ${docLink(docPath)}`),
+    '',
+    'Required verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Visible blocker scope:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Capture template rules:',
+    '- This capture template is target-boundary evidence intake, not production-ready approval.',
+    '- Every field must identify the same approved target environment, company/workspace scope, deployment boundary, source commit, evidence owner, capture date, and sanitized evidence reference unless a reviewer-approved exception is recorded.',
+    '- The completed template must still be paired with target deployment contract, provider evidence intake, provider operations, identity/session operations, tenant isolation operations, SLO operations, clean deployment operations, release artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate evidence.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, customer secrets, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, raw provider account ids, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every mandatory target control has target-boundary evidence and every related stop-condition is closed.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -3569,6 +3744,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
+  const targetEvidenceCaptureTemplate = buildReleaseTargetEvidenceCaptureTemplateText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
   const submissionManifest = buildReleaseTargetEvidenceSubmissionManifestText({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -3640,6 +3822,9 @@ function buildReleaseTargetEvidenceIntakePacketText({
     `- targetDeploymentContractDoc: ${targetDeploymentContractDoc}`,
     `- targetProviderEvidenceIntakeDoc: ${targetProviderEvidenceDoc}`,
     `- targetProviderOperationsDoc: ${targetProviderOperationsDoc}`,
+    '',
+    'Target evidence capture template:',
+    targetEvidenceCaptureTemplate || '- none',
     '',
     'Target evidence capture template fields:',
     '1. targetEnvironmentName',
@@ -5989,6 +6174,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-capture-template') {
+        void copyReleaseTargetEvidenceCaptureTemplate();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -7215,6 +7405,37 @@ async function copyReleaseTargetEvidenceIntakeSummary({
     promptMessage: 'target evidence intake summary를 복사하세요.',
     shownNotice: 'target evidence intake summary를 표시했습니다.',
     successNotice: 'target evidence intake summary를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceCaptureTemplate({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const templateText = buildReleaseTargetEvidenceCaptureTemplateText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!templateText) {
+    setUiNotice('복사할 target evidence capture template가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(templateText, {
+    promptMessage: 'target evidence capture template를 복사하세요.',
+    shownNotice: 'target evidence capture template를 표시했습니다.',
+    successNotice: 'target evidence capture template를 복사했습니다.',
   });
 }
 
@@ -11802,6 +12023,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-capture-template="true"
+                  data-ui-action="copy-release-target-evidence-capture-template"
+                >target capture template 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
