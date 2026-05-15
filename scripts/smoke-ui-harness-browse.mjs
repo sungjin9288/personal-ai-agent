@@ -269,6 +269,11 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes('targetEnvironmentEvidenceIntakeDoc'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakeSummaryText'), true);
+  assert.equal(appJs.includes('Target environment evidence intake summary'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-intake-summary'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-intake-summary'), true);
+  assert.equal(appJs.includes('This summary is triage manifest only'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
   assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);

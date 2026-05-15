@@ -3476,6 +3476,102 @@ function buildReleaseTargetEvidenceIntakePacketText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceIntakeSummaryText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const summary = releaseStatus.summary || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const sliceSummary = getReleaseBlockerSliceSummary({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+  });
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const providerCounts = visibleActions.reduce((counts, item) => {
+    const provider = String(item.provider || '').trim();
+    if (!provider) {
+      return counts;
+    }
+    counts.set(provider, (counts.get(provider) || 0) + 1);
+    return counts;
+  }, new Map());
+  const providerCountLines = Array.from(providerCounts.entries())
+    .sort(([leftProvider, leftCount], [rightProvider, rightCount]) =>
+      rightCount - leftCount || leftProvider.localeCompare(rightProvider),
+    )
+    .map(([provider, count]) => `- ${provider}: ${count}`);
+  const targetDocLines = [
+    ['Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'],
+    ['Target deployment contract', 'docs/target-deployment-contract-v1.md'],
+    ['Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'],
+    ['Target provider operations', 'docs/target-provider-operations-v1.md'],
+    ['Release readiness', 'docs/release-readiness-v1.md'],
+  ].map(([label, docPath]) => {
+    const href = getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(docPath)}`);
+    return `- ${label}: ${docPath} (${href})`;
+  });
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-deployment-contract',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run smoke:execution-v1-status',
+  ];
+  const topBlockerLabel = sliceSummary.topVisibleBlockerLabel
+    ? `${sliceSummary.topVisibleBlockerId || 'unknown'}: ${sliceSummary.topVisibleBlockerLabel}`
+    : 'none';
+  const lines = [
+    'Target environment evidence intake summary',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- visibleCurrentBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
+    `- commandCount: ${sliceSummary.commandCount}`,
+    `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
+    `- providerBlockerCount: ${Array.from(providerCounts.values()).reduce((total, count) => total + count, 0)}`,
+    `- providerCount: ${providerCounts.size}`,
+    `- topVisibleBlocker: ${topBlockerLabel}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Provider blocker counts:',
+    ...(providerCountLines.length ? providerCountLines : ['- none']),
+    '',
+    'Required target docs:',
+    ...targetDocLines,
+    '',
+    'Required commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Summary handoff rules:',
+    '- This summary is triage manifest only; use target evidence packet copy before reviewer decision.',
+    '- Do not treat a copied summary as production-ready approval.',
+    '- Keep productionReadyClaim=false until every target stop-condition has accepted target-boundary evidence and final gates pass.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseBlockerSlicePackageText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4610,6 +4706,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-filter-closure-matrix') {
         void copyReleaseBlockerFilterClosureMatrixPackage();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-intake-summary') {
+        void copyReleaseTargetEvidenceIntakeSummary();
         return;
       }
 
@@ -5773,6 +5874,37 @@ async function copyReleaseBlockerFilterClosureMatrixPackage({
     promptMessage: 'release blocker closure matrix package를 복사하세요.',
     shownNotice: 'release blocker closure matrix package를 표시했습니다.',
     successNotice: 'release blocker closure matrix package를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceIntakeSummary({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const summaryText = buildReleaseTargetEvidenceIntakeSummaryText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!summaryText) {
+    setUiNotice('복사할 target evidence intake summary가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(summaryText, {
+    promptMessage: 'target evidence intake summary를 복사하세요.',
+    shownNotice: 'target evidence intake summary를 표시했습니다.',
+    successNotice: 'target evidence intake summary를 복사했습니다.',
   });
 }
 
@@ -10137,6 +10269,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-closure-matrix="true"
                   data-ui-action="copy-release-blocker-filter-closure-matrix"
                 >closure matrix 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-intake-summary="true"
+                  data-ui-action="copy-release-target-evidence-intake-summary"
+                >target evidence summary 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
