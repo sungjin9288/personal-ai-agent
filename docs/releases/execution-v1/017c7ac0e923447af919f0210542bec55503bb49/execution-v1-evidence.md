@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T05:33:19.774Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T05:33:08.767Z
 - branch: codex/post-target-evidence-command-rerun-log-artifact-sync
 - commit: 017c7ac0e923447af919f0210542bec55503bb49
