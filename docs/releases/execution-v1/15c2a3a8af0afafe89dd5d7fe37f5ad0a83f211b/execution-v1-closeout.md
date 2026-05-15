@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-15T02:09:33.676Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-15T02:09:23.320Z
 - branch: codex/post-provider-readiness-handoff-artifact-sync
 - commit: 15c2a3a8af0afafe89dd5d7fe37f5ad0a83f211b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/15c2a3a8af0afafe89dd5d7fe37f5ad0a83f211b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

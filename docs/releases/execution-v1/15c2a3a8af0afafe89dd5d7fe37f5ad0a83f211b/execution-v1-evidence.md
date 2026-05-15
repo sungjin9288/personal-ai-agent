@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-15T02:09:33.676Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-15T02:09:23.244Z
 - branch: codex/post-provider-readiness-handoff-artifact-sync
 - commit: 15c2a3a8af0afafe89dd5d7fe37f5ad0a83f211b
