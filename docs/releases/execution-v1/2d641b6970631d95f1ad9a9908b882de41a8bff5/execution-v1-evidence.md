@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-16T07:29:06.221Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-16T07:28:58.003Z
 - branch: codex/post-provider-refs-artifact-refresh
 - commit: 2d641b6970631d95f1ad9a9908b882de41a8bff5
