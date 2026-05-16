@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-16 Web Target Evidence Provider References Copy Pass
+
+- added a target evidence provider references copy action to the current open blocker triage surface so reviewers can hand off provider env readiness, preflight status, archived live validation status, live/evidence commands, linked blockers, and required provider evidence docs separately from the full packet
+- included provider blocker reference rows with stop reasons, required closing evidence, verification commands, evidence docs, and provider claim impact so OpenAI, Anthropic, local, and Hermes references remain tied to target-boundary proof instead of broad production claims
+- embedded the standalone provider evidence references body inside the full target evidence intake packet so provider references stay aligned with productionReadyClaim=false, target provider evidence intake, provider operations evidence, artifact refresh, release artifact hygiene, and production readiness gate requirements
+- extended `smoke:ui-harness-browse` to pin the provider references builder, copy action marker, DOM marker, packet section, and provider reference row title
+
 ## 2026-05-16 Web Target Evidence Risk Decision Register Copy Pass
 
 - added a target evidence accepted risk decision register copy action to the current open blocker triage surface so reviewers can hand off accepted risks, rejected claims, residual blockers, decision owner, evidence owner, next review date, release readiness note, and productionReadyClaim decision separately from the full packet
