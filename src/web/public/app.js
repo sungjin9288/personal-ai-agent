@@ -4436,6 +4436,166 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const providerReadiness = Array.isArray(releaseStatus.providerReadiness)
+    ? releaseStatus.providerReadiness
+    : [];
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const generatedArtifactCommit = String(summary.generatedArtifactCommit || snapshot.verifiedCommit || '<required artifact refresh commit>').trim()
+    || '<required artifact refresh commit>';
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const providerRows = providerReadiness.length
+    ? providerReadiness.flatMap((item, index) => {
+        const provider = String(item.provider || '').trim();
+        const preflight = state.releasePreflightResults?.[provider] || null;
+        const preflightStatus = String(preflight?.status || 'not-run').trim();
+        const archivedLiveStatus = getReleaseProviderLiveStatus(provider, releaseStatus) || 'not archived';
+        const liveCommand = getProviderLiveCommand(item, preflight) || item.command || `npm run live:execution-v1:${provider}`;
+        const linkedBlockers = getReleaseProviderBlockerActions({ provider, releaseStatus });
+        const linkedBlockerIds = linkedBlockers
+          .map((action) => String(action.id || '').trim())
+          .filter(Boolean);
+        const visibleLinkedBlockerIds = linkedBlockers
+          .filter((action) => visibleActions.some((visibleAction) =>
+            String(visibleAction.id || '').trim() === String(action.id || '').trim()))
+          .map((action) => String(action.id || '').trim())
+          .filter(Boolean);
+        const evidenceDocs = getReleaseProviderReadinessEvidenceDocs(provider)
+          .map((doc) => docLink(doc.path))
+          .filter(Boolean);
+        return [
+          `${index + 1}. ${String(item.label || provider || 'provider').trim()}`,
+          `   - provider: ${provider || 'unknown'}`,
+          `   - providerLink: ${buildReleaseProviderReadinessUrl(provider)}`,
+          `   - envKey: ${String(item.envKey || '').trim() || 'not recorded'}`,
+          `   - envReady: ${String(Boolean(item.ready))}`,
+          `   - readinessStatus: ${String(item.status || 'unknown').trim()}`,
+          `   - preflightStatus: ${preflightStatus}`,
+          `   - archivedLiveStatus: ${archivedLiveStatus}`,
+          `   - linkedCurrentBlockers: ${linkedBlockerIds.length ? linkedBlockerIds.join(', ') : 'none'}`,
+          `   - linkedVisibleBlockers: ${visibleLinkedBlockerIds.length ? visibleLinkedBlockerIds.join(', ') : 'none in current slice'}`,
+          `   - preflightCommand: ${String(item.preflightCommand || '').trim() || `npm run preflight:execution-v1:${provider}`}`,
+          `   - liveCommand: ${String(liveCommand || '').trim() || 'not recorded'}`,
+          `   - evidenceCommand: ${String(item.evidenceCommand || '').trim() || `node scripts/build-execution-v1-evidence.mjs --live-${provider}`}`,
+          `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.join(' | ') : 'none'}`,
+          '   - targetBoundaryRequirement: provider account or architecture approval, target secret manager alias, live validation evidence, fallback evidence, provider operations evidence, and artifact refresh must all match the claimed target boundary',
+          '   - productionClaimImpact: provider cannot be included in a production-ready or live-provider-complete claim unless linked blockers are closed by target-boundary evidence and final gates pass',
+        ];
+      })
+    : ['- none'];
+  const providerBlockers = getUniqueReleaseProviderBlockerActions(providerReadiness.flatMap((item) =>
+    getReleaseProviderBlockerActions({
+      provider: String(item.provider || '').trim(),
+      releaseStatus,
+    }),
+  ));
+  const providerBlockerRows = providerBlockers.length
+    ? providerBlockers.flatMap((item, index) => {
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'provider blocker').trim()}`,
+          `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+          `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - currentState: ${String(item.status || 'blocked').trim()}`,
+          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - verificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          '   - providerReferenceImpact: keep the provider as blocked until target provider evidence intake, provider operations evidence, and release artifact refresh are accepted',
+        ];
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const requiredCommands = [
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run smoke:production-provider-readiness',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+  ];
+  const lines = [
+    'Target evidence provider evidence references',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- generatedArtifactCommit: ${generatedArtifactCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- providerReferenceCount: ${providerReadiness.length}`,
+    `- providerBlockerReferenceCount: ${providerBlockers.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Provider evidence reference rows:',
+    ...providerRows,
+    '',
+    'Provider blocker reference rows:',
+    ...providerBlockerRows,
+    '',
+    'Required provider evidence reference docs:',
+    `- ${docLink('docs/production-provider-readiness-v1.md')}`,
+    `- ${docLink('docs/target-provider-evidence-intake-v1.md')}`,
+    `- ${docLink('docs/target-provider-operations-v1.md')}`,
+    `- ${docLink('docs/target-openai-provider-account-v1.md')}`,
+    `- ${docLink('docs/target-anthropic-provider-account-v1.md')}`,
+    `- ${docLink('docs/target-local-provider-architecture-v1.md')}`,
+    `- ${docLink('docs/target-hermes-provider-architecture-v1.md')}`,
+    '',
+    'Required provider evidence verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Provider evidence reference rules:',
+    '- This reference list is a provider evidence handoff, not provider approval or production-ready approval.',
+    '- A provider row must not be used in a production-ready claim unless env readiness, target-boundary live validation, provider account or architecture approval, secret manager alias, provider operations evidence, fallback evidence, artifact hygiene, and refreshed execution-v1 artifacts are all accepted for the same target boundary.',
+    '- Missing env, stale live validation, archived local-only proof, unapproved account or architecture, missing provider blocker disposition, or missing release refresh evidence keeps the provider as a stop-condition.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, raw account ids, endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
+    '- Keep productionReadyClaim=false until every provider included in the target claim is approved by target-boundary evidence and all final gates pass.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4453,9 +4613,6 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const normalizedOwner = String(owner || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
-  const providerReadiness = Array.isArray(releaseStatus.providerReadiness)
-    ? releaseStatus.providerReadiness
-    : [];
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
@@ -4483,23 +4640,6 @@ function buildReleaseTargetEvidenceIntakePacketText({
     'npm run smoke:release-artifact-hygiene',
     'npm run smoke:execution-v1-status',
   ];
-  const providerRows = providerReadiness.length
-    ? providerReadiness.map((item, index) => {
-        const provider = String(item.provider || '').trim();
-        const linkedBlockers = getReleaseProviderBlockerActions({ provider, releaseStatus });
-        return [
-          `${index + 1}. ${String(item.label || provider || 'provider').trim()}`,
-          `   - provider: ${provider || 'unknown'}`,
-          `   - envKey: ${String(item.envKey || '').trim() || 'not recorded'}`,
-          `   - envReady: ${String(Boolean(item.ready))}`,
-          `   - readinessStatus: ${String(item.status || 'unknown').trim()}`,
-          `   - linkedCurrentBlockers: ${linkedBlockers.map((action) => String(action.id || '').trim()).filter(Boolean).join(', ') || 'none'}`,
-          `   - preflightCommand: ${String(item.preflightCommand || '').trim() || `npm run preflight:execution-v1:${provider}`}`,
-          `   - liveCommand: ${String(item.command || '').trim() || 'not recorded'}`,
-          `   - evidenceCommand: ${String(item.evidenceCommand || '').trim() || `node scripts/build-execution-v1-evidence.mjs --live-${provider}`}`,
-        ].join('\n');
-      })
-    : ['- none'];
   const residualBlockerLines = productionBlockers.length
     ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
     : ['- none'];
@@ -4532,6 +4672,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     releaseStatus,
   }).trim();
   const riskDecisionRegister = buildReleaseTargetEvidenceRiskDecisionRegisterText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const providerEvidenceReferences = buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -4668,7 +4815,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     riskDecisionRegister || '- none',
     '',
     'Provider evidence references:',
-    ...providerRows,
+    providerEvidenceReferences || '- none',
     '',
     'Residual production blockers:',
     ...residualBlockerLines,
@@ -6998,6 +7145,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-references') {
+        void copyReleaseTargetEvidenceProviderEvidenceReferences();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -8379,6 +8531,37 @@ async function copyReleaseTargetEvidenceRiskDecisionRegister({
     promptMessage: 'target evidence risk decision register를 복사하세요.',
     shownNotice: 'target evidence risk decision register를 표시했습니다.',
     successNotice: 'target evidence risk decision register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderEvidenceReferences({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const referencesText = buildReleaseTargetEvidenceProviderEvidenceReferencesText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!referencesText) {
+    setUiNotice('복사할 target evidence provider references가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(referencesText, {
+    promptMessage: 'target evidence provider references를 복사하세요.',
+    shownNotice: 'target evidence provider references를 표시했습니다.',
+    successNotice: 'target evidence provider references를 복사했습니다.',
   });
 }
 
@@ -12996,6 +13179,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-risk-decision-register="true"
                   data-ui-action="copy-release-target-evidence-risk-decision-register"
                 >target risk decision 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-provider-references="true"
+                  data-ui-action="copy-release-target-evidence-provider-references"
+                >target provider refs 복사</button>
                 <button
                   class="ghost-button"
                   type="button"
