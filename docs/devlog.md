@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Security Refresh Checklist Alignment
+
+- aligned the product plan and security model selected-provider refresh guidance with `refresh:execution-v1-artifacts` so source-of-record changes preserve archived live proof while regenerating closeout, handoff, provider readiness, immutable snapshot, and pilot export package artifacts
+- clarified that `node scripts/build-execution-v1-evidence.mjs --live-<provider>` is for intentionally replacing a selected provider proof, not for routine deterministic-only artifact refresh
+- extended `smoke:pilot-export-package` to pin the security/product refresh checklist wording and accepted-risk handoff requirements inside the shareable pilot pack
+
 ## 2026-05-18 Operator Runbook Local Provider Evidence Guard
 
 - aligned the Daily Start provider readiness expectations with current execution-v1 evidence by documenting archived local provider live evidence for the configured local rehearsal
