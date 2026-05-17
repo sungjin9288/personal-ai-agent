@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-05-17 Web Target Evidence Residual Blockers Copy Pass
+
+- added a target evidence residual production blocker guard copy action to the current open blocker triage surface so reviewers can hand off the remaining production-ready stop-condition list separately from the full packet
+- included residual production blocker rows with productionReadyClaim decision, required closing evidence, stop-condition impact, evidence owner, decision owner, reviewer, next action, release readiness note, and visible current blocker cross-checks
+- embedded the residual blocker guard inside the full target evidence intake packet so the packet carries the same production-ready claim guard as the standalone copy action
+- extended `smoke:ui-harness-browse` to pin the residual blocker guard builder, copy action marker, DOM marker, packet section, and residual blocker row title
+
 ## 2026-05-16 Web Target Evidence Provider References Copy Pass
 
 - added a target evidence provider references copy action to the current open blocker triage surface so reviewers can hand off provider env readiness, preflight status, archived live validation status, live/evidence commands, linked blockers, and required provider evidence docs separately from the full packet
