@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-17T14:23:57.425Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-17T14:23:56.030Z
 - localDate: 2026-05-17
 - branch: codex/post-residual-blockers-artifact-refresh
 - commit: f78a0ead5d476b89d7b4180548a6d7357518a987
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987](releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987](docs/releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987)
 - visualArtifactSetSha256: fc31a11287fb7b51e1d66efb453242cc29cb28b5075f07bdf42e86293cb4bd53
 - commitPushStatus: pushed to origin/main
 

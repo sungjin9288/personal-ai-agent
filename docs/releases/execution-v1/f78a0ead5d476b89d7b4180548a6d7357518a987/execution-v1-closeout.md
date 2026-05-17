@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-17T14:23:57.425Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-17T14:23:49.262Z
 - branch: codex/post-residual-blockers-artifact-refresh
 - commit: f78a0ead5d476b89d7b4180548a6d7357518a987
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f78a0ead5d476b89d7b4180548a6d7357518a987/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
