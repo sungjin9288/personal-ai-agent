@@ -110,7 +110,7 @@
 - [x] Reference adoption regression gate implemented
 - [x] Live OpenAI validation archived
 - [ ] Live Anthropic validation archived
-- [ ] Live local provider validation archived
+- [x] Live local provider validation archived
 - [ ] Live Hermes validation archived
 - [x] Tenant/workspace isolation policy documented
 - [x] Self-hosted runtime isolation smoke implemented
@@ -174,7 +174,7 @@ Criteria:
 - security boundary, secret handling, and approval model are documented
 - known operational failure modes have triage steps
 
-Current status: achieved only for the OpenAI-backed local-first/self-hosted pilot boundary. Anthropic, local provider, and Hermes validation remain outside the achieved scope.
+Current status: achieved only for the OpenAI-backed local-first/self-hosted pilot boundary, with archived local provider validation evidence for the configured local rehearsal. Anthropic and Hermes validation remain outside the achieved scope, and target local provider architecture remains a production gate.
 
 ### Production Ready
 

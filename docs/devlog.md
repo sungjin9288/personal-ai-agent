@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Product Plan Local Live Evidence Alignment
+
+- aligned the enterprise readiness checklist with current execution-v1 evidence by marking local provider live validation as archived while leaving Anthropic and Hermes live validation incomplete
+- clarified the pilot-ready status text so local provider validation is scoped to the configured local rehearsal and does not approve target local provider architecture or production readiness
+- extended `smoke:production-readiness-gate` to pin the product-plan live provider checklist and local-provider production gate wording against release evidence drift
+
 ## 2026-05-17 Web Target Evidence Closure Rules Copy Pass
 
 - added a target evidence closure rules copy action to the current open blocker triage surface so reviewers can hand off blocker closure rules separately from the full packet
