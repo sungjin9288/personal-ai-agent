@@ -316,6 +316,14 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-residual-blockers'), true);
   assert.equal(appJs.includes('Residual production blockers:'), true);
   assert.equal(appJs.includes('Residual production blocker rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceClosureRulesText'), true);
+  assert.equal(appJs.includes('Target evidence closure rules guard'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-closure-rules'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-closure-rules'), true);
+  assert.equal(appJs.includes('Closure rules:'), true);
+  assert.equal(appJs.includes('Closure rule rows:'), true);
+  assert.equal(appJs.includes('showCopyPromptFallback'), true);
+  assert.equal(appJs.includes("return { method: prompted ? 'prompt' : 'unavailable' };"), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);

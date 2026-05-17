@@ -4729,6 +4729,163 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   return `${lines.join('\n')}\n`;
 }
 
+function buildReleaseTargetEvidenceClosureRulesText({
+  blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
+  totalActions = getReleaseCurrentOpenBlockerActions(),
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  releaseStatus = state.releaseStatus,
+} = {}) {
+  const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
+  const allActions = Array.isArray(totalActions) ? totalActions : [];
+  if (!releaseStatus || !allActions.length) {
+    return '';
+  }
+
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const summary = releaseStatus.summary || {};
+  const releaseReadiness = releaseStatus.releaseReadiness || {};
+  const snapshot = releaseStatus.snapshot || {};
+  const productionBlockers = getReleaseProductionBlockers(releaseStatus);
+  const releaseLink = buildReleaseBlockerSliceUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
+    || '<required source commit>';
+  const generatedArtifactCommit = String(summary.generatedArtifactCommit || snapshot.verifiedCommit || '<required artifact refresh commit>').trim()
+    || '<required artifact refresh commit>';
+  const docLink = (docPath) => {
+    const normalizedPath = String(docPath || '').trim();
+    if (!normalizedPath) {
+      return '';
+    }
+    return `${normalizedPath} (${getAbsoluteReleaseUrl(`/api/execution-v1/release-doc?path=${encodeURIComponent(normalizedPath)}`)})`;
+  };
+  const closureRules = [
+    {
+      ruleId: 'packet-boundary',
+      rule: 'This packet is a target evidence review envelope, not production-ready approval',
+      stopConditionImpact: 'productionReadyClaim remains false while any target stop-condition remains open',
+      requiredEvidence: 'packet manifest, sanitized evidence register, boundary map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence, and production readiness gate result',
+    },
+    {
+      ruleId: 'sanitized-evidence-only',
+      rule: 'Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths',
+      stopConditionImpact: 'unsanitized evidence keeps the related blocker open and fails release artifact hygiene',
+      requiredEvidence: 'repository-relative evidence path or sanitized external alias, redaction note, retention class, and sha256 or signed export reference',
+    },
+    {
+      ruleId: 'accepted-disposition-proof',
+      rule: 'Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision',
+      stopConditionImpact: 'missing command evidence, stale artifacts, or unreviewed disposition keeps the blocker as a stop-condition',
+      requiredEvidence: 'target-boundary command output, reviewer decision, blocker disposition row, artifact refresh commit, hygiene pass, and snapshot pass',
+    },
+    {
+      ruleId: 'production-claim-boundary',
+      rule: 'Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open',
+      stopConditionImpact: 'blocked claims include production-ready, hosted SaaS ready, live-provider-complete, tenant-isolated production, clean production deployment ready, and staffed support ready',
+      requiredEvidence: 'all target controls accepted by target-boundary evidence, residual blocker count zero for the claimed scope, release artifact hygiene pass, regenerated execution-v1 artifacts, and production readiness gate pass',
+    },
+    {
+      ruleId: 'accepted-narrow-scope',
+      rule: 'accepted-with-scope requires allowed claim text, explicit excluded claims, decision owner, evidence owner, reviewer, review date, next review date, residual blockers, and release readiness note',
+      stopConditionImpact: 'ownerless, expired, stale, or broad exception decisions keep productionReadyClaim=false',
+      requiredEvidence: 'accepted-scope exception row, risk decision row, allowed claim text, reviewer approval, next review date, and release readiness update',
+    },
+  ];
+  const closureRuleRows = closureRules.flatMap((item, index) => [
+    `${index + 1}. ${item.ruleId}`,
+    `   - rule: ${item.rule}`,
+    `   - stopConditionImpact: ${item.stopConditionImpact}`,
+    `   - requiredEvidence: ${item.requiredEvidence}`,
+    '   - owner: <required accountable owner>',
+    '   - reviewer: <required reviewer or approval team>',
+    '   - evidenceDate: <required YYYY-MM-DD>',
+    '   - status: pass | fail | stale | not-reviewed',
+  ]);
+  const visibleBlockerRows = visibleActions.length
+    ? visibleActions.flatMap((item, index) => {
+        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        return [
+          `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
+          `   - blockerId: ${String(item.id || '').trim() || 'unknown'}`,
+          `   - provider: ${String(item.provider || '').trim() || 'none'}`,
+          `   - category: ${String(item.category || 'stop-condition').trim()}`,
+          `   - owner: ${String(item.owner || 'release-owner').trim()}`,
+          `   - currentState: ${String(item.status || 'blocked').trim()}`,
+          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - verificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+          '   - closureRuleImpact: blocker cannot close unless the closure rules pass for this row and target boundary',
+        ];
+      })
+    : ['- none'];
+  const residualBlockerLines = productionBlockers.length
+    ? productionBlockers.map((item, index) => `${index + 1}. ${String(item || '').trim()}`)
+    : ['- none'];
+  const requiredDocs = [
+    'docs/target-environment-evidence-intake-v1.md',
+    'docs/target-provider-evidence-intake-v1.md',
+    'docs/target-provider-operations-v1.md',
+    'docs/release-readiness-v1.md',
+    'docs/execution-v1-evidence.md',
+    'docs/execution-v1-closeout.md',
+    'docs/execution-v1-handoff.md',
+    'docs/pilot-export-package-v1.md',
+  ];
+  const requiredCommands = [
+    'npm run smoke:target-environment-evidence-intake',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:target-provider-operations',
+    'npm run smoke:production-provider-readiness',
+    'npm run smoke:production-readiness-gate',
+    'npm run smoke:release-artifact-hygiene',
+    'npm run refresh:execution-v1-artifacts',
+    'npm run smoke:execution-v1-status',
+    'npm run smoke:execution-v1-snapshot',
+  ];
+  const lines = [
+    'Target evidence closure rules guard',
+    `- category: ${normalizedCategory || 'all'}`,
+    `- owner: ${normalizedOwner || 'all'}`,
+    `- sourceCommit: ${sourceCommit}`,
+    `- generatedArtifactCommit: ${generatedArtifactCommit}`,
+    `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- closureRuleCount: ${closureRules.length}`,
+    `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
+    `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
+    `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
+    `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
+    `- releaseLink: ${releaseLink}`,
+    '',
+    'Closure rule rows:',
+    ...closureRuleRows,
+    '',
+    'Visible blocker closure-rule cross-check:',
+    ...visibleBlockerRows,
+    '',
+    'Residual production blockers:',
+    ...residualBlockerLines,
+    '',
+    'Required closure evidence docs:',
+    ...requiredDocs.map((docPath) => `- ${docLink(docPath)}`),
+    '',
+    'Required closure verification commands:',
+    ...requiredCommands.map((command) => `- ${command}`),
+    '',
+    'Closure rules:',
+    '- This packet is a target evidence review envelope, not production-ready approval.',
+    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
+    '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
+    '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+  ];
+
+  return `${lines.join('\n')}\n`;
+}
+
 function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -4819,6 +4976,13 @@ function buildReleaseTargetEvidenceIntakePacketText({
     releaseStatus,
   }).trim();
   const residualProductionBlockerGuard = buildReleaseTargetEvidenceResidualBlockersText({
+    blockerActions: visibleActions,
+    totalActions: allActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    releaseStatus,
+  }).trim();
+  const closureRulesGuard = buildReleaseTargetEvidenceClosureRulesText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
@@ -4966,10 +5130,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     closureMatrix,
     '',
     'Closure rules:',
-    '- This packet is a target evidence review envelope, not production-ready approval.',
-    '- Do not include raw API keys, tokens, private endpoint credentials, tenant payloads, customer personal data, billing identifiers, or machine-local absolute paths.',
-    '- Every accepted blocker disposition change must include fresh target-boundary command evidence, release artifact hygiene, regenerated execution-v1 artifacts, and reviewer decision.',
-    '- Keep productionReadyClaim=false while any target environment, provider, identity/session, tenant isolation, observability/SLO, retention/backup, support, or clean deployment stop-condition remains open.',
+    closureRulesGuard || '- none',
   ];
 
   return `${lines.join('\n')}\n`;
@@ -7295,6 +7456,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-closure-rules') {
+        void copyReleaseTargetEvidenceClosureRules();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-submission-manifest') {
         void copyReleaseTargetEvidenceSubmissionManifest();
         return;
@@ -8085,6 +8251,7 @@ async function copyUiLink(url, {
   promptMessage = '링크를 복사하세요.',
   shownNotice = '링크를 표시했습니다.',
   successNotice = '링크를 복사했습니다.',
+  unavailableNotice = '브라우저가 링크 복사를 지원하지 않습니다.',
 } = {}) {
   try {
     if (!navigator.clipboard?.writeText) {
@@ -8094,9 +8261,22 @@ async function copyUiLink(url, {
     setUiNotice(successNotice);
     return { method: 'clipboard' };
   } catch {
-    window.prompt(promptMessage, url);
-    setUiNotice(shownNotice);
-    return { method: 'prompt' };
+    const prompted = showCopyPromptFallback(promptMessage, url);
+    setUiNotice(prompted ? shownNotice : unavailableNotice);
+    return { method: prompted ? 'prompt' : 'unavailable' };
+  }
+}
+
+function showCopyPromptFallback(promptMessage, value) {
+  if (typeof window.prompt !== 'function') {
+    return false;
+  }
+
+  try {
+    window.prompt(promptMessage, value);
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -8104,6 +8284,7 @@ async function copyPlainTextValue(value, {
   promptMessage = '값을 복사하세요.',
   shownNotice = '값을 표시했습니다.',
   successNotice = '값을 복사했습니다.',
+  unavailableNotice = '브라우저가 텍스트 복사를 지원하지 않습니다.',
 } = {}) {
   const normalizedValue = String(value || '').trim();
   if (!normalizedValue) {
@@ -8118,9 +8299,9 @@ async function copyPlainTextValue(value, {
     setUiNotice(successNotice);
     return { method: 'clipboard' };
   } catch {
-    window.prompt(promptMessage, normalizedValue);
-    setUiNotice(shownNotice);
-    return { method: 'prompt' };
+    const prompted = showCopyPromptFallback(promptMessage, normalizedValue);
+    setUiNotice(prompted ? shownNotice : unavailableNotice);
+    return { method: prompted ? 'prompt' : 'unavailable' };
   }
 }
 
@@ -8738,6 +8919,37 @@ async function copyReleaseTargetEvidenceResidualBlockers({
     promptMessage: 'target evidence residual blockers를 복사하세요.',
     shownNotice: 'target evidence residual blockers를 표시했습니다.',
     successNotice: 'target evidence residual blockers를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceClosureRules({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const totalActions = getReleaseCurrentOpenBlockerActions();
+  const blockerActions = totalActions.filter((item) =>
+    isReleaseBlockerActionVisibleForFilter(item, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+    }),
+  );
+  const rulesText = buildReleaseTargetEvidenceClosureRulesText({
+    blockerActions,
+    totalActions,
+    category: normalizedCategory,
+    owner: normalizedOwner,
+  });
+  if (!rulesText) {
+    setUiNotice('복사할 target evidence closure rules가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(rulesText, {
+    promptMessage: 'target evidence closure rules를 복사하세요.',
+    shownNotice: 'target evidence closure rules를 표시했습니다.',
+    successNotice: 'target evidence closure rules를 복사했습니다.',
   });
 }
 
@@ -13367,6 +13579,12 @@ function renderReleaseStatus() {
                   data-release-target-evidence-residual-blockers="true"
                   data-ui-action="copy-release-target-evidence-residual-blockers"
                 >target residual blockers 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-target-evidence-closure-rules="true"
+                  data-ui-action="copy-release-target-evidence-closure-rules"
+                >target closure rules 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

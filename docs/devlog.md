@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-05-17 Web Target Evidence Closure Rules Copy Pass
+
+- added a target evidence closure rules copy action to the current open blocker triage surface so reviewers can hand off blocker closure rules separately from the full packet
+- included closure rule rows for packet boundary, sanitized evidence, accepted disposition proof, production claim boundary, and accepted narrow scope with required evidence, stop-condition impact, owner, reviewer, evidence date, and status placeholders
+- embedded the standalone closure rules guard inside the full target evidence intake packet so closure criteria stay tied to productionReadyClaim=false, target-boundary evidence, artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate requirements
+- hardened the shared copy fallback so unsupported browser prompt surfaces end in an unavailable notice instead of a console error
+- extended `smoke:ui-harness-browse` to pin the closure rules builder, copy action marker, DOM marker, packet section, closure rule row title, and unavailable copy fallback
+
 ## 2026-05-17 Web Target Evidence Residual Blockers Copy Pass
 
 - added a target evidence residual production blocker guard copy action to the current open blocker triage surface so reviewers can hand off the remaining production-ready stop-condition list separately from the full packet
