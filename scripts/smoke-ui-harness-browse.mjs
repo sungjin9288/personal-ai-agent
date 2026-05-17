@@ -310,6 +310,12 @@ try {
   assert.equal(appJs.includes('data-release-target-evidence-provider-references'), true);
   assert.equal(appJs.includes('Provider evidence references:'), true);
   assert.equal(appJs.includes('Provider evidence reference rows:'), true);
+  assert.equal(appJs.includes('buildReleaseTargetEvidenceResidualBlockersText'), true);
+  assert.equal(appJs.includes('Target evidence residual production blocker guard'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-residual-blockers'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-residual-blockers'), true);
+  assert.equal(appJs.includes('Residual production blockers:'), true);
+  assert.equal(appJs.includes('Residual production blocker rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
