@@ -245,8 +245,8 @@ Deferred models:
    - run `npm run live:execution-v1:anthropic`
    - run `npm run live:execution-v1:local`
    - run `npm run live:execution-v1:hermes`
-   - run selected-provider evidence refresh with `node scripts/build-execution-v1-evidence.mjs --live-<provider>`
-   - regenerate closeout, handoff, and snapshot with existing evidence reuse after each intentional provider proof refresh
+   - run selected-provider evidence refresh with `node scripts/build-execution-v1-evidence.mjs --live-<provider>` only when intentionally replacing that provider proof
+   - run `npm run refresh:execution-v1-artifacts` after each intentional provider proof refresh or source-of-record change so closeout, handoff, provider readiness, immutable snapshot, and pilot export package stay aligned while preserving archived live proof by default
 
 2. Harden enterprise production controls.
    - replace local shared-secret auth with identity-backed RBAC or bind to a verified deployment-level RBAC control

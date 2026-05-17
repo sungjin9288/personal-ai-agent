@@ -294,9 +294,9 @@ Required before production:
 - [ ] run credential and local-path scans before sharing artifacts
 - [ ] inject provider credentials only through approved environment or secret manager
 - [ ] run provider live validation only in an approved environment
-- [ ] refresh selected-provider evidence with `node scripts/build-execution-v1-evidence.mjs --live-<provider>` only when intentionally updating provider proof
-- [ ] regenerate closeout, handoff, and snapshot after selected-provider evidence refresh
-- [ ] document any accepted risk in the handoff
+- [ ] refresh selected-provider evidence with `node scripts/build-execution-v1-evidence.mjs --live-<provider>` only when intentionally replacing that provider proof
+- [ ] run `npm run refresh:execution-v1-artifacts` after selected-provider evidence refresh or source-of-record changes so closeout, handoff, provider readiness, immutable snapshot, and pilot export package stay aligned while preserving archived live proof by default
+- [ ] document any accepted risk in the handoff or target evidence accepted risk register with owner and next review date
 - [ ] delete or archive local runtime state according to the pilot agreement
 
 ## Current Readiness Decision

@@ -6,6 +6,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
+const productPlanPath = path.join(repoDir, 'docs', 'product-plan-v1.md');
 const deploymentPath = path.join(repoDir, 'docs', 'deployment-pilot-v1.md');
 const securityPath = path.join(repoDir, 'docs', 'security-model-v1.md');
 const readmePath = path.join(repoDir, 'README.md');
@@ -13,6 +14,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
+const productPlan = readRequiredFile(productPlanPath);
 const deployment = readRequiredFile(deploymentPath);
 const security = readRequiredFile(securityPath);
 const readme = readRequiredFile(readmePath);
@@ -121,6 +123,26 @@ assert.match(deployment, /npm run package:pilot-export/);
 assert.match(deployment, /npm run smoke:pilot-export-package/);
 assert.match(security, /pilot export package manifest/);
 assert.match(security, /retention\/export\/delete policy gate/);
+assert.match(
+  productPlan,
+  /run `npm run refresh:execution-v1-artifacts` after each intentional provider proof refresh or source-of-record change/,
+);
+assert.match(
+  productPlan,
+  /pilot export package stay aligned while preserving archived live proof by default/,
+);
+assert.match(
+  security,
+  /run `npm run refresh:execution-v1-artifacts` after selected-provider evidence refresh or source-of-record changes/,
+);
+assert.match(
+  security,
+  /closeout, handoff, provider readiness, immutable snapshot, and pilot export package stay aligned while preserving archived live proof by default/,
+);
+assert.match(
+  security,
+  /document any accepted risk in the handoff or target evidence accepted risk register with owner and next review date/,
+);
 assert.match(readme, /npm run package:pilot-export/);
 
 console.log(
