@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-17T14:56:48.589Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-17T14:56:39.829Z
 - branch: codex/post-closure-rules-artifact-refresh
 - commit: e295e886692635a82768872a0aff07a5fd0c4f1a
