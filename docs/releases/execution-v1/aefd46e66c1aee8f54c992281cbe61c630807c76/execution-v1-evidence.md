@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-17T17:26:32.809Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-17T17:26:24.467Z
 - branch: codex/post-security-refresh-checklist-artifact-refresh
 - commit: aefd46e66c1aee8f54c992281cbe61c630807c76
