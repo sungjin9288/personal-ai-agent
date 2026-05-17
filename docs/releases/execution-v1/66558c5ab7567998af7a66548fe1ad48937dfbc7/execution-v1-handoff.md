@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-17T16:35:44.936Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-17T16:35:43.585Z
 - localDate: 2026-05-18
 - branch: codex/post-runbook-live-provider-artifact-refresh
 - commit: 66558c5ab7567998af7a66548fe1ad48937dfbc7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7](releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7](docs/releases/execution-v1/66558c5ab7567998af7a66548fe1ad48937dfbc7)
 - visualArtifactSetSha256: 04095d877c6f4e0a4fa09f14ecf26b20d1fde4a9a3b474625b7f82e016c16a82
 - commitPushStatus: pushed to origin/main
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-17T16:35:44.936Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-17T16:35:35.938Z
 - branch: codex/post-runbook-live-provider-artifact-refresh
 - commit: 66558c5ab7567998af7a66548fe1ad48937dfbc7
