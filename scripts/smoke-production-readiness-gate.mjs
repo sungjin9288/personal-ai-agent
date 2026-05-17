@@ -8,6 +8,7 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
+const operatorRunbookPath = path.join(docsDir, 'operator-runbook-v1.md');
 const evidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const handoffPath = path.join(docsDir, 'execution-v1-handoff.md');
@@ -57,6 +58,7 @@ const cleanDeploymentReleasePath = path.join(docsDir, 'clean-deployment-release-
 
 const productPlan = readRequiredFile(productPlanPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
+const operatorRunbook = readRequiredFile(operatorRunbookPath);
 const evidence = readRequiredFile(evidencePath);
 const closeout = readRequiredFile(closeoutPath);
 const handoff = readRequiredFile(handoffPath);
@@ -174,6 +176,22 @@ assert.match(
   /archived local provider validation evidence for the configured local rehearsal/,
 );
 assert.match(productPlan, /target local provider architecture remains a production gate/);
+assert.match(
+  operatorRunbook,
+  /OpenAI and local provider live validation are archived in the current evidence pack/,
+);
+assert.match(
+  operatorRunbook,
+  /local provider live evidence is already archived for the configured local rehearsal/,
+);
+assert.match(
+  operatorRunbook,
+  /Hermes may show missing runtime configuration until an approved endpoint\/model is injected/,
+);
+assert.match(
+  operatorRunbook,
+  /target local provider architecture still requires approved target-boundary evidence before a production provider claim/,
+);
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
