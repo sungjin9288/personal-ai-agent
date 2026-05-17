@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-17T17:26:32.809Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-17T17:26:31.470Z
 - localDate: 2026-05-18
 - branch: codex/post-security-refresh-checklist-artifact-refresh
 - commit: aefd46e66c1aee8f54c992281cbe61c630807c76
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76](releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76](docs/releases/execution-v1/aefd46e66c1aee8f54c992281cbe61c630807c76)
 - visualArtifactSetSha256: b3499a9656413287215070ec6af5d0609052783cbb78b33416be3fb695de7a38
 - commitPushStatus: pushed to origin/main
 
