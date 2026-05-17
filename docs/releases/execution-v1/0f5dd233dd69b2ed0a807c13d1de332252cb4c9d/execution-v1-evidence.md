@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-17T15:59:19.204Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-17T15:59:11.251Z
 - branch: codex/post-product-plan-local-live-artifact-refresh
 - commit: 0f5dd233dd69b2ed0a807c13d1de332252cb4c9d
