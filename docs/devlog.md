@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Operator Runbook Local Provider Evidence Guard
+
+- aligned the Daily Start provider readiness expectations with current execution-v1 evidence by documenting archived local provider live evidence for the configured local rehearsal
+- kept the runbook explicit that Hermes remains blocked by runtime configuration and target local provider architecture still needs approved target-boundary evidence before any production provider claim
+- extended `smoke:production-readiness-gate` to pin the runbook provider evidence wording so operator guidance stays aligned with product-plan and release evidence state
+
 ## 2026-05-18 Product Plan Local Live Evidence Alignment
 
 - aligned the enterprise readiness checklist with current execution-v1 evidence by marking local provider live validation as archived while leaving Anthropic and Hermes live validation incomplete

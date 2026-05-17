@@ -53,8 +53,11 @@ Expected OpenAI-scoped pilot-ready state:
 
 - `blockedCount` is `0`
 - OpenAI live evidence is already archived in the current evidence pack
+- local provider live evidence is already archived for the configured local rehearsal
 - providers without runtime/env show `ready-but-missing-env`
 - Anthropic may show a provider-account failure until billing/credits are remediated
+- Hermes may show missing runtime configuration until an approved endpoint/model is injected
+- target local provider architecture still requires approved target-boundary evidence before a production provider claim
 - live commands are shown but not run automatically
 
 Stop condition:

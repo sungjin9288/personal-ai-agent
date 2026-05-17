@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-17T15:59:19.228Z
+- generatedAt: 2026-05-17T16:25:30.068Z
 - verifiedCommit: 0f5dd233dd69b2ed0a807c13d1de332252cb4c9d
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 3bd2ec5125222b119e07f3cff77ec45bf0460734963ad942d38bbc5c3a350700
+- bundleSha256: 6741f98718350d38e30b9b8d4c33cab7bc9a574dddb06a9c2b747b1862afef21
 - fileCount: 57
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -66,7 +66,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `README.md` | 185190 | `2ef4f27205f6f832d74ab6aae571468debe767c4e9860ddcb51cd6a72514d8bd` |
 | `docs/product-plan-v1.md` | 13774 | `9d68fcba5d5d5329cae1f1dbd0729ce37247918aff399ebf608d1ca2380a306a` |
 | `docs/security-model-v1.md` | 34314 | `92cee3fb67df3668fa857fd6300681c5f73450beabf0eac7a7c460c1e170df12` |
-| `docs/operator-runbook-v1.md` | 13375 | `dc98b461ec380c1829dfb99bb0cf59f03b1641da4d2342842e774e37bd0bf10d` |
+| `docs/operator-runbook-v1.md` | 13675 | `94a145f8d51979189acdc93f1f38474f3a26087e36e9b8288d3b6ec797ea44be` |
 | `docs/deployment-pilot-v1.md` | 70928 | `47ec49c0592349ad35d4295fa039f3a8d957bd1595df8a2df2d2128011b0a46a` |
 | `docs/pilot-onboarding-v1.md` | 9406 | `ec670cb055cf5bdcf7e88f652b336610d0622726d4742e87c91d1eb1a7a02088` |
 | `docs/demo-scenarios-v1.md` | 11621 | `cccd41868242cc43ef552b5a7477d5a3d06e5d8fd6971942ea079d79cdb9bc0b` |
