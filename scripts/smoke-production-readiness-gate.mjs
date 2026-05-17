@@ -6,6 +6,7 @@ import { runReleaseArtifactHygiene } from './release-artifact-hygiene-utils.mjs'
 
 const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
+const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const evidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const closeoutPath = path.join(docsDir, 'execution-v1-closeout.md');
@@ -54,6 +55,7 @@ const runtimeIsolationPath = path.join(docsDir, 'runtime-isolation-v1.md');
 const retentionDeletePath = path.join(docsDir, 'retention-delete-v1.md');
 const cleanDeploymentReleasePath = path.join(docsDir, 'clean-deployment-release-v1.md');
 
+const productPlan = readRequiredFile(productPlanPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const evidence = readRequiredFile(evidencePath);
 const closeout = readRequiredFile(closeoutPath);
@@ -163,6 +165,15 @@ for (const blocker of [
 }
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
+assert.match(productPlan, /^- \[x\] Live OpenAI validation archived$/m);
+assert.match(productPlan, /^- \[ \] Live Anthropic validation archived$/m);
+assert.match(productPlan, /^- \[x\] Live local provider validation archived$/m);
+assert.match(productPlan, /^- \[ \] Live Hermes validation archived$/m);
+assert.match(
+  productPlan,
+  /archived local provider validation evidence for the configured local rehearsal/,
+);
+assert.match(productPlan, /target local provider architecture remains a production gate/);
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
