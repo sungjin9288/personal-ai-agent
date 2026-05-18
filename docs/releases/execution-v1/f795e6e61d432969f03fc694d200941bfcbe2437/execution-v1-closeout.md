@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T14:08:30.576Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T14:08:20.371Z
 - branch: codex/post-tenant-isolation-wording-artifact-refresh
 - commit: f795e6e61d432969f03fc694d200941bfcbe2437
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

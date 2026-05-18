@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T14:08:30.576Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T14:08:29.027Z
 - localDate: 2026-05-18
 - branch: codex/post-tenant-isolation-wording-artifact-refresh
 - commit: f795e6e61d432969f03fc694d200941bfcbe2437
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437](releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437](docs/releases/execution-v1/f795e6e61d432969f03fc694d200941bfcbe2437)
 - visualArtifactSetSha256: 7968942c6b1c884209d04bae6f561384614f3dcb2a5bf2790b351128def01c3a
 - commitPushStatus: pushed to origin/main
 
