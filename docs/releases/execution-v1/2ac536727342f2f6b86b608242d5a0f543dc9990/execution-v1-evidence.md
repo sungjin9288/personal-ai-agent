@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T03:57:30.412Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T03:57:17.729Z
 - branch: codex/hermes-release-evidence-wording
 - commit: 2ac536727342f2f6b86b608242d5a0f543dc9990

@@ -167,6 +167,11 @@ for (const blocker of [
 }
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
+assert.match(
+  releaseReadiness,
+  /live validation: OpenAI passed, Anthropic failed with API billing\/credit blocker, local provider passed for the configured pilot boundary, Hermes remains blocked until target Hermes provider architecture evidence and target-boundary live validation are approved/,
+);
+assert.doesNotMatch(releaseReadiness, /Hermes missing runtime env/);
 assert.match(productPlan, /^- \[x\] Live OpenAI validation archived$/m);
 assert.match(productPlan, /^- \[ \] Live Anthropic validation archived$/m);
 assert.match(productPlan, /^- \[x\] Live local provider validation archived$/m);
