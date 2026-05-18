@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Production Target Local Provider Stop-Condition Alignment
+
+- aligned target deployment contract, target environment evidence intake, release readiness production blockers, and production-like drill guard with the detailed local provider stop-condition
+- required target-boundary endpoint/model ownership, network isolation, telemetry, quota/resource guard, target-boundary local provider live validation pass, and customer acceptance before local provider production claims
+- updated target deployment, target environment intake, production readiness, and production-like drill smoke guards so production-target blockers cannot fall back to generic target-boundary evidence wording
+
 ## 2026-05-18 Operator Facing Local Provider Stop-Condition Alignment
 
 - aligned README, operator runbook, pilot onboarding, demo scenarios, and deployment guide local provider blocker wording with the detailed target local provider stop-condition

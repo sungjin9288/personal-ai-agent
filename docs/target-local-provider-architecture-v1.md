@@ -18,7 +18,7 @@ This record defines the target local provider architecture decision and evidence
 
 It is not local provider live validation proof, not endpoint ownership proof, not model availability proof, not network isolation proof, not data residency proof, not target secret manager proof, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Local provider readiness remains blocked until this architecture decision is approved and local provider live validation evidence is generated from the approved production-like or hosted target environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Local provider readiness remains blocked until this architecture decision is approved and target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are generated from the approved production-like or hosted target environment.
 
 ## Local Provider Decision Areas
 
@@ -95,4 +95,4 @@ This gate is acceptable only when the local provider decision areas, required ev
 
 This is a local target local provider architecture contract. It does not approve local provider readiness, prove a live local endpoint, prove model availability, prove network isolation, prove data residency, prove target secret manager injection, prove target telemetry, prove quota or resource enforcement, or satisfy target environment production evidence.
 
-Local provider readiness remains blocked until a replacement architecture decision is approved, implementation is completed in the target environment, `npm run live:execution-v1:local` passes from the approved boundary, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Local provider readiness remains blocked until a replacement architecture decision is approved, implementation is completed in the target environment, target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and `npm run live:execution-v1:local` evidence are generated from the approved boundary, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.

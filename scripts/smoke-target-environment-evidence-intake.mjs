@@ -150,6 +150,8 @@ for (const state of [
 }
 assert.match(intake, /target-boundary `live:execution-v1:anthropic` pass/);
 assert.match(intake, /target-boundary `live:execution-v1:hermes` pass/);
+assert.match(intake, /target-boundary endpoint\/model ownership, network isolation, data residency, quota\/resource guard, telemetry, fallback evidence, target-boundary local provider live validation pass, and customer acceptance/);
+assert.match(intake, /customer approval, target-boundary endpoint\/model ownership, network isolation, data residency, quota\/resource guard, telemetry, fallback evidence, target-boundary local provider live validation pass, and acceptance record/);
 assert.match(intake, /negative cross-tenant test matrix/);
 assert.match(intake, /boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence/);
 assert.match(intake, /exceptions cannot convert a blocked production-ready claim into production-ready/);

@@ -142,7 +142,7 @@ for (const blocker of [
   /target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated from a production-like environment/,
   /target provider operations evidence is not generated from a production-like environment/,
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment/,
-  /target local provider architecture is not approved and target-boundary local provider evidence is not generated from a production-like environment/,
+  /target local provider architecture is not approved, and approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are not generated from a production-like environment/,
   /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence is not generated from a production-like environment/,
