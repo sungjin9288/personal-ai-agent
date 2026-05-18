@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T11:22:45.357Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T11:22:34.360Z
 - branch: codex/post-identity-session-wording-artifact-refresh
 - commit: 51fb7c2ef4b844c12c02a1e1477c690b7f49251b

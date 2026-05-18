@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T11:22:45.357Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T11:22:34.425Z
 - branch: codex/post-identity-session-wording-artifact-refresh
 - commit: 51fb7c2ef4b844c12c02a1e1477c690b7f49251b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

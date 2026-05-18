@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T11:22:45.357Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T11:22:43.840Z
 - localDate: 2026-05-18
 - branch: codex/post-identity-session-wording-artifact-refresh
 - commit: 51fb7c2ef4b844c12c02a1e1477c690b7f49251b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b](releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b](docs/releases/execution-v1/51fb7c2ef4b844c12c02a1e1477c690b7f49251b)
 - visualArtifactSetSha256: a70effabdc767c203a6c8b8839e8341c0714a9f035c4a88c018b622496a5790d
 - commitPushStatus: pushed to origin/main
 
