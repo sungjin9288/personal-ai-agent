@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T00:50:41.449Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T00:50:31.975Z
 - branch: codex/post-release-readiness-stop-condition-artifact-refresh
 - commit: 8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c
