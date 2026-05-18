@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T02:22:12.268Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T02:22:03.778Z
 - branch: codex/post-production-target-stop-condition-artifact-refresh
 - commit: 33af080fc3c1ac69a558637dad8bbb48c4ab40ee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/33af080fc3c1ac69a558637dad8bbb48c4ab40ee/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
