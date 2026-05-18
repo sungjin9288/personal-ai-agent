@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Operator Facing Local Provider Stop-Condition Alignment
+
+- aligned README, operator runbook, pilot onboarding, demo scenarios, and deployment guide local provider blocker wording with the detailed target local provider stop-condition
+- replaced generic approved target-boundary evidence wording with target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence requirements
+- extended production readiness and pilot export smoke guards so operator-facing handoff docs stay aligned with planning source and release readiness wording
+
 ## 2026-05-18 Local Provider Stop-Condition Source Alignment
 
 - aligned product plan, security model, roadmap, and execution handoff generator wording with the release readiness target local provider stop-condition

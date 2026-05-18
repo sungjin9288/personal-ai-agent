@@ -1268,6 +1268,6 @@ OpenAI-scoped pilot readiness is accepted when archived OpenAI live validation i
 
 ## Current Status
 
-This deployment guide supports a self-hosted OpenAI/local-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, Hermes remains blocked by missing runtime endpoint/model configuration, and local provider production claims remain blocked until target-boundary architecture evidence is approved.
+This deployment guide supports a self-hosted OpenAI/local-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, Hermes remains blocked by missing runtime endpoint/model configuration, and local provider production claims remain blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded.
 
-The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, local provider live validation, and production-grade deployment controls.

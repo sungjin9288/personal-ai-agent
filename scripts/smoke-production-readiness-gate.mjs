@@ -194,7 +194,7 @@ assert.match(
 );
 assert.match(
   operatorRunbook,
-  /target local provider architecture still requires approved target-boundary evidence before a production provider claim/,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence before a production provider claim/,
 );
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);

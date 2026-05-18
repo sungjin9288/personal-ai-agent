@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-18T01:32:41.368Z
+- generatedAt: 2026-05-18T01:42:37.733Z
 - verifiedCommit: 4213b9f60e933611d305817d6ac325522897795e
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 6d4ca608f903d760184fa6b5beca5b66f19ef55ff19d98ae10d0dc0b52f5539f
+- bundleSha256: 4aa322b6986c290caa34eee51776898becd9521ab240d184f6b217325ebd8f18
 - fileCount: 57
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -63,13 +63,13 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 185190 | `2ef4f27205f6f832d74ab6aae571468debe767c4e9860ddcb51cd6a72514d8bd` |
+| `README.md` | 185293 | `d7c022082e6c1f23c068072868f95d132b3f9a2ae9a13e4447316df8cc5dcbe9` |
 | `docs/product-plan-v1.md` | 14219 | `427e02b3de437d47b3cab8b5af1cd70b801a8734fc501788feae75534c05829b` |
 | `docs/security-model-v1.md` | 34871 | `12b0fb413b7b67c96d3ceee56702991c0d8075a1919673d610d365aa8365ec6e` |
-| `docs/operator-runbook-v1.md` | 13675 | `94a145f8d51979189acdc93f1f38474f3a26087e36e9b8288d3b6ec797ea44be` |
-| `docs/deployment-pilot-v1.md` | 70928 | `47ec49c0592349ad35d4295fa039f3a8d957bd1595df8a2df2d2128011b0a46a` |
-| `docs/pilot-onboarding-v1.md` | 9640 | `3ad14c1915ecd32d47e6ac8a0884f578a99c0ce52df748c952f1eca6259fea52` |
-| `docs/demo-scenarios-v1.md` | 12141 | `95855606f3b4b9905a01d3be458e0c2bc414b20e200d0fcacb20a1638ac5a98c` |
+| `docs/operator-runbook-v1.md` | 14000 | `88846f365fa5facc856c1721828fcd7d23ffd29da92d80880c847ac74cff7e49` |
+| `docs/deployment-pilot-v1.md` | 71147 | `c250a0a6416c0bdde2bb37c467c841625e5d40b1f76bcaaca2334c47e4467cfb` |
+| `docs/pilot-onboarding-v1.md` | 9862 | `0ab5ceafdf0354b2e6d58c8dafa2b80d054e0afda7d35fa469fcb8d3929c1915` |
+| `docs/demo-scenarios-v1.md` | 12609 | `12d4a982ca2447a6f91588c61f7013733b17f148442705d53b31af33c2491fe4` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |
 | `docs/customer-support-operations-v1.md` | 6200 | `8ed125281443fce70deb133eecfd9108744320ad1d977c5061e349f6fb1ab873` |
 | `docs/support-escalation-review-v1.md` | 5328 | `3b77fef9b2cb83c887a3c634292d7a14dbe1b24704d481d7046520db55f0d80d` |
