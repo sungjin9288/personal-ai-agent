@@ -238,10 +238,11 @@ Deferred models:
 
 ## Recommended Step Plan
 
-1. Broaden live validation coverage beyond OpenAI.
+1. Broaden live validation coverage beyond the archived OpenAI/local pilot proof.
    - run `npm run preflight:execution-v1:all`
    - resolve Anthropic account billing/credit blocker
-   - inject approved local/Hermes runtime configuration
+   - attach approved target local provider model/endpoint, network, telemetry, and resource evidence
+   - inject approved Hermes runtime endpoint/model configuration
    - run `npm run live:execution-v1:anthropic`
    - run `npm run live:execution-v1:local`
    - run `npm run live:execution-v1:hermes`
@@ -271,4 +272,4 @@ Deferred models:
 
 The project should currently be described as `provider-scoped pilot ready for OpenAI-backed local-first path`.
 
-It should not yet be described as production-ready for other companies because Anthropic/local/Hermes validation, enforced enterprise controls, and production-like deployment evidence are not complete.
+It should not yet be described as production-ready for other companies because Anthropic/Hermes validation, target local provider architecture evidence, enforced enterprise controls, and production-like deployment evidence are not complete.

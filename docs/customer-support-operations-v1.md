@@ -59,7 +59,7 @@ Production-ready remains blocked until the approved target deployment has staffe
 
 - confirm support owner, technical operator, incident commander, customer contact, and evidence owner
 - confirm the approved customer workspace path and runtime root boundary
-- confirm provider scope and whether optional Anthropic/local/Hermes validation is excluded or pending
+- confirm provider scope and whether optional Anthropic/Hermes validation or target local provider architecture approval is excluded or pending
 - attach execution evidence, closeout, handoff, release snapshot, pilot package manifest, and readiness decision
 - record known blockers and accepted risks without changing `productionReadyClaim: false`
 - define the first support review date after pilot start
