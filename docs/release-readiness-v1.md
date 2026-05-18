@@ -245,7 +245,7 @@ Blockers:
 
 - Anthropic and Hermes live validations are not complete
 - target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated from a production-like environment
-- target provider operations evidence is not generated from a production-like environment
+- target provider operations evidence for provider inventory/account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment is not generated from a production-like environment
 - target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment
 - target local provider architecture is not approved, and approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are not generated from a production-like environment
 - target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated from a production-like environment
