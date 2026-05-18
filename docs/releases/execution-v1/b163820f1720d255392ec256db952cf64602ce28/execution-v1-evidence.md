@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T15:58:07.455Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T15:57:51.628Z
 - branch: codex/post-clean-deployment-operations-wording-artifact-refresh
 - commit: b163820f1720d255392ec256db952cf64602ce28
