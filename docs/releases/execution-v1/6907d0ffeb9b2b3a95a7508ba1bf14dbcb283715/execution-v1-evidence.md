@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T04:10:02.990Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T04:09:52.353Z
 - branch: codex/post-hermes-release-wording-artifact-refresh
 - commit: 6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715
