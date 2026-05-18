@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T02:44:12.476Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T02:44:03.262Z
 - branch: codex/post-deployment-controls-artifact-refresh
 - commit: e16e426f085503a3d1e06fd004bec4bd7a1ff85c
