@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T03:33:44.472Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T03:33:34.777Z
 - branch: codex/post-hermes-stop-condition-artifact-refresh
 - commit: 0caf7c5303c504834c0f4db951e9c15f403aef29
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
