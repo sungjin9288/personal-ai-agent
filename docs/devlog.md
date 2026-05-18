@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target SLO Operations Stop-Condition Alignment
+
+- expanded the production-ready target SLO operations blocker so it names customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment evidence
+- kept the target SLO architecture approval gate separate while making the operations blocker match the detailed target SLO operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target SLO operations evidence wording
+
 ## 2026-05-18 Target Tenant Isolation Operations Stop-Condition Alignment
 
 - expanded the production-ready target tenant isolation operations blocker so it names tenant identity source, tenant-scoped authorization, storage partitioning, per-tenant encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence
