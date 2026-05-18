@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T04:10:02.990Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T04:10:01.508Z
 - localDate: 2026-05-18
 - branch: codex/post-hermes-release-wording-artifact-refresh
 - commit: 6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715](releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715](docs/releases/execution-v1/6907d0ffeb9b2b3a95a7508ba1bf14dbcb283715)
 - visualArtifactSetSha256: 02e91141f441dae41f41c30e58fdd30e699e44ac34e94562f86f02dc1cd6f872
 - commitPushStatus: pushed to origin/main
 
