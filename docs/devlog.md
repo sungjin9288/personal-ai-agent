@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Support Operations Stop-Condition Alignment
+
+- expanded the production-ready target support operations blocker so it names staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence
+- kept the target support architecture approval gate separate while making the operations blocker match the detailed target support operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target support operations evidence wording
+
 ## 2026-05-19 Target Clean Deployment Operations Stop-Condition Alignment
 
 - expanded the production-ready target clean deployment operations blocker so it names source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, evidence retention, and failed-deployment containment evidence
