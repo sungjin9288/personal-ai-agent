@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T17:51:32.940Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T17:51:20.924Z
 - branch: codex/post-observability-operations-wording-artifact-refresh
 - commit: d563e76a67dff69bd6633d1e298f4614d063d3ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
