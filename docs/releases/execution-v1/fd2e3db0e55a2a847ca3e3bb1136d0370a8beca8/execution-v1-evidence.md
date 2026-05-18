@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T17:21:01.913Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T17:20:54.095Z
 - branch: codex/post-support-operations-wording-artifact-refresh
 - commit: fd2e3db0e55a2a847ca3e3bb1136d0370a8beca8
