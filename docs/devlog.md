@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Local Provider Release Evidence Wording Alignment
+
+- aligned release readiness, target provider operations, target deployment contract, and execution handoff wording so target local provider architecture blockers name target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
+- kept configured local provider live validation as archived pilot evidence while preventing production claim guidance from falling back to generic target-boundary evidence wording
+- extended production readiness and pilot export smoke guards so generated handoff and packaged evidence keep the detailed local provider approval gap
+
 ## 2026-05-18 Hermes Release Evidence Wording Alignment
 
 - aligned release readiness and demo scenario provider-gap wording so Hermes is described as a target Hermes provider architecture evidence stop-condition rather than a runtime-env shorthand
@@ -57,7 +63,7 @@
 ## 2026-05-18 Operator Runbook Local Provider Evidence Guard
 
 - aligned the Daily Start provider readiness expectations with current execution-v1 evidence by documenting archived local provider live evidence for the configured local rehearsal
-- kept the runbook explicit that Hermes remains blocked until target Hermes provider evidence is approved and target local provider architecture still needs approved target-boundary evidence before any production provider claim
+- kept the runbook explicit that Hermes remains blocked until target Hermes provider evidence is approved and target local provider architecture still needs approved target-boundary endpoint/model, network, telemetry, quota/resource, and live validation evidence before any production provider claim
 - extended `smoke:production-readiness-gate` to pin the runbook provider evidence wording so operator guidance stays aligned with product-plan and release evidence state
 
 ## 2026-05-18 Product Plan Local Live Evidence Alignment

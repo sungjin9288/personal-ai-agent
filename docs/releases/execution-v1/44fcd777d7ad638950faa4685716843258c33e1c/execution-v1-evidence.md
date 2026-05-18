@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T06:28:07.193Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T06:27:52.744Z
 - branch: codex/local-provider-release-evidence-wording
 - commit: 44fcd777d7ad638950faa4685716843258c33e1c

@@ -172,6 +172,14 @@ assert.match(
   /live validation: OpenAI passed, Anthropic failed with API billing\/credit blocker, local provider passed for the configured pilot boundary, Hermes remains blocked until target Hermes provider architecture evidence and target-boundary live validation are approved/,
 );
 assert.doesNotMatch(releaseReadiness, /Hermes missing runtime env/);
+assert.match(
+  releaseReadiness,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp('target local provider architecture still lacks approved ' + 'target-boundary evidence'),
+);
 assert.match(productPlan, /^- \[x\] Live OpenAI validation archived$/m);
 assert.match(productPlan, /^- \[ \] Live Anthropic validation archived$/m);
 assert.match(productPlan, /^- \[x\] Live local provider validation archived$/m);
@@ -569,6 +577,14 @@ assert.equal(operationalState.get('local provider live validation'), 'passed');
 assert.equal(operationalState.get('Hermes live validation'), 'blocked by missing `HERMES_PROVIDER_MODEL`');
 assert.match(handoff, /Execution v1 is provider-scoped pilot ready/);
 assert.match(handoff, /It is not production-ready or live-provider-complete/);
+assert.match(
+  handoff,
+  /target local provider architecture approval still requires target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+);
+assert.doesNotMatch(
+  handoff,
+  new RegExp('target local provider architecture approval still requires ' + 'target-boundary evidence'),
+);
 assert.match(releaseReadiness, /The product is not yet ready to be sold or represented as production-ready for other companies\./);
 assert.equal(releaseArtifactHygiene.ok, true, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
 assert.equal(releaseArtifactHygiene.secretFindingCount, 0, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
