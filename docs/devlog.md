@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Target Clean Deployment Stop-Condition Alignment
+
+- expanded the remaining production deployment blocker from shorthand deployment-control wording to target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment
+- aligned release readiness, target deployment contract, operator runbook, onboarding, demo scenarios, deployment guide, and production-like drill blocker wording with the target clean deployment architecture and operations evidence contracts
+- updated production readiness, production-like drill, target deployment contract, and pilot export smoke guards so operator-facing handoff docs cannot fall back to shorthand deployment-control wording
+
 ## 2026-05-18 Production Target Local Provider Stop-Condition Alignment
 
 - aligned target deployment contract, target environment evidence intake, release readiness production blockers, and production-like drill guard with the detailed local provider stop-condition
