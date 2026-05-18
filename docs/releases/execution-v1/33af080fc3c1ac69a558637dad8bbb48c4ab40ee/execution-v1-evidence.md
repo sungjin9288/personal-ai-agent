@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T02:22:12.268Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T02:22:03.735Z
 - branch: codex/post-production-target-stop-condition-artifact-refresh
 - commit: 33af080fc3c1ac69a558637dad8bbb48c4ab40ee
