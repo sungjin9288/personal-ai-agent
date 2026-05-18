@@ -208,11 +208,11 @@ assert.match(
 );
 assert.match(
   targetProviderOperations,
-  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture gap, and target Hermes provider architecture approval gap are explicit/,
+  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture approval gap for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   targetDeploymentContract,
-  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture gap, and target Hermes provider architecture approval gap are explicit/,
+  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   security,

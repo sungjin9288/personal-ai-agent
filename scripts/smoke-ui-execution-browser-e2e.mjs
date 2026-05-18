@@ -2966,7 +2966,7 @@ try {
           sourceType: sourceMeta.sourceType,
         };
       }`,
-    ]);
+    ], { label: `retrieval-focus-${sourceType}`, timeoutMs: 120_000 });
 
     assert.equal(retrievalFocusState.missingSource, undefined, JSON.stringify(retrievalFocusState));
     assert.equal(retrievalFocusState.sourceType, sourceType, JSON.stringify(retrievalFocusState));

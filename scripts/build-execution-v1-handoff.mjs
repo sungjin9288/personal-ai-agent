@@ -252,7 +252,7 @@ function buildCompletionBoundary(providerStates) {
     blockers.push('Hermes live validation still requires target Hermes provider architecture evidence');
   }
   if (localProvider?.status === 'passed') {
-    blockers.push('target local provider architecture approval still requires target-boundary evidence');
+    blockers.push('target local provider architecture approval still requires target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence');
   } else {
     blockers.push('local provider live validation still requires target runtime configuration');
   }
