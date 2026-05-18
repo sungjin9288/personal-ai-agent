@@ -130,6 +130,10 @@ assert.equal(extractBulletValue(manifest, 'bundleSha256'), expectedBundleSha256)
 assert.doesNotMatch(manifest, /\/Users\/|\/private\/var\/folders\/|\/var\/folders\//);
 assert.match(releaseReadiness, /\[pilot-export-package-v1\.md\]\(pilot-export-package-v1\.md\)/);
 assert.match(releaseReadiness, /pilot export package manifest: passed/);
+assert.match(
+  releaseReadiness,
+  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
+);
 assert.match(deployment, /## Pilot Export Package/);
 assert.match(deployment, /npm run package:pilot-export/);
 assert.match(deployment, /npm run smoke:pilot-export-package/);

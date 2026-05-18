@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Release Readiness Local Provider Stop-Condition Alignment
+
+- aligned release readiness current open blocker wording with the target local provider architecture evidence contract instead of describing the gap as endpoint/model runtime configuration only
+- made the stop-condition require approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence before any target local provider production claim
+- extended `smoke:production-readiness-gate` and `smoke:pilot-export-package` to pin the updated release blocker wording in both readiness and shareable pilot package checks
+
 ## 2026-05-18 Pilot Boundary Local Provider Alignment
 
 - aligned security, product, onboarding, and roadmap provider-boundary wording so configured local provider live validation is treated as archived pilot evidence instead of an unresolved runtime configuration blocker

@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-05-18T00:35:04.007Z
+- generatedAt: 2026-05-18T00:40:16.359Z
 - verifiedCommit: 3c25fd7d6326aa206dfcf87cc7dbb46177b5210f
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 8f497adf839a23e272c358ba5edc365014825f5a4a38a1c299b0079382ec755f
+- bundleSha256: 6517036d67549a8a36f518f702a2fb9c0f268ab6942231a524ea858f76e56e65
 - fileCount: 57
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -111,7 +111,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-tenant-isolation-operations-v1.md` | 12129 | `dc8a83aaf504f45333c552e1871ce8ab38c9ddc6cef70c6768e9ee13aa452890` |
 | `docs/target-secret-manager-architecture-v1.md` | 6224 | `889b5ab3c5ba2dd58874391c538cbe910470e84d8770fb4b3d1469f65a127e3f` |
 | `docs/target-environment-evidence-intake-v1.md` | 26973 | `fc57414f0ffbdb0a8ca078024d9f67050c96ffafc8a97abc5da78261e880275c` |
-| `docs/release-readiness-v1.md` | 39687 | `4750af14d3d57f2339df9274a2ba4e0bb7d77059a6dfb852a9e8d4c295088cf3` |
+| `docs/release-readiness-v1.md` | 39779 | `b03eff46d5532284f7da736b7cbf76c5566e45b494943e679202b56491cc2dbe` |
 | `docs/production-like-release-drill-v1.md` | 19160 | `6f9b87e753cc06746f823f5bc814b57dfe201108c039497e6a129c96a969b95d` |
 | `docs/execution-v1-evidence.md` | 10435 | `805e3a0c4d384d464aac9e01a420d3f0e9107b20bf2a4056f04456a87a42ec1d` |
 | `docs/execution-v1-closeout.md` | 3255 | `3777e084fd57bec2d6f909129be72b7503166d8776e5a6ae62fa5924ed4f72de` |

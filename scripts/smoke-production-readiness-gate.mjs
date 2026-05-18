@@ -538,7 +538,7 @@ assert.match(cleanDeploymentRelease, /not target production deployment evidence/
 
 for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
-  /target local provider architecture remains blocked until approved endpoint\/model runtime configuration and target-boundary live validation evidence are recorded/,
+  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
   /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
   /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
