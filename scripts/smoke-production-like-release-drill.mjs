@@ -89,7 +89,7 @@ for (const blocker of [
   /target provider operations evidence is not generated/,
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated/,
   /target local provider architecture is not approved, and approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are not generated/,
-  /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated/,
+  /target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,

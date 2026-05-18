@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Hermes Provider Stop-Condition Alignment
+
+- expanded the Hermes blocker from runtime configuration shorthand to target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation
+- aligned release readiness, target deployment contract, target environment evidence intake, provider intake/operations docs, operator runbook, onboarding, demo scenarios, deployment guide, product plan, security model, roadmap, and README with the target Hermes provider architecture contract
+- updated Hermes, target deployment, target environment intake, production readiness, production-like drill, and pilot export smoke guards so Hermes production claims cannot bypass the detailed target-boundary evidence requirements
+
 ## 2026-05-18 Target Clean Deployment Stop-Condition Alignment
 
 - expanded the remaining production deployment blocker from shorthand deployment-control wording to target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment
@@ -34,7 +40,7 @@
 
 - aligned security, product, onboarding, and roadmap provider-boundary wording so configured local provider live validation is treated as archived pilot evidence instead of an unresolved runtime configuration blocker
 - kept target local provider architecture as a separate production gate requiring approved target-boundary endpoint/model, network, telemetry, and resource evidence before any production provider claim
-- extended `smoke:pilot-export-package` to pin the shareable pilot pack wording for OpenAI/local archived proof, Hermes runtime configuration, target local provider evidence, and accepted-risk refresh requirements
+- extended `smoke:pilot-export-package` to pin the shareable pilot pack wording for OpenAI/local archived proof, target Hermes provider evidence, target local provider evidence, and accepted-risk refresh requirements
 
 ## 2026-05-18 Security Refresh Checklist Alignment
 
@@ -45,7 +51,7 @@
 ## 2026-05-18 Operator Runbook Local Provider Evidence Guard
 
 - aligned the Daily Start provider readiness expectations with current execution-v1 evidence by documenting archived local provider live evidence for the configured local rehearsal
-- kept the runbook explicit that Hermes remains blocked by runtime configuration and target local provider architecture still needs approved target-boundary evidence before any production provider claim
+- kept the runbook explicit that Hermes remains blocked until target Hermes provider evidence is approved and target local provider architecture still needs approved target-boundary evidence before any production provider claim
 - extended `smoke:production-readiness-gate` to pin the runbook provider evidence wording so operator guidance stays aligned with product-plan and release evidence state
 
 ## 2026-05-18 Product Plan Local Live Evidence Alignment
@@ -548,7 +554,7 @@
 - fixed the closeout runtime summary smoke fixture to include the `smoke:execution-v1-handoff` runtime row and to expect the closeout generator's relative evidence link, matching the current generated closeout contract
 - reran the full deterministic `verify:execution-v1` gate after the fixture fix; all seven rows passed, including browser E2E, 15-script reference adoption aggregate, live-helper smoke, and handoff generator smoke
 - kept evidence/closeout/handoff/snapshot content unchanged except for this devlog note because current release artifacts already match HEAD and no new live provider validation was performed
-- current remaining live blockers are unchanged: Anthropic is blocked by provider account billing/credit, and local/Hermes still require target runtime configuration
+- current remaining live blockers are unchanged: Anthropic is blocked by provider account billing/credit, and local/Hermes still required target provider architecture evidence at that point
 
 ## 2026-05-03 OpenAI Live Validation and Scoped Pilot Readiness Pass
 

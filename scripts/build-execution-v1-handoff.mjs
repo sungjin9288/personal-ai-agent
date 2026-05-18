@@ -219,7 +219,7 @@ function buildNextOperatorSteps(providerStates, pushStatus) {
   );
   steps.push(
     missingProviders.length
-      ? `2. Inject ${formatProviderLabels(missingProviders)} runtime configuration in the target environment before claiming those provider paths.`
+      ? `2. Attach approved target provider architecture evidence for ${formatProviderLabels(missingProviders)}, including endpoint/model ownership, target secret injection, telemetry, fallback, customer approval, and target-boundary live validation, before claiming those provider paths.`
       : '2. Keep target runtime configuration pinned before claiming additional provider paths.',
   );
   steps.push(
@@ -249,7 +249,7 @@ function buildCompletionBoundary(providerStates) {
     blockers.push('Anthropic is blocked by provider account billing/credit');
   }
   if (hermes?.status !== 'passed') {
-    blockers.push('Hermes live validation still requires target runtime configuration');
+    blockers.push('Hermes live validation still requires target Hermes provider architecture evidence');
   }
   if (localProvider?.status === 'passed') {
     blockers.push('target local provider architecture approval still requires target-boundary evidence');

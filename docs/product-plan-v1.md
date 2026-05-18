@@ -242,7 +242,7 @@ Deferred models:
    - run `npm run preflight:execution-v1:all`
    - resolve Anthropic account billing/credit blocker
    - attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
-   - inject approved Hermes runtime endpoint/model configuration
+   - attach target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation
    - run `npm run live:execution-v1:anthropic`
    - run `npm run live:execution-v1:local`
    - run `npm run live:execution-v1:hermes`

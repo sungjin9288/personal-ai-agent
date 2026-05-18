@@ -42,6 +42,10 @@ assert.match(decision, /not endpoint ownership proof/);
 assert.match(decision, /not target secret manager injection proof/);
 assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Hermes provider readiness remains blocked/);
+assert.match(
+  decision,
+  /Hermes provider readiness remains blocked until this architecture decision is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are generated/,
+);
 
 for (const area of [
   'Endpoint ownership',
@@ -95,6 +99,10 @@ for (const field of [
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(
+  decision,
+  /endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and `npm run live:execution-v1:hermes` evidence are generated from the approved boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-hermes-provider-architecture',

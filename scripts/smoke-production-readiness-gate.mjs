@@ -143,7 +143,7 @@ for (const blocker of [
   /target provider operations evidence is not generated from a production-like environment/,
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment/,
   /target local provider architecture is not approved, and approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are not generated from a production-like environment/,
-  /target Hermes provider architecture is not approved and Hermes live validation evidence is not generated from a production-like environment/,
+  /target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated from a production-like environment/,
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence is not generated from a production-like environment/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
@@ -190,7 +190,7 @@ assert.match(
 );
 assert.match(
   operatorRunbook,
-  /Hermes may show missing runtime configuration until an approved endpoint\/model is injected/,
+  /Hermes remains excluded from provider claims until target Hermes provider architecture evidence covers endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary live validation/,
 );
 assert.match(
   operatorRunbook,
@@ -393,7 +393,7 @@ assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v
 assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:hermes` pass/);
 assert.match(targetEnvironmentEvidenceIntake, /Blocker disposition is a stop-condition input, not a waiver/);
 assert.match(targetEnvironmentEvidenceIntake, /anthropic-live-validation-missing-or-failed/);
-assert.match(targetEnvironmentEvidenceIntake, /hermes-runtime-config-missing/);
+assert.match(targetEnvironmentEvidenceIntake, /target-hermes-provider-approval-missing/);
 assert.match(targetEnvironmentEvidenceIntake, /target-environment-evidence-missing/);
 assert.match(targetEnvironmentEvidenceIntake, /customer-exception-scope-missing/);
 assert.match(targetEnvironmentEvidenceIntake, /matching target boundary, release artifact hygiene, and regenerated release artifacts/);
@@ -543,7 +543,7 @@ assert.match(cleanDeploymentRelease, /not target production deployment evidence/
 for (const blocker of [
   /Anthropic live validation is blocked by provider account billing\/credit/,
   /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
-  /Hermes live validation is blocked by missing approved endpoint\/model runtime configuration/,
+  /Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded/,
   /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {

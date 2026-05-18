@@ -92,7 +92,7 @@ The clean deployment release rehearsal is [docs/clean-deployment-release-v1.md](
 Current planning status:
 
 - execution-v1 is provider-scoped pilot-ready for OpenAI-backed local-first operation
-- OpenAI and local provider live validation are archived; Anthropic is currently blocked by provider account billing/credit, Hermes still requires runtime configuration, and target local provider architecture still requires approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
+- OpenAI and local provider live validation are archived; Anthropic is currently blocked by provider account billing/credit, Hermes still requires target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation, and target local provider architecture still requires approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
 - security model documentation now covers workspace isolation policy, RBAC matrix, secret handling, audit/retention/export/delete policy, tool permission model, and threat model
 - self-hosted runtime isolation can be verified with `npm run smoke:runtime-isolation`
 - operator runbook now covers daily start, UI operation, workspace/mission flow, approval handling, live validation, evidence refresh, artifact hygiene, incident triage, and release decision gates
@@ -145,7 +145,7 @@ Current planning status:
 - tenant-scoped runtime export/delete can be verified with `npm run smoke:tenant-data-lifecycle`; it proves local tenant-filtered export and delete behavior inside one runtime root, but it does not provide hosted tenant storage, encryption, backup, or tenant administration by itself
 - clean deployment release rehearsal evidence can be regenerated with `npm run rehearsal:clean-deployment-release`, but it intentionally keeps `productionReadyClaim: false`
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
-- the current release label should not move to `production-ready` until Anthropic/Hermes live validation, target local provider architecture evidence, enforced enterprise controls, and production-like deployment release evidence are complete
+- the current release label should not move to `production-ready` until Anthropic account remediation, target Hermes provider architecture evidence, target local provider architecture evidence, enforced enterprise controls, and production-like deployment release evidence are complete
 
 ## Current Commands
 

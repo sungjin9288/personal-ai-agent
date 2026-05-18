@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T03:18:09.425Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T03:18:07.947Z
 - localDate: 2026-05-18
 - branch: codex/hermes-stop-condition-detail
 - commit: b4b4fb55e4616e5dc34e0225fe7da1092409cb08
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08](releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08](docs/releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08)
 - visualArtifactSetSha256: ff7c13a67c143475cc4a14c0c2809981956d736ecd32bb1ef18ff9ded3a71dd7
 - commitPushStatus: pushed to origin/main
 
