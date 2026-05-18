@@ -160,7 +160,7 @@ for (const blocker of [
   /target support architecture is not approved and target support evidence is not generated from a production-like environment/,
   /target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment/,
   /target clean deployment architecture is not approved, and target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment is not generated from a production-like environment/,
-  /target clean deployment operations evidence is not generated from a production-like environment/,
+  /target clean deployment operations evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, evidence retention, and failed-deployment containment is not generated from a production-like environment/,
   /clean deployment release evidence is not generated/,
 ]) {
   assert.match(productionReadySection, blocker);
@@ -180,6 +180,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   productionReadySection,
   new RegExp('target SLO operations evidence is not generated from ' + 'a production-like environment'),
+);
+assert.doesNotMatch(
+  productionReadySection,
+  new RegExp('target clean deployment operations evidence is not generated from ' + 'a production-like environment'),
 );
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
