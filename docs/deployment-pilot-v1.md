@@ -363,7 +363,7 @@ npm run smoke:target-hermes-provider-architecture
 
 The source of record is [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md). It proves endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, required commands, and the Hermes provider production gap are present.
 
-Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and `npm run live:execution-v1:hermes` passes from the approved production-like or hosted target environment.
+Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and `npm run live:execution-v1:hermes` evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Environment Evidence Intake
 
@@ -1268,6 +1268,6 @@ OpenAI-scoped pilot readiness is accepted when archived OpenAI live validation i
 
 ## Current Status
 
-This deployment guide supports a self-hosted OpenAI/local-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, Hermes remains blocked by missing runtime endpoint/model configuration, and local provider production claims remain blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded.
+This deployment guide supports a self-hosted OpenAI/local-scoped local-first pilot. Anthropic remains blocked by provider billing/account credits, Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded, and local provider production claims remain blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded.
 
-The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, local provider live validation, and target clean deployment controls for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment.
+The remaining blockers are Anthropic billing/account remediation, target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary Hermes live validation, target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, local provider live validation, and target clean deployment controls for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment.

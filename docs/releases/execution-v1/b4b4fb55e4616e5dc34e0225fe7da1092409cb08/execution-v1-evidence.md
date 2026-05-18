@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T03:18:09.425Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T03:18:00.364Z
 - branch: codex/hermes-stop-condition-detail
 - commit: b4b4fb55e4616e5dc34e0225fe7da1092409cb08

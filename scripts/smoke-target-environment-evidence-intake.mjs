@@ -129,7 +129,7 @@ assert.match(
 );
 for (const blocker of [
   'Anthropic billing/live validation',
-  'Hermes runtime config',
+  'target Hermes provider approval',
   'target local provider approval',
   'hosted identity/session approval',
   'hosted tenant isolation approval',
@@ -139,6 +139,14 @@ for (const blocker of [
 ]) {
   assert.match(intake, new RegExp(`\\| ${escapeRegExp(blocker)} \\|`), blocker);
 }
+assert.match(
+  intake,
+  /target Hermes provider architecture approval, endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, and regenerated release artifacts/,
+);
+assert.match(
+  intake,
+  /endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, Hermes live validation pass, release artifact hygiene pass, and regenerated release artifacts/,
+);
 for (const state of [
   'still-blocking',
   'configuration-required',
@@ -167,7 +175,7 @@ assert.match(intake, /Every blocker disposition change must carry a matching ver
 assert.match(intake, /the stop-condition that remains in force when the command is missing, stale, or generated from the wrong boundary/);
 for (const stopCondition of [
   'anthropic-live-validation-missing-or-failed',
-  'hermes-runtime-config-missing',
+  'target-hermes-provider-approval-missing',
   'target-local-provider-approval-missing',
   'hosted-identity-session-approval-missing',
   'hosted-tenant-isolation-approval-missing',

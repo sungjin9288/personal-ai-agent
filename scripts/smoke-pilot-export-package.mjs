@@ -175,7 +175,7 @@ assert.match(
 );
 assert.match(
   pilotOnboarding,
-  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, local provider live validation, and target clean deployment controls for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment/,
+  /The remaining blockers are Anthropic billing\/account remediation, target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary Hermes live validation, target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, local provider live validation, and target clean deployment controls for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment/,
 );
 assert.match(
   demoScenarios,
@@ -199,11 +199,11 @@ assert.match(
 );
 assert.match(
   targetProviderOperations,
-  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture gap, and Hermes runtime blocker are explicit/,
+  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture gap, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   targetDeploymentContract,
-  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture gap, and Hermes runtime blocker are explicit/,
+  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture gap, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   security,

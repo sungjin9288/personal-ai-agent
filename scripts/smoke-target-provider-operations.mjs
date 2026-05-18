@@ -138,7 +138,7 @@ assert.match(
 assert.match(targetProviderOperations, /target environment evidence intake, blocker closure verification matrix, production readiness gate, and artifact hygiene/);
 assert.match(targetEnvironment, /## Blocker Closure Verification Matrix/);
 assert.match(targetEnvironment, /anthropic-live-validation-missing-or-failed/);
-assert.match(targetEnvironment, /hermes-runtime-config-missing/);
+assert.match(targetEnvironment, /target-hermes-provider-approval-missing/);
 assert.match(targetEnvironment, /target-local-provider-approval-missing/);
 
 for (const command of [

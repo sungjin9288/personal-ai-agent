@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T03:18:09.425Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T03:18:00.403Z
 - branch: codex/hermes-stop-condition-detail
 - commit: b4b4fb55e4616e5dc34e0225fe7da1092409cb08
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b4b4fb55e4616e5dc34e0225fe7da1092409cb08/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
