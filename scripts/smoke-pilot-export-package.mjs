@@ -175,7 +175,7 @@ assert.match(
 );
 assert.match(
   pilotOnboarding,
-  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, local provider live validation, and production-grade deployment controls/,
+  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, local provider live validation, and target clean deployment controls for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment/,
 );
 assert.match(
   demoScenarios,

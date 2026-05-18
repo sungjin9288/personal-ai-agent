@@ -58,7 +58,7 @@ It is ready for controlled OpenAI-backed local-first pilot operation, internal d
 
 It is `pilot-ready` only inside the validated OpenAI provider boundary and the documented self-hosted/local-first deployment boundary.
 
-It is not `production-ready` because the OpenAI/local path is approved only for the scoped self-hosted/local-first pilot, Anthropic is blocked by provider account billing/credit, Hermes provider validation still requires runtime configuration, target local provider architecture still lacks approved target-boundary evidence, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target OpenAI provider account approval, target Anthropic provider account approval, target local provider architecture approval, target Hermes provider architecture approval, target secret manager injection/audit, target observability/on-call operations, target SLO architecture, target SLO operations, target retention operations, target backup operations, target support architecture, target support operations, SLO/SLA, and clean production-like evidence.
+It is not `production-ready` because the OpenAI/local path is approved only for the scoped self-hosted/local-first pilot, Anthropic is blocked by provider account billing/credit, Hermes provider validation still requires runtime configuration, target local provider architecture still lacks approved target-boundary evidence, and the target deployment contract still lacks hosted identity/session administration, tenant storage/encryption, target OpenAI provider account approval, target Anthropic provider account approval, target local provider architecture approval, target Hermes provider architecture approval, target secret manager injection/audit, target observability/on-call operations, target SLO architecture, target SLO operations, target retention operations, target backup operations, target support architecture, target support operations, SLO/SLA, and target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment.
 
 ## Evidence Summary
 
@@ -264,7 +264,7 @@ Blockers:
 - production SLO/SLA operating evidence is not generated from a production-like environment
 - target support architecture is not approved and target support evidence is not generated from a production-like environment
 - target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment
-- target clean deployment architecture is not approved and target clean deployment evidence is not generated from a production-like environment
+- target clean deployment architecture is not approved, and target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment is not generated from a production-like environment
 - target clean deployment operations evidence is not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment
 
