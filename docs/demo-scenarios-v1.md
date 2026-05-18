@@ -13,7 +13,7 @@
 
 The demo catalog proves the product through concrete operator-visible workflows, not abstract claims. Each scenario should show a bounded task, explicit controls, evidence, and a decision point.
 
-The demo may claim OpenAI-scoped local-first pilot readiness when it uses the archived evidence pack. It must not claim production readiness or all-provider completeness because OpenAI and configured local provider live validation are archived only for the pilot boundary, Anthropic is blocked by provider billing/account credits, Hermes requires approved runtime endpoint/model configuration, and target local provider architecture still requires approved target-boundary evidence.
+The demo may claim OpenAI-scoped local-first pilot readiness when it uses the archived evidence pack. It must not claim production readiness or all-provider completeness because OpenAI and configured local provider live validation are archived only for the pilot boundary, Anthropic is blocked by provider billing/account credits, Hermes requires approved runtime endpoint/model configuration, and target local provider architecture still requires approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence.
 
 ## Demo Principles
 
@@ -77,7 +77,7 @@ Success criteria:
 - deterministic execution-v1 checks pass
 - handoff generator passes
 - snapshot smoke passes
-- provider scope and gaps are shown explicitly: OpenAI and configured local provider archived for the pilot boundary, Anthropic billing/account blocker if still unresolved, Hermes missing runtime env if still unconfigured, and target local provider architecture evidence still required for production claims
+- provider scope and gaps are shown explicitly: OpenAI and configured local provider archived for the pilot boundary, Anthropic billing/account blocker if still unresolved, Hermes missing runtime env if still unconfigured, and target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation still required for production claims
 - evidence and handoff are readable by a second operator
 
 Stop criteria:
@@ -179,7 +179,7 @@ Demo path A, archived OpenAI-scoped pilot evidence:
 - show configured local provider live validation as archived for the pilot boundary
 - show Anthropic provider-account blocker if still unresolved
 - show Hermes missing runtime env if still unconfigured
-- show target local provider architecture evidence as still required before production claims
+- show target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation as still required before production claims
 - explain that production readiness and all-provider completeness are not claimed
 
 Demo path B, deterministic-only:
@@ -420,4 +420,4 @@ Decision values:
 
 This scenario catalog is sufficient for a controlled customer or company pilot demo.
 
-The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, local provider live validation, and production-grade deployment controls.

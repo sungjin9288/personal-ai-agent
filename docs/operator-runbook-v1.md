@@ -11,7 +11,7 @@
 
 This runbook tells an operator how to run the v1 multi-agent harness from a clean local pilot state through mission execution, provider validation, evidence regeneration, release handoff, and incident triage.
 
-The current release state is `provider-scoped pilot ready for OpenAI-backed local-first path`. OpenAI and local provider live validation are archived in the current evidence pack. The release is not production-ready or live-provider-complete because Anthropic is blocked by provider account credit/billing, Hermes validation is blocked until approved runtime endpoint and model configuration are injected, and target local provider architecture still requires approved target-boundary evidence.
+The current release state is `provider-scoped pilot ready for OpenAI-backed local-first path`. OpenAI and local provider live validation are archived in the current evidence pack. The release is not production-ready or live-provider-complete because Anthropic is blocked by provider account credit/billing, Hermes validation is blocked until approved runtime endpoint and model configuration are injected, and target local provider architecture still requires approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence.
 
 ## Operator Roles
 
@@ -57,7 +57,7 @@ Expected OpenAI-scoped pilot-ready state:
 - providers without runtime/env show `ready-but-missing-env`
 - Anthropic may show a provider-account failure until billing/credits are remediated
 - Hermes may show missing runtime configuration until an approved endpoint/model is injected
-- target local provider architecture still requires approved target-boundary evidence before a production provider claim
+- target local provider architecture still requires approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence before a production provider claim
 - live commands are shown but not run automatically
 
 Stop condition:
@@ -417,4 +417,4 @@ Do not do:
 
 This runbook supports OpenAI-scoped controlled self-hosted pilot operation.
 
-The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, local provider live validation, and production-grade deployment controls.

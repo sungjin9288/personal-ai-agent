@@ -8,6 +8,7 @@ const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
 const productPlanPath = path.join(repoDir, 'docs', 'product-plan-v1.md');
 const deploymentPath = path.join(repoDir, 'docs', 'deployment-pilot-v1.md');
+const operatorRunbookPath = path.join(repoDir, 'docs', 'operator-runbook-v1.md');
 const pilotOnboardingPath = path.join(repoDir, 'docs', 'pilot-onboarding-v1.md');
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
@@ -22,6 +23,7 @@ const manifest = readRequiredFile(manifestPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const productPlan = readRequiredFile(productPlanPath);
 const deployment = readRequiredFile(deploymentPath);
+const operatorRunbook = readRequiredFile(operatorRunbookPath);
 const pilotOnboarding = readRequiredFile(pilotOnboardingPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
@@ -137,6 +139,10 @@ assert.match(
 assert.match(deployment, /## Pilot Export Package/);
 assert.match(deployment, /npm run package:pilot-export/);
 assert.match(deployment, /npm run smoke:pilot-export-package/);
+assert.match(
+  deployment,
+  /local provider production claims remain blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
+);
 assert.match(security, /pilot export package manifest/);
 assert.match(security, /retention\/export\/delete policy gate/);
 assert.match(
@@ -165,11 +171,11 @@ assert.match(
 );
 assert.match(
   pilotOnboarding,
-  /target local provider architecture still requires approved target-boundary evidence before any production provider claim/,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence before any production provider claim/,
 );
 assert.match(
   pilotOnboarding,
-  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls/,
+  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, local provider live validation, and production-grade deployment controls/,
 );
 assert.match(
   demoScenarios,
@@ -177,7 +183,11 @@ assert.match(
 );
 assert.match(
   demoScenarios,
-  /target local provider architecture evidence still required for production claims/,
+  /target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation still required for production claims/,
+);
+assert.match(
+  operatorRunbook,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence before a production provider claim/,
 );
 assert.match(
   customerSupportOperations,
@@ -218,6 +228,10 @@ assert.match(
 assert.match(
   security,
   /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence is recorded/,
+);
+assert.match(
+  readme,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
 );
 assert.match(readme, /npm run package:pilot-export/);
 
