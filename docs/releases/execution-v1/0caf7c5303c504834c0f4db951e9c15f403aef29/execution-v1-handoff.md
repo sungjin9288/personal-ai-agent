@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T03:33:44.472Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T03:33:43.030Z
 - localDate: 2026-05-18
 - branch: codex/post-hermes-stop-condition-artifact-refresh
 - commit: 0caf7c5303c504834c0f4db951e9c15f403aef29
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29](releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29](docs/releases/execution-v1/0caf7c5303c504834c0f4db951e9c15f403aef29)
 - visualArtifactSetSha256: ddf57501f721c8000c647ba88b00a8fb633fc98ab83737e2e8e59259cd1a52dd
 - commitPushStatus: pushed to origin/main
 

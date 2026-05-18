@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T03:33:44.472Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T03:33:34.726Z
 - branch: codex/post-hermes-stop-condition-artifact-refresh
 - commit: 0caf7c5303c504834c0f4db951e9c15f403aef29
