@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T15:18:57.276Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T15:18:47.126Z
 - branch: codex/post-slo-operations-wording-artifact-refresh
 - commit: bd9c6353b5782dcdb7a1a39677fa8e3c1dc63297
