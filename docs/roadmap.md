@@ -250,7 +250,7 @@
 - deterministic local-first smoke coverage
 - OpenAI and configured local provider live execution-v1 validation are archived and reflected in the current evidence, closeout, handoff, and snapshot package
 - Anthropic live validation reaches the provider API but is blocked by account credit/billing, so its failure is treated as a provider-account blocker rather than a harness runtime failure
-- target local provider architecture remains blocked until approved target-boundary endpoint/model, network, telemetry, and resource evidence are recorded, while Hermes provider validation remains blocked until approved runtime endpoint/model configuration is injected
+- target local provider architecture remains blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded, while Hermes provider validation remains blocked until approved runtime endpoint/model configuration is injected
 - pilot deployment, onboarding, demo, security, operator runbook, evidence, closeout, handoff, and snapshot artifacts are aligned for an OpenAI-backed local-first pilot
 - foreground execution approvals now include operator-reviewed mutation bundles with rollback previews, predicted sha/byte/line deltas, template counts, and target file lists before a lease is approved
 - approved mutation executions now preserve rollback snapshots and expose explicit rollback commands with hash guards, dry-run previews, CLI/API/UI controls, and per-session rollback audit state
@@ -262,7 +262,7 @@
 ## Next Milestone Scope
 
 - remediate Anthropic billing/account credits, rerun live validation, and archive updated evidence
-- attach approved target local provider model/endpoint, network, telemetry, and resource evidence; inject approved Hermes runtime endpoint/model configuration; rerun live validation; and archive updated evidence
+- attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence; inject approved Hermes runtime endpoint/model configuration; rerun live validation; and archive updated evidence
 - add production deployment controls for authenticated RBAC, tenant isolation, centralized secret handling, retention/export/delete verification, incident/SLO evidence, and production-like clean-environment release generation
 - deepen provider failover, policy-aware retries, and operator remediation automation using the existing provider attention and maintenance surfaces
 - add provider-side usage/cost variants and stronger deliverable-specific reviewer rubrics after provider coverage is unblocked

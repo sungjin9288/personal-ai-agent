@@ -218,7 +218,7 @@ Current status:
 - deterministic evidence and handoff are implemented
 - OpenAI and local provider live evidence are archived in the current evidence pack, with local provider proof scoped to the configured local rehearsal
 - Anthropic evidence records a provider account billing/credit blocker
-- target local provider architecture remains blocked until approved target-boundary endpoint/model, network, telemetry, and resource evidence is recorded
+- target local provider architecture remains blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence is recorded
 - Hermes provider evidence remains blocked until approved runtime endpoint/model configuration is injected
 - [production-provider-readiness-v1.md](production-provider-readiness-v1.md) records provider preflight readiness and live-validation blockers while keeping live-provider-complete and production-ready claims blocked
 - [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md) defines the target OpenAI provider account contract for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, renewal/review audit, and the remaining target account evidence gap

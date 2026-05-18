@@ -177,6 +177,10 @@ assert.match(
 );
 assert.match(productPlan, /target local provider architecture remains a production gate/);
 assert.match(
+  productPlan,
+  /attach approved target-boundary local provider endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+);
+assert.match(
   operatorRunbook,
   /OpenAI and local provider live validation are archived in the current evidence pack/,
 );
