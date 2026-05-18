@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T06:46:08.624Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T06:45:57.317Z
 - branch: codex/post-local-provider-release-wording-artifact-refresh
 - commit: 81f2b3c286a6325f1001288e21cc0f113713402d
