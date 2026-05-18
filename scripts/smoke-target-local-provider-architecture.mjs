@@ -44,6 +44,10 @@ assert.match(decision, /not network isolation proof/);
 assert.match(decision, /not data residency proof/);
 assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Local provider readiness remains blocked/);
+assert.match(
+  decision,
+  /Local provider readiness remains blocked until this architecture decision is approved and target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are generated from the approved production-like or hosted target environment/,
+);
 
 for (const area of [
   'Endpoint ownership',
@@ -95,6 +99,10 @@ for (const field of [
   assert.match(decision, new RegExp(`\\| ${escapeRegExp(field)} \\|`), field);
 }
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
+assert.match(
+  decision,
+  /target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and `npm run live:execution-v1:local` evidence are generated from the approved boundary/,
+);
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
 

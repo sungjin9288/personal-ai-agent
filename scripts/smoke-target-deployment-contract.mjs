@@ -158,7 +158,7 @@ for (const blocker of [
   /stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment evidence are captured/,
   /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
-  /stop local provider claims until the target local provider architecture record is approved and local provider live validation evidence is generated/,
+  /stop local provider claims until the target local provider architecture record is approved and target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are generated/,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and Hermes live validation evidence is generated/,
   /stop production-ready claims if the target environment evidence intake packet is incomplete/,
   /stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated/,
