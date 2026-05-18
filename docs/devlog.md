@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Observability Operations Stop-Condition Alignment
+
+- expanded the production-ready target observability operations blocker so it names telemetry ingestion, alert delivery, trace/log retention, staffed on-call routing and acknowledgement, customer-facing status communication, incident response, and incident review history evidence
+- kept the target observability architecture approval gate separate while making the operations blocker match the detailed target observability operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target observability operations evidence wording
+
 ## 2026-05-19 Target Support Operations Stop-Condition Alignment
 
 - expanded the production-ready target support operations blocker so it names staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence
