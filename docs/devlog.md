@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Target Provider Operations Stop-Condition Alignment
+
+- expanded the production-ready target provider operations blocker so it names provider inventory/account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
+- kept the provider operations contract and current target deployment gate unchanged while making the release blocker match the detailed target provider operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic provider operations evidence wording
+
 ## 2026-05-18 Local Provider Release Evidence Wording Alignment
 
 - aligned release readiness, target provider operations, target deployment contract, and execution handoff wording so target local provider architecture blockers name target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
