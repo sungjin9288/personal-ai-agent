@@ -263,7 +263,7 @@ Blockers:
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
 - production SLO/SLA operating evidence is not generated from a production-like environment
 - target support architecture is not approved and target support evidence is not generated from a production-like environment
-- target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment
+- target support operations evidence for staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence is not generated from a production-like environment
 - target clean deployment architecture is not approved, and target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment is not generated from a production-like environment
 - target clean deployment operations evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, evidence retention, and failed-deployment containment is not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment

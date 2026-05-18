@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-18T15:58:50.545Z
-- branch: codex/post-clean-deployment-operations-wording-artifact-refresh
-- verifiedCommit: b163820f1720d255392ec256db952cf64602ce28
+- generatedAt: 2026-05-18T17:10:48.410Z
+- branch: codex/target-support-operations-stop-condition-wording
+- verifiedCommit: bb045b7987d92adeadbe53819ceb5c1f2d5783d3
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -34,51 +34,51 @@ Production-ready remains blocked until the target deployment model produces targ
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 326 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 329 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 336 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 331 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 331 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 307 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 330 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 321 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 320 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 328 |
-| `npm run smoke:target-support-operations` | pass | 0 | 328 |
-| `npm run smoke:secret-management` | pass | 0 | 318 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 331 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 331 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 329 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 331 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 331 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 333 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 345 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 340 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 329 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 334 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 330 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 335 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 331 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1761 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 339 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 334 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 318 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 328 |
-| `npm run smoke:target-local-provider-architecture` | pass | 0 | 334 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 330 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 330 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 333 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 328 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 323 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 331 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 809 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 420 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 341 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 336 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 864 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 389 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 389 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1386 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 98 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 95 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 96 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 100 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 96 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 97 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 97 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 98 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 94 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 99 |
+| `npm run smoke:target-support-operations` | pass | 0 | 100 |
+| `npm run smoke:secret-management` | pass | 0 | 101 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 101 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 103 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 100 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 102 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 101 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 101 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 98 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 100 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 98 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 96 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 95 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 95 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 98 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1279 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 117 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 101 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 98 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 96 |
+| `npm run smoke:target-local-provider-architecture` | pass | 0 | 94 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 98 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 97 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 98 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 97 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 96 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 111 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 402 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 193 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 112 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 115 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 277 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 113 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 113 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 415 |
 
 ## Key Signals
 
@@ -492,9 +492,9 @@ Production-ready remains blocked until the target deployment model produces targ
 
 ```json
 {
-    "artifactState": "local-current",
-    "artifactSyncCommit": false,
-    "branch": "codex/post-clean-deployment-operations-wording-artifact-refresh",
+    "artifactState": "artifact-sync-current",
+    "artifactSyncCommit": true,
+    "branch": "codex/target-support-operations-stop-condition-wording",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
@@ -506,7 +506,7 @@ Production-ready remains blocked until the target deployment model produces targ
 
 ```json
 {
-    "artifactSyncCommit": false,
+    "artifactSyncCommit": true,
     "deterministicPassed": 8,
     "runtimeRows": 8,
     "verifiedCommit": "b163820f1720d255392ec256db952cf64602ce28"
@@ -625,7 +625,7 @@ Production-ready remains blocked until the target deployment model produces targ
 - target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
 - production SLO/SLA operating evidence is not generated from a production-like environment
 - target support architecture is not approved and target support evidence is not generated from a production-like environment
-- target support operations, staffed coverage, support audit history, on-call handoff, and incident review evidence are not generated from a production-like environment
+- target support operations evidence for staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence is not generated from a production-like environment
 - target clean deployment architecture is not approved, and target clean deployment evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke/health verification, rollback/recovery, release approval, and failed-deployment containment is not generated from a production-like environment
 - target clean deployment operations evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, evidence retention, and failed-deployment containment is not generated from a production-like environment
 - clean deployment release evidence is not generated from a production-like environment
