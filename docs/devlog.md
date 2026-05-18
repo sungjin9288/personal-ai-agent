@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Local Provider Stop-Condition Source Alignment
+
+- aligned product plan, security model, roadmap, and execution handoff generator wording with the release readiness target local provider stop-condition
+- replaced shorthand local provider evidence wording with approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence requirements
+- extended production readiness and pilot export smoke guards so source planning docs cannot drift away from the release blocker wording
+
 ## 2026-05-18 Release Readiness Local Provider Stop-Condition Alignment
 
 - aligned release readiness current open blocker wording with the target local provider architecture evidence contract instead of describing the gap as endpoint/model runtime configuration only

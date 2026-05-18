@@ -153,6 +153,10 @@ assert.match(
 );
 assert.match(
   productPlan,
+  /attach approved target-boundary local provider endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+);
+assert.match(
+  productPlan,
   /target local provider architecture evidence, enforced enterprise controls, and production-like deployment evidence are not complete/,
 );
 assert.match(
@@ -213,7 +217,7 @@ assert.match(
 );
 assert.match(
   security,
-  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network, telemetry, and resource evidence is recorded/,
+  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence is recorded/,
 );
 assert.match(readme, /npm run package:pilot-export/);
 

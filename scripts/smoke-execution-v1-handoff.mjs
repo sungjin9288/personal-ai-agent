@@ -77,7 +77,7 @@ fs.writeFileSync(closeoutPath, [
   '- [x] CLI execution preflight/start/stop/status/logs 계약 반영',
   '- [ ] OpenAI live validation',
   '- [ ] Anthropic live validation',
-  '- [ ] Local provider live validation',
+  '- [x] Local provider live validation',
   '- [ ] Hermes live validation',
   '- [x] browser interaction E2E 자동화',
   '',
@@ -88,7 +88,7 @@ fs.writeFileSync(closeoutPath, [
   '- deterministic runtime summary: ready',
   '- openai live validation: missing-env',
   '- anthropic live validation: missing-env',
-  '- local live validation: missing-env',
+  '- local live validation: passed',
   '- hermes live validation: missing-env',
   '- browser interaction e2e: ready',
   '',
@@ -128,6 +128,10 @@ assert.equal(handoff.includes('npm run preflight:execution-v1:all'), true);
 assert.equal(handoff.includes('npm run refresh:execution-v1-artifacts'), true);
 assert.equal(handoff.includes('pilot export package'), true);
 assert.equal(handoff.includes('node scripts/build-execution-v1-evidence.mjs --live-<provider>'), true);
+assert.equal(
+  handoff.includes('Attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence'),
+  true,
+);
 assert.equal(handoff.includes('npm run snapshot:execution-v1'), false);
 assert.equal(
   handoff.includes('Commit and push the refreshed release artifacts')

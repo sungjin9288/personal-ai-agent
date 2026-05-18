@@ -241,7 +241,7 @@ Deferred models:
 1. Broaden live validation coverage beyond the archived OpenAI/local pilot proof.
    - run `npm run preflight:execution-v1:all`
    - resolve Anthropic account billing/credit blocker
-   - attach approved target local provider model/endpoint, network, telemetry, and resource evidence
+   - attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence
    - inject approved Hermes runtime endpoint/model configuration
    - run `npm run live:execution-v1:anthropic`
    - run `npm run live:execution-v1:local`

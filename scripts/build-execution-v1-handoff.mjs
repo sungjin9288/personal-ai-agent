@@ -224,7 +224,7 @@ function buildNextOperatorSteps(providerStates, pushStatus) {
   );
   steps.push(
     localProvider?.status === 'passed'
-      ? '3. Attach approved local provider model/endpoint, network, telemetry, and resource evidence to the target local provider architecture before adding local provider operation to a production claim.'
+      ? '3. Attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence to the target local provider architecture before adding local provider operation to a production claim.'
       : '3. Complete target local provider architecture approval before adding local provider operation to a production claim.',
   );
   steps.push(
