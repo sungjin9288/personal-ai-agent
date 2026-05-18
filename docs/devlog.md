@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Clean Deployment Operations Stop-Condition Alignment
+
+- expanded the production-ready target clean deployment operations blocker so it names source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, evidence retention, and failed-deployment containment evidence
+- kept the target clean deployment architecture approval gate separate while making the operations blocker match the detailed target clean deployment operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target clean deployment operations evidence wording
+
 ## 2026-05-19 Target SLO Operations Stop-Condition Alignment
 
 - expanded the production-ready target SLO operations blocker so it names customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment evidence
