@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T00:35:03.973Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T00:34:55.005Z
 - branch: codex/post-pilot-boundary-local-artifact-refresh
 - commit: 3c25fd7d6326aa206dfcf87cc7dbb46177b5210f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3c25fd7d6326aa206dfcf87cc7dbb46177b5210f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

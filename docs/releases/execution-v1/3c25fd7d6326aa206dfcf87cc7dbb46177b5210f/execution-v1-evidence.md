@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T00:35:03.973Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T00:34:54.956Z
 - branch: codex/post-pilot-boundary-local-artifact-refresh
 - commit: 3c25fd7d6326aa206dfcf87cc7dbb46177b5210f
