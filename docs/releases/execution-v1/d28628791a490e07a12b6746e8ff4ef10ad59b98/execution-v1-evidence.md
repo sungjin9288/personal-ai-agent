@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T01:53:23.232Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T01:53:13.822Z
 - branch: codex/post-operator-facing-stop-condition-artifact-refresh
 - commit: d28628791a490e07a12b6746e8ff4ef10ad59b98

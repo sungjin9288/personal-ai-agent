@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T01:53:23.232Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T01:53:21.857Z
 - localDate: 2026-05-18
 - branch: codex/post-operator-facing-stop-condition-artifact-refresh
 - commit: d28628791a490e07a12b6746e8ff4ef10ad59b98
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98](releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98](docs/releases/execution-v1/d28628791a490e07a12b6746e8ff4ef10ad59b98)
 - visualArtifactSetSha256: 36149f5c5f3dde806a568c9e84151f0798aa895e1262e64f60b2eaccbdc2390e
 - commitPushStatus: pushed to origin/main
 
