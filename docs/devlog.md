@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Target Tenant Isolation Operations Stop-Condition Alignment
+
+- expanded the production-ready target tenant isolation operations blocker so it names tenant identity source, tenant-scoped authorization, storage partitioning, per-tenant encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence
+- kept the hosted tenant isolation architecture approval gate separate while making the operations blocker match the detailed target tenant isolation operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target tenant isolation operations evidence wording
+
 ## 2026-05-18 Target Identity Session Operations Stop-Condition Alignment
 
 - expanded the production-ready target identity/session operations blocker so it names customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment evidence

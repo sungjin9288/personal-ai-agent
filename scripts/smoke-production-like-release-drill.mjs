@@ -93,7 +93,7 @@ for (const blocker of [
   /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
   /target identity\/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
-  /target tenant isolation operations evidence is not generated/,
+  /target tenant isolation operations evidence for tenant identity source, tenant-scoped authorization, storage partitioning, per-tenant encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment is not generated/,
   /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
   /target SLO architecture is not approved and target SLO\/SLA evidence is not generated from a production-like environment/,
