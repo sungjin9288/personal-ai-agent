@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Target Identity Session Operations Stop-Condition Alignment
+
+- expanded the production-ready target identity/session operations blocker so it names customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment evidence
+- kept the hosted identity architecture approval gate separate while making the operations blocker match the detailed target identity/session operations evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target identity/session operations evidence wording
+
 ## 2026-05-18 Target Provider Operations Stop-Condition Alignment
 
 - expanded the production-ready target provider operations blocker so it names provider inventory/account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence

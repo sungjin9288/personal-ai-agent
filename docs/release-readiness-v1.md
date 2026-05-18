@@ -250,7 +250,7 @@ Blockers:
 - target local provider architecture is not approved, and approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are not generated from a production-like environment
 - target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated from a production-like environment
 - hosted identity session architecture is not approved and target identity/session evidence is not generated
-- target identity/session operations evidence is not generated from a production-like environment
+- target identity/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated from a production-like environment
 - hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated
 - target tenant isolation operations evidence is not generated from a production-like environment
 - target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment
