@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T17:51:32.940Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T17:51:31.456Z
 - localDate: 2026-05-19
 - branch: codex/post-observability-operations-wording-artifact-refresh
 - commit: d563e76a67dff69bd6633d1e298f4614d063d3ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec](releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec](docs/releases/execution-v1/d563e76a67dff69bd6633d1e298f4614d063d3ec)
 - visualArtifactSetSha256: 384b51dbc3e56bfecc85a309b23ea2dfc52ad2f75b29603da37f88030faa981c
 - commitPushStatus: pushed to origin/main
 
