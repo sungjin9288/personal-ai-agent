@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T14:08:30.576Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T14:08:20.314Z
 - branch: codex/post-tenant-isolation-wording-artifact-refresh
 - commit: f795e6e61d432969f03fc694d200941bfcbe2437
