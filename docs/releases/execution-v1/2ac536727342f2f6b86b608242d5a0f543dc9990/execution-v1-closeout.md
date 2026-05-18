@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-18T03:57:30.412Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-18T03:57:17.825Z
 - branch: codex/hermes-release-evidence-wording
 - commit: 2ac536727342f2f6b86b608242d5a0f543dc9990
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

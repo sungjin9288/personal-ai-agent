@@ -70,7 +70,7 @@ Current execution evidence:
 - reference adoption aggregate: ready, 15 scripts
 - handoff generator: passed
 - visual artifact set: `d58b31568fb8088dde4b8d8fa34d0af2a2f2e6012a43b1449074ab27768534ea`
-- live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local provider passed, Hermes missing runtime env
+- live validation: OpenAI passed, Anthropic failed with API billing/credit blocker, local provider passed for the configured pilot boundary, Hermes remains blocked until target Hermes provider architecture evidence and target-boundary live validation are approved
 - local deterministic production-like release drill: passed, with `productionReadyClaim: false`
 - pilot export package manifest: passed, with repository-relative paths and `productionReadyClaim: false`
 - self-hosted runtime isolation smoke: passed, with `productionReadyClaim: false`

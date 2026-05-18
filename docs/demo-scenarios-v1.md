@@ -77,7 +77,7 @@ Success criteria:
 - deterministic execution-v1 checks pass
 - handoff generator passes
 - snapshot smoke passes
-- provider scope and gaps are shown explicitly: OpenAI and configured local provider archived for the pilot boundary, Anthropic billing/account blocker if still unresolved, Hermes missing runtime env if still unconfigured, and target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation still required for production claims
+- provider scope and gaps are shown explicitly: OpenAI and configured local provider archived for the pilot boundary, Anthropic billing/account blocker if still unresolved, Hermes target provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary live validation still required before any provider claim, and target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation still required for production claims
 - evidence and handoff are readable by a second operator
 
 Stop criteria:
@@ -178,7 +178,7 @@ Demo path A, archived OpenAI-scoped pilot evidence:
 - show OpenAI live validation as archived
 - show configured local provider live validation as archived for the pilot boundary
 - show Anthropic provider-account blocker if still unresolved
-- show Hermes missing runtime env if still unconfigured
+- show Hermes target provider architecture evidence gap and target-boundary live validation requirement if still unapproved
 - show target local provider architecture evidence for target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation as still required before production claims
 - explain that production readiness and all-provider completeness are not claimed
 

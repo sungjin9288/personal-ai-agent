@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Hermes Release Evidence Wording Alignment
+
+- aligned release readiness and demo scenario provider-gap wording so Hermes is described as a target Hermes provider architecture evidence stop-condition rather than a runtime-env shorthand
+- kept runtime preflight `ready-but-missing-env` semantics intact while clarifying that Hermes provider claims remain blocked until target-boundary architecture evidence and live validation are approved
+- extended production readiness and pilot export smoke guards so operator-facing release and demo artifacts cannot reintroduce the Hermes runtime-env shorthand
+
 ## 2026-05-18 Hermes Provider Stop-Condition Alignment
 
 - expanded the Hermes blocker from runtime configuration shorthand to target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation

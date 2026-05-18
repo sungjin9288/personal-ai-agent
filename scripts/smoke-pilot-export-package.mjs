@@ -183,6 +183,15 @@ assert.match(
 );
 assert.match(
   demoScenarios,
+  /Hermes target provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary live validation still required before any provider claim/,
+);
+assert.match(
+  demoScenarios,
+  /show Hermes target provider architecture evidence gap and target-boundary live validation requirement if still unapproved/,
+);
+assert.doesNotMatch(demoScenarios, /Hermes missing runtime env/);
+assert.match(
+  demoScenarios,
   /target local provider architecture evidence for target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation still required for production claims/,
 );
 assert.match(

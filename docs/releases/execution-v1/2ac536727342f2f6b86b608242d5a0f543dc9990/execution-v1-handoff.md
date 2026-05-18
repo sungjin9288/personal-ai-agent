@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T03:57:30.412Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T03:57:28.978Z
 - localDate: 2026-05-18
 - branch: codex/hermes-release-evidence-wording
 - commit: 2ac536727342f2f6b86b608242d5a0f543dc9990
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990](releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990](docs/releases/execution-v1/2ac536727342f2f6b86b608242d5a0f543dc9990)
 - visualArtifactSetSha256: aff3f77ad5e40d4d7434b87ba0cd33caef7397a3ccec17b65b8dd4dd5f9b278d
 - commitPushStatus: pushed to origin/main
 
