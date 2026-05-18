@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-18T01:32:41.338Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-18T01:32:31.154Z
 - branch: codex/post-local-provider-source-alignment-artifact-refresh
 - commit: 4213b9f60e933611d305817d6ac325522897795e
