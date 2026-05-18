@@ -8,6 +8,12 @@ const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
 const productPlanPath = path.join(repoDir, 'docs', 'product-plan-v1.md');
 const deploymentPath = path.join(repoDir, 'docs', 'deployment-pilot-v1.md');
+const pilotOnboardingPath = path.join(repoDir, 'docs', 'pilot-onboarding-v1.md');
+const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
+const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
+const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
+const targetProviderOperationsPath = path.join(repoDir, 'docs', 'target-provider-operations-v1.md');
+const targetDeploymentContractPath = path.join(repoDir, 'docs', 'target-deployment-contract-v1.md');
 const securityPath = path.join(repoDir, 'docs', 'security-model-v1.md');
 const readmePath = path.join(repoDir, 'README.md');
 const packagePath = path.join(repoDir, 'package.json');
@@ -16,6 +22,12 @@ const manifest = readRequiredFile(manifestPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const productPlan = readRequiredFile(productPlanPath);
 const deployment = readRequiredFile(deploymentPath);
+const pilotOnboarding = readRequiredFile(pilotOnboardingPath);
+const demoScenarios = readRequiredFile(demoScenariosPath);
+const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
+const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
+const targetProviderOperations = readRequiredFile(targetProviderOperationsPath);
+const targetDeploymentContract = readRequiredFile(targetDeploymentContractPath);
 const security = readRequiredFile(securityPath);
 const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packagePath));
@@ -132,6 +144,50 @@ assert.match(
   /pilot export package stay aligned while preserving archived live proof by default/,
 );
 assert.match(
+  productPlan,
+  /Broaden live validation coverage beyond the archived OpenAI\/local pilot proof/,
+);
+assert.match(
+  productPlan,
+  /target local provider architecture evidence, enforced enterprise controls, and production-like deployment evidence are not complete/,
+);
+assert.match(
+  pilotOnboarding,
+  /OpenAI and configured local provider live validation are archived/,
+);
+assert.match(
+  pilotOnboarding,
+  /target local provider architecture still requires approved target-boundary evidence before any production provider claim/,
+);
+assert.match(
+  pilotOnboarding,
+  /The remaining blockers are Anthropic billing\/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls/,
+);
+assert.match(
+  demoScenarios,
+  /OpenAI and configured local provider live validation are archived only for the pilot boundary/,
+);
+assert.match(
+  demoScenarios,
+  /target local provider architecture evidence still required for production claims/,
+);
+assert.match(
+  customerSupportOperations,
+  /optional Anthropic\/Hermes validation or target local provider architecture approval is excluded or pending/,
+);
+assert.match(
+  targetProviderEvidenceIntake,
+  /configured local provider pilot proof is archived but target local provider architecture remains unapproved/,
+);
+assert.match(
+  targetProviderOperations,
+  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture gap, and Hermes runtime blocker are explicit/,
+);
+assert.match(
+  targetDeploymentContract,
+  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture gap, and Hermes runtime blocker are explicit/,
+);
+assert.match(
   security,
   /run `npm run refresh:execution-v1-artifacts` after selected-provider evidence refresh or source-of-record changes/,
 );
@@ -142,6 +198,18 @@ assert.match(
 assert.match(
   security,
   /document any accepted risk in the handoff or target evidence accepted risk register with owner and next review date/,
+);
+assert.match(
+  security,
+  /selected-provider live validation must be regenerated into evidence before expanding provider-backed readiness beyond the current archived OpenAI\/local pilot proof/,
+);
+assert.match(
+  security,
+  /OpenAI and local provider live evidence are archived in the current evidence pack, with local provider proof scoped to the configured local rehearsal/,
+);
+assert.match(
+  security,
+  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network, telemetry, and resource evidence is recorded/,
 );
 assert.match(readme, /npm run package:pilot-export/);
 

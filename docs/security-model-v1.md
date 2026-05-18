@@ -209,16 +209,17 @@ Auditable records:
 Policy:
 
 - every release decision must point to current evidence and handoff artifacts
-- selected-provider live validation must be regenerated into evidence before expanding provider-backed readiness beyond the current archived OpenAI proof
+- selected-provider live validation must be regenerated into evidence before expanding provider-backed readiness beyond the current archived OpenAI/local pilot proof
 - release artifacts must be reproducible from documented npm scripts
 - commit/push state must be stated explicitly in handoff when deferred
 
 Current status:
 
 - deterministic evidence and handoff are implemented
-- OpenAI live evidence is archived in the current evidence pack
+- OpenAI and local provider live evidence are archived in the current evidence pack, with local provider proof scoped to the configured local rehearsal
 - Anthropic evidence records a provider account billing/credit blocker
-- local and Hermes provider evidence remain blocked until approved runtime endpoint/model configuration is injected
+- target local provider architecture remains blocked until approved target-boundary endpoint/model, network, telemetry, and resource evidence is recorded
+- Hermes provider evidence remains blocked until approved runtime endpoint/model configuration is injected
 - [production-provider-readiness-v1.md](production-provider-readiness-v1.md) records provider preflight readiness and live-validation blockers while keeping live-provider-complete and production-ready claims blocked
 - [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md) defines the target OpenAI provider account contract for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, renewal/review audit, and the remaining target account evidence gap
 - [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md) defines the target Anthropic provider account contract for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, remediation audit, and the remaining account-level evidence gap

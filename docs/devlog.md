@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-18 Pilot Boundary Local Provider Alignment
+
+- aligned security, product, onboarding, and roadmap provider-boundary wording so configured local provider live validation is treated as archived pilot evidence instead of an unresolved runtime configuration blocker
+- kept target local provider architecture as a separate production gate requiring approved target-boundary endpoint/model, network, telemetry, and resource evidence before any production provider claim
+- extended `smoke:pilot-export-package` to pin the shareable pilot pack wording for OpenAI/local archived proof, Hermes runtime configuration, target local provider evidence, and accepted-risk refresh requirements
+
 ## 2026-05-18 Security Refresh Checklist Alignment
 
 - aligned the product plan and security model selected-provider refresh guidance with `refresh:execution-v1-artifacts` so source-of-record changes preserve archived live proof while regenerating closeout, handoff, provider readiness, immutable snapshot, and pilot export package artifacts

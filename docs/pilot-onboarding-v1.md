@@ -13,7 +13,7 @@
 
 The pilot should prove that a company can use the local-first multi-agent harness to run a bounded engineering workflow with clear context, explicit approval, provider readiness checks, evidence generation, and handoff.
 
-The onboarding goal is not to prove production SaaS readiness. The current release should be described as `provider-scoped pilot ready for OpenAI-backed local-first path`: OpenAI live validation is archived, Anthropic is blocked by provider account credit/billing, and local/Hermes require approved runtime endpoint and model configuration before validation.
+The onboarding goal is not to prove production SaaS readiness. The current release should be described as `provider-scoped pilot ready for OpenAI-backed local-first path`: OpenAI and configured local provider live validation are archived, Anthropic is blocked by provider account credit/billing, Hermes requires approved runtime endpoint and model configuration, and target local provider architecture still requires approved target-boundary evidence before any production provider claim.
 
 ## Who Should Attend
 
@@ -282,6 +282,6 @@ A: Not for v1 pilot. Use one isolated runtime state per customer or company pilo
 
 ## Current Status
 
-This onboarding guide is sufficient for a controlled first OpenAI-scoped pilot session.
+This onboarding guide is sufficient for a controlled OpenAI-backed local-first pilot session with configured local provider rehearsal evidence archived.
 
-The remaining blockers are Anthropic billing/account remediation, local/Hermes runtime configuration, and production-grade deployment controls.
+The remaining blockers are Anthropic billing/account remediation, Hermes runtime configuration, target local provider architecture evidence, and production-grade deployment controls.
