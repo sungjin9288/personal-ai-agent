@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T00:50:41.449Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T00:50:39.818Z
 - localDate: 2026-05-18
 - branch: codex/post-release-readiness-stop-condition-artifact-refresh
 - commit: 8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c](releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c](docs/releases/execution-v1/8fdd9cc8f2f14c0e57cc4755dc62c47e43624c0c)
 - visualArtifactSetSha256: b73b9cd931dbff989c4f4572409f562a970ad9e70039b01a660f81bf72cf2aff
 - commitPushStatus: pushed to origin/main
 
