@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-18T15:58:07.455Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-18T15:58:05.873Z
 - localDate: 2026-05-19
 - branch: codex/post-clean-deployment-operations-wording-artifact-refresh
 - commit: b163820f1720d255392ec256db952cf64602ce28
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28](releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28](docs/releases/execution-v1/b163820f1720d255392ec256db952cf64602ce28)
 - visualArtifactSetSha256: 246aa78849c3666750a910b3edfd7d347625f43778061016bfed70f76bb9790e
 - commitPushStatus: pushed to origin/main
 
