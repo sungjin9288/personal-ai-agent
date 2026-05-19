@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-19T12:27:20.787Z
-- branch: codex/clean-deployment-release-evidence-stop-condition-wording
-- verifiedCommit: dd7080aef8f4503c830718f950fc742e143a6b54
+- generatedAt: 2026-05-19T12:45:08.089Z
+- branch: codex/target-openai-provider-account-stop-condition-wording
+- verifiedCommit: 6e22ee7b5c2531f530caf51b825b7d9fb33ad97c
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -34,51 +34,51 @@ Production-ready remains blocked until the target deployment model produces targ
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 88 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 89 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 89 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 91 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 91 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 91 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 94 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 92 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 94 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 92 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 93 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 92 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 94 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 92 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 92 |
 | `npm run smoke:support-escalation-review` | pass | 0 | 92 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 93 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 92 |
 | `npm run smoke:target-support-operations` | pass | 0 | 95 |
-| `npm run smoke:secret-management` | pass | 0 | 96 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 89 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 91 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 92 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 92 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 92 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 97 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 92 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 89 |
+| `npm run smoke:secret-management` | pass | 0 | 92 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 92 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 92 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 92 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 92 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 93 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 94 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 93 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 93 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 101 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 92 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 98 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 93 |
 | `npm run smoke:production-slo-operating` | pass | 0 | 92 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1269 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 121 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 98 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 91 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 92 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1274 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 117 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 92 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 93 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 93 |
 | `npm run smoke:target-local-provider-architecture` | pass | 0 | 93 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 94 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 95 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 94 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 89 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 103 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 95 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 359 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 93 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 94 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 93 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 93 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 94 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 99 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 357 |
 | `npm run smoke:execution-v1-snapshot` | pass | 0 | 125 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 97 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 96 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 255 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 100 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 97 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 252 |
 | `npm run smoke:tenant-data-lifecycle` | pass | 0 | 106 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 105 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 390 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 108 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 398 |
 
 ## Key Signals
 
@@ -494,11 +494,11 @@ Production-ready remains blocked until the target deployment model produces targ
 {
     "artifactState": "local-current",
     "artifactSyncCommit": false,
-    "branch": "codex/clean-deployment-release-evidence-stop-condition-wording",
+    "branch": "codex/target-openai-provider-account-stop-condition-wording",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "dd7080aef8f4503c830718f950fc742e143a6b54"
+    "snapshotCommit": "6e22ee7b5c2531f530caf51b825b7d9fb33ad97c"
   }
 ```
 
@@ -509,7 +509,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "dd7080aef8f4503c830718f950fc742e143a6b54"
+    "verifiedCommit": "6e22ee7b5c2531f530caf51b825b7d9fb33ad97c"
   }
 ```
 
@@ -557,7 +557,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "dd7080aef8f4503c830718f950fc742e143a6b54"
+    "verifiedCommit": "6e22ee7b5c2531f530caf51b825b7d9fb33ad97c"
   }
 ```
 
@@ -606,7 +606,7 @@ Production-ready remains blocked until the target deployment model produces targ
 ## Production Blockers Preserved
 
 - Anthropic and Hermes live validations are not complete
-- target OpenAI provider account is not approved and OpenAI target-boundary live validation evidence is not generated from a production-like environment
+- target OpenAI provider account is not approved, and target OpenAI provider account evidence for account ownership proof with OpenAI organization/project owner, project/workspace alias, customer scope, evidence owner, and review date, billing and quota proof with active billing plan, quota tier, payment owner, spend cap, low-balance/quota alert route, and redacted evidence summary, API key and secret injection proof with target secret manager alias, OPENAI_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with OPENAI_MODEL, model availability, region/project access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer/workspace, transcript/retention policy, support owner, and evidence owner, usage and cost guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:openai, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, renewal and review audit proof with account owner recertification, quota review, model access review, artifact hygiene result, accepted risk, and next review date, migration plan, missing API key, revoked key, quota exhaustion, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment
 - target provider operations evidence for provider inventory/account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment is not generated from a production-like environment
 - target Anthropic provider account is not approved and Anthropic live validation evidence is not generated from a production-like environment
 - target local provider architecture is not approved, and approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are not generated from a production-like environment

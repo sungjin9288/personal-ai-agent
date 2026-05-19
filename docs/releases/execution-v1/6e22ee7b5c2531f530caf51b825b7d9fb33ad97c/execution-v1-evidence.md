@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T12:44:54.721Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T12:44:46.847Z
 - branch: codex/target-openai-provider-account-stop-condition-wording
 - commit: 6e22ee7b5c2531f530caf51b825b7d9fb33ad97c

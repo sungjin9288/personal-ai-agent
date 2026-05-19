@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T12:44:54.721Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T12:44:53.231Z
 - localDate: 2026-05-19
 - branch: codex/target-openai-provider-account-stop-condition-wording
 - commit: 6e22ee7b5c2531f530caf51b825b7d9fb33ad97c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c](releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c](docs/releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c)
 - visualArtifactSetSha256: 5b0af153c106ca5db962751edda05815b43b122db49c1056458c5635a845e1ab
 - commitPushStatus: not pushed, origin/codex/target-openai-provider-account-stop-condition-wording not found
 
