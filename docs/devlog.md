@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Local Provider Architecture Stop-Condition Alignment
+
+- expanded the production-ready target local provider architecture blocker so it names endpoint ownership proof, model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, migration plan, and provider failure containment evidence
+- kept configured local provider pilot validation separate from target local provider architecture approval while making the blocker match the target local provider architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target local provider architecture smoke guards so release artifacts cannot fall back to generic target-boundary endpoint/model evidence wording
+
 ## 2026-05-19 Target Anthropic Provider Account Stop-Condition Alignment
 
 - expanded the production-ready target Anthropic provider account blocker so it names account ownership proof, billing and credit proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, quota and spend guard proof, target live validation proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, migration plan, and provider failure containment evidence

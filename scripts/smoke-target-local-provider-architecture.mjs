@@ -131,6 +131,18 @@ assert.match(intake, /\[target-local-provider-architecture-v1\.md\]\(target-loca
 assert.match(intake, /local provider architecture approval/);
 assert.match(releaseReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target local provider architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target local provider architecture is not approved, and target local provider architecture evidence for endpoint ownership proof with approved base URL alias, runtime owner, network boundary, transport, availability owner, and health check record, model pinning proof with LOCAL_PROVIDER_MODEL, model source\/version, compatibility profile, max token policy, fallback model, and owner approval, network isolation proof with host boundary, ingress policy, egress policy, tenant\/customer boundary, operator access policy, and firewall decision, secret and credential policy proof with auth mode, API key requirement, target secret manager alias when used, rotation path, redaction result, and access audit, runtime lifecycle proof with process manager, startup command, health endpoint, restart policy, resource limits, and log retention, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof with prompt data class, local storage path alias, transcript retention, customer data approval, delete request route, and post-delete absence evidence, quota and resource guard proof with CPU\/GPU\/memory envelope, concurrency limit, timeout, retry policy, saturation fallback, and resource owner approval, telemetry proof with probe result, model availability, run duration, retry count, failureKind taxonomy, usage\/resource metrics, alert route, and incident owner, fallback and customer approval proof with fallback provider, degraded mode, customer impact rule, manual approval path, provider terms\/local model license decision, and residual risk owner, migration plan, missing base URL, missing model, unavailable runtime, model mismatch, data residency gap, resource exhaustion, and fallback failure containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target local provider architecture is not approved, and approved target-boundary ' +
+      'endpoint/model, network isolation, telemetry, quota/resource guard, and local provider ' +
+      'live validation evidence are not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Local Provider Architecture/);
 assert.match(deployment, /npm run smoke:target-local-provider-architecture/);
