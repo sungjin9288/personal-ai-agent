@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Hermes Provider Architecture Stop-Condition Alignment
+
+- expanded the production-ready target Hermes provider architecture blocker so it names endpoint ownership proof, model pinning proof, secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, migration plan, and Hermes provider failure containment evidence
+- kept Hermes live validation failure separate from target Hermes provider architecture approval while making the blocker match the target Hermes provider architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target Hermes provider architecture smoke guards so release artifacts cannot fall back to generic endpoint/model/tool-call/live validation wording
+
 ## 2026-05-19 Target Local Provider Architecture Stop-Condition Alignment
 
 - expanded the production-ready target local provider architecture blocker so it names endpoint ownership proof, model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, migration plan, and provider failure containment evidence

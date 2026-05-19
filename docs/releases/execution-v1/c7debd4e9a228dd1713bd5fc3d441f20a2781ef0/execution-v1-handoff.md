@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T14:15:24.678Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T14:15:23.157Z
 - localDate: 2026-05-19
 - branch: codex/target-hermes-provider-architecture-stop-condition-wording
 - commit: c7debd4e9a228dd1713bd5fc3d441f20a2781ef0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0](releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0](docs/releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0)
 - visualArtifactSetSha256: fb731c54c5d1d76d8adc723b3686d696875bf04502ddaa77454f2861bdb0591c
 - commitPushStatus: not pushed, origin/codex/target-hermes-provider-architecture-stop-condition-wording not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T14:15:24.678Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T14:15:16.213Z
 - branch: codex/target-hermes-provider-architecture-stop-condition-wording
 - commit: c7debd4e9a228dd1713bd5fc3d441f20a2781ef0
