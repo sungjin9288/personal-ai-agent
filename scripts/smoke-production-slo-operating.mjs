@@ -71,6 +71,14 @@ assert.match(rehearsal, /\[target-slo-architecture-v1\.md\]\(target-slo-architec
 assert.match(rehearsal, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(rehearsal, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /local production SLO operating rehearsal: passed/);
+assert.match(
+  releaseReadiness,
+  /production SLO\/SLA operating evidence for incident\/SLO policy replay, target SLO architecture and operations gates, observability telemetry and target observability operations, support escalation and target support operations, release artifact hygiene, runtime lifecycle, runtime isolation, staffed incident ownership, customer-approved SLO\/SLA terms, and provider\/deployment evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp('production SLO/SLA operating evidence is not generated from ' + 'a production-like environment'),
+);
 assert.match(incidentSlo, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(deployment, /## Production SLO Operating Rehearsal/);
 assert.match(deployment, /npm run rehearsal:production-slo-operating/);
