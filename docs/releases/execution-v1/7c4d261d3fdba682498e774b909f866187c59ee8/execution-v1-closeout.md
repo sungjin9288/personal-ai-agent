@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T11:49:57.796Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T11:49:49.371Z
 - branch: codex/target-clean-deployment-architecture-stop-condition-wording
 - commit: 7c4d261d3fdba682498e774b909f866187c59ee8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7c4d261d3fdba682498e774b909f866187c59ee8/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

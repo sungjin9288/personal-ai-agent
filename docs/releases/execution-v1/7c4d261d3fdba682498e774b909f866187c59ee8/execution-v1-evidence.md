@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T11:49:57.796Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T11:49:49.333Z
 - branch: codex/target-clean-deployment-architecture-stop-condition-wording
 - commit: 7c4d261d3fdba682498e774b909f866187c59ee8
