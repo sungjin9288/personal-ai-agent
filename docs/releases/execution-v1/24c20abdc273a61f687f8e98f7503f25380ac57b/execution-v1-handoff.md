@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T07:33:10.409Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T07:33:08.948Z
 - localDate: 2026-05-19
 - branch: codex/target-secret-manager-stop-condition-wording
 - commit: 24c20abdc273a61f687f8e98f7503f25380ac57b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b](releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b](docs/releases/execution-v1/24c20abdc273a61f687f8e98f7503f25380ac57b)
 - visualArtifactSetSha256: 4f087555cb2efe42e8d7292070206aaf7116b7760cb5316db5228f6a0b5b1e22
 - commitPushStatus: not pushed, origin/codex/target-secret-manager-stop-condition-wording not found
 

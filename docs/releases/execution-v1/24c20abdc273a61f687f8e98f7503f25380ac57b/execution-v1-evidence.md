@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T07:33:10.409Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T07:33:01.704Z
 - branch: codex/target-secret-manager-stop-condition-wording
 - commit: 24c20abdc273a61f687f8e98f7503f25380ac57b
