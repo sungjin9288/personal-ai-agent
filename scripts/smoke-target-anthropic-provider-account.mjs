@@ -123,6 +123,17 @@ assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthr
 assert.match(intake, /Anthropic provider account approval/);
 assert.match(releaseReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /target Anthropic provider account gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target Anthropic provider account is not approved, and target Anthropic provider account evidence for account ownership proof with Anthropic account owner, organization\/workspace alias, customer scope, evidence owner, and review date, billing and credit proof with active billing plan, available credit balance, payment owner, renewal path, low-balance alert route, and screenshot-free redacted evidence summary, API key and secret injection proof with target secret manager alias, ANTHROPIC_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with ANTHROPIC_MODEL, model availability, region\/workspace access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer\/workspace, transcript retention policy, support owner, and evidence owner, quota and spend guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:anthropic, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, remediation audit proof with account remediation ticket, billing owner approval, post-remediation live run, artifact hygiene result, accepted risk, and next review date, migration plan, low credit balance, missing API key, revoked key, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target Anthropic provider account is not approved and Anthropic live validation ' +
+      'evidence is not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(deployment, /## Target Anthropic Provider Account/);
 assert.match(deployment, /npm run smoke:target-anthropic-provider-account/);
