@@ -1,13 +1,13 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-05-19T05:11:57.012Z
+- generatedAt: 2026-05-19T05:25:15.478Z
 - localDate: 2026-05-19
 - branch: codex/target-retention-backup-operations-stop-condition-wording
-- commit: b9e7bc5f3f15d72b2c86608d082b267a4ef97395
+- commit: e24e65d0be0c539e42d837996da28db1029d924e
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395](releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395)
-- visualArtifactSetSha256: f77f3f57f07acaccb34796f3843b4b44378dd2dd19294d48845a7bd9a09519f5
+- immutableSnapshot: [releases/execution-v1/e24e65d0be0c539e42d837996da28db1029d924e](releases/execution-v1/e24e65d0be0c539e42d837996da28db1029d924e)
+- visualArtifactSetSha256: 332d0505577c70cb15c0366e3f4b3aea3adc2b8d5bdbd56895e443cf7cf67d52
 - commitPushStatus: not pushed, origin/codex/target-retention-backup-operations-stop-condition-wording not found
 
 ## Operational State
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=31.0s
+- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=33.0s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 15 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: f77f3f57f07acaccb34796f3843b4b44378dd2dd19294d48845a7bd9a09519f5
+- visual artifact set: 332d0505577c70cb15c0366e3f4b3aea3adc2b8d5bdbd56895e443cf7cf67d52
 
 ## Live Provider Handoff
 
