@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T06:23:46.791Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T06:23:37.026Z
 - branch: codex/target-support-architecture-stop-condition-wording
 - commit: 2d0576c9bbb184652d41e9f53b2b435d3c4ae9dc

@@ -97,6 +97,17 @@ assert.match(intake, /\[target-support-architecture-v1\.md\]\(target-support-arc
 assert.match(intake, /npm run smoke:target-support-architecture/);
 assert.match(releaseReadiness, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target support architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target support architecture is not approved, and target support architecture evidence for staffing model, support queue platform, severity routing, customer communication boundary, ticket audit and retention, on-call handoff, incident commander ownership, escalation and backup coverage, support data handling, incident review governance, migration plan, and missed-acknowledgement, queue-misrouting, customer-communication, ticket-audit, and unstaffed-escalation containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target support architecture is not approved and target support ' +
+      'evidence is not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Support Architecture/);
 assert.match(deployment, /npm run smoke:target-support-architecture/);

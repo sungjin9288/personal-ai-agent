@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T06:23:46.791Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T06:23:37.159Z
 - branch: codex/target-support-architecture-stop-condition-wording
 - commit: 2d0576c9bbb184652d41e9f53b2b435d3c4ae9dc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2d0576c9bbb184652d41e9f53b2b435d3c4ae9dc/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
