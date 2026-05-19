@@ -97,6 +97,17 @@ assert.match(intake, /\[target-clean-deployment-architecture-v1\.md\]\(target-cl
 assert.match(intake, /npm run smoke:target-clean-deployment-architecture/);
 assert.match(releaseReadiness, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target clean deployment architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target clean deployment architecture is not approved, and target clean deployment architecture evidence for source provenance proof with branch, commit, review owner, build actor, release tag, and tamper-control decision, artifact registry proof with immutable artifact id, sha256, registry path, retention policy, access owner, and promotion rule, dependency installation proof with lockfile source, install command, cache policy, vulnerability scan result, reproducibility record, and owner, runtime bootstrap proof with deployment profile, runtime root, process manager, health endpoint result, startup log, and bootstrap owner, secret injection proof with target secret manager alias, injection path, rotation state, redaction check, break-glass owner, and access audit, environment boundary proof with target environment name, network boundary, storage boundary, tenant profile, operator access policy, and rollback owner, migration and data readiness proof with migration command, seed\/import policy, backup precheck, rollback point, data owner approval, and validation result, smoke and health verification proof with health, auth, provider, tenant isolation, artifact hygiene, release readiness, and target deployment contract results, rollback and recovery proof with rollback artifact, rollback command, recovery time result, validation command, owner, and residual risk decision, release approval proof with change ticket or equivalent approval, approver, evidence packet, customer communication, freeze exception, and final decision owner, migration plan, dependency drift, failed bootstrap, failed secret injection, rollback failure, and misleading release approval containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target clean deployment architecture is not approved, and target clean deployment ' +
+      'evidence for source provenance, artifact registry, dependency installation',
+  ),
+);
 assert.match(security, /\[target-clean-deployment-architecture-v1\.md\]\(target-clean-deployment-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Clean Deployment Architecture/);
 assert.match(deployment, /npm run smoke:target-clean-deployment-architecture/);
