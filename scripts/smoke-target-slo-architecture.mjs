@@ -110,6 +110,17 @@ assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architectur
 assert.match(intake, /npm run smoke:target-slo-architecture/);
 assert.match(releaseReadiness, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target SLO architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target SLO architecture is not approved, and target SLO\/SLA architecture evidence for customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy with measurement window, budget owner, burn-rate threshold, freeze rule, exception handling, review cadence, telemetry measurement proof for metrics backend, uptime check, synthetic probe, latency histogram, provider failure signal, data source owner, retention period, alert acknowledgement proof with severity mapping, route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, audit record, staffed on-call proof with rota, primary and secondary owner, handoff rule, timezone coverage, absence handling, escalation chain, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target SLO architecture is not approved and target SLO/SLA ' +
+      'evidence is not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(deployment, /## Target SLO Architecture/);
 assert.match(deployment, /npm run smoke:target-slo-architecture/);
