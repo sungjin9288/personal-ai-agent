@@ -439,7 +439,7 @@ This rehearsal proves that core release gates can be replayed from a clean track
 
 It is not target production deployment evidence, not hosted environment proof, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the approved target environment produces target clean deployment operations evidence, clean deployment release evidence, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
+Production-ready remains blocked until the approved target environment produces target clean deployment operations evidence, clean deployment release proof for clean checkout replay, command matrix results, artifact synchronization, production-like boundary execution, rollback readiness, release approval, and failed-release containment, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
 
 ## Command Matrix
 

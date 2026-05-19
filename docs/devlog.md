@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Clean Deployment Release Evidence Stop-Condition Alignment
+
+- expanded the production-ready clean deployment release blocker so it names clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, and failure containment evidence
+- kept clean deployment release evidence separate from target clean deployment architecture and operations while making the release blocker match the clean rehearsal, production-like drill, pilot export, and artifact hygiene evidence packet
+- extended production readiness, production-like drill, and clean deployment release smoke guards so release artifacts cannot fall back to generic clean deployment release evidence wording
+
 ## 2026-05-19 Target Clean Deployment Architecture Stop-Condition Alignment
 
 - expanded the production-ready target clean deployment architecture blocker so it names source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, migration and data readiness proof, smoke and health verification proof, rollback and recovery proof, release approval proof, migration plan, dependency drift, failed bootstrap, failed secret injection, rollback failure, and misleading release approval containment evidence

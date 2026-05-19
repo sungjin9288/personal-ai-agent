@@ -496,7 +496,7 @@ This drill proves that the release gate can be replayed in a local deterministic
 
 It is not production deployment evidence, not customer production SLO/SLA evidence, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the target deployment model produces target clean deployment operations evidence, clean deployment release evidence, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
+Production-ready remains blocked until the target deployment model produces target clean deployment operations evidence, clean deployment release proof for clean checkout replay, command matrix results, artifact synchronization, production-like boundary execution, rollback readiness, release approval, and failed-release containment, production SLO/SLA operating evidence, completed target provider validation, and enforced enterprise controls.
 
 ## Command Matrix
 
