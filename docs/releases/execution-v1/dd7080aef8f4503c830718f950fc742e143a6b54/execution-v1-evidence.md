@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T12:27:06.454Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T12:26:58.645Z
 - branch: codex/clean-deployment-release-evidence-stop-condition-wording
 - commit: dd7080aef8f4503c830718f950fc742e143a6b54
