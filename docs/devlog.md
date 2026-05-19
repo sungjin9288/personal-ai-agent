@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Anthropic Provider Account Stop-Condition Alignment
+
+- expanded the production-ready target Anthropic provider account blocker so it names account ownership proof, billing and credit proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, quota and spend guard proof, target live validation proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, migration plan, and provider failure containment evidence
+- kept the archived Anthropic billing/credit failure separate from target Anthropic provider account approval while making the blocker match the target Anthropic provider account decision areas and required evidence packet
+- extended production readiness, production-like drill, and target Anthropic provider account smoke guards so release artifacts cannot fall back to generic Anthropic live validation evidence wording
+
 ## 2026-05-19 Target OpenAI Provider Account Stop-Condition Alignment
 
 - expanded the production-ready target OpenAI provider account blocker so it names account ownership proof, billing and quota proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, usage and cost guard proof, target live validation proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, migration plan, and provider failure containment evidence
