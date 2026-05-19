@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Provider Operations Stop-Condition Detail Alignment
+
+- expanded the production-ready target provider operations blocker so it names completed per-provider capture template, branch and commit, release label and deployment boundary, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota/cost/resource guard proof, fallback and disable proof, provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, artifact hygiene, production readiness gate result, residual risk, and provider failure containment plan
+- kept target provider operations as a target-environment evidence gate while making the blocker match the target provider operations evidence packet and capture template
+- extended production readiness, production-like drill, and target provider operations smoke guards so release artifacts cannot fall back to generic provider operations evidence wording
+
 ## 2026-05-19 Target Hermes Provider Architecture Stop-Condition Alignment
 
 - expanded the production-ready target Hermes provider architecture blocker so it names endpoint ownership proof, model pinning proof, secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, migration plan, and Hermes provider failure containment evidence
