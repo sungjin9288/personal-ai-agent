@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T08:43:53.149Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T08:43:45.260Z
 - branch: codex/target-data-lifecycle-architecture-stop-condition-wording
 - commit: 4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f

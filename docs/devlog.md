@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Data Lifecycle Architecture Stop-Condition Alignment
+
+- expanded the production-ready target data lifecycle architecture blocker so it names customer-approved data class matrix, target retention configuration, export request proof, delete request proof, provider transcript policy proof, post-delete absence evidence, backup architecture proof, restore validation proof, backup key ownership proof, disaster recovery evidence, migration plan, rollback, legal hold, delete conflict, provider transcript exception, and customer communication containment evidence
+- kept target retention and backup operations as separate production evidence gates while making the architecture blocker match the target data lifecycle architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target data lifecycle architecture smoke guards so release artifacts cannot fall back to generic target data lifecycle evidence wording
+
 ## 2026-05-19 Target SLO Architecture Stop-Condition Alignment
 
 - expanded the production-ready target SLO architecture blocker so it names customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment evidence
