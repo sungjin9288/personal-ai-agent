@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T13:07:55.255Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T13:07:47.525Z
 - branch: codex/target-anthropic-provider-account-stop-condition-wording
 - commit: 6c5eeedf3ab0909fb1a5332e669b2f894295a8f7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6c5eeedf3ab0909fb1a5332e669b2f894295a8f7/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

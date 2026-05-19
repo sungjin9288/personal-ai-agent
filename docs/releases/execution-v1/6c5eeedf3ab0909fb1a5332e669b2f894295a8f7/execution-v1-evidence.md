@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T13:07:55.255Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T13:07:47.488Z
 - branch: codex/target-anthropic-provider-account-stop-condition-wording
 - commit: 6c5eeedf3ab0909fb1a5332e669b2f894295a8f7
