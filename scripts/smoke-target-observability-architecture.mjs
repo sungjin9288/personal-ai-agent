@@ -99,6 +99,17 @@ assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-obser
 assert.match(intake, /npm run smoke:target-observability-architecture/);
 assert.match(releaseReadiness, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target observability architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target observability architecture is not approved, and target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target observability architecture is not approved and target observability ' +
+      'evidence is not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Observability Architecture/);
 assert.match(deployment, /npm run smoke:target-observability-architecture/);

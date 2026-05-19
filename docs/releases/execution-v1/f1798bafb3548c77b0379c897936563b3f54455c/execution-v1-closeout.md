@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T08:05:34.576Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T08:05:23.791Z
 - branch: codex/target-observability-architecture-stop-condition-wording
 - commit: f1798bafb3548c77b0379c897936563b3f54455c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
