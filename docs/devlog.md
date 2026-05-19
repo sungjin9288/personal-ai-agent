@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target OpenAI Provider Account Stop-Condition Alignment
+
+- expanded the production-ready target OpenAI provider account blocker so it names account ownership proof, billing and quota proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, usage and cost guard proof, target live validation proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, migration plan, and provider failure containment evidence
+- kept archived OpenAI pilot validation separate from target OpenAI provider account approval while making the blocker match the target OpenAI provider account decision areas and required evidence packet
+- extended production readiness, production-like drill, and target OpenAI provider account smoke guards so release artifacts cannot fall back to generic OpenAI target-boundary live validation wording
+
 ## 2026-05-19 Clean Deployment Release Evidence Stop-Condition Alignment
 
 - expanded the production-ready clean deployment release blocker so it names clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, and failure containment evidence
