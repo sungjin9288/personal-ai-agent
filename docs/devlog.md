@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target SLO Architecture Stop-Condition Alignment
+
+- expanded the production-ready target SLO architecture blocker so it names customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment evidence
+- kept target SLO operations as a separate production evidence gate while making the architecture blocker match the target SLO architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target SLO architecture smoke guards so release artifacts cannot fall back to generic target SLO/SLA evidence wording
+
 ## 2026-05-19 Target Observability Architecture Stop-Condition Alignment
 
 - expanded the production-ready target observability architecture blocker so it names approved telemetry backend, region, tenancy boundary, owner, fallback, data residency, signal inventory, ingestion proof, alert routing, staffed on-call proof, log and trace retention, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment evidence

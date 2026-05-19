@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T08:26:53.755Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T08:26:44.982Z
 - branch: codex/target-slo-architecture-stop-condition-wording
 - commit: 07a606554f4a90f0564807f79b13340ae5d239bf
