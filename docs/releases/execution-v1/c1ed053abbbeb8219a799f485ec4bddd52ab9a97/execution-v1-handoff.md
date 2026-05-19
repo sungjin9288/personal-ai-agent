@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T05:49:41.988Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T05:49:40.126Z
 - localDate: 2026-05-19
 - branch: codex/production-slo-operating-stop-condition-wording
 - commit: c1ed053abbbeb8219a799f485ec4bddd52ab9a97
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97](releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97](docs/releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97)
 - visualArtifactSetSha256: 517e69f5802aef8aa63b3a18fd1384d95a267e38d681e14cee0619b9aa2fa254
 - commitPushStatus: not pushed, origin/codex/production-slo-operating-stop-condition-wording not found
 

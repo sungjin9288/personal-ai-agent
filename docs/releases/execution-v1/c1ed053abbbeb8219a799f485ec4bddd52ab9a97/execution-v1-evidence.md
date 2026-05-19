@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T05:49:41.988Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T05:49:23.785Z
 - branch: codex/production-slo-operating-stop-condition-wording
 - commit: c1ed053abbbeb8219a799f485ec4bddd52ab9a97
