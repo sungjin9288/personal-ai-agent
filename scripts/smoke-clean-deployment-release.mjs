@@ -37,6 +37,14 @@ assert.match(rehearsal, /^- excludedRuntimeState: var\/, output\/playwright\/, n
 assert.match(rehearsal, /^- productionReadyClaim: false$/m);
 assert.match(rehearsal, /not target production deployment evidence/);
 assert.match(rehearsal, /not permission to claim `production-ready`/);
+assert.match(
+  releaseReadiness,
+  /clean deployment release evidence for clean checkout proof with source branch, source commit, tracked-file mode, file count, excluded runtime state, and clean checkout owner, command replay proof with incident\/SLO, identity\/session, tenant, support, secret, observability, SLO, data lifecycle, clean deployment architecture and operations, retention, backup, provider, target deployment contract, artifact hygiene, runtime lifecycle, runtime isolation, pilot export, and package validation results, artifact synchronization proof with source commit, execution snapshot, clean deployment release artifact, production-like drill, pilot export package, release artifact hygiene, and artifact-sync-current status, production-like environment proof with approved target boundary, runtime bootstrap, secret injection, dependency install, environment boundary, rollback point, release approval, operator, and timestamp, and failure containment for stale checkout, dependency drift, local runtime leakage, missing artifact, failed smoke, failed hygiene, failed rollback, and misleading production-ready claim is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp('clean deployment release evidence is not generated from ' + 'a production-like environment'),
+);
 
 for (const command of [
   'npm run smoke:incident-slo-policy',
