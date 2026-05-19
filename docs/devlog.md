@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Secret Manager Architecture Stop-Condition Alignment
+
+- expanded the production-ready target secret manager architecture blocker so it names approved platform, region, tenancy boundary, owner and fallback decision, secret class inventory, runtime injection proof, least-privilege access policy, service binding, deny-by-default rules, rotation and revocation event proof, secret access audit logs, break-glass approval and post-use review, leakage review, disaster recovery, migration plan, rollback, lockout recovery, and credential containment evidence
+- kept the target secret manager operations gate as a separate production evidence gate while making the architecture blocker match the target secret manager architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target secret manager architecture smoke guards so release artifacts cannot fall back to generic target secret manager evidence wording
+
 ## 2026-05-19 Hosted Tenant Isolation Architecture Stop-Condition Alignment
 
 - expanded the production-ready hosted tenant isolation architecture blocker so it names tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment evidence
