@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T05:11:58.370Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T05:11:57.012Z
 - localDate: 2026-05-19
 - branch: codex/target-retention-backup-operations-stop-condition-wording
 - commit: b9e7bc5f3f15d72b2c86608d082b267a4ef97395
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395](releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395](docs/releases/execution-v1/b9e7bc5f3f15d72b2c86608d082b267a4ef97395)
 - visualArtifactSetSha256: f77f3f57f07acaccb34796f3843b4b44378dd2dd19294d48845a7bd9a09519f5
 - commitPushStatus: not pushed, origin/codex/target-retention-backup-operations-stop-condition-wording not found
 

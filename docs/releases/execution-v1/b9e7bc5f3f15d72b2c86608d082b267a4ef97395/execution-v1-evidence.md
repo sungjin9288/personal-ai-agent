@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T05:11:58.370Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T05:11:49.869Z
 - branch: codex/target-retention-backup-operations-stop-condition-wording
 - commit: b9e7bc5f3f15d72b2c86608d082b267a4ef97395
