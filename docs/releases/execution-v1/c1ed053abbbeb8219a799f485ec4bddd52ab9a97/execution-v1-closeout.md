@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T05:49:41.988Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T05:49:23.841Z
 - branch: codex/production-slo-operating-stop-condition-wording
 - commit: c1ed053abbbeb8219a799f485ec4bddd52ab9a97
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c1ed053abbbeb8219a799f485ec4bddd52ab9a97/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

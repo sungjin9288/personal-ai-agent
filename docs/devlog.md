@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Production SLO Operating Stop-Condition Alignment
+
+- expanded the production-ready production SLO/SLA operating blocker so it names incident/SLO policy replay, target SLO architecture and operations gates, observability telemetry and target observability operations, support escalation and target support operations, release artifact hygiene, runtime lifecycle, runtime isolation, staffed incident ownership, customer-approved SLO/SLA terms, and provider/deployment evidence
+- kept target SLO architecture and target SLO operations as separate production gates while making the operating blocker match the combined production SLO operating rehearsal surface
+- extended production readiness, production-like drill, and production SLO operating smoke guards so release artifacts cannot fall back to generic production SLO/SLA operating wording
+
 ## 2026-05-19 Target Retention and Backup Operations Stop-Condition Alignment
 
 - expanded the production-ready target retention and backup operations blocker so it names customer-approved data classes, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery runbook, and audit trail evidence

@@ -42,7 +42,14 @@ assert.match(policy, /production SLO\/SLA operating evidence is generated from t
 assert.match(policy, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
-assert.match(releaseReadiness, /production SLO\/SLA operating evidence is not generated from a production-like environment/);
+assert.match(
+  releaseReadiness,
+  /production SLO\/SLA operating evidence for incident\/SLO policy replay, target SLO architecture and operations gates, observability telemetry and target observability operations, support escalation and target support operations, release artifact hygiene, runtime lifecycle, runtime isolation, staffed incident ownership, customer-approved SLO\/SLA terms, and provider\/deployment evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp('production SLO/SLA operating evidence is not generated from ' + 'a production-like environment'),
+);
 assert.match(security, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
 assert.match(productPlan, /Incident and SLO policy documented/);
 
