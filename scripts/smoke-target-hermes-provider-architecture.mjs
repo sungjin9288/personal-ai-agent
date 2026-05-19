@@ -129,6 +129,19 @@ assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-her
 assert.match(intake, /Hermes provider architecture approval/);
 assert.match(releaseReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target Hermes provider architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target Hermes provider architecture is not approved, and target Hermes provider architecture evidence for endpoint ownership proof with approved base URL alias, endpoint owner, network boundary, transport, availability owner, and health check record, model pinning proof with HERMES_PROVIDER_MODEL, model version\/source, compatibility profile, max token policy, fallback model, and owner approval, secret injection proof with target secret manager alias, API key requirement decision, rotation path, break-glass owner, access audit, and redaction result, tool-call parsing proof with Hermes <tool_call> sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof with prompt data class, provider transcript retention, customer data approval, delete request route, and post-delete absence evidence, quota and rate guard proof with concurrency limit, timeout, retry policy, cost owner, usage envelope, saturation fallback, and spend review, telemetry proof with probe result, model availability, run duration, retry count, failureKind taxonomy, usage metrics, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, customer approval proof with provider terms, allowed workspace\/customer, data-processing approval, support owner, evidence owner, and next review date, migration plan, missing model, unavailable endpoint, malformed tool-call output, transcript retention gap, quota exhaustion, and fallback failure containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target Hermes provider architecture is not approved, and endpoint ownership, model pinning, ' +
+      'target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, ' +
+      'telemetry, fallback, customer approval, and Hermes live validation evidence are not generated ' +
+      'from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Hermes Provider Architecture/);
 assert.match(deployment, /npm run smoke:target-hermes-provider-architecture/);
