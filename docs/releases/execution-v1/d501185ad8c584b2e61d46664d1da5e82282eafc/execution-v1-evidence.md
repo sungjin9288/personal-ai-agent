@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T07:02:23.792Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T07:02:15.293Z
 - branch: codex/hosted-tenant-isolation-stop-condition-wording
 - commit: d501185ad8c584b2e61d46664d1da5e82282eafc

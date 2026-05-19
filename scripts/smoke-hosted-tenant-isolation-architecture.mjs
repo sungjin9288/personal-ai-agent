@@ -95,6 +95,17 @@ assert.match(targetContract, /hosted tenant isolation architecture is approved/)
 assert.match(targetContract, /npm run smoke:hosted-tenant-isolation-architecture/);
 assert.match(releaseReadiness, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /hosted tenant isolation architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'hosted tenant isolation architecture is not approved and target tenant ' +
+      'isolation evidence is not generated',
+  ),
+);
 assert.match(security, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(deployment, /## Hosted Tenant Isolation Architecture/);
 assert.match(deployment, /npm run smoke:hosted-tenant-isolation-architecture/);

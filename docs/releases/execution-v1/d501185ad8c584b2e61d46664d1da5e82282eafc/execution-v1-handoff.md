@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T07:02:23.792Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T07:02:22.237Z
 - localDate: 2026-05-19
 - branch: codex/hosted-tenant-isolation-stop-condition-wording
 - commit: d501185ad8c584b2e61d46664d1da5e82282eafc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc](releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc](docs/releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc)
 - visualArtifactSetSha256: 9f79a3b9dffd288397627d6ef8265865678ce594c0203d3b56e3753f903d8017
 - commitPushStatus: not pushed, origin/codex/hosted-tenant-isolation-stop-condition-wording not found
 

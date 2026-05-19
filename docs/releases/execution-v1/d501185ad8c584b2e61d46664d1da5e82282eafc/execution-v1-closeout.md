@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T07:02:23.792Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T07:02:15.338Z
 - branch: codex/hosted-tenant-isolation-stop-condition-wording
 - commit: d501185ad8c584b2e61d46664d1da5e82282eafc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d501185ad8c584b2e61d46664d1da5e82282eafc/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
