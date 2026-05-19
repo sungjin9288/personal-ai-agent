@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Observability Architecture Stop-Condition Alignment
+
+- expanded the production-ready target observability architecture blocker so it names approved telemetry backend, region, tenancy boundary, owner, fallback, data residency, signal inventory, ingestion proof, alert routing, staffed on-call proof, log and trace retention, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment evidence
+- kept target observability operations as a separate production evidence gate while making the architecture blocker match the target observability architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target observability architecture smoke guards so release artifacts cannot fall back to generic target observability evidence wording
+
 ## 2026-05-19 Target Secret Manager Architecture Stop-Condition Alignment
 
 - expanded the production-ready target secret manager architecture blocker so it names approved platform, region, tenancy boundary, owner and fallback decision, secret class inventory, runtime injection proof, least-privilege access policy, service binding, deny-by-default rules, rotation and revocation event proof, secret access audit logs, break-glass approval and post-use review, leakage review, disaster recovery, migration plan, rollback, lockout recovery, and credential containment evidence
