@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T08:05:34.576Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T08:05:23.715Z
 - branch: codex/target-observability-architecture-stop-condition-wording
 - commit: f1798bafb3548c77b0379c897936563b3f54455c

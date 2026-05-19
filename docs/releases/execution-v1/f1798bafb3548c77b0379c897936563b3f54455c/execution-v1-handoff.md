@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T08:05:34.576Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T08:05:33.253Z
 - localDate: 2026-05-19
 - branch: codex/target-observability-architecture-stop-condition-wording
 - commit: f1798bafb3548c77b0379c897936563b3f54455c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c](releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c](docs/releases/execution-v1/f1798bafb3548c77b0379c897936563b3f54455c)
 - visualArtifactSetSha256: 77efaea1fcb1718bfd22c12063a3e53efd88a281ebfac67a4d15ee9d41d0863a
 - commitPushStatus: not pushed, origin/codex/target-observability-architecture-stop-condition-wording not found
 
