@@ -92,7 +92,7 @@ for (const blocker of [
   /target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated/,
   /hosted identity session architecture is not approved, and hosted identity\/session architecture evidence for customer IdP onboarding, metadata ownership, issuer\/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment is not generated/,
   /target identity\/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated/,
-  /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
+  /hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment is not generated/,
   /target tenant isolation operations evidence for tenant identity source, tenant-scoped authorization, storage partitioning, per-tenant encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment is not generated/,
   /target secret manager architecture is not approved and target secret manager evidence is not generated from a production-like environment/,
   /target observability architecture is not approved and target observability evidence is not generated from a production-like environment/,
@@ -116,6 +116,13 @@ assert.doesNotMatch(
   new RegExp(
     'hosted identity session architecture is not approved and target identity/session ' +
       'evidence is not generated',
+  ),
+);
+assert.doesNotMatch(
+  drill,
+  new RegExp(
+    'hosted tenant isolation architecture is not approved and target tenant ' +
+      'isolation evidence is not generated',
   ),
 );
 assert.doesNotMatch(

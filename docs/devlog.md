@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Hosted Tenant Isolation Architecture Stop-Condition Alignment
+
+- expanded the production-ready hosted tenant isolation architecture blocker so it names tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment evidence
+- kept target tenant isolation operations as a separate production evidence gate while making the architecture blocker match the hosted tenant isolation architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and hosted tenant isolation architecture smoke guards so release artifacts cannot fall back to generic target tenant isolation evidence wording
+
 ## 2026-05-19 Hosted Identity Session Architecture Stop-Condition Alignment
 
 - expanded the production-ready hosted identity session architecture blocker so it names customer IdP onboarding, metadata ownership, issuer/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment evidence
