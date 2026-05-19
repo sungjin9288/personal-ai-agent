@@ -212,7 +212,10 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   productionReadySection,
-  new RegExp('target support architecture is not approved and target support evidence is not generated from ' + 'a production-like environment'),
+  new RegExp(
+    'target support architecture is not approved and target support ' +
+      'evidence is not generated from a production-like environment',
+  ),
 );
 
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);

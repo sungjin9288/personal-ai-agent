@@ -124,7 +124,10 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   drill,
-  new RegExp('target support architecture is not approved and target support evidence is not generated'),
+  new RegExp(
+    'target support architecture is not approved and target support ' +
+      'evidence is not generated',
+  ),
 );
 
 assert.match(releaseReadiness, /\[production-like-release-drill-v1\.md\]\(production-like-release-drill-v1\.md\)/);

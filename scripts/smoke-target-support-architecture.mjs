@@ -103,7 +103,10 @@ assert.match(
 );
 assert.doesNotMatch(
   releaseReadiness,
-  new RegExp('target support architecture is not approved and target support evidence is not generated from ' + 'a production-like environment'),
+  new RegExp(
+    'target support architecture is not approved and target support ' +
+      'evidence is not generated from a production-like environment',
+  ),
 );
 assert.match(security, /\[target-support-architecture-v1\.md\]\(target-support-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Support Architecture/);
