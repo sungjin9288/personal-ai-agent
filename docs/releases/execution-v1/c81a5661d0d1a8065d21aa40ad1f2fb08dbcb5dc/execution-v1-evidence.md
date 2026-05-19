@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T15:29:24.866Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T15:29:16.747Z
 - branch: codex/target-provider-operations-stop-condition-wording
 - commit: c81a5661d0d1a8065d21aa40ad1f2fb08dbcb5dc

@@ -175,6 +175,20 @@ assert.match(targetEnvironment, /\[target-provider-operations-v1\.md\]\(target-p
 assert.match(targetEnvironment, /target provider operations evidence/);
 assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(releaseReadiness, /target provider operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target provider operations evidence for completed per-provider operations capture template, branch and commit, release label and deployment boundary, provider inventory proof with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer\/workspace approval, account or architecture record, and operating decision, provider account approval proof with billing\/credit\/quota state, provider terms, model access, and renewal owner, target secret injection proof with secret manager alias, rotation owner, access policy, redaction result, break-glass path, and revocation evidence, target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner, model and endpoint pinning proof with model id, endpoint\/base URL alias, retry policy, concurrency limit, fallback route, and approval owner, quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route, fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop conditions, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts, provider telemetry proof with health signal, latency\/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner, provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes, data and transcript handling proof with data classification, provider transcript policy, retention class, export\/delete handling, redaction rule, and post-delete absence requirement, remediation and renewal review proof with billing\/credit remediation, endpoint\/model renewal, key rotation, provider terms review, accepted-risk owner, and next review date, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and provider failure containment plan is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target provider operations evidence for provider inventory/account approval, target secret injection, ' +
+      'target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, ' +
+      'fallback/disable path, provider fallback runtime audit, telemetry, incident triage, ' +
+      'data/transcript handling, remediation/renewal, evidence retention, and provider failure ' +
+      'containment is not generated from a production-like environment',
+  ),
+);
 assert.match(security, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(deployment, /## Target Provider Operations/);
 assert.match(deployment, /npm run smoke:target-provider-operations/);
