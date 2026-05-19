@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T08:43:53.149Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T08:43:51.818Z
 - localDate: 2026-05-19
 - branch: codex/target-data-lifecycle-architecture-stop-condition-wording
 - commit: 4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f](releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f](docs/releases/execution-v1/4c672fa7d11e0d687bd7b9d56f7ff2a095b22b6f)
 - visualArtifactSetSha256: 03d84510437002631c43aaae50cf001ae837b8d0b47e9740471632d48597b821
 - commitPushStatus: not pushed, origin/codex/target-data-lifecycle-architecture-stop-condition-wording not found
 
