@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-19T06:44:02.224Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-19T06:44:00.872Z
 - localDate: 2026-05-19
 - branch: codex/hosted-identity-session-stop-condition-wording
 - commit: dc92096f761d4aff68bb3fd858e9804d64f868f0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0](releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0](docs/releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0)
 - visualArtifactSetSha256: 18deee422fe6b4d5c8a7a8d33f781fcef38c32732e7b29b407750670fed3cc2c
 - commitPushStatus: not pushed, origin/codex/hosted-identity-session-stop-condition-wording not found
 

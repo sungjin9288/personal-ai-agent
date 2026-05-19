@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-19T06:44:02.224Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-19T06:43:53.325Z
 - branch: codex/hosted-identity-session-stop-condition-wording
 - commit: dc92096f761d4aff68bb3fd858e9804d64f868f0
