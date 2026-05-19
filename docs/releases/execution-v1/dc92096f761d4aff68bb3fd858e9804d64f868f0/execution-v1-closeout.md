@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T06:44:02.224Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T06:43:53.365Z
 - branch: codex/hosted-identity-session-stop-condition-wording
 - commit: dc92096f761d4aff68bb3fd858e9804d64f868f0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dc92096f761d4aff68bb3fd858e9804d64f868f0/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

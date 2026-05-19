@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Hosted Identity Session Architecture Stop-Condition Alignment
+
+- expanded the production-ready hosted identity session architecture blocker so it names customer IdP onboarding, metadata ownership, issuer/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment evidence
+- kept target identity/session operations as a separate production evidence gate while making the architecture blocker match the hosted identity session architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and hosted identity session architecture smoke guards so release artifacts cannot fall back to generic target identity/session evidence wording
+
 ## 2026-05-19 Target Support Architecture Stop-Condition Alignment
 
 - expanded the production-ready target support architecture blocker so it names staffing model, support queue platform, severity routing, customer communication boundary, ticket audit and retention, on-call handoff, incident commander ownership, escalation and backup coverage, support data handling, incident review governance, migration plan, and missed-acknowledgement, queue-misrouting, customer-communication, ticket-audit, and unstaffed-escalation containment evidence

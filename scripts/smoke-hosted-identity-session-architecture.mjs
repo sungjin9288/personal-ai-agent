@@ -95,6 +95,17 @@ assert.match(targetContract, /hosted identity session architecture is approved/)
 assert.match(targetContract, /npm run smoke:hosted-identity-session-architecture/);
 assert.match(releaseReadiness, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /hosted identity session architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /hosted identity session architecture is not approved, and hosted identity\/session architecture evidence for customer IdP onboarding, metadata ownership, issuer\/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'hosted identity session architecture is not approved and target identity/session ' +
+      'evidence is not generated',
+  ),
+);
 assert.match(security, /\[hosted-identity-session-architecture-v1\.md\]\(hosted-identity-session-architecture-v1\.md\)/);
 assert.match(deployment, /## Hosted Identity Session Architecture/);
 assert.match(deployment, /npm run smoke:hosted-identity-session-architecture/);
