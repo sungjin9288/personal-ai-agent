@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Support Architecture Stop-Condition Alignment
+
+- expanded the production-ready target support architecture blocker so it names staffing model, support queue platform, severity routing, customer communication boundary, ticket audit and retention, on-call handoff, incident commander ownership, escalation and backup coverage, support data handling, incident review governance, migration plan, and missed-acknowledgement, queue-misrouting, customer-communication, ticket-audit, and unstaffed-escalation containment evidence
+- kept target support operations as a separate production evidence gate while making the architecture blocker match the target support architecture decision areas and required evidence packet
+- extended production readiness, production-like drill, and target support architecture smoke guards so release artifacts cannot fall back to generic target support evidence wording
+
 ## 2026-05-19 Production SLO Operating Stop-Condition Alignment
 
 - expanded the production-ready production SLO/SLA operating blocker so it names incident/SLO policy replay, target SLO architecture and operations gates, observability telemetry and target observability operations, support escalation and target support operations, release artifact hygiene, runtime lifecycle, runtime isolation, staffed incident ownership, customer-approved SLO/SLA terms, and provider/deployment evidence
