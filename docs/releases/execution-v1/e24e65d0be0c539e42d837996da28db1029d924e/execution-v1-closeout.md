@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T05:25:17.011Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T05:25:07.338Z
 - branch: codex/target-retention-backup-operations-stop-condition-wording
 - commit: e24e65d0be0c539e42d837996da28db1029d924e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e24e65d0be0c539e42d837996da28db1029d924e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

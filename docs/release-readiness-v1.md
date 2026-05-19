@@ -260,7 +260,7 @@ Blockers:
 - target SLO architecture is not approved and target SLO/SLA evidence is not generated from a production-like environment
 - target SLO operations evidence for customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment is not generated from a production-like environment
 - target data lifecycle architecture is not approved and target data lifecycle evidence is not generated from a production-like environment
-- target retention, export, delete, provider transcript handling, target backup, and post-delete absence evidence is not generated from a production-like environment
+- target retention operations evidence for customer-approved data classes, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and audit history, plus target backup operations evidence for backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery runbook, and audit trail is not generated from a production-like environment
 - production SLO/SLA operating evidence is not generated from a production-like environment
 - target support architecture is not approved and target support evidence is not generated from a production-like environment
 - target support operations evidence for staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and closure evidence is not generated from a production-like environment

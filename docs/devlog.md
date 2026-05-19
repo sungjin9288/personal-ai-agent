@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-19 Target Retention and Backup Operations Stop-Condition Alignment
+
+- expanded the production-ready target retention and backup operations blocker so it names customer-approved data classes, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery runbook, and audit trail evidence
+- kept the target data lifecycle architecture approval gate separate while making the operations blocker match the detailed target retention and target backup operations evidence packets
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target retention, export, delete, backup, and post-delete absence wording
+
 ## 2026-05-19 Target Observability Operations Stop-Condition Alignment
 
 - expanded the production-ready target observability operations blocker so it names telemetry ingestion, alert delivery, trace/log retention, staffed on-call routing and acknowledgement, customer-facing status communication, incident response, and incident review history evidence
