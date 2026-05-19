@@ -90,7 +90,7 @@ for (const blocker of [
   /target Anthropic provider account is not approved and Anthropic live validation evidence is not generated/,
   /target local provider architecture is not approved, and approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are not generated/,
   /target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated/,
-  /hosted identity session architecture is not approved and target identity\/session evidence is not generated/,
+  /hosted identity session architecture is not approved, and hosted identity\/session architecture evidence for customer IdP onboarding, metadata ownership, issuer\/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment is not generated/,
   /target identity\/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated/,
   /hosted tenant isolation architecture is not approved and target tenant isolation evidence is not generated/,
   /target tenant isolation operations evidence for tenant identity source, tenant-scoped authorization, storage partitioning, per-tenant encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment is not generated/,
@@ -111,6 +111,13 @@ for (const blocker of [
   assert.match(drill, blocker);
 }
 
+assert.doesNotMatch(
+  drill,
+  new RegExp(
+    'hosted identity session architecture is not approved and target identity/session ' +
+      'evidence is not generated',
+  ),
+);
 assert.doesNotMatch(
   drill,
   new RegExp(
