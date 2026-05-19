@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-19T13:28:01.504Z
-- branch: codex/target-local-provider-architecture-stop-condition-wording
-- verifiedCommit: 3387769970525b7f20e2c55bc9d129b1a4d5c4b7
+- generatedAt: 2026-05-19T14:15:35.949Z
+- branch: codex/target-hermes-provider-architecture-stop-condition-wording
+- verifiedCommit: c7debd4e9a228dd1713bd5fc3d441f20a2781ef0
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -34,50 +34,50 @@ Production-ready remains blocked until the target deployment model produces targ
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 110 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 113 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 112 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 113 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 112 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 113 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 113 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 112 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 112 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 113 |
-| `npm run smoke:target-support-operations` | pass | 0 | 112 |
-| `npm run smoke:secret-management` | pass | 0 | 114 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 112 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 113 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 113 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 114 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 113 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 111 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 126 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 113 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 113 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 112 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 113 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 112 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 112 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1292 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 122 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 113 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 113 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 111 |
-| `npm run smoke:target-local-provider-architecture` | pass | 0 | 112 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 112 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 114 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 112 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 114 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 112 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 117 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 381 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 146 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 120 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 116 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 298 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 128 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 157 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 124 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 129 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 128 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 126 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 130 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 133 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 132 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 125 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 130 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 129 |
+| `npm run smoke:target-support-operations` | pass | 0 | 124 |
+| `npm run smoke:secret-management` | pass | 0 | 111 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 123 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 128 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 131 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 115 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 122 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 130 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 131 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 115 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 120 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 128 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 128 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 118 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 116 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1319 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 127 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 132 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 128 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 125 |
+| `npm run smoke:target-local-provider-architecture` | pass | 0 | 125 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 126 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 127 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 124 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 126 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 118 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 127 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 404 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 157 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 138 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 129 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 316 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 144 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 134 |
 | `npm run smoke:runtime-isolation` | pass | 0 | 473 |
 
 ## Key Signals
@@ -494,11 +494,11 @@ Production-ready remains blocked until the target deployment model produces targ
 {
     "artifactState": "local-current",
     "artifactSyncCommit": false,
-    "branch": "codex/target-local-provider-architecture-stop-condition-wording",
+    "branch": "codex/target-hermes-provider-architecture-stop-condition-wording",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "3387769970525b7f20e2c55bc9d129b1a4d5c4b7"
+    "snapshotCommit": "c7debd4e9a228dd1713bd5fc3d441f20a2781ef0"
   }
 ```
 
@@ -509,7 +509,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "3387769970525b7f20e2c55bc9d129b1a4d5c4b7"
+    "verifiedCommit": "c7debd4e9a228dd1713bd5fc3d441f20a2781ef0"
   }
 ```
 
@@ -557,7 +557,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "3387769970525b7f20e2c55bc9d129b1a4d5c4b7"
+    "verifiedCommit": "c7debd4e9a228dd1713bd5fc3d441f20a2781ef0"
   }
 ```
 
@@ -610,7 +610,7 @@ Production-ready remains blocked until the target deployment model produces targ
 - target provider operations evidence for provider inventory/account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment is not generated from a production-like environment
 - target Anthropic provider account is not approved, and target Anthropic provider account evidence for account ownership proof with Anthropic account owner, organization/workspace alias, customer scope, evidence owner, and review date, billing and credit proof with active billing plan, available credit balance, payment owner, renewal path, low-balance alert route, and screenshot-free redacted evidence summary, API key and secret injection proof with target secret manager alias, ANTHROPIC_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with ANTHROPIC_MODEL, model availability, region/workspace access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer/workspace, transcript retention policy, support owner, and evidence owner, quota and spend guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:anthropic, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, remediation audit proof with account remediation ticket, billing owner approval, post-remediation live run, artifact hygiene result, accepted risk, and next review date, migration plan, low credit balance, missing API key, revoked key, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment
 - target local provider architecture is not approved, and target local provider architecture evidence for endpoint ownership proof with approved base URL alias, runtime owner, network boundary, transport, availability owner, and health check record, model pinning proof with LOCAL_PROVIDER_MODEL, model source/version, compatibility profile, max token policy, fallback model, and owner approval, network isolation proof with host boundary, ingress policy, egress policy, tenant/customer boundary, operator access policy, and firewall decision, secret and credential policy proof with auth mode, API key requirement, target secret manager alias when used, rotation path, redaction result, and access audit, runtime lifecycle proof with process manager, startup command, health endpoint, restart policy, resource limits, and log retention, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof with prompt data class, local storage path alias, transcript retention, customer data approval, delete request route, and post-delete absence evidence, quota and resource guard proof with CPU/GPU/memory envelope, concurrency limit, timeout, retry policy, saturation fallback, and resource owner approval, telemetry proof with probe result, model availability, run duration, retry count, failureKind taxonomy, usage/resource metrics, alert route, and incident owner, fallback and customer approval proof with fallback provider, degraded mode, customer impact rule, manual approval path, provider terms/local model license decision, and residual risk owner, migration plan, missing base URL, missing model, unavailable runtime, model mismatch, data residency gap, resource exhaustion, and fallback failure containment is not generated from a production-like environment
-- target Hermes provider architecture is not approved, and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are not generated from a production-like environment
+- target Hermes provider architecture is not approved, and target Hermes provider architecture evidence for endpoint ownership proof with approved base URL alias, endpoint owner, network boundary, transport, availability owner, and health check record, model pinning proof with HERMES_PROVIDER_MODEL, model version/source, compatibility profile, max token policy, fallback model, and owner approval, secret injection proof with target secret manager alias, API key requirement decision, rotation path, break-glass owner, access audit, and redaction result, tool-call parsing proof with Hermes <tool_call> sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof with prompt data class, provider transcript retention, customer data approval, delete request route, and post-delete absence evidence, quota and rate guard proof with concurrency limit, timeout, retry policy, cost owner, usage envelope, saturation fallback, and spend review, telemetry proof with probe result, model availability, run duration, retry count, failureKind taxonomy, usage metrics, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, customer approval proof with provider terms, allowed workspace/customer, data-processing approval, support owner, evidence owner, and next review date, migration plan, missing model, unavailable endpoint, malformed tool-call output, transcript retention gap, quota exhaustion, and fallback failure containment is not generated from a production-like environment
 - hosted identity session architecture is not approved, and hosted identity/session architecture evidence for customer IdP onboarding, metadata ownership, issuer/audience policy, JWKS rotation, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance and retention, rollback and lockout recovery, and customer access containment is not generated from a production-like environment
 - target identity/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated from a production-like environment
 - hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment is not generated from a production-like environment

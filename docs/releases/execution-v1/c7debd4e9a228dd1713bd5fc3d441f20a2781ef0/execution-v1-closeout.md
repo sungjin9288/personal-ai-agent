@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T14:15:24.678Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T14:15:16.251Z
 - branch: codex/target-hermes-provider-architecture-stop-condition-wording
 - commit: c7debd4e9a228dd1713bd5fc3d441f20a2781ef0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c7debd4e9a228dd1713bd5fc3d441f20a2781ef0/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
