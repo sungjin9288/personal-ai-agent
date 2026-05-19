@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-19T12:44:54.721Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-19T12:44:46.879Z
 - branch: codex/target-openai-provider-account-stop-condition-wording
 - commit: 6e22ee7b5c2531f530caf51b825b7d9fb33ad97c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6e22ee7b5c2531f530caf51b825b7d9fb33ad97c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
