@@ -89,6 +89,17 @@ assert.match(targetContract, /target secret manager architecture is approved/);
 assert.match(targetContract, /npm run smoke:target-secret-manager-architecture/);
 assert.match(releaseReadiness, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target secret manager architecture gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target secret manager architecture is not approved, and target secret manager architecture evidence for approved platform, region, tenancy boundary, owner and fallback decision, secret class inventory, runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths, least-privilege access policy, service binding, deny-by-default rules, rotation and revocation event proof, secret access audit logs, break-glass approval and post-use review, leakage review across logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors, disaster recovery, migration plan, rollback, lockout recovery, and credential containment is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  new RegExp(
+    'target secret manager architecture is not approved and target secret manager ' +
+      'evidence is not generated',
+  ),
+);
 assert.match(security, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Secret Manager Architecture/);
 assert.match(deployment, /npm run smoke:target-secret-manager-architecture/);
