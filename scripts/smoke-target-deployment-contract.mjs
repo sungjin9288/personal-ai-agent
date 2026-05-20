@@ -159,7 +159,7 @@ for (const blocker of [
   /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
   /stop local provider claims until the target local provider architecture record is approved and endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
-  /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are generated/,
+  /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated release artifact evidence are generated/,
   /stop production-ready claims if the target environment evidence intake packet is incomplete/,
   /stop hosted SaaS claims until the hosted SaaS architecture decision record is approved and target evidence is generated/,
   /stop hosted identity-backed RBAC claims until the hosted identity session architecture record is approved and target identity\/session evidence is generated/,
@@ -185,6 +185,10 @@ for (const blocker of [
 ]) {
   assert.match(contract, blocker);
 }
+assert.doesNotMatch(
+  contract,
+  /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are generated/,
+);
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(contract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);

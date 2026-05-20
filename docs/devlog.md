@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Hermes Provider Architecture Proof Detail Alignment
+
+- expanded target Hermes provider architecture, target deployment contract, target environment evidence intake, deployment guide, security model, README, and provider readiness gate wording so Hermes approval requires endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifacts
+- kept `targetHermesProviderApproved: false` and the existing runtime missing-env behavior unchanged while making the target architecture source-of-record match the proof-level evidence packet
+- extended target Hermes architecture, target deployment contract, target environment evidence intake, and production provider readiness smoke guards so target Hermes approval cannot fall back to generic endpoint/model/live-validation shorthand
+
 ## 2026-05-20 Hermes Handoff Blocker Stop-Condition Detail Alignment
 
 - expanded execution-v1 handoff Hermes next-step and completion-boundary blockers so they name endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence

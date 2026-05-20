@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T05:33:17.679Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T05:33:16.233Z
 - localDate: 2026-05-20
 - branch: codex/hermes-target-architecture-proof-detail
 - commit: d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24](releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24](docs/releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24)
 - visualArtifactSetSha256: 604dd514b08a471374416771e86534d33771bf5b9c7d0fed4100453d7c5fa226
 - commitPushStatus: not pushed, origin/codex/hermes-target-architecture-proof-detail not found
 

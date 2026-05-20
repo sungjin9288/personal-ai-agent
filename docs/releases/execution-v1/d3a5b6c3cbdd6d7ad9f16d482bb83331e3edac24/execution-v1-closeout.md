@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T05:33:17.679Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T05:33:08.301Z
 - branch: codex/hermes-target-architecture-proof-detail
 - commit: d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

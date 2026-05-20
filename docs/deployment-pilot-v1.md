@@ -361,9 +361,9 @@ Before presenting Hermes as a target production provider, verify the Hermes-comp
 npm run smoke:target-hermes-provider-architecture
 ```
 
-The source of record is [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md). It proves endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, required commands, and the Hermes provider production gap are present.
+The source of record is [target-hermes-provider-architecture-v1.md](target-hermes-provider-architecture-v1.md). It proves endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, regenerated release artifact requirements, required commands, and the Hermes provider production gap are present.
 
-Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and `npm run live:execution-v1:hermes` evidence are generated from the approved production-like or hosted target environment.
+Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated release artifact evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Environment Evidence Intake
 

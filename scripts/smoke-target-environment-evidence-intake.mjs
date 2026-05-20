@@ -141,9 +141,17 @@ for (const blocker of [
 }
 assert.match(
   intake,
-  /target Hermes provider architecture approval, endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, and regenerated release artifacts/,
+  /target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, release artifact hygiene result, and regenerated release artifacts/,
 );
 assert.match(
+  intake,
+  /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene pass, and regenerated release artifacts/,
+);
+assert.doesNotMatch(
+  intake,
+  /target Hermes provider architecture approval, endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, and regenerated release artifacts/,
+);
+assert.doesNotMatch(
   intake,
   /endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, Hermes live validation pass, release artifact hygiene pass, and regenerated release artifacts/,
 );
