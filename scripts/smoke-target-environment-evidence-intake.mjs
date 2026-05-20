@@ -63,7 +63,7 @@ for (const checklistItem of [
   /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
   /identity provider, role owner, session policy, and permission audit evidence/,
   /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
-  /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
+  /target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, revocation path, and credential containment evidence/,
   /target SLO\/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
   /target SLO operations evidence for customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment/,
   /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
@@ -95,7 +95,26 @@ for (const field of [
 }
 assert.match(intake, /must reference target identity session operations evidence generated from the same boundary/);
 assert.match(intake, /must prove provider credentials and provider live validation are target-approved without exposing secret values/);
-assert.match(intake, /target deployment contract, target provider evidence intake, target provider operations, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/);
+assert.match(
+  intake,
+  /Provider and secret manager \| provider account approval, OpenAI provider account approval when OpenAI is included, Anthropic provider account approval when Anthropic is included, local provider architecture approval when local provider is included, Hermes provider architecture approval when Hermes is included, target provider operations evidence, target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager injection, revocation, and live validation are proven/,
+);
+assert.match(
+  intake,
+  /providerSecretEvidence \| selected providers, completed provider evidence intake references, provider account\/architecture approvals, target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation proof, audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, credential containment evidence, and target-boundary live validation evidence/,
+);
+assert.match(
+  intake,
+  /target deployment contract, target provider evidence intake, target provider operations, target secret manager architecture, target secret manager, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /target secret manager aliases, rotation evidence, revocation path, and break-glass approval/,
+);
+assert.doesNotMatch(
+  intake,
+  /providerSecretEvidence \| selected providers, completed provider evidence intake references, provider account\/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence/,
+);
 
 assert.match(intake, /## Target Evidence Submission Packet/);
 assert.match(

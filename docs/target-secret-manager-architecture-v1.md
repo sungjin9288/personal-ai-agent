@@ -19,7 +19,7 @@ This record defines the target secret manager architecture decision and evidence
 
 It is not target secret manager implementation, not cloud KMS evidence, not production credential rotation proof, not break-glass approval history, not target deployment approval, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target secret manager readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target secret manager readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment for approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence.
 
 ## Secret Manager Decision Areas
 
@@ -50,6 +50,7 @@ Any future target secret manager approval must include:
 - disaster recovery evidence for secret backup, restore, key recovery, region outage, rollback, and compromised-secret containment
 - migration plan from local environment injection to target secret manager injection
 - explicit rollback, lockout recovery, and credential containment plan
+- release artifact hygiene result and regenerated execution snapshot evidence from the approved target boundary
 
 ## Required Commands
 
@@ -71,4 +72,4 @@ This gate is acceptable only when the target secret manager decision areas, requ
 
 This is a local target secret manager architecture contract. It does not approve target secret manager readiness, implement secret manager injection, prove rotation, prove access policy, prove audit monitoring, prove break-glass governance, prove leakage absence in target logs, or satisfy target environment production evidence.
 
-Target secret manager readiness remains blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Target secret manager readiness remains blocked until a replacement architecture decision is approved, implementation is completed, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.

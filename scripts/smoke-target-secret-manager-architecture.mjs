@@ -66,9 +66,26 @@ for (const packetItem of [
   /disaster recovery evidence for secret backup, restore, key recovery, region outage, rollback, and compromised-secret containment/,
   /migration plan from local environment injection to target secret manager injection/,
   /explicit rollback, lockout recovery, and credential containment plan/,
+  /release artifact hygiene result and regenerated execution snapshot evidence from the approved target boundary/,
 ]) {
   assert.match(decision, packetItem);
 }
+assert.match(
+  decision,
+  /Target secret manager readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment for approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  decision,
+  /Target secret manager readiness remains blocked until a replacement architecture decision is approved, implementation is completed, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment/,
+);
+assert.doesNotMatch(
+  decision,
+  /Target secret manager readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment\./,
+);
+assert.doesNotMatch(
+  decision,
+  /Target secret manager readiness remains blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved production-like or hosted environment/,
+);
 
 for (const command of [
   'npm run smoke:target-secret-manager-architecture',
@@ -85,13 +102,36 @@ for (const command of [
 assert.match(secretManagement, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(targetSecret, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(targetContract, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
-assert.match(targetContract, /target secret manager architecture is approved/);
+assert.match(
+  targetContract,
+  /Target secret manager architecture \| target secret manager architecture is approved with approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  targetContract,
+  /secretObservabilityEvidence \| target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, telemetry backend, alert route, log\/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence/,
+);
+assert.match(
+  targetContract,
+  /stop target secret manager claims until the target secret manager architecture record is approved and approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
+);
+assert.doesNotMatch(
+  targetContract,
+  /Target secret manager architecture \| target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions/,
+);
+assert.doesNotMatch(
+  targetContract,
+  /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,
+);
 assert.match(targetContract, /npm run smoke:target-secret-manager-architecture/);
 assert.match(releaseReadiness, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target secret manager architecture gate: passed/);
 assert.match(
   releaseReadiness,
-  /target secret manager architecture is not approved, and target secret manager architecture evidence for approved platform, region, tenancy boundary, owner and fallback decision, secret class inventory, runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths, least-privilege access policy, service binding, deny-by-default rules, rotation and revocation event proof, secret access audit logs, break-glass approval and post-use review, leakage review across logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors, disaster recovery, migration plan, rollback, lockout recovery, and credential containment is not generated from a production-like environment/,
+  /target secret manager architecture gate: passed, with targetSecretManagerApproved false, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
+);
+assert.match(
+  releaseReadiness,
+  /target secret manager architecture is not approved, and target secret manager architecture evidence for approved platform proof with provider, region, tenancy boundary, owner, and fallback decision, secret class inventory proof with provider, environment, owner, rotation cadence, and allowed consumers, runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths, least-privilege access policy proof with reader, writer, admin, reviewer, service binding, and deny-by-default evidence, rotation and revocation event proof with previous secret invalidation and downstream redeploy or reload result, secret access audit log proof for read, write, rotate, revoke, break-glass, and failed access attempts, break-glass governance proof with approval, expiry, monitoring, customer notification, revocation, and post-use review, leakage review proof across production logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors, disaster recovery proof for secret backup, restore, key recovery, region outage, rollback, and compromised-secret containment, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
 );
 assert.doesNotMatch(
   releaseReadiness,
@@ -100,12 +140,44 @@ assert.doesNotMatch(
       'evidence is not generated',
   ),
 );
+assert.doesNotMatch(
+  releaseReadiness,
+  /target secret manager architecture gate: passed, with targetSecretManagerApproved false, platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery decision requirements, and `productionReadyClaim: false`/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target secret manager architecture is not approved, and target secret manager architecture evidence for approved platform, region, tenancy boundary, owner and fallback decision, secret class inventory, runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths, least-privilege access policy, service binding, deny-by-default rules, rotation and revocation event proof, secret access audit logs, break-glass approval and post-use review, leakage review across logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors, disaster recovery, migration plan, rollback, lockout recovery, and credential containment is not generated from a production-like environment/,
+);
 assert.match(security, /\[target-secret-manager-architecture-v1\.md\]\(target-secret-manager-architecture-v1\.md\)/);
+assert.match(
+  security,
+  /target secret manager architecture contract for approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, regenerated execution snapshot evidence, and the remaining target evidence gap/,
+);
+assert.doesNotMatch(
+  security,
+  /target secret manager architecture contract for platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, disaster recovery, and the remaining target evidence gap/,
+);
 assert.match(deployment, /## Target Secret Manager Architecture/);
 assert.match(deployment, /npm run smoke:target-secret-manager-architecture/);
+assert.match(
+  deployment,
+  /It requires approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `targetSecretManagerApproved: false`/,
+);
+assert.doesNotMatch(
+  deployment,
+  /It requires secret manager platform, secret classes, injection path, access policy, rotation\/revocation, audit\/monitoring, break-glass, leakage controls, disaster recovery, migration, rollback, and credential containment decisions while keeping `targetSecretManagerApproved: false`/,
+);
 assert.match(productPlan, /\[x\] Target secret manager architecture gate implemented/);
 assert.match(readme, /docs\/target-secret-manager-architecture-v1\.md/);
 assert.match(readme, /npm run smoke:target-secret-manager-architecture/);
+assert.match(
+  readme,
+  /target secret manager architecture evidence can be verified with `npm run smoke:target-secret-manager-architecture`; it proves approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetSecretManagerApproved: false`/,
+);
+assert.doesNotMatch(
+  readme,
+  /target secret manager architecture evidence can be verified with `npm run smoke:target-secret-manager-architecture`; it proves platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decision requirements are present, but it keeps `targetSecretManagerApproved: false`/,
+);
 
 console.log(
   JSON.stringify(

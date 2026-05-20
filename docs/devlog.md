@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Secret Manager Architecture Proof Detail Alignment
+
+- expanded target secret manager architecture summary wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `targetSecretManagerApproved: false`, local secret-management evidence, and the existing production-ready stop-condition unchanged while making the architecture source-of-record match the proof-level evidence packet
+- extended target secret manager architecture, target deployment contract, target environment evidence intake, and production readiness smoke guards so target secret manager claims cannot fall back to generic platform/access/rotation shorthand
+
 ## 2026-05-20 Target Provider Account Proof Detail Alignment
 
 - expanded target OpenAI and Anthropic provider account summary wording across README, release readiness, deployment guide, security model, target provider evidence intake, target deployment contract, target environment evidence intake, and provider readiness generation so account approval requires account ownership proof, billing/quota or billing/credit remediation proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, quota/usage guard proof, target-boundary live validation, telemetry proof, fallback and stop-condition proof, renewal or remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence
