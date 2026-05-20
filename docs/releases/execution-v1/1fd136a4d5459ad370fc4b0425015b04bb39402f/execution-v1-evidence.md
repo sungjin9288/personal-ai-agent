@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T19:36:27.453Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T19:36:19.289Z
 - branch: codex/post-observability-artifact-sync
 - commit: 1fd136a4d5459ad370fc4b0425015b04bb39402f
