@@ -112,6 +112,18 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityCategory, 'provider-account');
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityOwner, 'provider-ops');
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityProvider, 'anthropic');
+  assert.match(
+    status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityBlocker || '',
+    /Anthropic live validation remains blocked until target Anthropic provider account evidence/,
+  );
+  assert.match(
+    status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityNextEvidence || '',
+    /ANTHROPIC_API_KEY target secret injection/,
+  );
+  assert.match(
+    status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityStopReason || '',
+    /target-boundary live validation pass/,
+  );
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
       item.includes('provider live validation completion evidence for Anthropic and Hermes is incomplete'),
@@ -122,6 +134,20 @@ try {
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
       item.includes('Anthropic and Hermes live validations are not complete'),
+    ),
+    false,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('Anthropic live validation remains blocked until target Anthropic provider account evidence'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('Anthropic live validation is blocked by provider account billing/credit'),
     ),
     false,
     JSON.stringify(status.releaseReadiness),
@@ -141,6 +167,8 @@ try {
   );
   assert.equal(Boolean(anthropicBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.equal(anthropicBlockerAction.provider, 'anthropic', JSON.stringify(anthropicBlockerAction));
+  assert.match(anthropicBlockerAction.nextEvidence, /ANTHROPIC_MODEL access/, JSON.stringify(anthropicBlockerAction));
+  assert.match(anthropicBlockerAction.stopReason, /regenerated release artifacts are missing/, JSON.stringify(anthropicBlockerAction));
   const anthropicEvidenceDoc = anthropicBlockerAction.evidenceDocs.find(
     (doc) => doc.path === 'docs/target-anthropic-provider-account-v1.md',
   );

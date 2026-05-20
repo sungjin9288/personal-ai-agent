@@ -1258,10 +1258,10 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
         buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
         buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
       ],
-      nextEvidence: 'Approved Anthropic billing/credit, target secret injection, and target-boundary Anthropic live validation evidence.',
+      nextEvidence: 'Approved Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms/customer approval, quota/spend guard, target-boundary Anthropic live validation pass, telemetry, fallback/stop-condition decision, artifact hygiene, and regenerated execution snapshot.',
       owner: 'provider-ops',
       provider: 'anthropic',
-      stopReason: 'Anthropic account billing/credit and target-boundary live validation evidence are missing.',
+      stopReason: 'Anthropic billing/credit remediation, target provider account evidence, target secret injection, model access, target-boundary live validation pass, telemetry, fallback decision, and regenerated release artifacts are missing.',
     };
   }
 
