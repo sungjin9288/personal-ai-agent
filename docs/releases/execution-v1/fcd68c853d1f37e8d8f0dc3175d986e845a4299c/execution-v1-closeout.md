@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T11:56:14.797Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T11:56:02.044Z
 - branch: codex/secret-manager-architecture-proof-detail
 - commit: fcd68c853d1f37e8d8f0dc3175d986e845a4299c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

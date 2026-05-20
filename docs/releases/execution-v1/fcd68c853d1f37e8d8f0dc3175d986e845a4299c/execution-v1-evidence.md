@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T11:56:14.797Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T11:56:01.944Z
 - branch: codex/secret-manager-architecture-proof-detail
 - commit: fcd68c853d1f37e8d8f0dc3175d986e845a4299c

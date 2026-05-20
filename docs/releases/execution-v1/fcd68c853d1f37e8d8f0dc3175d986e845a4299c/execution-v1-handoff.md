@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T11:56:14.797Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T11:56:13.247Z
 - localDate: 2026-05-20
 - branch: codex/secret-manager-architecture-proof-detail
 - commit: fcd68c853d1f37e8d8f0dc3175d986e845a4299c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c](releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c](docs/releases/execution-v1/fcd68c853d1f37e8d8f0dc3175d986e845a4299c)
 - visualArtifactSetSha256: a18f58bd4f877184c9998d1c7b332c671bdfe6a616667c26ba0acd5d2387f362
 - commitPushStatus: not pushed, origin/codex/secret-manager-architecture-proof-detail not found
 
