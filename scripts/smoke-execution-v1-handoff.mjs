@@ -129,8 +129,26 @@ assert.equal(handoff.includes('npm run refresh:execution-v1-artifacts'), true);
 assert.equal(handoff.includes('pilot export package'), true);
 assert.equal(handoff.includes('node scripts/build-execution-v1-evidence.mjs --live-<provider>'), true);
 assert.equal(
+  handoff.includes(
+    'Hermes live validation still requires target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence',
+  ),
+  true,
+);
+assert.equal(
   handoff.includes('Attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence'),
   true,
+);
+assert.equal(
+  handoff.includes(
+    'Attach approved target provider architecture evidence for Hermes, including endpoint/model ownership, target secret injection, telemetry, fallback, customer approval, and target-boundary live validation',
+  ),
+  false,
+);
+assert.equal(
+  handoff.includes(
+    'Hermes live validation still requires target Hermes provider architecture evidence, and target local provider architecture approval still requires',
+  ),
+  false,
 );
 assert.equal(handoff.includes('npm run snapshot:execution-v1'), false);
 assert.equal(

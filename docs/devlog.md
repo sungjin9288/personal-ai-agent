@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Hermes Handoff Blocker Stop-Condition Detail Alignment
+
+- expanded execution-v1 handoff Hermes next-step and completion-boundary blockers so they name endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence
+- kept the operational missing-env line for HERMES_PROVIDER_MODEL separate while making the handoff stop-condition match the target Hermes provider architecture evidence packet
+- extended the execution-v1 handoff smoke guard so generated handoff output cannot fall back to generic target-provider-architecture shorthand
+
 ## 2026-05-20 Hermes Current Blocker Stop-Condition Detail Alignment
 
 - expanded current-open, planning, security, onboarding, demo, runbook, deployment, roadmap, and production provider readiness Hermes blockers so they name endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence
