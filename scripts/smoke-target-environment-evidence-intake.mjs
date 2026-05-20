@@ -64,7 +64,7 @@ for (const checklistItem of [
   /identity provider owner, role owner, session policy owner, permission audit evidence, break-glass governance owner, support impersonation owner, compliance\/retention owner, and customer access containment evidence/,
   /tenant storage boundary, storage partitioning proof, encryption\/key policy, backup\/restore isolation proof, tenant admin evidence, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, revocation path, and credential containment evidence/,
-  /target SLO\/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
+  /target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert delivery proof, log\/trace retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO\/SLA terms, error budget owner, provider outage handling, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target SLO operations evidence for customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment/,
   /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
   /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
@@ -133,11 +133,27 @@ assert.match(
 );
 assert.match(
   intake,
+  /Observability and SLO\/SLA \| target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert delivery proof, log\/trace retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval, target SLO operations evidence, customer SLO\/SLA review, release artifact hygiene, and regenerated execution snapshot evidence are proven/,
+);
+assert.match(
+  intake,
   /providerSecretEvidence \| selected providers, completed provider evidence intake references, provider account\/architecture approvals, target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation proof, audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, credential containment evidence, and target-boundary live validation evidence/,
 );
 assert.match(
   intake,
-  /target deployment contract, target provider evidence intake, target provider operations, target secret manager architecture, target secret manager, target identity\/session operations, target tenant isolation operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/,
+  /observabilitySloEvidence \| target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert route, alert delivery receipt, alert acknowledgement, staffed on-call owner, log\/trace retention proof, customer status route, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO\/SLA terms, error budget owner, provider outage handling, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  intake,
+  /target deployment contract, target provider evidence intake, target provider operations, target secret manager architecture, target secret manager, target identity\/session operations, target tenant isolation operations, target observability architecture, target observability operations, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /Observability and SLO\/SLA \| target SLO architecture approval, target SLO operations evidence, telemetry backend approval, telemetry ingestion, alert delivery, log\/trace retention, staffed on-call routing, incident review, and customer SLO\/SLA review are proven/,
+);
+assert.doesNotMatch(
+  intake,
+  /observabilitySloEvidence \| SLO\/SLA terms, error budget owner, telemetry backend, telemetry ingestion, alert route, alert acknowledgement, on-call owner, customer status route, incident review, provider outage handling, and missed-SLO containment/,
 );
 assert.doesNotMatch(
   intake,

@@ -21,7 +21,7 @@ This record defines the target observability architecture decision and evidence 
 
 It is not target telemetry implementation, not production log aggregation evidence, not staffed on-call proof, not customer status page history, not incident response evidence, not target deployment approval, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target observability readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target observability readiness remains blocked until a replacement architecture decision is approved and approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, migration plan, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment.
 
 ## Observability Decision Areas
 
@@ -53,6 +53,7 @@ Any future target observability approval must include:
 - disaster recovery evidence for telemetry backend outage, alert route outage, incident bridge fallback, log export fallback, and evidence recovery
 - migration plan from local observability signals to target telemetry backend and on-call workflow
 - explicit rollback, false-positive triage, alert fatigue, and customer communication containment plan
+- release artifact hygiene result and regenerated execution snapshot evidence after target observability architecture evidence is attached
 
 ## Required Commands
 
@@ -70,10 +71,10 @@ npm run smoke:release-artifact-hygiene
 
 ## Acceptance Rule
 
-This gate is acceptable only when the target observability decision areas, required evidence packet, required commands, and production gap are present, and the document keeps `productionReadyClaim: false` and `targetObservabilityApproved: false`.
+This gate is acceptable only when the target observability decision areas, proof-level evidence packet, required commands, release artifact hygiene requirement, regenerated execution snapshot requirement, and production gap are present, and the document keeps `productionReadyClaim: false` and `targetObservabilityApproved: false`.
 
 ## Production Gap
 
 This is a local target observability architecture contract. It does not approve target observability readiness, implement telemetry ingestion, prove alert delivery, prove staffed on-call acknowledgement, prove customer communication, prove incident review history, prove target log retention, or satisfy target environment production evidence.
 
-Target observability readiness remains blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Target observability readiness remains blocked until a replacement architecture decision is approved, implementation is completed, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, migration plan, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.

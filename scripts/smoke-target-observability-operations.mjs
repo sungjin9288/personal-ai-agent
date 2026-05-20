@@ -7,6 +7,7 @@ const docsDir = path.join(repoDir, 'docs');
 const targetObservabilityPath = path.join(docsDir, 'target-observability-operations-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
+const intakePath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
 const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
 const securityPath = path.join(docsDir, 'security-model-v1.md');
 const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
@@ -16,6 +17,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const targetObservability = readRequiredFile(targetObservabilityPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const targetContract = readRequiredFile(targetContractPath);
+const intake = readRequiredFile(intakePath);
 const deployment = readRequiredFile(deploymentPath);
 const security = readRequiredFile(securityPath);
 const productPlan = readRequiredFile(productPlanPath);
@@ -33,6 +35,10 @@ assert.match(targetObservability, /^- productionReadyClaim: false$/m);
 assert.match(targetObservability, /not target observability evidence/);
 assert.match(targetObservability, /not permission to claim `production-ready`/);
 assert.match(targetObservability, /Target observability operations remain blocked for production-ready claims/);
+assert.match(
+  targetObservability,
+  /telemetry ingestion proof, alert delivery proof, trace\/log retention proof, staffed on-call routing and acknowledgement proof, customer-facing status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
+);
 
 for (const heading of [
   '## Decision Boundary',
@@ -63,20 +69,54 @@ for (const command of [
   'npm run smoke:observability-telemetry',
   'npm run smoke:production-slo-operating',
   'npm run smoke:target-slo-architecture',
+  'npm run smoke:target-deployment-contract',
+  'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:production-readiness-gate',
 ]) {
   assert.match(targetObservability, new RegExp(escapeRegExp(command)));
 }
 
+for (const packetItem of [
+  /branch, commit, release label, and deployment boundary from the approved production-like or hosted target environment/,
+  /telemetry backend or logical pipeline identifier, ingestion owner, event taxonomy, and metrics\/logs\/traces\/audit\/provider\/release\/support event sample references/,
+  /alert route, severity, delivery receipt, retry policy, acknowledgement SLA, escalation evidence, and retry outcome/,
+  /staffed on-call owner, backup owner, rota reference, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain/,
+  /log and trace retention policy reference with period, storage class, redaction policy, query role, customer export boundary, deletion path, and query access audit/,
+  /redaction and sensitive-data review result for production logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors/,
+  /customer status communication owner, channel, approval reference, timestamp, message, cadence, and closure evidence/,
+  /incident timeline, mitigation owner, customer impact, response evidence, review decision, corrective actions, due dates, residual risk, and closure evidence/,
+  /audit export proof for alert delivery, acknowledgement, customer update, query access, review decision, and corrective action closure/,
+  /release artifact hygiene result, regenerated execution snapshot evidence, production readiness gate result, residual risk, decision owner, and next review date/,
+]) {
+  assert.match(targetObservability, packetItem);
+}
+
 assert.match(releaseReadiness, /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/);
 assert.match(targetObservability, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
+assert.match(targetObservability, /\[target-environment-evidence-intake-v1\.md\]\(target-environment-evidence-intake-v1\.md\)/);
 assert.match(releaseReadiness, /local target observability operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target observability operations evidence for telemetry ingestion proof with metrics, logs, traces, audit events, provider events, release events, and support events, alert delivery proof with route, severity, delivery receipt, retry policy, acknowledgement SLA, and escalation evidence, trace\/log retention proof with period, storage class, redaction policy, query role, customer export boundary, deletion path, and query access audit, staffed on-call routing and acknowledgement proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, customer-facing status communication proof with route, owner, approval, timestamp, message, cadence, and closure evidence, incident response proof with timeline, mitigation owner, customer impact, review decision, corrective actions, due dates, and closure evidence, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target observability operations evidence for telemetry ingestion, alert delivery, trace\/log retention, staffed on-call routing and acknowledgement, customer-facing status communication, incident response, and incident review history is not generated from a production-like environment/,
+);
 assert.match(
   targetContract,
   /local SLO operating, observability telemetry, target observability architecture, target observability operations, and target SLO architecture gates pass/,
 );
+assert.match(
+  targetContract,
+  /secretObservabilityEvidence \| target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log\/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, target observability operations evidence, target SLO architecture, target SLO operations, incident review evidence, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetContract, /npm run smoke:target-observability-operations/);
+assert.match(
+  intake,
+  /observabilitySloEvidence \| target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert route, alert delivery receipt, alert acknowledgement, staffed on-call owner, log\/trace retention proof, customer status route, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO\/SLA terms, error budget owner, provider outage handling, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
 assert.match(deployment, /## Target Observability Operations Gate/);
 assert.match(deployment, /npm run smoke:target-observability-operations/);
 assert.match(security, /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/);
