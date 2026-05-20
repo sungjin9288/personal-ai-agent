@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T07:54:23.526Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T07:54:22.237Z
 - localDate: 2026-05-20
 - branch: codex/provider-account-proof-main-artifact-sync
 - commit: ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3](releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3](docs/releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3)
 - visualArtifactSetSha256: 08631ea1e87ee2f0ba5bcf615e5ca4aec6c2e4cadfecc611ead84a882be73ef2
 - commitPushStatus: pushed to origin/main
 

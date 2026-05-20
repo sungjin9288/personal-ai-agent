@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T07:54:23.526Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T07:54:15.807Z
 - branch: codex/provider-account-proof-main-artifact-sync
 - commit: ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

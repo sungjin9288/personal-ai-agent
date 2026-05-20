@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T07:54:23.526Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T07:54:15.770Z
 - branch: codex/provider-account-proof-main-artifact-sync
 - commit: ebb64109fd2e55b91a4b03d8309dbf4ad30ae3f3
