@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T01:45:00.675Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T01:44:59.295Z
 - localDate: 2026-05-20
 - branch: codex/hermes-pilot-blocker-stop-condition-wording
 - commit: 1752453b030e895765c0696adf1dd7b4b932a28b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b](releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b](docs/releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b)
 - visualArtifactSetSha256: eacffab704cd31f56be867d43e45753d239725ddf2b0c055ca3af57f59b93d7f
 - commitPushStatus: not pushed, origin/codex/hermes-pilot-blocker-stop-condition-wording not found
 

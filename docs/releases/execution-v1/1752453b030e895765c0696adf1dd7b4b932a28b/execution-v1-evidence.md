@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T01:45:00.675Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T01:44:50.242Z
 - branch: codex/hermes-pilot-blocker-stop-condition-wording
 - commit: 1752453b030e895765c0696adf1dd7b4b932a28b

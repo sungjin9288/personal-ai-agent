@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T01:45:00.675Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T01:44:50.297Z
 - branch: codex/hermes-pilot-blocker-stop-condition-wording
 - commit: 1752453b030e895765c0696adf1dd7b4b932a28b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1752453b030e895765c0696adf1dd7b4b932a28b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
