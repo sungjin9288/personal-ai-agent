@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-20T00:29:18.103Z
-- branch: codex/target-deployment-contract-stop-condition-wording
-- verifiedCommit: 50fdaebb239b07d49168e451c02f73820e69758d
+- generatedAt: 2026-05-20T00:54:01.797Z
+- branch: codex/provider-live-validation-stop-condition-wording
+- verifiedCommit: 860db6806dc2fa6d79461e089a30868b97154509
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -34,51 +34,51 @@ Production-ready remains blocked until the target deployment model produces targ
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 123 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 129 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 133 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 125 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 142 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 143 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 141 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 140 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 144 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 140 |
-| `npm run smoke:target-support-operations` | pass | 0 | 140 |
-| `npm run smoke:secret-management` | pass | 0 | 142 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 143 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 141 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 132 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 143 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 137 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 132 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 129 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 132 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 137 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 137 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 141 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 151 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 139 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1340 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 219 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 214 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 206 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 148 |
-| `npm run smoke:target-local-provider-architecture` | pass | 0 | 148 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 177 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 225 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 161 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 147 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 144 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 194 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 519 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 324 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 151 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 145 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 452 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 155 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 160 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 577 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 105 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 107 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 108 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 106 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 107 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 106 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 105 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 105 |
+| `npm run smoke:target-support-operations` | pass | 0 | 106 |
+| `npm run smoke:secret-management` | pass | 0 | 107 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 107 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 115 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 107 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 107 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 106 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 106 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 107 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 105 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1279 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 106 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 105 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 105 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 106 |
+| `npm run smoke:target-local-provider-architecture` | pass | 0 | 105 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 106 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 105 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 107 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 106 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 105 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 111 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 371 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 138 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 114 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 111 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 284 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 118 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 123 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 449 |
 
 ## Key Signals
 
@@ -494,11 +494,11 @@ Production-ready remains blocked until the target deployment model produces targ
 {
     "artifactState": "local-current",
     "artifactSyncCommit": false,
-    "branch": "codex/target-deployment-contract-stop-condition-wording",
+    "branch": "codex/provider-live-validation-stop-condition-wording",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "50fdaebb239b07d49168e451c02f73820e69758d"
+    "snapshotCommit": "860db6806dc2fa6d79461e089a30868b97154509"
   }
 ```
 
@@ -509,7 +509,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "50fdaebb239b07d49168e451c02f73820e69758d"
+    "verifiedCommit": "860db6806dc2fa6d79461e089a30868b97154509"
   }
 ```
 
@@ -557,7 +557,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "50fdaebb239b07d49168e451c02f73820e69758d"
+    "verifiedCommit": "860db6806dc2fa6d79461e089a30868b97154509"
   }
 ```
 
@@ -605,7 +605,7 @@ Production-ready remains blocked until the target deployment model produces targ
 
 ## Production Blockers Preserved
 
-- Anthropic and Hermes live validations are not complete
+- provider live validation completion evidence for Anthropic and Hermes is incomplete, and production provider live validation evidence for Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, npm run live:execution-v1:anthropic result, Hermes target provider architecture approval, HERMES_PROVIDER_MODEL pinning, Hermes endpoint and secret injection, npm run live:execution-v1:hermes result, mission id, execution session id, provider response status, retry lineage, artifact provenance, telemetry probe result, failureKind taxonomy, fallback or disable decision, remediation owner, next review date, release artifact hygiene result, and regenerated execution snapshot is not generated from the approved production-like or hosted target environment
 - target OpenAI provider account is not approved, and target OpenAI provider account evidence for account ownership proof with OpenAI organization/project owner, project/workspace alias, customer scope, evidence owner, and review date, billing and quota proof with active billing plan, quota tier, payment owner, spend cap, low-balance/quota alert route, and redacted evidence summary, API key and secret injection proof with target secret manager alias, OPENAI_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with OPENAI_MODEL, model availability, region/project access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer/workspace, transcript/retention policy, support owner, and evidence owner, usage and cost guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:openai, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, renewal and review audit proof with account owner recertification, quota review, model access review, artifact hygiene result, accepted risk, and next review date, migration plan, missing API key, revoked key, quota exhaustion, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment
 - target provider operations evidence for completed per-provider operations capture template, branch and commit, release label and deployment boundary, provider inventory proof with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer/workspace approval, account or architecture record, and operating decision, provider account approval proof with billing/credit/quota state, provider terms, model access, and renewal owner, target secret injection proof with secret manager alias, rotation owner, access policy, redaction result, break-glass path, and revocation evidence, target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner, model and endpoint pinning proof with model id, endpoint/base URL alias, retry policy, concurrency limit, fallback route, and approval owner, quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route, fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop conditions, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts, provider telemetry proof with health signal, latency/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner, provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes, data and transcript handling proof with data classification, provider transcript policy, retention class, export/delete handling, redaction rule, and post-delete absence requirement, remediation and renewal review proof with billing/credit remediation, endpoint/model renewal, key rotation, provider terms review, accepted-risk owner, and next review date, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and provider failure containment plan is not generated from a production-like environment
 - target Anthropic provider account is not approved, and target Anthropic provider account evidence for account ownership proof with Anthropic account owner, organization/workspace alias, customer scope, evidence owner, and review date, billing and credit proof with active billing plan, available credit balance, payment owner, renewal path, low-balance alert route, and screenshot-free redacted evidence summary, API key and secret injection proof with target secret manager alias, ANTHROPIC_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with ANTHROPIC_MODEL, model availability, region/workspace access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer/workspace, transcript retention policy, support owner, and evidence owner, quota and spend guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:anthropic, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, remediation audit proof with account remediation ticket, billing owner approval, post-remediation live run, artifact hygiene result, accepted risk, and next review date, migration plan, low credit balance, missing API key, revoked key, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment
