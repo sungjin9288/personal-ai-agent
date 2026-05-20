@@ -693,18 +693,18 @@ Before presenting a production-like deployment as SLO/SLA-ready, verify the targ
 npm run smoke:target-slo-architecture
 ```
 
-The source of record is [target-slo-architecture-v1.md](target-slo-architecture-v1.md). It requires customer SLO terms, error budget policy, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, migration, rollback, false-positive alert, and missed-SLO containment decisions while keeping `targetSloApproved: false`.
+The source of record is [target-slo-architecture-v1.md](target-slo-architecture-v1.md). It requires customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance/degradation proof, service credit and contractual escalation proof, migration, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `targetSloApproved: false`.
 
 Acceptance:
 
-- target SLO decision areas cover customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit
-- required evidence packets include customer-approved SLO/SLA terms, error budget policy, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook, maintenance proof, service credit escalation, and migration plan
+- target SLO decision areas cover customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance/degradation proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence
+- required evidence packets include customer-approved SLO/SLA terms, error budget policy, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook, maintenance proof, service credit escalation, migration plan, release artifact hygiene result, and regenerated execution snapshot evidence
 - the generated target SLO architecture gate keeps `productionReadyClaim: false` and `targetSloApproved: false`
 
 Stop condition:
 
-- if target SLO architecture approval or target evidence is missing, do not present production-like SLO/SLA readiness
-- if the gate passes, treat it only as a local target SLO architecture contract, not contractual SLA approval, target telemetry measurement, staffed on-call, customer status, incident review history, or service credit approval
+- if target SLO architecture approval, proof-level target evidence, release artifact hygiene, or regenerated execution snapshot evidence is missing, do not present production-like SLO/SLA readiness
+- if the gate passes, treat it only as a local target SLO architecture contract, not contractual SLA approval, target telemetry measurement, staffed on-call, customer status, incident review history, service credit approval, or regenerated release evidence proof
 
 ## Target SLO Operations
 
@@ -714,18 +714,18 @@ Before presenting a production-like deployment as SLO/SLA-operational, verify th
 npm run smoke:target-slo-operations
 ```
 
-The source of record is [target-slo-operations-v1.md](target-slo-operations-v1.md). It requires customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, missed-SLO containment, required commands, and keeps `productionReadyClaim: false`.
+The source of record is [target-slo-operations-v1.md](target-slo-operations-v1.md). It requires customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene, regenerated execution snapshot evidence, required commands, and keeps `productionReadyClaim: false`.
 
 Acceptance:
 
-- target SLO operation controls cover customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit escalation
-- SLO evidence packets include branch, commit, deployment boundary, approved terms, error budget policy, measurement proof, alert acknowledgement proof, on-call proof, customer communication proof, incident review proof, provider outage proof, maintenance proof, service credit proof, artifact hygiene, residual risk, and missed-SLO containment
+- target SLO operation controls cover customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance/degradation proof, service credit proof, evidence retention proof, release artifact hygiene, and regenerated execution snapshot evidence
+- SLO evidence packets include branch, commit, deployment boundary, approved terms, error budget policy, measurement proof, alert acknowledgement proof, on-call proof, customer communication proof, incident review proof, provider outage proof, maintenance proof, service credit proof, release artifact hygiene result, regenerated execution snapshot evidence, residual risk, and missed-SLO containment
 - the generated target SLO operations gate keeps `productionReadyClaim: false`
 
 Stop condition:
 
-- if target SLO operations evidence is missing, do not present production-like SLO/SLA operational readiness
-- if the gate passes, treat it only as a local target SLO operations evidence contract, not contractual SLA approval, target telemetry proof, staffed on-call history, customer status page operation, incident review history, or service credit policy approval
+- if target SLO operations proof-level evidence, release artifact hygiene, or regenerated execution snapshot evidence is missing, do not present production-like SLO/SLA operational readiness
+- if the gate passes, treat it only as a local target SLO operations evidence contract, not contractual SLA approval, target telemetry proof, staffed on-call history, customer status page operation, incident review history, service credit policy approval, or regenerated release evidence proof
 
 ## Backup Restore Drill
 

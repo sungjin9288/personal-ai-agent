@@ -79,8 +79,8 @@ for (const packetItem of [
   /provider outage playbook proof with provider health signal, fallback decision, retry\/disable policy, customer impact rule, accepted-risk owner, and post-incident review/,
   /maintenance and degradation proof with maintenance approval, customer notice, degradation mode, rollback owner, recovery target, and post-maintenance review/,
   /service credit and contractual escalation proof with legal\/commercial owner, escalation path, customer approval, credit trigger, and evidence retention rule/,
-  /artifact hygiene and production readiness gate result/,
-  /residual risk, decision owner, next review date, and missed-SLO containment plan/,
+  /release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result/,
+  /residual risk, decision owner, next review date, evidence retention decision, and missed-SLO containment plan/,
 ]) {
   assert.match(targetSloOperations, packetItem);
 }
@@ -108,11 +108,25 @@ assert.match(targetSloArchitecture, /\[target-slo-operations-v1\.md\]\(target-sl
 assert.match(productionSlo, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(incidentSlo, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(targetContract, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
-assert.match(targetContract, /target SLO operations evidence is captured/);
+assert.match(
+  targetContract,
+  /Target SLO operations \| target SLO operations evidence is captured with customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetEnvironment, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
-assert.match(targetEnvironment, /target SLO operations evidence/);
+assert.match(
+  targetEnvironment,
+  /target SLO operations evidence for customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
 assert.match(releaseReadiness, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(releaseReadiness, /target SLO operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target SLO operations evidence for customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target SLO operations evidence for customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment is not generated from a production-like environment/,
+);
 assert.match(security, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(deployment, /## Target SLO Operations/);
 assert.match(deployment, /npm run smoke:target-slo-operations/);

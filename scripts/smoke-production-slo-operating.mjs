@@ -51,8 +51,8 @@ for (const command of [
 
 for (const phrase of [
   /deterministic release status and snapshot integrity/,
-  /target SLO architecture remains the gate/,
-  /target SLO operations remains the gate/,
+  /target SLO architecture remains the gate for customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance\/degradation proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+  /target SLO operations remains the gate for customer-approved SLO\/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
   /observability telemetry/,
   /target observability architecture remains the gate for approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, retention proof, customer communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
   /target observability operations remains the gate for telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
@@ -70,6 +70,7 @@ assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-
 assert.match(rehearsal, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(rehearsal, /\[target-slo-operations-v1\.md\]\(target-slo-operations-v1\.md\)/);
 assert.match(rehearsal, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
+assert.match(rehearsal, /release artifact hygiene and regenerated execution snapshot evidence are current/);
 assert.match(releaseReadiness, /local production SLO operating rehearsal: passed/);
 assert.match(
   releaseReadiness,

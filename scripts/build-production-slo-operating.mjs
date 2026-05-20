@@ -232,7 +232,7 @@ This rehearsal proves that pilot SLO operating checks can be replayed locally an
 
 It is not customer production SLO/SLA evidence, not hosted telemetry, not staffed on-call proof, and not permission to claim \`production-ready\`.
 
-Production-ready remains blocked until the approved target environment provides approved target SLO/SLA architecture, target SLO operations evidence, production telemetry, customer-approved SLO/SLA terms, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, and provider/deployment evidence.
+Production-ready remains blocked until the approved target environment provides approved target SLO/SLA architecture, target SLO operations evidence, production telemetry, customer-approved SLO/SLA terms proof, error budget policy proof, alert acknowledgement proof, staffed incident ownership, support queue routing, on-call handoff, incident review cadence, service credit proof, release artifact hygiene result, regenerated execution snapshot evidence, and provider/deployment evidence.
 
 ## Command Matrix
 
@@ -250,8 +250,8 @@ ${keySignalRows}
 - release artifact hygiene remains the gate for shareable evidence safety
 - runtime lifecycle and runtime isolation remain the gate for pilot data handling readiness
 - incident/SLO policy remains the source of severity, response target, owner, evidence, and closure rules
-- target SLO architecture remains the gate for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decision requirements
-- target SLO operations remains the gate for customer-approved SLO/SLA terms, error budget, target telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and missed-SLO containment evidence requirements
+- target SLO architecture remains the gate for customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance/degradation proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
+- target SLO operations remains the gate for customer-approved SLO/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
 - target observability architecture remains the gate for approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, retention proof, customer communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - target observability operations remains the gate for telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
@@ -270,7 +270,7 @@ npm run smoke:production-slo-operating
 
 The rehearsal is acceptable only when every command passes, every command remains within its local rehearsal target, and artifact hygiene reports zero credential and machine-local path findings.
 
-The rehearsal must keep \`productionReadyClaim: false\` until the target SLO architecture is approved, target SLO operations evidence is captured, and the same operating evidence is generated from the approved production-like or production target environment.
+The rehearsal must keep \`productionReadyClaim: false\` until the target SLO architecture is approved, target SLO operations evidence is captured, release artifact hygiene and regenerated execution snapshot evidence are current, and the same operating evidence is generated from the approved production-like or production target environment.
 `;
 }
 
