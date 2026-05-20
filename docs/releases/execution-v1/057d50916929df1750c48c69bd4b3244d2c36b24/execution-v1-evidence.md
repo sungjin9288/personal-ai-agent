@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T19:25:55.336Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T19:25:46.371Z
 - branch: codex/observability-proof-detail
 - commit: 057d50916929df1750c48c69bd4b3244d2c36b24

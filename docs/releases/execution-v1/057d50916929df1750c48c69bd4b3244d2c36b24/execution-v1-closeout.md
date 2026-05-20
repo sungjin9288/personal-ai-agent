@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T19:25:55.336Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T19:25:46.418Z
 - branch: codex/observability-proof-detail
 - commit: 057d50916929df1750c48c69bd4b3244d2c36b24
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/057d50916929df1750c48c69bd4b3244d2c36b24/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
