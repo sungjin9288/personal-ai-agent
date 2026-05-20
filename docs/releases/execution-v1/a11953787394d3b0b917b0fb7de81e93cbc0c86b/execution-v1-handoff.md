@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T12:08:42.512Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T12:08:41.069Z
 - localDate: 2026-05-20
 - branch: codex/post-secret-manager-proof-artifact-sync
 - commit: a11953787394d3b0b917b0fb7de81e93cbc0c86b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b](releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b](docs/releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b)
 - visualArtifactSetSha256: 8224eec65112db33bc75b15c88bfeca23c32e7187514a6343aa0a79bc3951dd3
 - commitPushStatus: pushed to origin/main
 

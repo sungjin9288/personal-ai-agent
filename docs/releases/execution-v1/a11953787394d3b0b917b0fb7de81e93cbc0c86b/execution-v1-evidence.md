@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T12:08:42.512Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T12:08:32.000Z
 - branch: codex/post-secret-manager-proof-artifact-sync
 - commit: a11953787394d3b0b917b0fb7de81e93cbc0c86b
