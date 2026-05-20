@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T00:29:00.116Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T00:28:50.474Z
 - branch: codex/target-deployment-contract-stop-condition-wording
 - commit: 50fdaebb239b07d49168e451c02f73820e69758d

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T00:29:00.116Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T00:28:50.521Z
 - branch: codex/target-deployment-contract-stop-condition-wording
 - commit: 50fdaebb239b07d49168e451c02f73820e69758d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
