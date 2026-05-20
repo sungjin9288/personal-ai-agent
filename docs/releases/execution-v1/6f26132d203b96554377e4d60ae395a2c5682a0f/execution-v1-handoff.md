@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T17:58:15.962Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T17:58:14.303Z
 - localDate: 2026-05-21
 - branch: codex/tenant-isolation-proof-detail
 - commit: 6f26132d203b96554377e4d60ae395a2c5682a0f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f](releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f](docs/releases/execution-v1/6f26132d203b96554377e4d60ae395a2c5682a0f)
 - visualArtifactSetSha256: 70c667bc12c226922f65f72c814ab6a13e1866793344883249f450e10cf25eb3
 - commitPushStatus: not pushed, origin/codex/tenant-isolation-proof-detail not found
 

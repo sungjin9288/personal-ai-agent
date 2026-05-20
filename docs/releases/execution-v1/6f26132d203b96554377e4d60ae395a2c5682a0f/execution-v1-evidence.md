@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T17:58:15.962Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T17:58:07.929Z
 - branch: codex/tenant-isolation-proof-detail
 - commit: 6f26132d203b96554377e4d60ae395a2c5682a0f
