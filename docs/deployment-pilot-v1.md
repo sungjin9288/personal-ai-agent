@@ -349,9 +349,9 @@ Before presenting local provider operation as a target production provider, veri
 npm run smoke:target-local-provider-architecture
 ```
 
-The source of record is [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md). It proves endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, customer approval, required commands, and the local provider production gap are present.
+The source of record is [target-local-provider-architecture-v1.md](target-local-provider-architecture-v1.md). It proves endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, regenerated execution snapshot evidence, required commands, and the local provider production gap are present.
 
-Do not include local provider operation in a target provider claim until the target local provider architecture is approved and `npm run live:execution-v1:local` passes from the approved production-like or hosted target environment.
+Do not include local provider operation in a target provider claim until the target local provider architecture is approved and endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Hermes Provider Architecture
 

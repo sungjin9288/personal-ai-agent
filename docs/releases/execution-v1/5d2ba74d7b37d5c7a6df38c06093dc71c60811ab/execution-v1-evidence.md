@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T06:44:49.115Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T06:44:33.206Z
 - branch: codex/local-target-architecture-proof-detail
 - commit: 5d2ba74d7b37d5c7a6df38c06093dc71c60811ab

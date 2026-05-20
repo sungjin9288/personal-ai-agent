@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Local Provider Architecture Proof Detail Alignment
+
+- expanded target local provider architecture, target deployment contract, target environment evidence intake, deployment guide, security model, README, and provider readiness gate wording so local provider approval requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `targetLocalProviderApproved: false`, archived local provider pilot proof, and runtime behavior unchanged while making the target local architecture source-of-record match the proof-level evidence packet
+- extended target local architecture, target deployment contract, target environment evidence intake, and production provider readiness smoke guards so local provider approval cannot fall back to generic endpoint/model shorthand
+
 ## 2026-05-20 Target Hermes Provider Architecture Proof Detail Alignment
 
 - expanded target Hermes provider architecture, target deployment contract, target environment evidence intake, deployment guide, security model, README, and provider readiness gate wording so Hermes approval requires endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifacts

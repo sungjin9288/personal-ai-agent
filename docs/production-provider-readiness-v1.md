@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-20T05:33:09.722Z
-- sourceBranch: codex/hermes-target-architecture-proof-detail
-- sourceCommit: d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24
+- generatedAt: 2026-05-20T06:44:34.914Z
+- sourceBranch: codex/local-target-architecture-proof-detail
+- sourceCommit: 5d2ba74d7b37d5c7a6df38c06093dc71c60811ab
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 6437 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 12431 |
 
 ## Key Signals
 
@@ -109,7 +109,7 @@ Production-ready remains blocked until every provider included in the target rel
 - target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
 - target OpenAI provider account remains the gate for account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, and renewal/review audit requirements
 - target Anthropic provider account remains the gate for account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, and remediation audit requirements
-- target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota/resource guard, telemetry, fallback, and customer approval decision requirements
+- target local provider architecture remains the gate for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - target Hermes provider architecture remains the gate for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifact requirements
 
 ## Target Provider Evidence Intake

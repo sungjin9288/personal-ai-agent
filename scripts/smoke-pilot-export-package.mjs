@@ -208,11 +208,19 @@ assert.match(
 );
 assert.match(
   targetProviderOperations,
-  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot, and target Hermes provider architecture approval gap are explicit/,
+  /OpenAI and configured local provider archived pilot live validations exist; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence, and target Hermes provider architecture approval gap are explicit/,
+);
+assert.doesNotMatch(
+  targetProviderOperations,
+  /target local provider architecture approval gap for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   targetDeploymentContract,
-  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot, and target Hermes provider architecture approval gap are explicit/,
+  /OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence, and target Hermes provider architecture approval gap are explicit/,
+);
+assert.doesNotMatch(
+  targetDeploymentContract,
+  /target local provider architecture approval gap for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot, and target Hermes provider architecture approval gap are explicit/,
 );
 assert.match(
   security,

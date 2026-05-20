@@ -81,6 +81,18 @@ for (const control of [
 ]) {
   assert.match(contract, new RegExp(`\\| ${escapeRegExp(control)} \\|`));
 }
+assert.match(
+  contract,
+  /Target provider validation \| every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence \| OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  contract,
+  /Target local provider architecture \| target local provider architecture is approved with endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  contract,
+  /Target local provider architecture \| target local provider architecture is approved with endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decisions/,
+);
 
 assert.match(contract, /## Target Evidence Capture Template/);
 assert.match(
