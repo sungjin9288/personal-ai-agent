@@ -80,6 +80,14 @@ assert.match(readiness, /archived live validation, provider blocker closure veri
 assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
 assert.match(
   readiness,
+  /target Hermes provider architecture remains the gate for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifact requirements/,
+);
+assert.doesNotMatch(
+  readiness,
+  /target Hermes provider architecture remains the gate for endpoint ownership, model pinning, secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, and customer approval decision requirements/,
+);
+assert.match(
+  readiness,
   /Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
 );
 assert.doesNotMatch(
