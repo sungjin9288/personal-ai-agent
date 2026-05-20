@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T02:48:30.593Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T02:48:17.909Z
 - branch: codex/local-provider-blocker-stop-condition-wording
 - commit: 01cbee8d1f315c030b87f4dc84eebeccac5d5630

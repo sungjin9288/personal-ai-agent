@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T02:48:30.593Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T02:48:29.005Z
 - localDate: 2026-05-20
 - branch: codex/local-provider-blocker-stop-condition-wording
 - commit: 01cbee8d1f315c030b87f4dc84eebeccac5d5630
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630](releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630](docs/releases/execution-v1/01cbee8d1f315c030b87f4dc84eebeccac5d5630)
 - visualArtifactSetSha256: 52a49d8dcb1a5590a43e1946864886c3748644534a680fb6b0fac70195f08352
 - commitPushStatus: not pushed, origin/codex/local-provider-blocker-stop-condition-wording not found
 
