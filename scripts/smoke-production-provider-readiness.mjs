@@ -76,6 +76,14 @@ for (const phrase of [
 
 assert.match(readiness, /\| local \| ready-but-missing-env \| LOCAL_PROVIDER_MODEL \| no \| passed \|/);
 assert.match(readiness, /target local provider architecture remains the production gate/);
+assert.match(
+  readiness,
+  /target local provider architecture remains the gate for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+);
+assert.doesNotMatch(
+  readiness,
+  /target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decision requirements/,
+);
 assert.match(readiness, /archived live validation, provider blocker closure verification, and fallback\/stop-condition evidence/);
 assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
 assert.match(
