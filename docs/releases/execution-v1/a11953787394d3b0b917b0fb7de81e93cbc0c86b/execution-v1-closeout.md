@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T12:08:42.512Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T12:08:32.043Z
 - branch: codex/post-secret-manager-proof-artifact-sync
 - commit: a11953787394d3b0b917b0fb7de81e93cbc0c86b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a11953787394d3b0b917b0fb7de81e93cbc0c86b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
