@@ -415,11 +415,11 @@ Before implementing or claiming hosted tenant isolation for a multi-tenant SaaS 
 npm run smoke:hosted-tenant-isolation-architecture
 ```
 
-The source of record is [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md). It requires tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial testing, observability/support isolation, data lifecycle isolation, migration, rollback, and containment decisions while keeping `hostedTenantIsolationApproved: false`.
+The source of record is [hosted-tenant-isolation-architecture-v1.md](hosted-tenant-isolation-architecture-v1.md). It requires tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration approval/audit proof, cross-tenant denial proof, observability/support isolation proof, data lifecycle isolation proof, migration, rollback, tenant data containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `hostedTenantIsolationApproved: false`.
 
 Acceptance:
 
-- tenant identity, authorization boundary, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, and lifecycle decision areas are documented
+- tenant identity source, customer organization mapping, tenant lifecycle, authorization boundary, service-to-service tenant propagation, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, artifact hygiene, and snapshot evidence decision areas are documented
 - required hosted tenant evidence packet items are explicit before any hosted multi-tenant claim
 - the architecture record keeps `productionReadyClaim: false` and `hostedTenantIsolationApproved: false`
 - target environment evidence remains required before changing the release label
@@ -485,12 +485,12 @@ Before presenting hosted multi-tenant isolation, tenant-scoped storage, or per-t
 npm run smoke:target-tenant-isolation-operations
 ```
 
-The source of record is [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md). It requires tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, tenant data containment, required commands, and keeps `productionReadyClaim: false`.
+The source of record is [target-tenant-isolation-operations-v1.md](target-tenant-isolation-operations-v1.md). It requires tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene, regenerated execution snapshot evidence, required commands, and keeps `productionReadyClaim: false`.
 
 Acceptance:
 
-- tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, and lifecycle isolation controls are documented
-- tenant evidence packets include deployment boundary, tenant identity source, authorization policy, storage partition proof, encryption/key evidence, backup/restore proof, tenant admin audit, cross-tenant denial matrix, support/observability isolation, lifecycle evidence, hygiene, residual risk, and decision owner
+- tenant identity source, tenant-scoped authorization, service propagation, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, artifact hygiene, and snapshot controls are documented
+- tenant evidence packets include deployment boundary, tenant identity source proof, authorization policy proof, storage partition proof, encryption/key evidence, backup/restore proof, tenant admin audit, cross-tenant denial matrix, support/observability isolation, lifecycle evidence, release artifact hygiene, regenerated execution snapshot evidence, residual risk, and decision owner
 - the generated target tenant isolation operations gate keeps `productionReadyClaim: false`
 - target environment evidence remains required before changing the release label
 

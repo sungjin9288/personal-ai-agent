@@ -53,7 +53,7 @@ for (const checklistItem of [
   /target environment name, owner, profile, and deployment boundary/,
   /hosted identity\/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, target identity session operations evidence, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /completed target identity\/session operations evidence capture template for the approved production-like or hosted boundary/,
-  /target tenant isolation operations evidence for tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment/,
+  /target tenant isolation operations evidence for tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /completed target tenant isolation operations evidence capture template for the approved production-like or hosted boundary/,
   /selected production providers and completed provider evidence intake references/,
   /target OpenAI provider account approval when OpenAI is included/,
@@ -62,7 +62,7 @@ for (const checklistItem of [
   /target Hermes provider architecture approval when Hermes is included/,
   /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
   /identity provider owner, role owner, session policy owner, permission audit evidence, break-glass governance owner, support impersonation owner, compliance\/retention owner, and customer access containment evidence/,
-  /tenant storage boundary, encryption\/key policy, backup\/restore isolation, and tenant admin evidence/,
+  /tenant storage boundary, storage partitioning proof, encryption\/key policy, backup\/restore isolation proof, tenant admin evidence, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, revocation path, and credential containment evidence/,
   /target SLO\/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, and incident review record/,
   /target SLO operations evidence for customer-approved SLO\/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance\/degradation, service credit, evidence retention, and missed-SLO containment/,
@@ -103,6 +103,14 @@ assert.match(
   intake,
   /identitySessionEvidence \| hosted identity\/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment evidence, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
+assert.match(
+  intake,
+  /Tenant storage and encryption \| tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, target tenant isolation operations evidence, tenant data containment proof, release artifact hygiene, and regenerated execution snapshot evidence are proven/,
+);
+assert.match(
+  intake,
+  /tenantIsolationEvidence \| tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, service-to-service tenant propagation proof, stale permission denial proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment evidence, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
 assert.doesNotMatch(
   intake,
   /Identity and sessions \| user lifecycle, session lifecycle, role assignment\/revocation, logout\/revocation behavior, audit trail, target identity session operations evidence, and customer IdP proof are proven/,
@@ -110,6 +118,14 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   intake,
   /identitySessionEvidence \| customer IdP proof, user lifecycle, session lifecycle, role assignment\/revocation, permission propagation, audit export, break-glass, support impersonation, compliance, and retention evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /Tenant storage and encryption \| tenant partitioning, tenant admin workflow, per-tenant encryption\/key policy, backup\/restore isolation, cross-tenant denial, target tenant isolation operations evidence, and tenant data containment proof are proven/,
+);
+assert.doesNotMatch(
+  intake,
+  /tenantIsolationEvidence \| tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment evidence/,
 );
 assert.match(
   intake,
@@ -178,9 +194,25 @@ assert.match(
   intake,
   /hosted identity\/session approval \| customer-approval-required \| hosted identity\/session architecture approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
+assert.match(
+  intake,
+  /hosted tenant isolation approval \| customer-approval-required \| hosted tenant isolation architecture approval, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization policy proof, service-to-service tenant propagation proof, storage partitioning proof, artifact\/memory\/search\/export\/index partitioning proof, per-tenant encryption and key ownership proof, key rotation\/revocation\/escrow\/break-glass proof, backup creation\/restore authorization\/non-interference\/post-restore denial proof, tenant administration approval\/audit proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, migration plan, rollback, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  intake,
+  /target tenant evidence \| target-evidence-required \| completed target tenant isolation operations evidence capture template, tenant identity source proof, tenant-scoped authorization proof, negative cross-tenant test matrix, tenant storage\/encryption proof, backup\/restore non-interference proof, observability\/support isolation proof, lifecycle proof, artifact hygiene, regenerated execution snapshot evidence, and production readiness gate result/,
+);
 assert.doesNotMatch(
   intake,
   /hosted identity\/session approval \| customer-approval-required \| hosted identity\/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof/,
+);
+assert.doesNotMatch(
+  intake,
+  /hosted tenant isolation approval \| customer-approval-required \| hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment proof/,
+);
+assert.doesNotMatch(
+  intake,
+  /target tenant evidence \| target-evidence-required \| completed target tenant isolation operations evidence capture template, negative cross-tenant test matrix, tenant storage\/encryption proof, backup\/restore non-interference proof, lifecycle proof, artifact hygiene, and production readiness gate result/,
 );
 assert.match(
   intake,
@@ -270,9 +302,21 @@ assert.match(
   intake,
   /hosted identity\/session approval \| `npm run smoke:hosted-identity-session-architecture` and `npm run smoke:target-identity-session-operations` \| hosted identity architecture approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene pass, and regenerated execution snapshot evidence \| `hosted-identity-session-approval-missing`/,
 );
+assert.match(
+  intake,
+  /hosted tenant isolation approval \| `npm run smoke:hosted-tenant-isolation-architecture` and `npm run smoke:target-tenant-isolation-operations` \| hosted tenant architecture approval, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization policy proof, service-to-service tenant propagation proof, storage partitioning proof, artifact\/memory\/search\/export\/index partitioning proof, per-tenant encryption and key ownership proof, key rotation\/revocation\/escrow\/break-glass proof, backup creation\/restore authorization\/non-interference\/post-restore denial proof, tenant administration approval\/audit proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene pass, and regenerated execution snapshot evidence \| `hosted-tenant-isolation-approval-missing`/,
+);
+assert.match(
+  intake,
+  /target tenant evidence \| `npm run smoke:target-tenant-isolation-operations` and `npm run smoke:production-readiness-gate` \| completed tenant isolation evidence capture template, tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore non-interference proof, negative cross-tenant test matrix, observability\/support isolation proof, lifecycle proof, tenant data containment, release artifact hygiene pass, regenerated execution snapshot evidence, and production readiness gate result \| `target-tenant-evidence-missing`/,
+);
 assert.doesNotMatch(
   intake,
   /hosted identity\/session approval \| `npm run smoke:hosted-identity-session-architecture` and `npm run smoke:target-identity-session-operations` \| hosted identity architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof/,
+);
+assert.doesNotMatch(
+  intake,
+  /hosted tenant isolation approval \| `npm run smoke:hosted-tenant-isolation-architecture` and `npm run smoke:target-tenant-isolation-operations` \| hosted tenant architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and containment proof/,
 );
 for (const closureCommand of [
   'npm run live:execution-v1:anthropic',
