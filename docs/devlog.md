@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Local Provider Blocker Stop-Condition Detail Alignment
+
+- expanded pilot, current-open, and handoff local provider blockers so they name endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local live validation pass, release artifact hygiene, and regenerated execution snapshot evidence
+- kept archived local provider pilot validation separate from target local provider architecture approval while making readiness blockers match the target local provider architecture evidence packet
+- extended production readiness, target local provider architecture, and pilot export smoke guards so local provider blockers cannot fall back to endpoint/model shorthand wording
+
 ## 2026-05-20 Hermes Pilot-Scope Blocker Stop-Condition Detail Alignment
 
 - expanded the pilot-scope Hermes live validation blocker so it names endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence

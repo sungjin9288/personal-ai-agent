@@ -46,6 +46,10 @@ assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Local provider readiness remains blocked/);
 assert.match(
   decision,
+  /Local provider readiness remains blocked until this architecture decision is approved and target local provider architecture evidence for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot is generated from the approved production-like or hosted target environment/,
+);
+assert.doesNotMatch(
+  decision,
   /Local provider readiness remains blocked until this architecture decision is approved and target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are generated from the approved production-like or hosted target environment/,
 );
 
@@ -101,7 +105,7 @@ for (const field of [
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
 assert.match(
   decision,
-  /target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and `npm run live:execution-v1:local` evidence are generated from the approved boundary/,
+  /endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
 );
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);

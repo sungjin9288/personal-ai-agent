@@ -336,11 +336,15 @@ assert.match(
 assert.doesNotMatch(releaseReadiness, /Hermes missing runtime env/);
 assert.match(
   releaseReadiness,
-  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+  /target local provider architecture still requires endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.doesNotMatch(
   releaseReadiness,
   new RegExp('target local provider architecture still lacks approved ' + 'target-boundary evidence'),
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
 );
 assert.match(productPlan, /^- \[x\] Live OpenAI validation archived$/m);
 assert.match(productPlan, /^- \[ \] Live Anthropic validation archived$/m);
@@ -353,7 +357,7 @@ assert.match(
 assert.match(productPlan, /target local provider architecture remains a production gate/);
 assert.match(
   productPlan,
-  /attach approved target-boundary local provider endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+  /attach target local provider architecture evidence for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.match(
   operatorRunbook,
@@ -369,7 +373,7 @@ assert.match(
 );
 assert.match(
   operatorRunbook,
-  /target local provider architecture still requires approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence before a production provider claim/,
+  /target local provider architecture still requires endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence before a production provider claim/,
 );
 assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-slo-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
@@ -717,13 +721,17 @@ assert.match(cleanDeploymentRelease, /not target production deployment evidence/
 
 for (const blocker of [
   /Anthropic live validation remains blocked until target Anthropic provider account evidence for billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary npm run live:execution-v1:anthropic pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot is recorded/,
-  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
+  /target local provider architecture remains blocked until endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence are recorded/,
   /Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded/,
   /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
 }
+assert.doesNotMatch(
+  currentOpenBlockersSection,
+  /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
+);
 assert.doesNotMatch(
   currentOpenBlockersSection,
   new RegExp('Anthropic live validation is blocked by provider account billing/credit'),
@@ -745,11 +753,15 @@ assert.match(handoff, /Execution v1 is provider-scoped pilot ready/);
 assert.match(handoff, /It is not production-ready or live-provider-complete/);
 assert.match(
   handoff,
-  /target local provider architecture approval still requires target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
+  /target local provider architecture approval still requires endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.doesNotMatch(
   handoff,
   new RegExp('target local provider architecture approval still requires ' + 'target-boundary evidence'),
+);
+assert.doesNotMatch(
+  handoff,
+  /target local provider architecture approval still requires target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence/,
 );
 assert.match(releaseReadiness, /The product is not yet ready to be sold or represented as production-ready for other companies\./);
 assert.equal(releaseArtifactHygiene.ok, true, JSON.stringify(releaseArtifactHygiene.findings, null, 2));
