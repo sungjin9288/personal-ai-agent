@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Hermes Current Blocker Stop-Condition Detail Alignment
+
+- expanded current-open, planning, security, onboarding, demo, runbook, deployment, roadmap, and production provider readiness Hermes blockers so they name endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence
+- kept the runtime live helper missing-env state separate while making current Hermes blocker wording match the target Hermes provider architecture evidence packet
+- extended production readiness, production provider readiness, and pilot export smoke guards so Hermes blockers cannot fall back to endpoint/model configuration shorthand
+
 ## 2026-05-20 Target Local Provider Blocker Stop-Condition Detail Alignment
 
 - expanded pilot, current-open, and handoff local provider blockers so they name endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local live validation pass, release artifact hygiene, and regenerated execution snapshot evidence

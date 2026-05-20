@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T03:20:04.316Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T03:19:47.243Z
 - branch: codex/hermes-current-blocker-stop-condition-wording
 - commit: 1c292acfc3676b678e8927b71cef70d04db9c02f

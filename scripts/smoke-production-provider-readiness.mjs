@@ -78,6 +78,14 @@ assert.match(readiness, /\| local \| ready-but-missing-env \| LOCAL_PROVIDER_MOD
 assert.match(readiness, /target local provider architecture remains the production gate/);
 assert.match(readiness, /archived live validation, provider blocker closure verification, and fallback\/stop-condition evidence/);
 assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
+assert.match(
+  readiness,
+  /Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
+);
+assert.doesNotMatch(
+  readiness,
+  /Hermes remains blocked until approved Hermes endpoint\/model configuration is injected and live validation passes/,
+);
 
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);

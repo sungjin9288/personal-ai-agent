@@ -258,7 +258,9 @@ function buildOperatingInterpretationRows(providerRows) {
   }
 
   if (!isPassedLiveStatus(rowByProvider.get('hermes')?.archivedLiveStatus)) {
-    rows.push('- Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes');
+    rows.push(
+      '- Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded',
+    );
   }
 
   rows.push(
