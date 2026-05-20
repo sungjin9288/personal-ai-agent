@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-21 Tenant Isolation Proof Detail Alignment
+
+- expanded hosted tenant isolation architecture and target tenant isolation operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `hostedTenantIsolationApproved: false`, `productionReadyClaim: false`, and the local tenant storage/runtime isolation evidence boundary unchanged while making tenant isolation source-of-record wording match the proof-level evidence packet
+- extended hosted tenant isolation, target tenant isolation operations, target deployment contract, target environment evidence intake, and production readiness smoke guards so tenant isolation claims cannot fall back to generic tenant/storage/encryption shorthand
+
 ## 2026-05-20 Hosted Identity Session Proof Detail Alignment
 
 - expanded hosted identity/session architecture and target identity/session operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence

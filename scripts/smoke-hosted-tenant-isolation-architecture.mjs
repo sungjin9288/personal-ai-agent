@@ -57,21 +57,25 @@ for (const area of [
 }
 
 for (const packetItem of [
-  /tenant identity source and customer organization mapping/,
-  /tenant lifecycle state machine and ownership model/,
-  /tenant-aware authorization policy and service propagation rules/,
-  /storage partitioning proof for runtime state, artifacts, memory, search, and exports/,
-  /per-tenant encryption, key rotation, revocation, and break-glass evidence/,
-  /tenant-scoped backup creation, restore authorization, and post-restore denial proof/,
-  /tenant administration workflow with audit history and customer approval trail/,
-  /cross-tenant negative test matrix covering API, storage, export, delete, backup, support, and observability surfaces/,
-  /tenant-scoped telemetry, support ticket, incident review, and customer status communication proof/,
-  /retention, export, delete, provider transcript, legal hold, backup expiry, and post-delete absence evidence per tenant/,
+  /tenant identity source proof with tenant source owner, customer organization mapping, lifecycle owner, trust policy, and source approval/,
+  /tenant lifecycle proof for create, suspend, restore, delete, owner transfer, exception review, and orphan tenant review/,
+  /tenant-aware authorization policy, service-to-service tenant propagation, stale permission denial, delegated admin boundary, and denial owner proof/,
+  /storage partitioning proof for runtime state, artifacts, memory, search, exports, indexes, schema\/bucket\/keyspace boundary, and migration safety/,
+  /per-tenant encryption and key ownership proof with key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision/,
+  /tenant-scoped backup creation, restore authorization, integrity result, other-tenant non-interference, and post-restore denial proof/,
+  /tenant administration workflow proof with create, suspend, restore, delete, role delegation, customer approval, audit history, rollback route, and tenant admin owner/,
+  /cross-tenant negative test matrix proof covering API, storage, memory, search, export, delete, backup, support, and observability surfaces/,
+  /tenant-scoped telemetry, support ticket visibility, incident review, customer status routing, evidence export, and support owner proof/,
+  /retention, export, delete, provider transcript, legal hold, backup expiry, post-delete absence, and lifecycle owner evidence per tenant/,
+  /release artifact hygiene result and regenerated execution snapshot evidence from the approved hosted or production-like tenant boundary/,
   /migration plan from self-hosted\/local-first runtime roots to hosted tenant partitions/,
   /explicit rollback and tenant data containment plan/,
 ]) {
   assert.match(decision, packetItem);
 }
+assert.doesNotMatch(decision, /tenant identity source and customer organization mapping/);
+assert.doesNotMatch(decision, /tenant-aware authorization policy and service propagation rules/);
+assert.doesNotMatch(decision, /per-tenant encryption, key rotation, revocation, and break-glass evidence/);
 
 for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
@@ -91,13 +95,16 @@ assert.match(tenantStorage, /\[hosted-tenant-isolation-architecture-v1\.md\]\(ho
 assert.match(targetTenant, /^# Target Tenant Isolation Operations v1$/m);
 assert.match(decision, /\[target-tenant-isolation-operations-v1\.md\]\(target-tenant-isolation-operations-v1\.md\)/);
 assert.match(targetContract, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
-assert.match(targetContract, /hosted tenant isolation architecture is approved/);
+assert.match(
+  targetContract,
+  /Hosted tenant isolation architecture \| hosted tenant isolation architecture is approved with tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization policy proof, service-to-service tenant propagation proof, storage partitioning proof, artifact\/memory\/search\/export\/index partitioning proof, per-tenant encryption and key ownership proof, key rotation\/revocation\/escrow\/break-glass proof, backup creation\/restore authorization\/non-interference\/post-restore denial proof, tenant administration approval\/audit proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, migration plan, rollback, tenant data containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetContract, /npm run smoke:hosted-tenant-isolation-architecture/);
 assert.match(releaseReadiness, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /hosted tenant isolation architecture gate: passed/);
 assert.match(
   releaseReadiness,
-  /hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability, tenant-scoped telemetry and support visibility, data lifecycle isolation, migration plan, rollback, and tenant data containment is not generated from a production-like environment/,
+  /hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source proof with tenant source owner, customer organization mapping, lifecycle owner, trust policy, and source approval, tenant lifecycle proof with create, suspend, restore, delete, owner transfer, exception review, and orphan tenant review, tenant-aware authorization proof with policy, service-to-service tenant propagation, stale permission denial, delegated admin boundary, and denial owner, storage partitioning proof for runtime state, artifacts, memory, search, exports, indexes, schema\/bucket\/keyspace boundary, and migration safety, per-tenant encryption and key ownership proof with key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision, backup\/restore isolation proof with tenant-scoped backup creation, restore authorization, integrity result, other-tenant non-interference, and post-restore denial, tenant administration proof with create, suspend, restore, delete, role delegation, customer approval, audit history, rollback route, and tenant admin owner, cross-tenant denial proof across API, storage, memory, search, export, delete, backup, support, and observability, observability\/support isolation proof with tenant-scoped logs, traces, alerts, support ticket visibility, incident review, customer status routing, evidence export, and support owner, lifecycle isolation proof with retention, export, delete, provider transcript, legal hold, backup expiry, post-delete absence, and lifecycle owner, migration plan, rollback, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
 );
 assert.doesNotMatch(
   releaseReadiness,
@@ -105,6 +112,10 @@ assert.doesNotMatch(
     'hosted tenant isolation architecture is not approved and target tenant ' +
       'isolation evidence is not generated',
   ),
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /hosted tenant isolation architecture evidence for tenant identity source, customer organization mapping, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, per-tenant encryption and key ownership, backup and restore isolation, tenant administration, cross-tenant denial across API, storage, search, export, delete, backup, support, and observability/,
 );
 assert.match(security, /\[hosted-tenant-isolation-architecture-v1\.md\]\(hosted-tenant-isolation-architecture-v1\.md\)/);
 assert.match(deployment, /## Hosted Tenant Isolation Architecture/);
