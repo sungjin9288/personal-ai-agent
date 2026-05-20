@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Hosted Identity Session Proof Detail Alignment
+
+- expanded hosted identity/session architecture and target identity/session operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `hostedIdentitySessionApproved: false`, `productionReadyClaim: false`, and the local identity/session admin evidence boundary unchanged while making identity/session source-of-record wording match the proof-level evidence packet
+- extended hosted identity/session, target identity/session operations, target deployment contract, target environment evidence intake, and production readiness smoke guards so identity/session claims cannot fall back to generic customer-IdP/lifecycle/audit shorthand
+
 ## 2026-05-20 Target Secret Manager Architecture Proof Detail Alignment
 
 - expanded target secret manager architecture summary wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence

@@ -20,7 +20,7 @@ This record defines the hosted identity/session architecture decision and eviden
 
 It is not hosted identity implementation, not customer SSO production evidence, not proof of persistent role administration, not logout or revocation evidence, not a hosted control-plane approval, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Hosted identity-backed RBAC and session administration remain blocked until a replacement architecture decision is approved and target evidence is generated from the approved hosted or production-like environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Hosted identity-backed RBAC and session administration remain blocked until a replacement architecture decision is approved and target evidence is generated from the approved hosted or production-like environment for customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence.
 
 ## Identity Decision Areas
 
@@ -50,6 +50,7 @@ Any future hosted identity/session approval must include:
 - break-glass access approval, expiry, monitoring, customer notification, and incident review evidence
 - support impersonation approval, scoped session, action log, customer-safe update, and denial test evidence
 - identity audit retention, export, legal hold, privacy deletion, and customer handoff evidence
+- release artifact hygiene result and regenerated execution snapshot evidence from the approved hosted or production-like identity boundary
 - migration plan from local shared-secret/OIDC pilot mode to hosted identity control plane
 - explicit rollback, lockout recovery, and customer access containment plan
 
@@ -72,6 +73,6 @@ This gate is acceptable only when the hosted identity decision areas, required e
 
 ## Production Gap
 
-This is a local hosted identity/session architecture contract. It does not approve hosted identity-backed RBAC, implement customer SSO, prove persistent role administration, prove session logout/revocation, prove break-glass access, prove support impersonation controls, or satisfy target environment production evidence.
+This is a local hosted identity/session architecture contract. It does not approve hosted identity-backed RBAC, implement customer SSO, prove persistent role administration, prove session logout/revocation, prove break-glass governance, prove support impersonation controls, prove immutable audit export, prove target compliance retention, or satisfy target environment production evidence.
 
-Hosted identity-backed RBAC and session administration remain blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved hosted or production-like environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Hosted identity-backed RBAC and session administration remain blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved hosted or production-like environment for customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before/after state, timestamp, and checksum, break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review, support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure, compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence with `productionReadyClaim` still false until every mandatory production control passes.

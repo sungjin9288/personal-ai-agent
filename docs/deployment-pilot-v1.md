@@ -393,11 +393,11 @@ Before implementing or claiming hosted identity-backed RBAC or session administr
 npm run smoke:hosted-identity-session-architecture
 ```
 
-The source of record is [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md). It requires customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, retention, migration, rollback, and access containment decisions while keeping `hostedIdentitySessionApproved: false`.
+The source of record is [hosted-identity-session-architecture-v1.md](hosted-identity-session-architecture-v1.md). It requires customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `hostedIdentitySessionApproved: false`.
 
 Acceptance:
 
-- customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decision areas are documented
+- customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass governance, support impersonation, compliance, retention, migration, rollback, lockout recovery, and customer access containment proof requirements are documented
 - required hosted identity evidence packet items are explicit before any hosted identity-backed RBAC claim
 - the architecture record keeps `productionReadyClaim: false` and `hostedIdentitySessionApproved: false`
 - target environment evidence remains required before changing the release label
@@ -405,7 +405,7 @@ Acceptance:
 Stop condition:
 
 - if hosted identity session architecture is not approved, do not claim hosted identity-backed RBAC or session administration
-- if target customer IdP, persistent role administration, logout/revocation, audit, break-glass, support access, and retention evidence is missing, treat the gate as architecture boundary evidence only
+- if target customer IdP onboarding proof, persistent role administration proof, logout/revocation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance/retention proof, release artifact hygiene, and regenerated execution snapshot evidence are missing, treat the gate as architecture boundary evidence only
 
 ## Hosted Tenant Isolation Architecture
 
@@ -437,19 +437,19 @@ Before presenting hosted identity-backed RBAC or session administration as targe
 npm run smoke:target-identity-session-operations
 ```
 
-The source of record is [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md). It requires customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, customer access containment, required commands, and keeps `productionReadyClaim: false`.
+The source of record is [target-identity-session-operations-v1.md](target-identity-session-operations-v1.md). It requires customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene, regenerated execution snapshot evidence, required commands, and keeps `productionReadyClaim: false`.
 
 Acceptance:
 
-- customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, and retention operation controls are documented
-- identity evidence packets include deployment boundary, IdP metadata, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, retention, hygiene, residual risk, and review owner
+- customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass governance, support impersonation, compliance, retention, and customer access containment operation controls are documented
+- identity evidence packets include deployment boundary, IdP metadata, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass governance, support impersonation, compliance/retention, hygiene, regenerated execution snapshot evidence, residual risk, and review owner
 - the generated target identity/session operations gate keeps `productionReadyClaim: false`
 - target environment evidence remains required before changing the release label
 
 Stop condition:
 
 - if target identity/session operations evidence is missing, do not present hosted identity-backed RBAC or session administration as target-production evidence
-- if the gate passes, treat it only as a local target identity/session operations evidence contract, not customer SSO production proof, logout/revocation proof, persistent role administration proof, immutable audit export proof, or target environment production evidence
+- if the gate passes, treat it only as a local target identity/session operations evidence contract, not customer SSO production proof, logout/revocation proof, persistent role administration proof, immutable audit export proof, break-glass governance proof, support impersonation proof, release artifact hygiene proof, regenerated execution snapshot proof, or target environment production evidence
 
 ## Production Enterprise Controls Rehearsal
 
