@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Provider Account Proof Detail Alignment
+
+- expanded target OpenAI and Anthropic provider account summary wording across README, release readiness, deployment guide, security model, target provider evidence intake, target deployment contract, target environment evidence intake, and provider readiness generation so account approval requires account ownership proof, billing/quota or billing/credit remediation proof, API key and secret injection proof, model access proof, provider terms and customer approval proof, quota/usage guard proof, target-boundary live validation, telemetry proof, fallback and stop-condition proof, renewal or remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `targetOpenAIProviderApproved: false`, `targetAnthropicProviderApproved: false`, archived OpenAI pilot validation, and the existing Anthropic billing/credit blocker unchanged while making account-gate summaries match their proof-level evidence packets
+- extended target OpenAI account, target Anthropic account, target deployment contract, target environment evidence intake, and production provider readiness smoke guards so provider account approval cannot fall back to generic account/billing/live-validation shorthand
+
 ## 2026-05-20 Target Local Provider Architecture Proof Detail Alignment
 
 - expanded target local provider architecture, target deployment contract, target environment evidence intake, deployment guide, security model, README, and provider readiness gate wording so local provider approval requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence

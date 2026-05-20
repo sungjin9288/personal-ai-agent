@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T07:42:02.205Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T07:41:59.757Z
 - localDate: 2026-05-20
 - branch: codex/provider-account-proof-detail
 - commit: 5a851095356f77ca9614e0e45b8129d225138861
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861](releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861](docs/releases/execution-v1/5a851095356f77ca9614e0e45b8129d225138861)
 - visualArtifactSetSha256: 7266d9e3ed7bb81f7a55520833027226f8fb58eaf1c951ccac6a1f439d25e156
 - commitPushStatus: not pushed, origin/codex/provider-account-proof-detail not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T07:42:02.205Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T07:41:45.030Z
 - branch: codex/provider-account-proof-detail
 - commit: 5a851095356f77ca9614e0e45b8129d225138861

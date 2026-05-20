@@ -44,6 +44,14 @@ assert.match(decision, /not model access approval proof/);
 assert.match(decision, /not provider terms approval/);
 assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /OpenAI target production provider readiness remains blocked/);
+assert.match(
+  decision,
+  /OpenAI target production provider readiness remains blocked until this account decision is approved and target account evidence is generated for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary `npm run live:execution-v1:openai` pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence from the approved production-like or hosted target environment/,
+);
+assert.doesNotMatch(
+  decision,
+  /OpenAI target production provider readiness remains blocked until this account decision is approved and OpenAI live validation evidence is generated from the approved production-like or hosted target environment/,
+);
 
 for (const area of [
   'Account ownership',
@@ -97,6 +105,14 @@ for (const field of [
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(
+  decision,
+  /OpenAI target production provider readiness remains blocked until a target account decision is approved, implementation is completed in the target environment, account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary `npm run live:execution-v1:openai` pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
+);
+assert.doesNotMatch(
+  decision,
+  /OpenAI target production provider readiness remains blocked until a target account decision is approved, billing\/quota and model access are verified, implementation is completed in the target environment, `npm run live:execution-v1:openai` passes from the approved boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-openai-provider-account',
@@ -119,10 +135,26 @@ assert.match(targetProviderIntake, /\[target-openai-provider-account-v1\.md\]\(t
 assert.match(targetProviderIntake, /OpenAI provider account approval/);
 assert.match(targetContract, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(targetContract, /target OpenAI provider account is approved/);
+assert.match(
+  targetContract,
+  /Target OpenAI provider account \| target OpenAI provider account is approved with account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  targetContract,
+  /Target OpenAI provider account \| target OpenAI provider account is approved with account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, live validation, telemetry, fallback, and renewal\/review audit decisions/,
+);
 assert.match(intake, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(intake, /OpenAI provider account approval/);
 assert.match(releaseReadiness, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /target OpenAI provider account gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target OpenAI provider account gate: passed, with targetOpenAIProviderApproved false, account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target OpenAI provider account gate: passed, with targetOpenAIProviderApproved false, account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, target live validation, telemetry, fallback, renewal\/review audit requirements/,
+);
 assert.match(
   releaseReadiness,
   /target OpenAI provider account is not approved, and target OpenAI provider account evidence for account ownership proof with OpenAI organization\/project owner, project\/workspace alias, customer scope, evidence owner, and review date, billing and quota proof with active billing plan, quota tier, payment owner, spend cap, low-balance\/quota alert route, and redacted evidence summary, API key and secret injection proof with target secret manager alias, OPENAI_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with OPENAI_MODEL, model availability, region\/project access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer\/workspace, transcript\/retention policy, support owner, and evidence owner, usage and cost guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:openai, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, renewal and review audit proof with account owner recertification, quota review, model access review, artifact hygiene result, accepted risk, and next review date, migration plan, missing API key, revoked key, quota exhaustion, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment/,
@@ -137,9 +169,25 @@ assert.doesNotMatch(
 assert.match(security, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(deployment, /## Target OpenAI Provider Account/);
 assert.match(deployment, /npm run smoke:target-openai-provider-account/);
+assert.match(
+  deployment,
+  /Do not present archived OpenAI pilot live validation as target production provider approval\. Do not include OpenAI in a target production provider claim until the target OpenAI provider account is approved and account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary `npm run live:execution-v1:openai` pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment/,
+);
+assert.doesNotMatch(
+  deployment,
+  /Do not present archived OpenAI pilot live validation as target production provider approval\. Do not include OpenAI in a target production provider claim until the target OpenAI provider account is approved and `npm run live:execution-v1:openai` passes from the approved production-like or hosted target environment/,
+);
 assert.match(productPlan, /\[x\] Target OpenAI provider account gate implemented/);
 assert.match(readme, /docs\/target-openai-provider-account-v1\.md/);
 assert.match(readme, /npm run smoke:target-openai-provider-account/);
+assert.match(
+  readme,
+  /target OpenAI provider account evidence can be verified with `npm run smoke:target-openai-provider-account`; it proves account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetOpenAIProviderApproved: false`/,
+);
+assert.doesNotMatch(
+  readme,
+  /target OpenAI provider account evidence can be verified with `npm run smoke:target-openai-provider-account`; it proves account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, target live validation, telemetry, fallback, and renewal\/review audit requirements are present/,
+);
 
 console.log(
   JSON.stringify(

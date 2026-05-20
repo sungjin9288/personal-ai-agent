@@ -580,8 +580,8 @@ assert.match(targetEnvironmentEvidenceIntake, /## Target Evidence Submission Pac
 assert.match(targetEnvironmentEvidenceIntake, /## Target Blocker Disposition Register/);
 assert.match(targetEnvironmentEvidenceIntake, /## Blocker Closure Verification Matrix/);
 assert.match(targetEnvironmentEvidenceIntake, /\| blockerDispositionRegister \|/);
-assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:anthropic` pass/);
-assert.match(targetEnvironmentEvidenceIntake, /target-boundary `live:execution-v1:hermes` pass/);
+assert.match(targetEnvironmentEvidenceIntake, /target-boundary `npm run live:execution-v1:anthropic`/);
+assert.match(targetEnvironmentEvidenceIntake, /target-boundary `npm run live:execution-v1:hermes`/);
 assert.match(targetEnvironmentEvidenceIntake, /Blocker disposition is a stop-condition input, not a waiver/);
 assert.match(targetEnvironmentEvidenceIntake, /anthropic-live-validation-missing-or-failed/);
 assert.match(targetEnvironmentEvidenceIntake, /target-hermes-provider-approval-missing/);

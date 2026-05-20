@@ -164,8 +164,24 @@ for (const state of [
 ]) {
   assert.match(intake, new RegExp(escapeRegExp(state)), state);
 }
-assert.match(intake, /target-boundary `live:execution-v1:anthropic` pass/);
-assert.match(intake, /target-boundary `live:execution-v1:hermes` pass/);
+assert.match(intake, /target-boundary `npm run live:execution-v1:anthropic`/);
+assert.match(intake, /target-boundary `npm run live:execution-v1:hermes`/);
+assert.match(
+  intake,
+  /target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene result, and regenerated execution-v1 artifacts/,
+);
+assert.match(
+  intake,
+  /account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
+);
+assert.doesNotMatch(
+  intake,
+  /target Anthropic provider account approval, billing\/credit remediation proof, target secret injection, target-boundary `live:execution-v1:anthropic` pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts/,
+);
+assert.doesNotMatch(
+  intake,
+  /account approval, billing\/credit remediation proof, target secret injection proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
+);
 assert.match(
   intake,
   /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,

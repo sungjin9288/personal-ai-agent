@@ -78,6 +78,22 @@ assert.match(readiness, /\| local \| ready-but-missing-env \| LOCAL_PROVIDER_MOD
 assert.match(readiness, /target local provider architecture remains the production gate/);
 assert.match(
   readiness,
+  /target OpenAI provider account remains the gate for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+);
+assert.match(
+  readiness,
+  /target Anthropic provider account remains the gate for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+);
+assert.doesNotMatch(
+  readiness,
+  /target OpenAI provider account remains the gate for account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, target live validation, telemetry, fallback, and renewal\/review audit requirements/,
+);
+assert.doesNotMatch(
+  readiness,
+  /target Anthropic provider account remains the gate for account ownership, billing\/credit, API key injection, model access, provider terms, quota\/spend guard, target live validation, telemetry, fallback, and remediation audit requirements/,
+);
+assert.match(
+  readiness,
   /target local provider architecture remains the gate for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(

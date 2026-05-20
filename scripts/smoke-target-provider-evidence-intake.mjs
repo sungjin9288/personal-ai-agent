@@ -59,6 +59,18 @@ for (const evidenceItem of [
 ]) {
   assert.match(intake, new RegExp(`\\| ${escapeRegExp(evidenceItem)} \\|`));
 }
+assert.match(
+  intake,
+  /target OpenAI provider account contract is present with targetOpenAIProviderApproved false and account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence are missing/,
+);
+assert.match(
+  intake,
+  /target Anthropic provider account contract is present with targetAnthropicProviderApproved false and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence are missing/,
+);
+assert.doesNotMatch(
+  intake,
+  /target OpenAI provider account contract is present with targetOpenAIProviderApproved false; Anthropic account execution remains failed; target Anthropic provider account contract is present with targetAnthropicProviderApproved false/,
+);
 
 for (const checklistItem of [
   /provider owner and customer\/account approval/,
