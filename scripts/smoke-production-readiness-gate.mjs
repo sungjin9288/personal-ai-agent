@@ -134,11 +134,15 @@ assert.match(
 );
 assert.match(
   pilotReadySection,
-  /Hermes live validation remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot is recorded/,
+  /Hermes live validation remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
 );
 assert.doesNotMatch(
   pilotReadySection,
   /Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`/,
+);
+assert.doesNotMatch(
+  pilotReadySection,
+  /Hermes live validation remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot is recorded/,
 );
 assert.match(pilotReadySection, /Pilot-ready can be claimed only for the validated provider and approved deployment boundary\./);
 assert.match(productionReadySection, /^Status: blocked\./m);
@@ -331,7 +335,11 @@ assert.doesNotMatch(
 assert.match(releaseReadiness, /\[incident-slo-v1\.md\]\(incident-slo-v1\.md\)/);
 assert.match(
   releaseReadiness,
-  /live validation: OpenAI passed, Anthropic failed with API billing\/credit blocker, local provider passed for the configured pilot boundary, Hermes remains blocked until target Hermes provider architecture evidence and target-boundary live validation are approved/,
+  /live validation: OpenAI passed, Anthropic failed with API billing\/credit blocker, local provider passed for the configured pilot boundary, Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /Hermes remains blocked until target Hermes provider architecture evidence and target-boundary live validation are approved/,
 );
 assert.doesNotMatch(releaseReadiness, /Hermes missing runtime env/);
 assert.match(
@@ -368,6 +376,10 @@ assert.match(
   /local provider live evidence is already archived for the configured local rehearsal/,
 );
 assert.match(
+  operatorRunbook,
+  /Hermes remains excluded from provider claims until target Hermes provider architecture evidence covers endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
   operatorRunbook,
   /Hermes remains excluded from provider claims until target Hermes provider architecture evidence covers endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary live validation/,
 );
@@ -722,12 +734,16 @@ assert.match(cleanDeploymentRelease, /not target production deployment evidence/
 for (const blocker of [
   /Anthropic live validation remains blocked until target Anthropic provider account evidence for billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary npm run live:execution-v1:anthropic pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot is recorded/,
   /target local provider architecture remains blocked until endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence are recorded/,
-  /Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded/,
+  /Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot is recorded/,
   /target deployment contract is blocked until hosted identity\/session administration, target identity\/session operations, tenant storage\/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection\/audit, target observability architecture\/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
   /production release label cannot be claimed until all target production providers and enterprise controls are verified/,
 ]) {
   assert.match(currentOpenBlockersSection, blocker);
 }
+assert.doesNotMatch(
+  currentOpenBlockersSection,
+  /Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded/,
+);
 assert.doesNotMatch(
   currentOpenBlockersSection,
   /target local provider architecture remains blocked until approved target-boundary endpoint\/model, network isolation, telemetry, quota\/resource guard, and local provider live validation evidence are recorded/,
