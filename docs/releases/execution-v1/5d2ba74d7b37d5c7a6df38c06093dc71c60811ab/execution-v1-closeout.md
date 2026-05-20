@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T06:44:49.115Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T06:44:33.288Z
 - branch: codex/local-target-architecture-proof-detail
 - commit: 5d2ba74d7b37d5c7a6df38c06093dc71c60811ab
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5d2ba74d7b37d5c7a6df38c06093dc71c60811ab/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
