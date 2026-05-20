@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Anthropic Open Blocker Stop-Condition Detail Alignment
+
+- expanded the current open Anthropic live validation blocker so it names billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation pass, mission/session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene, and regenerated execution snapshot evidence
+- aligned the operator-facing current open blocker action summary with the detailed Anthropic provider-account evidence packet while keeping the provider account category, provider-ops owner, and Anthropic top-priority triage behavior unchanged
+- extended production readiness and execution-v1 status smoke guards so current open blockers cannot fall back to generic Anthropic billing/credit wording
+
 ## 2026-05-20 Provider Live Validation Stop-Condition Detail Alignment
 
 - expanded the production-ready Anthropic and Hermes live validation blocker so it names Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, Anthropic live command result, Hermes target provider architecture approval, HERMES_PROVIDER_MODEL pinning, Hermes endpoint and secret injection, Hermes live command result, mission/session provenance, telemetry, failureKind taxonomy, fallback or disable decision, remediation owner, next review date, release artifact hygiene, and regenerated execution snapshot evidence

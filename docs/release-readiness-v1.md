@@ -231,7 +231,7 @@ Validated scope:
 
 Remaining blockers outside this scope:
 
-- Anthropic live validation is blocked by provider account billing/credit
+- Anthropic live validation remains blocked until target Anthropic provider account evidence for billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary npm run live:execution-v1:anthropic pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot is recorded
 - target local provider architecture remains blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded
 - Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`
 
@@ -384,7 +384,7 @@ Next review date:
 
 ## Current Open Blockers
 
-- Anthropic live validation is blocked by provider account billing/credit
+- Anthropic live validation remains blocked until target Anthropic provider account evidence for billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary npm run live:execution-v1:anthropic pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot is recorded
 - target local provider architecture remains blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded
 - Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and target-boundary Hermes live validation is recorded
 - target deployment contract is blocked until hosted identity/session administration, target identity/session operations, tenant storage/encryption, target tenant isolation operations, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager injection/audit, target observability architecture/operations, target SLO architecture, target SLO operations, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO/SLA, clean deployment, and support escalation review have target-environment evidence

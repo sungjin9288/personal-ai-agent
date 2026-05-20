@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T01:23:33.718Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T01:23:32.259Z
 - localDate: 2026-05-20
 - branch: codex/anthropic-open-blocker-stop-condition-wording
 - commit: 5e6ac5a659de75fe17ce0bf2494239b34951be35
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35](releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35](docs/releases/execution-v1/5e6ac5a659de75fe17ce0bf2494239b34951be35)
 - visualArtifactSetSha256: 7d540279c690f51c4ed1765172a456038ca3e2d944d7e8fb39494b0711b67b86
 - commitPushStatus: not pushed, origin/codex/anthropic-open-blocker-stop-condition-wording not found
 
