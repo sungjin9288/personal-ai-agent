@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T03:52:48.341Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T03:52:46.974Z
 - localDate: 2026-05-20
 - branch: codex/hermes-handoff-blocker-detail
 - commit: 63eec80a85d3d711a8c08dda6ff2bec1d6c7b709
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709](releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709](docs/releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709)
 - visualArtifactSetSha256: f5cef4dcd09be3a190889d6fb767aed51bd2d4582bab78921fe92c6494b61e3f
 - commitPushStatus: not pushed, origin/codex/hermes-handoff-blocker-detail not found
 

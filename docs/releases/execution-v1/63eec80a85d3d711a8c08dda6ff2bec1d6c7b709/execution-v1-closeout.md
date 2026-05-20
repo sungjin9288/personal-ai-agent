@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T03:52:48.341Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T03:52:40.626Z
 - branch: codex/hermes-handoff-blocker-detail
 - commit: 63eec80a85d3d711a8c08dda6ff2bec1d6c7b709
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/63eec80a85d3d711a8c08dda6ff2bec1d6c7b709/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

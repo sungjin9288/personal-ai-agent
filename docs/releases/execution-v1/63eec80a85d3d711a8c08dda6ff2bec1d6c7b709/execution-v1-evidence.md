@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T03:52:48.341Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T03:52:40.590Z
 - branch: codex/hermes-handoff-blocker-detail
 - commit: 63eec80a85d3d711a8c08dda6ff2bec1d6c7b709

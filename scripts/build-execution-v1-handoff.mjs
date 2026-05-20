@@ -8,6 +8,11 @@ const defaultEvidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const defaultCloseoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const defaultOutputPath = path.join(docsDir, 'execution-v1-handoff.md');
 const snapshotsRoot = path.join(docsDir, 'releases', 'execution-v1');
+const hermesTargetProviderArchitectureEvidence =
+  'target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, ' +
+  'target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, ' +
+  'telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, ' +
+  'release artifact hygiene result, and regenerated execution snapshot evidence';
 
 const evidencePath = resolveArgPath('--evidence-path', defaultEvidencePath);
 const closeoutPath = resolveArgPath('--closeout-path', defaultCloseoutPath);
@@ -219,7 +224,7 @@ function buildNextOperatorSteps(providerStates, pushStatus) {
   );
   steps.push(
     missingProviders.length
-      ? `2. Attach approved target provider architecture evidence for ${formatProviderLabels(missingProviders)}, including endpoint/model ownership, target secret injection, telemetry, fallback, customer approval, and target-boundary live validation, before claiming those provider paths.`
+      ? `2. ${buildMissingProviderEvidenceStep(missingProviders)}`
       : '2. Keep target runtime configuration pinned before claiming additional provider paths.',
   );
   steps.push(
@@ -249,7 +254,7 @@ function buildCompletionBoundary(providerStates) {
     blockers.push('Anthropic is blocked by provider account billing/credit');
   }
   if (hermes?.status !== 'passed') {
-    blockers.push('Hermes live validation still requires target Hermes provider architecture evidence');
+    blockers.push(`Hermes live validation still requires ${hermesTargetProviderArchitectureEvidence}`);
   }
   if (localProvider?.status === 'passed') {
     blockers.push(
@@ -260,6 +265,18 @@ function buildCompletionBoundary(providerStates) {
   }
 
   return `Execution v1 is provider-scoped pilot ready for a bounded local-first path validated by ${formatProviderLabels(passedProviders)}. It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
+}
+
+function buildMissingProviderEvidenceStep(missingProviders) {
+  if (missingProviders.length === 1 && missingProviders[0].providerKey === 'hermes') {
+    return `Attach ${hermesTargetProviderArchitectureEvidence} before claiming Hermes provider paths.`;
+  }
+  return (
+    `Attach approved target provider account or architecture evidence for ${formatProviderLabels(missingProviders)}, ` +
+    'including provider ownership or endpoint ownership, model access or model pinning, target secret injection, telemetry, ' +
+    'fallback and stop-condition decision, customer approval, target-boundary live validation, release artifact hygiene, ' +
+    'and regenerated execution snapshot evidence, before claiming those provider paths.'
+  );
 }
 
 function formatProviderLabels(providers) {
