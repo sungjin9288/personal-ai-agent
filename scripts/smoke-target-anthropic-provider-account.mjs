@@ -44,6 +44,14 @@ assert.match(decision, /not model access proof/);
 assert.match(decision, /not provider terms approval/);
 assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Anthropic provider readiness remains blocked/);
+assert.match(
+  decision,
+  /Anthropic provider readiness remains blocked until this account decision is approved and target account evidence is generated for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence from the approved production-like or hosted target environment/,
+);
+assert.doesNotMatch(
+  decision,
+  /Anthropic provider readiness remains blocked until this account decision is approved and Anthropic live validation evidence is generated from the approved production-like or hosted target environment/,
+);
 
 for (const area of [
   'Account ownership',
@@ -97,6 +105,14 @@ for (const field of [
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary after account remediation/);
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(
+  decision,
+  /Anthropic provider readiness remains blocked until a replacement account decision is approved, implementation is completed in the target environment, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
+);
+assert.doesNotMatch(
+  decision,
+  /Anthropic provider readiness remains blocked until a replacement account decision is approved, billing\/credit is remediated, implementation is completed in the target environment, `npm run live:execution-v1:anthropic` passes from the approved boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-anthropic-provider-account',
@@ -119,10 +135,26 @@ assert.match(targetProviderIntake, /\[target-anthropic-provider-account-v1\.md\]
 assert.match(targetProviderIntake, /Anthropic provider account approval/);
 assert.match(targetContract, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(targetContract, /target Anthropic provider account is approved/);
+assert.match(
+  targetContract,
+  /Target Anthropic provider account \| target Anthropic provider account is approved with account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  targetContract,
+  /Target Anthropic provider account \| target Anthropic provider account is approved with account ownership, billing\/credit, API key injection, model access, provider terms, quota\/spend guard, live validation, telemetry, fallback, and remediation audit decisions/,
+);
 assert.match(intake, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(intake, /Anthropic provider account approval/);
 assert.match(releaseReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /target Anthropic provider account gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target Anthropic provider account gate: passed, with targetAnthropicProviderApproved false, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target Anthropic provider account gate: passed, with targetAnthropicProviderApproved false, account ownership, billing\/credit, API key injection, model access, provider terms, quota\/spend guard, target live validation, telemetry, fallback, remediation audit requirements/,
+);
 assert.match(
   releaseReadiness,
   /target Anthropic provider account is not approved, and target Anthropic provider account evidence for account ownership proof with Anthropic account owner, organization\/workspace alias, customer scope, evidence owner, and review date, billing and credit proof with active billing plan, available credit balance, payment owner, renewal path, low-balance alert route, and screenshot-free redacted evidence summary, API key and secret injection proof with target secret manager alias, ANTHROPIC_API_KEY owner, rotation path, access audit, break-glass owner, and redaction result, model access proof with ANTHROPIC_MODEL, model availability, region\/workspace access, max token policy, fallback model, and owner approval, provider terms and customer approval proof with provider terms, data processing approval, allowed customer\/workspace, transcript retention policy, support owner, and evidence owner, quota and spend guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence, target live validation proof with npm run live:execution-v1:anthropic, mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof with probe result, provider response status, model availability, run duration, retry count, failureKind taxonomy, alert route, and incident owner, fallback and stop-condition proof with fallback provider, degraded mode, customer impact rule, manual approval path, rollback owner, and residual risk decision, remediation audit proof with account remediation ticket, billing owner approval, post-remediation live run, artifact hygiene result, accepted risk, and next review date, migration plan, low credit balance, missing API key, revoked key, unavailable model, rate limit exhaustion, provider terms conflict, and fallback failure containment is not generated from a production-like environment/,
@@ -137,9 +169,25 @@ assert.doesNotMatch(
 assert.match(security, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(deployment, /## Target Anthropic Provider Account/);
 assert.match(deployment, /npm run smoke:target-anthropic-provider-account/);
+assert.match(
+  deployment,
+  /Do not include Anthropic in a target provider claim until the target Anthropic provider account is approved and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment/,
+);
+assert.doesNotMatch(
+  deployment,
+  /Do not include Anthropic in a target provider claim until the target Anthropic provider account is approved, billing\/credit is remediated, and `npm run live:execution-v1:anthropic` passes from the approved production-like or hosted target environment/,
+);
 assert.match(productPlan, /\[x\] Target Anthropic provider account gate implemented/);
 assert.match(readme, /docs\/target-anthropic-provider-account-v1\.md/);
 assert.match(readme, /npm run smoke:target-anthropic-provider-account/);
+assert.match(
+  readme,
+  /target Anthropic provider account evidence can be verified with `npm run smoke:target-anthropic-provider-account`; it proves account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetAnthropicProviderApproved: false`/,
+);
+assert.doesNotMatch(
+  readme,
+  /target Anthropic provider account evidence can be verified with `npm run smoke:target-anthropic-provider-account`; it proves account ownership, billing\/credit, API key injection, model access, provider terms, quota\/spend guard, live validation, telemetry, fallback, and remediation audit requirements are present/,
+);
 
 console.log(
   JSON.stringify(

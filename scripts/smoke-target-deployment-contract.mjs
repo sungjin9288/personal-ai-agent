@@ -89,6 +89,22 @@ assert.match(
   contract,
   /Target local provider architecture \| target local provider architecture is approved with endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
+assert.match(
+  contract,
+  /Target OpenAI provider account \| target OpenAI provider account is approved with account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  contract,
+  /Target Anthropic provider account \| target Anthropic provider account is approved with account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  contract,
+  /Target OpenAI provider account \| target OpenAI provider account is approved with account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, live validation, telemetry, fallback, and renewal\/review audit decisions/,
+);
+assert.doesNotMatch(
+  contract,
+  /Target Anthropic provider account \| target Anthropic provider account is approved with account ownership, billing\/credit, API key injection, model access, provider terms, quota\/spend guard, live validation, telemetry, fallback, and remediation audit decisions/,
+);
 assert.doesNotMatch(
   contract,
   /Target local provider architecture \| target local provider architecture is approved with endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decisions/,
@@ -168,8 +184,8 @@ for (const command of [
 for (const blocker of [
   /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
   /stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment evidence are captured/,
-  /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
-  /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
+  /stop OpenAI production provider claims until the target OpenAI provider account record is approved and account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary npm run live:execution-v1:openai pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
+  /stop Anthropic provider claims until the target Anthropic provider account record is approved and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary npm run live:execution-v1:anthropic pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop local provider claims until the target local provider architecture record is approved and endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated release artifact evidence are generated/,
   /stop production-ready claims if the target environment evidence intake packet is incomplete/,
@@ -200,6 +216,14 @@ for (const blocker of [
 assert.doesNotMatch(
   contract,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are generated/,
+);
+assert.doesNotMatch(
+  contract,
+  /stop OpenAI production provider claims until the target OpenAI provider account record is approved and OpenAI target-boundary live validation evidence is generated/,
+);
+assert.doesNotMatch(
+  contract,
+  /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
 );
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);

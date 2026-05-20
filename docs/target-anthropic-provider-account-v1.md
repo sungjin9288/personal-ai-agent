@@ -18,7 +18,7 @@ This record defines the target Anthropic provider account decision and evidence 
 
 It is not Anthropic live validation proof, not account remediation proof, not billing/credit proof, not model access proof, not provider terms approval, not target secret manager proof, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Anthropic provider readiness remains blocked until this account decision is approved and Anthropic live validation evidence is generated from the approved production-like or hosted target environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Anthropic provider readiness remains blocked until this account decision is approved and target account evidence is generated for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence from the approved production-like or hosted target environment.
 
 ## Anthropic Account Decision Areas
 
@@ -95,4 +95,4 @@ This gate is acceptable only when the Anthropic account decision areas, required
 
 This is a local target Anthropic provider account contract. It does not remediate Anthropic billing or credit, approve Anthropic provider readiness, prove model access, prove target secret manager injection, prove target-boundary live validation, prove quota enforcement, prove provider terms approval, or satisfy target environment production evidence.
 
-Anthropic provider readiness remains blocked until a replacement account decision is approved, billing/credit is remediated, implementation is completed in the target environment, `npm run live:execution-v1:anthropic` passes from the approved boundary, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Anthropic provider readiness remains blocked until a replacement account decision is approved, implementation is completed in the target environment, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.

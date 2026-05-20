@@ -325,9 +325,9 @@ Before presenting OpenAI as a target production provider or fallback provider, v
 npm run smoke:target-openai-provider-account
 ```
 
-The source of record is [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md). It proves account ownership, billing/quota, API key injection, model access, provider terms, usage/cost guard, target live validation, telemetry, fallback, renewal/review audit, required commands, and the OpenAI provider production gap are present.
+The source of record is [target-openai-provider-account-v1.md](target-openai-provider-account-v1.md). It proves account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, regenerated execution snapshot evidence, required commands, and the OpenAI provider production gap are present.
 
-Do not present archived OpenAI pilot live validation as target production provider approval. Do not include OpenAI in a target production provider claim until the target OpenAI provider account is approved and `npm run live:execution-v1:openai` passes from the approved production-like or hosted target environment.
+Do not present archived OpenAI pilot live validation as target production provider approval. Do not include OpenAI in a target production provider claim until the target OpenAI provider account is approved and account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary `npm run live:execution-v1:openai` pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Anthropic Provider Account
 
@@ -337,9 +337,9 @@ Before presenting Anthropic as a target production provider or fallback provider
 npm run smoke:target-anthropic-provider-account
 ```
 
-The source of record is [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md). It proves account ownership, billing/credit, API key injection, model access, provider terms, quota/spend guard, target live validation, telemetry, fallback, remediation audit, required commands, and the Anthropic provider production gap are present.
+The source of record is [target-anthropic-provider-account-v1.md](target-anthropic-provider-account-v1.md). It proves account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, regenerated execution snapshot evidence, required commands, and the Anthropic provider production gap are present.
 
-Do not include Anthropic in a target provider claim until the target Anthropic provider account is approved, billing/credit is remediated, and `npm run live:execution-v1:anthropic` passes from the approved production-like or hosted target environment.
+Do not include Anthropic in a target provider claim until the target Anthropic provider account is approved and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary `npm run live:execution-v1:anthropic` pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Local Provider Architecture
 
