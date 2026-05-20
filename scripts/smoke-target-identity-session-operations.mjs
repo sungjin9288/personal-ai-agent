@@ -81,10 +81,19 @@ for (const packetItem of [
   /support impersonation evidence with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure/,
   /identity retention, legal hold, audit export, privacy deletion, and customer handoff evidence/,
   /artifact hygiene and production readiness gate result/,
+  /regenerated execution snapshot evidence from the approved production-like or hosted identity boundary/,
   /residual risk, decision owner, next review date, and customer access containment plan/,
 ]) {
   assert.match(targetIdentity, packetItem);
 }
+assert.match(
+  targetIdentity,
+  /Production-ready remains blocked until the approved target environment proves customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before\/after state, timestamp, and checksum, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  targetIdentity,
+  /Target identity\/session operations remain blocked for production-ready claims until customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before\/after state, timestamp, and checksum, break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review, support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure, compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence are captured from the approved production-like or hosted target environment/,
+);
 
 assert.match(targetIdentity, /## Target Evidence Capture Template/);
 assert.match(
@@ -132,11 +141,25 @@ for (const command of [
 assert.match(hostedIdentity, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(identityAdmin, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(targetContract, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
-assert.match(targetContract, /target identity session operations evidence is captured/);
+assert.match(
+  targetContract,
+  /Target identity session operations \| target identity session operations evidence is captured with customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetEnvironment, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
-assert.match(targetEnvironment, /target identity session operations evidence/);
+assert.match(
+  targetEnvironment,
+  /Identity and sessions \| hosted identity\/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, target identity session operations evidence, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence are proven/,
+);
 assert.match(releaseReadiness, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(releaseReadiness, /target identity session operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target identity\/session operations evidence for customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before\/after state, timestamp, and checksum, break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review, support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure, compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target identity\/session operations evidence for customer IdP onboarding, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass access, support impersonation, compliance, retention, and customer access containment is not generated from a production-like environment/,
+);
 assert.match(security, /\[target-identity-session-operations-v1\.md\]\(target-identity-session-operations-v1\.md\)/);
 assert.match(deployment, /## Target Identity Session Operations/);
 assert.match(deployment, /npm run smoke:target-identity-session-operations/);
@@ -148,7 +171,7 @@ console.log(
   JSON.stringify(
     {
       controlCount: 9,
-      identityPacketItemCount: 14,
+      identityPacketItemCount: 15,
       mode: 'target-identity-session-operations',
       ok: true,
       path: 'docs/target-identity-session-operations-v1.md',
