@@ -606,7 +606,7 @@ Before implementing or claiming target secret manager readiness, verify the targ
 npm run smoke:target-secret-manager-architecture
 ```
 
-The source of record is [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md). It requires secret manager platform, secret classes, injection path, access policy, rotation/revocation, audit/monitoring, break-glass, leakage controls, disaster recovery, migration, rollback, and credential containment decisions while keeping `targetSecretManagerApproved: false`.
+The source of record is [target-secret-manager-architecture-v1.md](target-secret-manager-architecture-v1.md). It requires approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `targetSecretManagerApproved: false`.
 
 Acceptance:
 

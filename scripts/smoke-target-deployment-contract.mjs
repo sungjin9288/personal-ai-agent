@@ -97,6 +97,10 @@ assert.match(
   contract,
   /Target Anthropic provider account \| target Anthropic provider account is approved with account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
+assert.match(
+  contract,
+  /Target secret manager architecture \| target secret manager architecture is approved with approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.doesNotMatch(
   contract,
   /Target OpenAI provider account \| target OpenAI provider account is approved with account ownership, billing\/quota, API key injection, model access, provider terms, usage\/cost guard, live validation, telemetry, fallback, and renewal\/review audit decisions/,
@@ -108,6 +112,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   contract,
   /Target local provider architecture \| target local provider architecture is approved with endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decisions/,
+);
+assert.doesNotMatch(
+  contract,
+  /Target secret manager architecture \| target secret manager architecture is approved with platform, secret classes, injection path, access policy, rotation, audit, break-glass, leakage controls, and disaster recovery decisions/,
 );
 
 assert.match(contract, /## Target Evidence Capture Template/);
@@ -131,6 +139,10 @@ for (const field of [
 }
 assert.match(contract, /must map the deployment to one target deployment profile without claiming an unapproved profile/);
 assert.match(contract, /must prove every control row was reviewed against target evidence from the same boundary/);
+assert.match(
+  contract,
+  /secretObservabilityEvidence \| target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, telemetry backend, alert route, log\/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence/,
+);
 assert.match(contract, /must record why `productionReadyClaim` remains false when any mandatory target evidence is missing/);
 assert.match(
   contract,
@@ -194,9 +206,9 @@ for (const blocker of [
   /stop target identity\/session operations claims until customer IdP integration, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, and customer access containment evidence are captured/,
   /stop hosted multi-tenant isolation claims until the hosted tenant isolation architecture record is approved and target isolation evidence is generated/,
   /stop target tenant isolation operations claims until tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment evidence are captured/,
+  /stop target secret manager claims until the target secret manager architecture record is approved and approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop multi-tenant claims until tenant storage, encryption, backup, restore, and tenant administration evidence exist/,
   /stop enterprise RBAC claims until identity-backed user\/session lifecycle/,
-  /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,
   /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop target observability claims until the target observability architecture record is approved and target observability evidence is generated/,
   /stop target SLO\/SLA claims until the target SLO architecture record is approved and target SLO evidence is generated/,
@@ -213,6 +225,10 @@ for (const blocker of [
 ]) {
   assert.match(contract, blocker);
 }
+assert.doesNotMatch(
+  contract,
+  /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,
+);
 assert.doesNotMatch(
   contract,
   /stop Hermes provider claims until the target Hermes provider architecture record is approved and endpoint ownership, model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback, customer approval, and Hermes live validation evidence are generated/,
@@ -250,7 +266,7 @@ assert.match(contract, /\[target-clean-deployment-operations-v1\.md\]\(target-cl
 assert.match(releaseReadiness, /target deployment contract gate: passed/);
 assert.match(
   releaseReadiness,
-  /target deployment contract evidence for target deployment name with approved target environment name, company\/workspace scope, deployment owner, evidence owner, review date, and release label, deployment profile decision with selected deployment profile, approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval reference, mandatory control evidence with every mandatory control, required command output, production readiness gate result, and unresolved blocker list, provider readiness evidence with completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection, target-boundary live validation, quota\/cost\/resource guard, fallback evidence, and provider failure containment proof, identity and tenant evidence with hosted identity\/session approval, target identity\/session operations, hosted tenant isolation approval, target tenant isolation operations, RBAC\/session audit, tenant storage boundary, encryption\/key ownership, and cross-tenant denial evidence, secret and observability evidence with target secret manager approval, rotation\/revocation evidence, telemetry backend, alert route, log\/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence, data lifecycle and support evidence with target data lifecycle approval, retention\/export\/delete proof, provider transcript handling, backup\/restore evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence, clean release artifact evidence with target clean deployment architecture, target clean deployment operations, clean deployment run, dependency\/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, and failed-deployment containment, stop-condition decision with explicit stop conditions, residual blockers, accepted risks, blocker owner, remediation owner, and next review date, and production-ready claim decision with decision owner, approval or rejection summary, allowed claim text, evidence commit, snapshot path, and regeneration command references is not generated from a production-like environment/,
+  /target deployment contract evidence for target deployment name with approved target environment name, company\/workspace scope, deployment owner, evidence owner, review date, and release label, deployment profile decision with selected deployment profile, approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval reference, mandatory control evidence with every mandatory control, required command output, production readiness gate result, and unresolved blocker list, provider readiness evidence with completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection, target-boundary live validation, quota\/cost\/resource guard, fallback evidence, and provider failure containment proof, identity and tenant evidence with hosted identity\/session approval, target identity\/session operations, hosted tenant isolation approval, target tenant isolation operations, RBAC\/session audit, tenant storage boundary, encryption\/key ownership, and cross-tenant denial evidence, secret and observability evidence with target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, telemetry backend, alert route, log\/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence, data lifecycle and support evidence with target data lifecycle approval, retention\/export\/delete proof, provider transcript handling, backup\/restore evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence, clean release artifact evidence with target clean deployment architecture, target clean deployment operations, clean deployment run, dependency\/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, and failed-deployment containment, stop-condition decision with explicit stop conditions, residual blockers, accepted risks, blocker owner, remediation owner, and next review date, and production-ready claim decision with decision owner, approval or rejection summary, allowed claim text, evidence commit, snapshot path, and regeneration command references is not generated from a production-like environment/,
 );
 assert.doesNotMatch(
   releaseReadiness,
