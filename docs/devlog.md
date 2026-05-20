@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-21 Target Observability Proof Detail Alignment
+
+- expanded target observability architecture and target observability operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `targetObservabilityApproved: false`, `productionReadyClaim: false`, and the local observability telemetry evidence boundary unchanged while making observability source-of-record wording match the proof-level evidence packets
+- extended target observability architecture, target observability operations, target deployment contract, target environment evidence intake, production readiness, and production-like release drill smoke guards so observability claims cannot fall back to generic telemetry/alert/on-call shorthand
+
 ## 2026-05-21 Tenant Isolation Proof Detail Alignment
 
 - expanded hosted tenant isolation architecture and target tenant isolation operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene, and regenerated execution snapshot evidence

@@ -650,18 +650,18 @@ Before presenting a production-like deployment as observability-architecture-rea
 npm run smoke:target-observability-architecture
 ```
 
-The source of record is [target-observability-architecture-v1.md](target-observability-architecture-v1.md). It requires telemetry backend, signal taxonomy, alert routing, on-call staffing, log and trace retention, customer communication, incident response, audit and compliance, disaster recovery, migration, rollback, and customer communication containment decisions while keeping `targetObservabilityApproved: false`.
+The source of record is [target-observability-architecture-v1.md](target-observability-architecture-v1.md). It requires approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, migration, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene, and regenerated execution snapshot evidence while keeping `targetObservabilityApproved: false`.
 
 Acceptance:
 
-- target observability decision areas cover telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, and disaster recovery
-- required evidence packets include ingestion proof, alert delivery receipt, staffed acknowledgement, retention proof, customer status communication, incident response, audit export, recovery evidence, and migration plan
+- target observability decision areas cover approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, retention proof, customer communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence
+- required evidence packets include ingestion proof, alert delivery receipt, staffed acknowledgement, retention proof, customer status communication, incident response, audit export, recovery evidence, migration plan, release artifact hygiene result, and regenerated execution snapshot evidence
 - the generated target observability architecture gate keeps `productionReadyClaim: false` and `targetObservabilityApproved: false`
 
 Stop condition:
 
-- if target observability architecture approval or target evidence is missing, do not present production-like observability readiness
-- if the gate passes, treat it only as a local target observability architecture contract, not target telemetry ingestion, alert delivery, staffed on-call, customer status, or incident review proof
+- if target observability architecture approval, proof-level target evidence, release artifact hygiene, or regenerated execution snapshot evidence is missing, do not present production-like observability readiness
+- if the gate passes, treat it only as a local target observability architecture contract, not target telemetry ingestion, alert delivery, staffed on-call, customer status, incident review, audit export, or regenerated release evidence proof
 
 ## Target Observability Operations Gate
 
@@ -671,19 +671,19 @@ Before presenting a production-like deployment as observability-ready, verify th
 npm run smoke:target-observability-operations
 ```
 
-The source of record is [target-observability-operations-v1.md](target-observability-operations-v1.md). It proves telemetry pipeline, alert delivery, log and trace retention, on-call routing, customer status communication, incident review history, required commands, and the target observability production gap are present.
+The source of record is [target-observability-operations-v1.md](target-observability-operations-v1.md). It proves telemetry ingestion proof, alert delivery proof, log/trace retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, regenerated execution snapshot evidence, required commands, and the target observability production gap are present.
 
 Acceptance:
 
-- target observability operation controls cover telemetry pipeline, alert delivery, retention, on-call routing, status communication, and incident review history
-- operations evidence packets include commit, deployment boundary, alert route, owner acknowledgement, retention policy, redaction review, customer channel, incident timeline, and hygiene result
+- target observability operation controls cover telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence
+- operations evidence packets include commit, deployment boundary, telemetry ingestion samples, alert route, delivery receipt, owner acknowledgement, retention policy, redaction review, customer channel, incident timeline, audit export, hygiene result, and regenerated execution snapshot evidence
 - on-call rules require primary and secondary owner, acknowledgement timing, hygiene rerun, customer communication, corrective action, and residual risk review
 - the generated target observability operations gate keeps `productionReadyClaim: false`
 
 Stop condition:
 
-- if target observability controls or operations evidence requirements are missing, do not present production-like observability readiness
-- if the gate passes, treat it only as a local target observability operations evidence contract, not production telemetry backend, alert delivery, staffed on-call, or customer status page proof
+- if target observability controls, proof-level operations evidence requirements, release artifact hygiene, or regenerated execution snapshot evidence are missing, do not present production-like observability readiness
+- if the gate passes, treat it only as a local target observability operations evidence contract, not production telemetry backend, alert delivery, staffed on-call, customer status page, incident response, audit export, or regenerated release evidence proof
 
 ## Target SLO Architecture
 

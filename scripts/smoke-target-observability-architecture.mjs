@@ -71,6 +71,7 @@ for (const packetItem of [
   /disaster recovery evidence for telemetry backend outage, alert route outage, incident bridge fallback, log export fallback, and evidence recovery/,
   /migration plan from local observability signals to target telemetry backend and on-call workflow/,
   /explicit rollback, false-positive triage, alert fatigue, and customer communication containment plan/,
+  /release artifact hygiene result and regenerated execution snapshot evidence after target observability architecture evidence is attached/,
 ]) {
   assert.match(decision, packetItem);
 }
@@ -93,7 +94,10 @@ assert.match(observabilityTelemetry, /\[target-observability-architecture-v1\.md
 assert.match(targetObservability, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(productionSlo, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(targetContract, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
-assert.match(targetContract, /target observability architecture is approved/);
+assert.match(
+  targetContract,
+  /target observability architecture is approved with approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log\/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, migration plan, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetContract, /npm run smoke:target-observability-architecture/);
 assert.match(intake, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(intake, /npm run smoke:target-observability-architecture/);
@@ -101,7 +105,7 @@ assert.match(releaseReadiness, /\[target-observability-architecture-v1\.md\]\(ta
 assert.match(releaseReadiness, /target observability architecture gate: passed/);
 assert.match(
   releaseReadiness,
-  /target observability architecture is not approved, and target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment is not generated from a production-like environment/,
+  /target observability architecture is not approved, and target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
 );
 assert.doesNotMatch(
   releaseReadiness,
@@ -109,6 +113,10 @@ assert.doesNotMatch(
     'target observability architecture is not approved and target observability ' +
       'evidence is not generated from a production-like environment',
   ),
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment is not generated/,
 );
 assert.match(security, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);
 assert.match(deployment, /## Target Observability Architecture/);
