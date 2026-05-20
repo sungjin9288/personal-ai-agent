@@ -75,6 +75,7 @@ for (const packetItem of [
   /service credit and contractual escalation proof with legal\/commercial owner, escalation path, customer approval, credit trigger, and evidence retention rule/,
   /migration plan from pilot incident\/SLO policy and local production SLO rehearsal to approved target SLO\/SLA operations/,
   /explicit rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment plan/,
+  /release artifact hygiene result and regenerated execution snapshot evidence after target SLO\/SLA architecture evidence is attached/,
 ]) {
   assert.match(decision, packetItem);
 }
@@ -105,12 +106,23 @@ assert.match(targetObservabilityOperations, /\[target-slo-architecture-v1\.md\]\
 assert.match(supportEscalation, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(targetSupport, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(targetContract, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
-assert.match(targetContract, /target SLO architecture is approved/);
+assert.match(
+  targetContract,
+  /Target SLO architecture \| target SLO architecture is approved with customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance\/degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(intake, /npm run smoke:target-slo-architecture/);
+assert.match(
+  intake,
+  /target SLO architecture approval, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
 assert.match(releaseReadiness, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target SLO architecture gate: passed/);
 assert.match(
+  releaseReadiness,
+  /target SLO architecture is not approved, and target SLO\/SLA architecture evidence for customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy with measurement window, budget owner, burn-rate threshold, freeze rule, exception handling, review cadence, telemetry measurement proof for metrics backend, uptime check, synthetic probe, latency histogram, provider failure signal, data source owner, retention period, alert acknowledgement proof with severity mapping, route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, audit record, staffed on-call proof with rota, primary and secondary owner, handoff rule, timezone coverage, absence handling, escalation chain, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
   releaseReadiness,
   /target SLO architecture is not approved, and target SLO\/SLA architecture evidence for customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy with measurement window, budget owner, burn-rate threshold, freeze rule, exception handling, review cadence, telemetry measurement proof for metrics backend, uptime check, synthetic probe, latency histogram, provider failure signal, data source owner, retention period, alert acknowledgement proof with severity mapping, route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, audit record, staffed on-call proof with rota, primary and secondary owner, handoff rule, timezone coverage, absence handling, escalation chain, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment is not generated from a production-like environment/,
 );

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-21 Target SLO Proof Detail Alignment
+
+- expanded target SLO architecture and target SLO operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage proof, maintenance/degradation proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `targetSloApproved: false`, `productionReadyClaim: false`, and the local incident/SLO operating evidence boundary unchanged while making SLO/SLA source-of-record wording match the proof-level evidence packets
+- extended target SLO architecture, target SLO operations, target deployment contract, target environment evidence intake, production readiness, and production-like release drill smoke guards so SLO/SLA claims cannot fall back to generic telemetry/on-call/service-credit shorthand
+
 ## 2026-05-21 Target Observability Proof Detail Alignment
 
 - expanded target observability architecture and target observability operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence

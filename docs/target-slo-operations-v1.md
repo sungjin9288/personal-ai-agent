@@ -2,7 +2,7 @@
 
 - status: local-target-slo-operations-current
 - localDate: 2026-05-06
-- scope: target customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and evidence retention contract
+- scope: target customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, release artifact hygiene, and regenerated execution snapshot evidence contract
 - productionReadyClaim: false
 - relatedTargetSloArchitecture: [target-slo-architecture-v1.md](target-slo-architecture-v1.md)
 - relatedProductionSloOperating: [production-slo-operating-v1.md](production-slo-operating-v1.md)
@@ -23,7 +23,7 @@ It proves that target SLO/SLA operating evidence requirements are explicitly doc
 
 It is not contractual SLA approval, not target SLO architecture approval, not target telemetry implementation proof, not customer status page evidence, not staffed on-call production proof, not incident response history, not service credit policy approval, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until the approved target environment proves customer-approved SLO/SLA terms, error budget policy, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation handling, service credit policy, and evidence retention.
+Production-ready remains blocked until the approved target environment proves customer-approved SLO/SLA terms, error budget policy, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation handling, service credit policy, evidence retention, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence.
 
 ## SLO Operation Controls
 
@@ -44,8 +44,7 @@ Production-ready remains blocked until the approved target environment proves cu
 
 Every target SLO operations review must include:
 
-- branch and commit
-- release label and deployment boundary
+- branch, commit, release label, and deployment boundary from the approved production-like or hosted target environment
 - customer-approved SLO/SLA terms with availability, latency, error rate, support response, maintenance window, exclusions, and decision owner
 - error budget policy with measurement window, budget owner, burn-rate threshold, freeze rule, exception handling, and review cadence
 - telemetry measurement proof with metrics backend, uptime check, synthetic probe, latency histogram, provider failure signal, data source owner, and retention period
@@ -56,16 +55,16 @@ Every target SLO operations review must include:
 - provider outage playbook proof with provider health signal, fallback decision, retry/disable policy, customer impact rule, accepted-risk owner, and post-incident review
 - maintenance and degradation proof with maintenance approval, customer notice, degradation mode, rollback owner, recovery target, and post-maintenance review
 - service credit and contractual escalation proof with legal/commercial owner, escalation path, customer approval, credit trigger, and evidence retention rule
-- artifact hygiene and production readiness gate result
-- residual risk, decision owner, next review date, and missed-SLO containment plan
+- release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result
+- residual risk, decision owner, next review date, evidence retention decision, and missed-SLO containment plan
 
 ## SLO Operation Rules
 
 - define SLO owner, error budget owner, telemetry owner, alert route owner, on-call owner, customer communication owner, incident review owner, legal/commercial owner, and evidence owner before a target deployment is presented as SLO/SLA-ready
 - never treat pilot incident policy or local production SLO rehearsal as customer-approved SLO/SLA evidence
 - record alert acknowledgement, escalation, customer update, incident review, maintenance, degradation, and service credit decisions with actor, customer, tenant, impact, reason, timestamp, and closure state
-- deny target SLO/SLA claims when customer-approved terms, error budget, target telemetry, alert acknowledgement, staffed on-call, customer communication, incident review, or service credit evidence is missing
-- rerun target SLO operations, target SLO architecture, production SLO operating rehearsal, target environment evidence intake, production readiness gate, and artifact hygiene after SLO evidence is attached
+- deny target SLO/SLA claims when customer-approved terms, error budget, target telemetry, alert acknowledgement, staffed on-call, customer communication, incident review, service credit evidence, release artifact hygiene result, or regenerated execution snapshot evidence is missing
+- rerun target SLO operations, target SLO architecture, production SLO operating rehearsal, target environment evidence intake, production readiness gate, release artifact hygiene, and execution snapshot generation after SLO evidence is attached
 
 ## Required Commands
 
@@ -88,10 +87,10 @@ npm run smoke:release-artifact-hygiene
 
 ## Acceptance Rule
 
-This gate is acceptable only when SLO operation controls, SLO evidence packet, SLO operation rules, required commands, and production gap are present and the document keeps `productionReadyClaim: false`.
+This gate is acceptable only when SLO operation controls, proof-level SLO evidence packet, SLO operation rules, required commands, release artifact hygiene requirement, regenerated execution snapshot requirement, and production gap are present and the document keeps `productionReadyClaim: false`.
 
 ## Production Gap
 
-This is a local target SLO operations evidence contract. It does not approve contractual SLA terms, approve target SLO architecture, prove target telemetry implementation, prove alert acknowledgement history, prove staffed on-call production response, prove customer status operation, prove incident review history, approve service credit terms, or satisfy target environment production evidence.
+This is a local target SLO operations evidence contract. It does not approve contractual SLA terms, approve target SLO architecture, prove target telemetry implementation, prove alert acknowledgement history, prove staffed on-call production response, prove customer status operation, prove incident review history, approve service credit terms, prove regenerated release evidence, or satisfy target environment production evidence.
 
-Target SLO operations remain blocked for production-ready claims until customer-approved SLO/SLA terms, error budget, target telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation handling, service credit, evidence retention, and missed-SLO containment evidence are captured from the approved production-like or hosted target environment.
+Target SLO operations remain blocked for production-ready claims until customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured from the approved production-like or hosted target environment.

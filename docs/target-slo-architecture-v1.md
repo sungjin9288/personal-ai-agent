@@ -24,7 +24,7 @@ This record defines the target SLO/SLA architecture decision and evidence requir
 
 It is not contractual SLA approval, not target telemetry implementation, not customer status page evidence, not staffed on-call proof, not incident response history, not service credit policy approval, not target deployment approval, and not permission to claim `production-ready`.
 
-The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target SLO readiness remains blocked until a replacement architecture decision is approved and target evidence is generated from the approved production-like or hosted environment.
+The current approved path remains OpenAI-scoped self-hosted/local-first pilot. Target SLO readiness remains blocked until a replacement architecture decision is approved and customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment.
 
 ## SLO Decision Areas
 
@@ -57,6 +57,7 @@ Any future target SLO approval must include:
 - service credit and contractual escalation proof with legal/commercial owner, escalation path, customer approval, credit trigger, and evidence retention rule
 - migration plan from pilot incident/SLO policy and local production SLO rehearsal to approved target SLO/SLA operations
 - explicit rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment plan
+- release artifact hygiene result and regenerated execution snapshot evidence after target SLO/SLA architecture evidence is attached
 
 ## Required Commands
 
@@ -79,10 +80,10 @@ npm run smoke:release-artifact-hygiene
 
 ## Acceptance Rule
 
-This gate is acceptable only when the target SLO decision areas, required evidence packet, required commands, and production gap are present, and the document keeps `productionReadyClaim: false` and `targetSloApproved: false`.
+This gate is acceptable only when the target SLO decision areas, proof-level evidence packet, required commands, release artifact hygiene requirement, regenerated execution snapshot requirement, and production gap are present, and the document keeps `productionReadyClaim: false` and `targetSloApproved: false`.
 
 ## Production Gap
 
 This is a local target SLO architecture contract. It does not approve target SLO/SLA readiness, implement target telemetry measurement, prove alert acknowledgement, prove staffed on-call response, prove customer communication, prove incident review history, approve service credit terms, or satisfy target environment production evidence.
 
-Target SLO readiness remains blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.
+Target SLO readiness remains blocked until a replacement architecture decision is approved, implementation is completed, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted environment, and release evidence is regenerated with `productionReadyClaim` still false until every mandatory production control passes.

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T21:24:44.333Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T21:24:36.525Z
 - branch: codex/slo-proof-detail
 - commit: e4d4a61ed0cad6f5619ad18694457286ef6f88f6
