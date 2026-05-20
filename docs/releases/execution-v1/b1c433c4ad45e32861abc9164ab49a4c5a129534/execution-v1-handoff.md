@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T18:08:50.959Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T18:08:49.576Z
 - localDate: 2026-05-21
 - branch: codex/post-tenant-isolation-artifact-sync
 - commit: b1c433c4ad45e32861abc9164ab49a4c5a129534
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534](releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534](docs/releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534)
 - visualArtifactSetSha256: d536cdf572fc52848b0377dbce7e69b8785254db61dcd805803c29653c091599
 - commitPushStatus: pushed to origin/main
 

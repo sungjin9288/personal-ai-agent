@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T18:08:50.959Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T18:08:43.386Z
 - branch: codex/post-tenant-isolation-artifact-sync
 - commit: b1c433c4ad45e32861abc9164ab49a4c5a129534
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b1c433c4ad45e32861abc9164ab49a4c5a129534/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
