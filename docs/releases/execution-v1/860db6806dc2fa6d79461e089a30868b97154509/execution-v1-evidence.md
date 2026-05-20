@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T00:53:51.717Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T00:53:44.026Z
 - branch: codex/provider-live-validation-stop-condition-wording
 - commit: 860db6806dc2fa6d79461e089a30868b97154509

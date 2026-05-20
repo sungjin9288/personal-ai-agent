@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T00:53:51.717Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T00:53:44.061Z
 - branch: codex/provider-live-validation-stop-condition-wording
 - commit: 860db6806dc2fa6d79461e089a30868b97154509
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

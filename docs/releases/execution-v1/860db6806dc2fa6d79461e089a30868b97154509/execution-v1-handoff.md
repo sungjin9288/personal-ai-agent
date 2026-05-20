@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T00:53:51.717Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T00:53:50.443Z
 - localDate: 2026-05-20
 - branch: codex/provider-live-validation-stop-condition-wording
 - commit: 860db6806dc2fa6d79461e089a30868b97154509
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509](releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509](docs/releases/execution-v1/860db6806dc2fa6d79461e089a30868b97154509)
 - visualArtifactSetSha256: 7486198eac903580d276dc51636bbc74d4d2d27ac4962199177b35aac9e61d92
 - commitPushStatus: not pushed, origin/codex/provider-live-validation-stop-condition-wording not found
 
