@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T14:54:13.773Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T14:54:05.760Z
 - branch: codex/hosted-identity-session-proof-detail
 - commit: 694ce2f3208836113bd9fc51a91f2b2bf50ee4ae

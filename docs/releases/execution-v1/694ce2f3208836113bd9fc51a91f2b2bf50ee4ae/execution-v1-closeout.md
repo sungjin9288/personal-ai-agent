@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T14:54:13.773Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T14:54:05.792Z
 - branch: codex/hosted-identity-session-proof-detail
 - commit: 694ce2f3208836113bd9fc51a91f2b2bf50ee4ae
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/694ce2f3208836113bd9fc51a91f2b2bf50ee4ae/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
