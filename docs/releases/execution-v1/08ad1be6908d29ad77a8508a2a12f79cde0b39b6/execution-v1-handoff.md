@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T21:34:22.787Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T21:34:21.486Z
 - localDate: 2026-05-21
 - branch: codex/post-slo-artifact-sync
 - commit: 08ad1be6908d29ad77a8508a2a12f79cde0b39b6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6](releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6](docs/releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6)
 - visualArtifactSetSha256: 83ce8a8132e37dc698ab8b0aeaa9253f38ddcb5dd30f72fa1fd01af06259e179
 - commitPushStatus: pushed to origin/main
 

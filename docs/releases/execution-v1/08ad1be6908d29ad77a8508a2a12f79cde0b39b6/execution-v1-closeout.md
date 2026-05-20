@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T21:34:22.787Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T21:34:14.982Z
 - branch: codex/post-slo-artifact-sync
 - commit: 08ad1be6908d29ad77a8508a2a12f79cde0b39b6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/08ad1be6908d29ad77a8508a2a12f79cde0b39b6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
