@@ -114,9 +114,16 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityProvider, 'anthropic');
   assert.equal(
     status.releaseReadiness.productionBlockers.some((item) =>
-      item.includes('Anthropic and Hermes live validations are not complete'),
+      item.includes('provider live validation completion evidence for Anthropic and Hermes is incomplete'),
     ),
     true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.productionBlockers.some((item) =>
+      item.includes('Anthropic and Hermes live validations are not complete'),
+    ),
+    false,
     JSON.stringify(status.releaseReadiness),
   );
   assert.equal(

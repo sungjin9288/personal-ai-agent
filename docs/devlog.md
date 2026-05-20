@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Provider Live Validation Stop-Condition Detail Alignment
+
+- expanded the production-ready Anthropic and Hermes live validation blocker so it names Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, Anthropic live command result, Hermes target provider architecture approval, HERMES_PROVIDER_MODEL pinning, Hermes endpoint and secret injection, Hermes live command result, mission/session provenance, telemetry, failureKind taxonomy, fallback or disable decision, remediation owner, next review date, release artifact hygiene, and regenerated execution snapshot evidence
+- kept provider live validation completion separate from provider account and provider architecture approval while making the blocker match the included-provider live validation evidence packet
+- extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic Anthropic and Hermes live validation wording
+
 ## 2026-05-20 Target Deployment Contract Stop-Condition Detail Alignment
 
 - expanded the production-ready target deployment contract blocker so it names target deployment name, deployment profile decision, mandatory control evidence, provider readiness evidence, identity and tenant evidence, secret and observability evidence, data lifecycle and support evidence, clean release artifact evidence, stop-condition decision, and production-ready claim decision
