@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T00:29:00.116Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T00:28:58.607Z
 - localDate: 2026-05-20
 - branch: codex/target-deployment-contract-stop-condition-wording
 - commit: 50fdaebb239b07d49168e451c02f73820e69758d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d](releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d](docs/releases/execution-v1/50fdaebb239b07d49168e451c02f73820e69758d)
 - visualArtifactSetSha256: 35dff0188305ffd6ea7a01218f85d079cc5343d5c172044656f213eca1ea9cbe
 - commitPushStatus: not pushed, origin/codex/target-deployment-contract-stop-condition-wording not found
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Target Deployment Contract Stop-Condition Detail Alignment
+
+- expanded the production-ready target deployment contract blocker so it names target deployment name, deployment profile decision, mandatory control evidence, provider readiness evidence, identity and tenant evidence, secret and observability evidence, data lifecycle and support evidence, clean release artifact evidence, stop-condition decision, and production-ready claim decision
+- kept the target deployment contract as a target-environment evidence gate while making the blocker match the target deployment contract capture template and mandatory-control review boundary
+- extended production readiness, production-like drill, and target deployment contract smoke guards so release artifacts cannot fall back to generic target-environment evidence wording
+
 ## 2026-05-20 Target Provider Operations Stop-Condition Detail Alignment
 
 - expanded the production-ready target provider operations blocker so it names completed per-provider capture template, branch and commit, release label and deployment boundary, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota/cost/resource guard proof, fallback and disable proof, provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, artifact hygiene, production readiness gate result, residual risk, and provider failure containment plan
