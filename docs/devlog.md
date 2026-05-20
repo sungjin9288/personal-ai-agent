@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-20 Hermes Pilot-Scope Blocker Stop-Condition Detail Alignment
+
+- expanded the pilot-scope Hermes live validation blocker so it names endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary Hermes live validation pass, release artifact hygiene, and regenerated execution snapshot evidence
+- kept the runtime live helper missing-env state separate while making the pilot-scope blocker match the target Hermes provider architecture evidence contract
+- extended production readiness smoke guards so pilot-ready blockers cannot fall back to generic HERMES_PROVIDER_MODEL missing-env wording
+
 ## 2026-05-20 Anthropic Open Blocker Stop-Condition Detail Alignment
 
 - expanded the current open Anthropic live validation blocker so it names billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation pass, mission/session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene, and regenerated execution snapshot evidence
