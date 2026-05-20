@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T15:05:37.956Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T15:05:36.344Z
 - localDate: 2026-05-21
 - branch: codex/post-hosted-identity-artifact-sync
 - commit: 5b9b72074cc1cc9a30bdb589517bcc88da742cfd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd](releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd](docs/releases/execution-v1/5b9b72074cc1cc9a30bdb589517bcc88da742cfd)
 - visualArtifactSetSha256: e5993f277dee94ffb627e901fbf2718ee4c6da0a1556c26070ace1cfce83ca86
 - commitPushStatus: pushed to origin/main
 
