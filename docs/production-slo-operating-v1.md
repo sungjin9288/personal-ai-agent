@@ -1,9 +1,9 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-19T05:49:51.502Z
-- sourceBranch: codex/production-slo-operating-stop-condition-wording
-- sourceCommit: c1ed053abbbeb8219a799f485ec4bddd52ab9a97
+- generatedAt: 2026-05-20T19:26:01.893Z
+- sourceBranch: codex/observability-proof-detail
+- sourceCommit: 057d50916929df1750c48c69bd4b3244d2c36b24
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
@@ -30,20 +30,20 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 437 | 5s | yes |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 337 | 5s | yes |
-| `npm run smoke:target-slo-operations` | pass | 0 | 382 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 431 | 5s | yes |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 382 | 5s | yes |
-| `npm run smoke:target-observability-operations` | pass | 0 | 474 | 5s | yes |
-| `npm run smoke:support-escalation-review` | pass | 0 | 373 | 5s | yes |
-| `npm run smoke:target-support-architecture` | pass | 0 | 368 | 5s | yes |
-| `npm run smoke:target-support-operations` | pass | 0 | 418 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 1054 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 664 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 418 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 992 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1248 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 144 | 5s | yes |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 135 | 5s | yes |
+| `npm run smoke:target-slo-operations` | pass | 0 | 136 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 144 | 5s | yes |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 141 | 5s | yes |
+| `npm run smoke:target-observability-operations` | pass | 0 | 139 | 5s | yes |
+| `npm run smoke:support-escalation-review` | pass | 0 | 144 | 5s | yes |
+| `npm run smoke:target-support-architecture` | pass | 0 | 151 | 5s | yes |
+| `npm run smoke:target-support-operations` | pass | 0 | 144 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 450 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 240 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 146 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 375 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 616 | 10s | yes |
 
 ## Key Signals
 
@@ -153,7 +153,7 @@ Production-ready remains blocked until the approved target environment provides 
     "artifactSyncCommit": false,
     "deterministic": "8/8",
     "runtimeRows": 8,
-    "snapshotCommit": "c1ed053abbbeb8219a799f485ec4bddd52ab9a97"
+    "snapshotCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -164,7 +164,7 @@ Production-ready remains blocked until the approved target environment provides 
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "c1ed053abbbeb8219a799f485ec4bddd52ab9a97"
+    "verifiedCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -175,7 +175,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "c1ed053abbbeb8219a799f485ec4bddd52ab9a97"
+    "verifiedCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -209,8 +209,8 @@ Production-ready remains blocked until the approved target environment provides 
 - target SLO architecture remains the gate for customer SLO terms, error budget, telemetry measurement, alert acknowledgement, on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, and service credit decision requirements
 - target SLO operations remains the gate for customer-approved SLO/SLA terms, error budget, target telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, and missed-SLO containment evidence requirements
 - observability telemetry remains the gate for local telemetry signals, alert triggers, and handoff requirements
-- target observability architecture remains the gate for telemetry backend, signal taxonomy, alert routing, on-call staffing, retention, customer communication, incident response, audit, and disaster recovery decisions
-- target observability operations remains the gate for telemetry pipeline, alert delivery, on-call routing, customer status communication, and incident review evidence requirements
+- target observability architecture remains the gate for approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, retention proof, customer communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
+- target observability operations remains the gate for telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 - target support architecture remains the gate for staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decision requirements
 - target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements

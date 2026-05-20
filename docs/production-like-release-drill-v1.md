@@ -1,9 +1,9 @@
 # Production-Like Release Drill v1
 
 - status: dry-run-evidence-current
-- generatedAt: 2026-05-20T18:09:02.333Z
-- branch: codex/post-tenant-isolation-artifact-sync
-- verifiedCommit: b1c433c4ad45e32861abc9164ab49a4c5a129534
+- generatedAt: 2026-05-20T19:26:12.850Z
+- branch: codex/observability-proof-detail
+- verifiedCommit: 057d50916929df1750c48c69bd4b3244d2c36b24
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local deterministic production-like release drill
 - productionReadyClaim: false
@@ -34,51 +34,51 @@ Production-ready remains blocked until the target deployment model produces targ
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 93 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 90 |
-| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 90 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 90 |
-| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 92 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 91 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 89 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-support-operations` | pass | 0 | 90 |
-| `npm run smoke:secret-management` | pass | 0 | 90 |
-| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 89 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 90 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 88 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 89 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 92 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 92 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 91 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 91 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 90 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 90 |
-| `npm run smoke:production-slo-operating` | pass | 0 | 92 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1266 |
-| `npm run smoke:production-enterprise-controls` | pass | 0 | 121 |
-| `npm run smoke:production-provider-readiness` | pass | 0 | 91 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 90 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 90 |
-| `npm run smoke:target-local-provider-architecture` | pass | 0 | 89 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 90 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 90 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 91 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 90 |
-| `npm run smoke:production-retention-operating` | pass | 0 | 91 |
-| `npm run smoke:clean-deployment-release` | pass | 0 | 97 |
-| `npm run smoke:execution-v1-status` | pass | 0 | 358 |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 125 |
-| `npm run smoke:production-readiness-gate` | pass | 0 | 96 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 94 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 243 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 103 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 104 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 382 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 141 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 144 |
+| `npm run smoke:hosted-identity-session-architecture` | pass | 0 | 145 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 139 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 145 |
+| `npm run smoke:hosted-tenant-isolation-architecture` | pass | 0 | 143 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 140 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 136 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 142 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 143 |
+| `npm run smoke:target-support-operations` | pass | 0 | 142 |
+| `npm run smoke:secret-management` | pass | 0 | 144 |
+| `npm run smoke:target-secret-manager-architecture` | pass | 0 | 144 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 138 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 136 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 137 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 142 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 139 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 139 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 139 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 141 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 146 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 135 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 139 |
+| `npm run smoke:production-slo-operating` | pass | 0 | 144 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1337 |
+| `npm run smoke:production-enterprise-controls` | pass | 0 | 140 |
+| `npm run smoke:production-provider-readiness` | pass | 0 | 139 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 141 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 143 |
+| `npm run smoke:target-local-provider-architecture` | pass | 0 | 145 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 140 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 142 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 144 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 140 |
+| `npm run smoke:production-retention-operating` | pass | 0 | 144 |
+| `npm run smoke:clean-deployment-release` | pass | 0 | 150 |
+| `npm run smoke:execution-v1-status` | pass | 0 | 423 |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 184 |
+| `npm run smoke:production-readiness-gate` | pass | 0 | 154 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 150 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 372 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 161 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 170 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 587 |
 
 ## Key Signals
 
@@ -494,11 +494,11 @@ Production-ready remains blocked until the target deployment model produces targ
 {
     "artifactState": "local-current",
     "artifactSyncCommit": false,
-    "branch": "codex/post-tenant-isolation-artifact-sync",
+    "branch": "codex/observability-proof-detail",
     "deterministic": "8/8",
     "referenceAdoptionReady": true,
     "runtimeRows": 8,
-    "snapshotCommit": "b1c433c4ad45e32861abc9164ab49a4c5a129534"
+    "snapshotCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -509,7 +509,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "b1c433c4ad45e32861abc9164ab49a4c5a129534"
+    "verifiedCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -557,7 +557,7 @@ Production-ready remains blocked until the target deployment model produces targ
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "b1c433c4ad45e32861abc9164ab49a4c5a129534"
+    "verifiedCommit": "057d50916929df1750c48c69bd4b3244d2c36b24"
   }
 ```
 
@@ -616,9 +616,9 @@ Production-ready remains blocked until the target deployment model produces targ
 - hosted tenant isolation architecture is not approved, and hosted tenant isolation architecture evidence for tenant identity source proof with tenant source owner, customer organization mapping, lifecycle owner, trust policy, and source approval, tenant lifecycle proof with create, suspend, restore, delete, owner transfer, exception review, and orphan tenant review, tenant-aware authorization proof with policy, service-to-service tenant propagation, stale permission denial, delegated admin boundary, and denial owner, storage partitioning proof for runtime state, artifacts, memory, search, exports, indexes, schema/bucket/keyspace boundary, and migration safety, per-tenant encryption and key ownership proof with key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision, backup/restore isolation proof with tenant-scoped backup creation, restore authorization, integrity result, other-tenant non-interference, and post-restore denial, tenant administration proof with create, suspend, restore, delete, role delegation, customer approval, audit history, rollback route, and tenant admin owner, cross-tenant denial proof across API, storage, memory, search, export, delete, backup, support, and observability, observability/support isolation proof with tenant-scoped logs, traces, alerts, support ticket visibility, incident review, customer status routing, evidence export, and support owner, lifecycle isolation proof with retention, export, delete, provider transcript, legal hold, backup expiry, post-delete absence, and lifecycle owner, migration plan, rollback, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment
 - target tenant isolation operations evidence for tenant identity source proof with source owner, customer organization mapping, tenant lifecycle owner, trust policy, source approval, and orphan tenant review, tenant-scoped authorization proof with permission policy, service propagation, stale permission denial, delegated admin boundary, and denial owner, storage partitioning proof for runtime state, artifacts, memory, search, exports, indexes, schema/bucket/keyspace boundary, and migration safety, per-tenant encryption/key ownership proof with key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision, backup/restore isolation proof with tenant-scoped backup selection, restore authorization, integrity result, other-tenant non-interference, post-restore denial, backup owner, and restore rollback route, tenant administration proof with create, suspend, restore, delete, role delegation, customer approval, audit history, rollback route, tenant admin owner, and approval expiry, cross-tenant denial proof across API, storage, memory, search, export, delete, backup, support, and observability, observability/support isolation proof with tenant-scoped logs, traces, alerts, support ticket visibility, incident review, customer status routing, evidence export, support owner, and retention class, lifecycle isolation proof with retention, export, delete, provider transcript, legal hold, backup expiry, post-delete absence, lifecycle owner, and exception policy, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment
 - target secret manager architecture is not approved, and target secret manager architecture evidence for approved platform proof with provider, region, tenancy boundary, owner, and fallback decision, secret class inventory proof with provider, environment, owner, rotation cadence, and allowed consumers, runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths, least-privilege access policy proof with reader, writer, admin, reviewer, service binding, and deny-by-default evidence, rotation and revocation event proof with previous secret invalidation and downstream redeploy or reload result, secret access audit log proof for read, write, rotate, revoke, break-glass, and failed access attempts, break-glass governance proof with approval, expiry, monitoring, customer notification, revocation, and post-use review, leakage review proof across production logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors, disaster recovery proof for secret backup, restore, key recovery, region outage, rollback, and compromised-secret containment, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment
-- target observability architecture is not approved, and target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, and customer communication containment is not generated from a production-like environment
-- target observability operations evidence for telemetry ingestion, alert delivery, trace/log retention, staffed on-call routing and acknowledgement, customer-facing status communication, incident response, and incident review history is not generated from a production-like environment
-- target deployment contract evidence for target deployment name with approved target environment name, company/workspace scope, deployment owner, evidence owner, review date, and release label, deployment profile decision with selected deployment profile, approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval reference, mandatory control evidence with every mandatory control, required command output, production readiness gate result, and unresolved blocker list, provider readiness evidence with completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection, target-boundary live validation, quota/cost/resource guard, fallback evidence, and provider failure containment proof, identity and tenant evidence with hosted identity/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, target identity/session operations, hosted tenant isolation approval, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, target tenant isolation operations, RBAC/session audit, tenant storage boundary, storage partitioning proof, encryption/key ownership proof, backup/restore isolation proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, release artifact hygiene, and regenerated execution snapshot evidence, secret and observability evidence with target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, telemetry backend, alert route, log/trace retention, target observability operations, target SLO architecture, target SLO operations, and incident review evidence, data lifecycle and support evidence with target data lifecycle approval, retention/export/delete proof, provider transcript handling, backup/restore evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence, clean release artifact evidence with target clean deployment architecture, target clean deployment operations, clean deployment run, dependency/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, and failed-deployment containment, stop-condition decision with explicit stop conditions, residual blockers, accepted risks, blocker owner, remediation owner, and next review date, and production-ready claim decision with decision owner, approval or rejection summary, allowed claim text, evidence commit, snapshot path, and regeneration command references is not generated from a production-like environment
+- target observability architecture is not approved, and target observability architecture evidence for approved telemetry backend, region, tenancy boundary, owner, fallback, and data residency, signal inventory for release, provider, mission, approval, runtime, security, support, and incident domains, ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events, alert routing with severity mapping, primary and secondary routes, retry policy, acknowledgement SLA, and delivery receipts, staffed on-call proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, log and trace retention with storage class, redaction policy, query role, customer export boundary, and deletion path, customer status communication, incident response, audit export, disaster recovery, migration plan, rollback, false-positive triage, alert fatigue, customer communication containment, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment
+- target observability operations evidence for telemetry ingestion proof with metrics, logs, traces, audit events, provider events, release events, and support events, alert delivery proof with route, severity, delivery receipt, retry policy, acknowledgement SLA, and escalation evidence, trace/log retention proof with period, storage class, redaction policy, query role, customer export boundary, deletion path, and query access audit, staffed on-call routing and acknowledgement proof with rota, primary and backup owner, handoff rule, timezone coverage, acknowledgement timestamp, and escalation chain, customer-facing status communication proof with route, owner, approval, timestamp, message, cadence, and closure evidence, incident response proof with timeline, mitigation owner, customer impact, review decision, corrective actions, due dates, and closure evidence, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence is not generated from a production-like environment
+- target deployment contract evidence for target deployment name with approved target environment name, company/workspace scope, deployment owner, evidence owner, review date, and release label, deployment profile decision with selected deployment profile, approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval reference, mandatory control evidence with every mandatory control, required command output, production readiness gate result, and unresolved blocker list, provider readiness evidence with completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection, target-boundary live validation, quota/cost/resource guard, fallback evidence, and provider failure containment proof, identity and tenant evidence with hosted identity/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, target identity/session operations, hosted tenant isolation approval, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, target tenant isolation operations, RBAC/session audit, tenant storage boundary, storage partitioning proof, encryption/key ownership proof, backup/restore isolation proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, release artifact hygiene, and regenerated execution snapshot evidence, secret and observability evidence with target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, target observability operations evidence, target SLO architecture, target SLO operations, incident review evidence, release artifact hygiene, and regenerated execution snapshot evidence, data lifecycle and support evidence with target data lifecycle approval, retention/export/delete proof, provider transcript handling, backup/restore evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence, clean release artifact evidence with target clean deployment architecture, target clean deployment operations, clean deployment run, dependency/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, and failed-deployment containment, stop-condition decision with explicit stop conditions, residual blockers, accepted risks, blocker owner, remediation owner, and next review date, and production-ready claim decision with decision owner, approval or rejection summary, allowed claim text, evidence commit, snapshot path, and regeneration command references is not generated from a production-like environment
 - target SLO architecture is not approved, and target SLO/SLA architecture evidence for customer-approved availability, latency, error rate, support response, maintenance window, exclusions, decision owner, error budget policy with measurement window, budget owner, burn-rate threshold, freeze rule, exception handling, review cadence, telemetry measurement proof for metrics backend, uptime check, synthetic probe, latency histogram, provider failure signal, data source owner, retention period, alert acknowledgement proof with severity mapping, route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, audit record, staffed on-call proof with rota, primary and secondary owner, handoff rule, timezone coverage, absence handling, escalation chain, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment is not generated from a production-like environment
 - target SLO operations evidence for customer-approved SLO/SLA terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance/degradation, service credit, evidence retention, and missed-SLO containment is not generated from a production-like environment
 - target data lifecycle architecture is not approved, and target data lifecycle architecture evidence for customer-approved data class matrix with legal basis, owner, retention window, exportability, delete eligibility, and exception policy, target retention configuration with enforcement timestamp, storage boundary, policy owner, reviewer, and audit record, export request proof with requester, approver, package scope, delivery boundary, encryption mode, package hash, and customer receipt, delete request proof with authorization, confirmation control, execution owner, storage scope, timestamp, and audit record, provider transcript policy proof with provider-side retention, deletion or non-retention evidence, exception review, and customer disclosure, post-delete absence evidence across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries, backup architecture proof with schedule, encrypted storage, storage class, retention class, missed-run handling, owner acknowledgement, and access audit, restore validation proof with objective, duration, restored data class inventory, integrity proof, tenant isolation, cross-tenant denial, and validation owner, backup key ownership proof with key owner, rotation cadence, revocation, break-glass, expiry/delete evidence, and access audit, disaster recovery evidence with owner, runbook execution, outage scenario, restore priority, customer communication, rollback path, residual risk decision, migration plan, rollback, legal hold, delete conflict, provider transcript exception, and customer communication containment is not generated from a production-like environment
