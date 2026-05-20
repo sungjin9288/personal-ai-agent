@@ -233,7 +233,7 @@ Remaining blockers outside this scope:
 
 - Anthropic live validation remains blocked until target Anthropic provider account evidence for billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary npm run live:execution-v1:anthropic pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot is recorded
 - target local provider architecture remains blocked until approved target-boundary endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence are recorded
-- Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`
+- Hermes live validation remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot is recorded
 
 Pilot-ready can be claimed only for the validated provider and approved deployment boundary.
 

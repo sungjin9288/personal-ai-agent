@@ -132,6 +132,14 @@ assert.match(
   pilotReadySection,
   /release evidence is synchronized through the current execution-v1 snapshot and `artifact-sync-current` smoke state/,
 );
+assert.match(
+  pilotReadySection,
+  /Hermes live validation remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot is recorded/,
+);
+assert.doesNotMatch(
+  pilotReadySection,
+  /Hermes live validation is blocked by missing `HERMES_PROVIDER_MODEL`/,
+);
 assert.match(pilotReadySection, /Pilot-ready can be claimed only for the validated provider and approved deployment boundary\./);
 assert.match(productionReadySection, /^Status: blocked\./m);
 assert.match(productionReadySection, /Production-ready must not be claimed from the current state\./);
