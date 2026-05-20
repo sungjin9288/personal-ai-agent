@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-20T19:36:27.453Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-20T19:36:26.104Z
 - localDate: 2026-05-21
 - branch: codex/post-observability-artifact-sync
 - commit: 1fd136a4d5459ad370fc4b0425015b04bb39402f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f](releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f](docs/releases/execution-v1/1fd136a4d5459ad370fc4b0425015b04bb39402f)
 - visualArtifactSetSha256: 2b982f5e7c822f7d6de4fd1fecb5f9121c486de67721fcbe1ddd97d9637997d8
 - commitPushStatus: pushed to origin/main
 
