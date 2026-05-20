@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T21:24:44.333Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T21:24:36.562Z
 - branch: codex/slo-proof-detail
 - commit: e4d4a61ed0cad6f5619ad18694457286ef6f88f6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e4d4a61ed0cad6f5619ad18694457286ef6f88f6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
