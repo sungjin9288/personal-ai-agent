@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T15:05:37.956Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T15:05:29.951Z
 - branch: codex/post-hosted-identity-artifact-sync
 - commit: 5b9b72074cc1cc9a30bdb589517bcc88da742cfd
