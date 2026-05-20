@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-20T02:48:19.564Z
-- sourceBranch: codex/local-provider-blocker-stop-condition-wording
-- sourceCommit: 01cbee8d1f315c030b87f4dc84eebeccac5d5630
+- generatedAt: 2026-05-20T03:19:49.155Z
+- sourceBranch: codex/hermes-current-blocker-stop-condition-wording
+- sourceCommit: 1c292acfc3676b678e8927b71cef70d04db9c02f
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 9337 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 13226 |
 
 ## Key Signals
 
@@ -103,7 +103,7 @@ Production-ready remains blocked until every provider included in the target rel
 - archived passed live providers in the current release evidence: OpenAI, local
 - Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
 - local provider live validation is archived as passed for the configured model/endpoint used by this rehearsal, while target local provider architecture remains the production gate
-- Hermes remains blocked until approved Hermes endpoint/model configuration is injected and live validation passes
+- Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage evidence, and provider blocker closure verification
 - target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence

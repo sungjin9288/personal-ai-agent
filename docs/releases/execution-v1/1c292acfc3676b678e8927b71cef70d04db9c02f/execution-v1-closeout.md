@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-20T03:20:04.316Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-20T03:19:47.317Z
 - branch: codex/hermes-current-blocker-stop-condition-wording
 - commit: 1c292acfc3676b678e8927b71cef70d04db9c02f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1c292acfc3676b678e8927b71cef70d04db9c02f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
