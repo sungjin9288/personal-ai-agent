@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-20T05:33:17.679Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-20T05:33:08.254Z
 - branch: codex/hermes-target-architecture-proof-detail
 - commit: d3a5b6c3cbdd6d7ad9f16d482bb83331e3edac24
