@@ -66,8 +66,8 @@ for (const checklistItem of [
   /target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, revocation path, and credential containment evidence/,
   /target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert delivery proof, log\/trace retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target SLO operations evidence for customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
-  /retention classes, export approval, delete execution proof, provider transcript policy, and post-delete absence evidence/,
-  /backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
+  /target retention operations evidence for customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+  /target backup operations evidence for backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
   /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
   /completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register/,
@@ -145,6 +145,14 @@ assert.match(
 );
 assert.match(
   intake,
+  /Retention, export, delete, and backup \| target data lifecycle approval, customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence are proven/,
+);
+assert.match(
+  intake,
+  /retentionBackupEvidence \| customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  intake,
   /target deployment contract, target provider evidence intake, target provider operations, target secret manager architecture, target secret manager, target identity\/session operations, target tenant isolation operations, target observability architecture, target observability operations, target SLO architecture, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/,
 );
 assert.doesNotMatch(
@@ -162,6 +170,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   intake,
   /providerSecretEvidence \| selected providers, completed provider evidence intake references, provider account\/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /retentionBackupEvidence \| retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
 );
 
 assert.match(intake, /## Target Evidence Submission Packet/);

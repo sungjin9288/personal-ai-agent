@@ -133,6 +133,10 @@ assert.match(
   contract,
   /SLO\/SLA operations \| customer-approved SLO\/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident response proof, incident review proof, provider outage handling proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence are proven/,
 );
+assert.match(
+  contract,
+  /Retention, export, delete \| target retention operations evidence is captured with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene, and regenerated execution snapshot evidence, and target backup operations evidence is captured with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.doesNotMatch(
   contract,
   /Hosted identity session architecture \| hosted identity session architecture is approved with customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, audit, break-glass, support impersonation, compliance, and retention decisions/,
@@ -198,6 +202,10 @@ assert.doesNotMatch(
 assert.match(
   contract,
   /secretObservabilityEvidence \| target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log\/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, target observability operations evidence, target SLO architecture approval, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, target SLO operations evidence, incident review evidence, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  contract,
+  /dataLifecycleSupportEvidence \| target data lifecycle approval, target retention operations evidence with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene, and regenerated execution snapshot evidence, target backup operations evidence with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence/,
 );
 assert.doesNotMatch(
   contract,
@@ -275,7 +283,7 @@ for (const blocker of [
   /stop target SLO operations claims until customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop target support claims until the target support architecture record is approved and target support evidence is generated/,
   /stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated/,
-  /stop retention\/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured/,
+  /stop retention\/delete claims until customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop observability claims until telemetry ingestion proof, alert delivery proof, trace\/log retention proof, staffed on-call routing and acknowledgement proof, customer-facing status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop SLO\/SLA claims until customer-approved SLO\/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, incident response proof, customer communication proof, service credit proof, release artifact hygiene result, and regenerated execution snapshot evidence exist/,
   /stop target clean deployment claims until the target clean deployment architecture record is approved and source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment evidence are generated/,
@@ -308,6 +316,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   contract,
   /stop observability claims until target observability telemetry, alert delivery, log\/trace retention, staffed on-call route, customer status communication, and incident review evidence are captured/,
+);
+assert.doesNotMatch(
+  contract,
+  /stop retention\/delete claims until target retention configuration, export approval, delete workflow, provider transcript handling, target backup execution, encrypted storage, backup expiry, and post-delete absence evidence are captured/,
 );
 assert.doesNotMatch(
   contract,

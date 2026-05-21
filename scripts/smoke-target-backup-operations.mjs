@@ -7,6 +7,7 @@ const docsDir = path.join(repoDir, 'docs');
 const targetBackupPath = path.join(docsDir, 'target-backup-operations-v1.md');
 const releaseReadinessPath = path.join(docsDir, 'release-readiness-v1.md');
 const targetContractPath = path.join(docsDir, 'target-deployment-contract-v1.md');
+const intakePath = path.join(docsDir, 'target-environment-evidence-intake-v1.md');
 const deploymentPath = path.join(docsDir, 'deployment-pilot-v1.md');
 const securityPath = path.join(docsDir, 'security-model-v1.md');
 const productPlanPath = path.join(docsDir, 'product-plan-v1.md');
@@ -16,6 +17,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const targetBackup = readRequiredFile(targetBackupPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const targetContract = readRequiredFile(targetContractPath);
+const intake = readRequiredFile(intakePath);
 const deployment = readRequiredFile(deploymentPath);
 const security = readRequiredFile(securityPath);
 const productPlan = readRequiredFile(productPlanPath);
@@ -31,6 +33,8 @@ assert.match(targetBackup, /not target backup evidence/);
 assert.match(targetBackup, /not encrypted backup storage proof/);
 assert.match(targetBackup, /not permission to claim `production-ready`/);
 assert.match(targetBackup, /Target backup operations remain blocked for production-ready claims/);
+assert.match(targetBackup, /release artifact hygiene/);
+assert.match(targetBackup, /regenerated execution snapshot evidence/);
 
 for (const heading of [
   '## Decision Boundary',
@@ -55,11 +59,28 @@ for (const control of [
   assert.match(targetBackup, new RegExp(`\\| ${escapeRegExp(control)} \\|`));
 }
 
+for (const packetItem of [
+  /backup schedule execution proof with backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement/,
+  /encrypted backup storage proof with storage class, encryption mode, retention class, location alias, storage owner, and access audit/,
+  /backup key ownership proof with key owner, rotation cadence, revocation path, break-glass route, expiry\/delete evidence, and access audit/,
+  /restore validation proof with objective, duration, restored data class inventory, checksum or equivalent integrity proof, tenant isolation, cross-tenant denial, and validation owner/,
+  /tenant isolation proof with tenant-scoped backup selection, restore authorization, other-tenant non-interference, post-restore denial, backup owner, and restore rollback route/,
+  /backup expiry\/deletion proof with expiry schedule, delete proof, post-delete absence check, deletion owner, and audit record/,
+  /disaster recovery proof with DR owner, runbook execution, outage scenario, restore priority, customer communication, rollback path, residual risk decision, and audit trail/,
+  /release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result/,
+  /residual recovery risk, next review date, customer handoff decision, and failed-restore containment plan/,
+]) {
+  assert.match(targetBackup, packetItem);
+}
+
 for (const command of [
   'npm run smoke:target-backup-operations',
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:backup-restore-drill',
   'npm run smoke:production-retention-operating',
+  'npm run smoke:target-retention-operations',
+  'npm run smoke:target-deployment-contract',
+  'npm run smoke:target-environment-evidence-intake',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:production-readiness-gate',
 ]) {
@@ -68,12 +89,31 @@ for (const command of [
 
 assert.match(releaseReadiness, /\[target-backup-operations-v1\.md\]\(target-backup-operations-v1\.md\)/);
 assert.match(targetBackup, /\[target-data-lifecycle-architecture-v1\.md\]\(target-data-lifecycle-architecture-v1\.md\)/);
-assert.match(releaseReadiness, /local target backup operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /local target backup operations gate: passed, with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
+);
+assert.match(
+  releaseReadiness,
+  /target backup operations evidence for backup schedule execution proof with backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement, encrypted backup storage proof with storage class, encryption mode, retention class, location alias, and access audit, backup key ownership proof with key owner, rotation cadence, revocation path, break-glass route, expiry\/delete evidence, and access audit, restore validation proof with objective, duration, restored data class inventory, checksum or integrity proof, tenant isolation, cross-tenant denial, and validation owner, backup expiry\/deletion proof with expiry schedule, delete proof, post-delete absence check, and audit record, disaster recovery proof with DR owner, runbook execution, outage scenario, restore priority, customer communication, rollback path, residual risk decision, and audit trail, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target backup operations evidence for backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry\/deletion, disaster recovery runbook, and audit trail/,
+);
 assert.match(
   targetContract,
   /local retention, tenant lifecycle, target data lifecycle architecture, target retention operations, backup\/restore drill, and target backup operations gates pass/,
 );
+assert.match(
+  targetContract,
+  /target backup operations evidence is captured with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
 assert.match(targetContract, /npm run smoke:target-backup-operations/);
+assert.match(
+  intake,
+  /target backup operations evidence for backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
 assert.match(deployment, /## Target Backup Operations Gate/);
 assert.match(deployment, /npm run smoke:target-backup-operations/);
 assert.match(security, /\[target-backup-operations-v1\.md\]\(target-backup-operations-v1\.md\)/);
@@ -89,6 +129,7 @@ console.log(
       path: 'docs/target-backup-operations-v1.md',
       productionReadyClaim: false,
       recoveryPacketItemCount: 10,
+      requiredCommandCount: 9,
     },
     null,
     2,
