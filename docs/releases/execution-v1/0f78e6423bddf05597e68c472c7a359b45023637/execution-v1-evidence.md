@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-21T08:23:05.856Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-21T08:22:57.595Z
 - branch: codex/support-operations-proof-detail
 - commit: 0f78e6423bddf05597e68c472c7a359b45023637

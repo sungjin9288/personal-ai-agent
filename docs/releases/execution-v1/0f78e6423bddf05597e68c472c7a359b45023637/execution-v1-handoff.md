@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-21T08:23:05.856Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-21T08:23:04.458Z
 - localDate: 2026-05-21
 - branch: codex/support-operations-proof-detail
 - commit: 0f78e6423bddf05597e68c472c7a359b45023637
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637](releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637](docs/releases/execution-v1/0f78e6423bddf05597e68c472c7a359b45023637)
 - visualArtifactSetSha256: 8d1e3d2c188906013f625132e9447043a51715fc7ef789de1c97b4310eff9665
 - commitPushStatus: not pushed, origin/codex/support-operations-proof-detail not found
 

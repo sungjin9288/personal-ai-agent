@@ -1,9 +1,9 @@
 # Production SLO Operating Rehearsal v1
 
 - status: local-slo-operating-current
-- generatedAt: 2026-05-20T21:34:27.380Z
-- sourceBranch: codex/post-slo-artifact-sync
-- sourceCommit: 08ad1be6908d29ad77a8508a2a12f79cde0b39b6
+- generatedAt: 2026-05-21T08:23:20.361Z
+- sourceBranch: codex/support-operations-proof-detail
+- sourceCommit: 0f78e6423bddf05597e68c472c7a359b45023637
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local production-like SLO/SLA operating rehearsal
 - productionReadyClaim: false
@@ -30,20 +30,20 @@ Production-ready remains blocked until the approved target environment provides 
 
 | Command | Result | Exit Code | Duration Ms | Local Target | Within Target |
 | --- | --- | ---: | ---: | --- | --- |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 113 | 5s | yes |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 110 | 5s | yes |
-| `npm run smoke:target-slo-operations` | pass | 0 | 110 | 5s | yes |
-| `npm run smoke:observability-telemetry` | pass | 0 | 110 | 5s | yes |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 112 | 5s | yes |
-| `npm run smoke:target-observability-operations` | pass | 0 | 114 | 5s | yes |
-| `npm run smoke:support-escalation-review` | pass | 0 | 111 | 5s | yes |
-| `npm run smoke:target-support-architecture` | pass | 0 | 112 | 5s | yes |
-| `npm run smoke:target-support-operations` | pass | 0 | 112 | 5s | yes |
-| `npm run smoke:execution-v1-status` | pass | 0 | 397 | 15s | yes |
-| `npm run smoke:execution-v1-snapshot` | pass | 0 | 197 | 15s | yes |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 114 | 5s | yes |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 292 | 10s | yes |
-| `npm run smoke:runtime-isolation` | pass | 0 | 459 | 10s | yes |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 111 | 5s | yes |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 115 | 5s | yes |
+| `npm run smoke:target-slo-operations` | pass | 0 | 124 | 5s | yes |
+| `npm run smoke:observability-telemetry` | pass | 0 | 115 | 5s | yes |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 114 | 5s | yes |
+| `npm run smoke:target-observability-operations` | pass | 0 | 118 | 5s | yes |
+| `npm run smoke:support-escalation-review` | pass | 0 | 116 | 5s | yes |
+| `npm run smoke:target-support-architecture` | pass | 0 | 120 | 5s | yes |
+| `npm run smoke:target-support-operations` | pass | 0 | 123 | 5s | yes |
+| `npm run smoke:execution-v1-status` | pass | 0 | 423 | 15s | yes |
+| `npm run smoke:execution-v1-snapshot` | pass | 0 | 216 | 15s | yes |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 126 | 5s | yes |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 308 | 10s | yes |
+| `npm run smoke:runtime-isolation` | pass | 0 | 498 | 10s | yes |
 
 ## Key Signals
 
@@ -138,10 +138,10 @@ Production-ready remains blocked until the approved target environment provides 
 
 ```json
 {
-    "controlCount": 6,
+    "controlCount": 8,
     "mode": "target-support-operations",
     "productionReadyClaim": false,
-    "supportPacketItemCount": 10
+    "supportPacketItemCount": 12
   }
 ```
 
@@ -153,7 +153,7 @@ Production-ready remains blocked until the approved target environment provides 
     "artifactSyncCommit": false,
     "deterministic": "8/8",
     "runtimeRows": 8,
-    "snapshotCommit": "08ad1be6908d29ad77a8508a2a12f79cde0b39b6"
+    "snapshotCommit": "0f78e6423bddf05597e68c472c7a359b45023637"
   }
 ```
 
@@ -164,7 +164,7 @@ Production-ready remains blocked until the approved target environment provides 
     "artifactSyncCommit": false,
     "deterministicPassed": 8,
     "runtimeRows": 8,
-    "verifiedCommit": "08ad1be6908d29ad77a8508a2a12f79cde0b39b6"
+    "verifiedCommit": "0f78e6423bddf05597e68c472c7a359b45023637"
   }
 ```
 
@@ -175,7 +175,7 @@ Production-ready remains blocked until the approved target environment provides 
     "machinePathFindingCount": 0,
     "scannedFileCount": 48,
     "secretFindingCount": 0,
-    "verifiedCommit": "08ad1be6908d29ad77a8508a2a12f79cde0b39b6"
+    "verifiedCommit": "0f78e6423bddf05597e68c472c7a359b45023637"
   }
 ```
 
@@ -213,7 +213,7 @@ Production-ready remains blocked until the approved target environment provides 
 - target observability operations remains the gate for telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 - target support architecture remains the gate for staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decision requirements
-- target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements
+- target support operations remains the gate for staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 
 ## Operator Re-Run
 
