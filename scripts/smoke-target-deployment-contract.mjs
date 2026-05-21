@@ -70,6 +70,7 @@ for (const control of [
   'Target SLO architecture',
   'Target SLO operations',
   'Target support architecture',
+  'Target support operations',
   'Target data lifecycle architecture',
   'Target clean deployment architecture',
   'Target clean deployment operations',
@@ -124,6 +125,10 @@ assert.match(
 assert.match(
   contract,
   /Target SLO architecture \| target SLO architecture is approved with customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance\/degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  contract,
+  /Target support operations \| target support operations evidence is captured with staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
 assert.match(
   contract,
@@ -205,7 +210,7 @@ assert.match(
 );
 assert.match(
   contract,
-  /dataLifecycleSupportEvidence \| target data lifecycle approval, target retention operations evidence with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene, and regenerated execution snapshot evidence, target backup operations evidence with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence, support architecture approval, staffed support route, escalation audit, customer communication route, and incident review cadence/,
+  /dataLifecycleSupportEvidence \| target data lifecycle approval, target retention operations evidence with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene, and regenerated execution snapshot evidence, target backup operations evidence with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence, target support operations evidence with staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
 assert.doesNotMatch(
   contract,
@@ -281,7 +286,7 @@ for (const blocker of [
   /stop secret management claims until target secret manager injection, rotation, access policy, audit trail, break-glass, and revocation evidence are captured/,
   /stop target SLO\/SLA claims until the target SLO architecture record is approved and customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance\/degradation proof, service credit and contractual escalation proof, migration plan, rollback, communication misfire containment, false-positive alert containment, alert fatigue containment, missed-SLO containment, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop target SLO operations claims until customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
-  /stop target support claims until the target support architecture record is approved and target support evidence is generated/,
+  /stop target support claims until the target support architecture record is approved and staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop target data lifecycle claims until the target data lifecycle architecture record is approved and target data lifecycle evidence is generated/,
   /stop retention\/delete claims until customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop observability claims until telemetry ingestion proof, alert delivery proof, trace\/log retention proof, staffed on-call routing and acknowledgement proof, customer-facing status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
@@ -289,7 +294,7 @@ for (const blocker of [
   /stop target clean deployment claims until the target clean deployment architecture record is approved and source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment evidence are generated/,
   /stop target clean deployment operations claims until source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, evidence retention, and failed-deployment containment evidence are captured/,
   /stop clean deployment claims until source provenance, artifact registry, dependency install, runtime bootstrap, secret injection, environment boundary, smoke\/health, rollback, and release approval evidence are captured/,
-  /stop customer support claims until staffed ownership, support queue routing, customer communication route, ticket audit history, on-call handoff, and incident review cadence are proven in the target environment/,
+  /stop customer support claims until staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence are proven in the target environment/,
 ]) {
   assert.match(contract, blocker);
 }

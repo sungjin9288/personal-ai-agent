@@ -868,7 +868,7 @@ npm run smoke:target-support-architecture
 
 The source of record is [target-support-architecture-v1.md](target-support-architecture-v1.md). It proves staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, incident review governance, required commands, and the target support architecture production gap are present.
 
-Do not claim target support readiness until target support architecture is approved and target support evidence is generated from the approved production-like or hosted target environment.
+Do not claim target support readiness until target support architecture is approved and staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment.
 
 ## Target Support Operations Gate
 
@@ -878,18 +878,18 @@ Before presenting a production-like deployment as support-ready, verify the targ
 npm run smoke:target-support-operations
 ```
 
-The source of record is [target-support-operations-v1.md](target-support-operations-v1.md). It proves staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, on-call handoff, required commands, and the target support production gap are present.
+The source of record is [target-support-operations-v1.md](target-support-operations-v1.md). It proves staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, regenerated execution snapshot evidence, required commands, and the target support production gap are present.
 
 Acceptance:
 
-- target support operation controls cover staffed coverage, queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff
-- support evidence packets include commit, deployment boundary, rota, queue, customer channel, ticket history, on-call acknowledgement, incident closure, hygiene result, residual risk, and handoff decision
-- customer support rules require named support owner, incident commander, customer contact, evidence owner, acknowledgement evidence, hygiene rerun, corrective action, residual risk, and next review date
+- target support operation controls cover staffed coverage, queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, and support data handling
+- support evidence packets include commit, deployment boundary, target support architecture approval, staffed coverage proof, queue routing proof, customer communication proof, ticket audit proof, escalation ownership proof, on-call handoff proof, incident review proof, support data handling proof, hygiene result, regenerated execution snapshot evidence, residual risk, and handoff decision
+- customer support rules require named support owner, incident commander, customer contact, queue owner, escalation owner, incident review owner, evidence owner, acknowledgement evidence, hygiene rerun, regenerated snapshot evidence, corrective action, residual risk, and next review date
 - the generated target support operations gate keeps `productionReadyClaim: false`
 
 Stop condition:
 
-- if target support controls or support evidence requirements are missing, do not present production-like support readiness
+- if target support controls, support evidence requirements, release artifact hygiene result, or regenerated execution snapshot evidence are missing, do not present production-like support readiness
 - if the gate passes, treat it only as a local target support operations evidence contract, not staffed production support, ticketing export, on-call rota, or contractual SLA proof
 
 ## Production-Like Release Drill
