@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-21T09:00:20.959Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-21T08:59:37.603Z
 - branch: codex/clean-deployment-proof-detail
 - commit: 3f97510515c8cb69ee2763e62f1b934a12ccfa1a
