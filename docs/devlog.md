@@ -198,6 +198,12 @@
 - kept the target data lifecycle architecture approval gate separate while making the operations blocker match the detailed target retention and target backup operations evidence packets
 - extended production readiness and production-like drill smoke guards so release artifacts cannot fall back to generic target retention, export, delete, backup, and post-delete absence wording
 
+## 2026-05-21 Target Clean Deployment Operations Proof Detail Tightening
+
+- expanded target clean deployment operations stop-condition wording from domain labels into required proof fields for source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, artifact hygiene, production readiness gate result, residual risk, and failed-deployment containment
+- aligned target deployment contract and target environment intake clean release rows so the target clean deployment operations proof packet cannot be represented by a generic operations label
+- tightened production readiness, production-like drill, target deployment contract, target environment intake, and target clean deployment operations smoke guards against regression to shorthand clean deployment operations evidence wording
+
 ## 2026-05-19 Target Observability Operations Stop-Condition Alignment
 
 - expanded the production-ready target observability operations blocker so it names telemetry ingestion, alert delivery, trace/log retention, staffed on-call routing and acknowledgement, customer-facing status communication, incident response, and incident review history evidence

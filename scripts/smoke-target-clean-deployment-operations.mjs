@@ -110,6 +110,14 @@ assert.match(targetEnvironment, /\[target-clean-deployment-operations-v1\.md\]\(
 assert.match(targetEnvironment, /target clean deployment operations evidence/);
 assert.match(releaseReadiness, /\[target-clean-deployment-operations-v1\.md\]\(target-clean-deployment-operations-v1\.md\)/);
 assert.match(releaseReadiness, /target clean deployment operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target clean deployment operations evidence for source provenance proof with approved branch, commit, review owner, build actor, release tag, tamper-control decision, and source approval, artifact registry proof with immutable artifact id, registry path, sha256, retention policy, access owner, promotion rule, and pull\/download proof, dependency installation proof with lockfile source, install command, cache policy, vulnerability scan result, reproducibility record, install log, and owner, runtime bootstrap proof with deployment profile, runtime root, process manager, health endpoint result, startup log, restart policy, and bootstrap owner, secret injection proof with target secret manager alias, injection path, rotation state, redaction check, break-glass owner, and access audit, environment boundary proof with target environment name, network boundary, storage boundary, tenant profile, operator access policy, and rollback owner, migration and data readiness proof with migration command, seed\/import policy, backup precheck, rollback point, data owner approval, and validation result, smoke and health verification proof with health, auth, provider, tenant isolation, artifact hygiene, release readiness, and target deployment contract results, rollback and recovery proof with rollback artifact, rollback command, recovery time result, validation command, owner, and residual risk decision, release approval proof with change ticket or equivalent approval, approver, evidence packet, customer communication, freeze exception, and final decision owner, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and failed-deployment containment plan is not generated from a production-like environment/,
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target clean deployment operations evidence for source provenance, artifact registry, dependency installation, runtime bootstrap, target secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, evidence retention, and failed-deployment containment is not generated/,
+);
 assert.match(security, /\[target-clean-deployment-operations-v1\.md\]\(target-clean-deployment-operations-v1\.md\)/);
 assert.match(deployment, /## Target Clean Deployment Operations/);
 assert.match(deployment, /npm run smoke:target-clean-deployment-operations/);

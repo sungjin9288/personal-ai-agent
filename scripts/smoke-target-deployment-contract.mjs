@@ -136,6 +136,18 @@ assert.match(
 );
 assert.match(
   contract,
+  /Target clean deployment operations \| target clean deployment operations evidence is captured with source provenance proof with approved branch, commit, review owner, build actor, release tag, tamper-control decision, and source approval, artifact registry proof with immutable artifact id, registry path, sha256, retention policy, access owner, promotion rule, and pull\/download proof, dependency installation proof with lockfile source, install command, cache policy, vulnerability scan result, reproducibility record, install log, and owner, runtime bootstrap proof with deployment profile, runtime root, process manager, health endpoint result, startup log, restart policy, and bootstrap owner, secret injection proof with target secret manager alias, injection path, rotation state, redaction check, break-glass owner, and access audit, environment boundary proof with target environment name, network boundary, storage boundary, tenant profile, operator access policy, and rollback owner, migration\/data readiness proof with migration command, seed\/import policy, backup precheck, rollback point, data owner approval, and validation result, smoke\/health proof with health, auth, provider, tenant isolation, artifact hygiene, release readiness, and target deployment contract results, rollback\/recovery proof with rollback artifact, rollback command, recovery time result, validation command, owner, and residual risk decision, release approval proof with change ticket or equivalent approval, approver, evidence packet, customer communication, freeze exception, and final decision owner, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and failed-deployment containment plan/,
+);
+assert.doesNotMatch(
+  contract,
+  /Target clean deployment operations \| target clean deployment operations evidence is captured with source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, and evidence retention proof/,
+);
+assert.match(
+  contract,
+  /cleanReleaseArtifactEvidence \| target clean deployment architecture, target clean deployment operations proof packet, clean deployment run, dependency\/runtime proof, release snapshot, export package, production-like drill, artifact hygiene result, rollback proof, release approval proof, residual risk decision, and failed-deployment containment/,
+);
+assert.match(
+  contract,
   /SLO\/SLA operations \| customer-approved SLO\/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident response proof, incident review proof, provider outage handling proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence are proven/,
 );
 assert.match(
@@ -292,7 +304,7 @@ for (const blocker of [
   /stop observability claims until telemetry ingestion proof, alert delivery proof, trace\/log retention proof, staffed on-call routing and acknowledgement proof, customer-facing status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured/,
   /stop SLO\/SLA claims until customer-approved SLO\/SLA terms proof, error budget policy proof, target telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, incident response proof, customer communication proof, service credit proof, release artifact hygiene result, and regenerated execution snapshot evidence exist/,
   /stop target clean deployment claims until the target clean deployment architecture record is approved and source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, smoke\/health verification, rollback\/recovery, release approval, and failed-deployment containment evidence are generated/,
-  /stop target clean deployment operations claims until source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, evidence retention, and failed-deployment containment evidence are captured/,
+  /stop target clean deployment operations claims until source provenance proof with approved branch, commit, review owner, build actor, release tag, tamper-control decision, and source approval, artifact registry proof with immutable artifact id, registry path, sha256, retention policy, access owner, promotion rule, and pull\/download proof, dependency installation proof with lockfile source, install command, cache policy, vulnerability scan result, reproducibility record, install log, and owner, runtime bootstrap proof with deployment profile, runtime root, process manager, health endpoint result, startup log, restart policy, and bootstrap owner, secret injection proof with target secret manager alias, injection path, rotation state, redaction check, break-glass owner, and access audit, environment boundary proof with target environment name, network boundary, storage boundary, tenant profile, operator access policy, and rollback owner, migration\/data readiness proof with migration command, seed\/import policy, backup precheck, rollback point, data owner approval, and validation result, smoke\/health proof with health, auth, provider, tenant isolation, artifact hygiene, release readiness, and target deployment contract results, rollback\/recovery proof with rollback artifact, rollback command, recovery time result, validation command, owner, and residual risk decision, release approval proof with change ticket or equivalent approval, approver, evidence packet, customer communication, freeze exception, and final decision owner, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and failed-deployment containment plan are captured/,
   /stop clean deployment claims until source provenance, artifact registry, dependency install, runtime bootstrap, secret injection, environment boundary, smoke\/health, rollback, and release approval evidence are captured/,
   /stop customer support claims until staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence are proven in the target environment/,
 ]) {
@@ -345,6 +357,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   contract,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and Anthropic live validation evidence is generated/,
+);
+assert.doesNotMatch(
+  contract,
+  /stop target clean deployment operations claims until source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration\/data readiness, smoke\/health verification, rollback\/recovery, release approval, evidence retention, and failed-deployment containment evidence are captured/,
 );
 
 assert.match(releaseReadiness, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
