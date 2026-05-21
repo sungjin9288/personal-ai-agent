@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-21 Target Retention and Backup Proof Detail Alignment
+
+- expanded target retention operations and target backup operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so production evidence requires proof-level data class approval, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `productionReadyClaim: false`, target data lifecycle architecture approval, and local retention/backup rehearsal boundaries unchanged while making operations source-of-record wording match the proof-level evidence packets
+- extended target retention operations, target backup operations, target deployment contract, target environment evidence intake, production retention operating, production readiness, and production-like release drill smoke guards so retention/backup claims cannot fall back to generic retention/export/delete/backup shorthand
+
 ## 2026-05-21 Target SLO Proof Detail Alignment
 
 - expanded target SLO architecture and target SLO operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so approval requires customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage proof, maintenance/degradation proof, service credit proof, release artifact hygiene, and regenerated execution snapshot evidence

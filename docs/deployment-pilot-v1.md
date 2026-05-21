@@ -778,13 +778,13 @@ Before presenting a production-like deployment as retention-ready or data-lifecy
 npm run smoke:target-retention-operations
 ```
 
-The source of record is [target-retention-operations-v1.md](target-retention-operations-v1.md). It proves customer-approved data classes, retention configuration, export package approval, delete workflow, provider transcript handling, post-delete absence, required commands, and the target retention production gap are present.
+The source of record is [target-retention-operations-v1.md](target-retention-operations-v1.md). It proves customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene, regenerated execution snapshot evidence requirements, and the target retention production gap are present.
 
 Acceptance:
 
-- target retention operation controls cover customer-approved data classes, retention configuration, export package approval, delete workflow, provider transcript handling, and post-delete absence
-- retention evidence packets include commit, deployment boundary, data class matrix, target retention configuration, export request, delete request, provider transcript handling, post-delete absence, hygiene result, residual risk, and handoff decision
-- data lifecycle rules require data class owner, retention owner, export approver, delete approver, evidence owner, exact lifecycle ids, hygiene rerun, provider transcript review, backup expiry impact, and next review date
+- target retention operation controls cover customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, and post-delete absence proof
+- retention evidence packets include commit, deployment boundary, data class matrix, target retention configuration, export request, delete request, provider transcript handling, post-delete absence, audit history, hygiene result, regenerated execution snapshot evidence, residual risk, and handoff decision
+- data lifecycle rules require data class owner, retention owner, export approver, delete approver, evidence owner, exact lifecycle ids, hygiene rerun, regenerated execution snapshot evidence, provider transcript review, backup expiry impact, and next review date
 - the generated target retention operations gate keeps `productionReadyClaim: false`
 
 Stop condition:
@@ -800,13 +800,13 @@ Before presenting a production-like deployment as backup-ready or disaster-recov
 npm run smoke:target-backup-operations
 ```
 
-The source of record is [target-backup-operations-v1.md](target-backup-operations-v1.md). It proves backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery rules, required commands, and the target backup production gap are present.
+The source of record is [target-backup-operations-v1.md](target-backup-operations-v1.md). It proves backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene, regenerated execution snapshot evidence requirements, and the target backup production gap are present.
 
 Acceptance:
 
-- target backup operation controls cover backup schedule, encrypted storage, key ownership, restore validation, tenant isolation, and backup expiry/deletion
-- recovery evidence packets include commit, deployment boundary, backup policy, storage encryption, key owner, restore result, data inventory, tenant isolation, expiry/delete evidence, DR owner, and readiness gate result
-- disaster recovery rules require backup owner, restore owner, decision owner, restore objective, integrity proof, hygiene rerun, customer communication review, and residual risk record
+- target backup operation controls cover backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, and backup expiry/deletion proof
+- recovery evidence packets include commit, deployment boundary, backup policy, storage encryption, key owner, restore result, data inventory, tenant isolation, expiry/delete evidence, disaster recovery proof, hygiene result, regenerated execution snapshot evidence, and readiness gate result
+- disaster recovery rules require backup owner, restore owner, decision owner, restore objective, integrity proof, hygiene rerun, regenerated execution snapshot evidence, customer communication review, and residual risk record
 - the generated target backup operations gate keeps `productionReadyClaim: false`
 
 Stop condition:
