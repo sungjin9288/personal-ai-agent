@@ -68,7 +68,7 @@ for (const checklistItem of [
   /target SLO operations evidence for customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target retention operations evidence for customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target backup operations evidence for backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
-  /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, and incident review cadence/,
+  /target support operations evidence for target support architecture approval, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
   /completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register/,
   /completed target blocker disposition register with owner, current state, required closing evidence, allowed claim impact, and next verification command/,
@@ -150,6 +150,14 @@ assert.match(
 assert.match(
   intake,
   /retentionBackupEvidence \| customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  intake,
+  /Support operations \| target support architecture approval, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence are proven/,
+);
+assert.match(
+  intake,
+  /supportOperationsEvidence \| target support architecture approval, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.match(
   intake,

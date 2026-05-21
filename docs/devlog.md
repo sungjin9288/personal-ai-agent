@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-21 Target Support Operations Proof Detail Alignment
+
+- expanded target support operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so production support evidence requires staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence
+- kept `productionReadyClaim: false`, `targetSupportApproved: false`, and the local support architecture approval boundary unchanged while making the operations source-of-record wording match the proof-level evidence packet
+- extended target support operations, target deployment contract, target environment evidence intake, production SLO operating, and production readiness smoke guards so support claims cannot fall back to generic rota/queue/ticketing shorthand
+
 ## 2026-05-21 Target Retention and Backup Proof Detail Alignment
 
 - expanded target retention operations and target backup operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so production evidence requires proof-level data class approval, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, backup schedule execution, encrypted backup storage, key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery, release artifact hygiene, and regenerated execution snapshot evidence

@@ -257,7 +257,7 @@ ${keySignalRows}
 - target observability operations remains the gate for telemetry ingestion proof, alert delivery proof, retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 - support escalation review remains the gate for escalation routes, audit packet requirements, incident review cadence, and customer update rules
 - target support architecture remains the gate for staffing model, support queue, severity routing, customer communication, ticket audit, on-call handoff, incident commander ownership, escalation, support data handling, and incident review governance decision requirements
-- target support operations remains the gate for staffed coverage, support queue routing, customer communication, ticket audit history, incident review cadence, and on-call handoff evidence requirements
+- target support operations remains the gate for staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
 
 ## Operator Re-Run
 
