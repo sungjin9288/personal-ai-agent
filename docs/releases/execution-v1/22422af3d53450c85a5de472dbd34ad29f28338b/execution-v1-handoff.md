@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-21T05:41:32.015Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-21T05:41:30.592Z
 - localDate: 2026-05-21
 - branch: codex/retention-backup-proof-detail
 - commit: 22422af3d53450c85a5de472dbd34ad29f28338b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b](releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b](docs/releases/execution-v1/22422af3d53450c85a5de472dbd34ad29f28338b)
 - visualArtifactSetSha256: 6083b952700738828105000605b4679e53116677dec290c9ef19b8d13bf6d84d
 - commitPushStatus: not pushed, origin/codex/retention-backup-proof-detail not found
 
