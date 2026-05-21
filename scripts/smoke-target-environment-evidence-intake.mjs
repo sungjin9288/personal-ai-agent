@@ -69,7 +69,7 @@ for (const checklistItem of [
   /target retention operations evidence for customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target backup operations evidence for backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target support operations evidence for target support architecture approval, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
-  /clean deployment architecture approval, target clean deployment operations evidence, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
+  /clean deployment architecture approval, target clean deployment operations evidence for source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, target secret injection proof, environment boundary proof, migration\/data readiness proof, smoke\/health proof, rollback\/recovery proof, release approval proof, evidence retention proof, and failed-deployment containment, clean deployment run, rollback proof, release snapshot, export package, artifact hygiene result, and failed-deployment containment/,
   /completed target environment evidence submission packet with sanitized manifest, evidence register, reviewer decision, command rerun log, and residual blocker register/,
   /completed target blocker disposition register with owner, current state, required closing evidence, allowed claim impact, and next verification command/,
   /accepted risks, decision owner, and next review date/,
@@ -162,6 +162,18 @@ assert.match(
 assert.match(
   intake,
   /target deployment contract, target provider evidence intake, target provider operations, target secret manager architecture, target secret manager, target identity\/session operations, target tenant isolation operations, target observability architecture, target observability operations, target SLO architecture, target SLO operations, target clean deployment operations, release artifact hygiene, and production readiness gate evidence/,
+);
+assert.match(
+  intake,
+  /Clean release and artifact hygiene \| clean deployment architecture approval, target clean deployment operations proof packet, clean checkout deployment, dependency\/runtime proof, rollback proof, release approval proof, release snapshot, export package, and hygiene report are generated from the target boundary/,
+);
+assert.match(
+  intake,
+  /cleanReleaseEvidence \| target clean deployment operations evidence for source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, target secret injection proof, environment boundary proof, migration\/data readiness proof, smoke\/health proof, rollback\/recovery proof, release approval proof, evidence retention proof, and failed-deployment containment, clean deployment run, dependency\/runtime proof, release snapshot, pilot\/export package, artifact hygiene result, rollback proof, release approval proof, and failed-deployment containment/,
+);
+assert.doesNotMatch(
+  intake,
+  /cleanReleaseEvidence \| target clean deployment operations evidence, clean deployment run, dependency\/runtime proof, release snapshot, pilot\/export package, artifact hygiene result, rollback proof, and failed-deployment containment/,
 );
 assert.doesNotMatch(
   intake,
