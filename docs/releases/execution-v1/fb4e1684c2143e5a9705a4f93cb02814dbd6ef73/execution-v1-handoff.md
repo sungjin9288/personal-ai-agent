@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T14:53:45.138Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T14:53:43.347Z
 - localDate: 2026-05-22
 - branch: codex/main-identity-session-artifact-sync
 - commit: fb4e1684c2143e5a9705a4f93cb02814dbd6ef73
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73](releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73](docs/releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73)
 - visualArtifactSetSha256: b22460d794462523d75a4e06f4f19ecb63585ae8dee969ac18499c6acd651449
 - commitPushStatus: pushed to origin/main
 
