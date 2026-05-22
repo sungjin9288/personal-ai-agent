@@ -1258,10 +1258,10 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
         buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
         buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
       ],
-      nextEvidence: 'Approved Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms/customer approval, quota/spend guard, target-boundary Anthropic live validation pass, telemetry, fallback/stop-condition decision, artifact hygiene, and regenerated execution snapshot.',
+      nextEvidence: 'Target Anthropic provider account evidence for account ownership, billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot evidence.',
       owner: 'provider-ops',
       provider: 'anthropic',
-      stopReason: 'Anthropic billing/credit remediation, target provider account evidence, target secret injection, model access, target-boundary live validation pass, telemetry, fallback decision, and regenerated release artifacts are missing.',
+      stopReason: 'Target Anthropic provider account lacks account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof, ANTHROPIC_API_KEY target secret injection proof, ANTHROPIC_MODEL access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation pass, mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot proof.',
     };
   }
 

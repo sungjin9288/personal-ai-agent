@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T01:04:42.447Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T01:03:57.636Z
 - branch: codex/anthropic-provider-account-action-proof-detail
 - commit: cab6d6e51af20abb6f28eb19e295eb5b1d4ba678
