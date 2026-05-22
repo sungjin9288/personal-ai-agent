@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T08:31:48.254Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T08:31:36.196Z
 - branch: codex/target-retention-backup-ui-proof-detail
 - commit: 3f548a8ca01282a40c1f1119a0806532c761a0df
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

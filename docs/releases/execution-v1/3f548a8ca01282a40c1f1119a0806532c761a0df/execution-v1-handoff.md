@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T08:31:48.254Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T08:31:46.607Z
 - localDate: 2026-05-22
 - branch: codex/target-retention-backup-ui-proof-detail
 - commit: 3f548a8ca01282a40c1f1119a0806532c761a0df
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df](releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df](docs/releases/execution-v1/3f548a8ca01282a40c1f1119a0806532c761a0df)
 - visualArtifactSetSha256: 2c967eb8ad99c47b4089dedf5322a1a924792c74760b93b0aee2fcd8db9d6124
 - commitPushStatus: not pushed, origin/codex/target-retention-backup-ui-proof-detail not found
 
