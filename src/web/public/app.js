@@ -3549,7 +3549,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'identitySessionEvidence',
-      requiredValue: 'customer IdP proof, user lifecycle, session lifecycle, role assignment/revocation, permission propagation, audit export, break-glass, support impersonation, compliance, and retention evidence',
+      requiredValue: 'customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must reference target identity session operations evidence generated from the same boundary',
       primaryDocs: ['docs/hosted-identity-session-architecture-v1.md', 'docs/target-identity-session-operations-v1.md'],
     },
@@ -3712,7 +3712,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-identity-session-operations',
       domain: 'identity/session operations',
-      proofIntent: 'customer IdP, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention evidence are captured',
+      proofIntent: 'target identity session operations evidence with customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'hosted-identity-session-approval-missing',
     },
     {
@@ -3754,7 +3754,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:hosted-identity-session-architecture',
       domain: 'hosted identity/session architecture',
-      proofIntent: 'hosted identity architecture, customer IdP integration, user lifecycle, session controls, authorization, audit, and support boundaries are defined',
+      proofIntent: 'hosted identity session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'hosted-identity-session-approval-missing',
     },
     {
@@ -3982,7 +3982,7 @@ function buildReleaseTargetEvidenceProductionGapText({
   const gapDefinitions = [
     {
       gap: 'hosted identity/session administration',
-      missingProof: 'customer IdP administration, user lifecycle, session lifecycle, role administration, audit export, break-glass, and support impersonation evidence from the hosted target boundary',
+      missingProof: 'customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence from the hosted target boundary',
       requiredEvidence: 'hosted identity/session architecture approval plus target identity/session operations evidence',
       stopCondition: 'hosted-identity-session-approval-missing',
       claimGuard: 'do not claim hosted SaaS or production-ready identity coverage',
@@ -4175,7 +4175,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     {
       exceptionId: 'hosted-identity-session-blocked',
       scope: 'block hosted SaaS identity/session claims until customer IdP and hosted session administration evidence are accepted',
-      requiredEvidence: 'hosted identity/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof',
+      requiredEvidence: 'hosted identity/session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       allowedClaimText: 'local identity/session controls only; hosted identity/session claims remain blocked',
       stopCondition: 'hosted-identity-session-approval-missing',
     },
@@ -5391,7 +5391,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
       id: 'hosted-identity-session-approval',
       blocker: 'hosted identity/session approval',
       currentState: 'customer-approval-required',
-      requiredClosingEvidence: 'hosted identity/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof',
+      requiredClosingEvidence: 'hosted identity/session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       claimImpact: 'hosted identity/session claims remain blocked',
       nextVerificationCommand: 'npm run smoke:hosted-identity-session-architecture && npm run smoke:target-identity-session-operations',
       stopCondition: 'hosted-identity-session-approval-missing',
@@ -5610,7 +5610,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     {
       key: 'identity-session-boundary',
       label: 'Identity and session boundary',
-      requiredBoundary: 'customer IdP, user lifecycle, session policy, role administration, audit export, break-glass, and support impersonation scope',
+      requiredBoundary: 'customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, and customer access containment scope',
       docs: [
         'docs/hosted-identity-session-architecture-v1.md',
         'docs/target-identity-session-operations-v1.md',
