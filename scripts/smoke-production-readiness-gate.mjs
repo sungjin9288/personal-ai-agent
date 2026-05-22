@@ -423,11 +423,15 @@ assert.match(releaseReadiness, /\[production-slo-operating-v1\.md\]\(production-
 assert.match(releaseReadiness, /\[production-retention-operating-v1\.md\]\(production-retention-operating-v1\.md\)/);
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
-assert.match(releaseReadiness, /target provider evidence intake gate: passed, with provider account approval/);
-assert.match(releaseReadiness, /provider blocker closure verification, and `productionReadyClaim: false`/);
+assert.match(
+  releaseReadiness,
+  /target provider evidence intake gate: passed, with provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, failure triage route proof, provider blocker closure verification proof, and `productionReadyClaim: false`/,
+);
 assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
-assert.match(releaseReadiness, /target provider operations gate: passed, with provider account approval/);
-assert.match(releaseReadiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
+assert.match(
+  releaseReadiness,
+  /target provider operations gate: passed, with provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, target blocker closure verification matrix proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment requirements, and `productionReadyClaim: false`/,
+);
 assert.match(releaseReadiness, /\[target-openai-provider-account-v1\.md\]\(target-openai-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-anthropic-provider-account-v1\.md\]\(target-anthropic-provider-account-v1\.md\)/);
 assert.match(releaseReadiness, /\[target-local-provider-architecture-v1\.md\]\(target-local-provider-architecture-v1\.md\)/);

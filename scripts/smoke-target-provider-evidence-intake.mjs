@@ -46,6 +46,14 @@ assert.match(intake, /not provider account remediation proof/);
 assert.match(intake, /not live-provider-complete evidence/);
 assert.match(intake, /not permission to claim `production-ready`/);
 assert.match(intake, /Production-ready remains blocked until every provider included in the target release/);
+assert.match(
+  intake,
+  /approved account status proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, provider blocker closure verification proof, and rollback and fallback decision evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /quota\/cost guard evidence|rollback\/fallback evidence|model\/endpoint pinning|quota\/cost\/resource guard|fallback\/disable path|data\/transcript handling|remediation\/renewal/,
+);
 
 for (const evidenceItem of [
   'Provider account approval',
@@ -120,7 +128,10 @@ assert.match(targetProviderOperations, /## Target Evidence Capture Template/);
 assert.match(targetProviderOperations, /blockerClosureVerificationEvidence/);
 assert.match(targetProviderOperations, /cannot bypass `productionReadyClaim: false` while any stop-condition remains/);
 assert.match(intake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
-assert.match(intake, /target provider operations evidence/);
+assert.match(
+  intake,
+  /target provider operations evidence remains the runtime operations gate for model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment/i,
+);
 assert.match(intake, /Provider blocker closure verification/);
 assert.match(intake, /provider blocker closure verification/);
 assert.match(intake, /target environment blocker closure verification matrix/);
@@ -138,16 +149,25 @@ assert.match(intake, /\[target-hermes-provider-architecture-v1\.md\]\(target-her
 assert.match(intake, /target Hermes provider architecture approval/);
 assert.match(targetContract, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(targetContract, /npm run smoke:target-provider-evidence-intake/);
-assert.match(targetContract, /provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/);
+assert.match(
+  targetContract,
+  /provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, and fallback and stop-condition evidence/,
+);
 assert.match(releaseReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
-assert.match(releaseReadiness, /target provider evidence intake gate: passed/);
-assert.match(releaseReadiness, /provider blocker closure verification, and `productionReadyClaim: false`/);
+assert.match(
+  releaseReadiness,
+  /target provider evidence intake gate: passed, with provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, failure triage route proof, provider blocker closure verification proof, and `productionReadyClaim: false`/,
+);
 assert.match(security, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(deployment, /## Target Provider Evidence Intake/);
 assert.match(deployment, /npm run smoke:target-provider-evidence-intake/);
 assert.match(productPlan, /\[x\] Target provider evidence intake gate implemented/);
 assert.match(readme, /docs\/target-provider-evidence-intake-v1\.md/);
 assert.match(readme, /npm run smoke:target-provider-evidence-intake/);
+assert.match(
+  readme,
+  /local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, and fallback and stop-condition evidence requirements are present/,
+);
 
 console.log(
   JSON.stringify(

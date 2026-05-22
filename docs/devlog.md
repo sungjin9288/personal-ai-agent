@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Provider Operations Proof Detail Alignment
+
+- expanded target provider operations source-of-record wording so model and endpoint pinning, quota, cost, and resource guard, fallback and disable path, provider fallback runtime audit, telemetry, incident triage, data and transcript handling, remediation and renewal review, evidence retention, and provider failure containment are recorded as proof fields instead of slash-based shorthand
+- aligned README, release readiness, deployment guide, security model, target deployment contract, target environment evidence intake, and target provider evidence intake references with the same proof-level provider operations vocabulary
+- extended target provider operations and target deployment contract smoke coverage so provider operations docs cannot reintroduce model/endpoint, quota/cost/resource, fallback/disable, data/transcript, or remediation/renewal shorthand
+
 ## 2026-05-22 Production Provider Readiness Proof Detail Alignment
 
 - expanded production provider readiness generator wording so target provider evidence intake and target provider operations guidance records provider owner, target boundary, secret manager alias, model and endpoint pinning, quota and cost guard, archived live validation, blocker closure verification, fallback and stop-condition, telemetry, incident triage, data and transcript handling, remediation and renewal, evidence retention, and failure containment as proof fields instead of slash-based shorthand
