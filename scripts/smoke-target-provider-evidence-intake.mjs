@@ -48,11 +48,15 @@ assert.match(intake, /not permission to claim `production-ready`/);
 assert.match(intake, /Production-ready remains blocked until every provider included in the target release/);
 assert.match(
   intake,
-  /approved account status proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, provider blocker closure verification proof, and rollback and fallback decision evidence/,
+  /approved account status proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, provider blocker closure verification proof, rollback proof, and fallback decision proof/,
 );
 assert.doesNotMatch(
   intake,
   /quota\/cost guard evidence|rollback\/fallback evidence|model\/endpoint pinning|quota\/cost\/resource guard|fallback\/disable path|data\/transcript handling|remediation\/renewal/,
+);
+assert.doesNotMatch(
+  intake,
+  /billing\/credit status|customer\/account approval|endpoint\/base URL alias|retry\/concurrency limits|quota\/spend owner|regenerated release artifact references/,
 );
 
 for (const evidenceItem of [
@@ -75,13 +79,33 @@ assert.match(
   intake,
   /target Anthropic provider account contract is present with targetAnthropicProviderApproved false and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence are missing/,
 );
+assert.match(
+  intake,
+  /Provider account approval \| account owner proof, billing and credit or quota status proof, allowed workspace or customer proof, provider terms proof, OpenAI provider account approval proof when OpenAI is included, Anthropic provider account approval proof when Anthropic is included, local provider architecture approval proof when local provider is included, and Hermes provider architecture approval proof when Hermes is included/,
+);
+assert.match(
+  intake,
+  /Quota and cost guard \| quota proof, concurrency limit proof, timeout proof, spend owner proof, and retry guard proof are documented before live use/,
+);
+assert.match(
+  intake,
+  /Model and endpoint pinning \| provider model proof, endpoint or base URL alias proof, timeout proof, and fallback route proof are recorded without secrets/,
+);
+assert.match(
+  intake,
+  /Failure triage route \| account failure owner proof, missing environment owner proof, live runtime failure owner proof, and fallback decision owner proof are recorded/,
+);
+assert.match(
+  intake,
+  /Provider blocker closure verification \| provider-specific blocker state proof, next verification command proof, required closing evidence proof, stop-condition id proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded/,
+);
 assert.doesNotMatch(
   intake,
   /target OpenAI provider account contract is present with targetOpenAIProviderApproved false; Anthropic account execution remains failed; target Anthropic provider account contract is present with targetAnthropicProviderApproved false/,
 );
 
 for (const checklistItem of [
-  /provider owner and customer\/account approval/,
+  /provider owner proof and customer or account approval proof/,
   /OpenAI provider account approval when OpenAI is included in the target provider claim/,
   /completed target OpenAI provider account evidence capture template when OpenAI is included in the target provider claim/,
   /Anthropic provider account approval when Anthropic is included in the target provider claim/,
@@ -92,12 +116,12 @@ for (const checklistItem of [
   /completed target Hermes provider evidence capture template when Hermes is included in the target provider claim/,
   /target environment name and deployment boundary/,
   /secret manager path or key alias, never the secret value/,
-  /model name, endpoint\/base URL alias, timeout, and retry\/concurrency limits/,
+  /model name proof, endpoint or base URL alias proof, timeout proof, and retry and concurrency limit proof/,
   /live validation command and archived execution-v1 evidence commit/,
-  /quota\/spend owner and expected usage envelope/,
+  /quota and spend owner proof and expected usage envelope proof/,
   /fallback provider or stop condition when live validation fails/,
-  /provider-specific blocker closure verification matrix row with current state, next verification command, required closing evidence, stop-condition id, artifact hygiene result, regenerated release artifact references, and decision owner/,
-  /account remediation note for billing, credit, region, or terms blockers/,
+  /provider-specific blocker closure verification matrix row with current state proof, next verification command proof, required closing evidence proof, stop-condition id proof, artifact hygiene result, regenerated execution snapshot evidence, refreshed release artifact references, and decision owner proof/,
+  /account remediation proof for billing, credit, region, or terms blockers/,
   /artifact hygiene result after evidence refresh/,
   /target provider operations evidence with provider failure containment plan/,
   /completed target provider operations evidence capture template for every provider included in the target provider claim/,
@@ -166,7 +190,7 @@ assert.match(readme, /docs\/target-provider-evidence-intake-v1\.md/);
 assert.match(readme, /npm run smoke:target-provider-evidence-intake/);
 assert.match(
   readme,
-  /local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, and fallback and stop-condition evidence requirements are present/,
+  /local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, fallback route proof, and blocker closure verification proof requirements are present/,
 );
 
 console.log(

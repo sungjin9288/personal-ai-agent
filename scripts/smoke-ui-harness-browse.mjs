@@ -259,6 +259,15 @@ try {
   assert.equal(appJs.includes('buildReleaseProviderReadinessPackageText'), true);
   assert.equal(appJs.includes('Provider readiness handoff package'), true);
   assert.equal(appJs.includes('Target provider evidence intake'), true);
+  assert.equal(appJs.includes('account or architecture approval proof'), true);
+  assert.equal(appJs.includes('quota and cost guard proof'), true);
+  assert.equal(appJs.includes('model and endpoint pinning proof'), true);
+  assert.equal(appJs.includes('blocker closure verification proof'), true);
+  assert.equal(appJs.includes('provider fallback runtime audit proof'), true);
+  assert.equal(appJs.includes('data and transcript handling proof'), true);
+  assert.equal(appJs.includes('remediation and renewal review proof'), true);
+  assert.doesNotMatch(appJs, /quota\/cost guard, model\/endpoint pinning/);
+  assert.doesNotMatch(appJs, /data\/transcript handling, remediation\/renewal/);
   assert.equal(appJs.includes('getReleaseProviderBlockerActions'), true);
   assert.equal(appJs.includes('Linked provider blockers:'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-count'), true);
