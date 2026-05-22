@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T05:37:40.611Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T05:37:38.839Z
 - localDate: 2026-05-22
 - branch: codex/target-provider-evidence-intake-proof-fields
 - commit: 25e64522cc6374d211a4293dd6b1db1025d4b982
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982](releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982](docs/releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982)
 - visualArtifactSetSha256: 91ba563d6e55dc2d0e91f39e238cc3d2585c6ac585c54850de9e64f85adc209f
 - commitPushStatus: not pushed, origin/codex/target-provider-evidence-intake-proof-fields not found
 

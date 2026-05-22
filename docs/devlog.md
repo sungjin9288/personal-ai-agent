@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Provider Evidence Intake Proof Field Cleanup
+
+- expanded target provider evidence intake wording so account owner, billing and credit or quota status, allowed workspace or customer, provider-specific account or architecture approval, quota, concurrency, timeout, spend owner, retry guard, model, endpoint or base URL alias, fallback route, failure owner, blocker state, next verification command, stop-condition id, regenerated execution snapshot, release artifact references, and decision owner are recorded as proof fields
+- aligned README and release provider readiness UI closure rules so target provider evidence intake and target provider operations guidance no longer falls back to quota/cost, model/endpoint, data/transcript, remediation/renewal, or slash-based shorthand
+- extended target provider evidence intake and UI harness browse smoke coverage so those source surfaces cannot reintroduce account approval, blocker closure, provider operations, or shorthand closure-rule wording
+
 ## 2026-05-22 Target Provider Operations Proof Field Cleanup
 
 - expanded target provider operations account approval, blocker closure, and remediation renewal wording so billing and credit or quota state, account owner, customer or workspace approval, provider terms, model access, renewal owner, regenerated execution snapshot, release artifact references, endpoint renewal, and model access renewal are recorded as proof fields

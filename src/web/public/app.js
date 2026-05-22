@@ -2690,8 +2690,8 @@ function buildReleaseProviderReadinessPackageText({
     '',
     'Closure rules:',
     '- Provider env or account remediation must be completed outside this UI package before live validation can pass.',
-    '- Target provider evidence intake must include account or architecture approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, fallback route, and blocker closure verification.',
-    '- Target provider operations must include provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.',
+    '- Target provider evidence intake must include account or architecture approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, fallback route proof, and blocker closure verification proof.',
+    '- Target provider operations must include provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment proof.',
     '- Regenerate execution-v1 artifacts after intentional live-provider proof or source-of-record changes.',
     '- Keep productionReadyClaim=false while any provider or target-environment stop-condition remains open.',
   ].join('\n');

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T05:37:40.611Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T05:37:28.984Z
 - branch: codex/target-provider-evidence-intake-proof-fields
 - commit: 25e64522cc6374d211a4293dd6b1db1025d4b982
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/25e64522cc6374d211a4293dd6b1db1025d4b982/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
