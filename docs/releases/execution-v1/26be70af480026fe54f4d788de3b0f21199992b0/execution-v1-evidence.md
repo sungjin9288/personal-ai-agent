@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T16:04:07.315Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T16:03:53.610Z
 - branch: codex/main-tenant-isolation-artifact-sync
 - commit: 26be70af480026fe54f4d788de3b0f21199992b0
