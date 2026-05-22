@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T12:59:48.926Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T12:59:47.556Z
 - localDate: 2026-05-22
 - branch: codex/target-clean-deployment-ui-proof-detail
 - commit: 2a2471af713c0855a677909168c992e768b9014c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c](releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c](docs/releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c)
 - visualArtifactSetSha256: e6325bae430a5772f7f161706fe4e18a3ed0c16218d9fefb294164be54bd51d1
 - commitPushStatus: not pushed, origin/codex/target-clean-deployment-ui-proof-detail not found
 
