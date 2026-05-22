@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T17:31:09.727Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T17:31:00.757Z
 - branch: codex/main-secret-manager-artifact-sync
 - commit: 42a9fa13a00448b4a28a17251ff5eb9901f876a8
