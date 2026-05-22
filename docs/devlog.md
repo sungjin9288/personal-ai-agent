@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Deployment and Release Action Guidance Proof Detail Alignment
+
+- expanded `/api/execution-v1/status` target-deployment current open blocker action guidance so `nextEvidence` and `stopReason` use proof-level target deployment name, deployment profile decision, mandatory control, provider readiness, identity and tenant, secret and observability, data lifecycle and support, clean release artifact, stop-condition decision, production-ready claim decision, target environment submission packet, release artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot wording instead of slash-based shorthand
+- expanded release-decision current open blocker action guidance so production release label expansion requires target provider evidence intake, provider operations, provider approvals, target-boundary live validation, provider failure containment, enterprise controls, hosted identity and session, hosted tenant isolation, target secret manager, target observability and SLO, data lifecycle and support, target deployment, clean deployment, production-like drill, release artifact hygiene, accepted risk, allowed claim, release decision owner, next review date, and regenerated execution snapshot proof
+- extended execution-v1 status smoke coverage so target deployment and release decision action guidance cannot reintroduce slash-based or hyphenated shorthand
+
 ## 2026-05-22 Provider Architecture Action Stop Reason Proof Detail Alignment
 
 - expanded local provider current open blocker action wording so `nextEvidence` and `stopReason` use proof-level quota and resource guard, release artifact hygiene result, regenerated execution snapshot evidence, and target-boundary local provider live validation pass wording instead of slash-based shorthand
