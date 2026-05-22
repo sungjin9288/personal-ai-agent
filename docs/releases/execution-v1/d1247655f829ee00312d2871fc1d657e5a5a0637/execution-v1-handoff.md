@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T05:54:53.990Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T05:54:52.499Z
 - localDate: 2026-05-22
 - branch: codex/local-provider-ui-proof-detail
 - commit: d1247655f829ee00312d2871fc1d657e5a5a0637
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637](releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637](docs/releases/execution-v1/d1247655f829ee00312d2871fc1d657e5a5a0637)
 - visualArtifactSetSha256: 0936cf1a9002b28af4c3f547ed00473fd37ad7470d180d45996086cc8f718c9a
 - commitPushStatus: not pushed, origin/codex/local-provider-ui-proof-detail not found
 
