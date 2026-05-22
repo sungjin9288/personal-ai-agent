@@ -253,6 +253,28 @@ try {
   assert.equal(appJs.includes('data-provider-fallback-event-package'), true);
   assert.equal(appJs.includes('buildProviderFallbackEventAuditPackageText'), true);
   assert.equal(appJs.includes('Provider fallback event audit package'), true);
+  assert.equal(
+    appJs.includes(
+      'productionReadyClaim must remain false until target provider operations evidence records provider account or architecture approval proof',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'provider fallback runtime audit proof must include mission run --fallback-provider --fallback-policy',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'the stop reason must remain visible in provider events plus mission, workspace, and operator timelines',
+    ),
+    true,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /productionReadyClaim must remain false until target provider operations evidence is approved/,
+  );
   assert.equal(appJs.includes('copyProviderFallbackEventAuditPackage'), true);
   assert.equal(appJs.includes('data-release-provider-readiness-package'), true);
   assert.equal(appJs.includes('copy-release-provider-readiness-package'), true);

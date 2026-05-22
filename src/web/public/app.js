@@ -10279,8 +10279,9 @@ function buildProviderFallbackEventAuditPackageText(payload = state.providerEven
     '- npm run smoke:ui-harness-browse',
     '',
     'Production readiness boundary:',
-    '- productionReadyClaim must remain false until target provider operations evidence is approved.',
-    '- recoverable-provider-failure-only stops non-recoverable provider failures instead of silently failing over.',
+    '- productionReadyClaim must remain false until target provider operations evidence records provider account or architecture approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, provider telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment evidence, release artifact hygiene result, and refreshed execution-v1 snapshot evidence from the same approved target boundary.',
+    '- provider fallback runtime audit proof must include mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, selected fallback provider, fallback policy id, fallback stop reason, non-provider-failure stop condition, non-recoverable provider failure stop condition, event family, and operator chronology evidence.',
+    '- recoverable-provider-failure-only stops non-recoverable provider failures instead of silently failing over, and the stop reason must remain visible in provider events plus mission, workspace, and operator timelines.',
   ].join('\n');
 }
 
