@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Local Provider UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for target local provider architecture so endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota and resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, regenerated execution snapshot, and customer acceptance are recorded as proof fields
+- aligned local provider accepted-scope exception, accepted risk decision, and blocker disposition register wording so UI handoff packages no longer fall back to endpoint ownership, model pinning, data residency, quota/resource, telemetry, fallback evidence, or customer acceptance shorthand
+- extended UI harness browse smoke coverage so local provider architecture guidance cannot reintroduce local provider proofIntent or register shorthand
+
 ## 2026-05-22 Target Provider Evidence Intake Proof Field Cleanup
 
 - expanded target provider evidence intake wording so account owner, billing and credit or quota status, allowed workspace or customer, provider-specific account or architecture approval, quota, concurrency, timeout, spend owner, retry guard, model, endpoint or base URL alias, fallback route, failure owner, blocker state, next verification command, stop-condition id, regenerated execution snapshot, release artifact references, and decision owner are recorded as proof fields
