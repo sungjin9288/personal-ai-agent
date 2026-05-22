@@ -3579,7 +3579,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'supportOperationsEvidence',
-      requiredValue: 'target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, customer communication, on-call handoff, and incident review cadence',
+      requiredValue: 'target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must prove support ownership and escalation routing are staffed for the target release',
       primaryDocs: ['docs/target-support-architecture-v1.md', 'docs/target-support-operations-v1.md'],
     },
@@ -3808,13 +3808,13 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-support-architecture',
       domain: 'support architecture',
-      proofIntent: 'target support queue, escalation policy, coverage model, ownership, customer communication, and incident review boundaries are defined',
+      proofIntent: 'target support architecture approval proof, staffing model proof, support queue platform proof, severity routing proof, customer communication boundary proof, ticket audit and retention proof, on-call handoff proof, incident commander ownership proof, escalation and backup coverage proof, support data handling proof, incident review governance proof, migration plan proof, missed-acknowledgement containment proof, queue-misrouting containment proof, customer-communication containment proof, ticket-audit containment proof, unstaffed-escalation containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-support-architecture-missing',
     },
     {
       command: 'npm run smoke:target-support-operations',
       domain: 'support operations',
-      proofIntent: 'target support staffing, ticket flow, escalation, audit trail, on-call handoff, customer communication, and incident review evidence are captured',
+      proofIntent: 'target support operations evidence with target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, closure evidence, release artifact hygiene result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'target-support-operations-missing',
     },
     {
@@ -4031,7 +4031,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'staffed support operations',
-      missingProof: 'support queue, coverage owner, escalation flow, ticket audit trail, customer communication, on-call handoff, and incident review evidence',
+      missingProof: 'target support architecture approval proof, staffed support coverage proof with support owner, coverage window, primary rota, secondary rota, backup policy, timezone coverage, absence handling, and acknowledgement evidence, support queue routing proof with ticketing system, queue identifier, severity mapping, routing rule, retry path, queue owner, access policy, assignment audit, and escalation evidence, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, closure evidence, release artifact hygiene result, and regenerated execution snapshot evidence',
       requiredEvidence: 'target support architecture and target support operations evidence',
       stopCondition: 'target-support-operations-missing',
       claimGuard: 'do not claim production customer support readiness',

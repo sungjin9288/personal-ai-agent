@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T12:36:20.905Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T12:36:10.314Z
 - branch: codex/target-support-ui-proof-detail
 - commit: b6901a8208809b165be970b74f77f9f817d247f7

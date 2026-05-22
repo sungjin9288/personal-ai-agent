@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Support UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for supportOperationsEvidence so target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded target support architecture and target support operations command package proofIntent wording so staffing model, support queue platform, severity routing, customer communication boundary, ticket audit and retention, on-call handoff, incident commander ownership, escalation and backup coverage, support data handling, incident review governance, migration, missed-acknowledgement, queue-misrouting, customer-communication, ticket-audit, unstaffed-escalation containment, closure, and artifact refresh evidence are explicit proof requirements
+- extended UI harness browse smoke coverage so support command package guidance cannot regress to generic support queue, staffing, escalation, ticket audit, customer communication, on-call handoff, or incident review shorthand
+
 ## 2026-05-22 Target Retention Backup UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for retentionBackupEvidence so customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields
