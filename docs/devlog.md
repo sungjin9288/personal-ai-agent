@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Clean Deployment UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for deploymentBoundaryEvidence and cleanReleaseEvidence so target deployment contract reference, approved target boundary, source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, rollback and recovery, clean checkout, command replay, artifact synchronization, production-like environment, release approval, pilot export package, release artifact hygiene, artifact-sync-current, failed-deployment containment, and misleading production-ready claim containment evidence are recorded as proof fields
+- expanded target clean deployment architecture, target clean deployment operations, target deployment contract, clean deployment release, production-like release drill, pilot export package, and release artifact hygiene command package proofIntent wording so clean deployment release evidence cannot fall back to dependency/runtime, release snapshot, rollback, file count, hygiene state, or scan shorthand
+- extended UI harness browse smoke coverage so clean deployment, deployment contract, production-like drill, pilot export, and release artifact hygiene guidance cannot regress to generic deployment boundary, clean checkout, dependency, snapshot, rollback, export package, or artifact scan shorthand
+
 ## 2026-05-22 Target Support UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for supportOperationsEvidence so target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields

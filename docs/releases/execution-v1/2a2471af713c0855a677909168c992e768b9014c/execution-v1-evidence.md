@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T12:59:48.926Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T12:59:40.054Z
 - branch: codex/target-clean-deployment-ui-proof-detail
 - commit: 2a2471af713c0855a677909168c992e768b9014c

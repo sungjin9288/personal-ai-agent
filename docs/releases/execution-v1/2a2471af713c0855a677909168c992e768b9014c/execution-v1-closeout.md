@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T12:59:48.926Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T12:59:40.121Z
 - branch: codex/target-clean-deployment-ui-proof-detail
 - commit: 2a2471af713c0855a677909168c992e768b9014c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2a2471af713c0855a677909168c992e768b9014c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
