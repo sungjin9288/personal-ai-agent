@@ -212,6 +212,30 @@ try {
     true,
     JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
   );
+  const targetDeploymentBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.category === 'target-deployment' &&
+      item.owner === 'deployment-owner' &&
+      item.commands.some((command) => command.command === 'npm run smoke:target-deployment-contract'),
+  );
+  assert.equal(Boolean(targetDeploymentBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.match(
+    targetDeploymentBlockerAction.nextEvidence,
+    /Target deployment name, deployment profile decision, mandatory controls, provider readiness, identity\/tenant, secret\/observability, data lifecycle\/support, clean release artifact, stop-condition, production-ready claim decision, target submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence from the same target boundary/,
+    JSON.stringify(targetDeploymentBlockerAction),
+  );
+  assert.match(
+    targetDeploymentBlockerAction.stopReason,
+    /same-boundary target deployment name\/profile, mandatory control, provider, identity\/tenant, secret\/observability, data lifecycle\/support, clean release, stop-condition, reviewer decision, artifact hygiene, production-like drill, and regenerated snapshot proof/,
+    JSON.stringify(targetDeploymentBlockerAction),
+  );
+  assert.equal(
+    targetDeploymentBlockerAction.evidenceDocs.some(
+      (doc) => doc.path === 'docs/target-deployment-contract-v1.md' && doc.exists === true,
+    ),
+    true,
+    JSON.stringify(targetDeploymentBlockerAction),
+  );
   assert.equal(status.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   assert.equal(status.baseline?.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   for (const scriptPath of requiredReferenceAdoptionSmokeScripts) {

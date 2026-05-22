@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Deployment Open Blocker Proof Detail Alignment
+
+- expanded the release-readiness current open target deployment blocker from a domain checklist into proof-level target deployment name, deployment profile, mandatory control, provider, identity/tenant, secret/observability, data lifecycle/support, clean release, stop-condition, production-ready claim, submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence requirements
+- aligned `/api/execution-v1/status` target-deployment blocker action metadata so operator triage surfaces the same proof-level `nextEvidence` and `stopReason` fields instead of generic target-evidence wording
+- extended production readiness, execution-v1 status, and target deployment contract smoke guards so current open blocker guidance cannot fall back to shorthand target deployment contract evidence wording
+
 ## 2026-05-21 Target Support Operations Proof Detail Alignment
 
 - expanded target support operations wording across README, release readiness, deployment guide, security model, target deployment contract, and target environment evidence intake so production support evidence requires staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene, and regenerated execution snapshot evidence
