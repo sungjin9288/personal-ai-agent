@@ -118,7 +118,7 @@ try {
   );
   assert.match(
     status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityNextEvidence || '',
-    /active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection/,
+    /active billing plan proof, available credit balance proof, API key and secret injection proof/,
   );
   assert.match(
     status.releaseReadiness?.currentOpenBlockerActionSummary?.topPriorityStopReason || '',
@@ -176,17 +176,17 @@ try {
   assert.equal(anthropicBlockerAction.provider, 'anthropic', JSON.stringify(anthropicBlockerAction));
   assert.match(
     anthropicBlockerAction.nextEvidence,
-    /account ownership, billing and credit remediation, active billing plan, available credit balance/,
+    /account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.match(
     anthropicBlockerAction.nextEvidence,
-    /ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard/,
+    /ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.match(
     anthropicBlockerAction.nextEvidence,
-    /mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot evidence/,
+    /mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.match(
@@ -196,12 +196,12 @@ try {
   );
   assert.match(
     anthropicBlockerAction.stopReason,
-    /provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation pass/,
+    /provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.match(
     anthropicBlockerAction.stopReason,
-    /mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene result, and regenerated execution snapshot proof/,
+    /mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot proof/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.doesNotMatch(
@@ -212,6 +212,21 @@ try {
   assert.doesNotMatch(
     anthropicBlockerAction.stopReason,
     /target provider account evidence, target secret injection, model access/,
+    JSON.stringify(anthropicBlockerAction),
+  );
+  assert.doesNotMatch(
+    anthropicBlockerAction.nextEvidence,
+    /account ownership, billing and credit remediation, active billing plan, available credit balance/,
+    JSON.stringify(anthropicBlockerAction),
+  );
+  assert.doesNotMatch(
+    anthropicBlockerAction.nextEvidence,
+    /ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard/,
+    JSON.stringify(anthropicBlockerAction),
+  );
+  assert.doesNotMatch(
+    anthropicBlockerAction.nextEvidence,
+    /mission and execution session provenance, telemetry, fallback and stop-condition decision, remediation audit/,
     JSON.stringify(anthropicBlockerAction),
   );
   assert.doesNotMatch(

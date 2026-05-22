@@ -3736,7 +3736,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-anthropic-provider-account',
       domain: 'Anthropic provider account',
-      proofIntent: 'target Anthropic account approval, billing/credit remediation, secret injection, model access, live validation, telemetry, and fallback evidence are captured',
+      proofIntent: 'target Anthropic account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation, telemetry proof, fallback and stop-condition proof, and remediation audit proof are captured',
       stopCondition: 'anthropic-live-validation-missing-or-failed',
     },
     {
@@ -4154,7 +4154,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     {
       exceptionId: 'anthropic-provider-exclusion',
       scope: 'exclude Anthropic from live-provider-complete and production-ready claims until target account billing/live validation closes',
-      requiredEvidence: 'target Anthropic provider account approval, billing/credit remediation proof, target secret injection, target-boundary live validation pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts',
+      requiredEvidence: 'target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene, and regenerated execution snapshot evidence',
       allowedClaimText: 'OpenAI-backed local-first pilot only; Anthropic remains excluded',
       stopCondition: 'anthropic-live-validation-missing-or-failed',
     },
@@ -4309,7 +4309,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
       acceptedRisk: 'Anthropic is not included in the approved live provider scope until billing/credit and target-boundary live validation pass',
       rejectedClaims: 'live-provider-complete, production-ready, Anthropic production provider readiness',
       residualBlocker: 'anthropic-live-validation-missing-or-failed',
-      requiredEvidence: 'target Anthropic provider account approval, billing remediation, target secret injection, live validation pass, provider operations evidence, artifact hygiene, and regenerated release artifacts',
+      requiredEvidence: 'target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, artifact hygiene, and regenerated execution snapshot evidence',
     },
     {
       riskId: 'hermes-runtime-not-configured',
@@ -5343,7 +5343,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
       id: 'anthropic-billing-live-validation',
       blocker: 'Anthropic billing/live validation',
       currentState: 'still-blocking',
-      requiredClosingEvidence: 'target Anthropic provider account approval, billing/credit remediation proof, target secret injection, target-boundary live:execution-v1:anthropic pass, provider operations evidence, release artifact hygiene, and regenerated execution-v1 artifacts',
+      requiredClosingEvidence: 'target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live:execution-v1:anthropic pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene, and regenerated execution snapshot evidence',
       claimImpact: 'Anthropic must not be included in a live-provider-complete or production-ready claim',
       nextVerificationCommand: 'npm run smoke:target-anthropic-provider-account && npm run live:execution-v1:anthropic',
       stopCondition: 'anthropic-live-validation-missing-or-failed',
