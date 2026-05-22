@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T01:14:21.620Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T01:13:40.229Z
 - branch: codex/provider-architecture-stop-reason-proof-detail
 - commit: 3d620ae68dfad721f14a63a50ce41ef3d0fc0f12

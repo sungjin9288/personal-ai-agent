@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Provider Architecture Action Stop Reason Proof Detail Alignment
+
+- expanded local provider current open blocker action wording so `nextEvidence` and `stopReason` use proof-level quota and resource guard, release artifact hygiene result, regenerated execution snapshot evidence, and target-boundary local provider live validation pass wording instead of slash-based shorthand
+- expanded Hermes provider current open blocker action wording so `nextEvidence` and `stopReason` record endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot proof
+- extended execution-v1 status smoke coverage so provider-architecture actions cannot reintroduce slash-based stop reason shorthand
+
 ## 2026-05-22 Anthropic Provider Account Action Proof Detail Alignment
 
 - expanded `/api/execution-v1/status` Anthropic provider-account current open blocker action metadata so `nextEvidence` names account ownership, billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation, mission/session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene, and regenerated execution snapshot proof
