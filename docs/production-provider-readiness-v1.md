@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-22T03:22:25.971Z
-- sourceBranch: codex/anthropic-provider-account-action-proof-detail
-- sourceCommit: 9a446dc90416b0fc585d980ab509e910a7b9275b
+- generatedAt: 2026-05-22T05:10:32.338Z
+- sourceBranch: codex/target-provider-operations-proof-field-cleanup
+- sourceCommit: 60de07e12478cda85a971f1bcf8f82e94e2090d5
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 12100 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 6119 |
 
 ## Key Signals
 
