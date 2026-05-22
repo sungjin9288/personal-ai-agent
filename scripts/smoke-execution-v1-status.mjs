@@ -200,6 +200,23 @@ try {
     true,
     JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
   );
+  const localBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.provider === 'local' &&
+      item.category === 'provider-architecture' &&
+      item.commands.some((command) => command.command === 'npm run smoke:target-local-provider-architecture'),
+  );
+  assert.equal(Boolean(localBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.match(
+    localBlockerAction.nextEvidence,
+    /Endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+    JSON.stringify(localBlockerAction),
+  );
+  assert.match(
+    localBlockerAction.stopReason,
+    /Target local provider architecture lacks endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret\/credential policy, runtime lifecycle, session\/artifact provenance, data residency\/transcript policy, quota\/resource guard, telemetry, fallback\/customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof/,
+    JSON.stringify(localBlockerAction),
+  );
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(
       (item) =>
@@ -209,6 +226,40 @@ try {
     ),
     true,
     JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  );
+  const hermesBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.provider === 'hermes' &&
+      item.category === 'provider-architecture' &&
+      item.commands.some((command) => command.command === 'npm run smoke:target-hermes-provider-architecture'),
+  );
+  assert.equal(Boolean(hermesBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.match(
+    hermesBlockerAction.nextEvidence,
+    /Endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+    JSON.stringify(hermesBlockerAction),
+  );
+  assert.match(
+    hermesBlockerAction.stopReason,
+    /Target Hermes provider architecture lacks endpoint ownership, HERMES_PROVIDER_MODEL pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback\/stop-condition decision, customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof/,
+    JSON.stringify(hermesBlockerAction),
+  );
+  const currentOpenBlockerActionsText = JSON.stringify(status.releaseReadiness.currentOpenBlockerActions);
+  assert.doesNotMatch(
+    currentOpenBlockerActionsText,
+    /Approved endpoint\/model runtime configuration and target-boundary local provider validation evidence/,
+  );
+  assert.doesNotMatch(
+    currentOpenBlockerActionsText,
+    /Approved Hermes-compatible endpoint\/model runtime configuration and target-boundary Hermes live validation evidence/,
+  );
+  assert.doesNotMatch(
+    currentOpenBlockerActionsText,
+    /Target local provider architecture approval and target-boundary evidence are missing/,
+  );
+  assert.doesNotMatch(
+    currentOpenBlockerActionsText,
+    /Hermes endpoint\/model runtime configuration and target-boundary evidence are missing/,
   );
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(

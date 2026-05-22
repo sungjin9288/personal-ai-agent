@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T00:50:09.037Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T00:49:38.157Z
 - branch: codex/provider-architecture-action-proof-detail
 - commit: b9fd6def7cf6c94661b7e037de72703fbd3c53e0

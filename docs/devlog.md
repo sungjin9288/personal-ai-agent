@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Provider Architecture Action Proof Detail Alignment
+
+- expanded `/api/execution-v1/status` local provider current open blocker action metadata so `nextEvidence` and `stopReason` name endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session/artifact provenance, data residency/transcript policy, quota/resource guard, telemetry, fallback/customer approval, target-boundary live validation, release artifact hygiene, and regenerated execution snapshot proof
+- expanded Hermes provider current open blocker action metadata so operator triage names endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback/stop-condition, customer approval, target-boundary live validation, release artifact hygiene, and regenerated execution snapshot proof
+- extended execution-v1 status smoke coverage so provider-architecture actions cannot fall back to endpoint/model runtime-configuration shorthand
+
 ## 2026-05-22 Release Label Open Blocker Proof Detail Alignment
 
 - expanded the release-readiness current open release label blocker from a generic provider/enterprise-controls verification line into proof-level provider intake, provider operations, provider approval, target-boundary live validation, provider failure containment, enterprise control, hosted identity/session, hosted tenant isolation, secret manager, observability/SLO, data lifecycle/support, target deployment, clean release, production-like drill, artifact hygiene, accepted-risk, allowed-claim, decision-owner, next-review, and regenerated execution snapshot evidence requirements
