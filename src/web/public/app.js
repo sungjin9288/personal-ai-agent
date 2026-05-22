@@ -3730,7 +3730,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-openai-provider-account',
       domain: 'OpenAI provider account',
-      proofIntent: 'target OpenAI account ownership, billing/quota, API key injection, model access, terms, usage guard, live validation, telemetry, fallback, and review audit are captured',
+      proofIntent: 'target OpenAI account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary live validation, telemetry proof, fallback and stop-condition proof, and renewal and review audit proof are captured',
       stopCondition: 'target-openai-provider-account-approval-missing',
     },
     {

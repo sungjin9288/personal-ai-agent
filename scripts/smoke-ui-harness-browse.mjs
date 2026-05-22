@@ -284,6 +284,18 @@ try {
   assert.equal(appJs.includes('Target evidence required commands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
+  assert.equal(appJs.includes('target OpenAI account ownership proof'), true);
+  assert.equal(appJs.includes('billing and quota proof'), true);
+  assert.equal(appJs.includes('API key and secret injection proof'), true);
+  assert.equal(appJs.includes('OPENAI_MODEL model access proof'), true);
+  assert.equal(appJs.includes('provider terms and customer approval proof'), true);
+  assert.equal(appJs.includes('usage and cost guard proof'), true);
+  assert.equal(appJs.includes('fallback and stop-condition proof'), true);
+  assert.equal(appJs.includes('renewal and review audit proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
