@@ -104,7 +104,7 @@ assert.match(readiness, /archived live validation proof, provider blocker closur
 assert.match(readiness, /provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof/);
 assert.match(
   readiness,
-  /target Hermes provider architecture remains the gate for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
+  /target Hermes provider architecture remains the gate for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(
   readiness,
@@ -112,7 +112,7 @@ assert.doesNotMatch(
 );
 assert.match(
   readiness,
-  /Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
+  /Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded/,
 );
 assert.doesNotMatch(
   readiness,
@@ -120,7 +120,7 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   readiness,
-  /model\/endpoint pinning|quota\/cost guard|quota\/cost\/resource guard|fallback\/disable path|fallback\/stop-condition evidence|data\/transcript handling|remediation\/renewal|quota\/resource guard|release artifact hygiene, and regenerated release artifact requirements/,
+  /model\/endpoint pinning|quota\/cost guard|quota\/cost\/resource guard|fallback\/disable path|fallback\/stop-condition evidence|data\/transcript handling|remediation\/renewal|quota\/resource guard|release artifact hygiene, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(
   readiness,

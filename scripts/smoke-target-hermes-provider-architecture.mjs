@@ -44,7 +44,7 @@ assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Hermes provider readiness remains blocked/);
 assert.match(
   decision,
-  /Hermes provider readiness remains blocked until this architecture decision is approved and target evidence is generated for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated release artifact evidence/,
+  /Hermes provider readiness remains blocked until this architecture decision is approved and target evidence is generated for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.doesNotMatch(
   decision,
@@ -105,7 +105,7 @@ assert.match(decision, /must prove secret values are injected and redacted throu
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
 assert.match(
   decision,
-  /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated release artifact evidence are generated from the approved boundary/,
+  /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
 );
 assert.doesNotMatch(
   decision,
@@ -138,7 +138,7 @@ assert.match(intake, /Hermes provider architecture approval/);
 assert.match(releaseReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(
   releaseReadiness,
-  /target Hermes provider architecture gate: passed, with targetHermesProviderApproved false, endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, regenerated release artifact requirements, and `productionReadyClaim: false`/,
+  /target Hermes provider architecture gate: passed, with targetHermesProviderApproved false, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
 );
 assert.doesNotMatch(
   releaseReadiness,
@@ -162,7 +162,7 @@ assert.match(deployment, /## Target Hermes Provider Architecture/);
 assert.match(deployment, /npm run smoke:target-hermes-provider-architecture/);
 assert.match(
   deployment,
-  /Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated release artifact evidence are generated/,
+  /Do not include Hermes in a target provider claim until the target Hermes provider architecture is approved and endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary `npm run live:execution-v1:hermes` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
 );
 assert.doesNotMatch(
   deployment,
@@ -173,7 +173,7 @@ assert.match(readme, /docs\/target-hermes-provider-architecture-v1\.md/);
 assert.match(readme, /npm run smoke:target-hermes-provider-architecture/);
 assert.match(
   readme,
-  /target Hermes provider architecture evidence can be verified with `npm run smoke:target-hermes-provider-architecture`; it proves endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifact requirements are present/,
+  /target Hermes provider architecture evidence can be verified with `npm run smoke:target-hermes-provider-architecture`; it proves endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements are present/,
 );
 
 console.log(

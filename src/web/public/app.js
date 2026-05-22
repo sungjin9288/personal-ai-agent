@@ -3748,8 +3748,8 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-hermes-provider-architecture',
       domain: 'Hermes provider architecture',
-      proofIntent: 'target Hermes endpoint/model aliases, runtime config, secret injection, network boundary, live validation, telemetry, and support ownership are captured',
-      stopCondition: 'hermes-runtime-config-missing',
+      proofIntent: 'target Hermes endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, live validation, and support ownership are captured',
+      stopCondition: 'target-hermes-provider-approval-missing',
     },
     {
       command: 'npm run smoke:hosted-identity-session-architecture',
@@ -4160,10 +4160,10 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     },
     {
       exceptionId: 'hermes-provider-exclusion',
-      scope: 'exclude Hermes from production provider claims until runtime config and target-boundary live validation are approved',
-      requiredEvidence: 'target Hermes provider architecture approval, endpoint/model alias, runtime secret injection proof, target-boundary live validation pass, provider operations evidence, and regenerated release artifacts',
+      scope: 'exclude Hermes from production provider claims until target provider architecture and target-boundary live validation are approved',
+      requiredEvidence: 'target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary live validation pass, provider operations evidence, and regenerated execution snapshot evidence',
       allowedClaimText: 'Hermes is not included in production provider readiness',
-      stopCondition: 'hermes-runtime-config-missing',
+      stopCondition: 'target-hermes-provider-approval-missing',
     },
     {
       exceptionId: 'local-provider-pilot-only',
@@ -4313,10 +4313,10 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
     },
     {
       riskId: 'hermes-runtime-not-configured',
-      acceptedRisk: 'Hermes remains excluded from provider readiness until runtime endpoint/model config and target-boundary live validation are approved',
+      acceptedRisk: 'Hermes remains excluded from provider readiness until target Hermes provider architecture proof and target-boundary live validation are approved',
       rejectedClaims: 'Hermes provider ready, live-provider-complete, production-ready',
-      residualBlocker: 'hermes-runtime-config-missing',
-      requiredEvidence: 'target Hermes provider architecture approval, endpoint/model alias, runtime secret injection, target-boundary live validation pass, provider operations evidence, and regenerated release artifacts',
+      residualBlocker: 'target-hermes-provider-approval-missing',
+      requiredEvidence: 'target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary live validation pass, provider operations evidence, and regenerated execution snapshot evidence',
     },
     {
       riskId: 'local-provider-pilot-scope',
@@ -5357,12 +5357,12 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
     },
     {
       id: 'hermes-runtime-config',
-      blocker: 'Hermes runtime config',
+      blocker: 'Hermes provider architecture approval',
       currentState: 'configuration-required',
-      requiredClosingEvidence: 'target Hermes provider architecture approval, model/endpoint alias, runtime secret injection proof, target-boundary live:execution-v1:hermes pass, provider operations evidence, and regenerated release artifacts',
+      requiredClosingEvidence: 'target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary live:execution-v1:hermes pass, provider operations evidence, and regenerated execution snapshot evidence',
       claimImpact: 'Hermes must remain excluded from production provider claims',
       nextVerificationCommand: 'npm run smoke:target-hermes-provider-architecture && npm run live:execution-v1:hermes',
-      stopCondition: 'hermes-runtime-config-missing',
+      stopCondition: 'target-hermes-provider-approval-missing',
       docs: [
         'docs/target-hermes-provider-architecture-v1.md',
         'docs/target-provider-evidence-intake-v1.md',

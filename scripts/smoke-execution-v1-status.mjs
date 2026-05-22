@@ -279,12 +279,12 @@ try {
   assert.equal(Boolean(hermesBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.match(
     hermesBlockerAction.nextEvidence,
-    /Endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot evidence/,
+    /Endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot evidence/,
     JSON.stringify(hermesBlockerAction),
   );
   assert.match(
     hermesBlockerAction.stopReason,
-    /Target Hermes provider architecture lacks endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene result, and regenerated execution snapshot proof/,
+    /Target Hermes provider architecture lacks endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene result, and regenerated execution snapshot proof/,
     JSON.stringify(hermesBlockerAction),
   );
   const providerArchitectureActionGuidanceText = JSON.stringify([

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Hermes Provider Architecture Proof Detail Alignment
+
+- expanded target Hermes provider architecture wording so endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle, data and transcript policy, quota and rate guard, telemetry, fallback and stop-condition, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot requirements are recorded as proof fields across the source-of-record and planning references
+- updated execution-v1 handoff and production provider readiness generation so Hermes blockers require proof-level provider architecture evidence instead of endpoint/model or runtime configuration shorthand
+- extended Hermes architecture, target deployment contract, target environment intake, production readiness, production provider readiness, pilot export, and execution-v1 status smoke coverage so Hermes claims cannot fall back to model/endpoint, fallback/stop-condition, transcript policy, or live-validation shorthand
+
 ## 2026-05-22 Target Local Provider Architecture Proof Detail Alignment
 
 - expanded target local provider architecture wording so quota and resource guard requirements are recorded as proof fields across the source-of-record, README, release readiness, deployment guide, security model, runbook, onboarding, demo, roadmap, target deployment contract, and target environment intake references
