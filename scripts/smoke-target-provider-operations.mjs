@@ -45,6 +45,14 @@ assert.match(targetProviderOperations, /not runtime endpoint approval/);
 assert.match(targetProviderOperations, /not production traffic proof/);
 assert.match(targetProviderOperations, /not permission to claim `production-ready`/);
 assert.match(targetProviderOperations, /Target provider operations remain blocked for production-ready claims/);
+assert.match(
+  targetProviderOperations,
+  /Production-ready remains blocked until the approved target environment proves provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, provider telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, and evidence retention proof/,
+);
+assert.doesNotMatch(
+  targetProviderOperations,
+  /model\/endpoint pinning|quota\/cost\/resource guard|fallback\/disable path|data\/transcript handling|remediation\/renewal/,
+);
 
 for (const heading of [
   '## Decision Boundary',
@@ -166,15 +174,28 @@ for (const command of [
 }
 
 assert.match(targetProviderEvidenceIntake, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
-assert.match(targetProviderEvidenceIntake, /target provider operations evidence/);
+assert.match(
+  targetProviderEvidenceIntake,
+  /target provider operations evidence remains the runtime operations gate for model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment/i,
+);
 assert.match(productionProviderReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(productionProviderReadiness, /target provider operations contract remains the gate/);
 assert.match(targetContract, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
 assert.match(targetContract, /target provider operations evidence is captured/);
 assert.match(targetEnvironment, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
-assert.match(targetEnvironment, /target provider operations evidence/);
+assert.match(
+  targetEnvironment,
+  /target provider operations evidence for account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment/,
+);
 assert.match(releaseReadiness, /\[target-provider-operations-v1\.md\]\(target-provider-operations-v1\.md\)/);
-assert.match(releaseReadiness, /target provider operations gate: passed/);
+assert.match(
+  releaseReadiness,
+  /target provider operations gate: passed, with provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, target blocker closure verification matrix proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment requirements, and `productionReadyClaim: false`/,
+);
+assert.match(
+  releaseReadiness,
+  /target provider operations evidence contract for account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment/,
+);
 assert.match(
   releaseReadiness,
   /target provider operations evidence for completed per-provider operations capture template, branch and commit, release label and deployment boundary, provider inventory proof with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer\/workspace approval, account or architecture record, and operating decision, provider account approval proof with billing\/credit\/quota state, provider terms, model access, and renewal owner, target secret injection proof with secret manager alias, rotation owner, access policy, redaction result, break-glass path, and revocation evidence, target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner, model and endpoint pinning proof with model id, endpoint\/base URL alias, retry policy, concurrency limit, fallback route, and approval owner, quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route, fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop conditions, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts, provider telemetry proof with health signal, latency\/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner, provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes, data and transcript handling proof with data classification, provider transcript policy, retention class, export\/delete handling, redaction rule, and post-delete absence requirement, remediation and renewal review proof with billing\/credit remediation, endpoint\/model renewal, key rotation, provider terms review, accepted-risk owner, and next review date, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and provider failure containment plan is not generated from a production-like environment/,
@@ -195,6 +216,10 @@ assert.match(deployment, /npm run smoke:target-provider-operations/);
 assert.match(productPlan, /\[x\] Target provider operations gate implemented/);
 assert.match(readme, /docs\/target-provider-operations-v1\.md/);
 assert.match(readme, /npm run smoke:target-provider-operations/);
+assert.match(
+  readme,
+  /local target provider operations can be verified with `npm run smoke:target-provider-operations`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, and evidence retention proof requirements are present/,
+);
 
 console.log(
   JSON.stringify(

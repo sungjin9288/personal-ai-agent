@@ -100,7 +100,11 @@ assert.match(
 );
 assert.match(
   contract,
-  /Target provider validation \| every provider in the production claim has provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence \| OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+  /Target provider validation \| every provider in the production claim has provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, and fallback and stop-condition evidence \| OpenAI and configured local provider live evidence are archived for the pilot boundary; Anthropic account blocker, target local provider architecture approval gap for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+);
+assert.match(
+  contract,
+  /Target provider operations \| target provider operations evidence is captured with provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment proof \| local target provider operations contract is present without target environment evidence \| blocked/,
 );
 assert.match(
   contract,
@@ -210,6 +214,10 @@ assert.match(contract, /must map the deployment to one target deployment profile
 assert.match(contract, /must prove every control row was reviewed against target evidence from the same boundary/);
 assert.match(
   contract,
+  /providerReadinessEvidence \| completed provider evidence intake, target provider operations, provider account or architecture approvals, target secret injection proof, target-boundary live validation proof, quota, cost, and resource guard proof, fallback and stop-condition evidence, and provider failure containment proof \| must prove all providers included in the target claim are approved and live-validated from the target boundary/,
+);
+assert.match(
+  contract,
   /identityTenantEvidence \| hosted identity\/session approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, target identity\/session operations, hosted tenant isolation approval, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, target tenant isolation operations, RBAC\/session audit, tenant storage boundary, storage partitioning proof, encryption\/key ownership proof, backup\/restore isolation proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
 assert.doesNotMatch(
@@ -279,8 +287,8 @@ for (const command of [
 }
 
 for (const blocker of [
-  /stop production-ready claims if any provider included in the production claim lacks provider account approval, target secret injection, target-boundary live validation, quota\/cost guard, model\/endpoint pinning, and fallback evidence/,
-  /stop target provider operations claims until provider inventory, account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment evidence are captured/,
+  /stop production-ready claims if any provider included in the production claim lacks provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, and fallback and stop-condition evidence/,
+  /stop target provider operations claims until provider inventory proof, account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence are captured/,
   /stop OpenAI production provider claims until the target OpenAI provider account record is approved and account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary npm run live:execution-v1:openai pass, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop Anthropic provider claims until the target Anthropic provider account record is approved and account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary npm run live:execution-v1:anthropic pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
   /stop local provider claims until the target local provider architecture record is approved and endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated/,
@@ -310,6 +318,10 @@ for (const blocker of [
 ]) {
   assert.match(contract, blocker);
 }
+assert.doesNotMatch(
+  contract,
+  /quota\/cost guard|model\/endpoint pinning|quota\/cost\/resource guard|fallback\/disable path|data\/transcript handling|remediation\/renewal/,
+);
 assert.doesNotMatch(
   contract,
   /stop target secret manager claims until the target secret manager architecture record is approved and target secret manager evidence is generated/,

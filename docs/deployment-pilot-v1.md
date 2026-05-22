@@ -307,7 +307,7 @@ Before adding Anthropic, local, Hermes, or any provider beyond the archived Open
 npm run smoke:target-provider-evidence-intake
 ```
 
-The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage, fallback route, artifact hygiene, and keeps `productionReadyClaim: false`.
+The source of record is [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md). It requires provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, failure triage proof, fallback route proof, artifact hygiene, and keeps `productionReadyClaim: false`.
 
 ## Target Provider Operations
 
@@ -315,7 +315,7 @@ The source of record is [target-provider-evidence-intake-v1.md](target-provider-
 npm run smoke:target-provider-operations
 ```
 
-The source of record is [target-provider-operations-v1.md](target-provider-operations-v1.md). It requires provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, provider failure containment, and keeps `productionReadyClaim: false`.
+The source of record is [target-provider-operations-v1.md](target-provider-operations-v1.md). It requires provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment, and keeps `productionReadyClaim: false`.
 
 ## Target OpenAI Provider Account
 

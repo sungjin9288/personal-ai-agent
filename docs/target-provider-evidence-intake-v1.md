@@ -19,9 +19,9 @@ This gate defines the evidence packet an operator must collect before adding Ope
 
 It is not provider account remediation proof, not live-provider-complete evidence, not target deployment proof, and not permission to claim `production-ready`.
 
-Production-ready remains blocked until every provider included in the target release has approved account status, target secret injection, target-boundary live validation, quota/cost guard evidence, provider blocker closure verification, and rollback/fallback evidence.
+Production-ready remains blocked until every provider included in the target release has approved account status proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, provider blocker closure verification proof, and rollback and fallback decision evidence.
 
-Target provider operations evidence remains the runtime operations gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment.
+Target provider operations evidence remains the runtime operations gate for model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment.
 
 ## Required Evidence Packet
 
@@ -34,7 +34,7 @@ Target provider operations evidence remains the runtime operations gate for mode
 | Model and endpoint pinning | provider model, endpoint/base URL, timeout, and fallback route are recorded without secrets | provider readiness matrix lists env keys and commands | blocked |
 | Failure triage route | account failure, missing env, live runtime failure, and fallback decision have named owners | release readiness and handoff list current blockers | blocked |
 | Provider blocker closure verification | provider-specific blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, and regenerated release artifacts are recorded in the target environment blocker closure verification matrix | target environment evidence intake defines the blocker closure verification matrix; provider operations requires blockerClosureVerificationEvidence | blocked |
-| Target provider operations | provider runtime operation evidence covers model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
+| Target provider operations | provider runtime operation evidence covers model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment | local target provider operations contract is present without target environment evidence | blocked |
 
 ## Provider Intake Checklist
 
