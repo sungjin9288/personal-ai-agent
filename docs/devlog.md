@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Observability SLO UI Proof Detail Alignment
+
+- expanded target observability architecture and operations UI command package proofIntent wording so telemetry backend ownership, signal inventory, metric log trace and audit event boundaries, alert routing, alert delivery receipts, staffed on-call coverage, log and trace retention, customer status communication, incident response, audit export, disaster recovery, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded target SLO architecture and operations UI command package proofIntent wording so SLO/SLA architecture approval, customer-approved SLO/SLA terms, error budget policy, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance and degradation, service credit, evidence retention, missed-SLO containment, release artifact hygiene, and regenerated execution snapshot evidence are explicit proof requirements
+- extended UI harness browse smoke coverage so observability and SLO command package guidance cannot regress to generic telemetry, alert, customer communication, error budget, route, or missed-SLO shorthand
+
 ## 2026-05-22 Provider Fallback Event UI Proof Detail Alignment
 
 - expanded the provider fallback event audit package production readiness boundary so target provider operations approval requires provider account or architecture approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry, incident triage, data and transcript handling, remediation and renewal, evidence retention, provider failure containment, release artifact hygiene, and refreshed execution-v1 snapshot evidence

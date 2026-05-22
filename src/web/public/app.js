@@ -3784,25 +3784,25 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-observability-architecture',
       domain: 'observability architecture',
-      proofIntent: 'target telemetry backend, log/metric/trace boundaries, alert routing, ownership, retention, and customer status paths are defined',
+      proofIntent: 'target observability architecture approval proof, telemetry backend ownership proof, signal inventory proof, metric log trace and audit event boundary proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-observability-architecture-missing',
     },
     {
       command: 'npm run smoke:target-observability-operations',
       domain: 'observability operations',
-      proofIntent: 'target telemetry ingestion, alert acknowledgement, incident handoff, customer communication, provider outage handling, and missed-alert containment are captured',
+      proofIntent: 'target observability telemetry ingestion proof, alert delivery receipt proof, trace and log retention proof, staffed on-call routing and acknowledgement proof, customer status communication proof, incident response proof, incident review proof, audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured',
       stopCondition: 'target-observability-operations-missing',
     },
     {
       command: 'npm run smoke:target-slo-architecture',
       domain: 'SLO architecture',
-      proofIntent: 'target SLO/SLA terms, error budget owner, customer status path, alert ownership, incident review, and operational boundary are defined',
+      proofIntent: 'target SLO/SLA architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-slo-architecture-missing',
     },
     {
       command: 'npm run smoke:target-slo-operations',
       domain: 'SLO operations',
-      proofIntent: 'target SLO measurements, error budget review, alert route, incident response, customer notification, and missed-SLO containment evidence are captured',
+      proofIntent: 'target SLO measurements proof, customer-approved SLO/SLA terms proof, error budget review proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are captured',
       stopCondition: 'target-slo-operations-missing',
     },
     {

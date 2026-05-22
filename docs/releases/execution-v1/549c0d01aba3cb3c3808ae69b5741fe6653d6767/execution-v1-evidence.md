@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T08:09:05.072Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T08:08:55.637Z
 - branch: codex/target-observability-slo-ui-proof-detail
 - commit: 549c0d01aba3cb3c3808ae69b5741fe6653d6767
