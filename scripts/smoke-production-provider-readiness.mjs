@@ -78,11 +78,11 @@ assert.match(readiness, /\| local \| ready-but-missing-env \| LOCAL_PROVIDER_MOD
 assert.match(readiness, /target local provider architecture remains the production gate/);
 assert.match(
   readiness,
-  /target OpenAI provider account remains the gate for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+  /target OpenAI provider account remains the gate for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
 );
 assert.match(
   readiness,
-  /target Anthropic provider account remains the gate for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+  /target Anthropic provider account remains the gate for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(
   readiness,
@@ -94,17 +94,17 @@ assert.doesNotMatch(
 );
 assert.match(
   readiness,
-  /target local provider architecture remains the gate for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements/,
+  /target local provider architecture remains the gate for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(
   readiness,
   /target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decision requirements/,
 );
-assert.match(readiness, /archived live validation, provider blocker closure verification, and fallback\/stop-condition evidence/);
-assert.match(readiness, /provider fallback runtime audit, target blocker closure verification matrix, telemetry/);
+assert.match(readiness, /archived live validation proof, provider blocker closure verification proof, and fallback and stop-condition evidence/);
+assert.match(readiness, /provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof/);
 assert.match(
   readiness,
-  /target Hermes provider architecture remains the gate for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifact requirements/,
+  /target Hermes provider architecture remains the gate for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements/,
 );
 assert.doesNotMatch(
   readiness,
@@ -117,6 +117,14 @@ assert.match(
 assert.doesNotMatch(
   readiness,
   /Hermes remains blocked until approved Hermes endpoint\/model configuration is injected and live validation passes/,
+);
+assert.doesNotMatch(
+  readiness,
+  /model\/endpoint pinning|quota\/cost guard|quota\/cost\/resource guard|fallback\/disable path|fallback\/stop-condition evidence|data\/transcript handling|remediation\/renewal|quota\/resource guard|release artifact hygiene, and regenerated release artifact requirements/,
+);
+assert.doesNotMatch(
+  readiness,
+  /target-boundary OpenAI live validation, telemetry proof|target-boundary Anthropic live validation, telemetry proof|target-boundary local provider live validation, release artifact hygiene/,
 );
 
 assert.match(releaseReadiness, /\[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/);

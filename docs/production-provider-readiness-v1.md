@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-22T01:32:36.346Z
-- sourceBranch: codex/deployment-release-action-guidance-proof-detail
-- sourceCommit: db6dbe26738e1700b717eeca62d5daafd4a12707
+- generatedAt: 2026-05-22T01:43:30.563Z
+- sourceBranch: codex/production-provider-readiness-proof-detail
+- sourceCommit: 48bb4280e70fa549bce3ea78b956f1c5edf0c07a
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 5556 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 5551 |
 
 ## Key Signals
 
@@ -102,23 +102,23 @@ Production-ready remains blocked until every provider included in the target rel
 
 - archived passed live providers in the current release evidence: OpenAI, local
 - Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
-- local provider live validation is archived as passed for the configured model/endpoint used by this rehearsal, while target local provider architecture remains the production gate
+- local provider live validation is archived as passed for the configured model and endpoint used by this rehearsal, while target local provider architecture remains the production gate
 - Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
-- target provider evidence intake contract remains the gate for provider account approval, target secret injection, target-boundary live validation, quota/cost guard, model/endpoint pinning, failure triage evidence, and provider blocker closure verification
-- target provider operations contract remains the gate for model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence
-- target OpenAI provider account remains the gate for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
-- target Anthropic provider account remains the gate for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements
-- target local provider architecture remains the gate for endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements
-- target Hermes provider architecture remains the gate for endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated release artifact requirements
+- target provider evidence intake contract remains the gate for provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, failure triage evidence, and provider blocker closure verification proof
+- target provider operations contract remains the gate for model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence
+- target OpenAI provider account remains the gate for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements
+- target Anthropic provider account remains the gate for account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements
+- target local provider architecture remains the gate for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements
+- target Hermes provider architecture remains the gate for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence requirements
 
 ## Target Provider Evidence Intake
 
-Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner, target boundary, secret manager alias, model/endpoint pinning, quota/cost guard, archived live validation, provider blocker closure verification, and fallback/stop-condition evidence.
+Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner proof, target boundary proof, secret manager alias proof, model and endpoint pinning proof, quota and cost guard proof, archived live validation proof, provider blocker closure verification proof, and fallback and stop-condition evidence.
 
 ## Target Provider Operations
 
-Before any provider is presented as target production-operational, the operator must verify [target-provider-operations-v1.md](target-provider-operations-v1.md) and attach provider account approval, target secret injection, target-boundary live validation, model/endpoint pinning, quota/cost/resource guard, fallback/disable path, provider fallback runtime audit, target blocker closure verification matrix, telemetry, incident triage, data/transcript handling, remediation/renewal, evidence retention, and provider failure containment evidence.
+Before any provider is presented as target production-operational, the operator must verify [target-provider-operations-v1.md](target-provider-operations-v1.md) and attach provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence.
 
 ## Operator Re-Run
 

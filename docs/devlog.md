@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Production Provider Readiness Proof Detail Alignment
+
+- expanded production provider readiness generator wording so target provider evidence intake and target provider operations guidance records provider owner, target boundary, secret manager alias, model and endpoint pinning, quota and cost guard, archived live validation, blocker closure verification, fallback and stop-condition, telemetry, incident triage, data and transcript handling, remediation and renewal, evidence retention, and failure containment as proof fields instead of slash-based shorthand
+- aligned OpenAI, Anthropic, local, and Hermes provider readiness gate bullets so live validation, release artifact hygiene, regenerated execution snapshot, local quota and resource guard, and Hermes regenerated artifact requirements use proof-level wording
+- extended production provider readiness smoke coverage so generated provider readiness docs cannot reintroduce model/endpoint, quota/cost, fallback/stop-condition, data/transcript, remediation/renewal, or release artifact shorthand
+
 ## 2026-05-22 Deployment and Release Action Guidance Proof Detail Alignment
 
 - expanded `/api/execution-v1/status` target-deployment current open blocker action guidance so `nextEvidence` and `stopReason` use proof-level target deployment name, deployment profile decision, mandatory control, provider readiness, identity and tenant, secret and observability, data lifecycle and support, clean release artifact, stop-condition decision, production-ready claim decision, target environment submission packet, release artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot wording instead of slash-based shorthand
