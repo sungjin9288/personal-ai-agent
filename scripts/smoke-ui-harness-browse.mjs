@@ -363,6 +363,37 @@ try {
     appJs,
     /target local provider ownership, model pinning, network isolation, data residency, resource guard, telemetry, fallback, and customer acceptance/,
   );
+  assert.equal(appJs.includes('target observability architecture approval proof'), true);
+  assert.equal(appJs.includes('telemetry backend ownership proof'), true);
+  assert.equal(appJs.includes('metric log trace and audit event boundary proof'), true);
+  assert.equal(appJs.includes('alert delivery receipt proof'), true);
+  assert.equal(appJs.includes('staffed on-call coverage proof'), true);
+  assert.equal(appJs.includes('target observability telemetry ingestion proof'), true);
+  assert.equal(appJs.includes('trace and log retention proof'), true);
+  assert.equal(appJs.includes('staffed on-call routing and acknowledgement proof'), true);
+  assert.equal(appJs.includes('target SLO/SLA architecture approval proof'), true);
+  assert.equal(appJs.includes('customer-approved SLO/SLA terms proof'), true);
+  assert.equal(appJs.includes('error budget policy proof'), true);
+  assert.equal(appJs.includes('provider outage playbook proof'), true);
+  assert.equal(appJs.includes('target SLO measurements proof'), true);
+  assert.equal(appJs.includes('staffed on-call response proof'), true);
+  assert.equal(appJs.includes('missed-SLO containment proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target telemetry backend, log\/metric\/trace boundaries, alert routing, ownership, retention, and customer status paths are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target telemetry ingestion, alert acknowledgement, incident handoff, customer communication, provider outage handling, and missed-alert containment are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target SLO\/SLA terms, error budget owner, customer status path, alert ownership, incident review, and operational boundary are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target SLO measurements, error budget review, alert route, incident response, customer notification, and missed-SLO containment evidence are captured/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
