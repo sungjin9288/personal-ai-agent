@@ -468,6 +468,69 @@ try {
     appJs,
     /support queue, coverage owner, escalation flow, ticket audit trail, customer communication, on-call handoff, and incident review evidence/,
   );
+  assert.equal(appJs.includes('target deployment contract reference proof'), true);
+  assert.equal(appJs.includes('approved target boundary proof'), true);
+  assert.equal(appJs.includes('source provenance proof'), true);
+  assert.equal(appJs.includes('artifact registry proof'), true);
+  assert.equal(appJs.includes('dependency installation proof'), true);
+  assert.equal(appJs.includes('runtime bootstrap proof'), true);
+  assert.equal(appJs.includes('secret injection proof'), true);
+  assert.equal(appJs.includes('environment boundary proof'), true);
+  assert.equal(appJs.includes('migration and data readiness proof'), true);
+  assert.equal(appJs.includes('smoke and health verification proof'), true);
+  assert.equal(appJs.includes('rollback and recovery proof'), true);
+  assert.equal(appJs.includes('release approval proof'), true);
+  assert.equal(appJs.includes('clean checkout proof'), true);
+  assert.equal(appJs.includes('command replay proof'), true);
+  assert.equal(appJs.includes('artifact synchronization proof'), true);
+  assert.equal(appJs.includes('production-like environment proof'), true);
+  assert.equal(appJs.includes('artifact-sync-current proof'), true);
+  assert.equal(appJs.includes('misleading production-ready claim containment proof'), true);
+  assert.equal(appJs.includes('repository-relative file inventory'), true);
+  assert.equal(appJs.includes('sha256 manifest proof'), true);
+  assert.equal(appJs.includes('machine-local path scan proof'), true);
+  assert.equal(appJs.includes('secret-like value scan proof'), true);
+  assert.equal(appJs.includes('unsupported evidence leakage scan proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target deployment contract reference, release label, deployment run id or equivalent, runtime\/dependency proof, rollback proof, and clean checkout evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target clean deployment operations evidence, clean deployment run, dependency\/runtime proof, release snapshot, pilot\/export package, artifact hygiene result, rollback proof, and failed-deployment containment/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target clean checkout, dependency\/runtime, environment config, release snapshot, rollback, and failure containment boundaries are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target clean deployment run, dependency\/runtime proof, release snapshot, rollback, failed-deployment containment, and run owner evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target deployment boundary, runtime root alias, release label, dependency proof, rollback owner, and contract references are present/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /clean checkout deployment, dependency proof, release snapshot, rollback, and artifact hygiene evidence remain current for the release review/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /production-like release rehearsal, target gates, provider checks, snapshot, rollback, and handoff evidence remain current/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /pilot\/export package inventory, bundle hash, file count, hygiene state, and verified commit references remain current/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /release artifacts are scanned for machine-local paths, secret-like values, and unsupported evidence leakage before reviewer acceptance/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /clean checkout deployment, dependency\/runtime proof, environment config, release snapshot, rollback proof, and failed deployment containment for the target boundary/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);

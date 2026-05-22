@@ -3543,7 +3543,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'deploymentBoundaryEvidence',
-      requiredValue: 'target deployment contract reference, release label, deployment run id or equivalent, runtime/dependency proof, rollback proof, and clean checkout evidence',
+      requiredValue: 'target deployment contract reference proof, approved target boundary proof, release label proof, deployment run id proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, rollback and recovery proof, clean checkout proof, artifact synchronization proof, release approval proof, and production readiness gate result',
       completionRule: 'must prove release artifacts were generated from the approved target boundary, not from an unrelated local run',
       primaryDocs: ['docs/target-deployment-contract-v1.md', 'docs/target-clean-deployment-operations-v1.md', 'docs/clean-deployment-release-v1.md'],
     },
@@ -3585,7 +3585,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'cleanReleaseEvidence',
-      requiredValue: 'target clean deployment operations evidence, clean deployment run, dependency/runtime proof, release snapshot, pilot/export package, artifact hygiene result, rollback proof, and failed-deployment containment',
+      requiredValue: 'target clean deployment operations evidence, clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, dependency installation proof, runtime bootstrap proof, secret injection proof, rollback and recovery proof, release approval proof, pilot export package proof, release artifact hygiene result, artifact-sync-current proof, failed-deployment containment proof, and misleading production-ready claim containment proof',
       completionRule: 'must reference passed clean deployment, release drill, export package, and hygiene evidence for the same target review',
       primaryDocs: ['docs/target-clean-deployment-operations-v1.md', 'docs/production-like-release-drill-v1.md', 'docs/pilot-export-package-v1.md'],
     },
@@ -3838,19 +3838,19 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-clean-deployment-architecture',
       domain: 'clean deployment architecture',
-      proofIntent: 'target clean checkout, dependency/runtime, environment config, release snapshot, rollback, and failure containment boundaries are defined',
+      proofIntent: 'target clean deployment architecture approval proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, migration and data readiness proof, smoke and health verification proof, rollback and recovery proof, release approval proof, migration plan proof, dependency drift containment proof, failed bootstrap containment proof, failed secret injection containment proof, rollback failure containment proof, misleading release approval containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-clean-deployment-architecture-missing',
     },
     {
       command: 'npm run smoke:target-clean-deployment-operations',
       domain: 'clean deployment operations',
-      proofIntent: 'target clean deployment run, dependency/runtime proof, release snapshot, rollback, failed-deployment containment, and run owner evidence are captured',
+      proofIntent: 'target clean deployment operations evidence with source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, migration and data readiness proof, smoke and health verification proof, rollback and recovery proof, release approval proof, artifact hygiene and production readiness gate result, residual risk proof, decision owner proof, next review date proof, and failed-deployment containment plan is captured',
       stopCondition: 'target-clean-deployment-operations-missing',
     },
     {
       command: 'npm run smoke:target-deployment-contract',
       domain: 'deployment contract',
-      proofIntent: 'target deployment boundary, runtime root alias, release label, dependency proof, rollback owner, and contract references are present',
+      proofIntent: 'target deployment boundary proof, approved environment name proof, deployment profile proof, runtime root alias proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, target secret injection proof, environment boundary proof, rollback owner proof, release label proof, target evidence packet reference proof, production readiness blocker proof, and contract references are present',
       stopCondition: 'target-deployment-contract-missing',
     },
     {
@@ -3862,25 +3862,25 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:clean-deployment-release',
       domain: 'clean deployment release',
-      proofIntent: 'clean checkout deployment, dependency proof, release snapshot, rollback, and artifact hygiene evidence remain current for the release review',
+      proofIntent: 'clean deployment release evidence with clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, rollback readiness proof, release approval proof, failed-release containment proof, release artifact hygiene result, artifact-sync-current proof, and regenerated execution snapshot evidence remains current for the release review',
       stopCondition: 'clean-deployment-release-missing-or-failed',
     },
     {
       command: 'npm run smoke:production-like-release-drill',
       domain: 'production-like release drill',
-      proofIntent: 'production-like release rehearsal, target gates, provider checks, snapshot, rollback, and handoff evidence remain current',
+      proofIntent: 'production-like release drill evidence with target gates proof, provider checks proof, execution snapshot proof, clean deployment release proof, pilot export package proof, rollback proof, handoff evidence proof, release artifact hygiene result, production readiness gate proof, and failed-release containment proof remains current',
       stopCondition: 'production-like-release-drill-missing-or-failed',
     },
     {
       command: 'npm run smoke:pilot-export-package',
       domain: 'pilot export package',
-      proofIntent: 'pilot/export package inventory, bundle hash, file count, hygiene state, and verified commit references remain current',
+      proofIntent: 'pilot export package proof with repository-relative file inventory, bundle hash proof, file count proof, sha256 manifest proof, hygiene state proof, verified commit reference proof, release artifact hygiene result, and regenerated execution snapshot reference remains current',
       stopCondition: 'pilot-export-package-missing-or-stale',
     },
     {
       command: 'npm run smoke:release-artifact-hygiene',
       domain: 'release artifact hygiene',
-      proofIntent: 'release artifacts are scanned for machine-local paths, secret-like values, and unsupported evidence leakage before reviewer acceptance',
+      proofIntent: 'release artifact hygiene proof with machine-local path scan proof, secret-like value scan proof, unsupported evidence leakage scan proof, scanned file count proof, zero finding proof, verified commit proof, and reviewer acceptance boundary is captured',
       stopCondition: 'release-artifact-hygiene-missing-or-failed',
     },
   ];
@@ -4038,7 +4038,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'clean production deployment',
-      missingProof: 'clean checkout deployment, dependency/runtime proof, environment config, release snapshot, rollback proof, and failed deployment containment for the target boundary',
+      missingProof: 'target clean deployment architecture approval proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, target secret injection proof, environment boundary proof, migration and data readiness proof, smoke and health verification proof, rollback and recovery proof, release approval proof, clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, release artifact hygiene result, artifact-sync-current proof, and failed-deployment containment proof for the target boundary',
       requiredEvidence: 'target clean deployment architecture and operations evidence plus clean deployment release proof',
       stopCondition: 'target-clean-deployment-operations-missing',
       claimGuard: 'do not claim production deployment readiness',
