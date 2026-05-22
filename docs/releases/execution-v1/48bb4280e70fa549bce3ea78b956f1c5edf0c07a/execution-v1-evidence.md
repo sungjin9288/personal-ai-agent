@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T01:43:59.833Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T01:43:06.847Z
 - branch: codex/production-provider-readiness-proof-detail
 - commit: 48bb4280e70fa549bce3ea78b956f1c5edf0c07a
