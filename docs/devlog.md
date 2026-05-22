@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Anthropic Provider Account Action Proof Detail Alignment
+
+- expanded Anthropic provider account blocker action wording so account ownership, billing and credit remediation, active billing plan, available credit balance, API key and secret injection, ANTHROPIC_MODEL model access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation, mission and execution session provenance, telemetry, fallback and stop-condition, remediation audit, release artifact hygiene, and regenerated execution snapshot are recorded as proof fields
+- aligned release target evidence UI metadata for Anthropic exception, risk, and blocker disposition registers so required evidence no longer falls back to billing/credit, target secret injection, live validation, or regenerated artifact shorthand
+- extended execution-v1 status and production readiness gate smoke coverage so Anthropic provider account blockers require proof-level action and stop-condition wording
+
 ## 2026-05-22 Target Hermes Provider Architecture Proof Detail Alignment
 
 - expanded target Hermes provider architecture wording so endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle, data and transcript policy, quota and rate guard, telemetry, fallback and stop-condition, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot requirements are recorded as proof fields across the source-of-record and planning references
