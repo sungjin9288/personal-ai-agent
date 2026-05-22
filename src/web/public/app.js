@@ -3561,7 +3561,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'providerSecretEvidence',
-      requiredValue: 'selected providers, completed provider evidence intake references, provider account/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence',
+      requiredValue: 'selected provider proof, completed provider evidence intake reference proof, provider account or architecture approval proof, approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, credential containment proof, target-boundary live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must prove provider credentials and provider live validation are target-approved without exposing secret values',
       primaryDocs: ['docs/target-provider-evidence-intake-v1.md', 'docs/target-provider-operations-v1.md', 'docs/target-secret-manager-v1.md'],
     },
@@ -3772,13 +3772,13 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-secret-manager-architecture',
       domain: 'secret manager architecture',
-      proofIntent: 'target secret manager ownership, aliases, access policy, rotation, revocation, break-glass, audit, and deployment injection boundaries are defined',
+      proofIntent: 'target secret manager architecture approval proof, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-secret-manager-architecture-missing',
     },
     {
       command: 'npm run smoke:target-secret-manager',
       domain: 'secret manager operations',
-      proofIntent: 'target secret injection, rotation proof, revocation path, audit export, and sanitized secret evidence references are captured',
+      proofIntent: 'target secret manager operations evidence with secret injection proof, scoped access policy proof, rotation and revocation evidence packet, audit trail proof, break-glass governance proof, leakage review proof, sanitized secret evidence references, release artifact hygiene result, production readiness gate result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'target-secret-injection-missing',
     },
     {
@@ -3996,8 +3996,8 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'target secret injection',
-      missingProof: 'target secret manager aliases, runtime injection, rotation, revocation, break-glass, and audit evidence without exposing secret values',
-      requiredEvidence: 'target secret manager architecture and operations evidence tied to provider runtime validation',
+      missingProof: 'approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, credential containment proof, release artifact hygiene result, and regenerated execution snapshot evidence without exposing secret values',
+      requiredEvidence: 'target secret manager architecture approval proof, target secret manager operations evidence, and provider runtime validation evidence tied to the same target boundary',
       stopCondition: 'target-secret-injection-missing',
       claimGuard: 'do not claim production provider credential readiness',
     },
@@ -4507,7 +4507,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
           `   - liveCommand: ${String(liveCommand || '').trim() || 'not recorded'}`,
           `   - evidenceCommand: ${String(item.evidenceCommand || '').trim() || `node scripts/build-execution-v1-evidence.mjs --live-${provider}`}`,
           `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.join(' | ') : 'none'}`,
-          '   - targetBoundaryRequirement: provider account or architecture approval proof, target secret manager alias proof, target-boundary live validation proof, fallback policy and stop-condition proof, provider operations proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 snapshot must all match the claimed target boundary',
+          '   - targetBoundaryRequirement: provider account or architecture approval proof, approved secret manager platform proof, runtime injection proof, secret access audit log proof, target-boundary live validation proof, fallback policy and stop-condition proof, provider operations proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 snapshot must all match the claimed target boundary',
           '   - productionClaimImpact: provider cannot be included in a production-ready or live-provider-complete claim unless linked blockers are closed by target-boundary evidence and final gates pass',
         ];
       })
@@ -4587,7 +4587,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     '',
     'Provider evidence reference rules:',
     '- This reference list is a provider evidence handoff, not provider approval or production-ready approval.',
-    '- A provider row must not be used in a production-ready claim unless env readiness, target-boundary live validation proof, provider account or architecture approval proof, target secret manager alias proof, provider operations proof, fallback policy and stop-condition proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 artifacts are all accepted for the same target boundary.',
+    '- A provider row must not be used in a production-ready claim unless env readiness, target-boundary live validation proof, provider account or architecture approval proof, approved secret manager platform proof, runtime injection proof, secret access audit log proof, provider operations proof, fallback policy and stop-condition proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 artifacts are all accepted for the same target boundary.',
     '- Missing env, stale live validation, archived local-only proof, unapproved account or architecture, missing provider blocker disposition, or missing release refresh evidence keeps the provider as a stop-condition.',
     '- Do not include raw API keys, tokens, private endpoint credentials, raw account ids, endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
     '- Keep productionReadyClaim=false until every provider included in the target claim is approved by target-boundary evidence and all final gates pass.',
@@ -5632,7 +5632,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     {
       key: 'provider-secret-boundary',
       label: 'Provider and secret boundary',
-      requiredBoundary: 'approved provider accounts, target secret aliases, injection proof, live validation boundary, quota guard, and fallback disable path',
+      requiredBoundary: 'provider account or architecture approval proof, approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, secret access audit log proof, target-boundary live validation proof, quota guard proof, and fallback disable path proof',
       docs: [
         'docs/target-provider-evidence-intake-v1.md',
         'docs/target-provider-operations-v1.md',
