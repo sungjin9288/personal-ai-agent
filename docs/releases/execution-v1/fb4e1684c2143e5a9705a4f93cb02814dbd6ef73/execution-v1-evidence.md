@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T14:53:45.138Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T14:53:34.764Z
 - branch: codex/main-identity-session-artifact-sync
 - commit: fb4e1684c2143e5a9705a4f93cb02814dbd6ef73

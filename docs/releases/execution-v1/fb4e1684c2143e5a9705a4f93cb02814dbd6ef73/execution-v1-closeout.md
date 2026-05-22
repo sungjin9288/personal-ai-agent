@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T14:53:45.138Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T14:53:34.810Z
 - branch: codex/main-identity-session-artifact-sync
 - commit: fb4e1684c2143e5a9705a4f93cb02814dbd6ef73
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fb4e1684c2143e5a9705a4f93cb02814dbd6ef73/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
