@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Identity Session UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for identitySessionEvidence so customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded hosted identity/session architecture and target identity/session operations command package proofIntent wording so migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence are explicit UI proof requirements
+- extended UI harness browse smoke coverage so identity/session guidance cannot regress to generic customer IdP, lifecycle, audit export, break-glass, support impersonation, compliance, or retention shorthand
+
 ## 2026-05-22 Target Clean Deployment UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for deploymentBoundaryEvidence and cleanReleaseEvidence so target deployment contract reference, approved target boundary, source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, rollback and recovery, clean checkout, command replay, artifact synchronization, production-like environment, release approval, pilot export package, release artifact hygiene, artifact-sync-current, failed-deployment containment, and misleading production-ready claim containment evidence are recorded as proof fields

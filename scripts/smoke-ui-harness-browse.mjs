@@ -328,6 +328,45 @@ try {
   assert.equal(appJs.includes('provider fallback runtime audit proof with fallback policy and stop reason'), true);
   assert.equal(appJs.includes('fallback policy and stop-condition proof, provider operations proof, blocker closure proof'), true);
   assert.equal(appJs.includes('provider blocker disposition, fallback policy and stop reason'), true);
+  assert.equal(appJs.includes('identitySessionEvidence'), true);
+  assert.equal(
+    appJs.includes(
+      'customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof',
+    ),
+    true,
+  );
+  assert.equal(appJs.includes('permission propagation proof'), true);
+  assert.equal(appJs.includes('immutable audit export proof'), true);
+  assert.equal(appJs.includes('break-glass governance proof'), true);
+  assert.equal(appJs.includes('support impersonation proof'), true);
+  assert.equal(appJs.includes('customer access containment proof'), true);
+  assert.equal(appJs.includes('migration plan proof'), true);
+  assert.equal(appJs.includes('lockout recovery proof'), true);
+  assert.equal(
+    appJs.includes('target identity session operations evidence with customer IdP onboarding proof'),
+    true,
+  );
+  assert.equal(appJs.includes('hosted identity session architecture approval proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /customer IdP proof, user lifecycle, session lifecycle, role assignment\/revocation/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /customer IdP, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted identity architecture, customer IdP integration, user lifecycle, session controls, authorization, audit, and support boundaries are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /customer IdP administration, user lifecycle, session lifecycle, role administration, audit export, break-glass, and support impersonation evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted identity\/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof/,
+  );
   assert.doesNotMatch(
     appJs,
     /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,
