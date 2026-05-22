@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T01:14:21.620Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T01:13:48.959Z
 - branch: codex/provider-architecture-stop-reason-proof-detail
 - commit: 3d620ae68dfad721f14a63a50ce41ef3d0fc0f12
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3d620ae68dfad721f14a63a50ce41ef3d0fc0f12/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
