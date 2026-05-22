@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T07:40:41.675Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T07:40:28.537Z
 - branch: codex/provider-fallback-event-ui-proof-detail
 - commit: 8a0ffc72bc9bf7c5815a28efc1225e159953f754
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

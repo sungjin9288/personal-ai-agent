@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Provider Fallback Event UI Proof Detail Alignment
+
+- expanded the provider fallback event audit package production readiness boundary so target provider operations approval requires provider account or architecture approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry, incident triage, data and transcript handling, remediation and renewal, evidence retention, provider failure containment, release artifact hygiene, and refreshed execution-v1 snapshot evidence
+- added explicit UI handoff wording that fallback runtime audit proof must include mission run, mission timeline, workspace timeline, operator timeline, provider events, provider attention remediation, selected fallback provider, fallback policy id, fallback stop reason, non-provider-failure stop condition, non-recoverable provider failure stop condition, event family, and operator chronology evidence
+- extended UI harness browse smoke coverage so the provider fallback event audit package cannot regress to generic target provider operations evidence approval wording
+
 ## 2026-05-22 Provider Attention Fallback Audit Coverage
 
 - extended provider attention remediation smoke coverage so `action remediate-provider-attention --fallback-provider --fallback-policy` proves provider-failure-only fallback events are written to the mission timeline with fallback policy and stop reason counts

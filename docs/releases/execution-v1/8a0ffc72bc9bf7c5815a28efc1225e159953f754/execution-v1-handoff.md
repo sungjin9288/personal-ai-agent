@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T07:40:41.675Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T07:40:40.233Z
 - localDate: 2026-05-22
 - branch: codex/provider-fallback-event-ui-proof-detail
 - commit: 8a0ffc72bc9bf7c5815a28efc1225e159953f754
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754](releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754](docs/releases/execution-v1/8a0ffc72bc9bf7c5815a28efc1225e159953f754)
 - visualArtifactSetSha256: 0963e9ba69e4f0592979ad13c83852f8051dc0d2020c9f2e94d36b6be4a77c50
 - commitPushStatus: not pushed, origin/codex/provider-fallback-event-ui-proof-detail not found
 
