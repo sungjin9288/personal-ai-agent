@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-23 Target Tenant Isolation UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for tenantIsolationEvidence so tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded hosted tenant isolation architecture and target tenant isolation operations command package proofIntent wording so migration plan, rollback, tenant data containment, release artifact hygiene, and regenerated execution snapshot evidence are explicit UI proof requirements
+- extended UI harness browse smoke coverage so tenant isolation guidance cannot regress to generic tenant identity, storage/encryption, backup/restore, lifecycle, cross-tenant, observability/support, or tenant containment shorthand
+
 ## 2026-05-22 Target Identity Session UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for identitySessionEvidence so customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields

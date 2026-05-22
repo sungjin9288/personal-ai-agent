@@ -367,6 +367,40 @@ try {
     appJs,
     /hosted identity\/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof/,
   );
+  assert.equal(appJs.includes('tenantIsolationEvidence'), true);
+  assert.equal(appJs.includes('tenant identity source proof'), true);
+  assert.equal(appJs.includes('customer organization mapping proof'), true);
+  assert.equal(appJs.includes('tenant-scoped authorization proof'), true);
+  assert.equal(appJs.includes('service-to-service tenant propagation proof'), true);
+  assert.equal(appJs.includes('storage partitioning proof'), true);
+  assert.equal(appJs.includes('artifact/memory/search/export/index partitioning proof'), true);
+  assert.equal(appJs.includes('per-tenant encryption/key ownership proof'), true);
+  assert.equal(appJs.includes('backup/restore isolation proof'), true);
+  assert.equal(appJs.includes('cross-tenant denial proof'), true);
+  assert.equal(appJs.includes('observability/support isolation proof'), true);
+  assert.equal(appJs.includes('lifecycle isolation proof'), true);
+  assert.equal(appJs.includes('target tenant isolation operations evidence with tenant identity source proof'), true);
+  assert.equal(appJs.includes('hosted tenant isolation architecture approval proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted tenant identity, authorization, storage partitioning, encryption\/key ownership, observability, support, backup\/restore, and lifecycle isolation are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target tenant isolation tests, storage\/encryption proof, backup\/restore non-interference, lifecycle evidence, and negative cross-tenant checks are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /tenant storage partitioning, tenant key ownership, backup\/restore isolation, tenant administration, and cross-tenant denial evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment proof/,
+  );
   assert.doesNotMatch(
     appJs,
     /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,

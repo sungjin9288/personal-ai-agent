@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T15:51:37.311Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T15:51:28.156Z
 - branch: codex/target-tenant-isolation-ui-proof-detail
 - commit: 272446400dbb6d83d84a483a35f57c00440489fb
