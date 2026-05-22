@@ -222,6 +222,38 @@ try {
   assert.equal(fallbackRemediation.postAttention.status, 'pending');
   assert.equal(fallbackRemediation.postAttention.pendingCount, 1);
 
+  const fallbackRemediationTimeline = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'timeline', fallbackMission.id],
+  });
+
+  assert.equal(fallbackRemediationTimeline.summary.providerFallbackAttemptCount, 2);
+  assert.equal(fallbackRemediationTimeline.summary.providerFallbackPolicyCounts['provider-failure-only'], 2);
+  assert.equal(fallbackRemediationTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'], 1);
+  assert.equal(fallbackRemediationTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'], 1);
+  assert.equal(
+    fallbackRemediationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'provider-fallback-attempted' &&
+        event.providerId === 'anthropic' &&
+        event.providerFailureKind === 'config' &&
+        event.fallbackPolicy === 'provider-failure-only' &&
+        event.fallbackStopReason === 'eligible-provider-failure',
+    ),
+    true,
+  );
+  assert.equal(
+    fallbackRemediationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'provider-fallback-used' &&
+        event.providerId === 'stub' &&
+        event.primaryProviderId === 'anthropic' &&
+        event.fallbackPolicy === 'provider-failure-only' &&
+        event.fallbackStopReason === 'mission-status-completed',
+    ),
+    true,
+  );
+
   const recoverableFallbackMission = service.createMission({
     workspaceId: workspace.id,
     mode: 'knowledge',
@@ -290,6 +322,47 @@ try {
   assert.equal(recoverableFallbackRemediation.result.providerFallback.attempts[1].fallbackStopReason, 'mission-status-completed');
   assert.equal(recoverableFallbackRemediation.postAttention.status, 'pending');
   assert.equal(recoverableFallbackRemediation.postAttention.pendingCount, 1);
+
+  const recoverableFallbackRemediationTimeline = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'timeline', recoverableFallbackMission.id],
+  });
+
+  assert.equal(recoverableFallbackRemediationTimeline.summary.providerFallbackAttemptCount, 2);
+  assert.equal(
+    recoverableFallbackRemediationTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'],
+    2,
+  );
+  assert.equal(
+    recoverableFallbackRemediationTimeline.summary.providerFallbackStopReasonCounts['eligible-provider-failure'],
+    1,
+  );
+  assert.equal(
+    recoverableFallbackRemediationTimeline.summary.providerFallbackStopReasonCounts['mission-status-completed'],
+    1,
+  );
+  assert.equal(
+    recoverableFallbackRemediationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'provider-fallback-attempted' &&
+        event.providerId === 'openai' &&
+        event.providerFailureKind === 'transport' &&
+        event.fallbackPolicy === 'recoverable-provider-failure-only' &&
+        event.fallbackStopReason === 'eligible-provider-failure',
+    ),
+    true,
+  );
+  assert.equal(
+    recoverableFallbackRemediationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'provider-fallback-used' &&
+        event.providerId === 'stub' &&
+        event.primaryProviderId === 'openai' &&
+        event.fallbackPolicy === 'recoverable-provider-failure-only' &&
+        event.fallbackStopReason === 'mission-status-completed',
+    ),
+    true,
+  );
 
   const recoverablePolicyMission = service.createMission({
     workspaceId: workspace.id,
@@ -379,6 +452,78 @@ try {
   assert.equal(recoverablePolicyRemediation.result.providerFallback.attempts[0].providerFailure.failureKind, 'config');
   assert.equal(recoverablePolicyRemediation.postAttention.status, 'pending');
   assert.equal(recoverablePolicyRemediation.postAttention.pendingCount, 1);
+
+  const recoverablePolicyRemediationTimeline = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'timeline', recoverablePolicyMission.id],
+  });
+
+  assert.equal(recoverablePolicyRemediationTimeline.summary.providerFallbackAttemptCount, 1);
+  assert.equal(
+    recoverablePolicyRemediationTimeline.summary.providerFallbackPolicyCounts['recoverable-provider-failure-only'],
+    1,
+  );
+  assert.equal(
+    recoverablePolicyRemediationTimeline.summary.providerFallbackStopReasonCounts['non-recoverable-provider-failure'],
+    1,
+  );
+  assert.equal(
+    recoverablePolicyRemediationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'provider-fallback-attempted' &&
+        event.providerId === 'anthropic' &&
+        event.providerFailureKind === 'config' &&
+        event.fallbackPolicy === 'recoverable-provider-failure-only' &&
+        event.fallbackStopReason === 'non-recoverable-provider-failure',
+    ),
+    true,
+  );
+
+  const attentionFallbackEvents = runCli({
+    rootDir: tempRoot,
+    args: ['provider', 'events', '--family', 'fallback'],
+  });
+
+  assert.equal(attentionFallbackEvents.summary.familyCounts.fallback, 5);
+  assert.equal(attentionFallbackEvents.summary.eventCounts['provider-fallback-attempted'], 3);
+  assert.equal(attentionFallbackEvents.summary.eventCounts['provider-fallback-used'], 2);
+  assert.equal(attentionFallbackEvents.summary.fallbackPolicyCounts['provider-failure-only'], 2);
+  assert.equal(attentionFallbackEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 3);
+  assert.equal(attentionFallbackEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 2);
+  assert.equal(attentionFallbackEvents.summary.fallbackStopReasonCounts['mission-status-completed'], 2);
+  assert.equal(attentionFallbackEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'], 1);
+
+  const attentionRecoverablePolicyEvents = runCli({
+    rootDir: tempRoot,
+    args: ['provider', 'events', '--fallback-policy', 'recoverable-provider-failure-only'],
+  });
+
+  assert.equal(attentionRecoverablePolicyEvents.summary.total, 3);
+  assert.equal(attentionRecoverablePolicyEvents.summary.fallbackPolicyCounts['recoverable-provider-failure-only'], 3);
+  assert.equal(attentionRecoverablePolicyEvents.summary.fallbackStopReasonCounts['eligible-provider-failure'], 1);
+  assert.equal(attentionRecoverablePolicyEvents.summary.fallbackStopReasonCounts['mission-status-completed'], 1);
+  assert.equal(
+    attentionRecoverablePolicyEvents.summary.fallbackStopReasonCounts['non-recoverable-provider-failure'],
+    1,
+  );
+  assert.ok(
+    attentionRecoverablePolicyEvents.timeline.every(
+      (event) =>
+        event.eventFamily === 'fallback' &&
+        event.fallbackPolicy === 'recoverable-provider-failure-only',
+    ),
+  );
+
+  const attentionNonRecoverableStopEvents = runCli({
+    rootDir: tempRoot,
+    args: ['provider', 'events', '--fallback-stop-reason', 'non-recoverable-provider-failure'],
+  });
+
+  assert.equal(attentionNonRecoverableStopEvents.summary.total, 1);
+  assert.equal(attentionNonRecoverableStopEvents.timeline[0].providerId, 'anthropic');
+  assert.equal(attentionNonRecoverableStopEvents.timeline[0].providerFailureKind, 'config');
+  assert.equal(attentionNonRecoverableStopEvents.timeline[0].fallbackPolicy, 'recoverable-provider-failure-only');
+  assert.equal(attentionNonRecoverableStopEvents.timeline[0].fallbackStopReason, 'non-recoverable-provider-failure');
 
   console.log(
     JSON.stringify(
