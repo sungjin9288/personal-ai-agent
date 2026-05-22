@@ -1318,6 +1318,27 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
     };
   }
 
+  if (normalized.includes('production release label')) {
+    return {
+      ...base,
+      category: 'release-decision',
+      commands: [
+        buildReleaseReadinessCommand('Aggregate provider preflight', 'npm run preflight:execution-v1:all', 'preflight'),
+        buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
+        buildReleaseReadinessCommand('Production provider readiness smoke', 'npm run smoke:production-provider-readiness'),
+        buildReleaseReadinessCommand('Production enterprise controls smoke', 'npm run smoke:production-enterprise-controls'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production enterprise controls', 'docs/production-enterprise-controls-v1.md'),
+      ],
+      nextEvidence: 'Target provider evidence intake, provider operations, provider account/architecture approvals, target-boundary live validation for every included provider, provider failure containment, enterprise controls, hosted identity/session, hosted tenant isolation, target secret manager, observability/SLO, data lifecycle/support, target deployment contract, clean deployment release, production-like drill, artifact hygiene, accepted risk register, allowed claim text, release decision owner approval, next review date, and regenerated execution snapshot from the same target boundary.',
+      owner: 'release-owner',
+      stopReason: 'Production release label expansion lacks same-boundary provider, enterprise control, identity/tenant, secret/observability/SLO, data/support, deployment, clean release, drill, hygiene, accepted-risk, allowed-claim, decision-owner, and regenerated snapshot proof.',
+    };
+  }
+
   if (normalized.includes('target deployment contract')) {
     return {
       ...base,
@@ -1336,27 +1357,6 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       nextEvidence: 'Target deployment name, deployment profile decision, mandatory controls, provider readiness, identity/tenant, secret/observability, data lifecycle/support, clean release artifact, stop-condition, production-ready claim decision, target submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence from the same target boundary.',
       owner: 'deployment-owner',
       stopReason: 'Target deployment contract lacks same-boundary target deployment name/profile, mandatory control, provider, identity/tenant, secret/observability, data lifecycle/support, clean release, stop-condition, reviewer decision, artifact hygiene, production-like drill, and regenerated snapshot proof.',
-    };
-  }
-
-  if (normalized.includes('production release label')) {
-    return {
-      ...base,
-      category: 'release-decision',
-      commands: [
-        buildReleaseReadinessCommand('Aggregate provider preflight', 'npm run preflight:execution-v1:all', 'preflight'),
-        buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
-        buildReleaseReadinessCommand('Production provider readiness smoke', 'npm run smoke:production-provider-readiness'),
-        buildReleaseReadinessCommand('Production enterprise controls smoke', 'npm run smoke:production-enterprise-controls'),
-      ],
-      evidenceDocs: [
-        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
-        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
-        buildReleaseReadinessDoc('Production enterprise controls', 'docs/production-enterprise-controls-v1.md'),
-      ],
-      nextEvidence: 'All target production providers and enterprise controls verified, artifact hygiene passed, and release decision owner approval recorded.',
-      owner: 'release-owner',
-      stopReason: 'Production release label cannot be claimed until all target production providers and enterprise controls are verified.',
     };
   }
 
