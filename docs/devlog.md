@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Provider Evidence Operations UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for target provider evidence intake so provider owner, target boundary, account or architecture approval, target secret injection, quota and cost guard, model and endpoint pinning, archived live validation, fallback route, failure triage, blocker closure verification, stop-condition id, release artifact references, and decision owner are recorded as proof fields
+- expanded target provider operations UI metadata and provider evidence reference handoff wording so fallback policy, stop reason, blocker closure, artifact hygiene, refreshed execution-v1 snapshot, telemetry, incident triage, data and transcript handling, remediation and renewal, evidence retention, and provider failure containment are explicit proof requirements
+- extended UI harness browse smoke coverage so provider evidence and provider operations guidance cannot reintroduce generic approval, live validation, fallback, operations, or artifact refresh shorthand
+
 ## 2026-05-22 Target Local Provider UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for target local provider architecture so endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota and resource guard, telemetry, fallback and customer approval, target-boundary local live validation, release artifact hygiene, regenerated execution snapshot, and customer acceptance are recorded as proof fields

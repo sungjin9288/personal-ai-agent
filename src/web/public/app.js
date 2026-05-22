@@ -3718,13 +3718,13 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-provider-evidence-intake',
       domain: 'provider evidence intake',
-      proofIntent: 'provider approvals, secret injection references, account ownership, live validation plan, telemetry, fallback, and renewal evidence are present for the target boundary',
+      proofIntent: 'provider owner proof, target boundary proof, account or architecture approval proof, target secret injection proof, quota and cost guard proof, model and endpoint pinning proof, archived live validation proof, fallback route proof, failure triage route proof, provider blocker closure verification proof, stop-condition id, release artifact references, and decision owner are present for the target boundary',
       stopCondition: 'target-provider-evidence-intake-missing',
     },
     {
       command: 'npm run smoke:target-provider-operations',
       domain: 'provider operations',
-      proofIntent: 'target provider runtime, secret rotation, revocation, live validation, fallback, outage handling, and operations evidence are captured',
+      proofIntent: 'provider inventory proof, provider account or architecture approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof with fallback policy and stop reason, target blocker closure verification proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence are captured',
       stopCondition: 'target-provider-operations-missing',
     },
     {
@@ -4507,7 +4507,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
           `   - liveCommand: ${String(liveCommand || '').trim() || 'not recorded'}`,
           `   - evidenceCommand: ${String(item.evidenceCommand || '').trim() || `node scripts/build-execution-v1-evidence.mjs --live-${provider}`}`,
           `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.join(' | ') : 'none'}`,
-          '   - targetBoundaryRequirement: provider account or architecture approval, target secret manager alias, live validation evidence, fallback evidence, provider operations evidence, and artifact refresh must all match the claimed target boundary',
+          '   - targetBoundaryRequirement: provider account or architecture approval proof, target secret manager alias proof, target-boundary live validation proof, fallback policy and stop-condition proof, provider operations proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 snapshot must all match the claimed target boundary',
           '   - productionClaimImpact: provider cannot be included in a production-ready or live-provider-complete claim unless linked blockers are closed by target-boundary evidence and final gates pass',
         ];
       })
@@ -4533,7 +4533,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
           `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
           `   - verificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
           `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
-          '   - providerReferenceImpact: keep the provider as blocked until target provider evidence intake, provider operations evidence, and release artifact refresh are accepted',
+          '   - providerReferenceImpact: keep the provider as blocked until target provider evidence intake proof, target provider operations proof, provider blocker disposition, fallback policy and stop reason, and release artifact refresh are accepted',
         ];
       })
     : ['- none'];
@@ -4587,7 +4587,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     '',
     'Provider evidence reference rules:',
     '- This reference list is a provider evidence handoff, not provider approval or production-ready approval.',
-    '- A provider row must not be used in a production-ready claim unless env readiness, target-boundary live validation, provider account or architecture approval, secret manager alias, provider operations evidence, fallback evidence, artifact hygiene, and refreshed execution-v1 artifacts are all accepted for the same target boundary.',
+    '- A provider row must not be used in a production-ready claim unless env readiness, target-boundary live validation proof, provider account or architecture approval proof, target secret manager alias proof, provider operations proof, fallback policy and stop-condition proof, blocker closure proof, artifact hygiene result, and refreshed execution-v1 artifacts are all accepted for the same target boundary.',
     '- Missing env, stale live validation, archived local-only proof, unapproved account or architecture, missing provider blocker disposition, or missing release refresh evidence keeps the provider as a stop-condition.',
     '- Do not include raw API keys, tokens, private endpoint credentials, raw account ids, endpoint credentials, tenant payloads, customer personal data, billing identifiers, private tenant identifiers, or machine-local absolute paths.',
     '- Keep productionReadyClaim=false until every provider included in the target claim is approved by target-boundary evidence and all final gates pass.',

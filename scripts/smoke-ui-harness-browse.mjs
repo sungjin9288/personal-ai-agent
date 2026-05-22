@@ -301,9 +301,30 @@ try {
   assert.equal(appJs.includes('usage and cost guard proof'), true);
   assert.equal(appJs.includes('fallback and stop-condition proof'), true);
   assert.equal(appJs.includes('renewal and review audit proof'), true);
+  assert.equal(appJs.includes('provider owner proof, target boundary proof'), true);
+  assert.equal(appJs.includes('provider blocker closure verification proof, stop-condition id'), true);
+  assert.equal(appJs.includes('provider fallback runtime audit proof with fallback policy and stop reason'), true);
+  assert.equal(appJs.includes('fallback policy and stop-condition proof, provider operations proof, blocker closure proof'), true);
+  assert.equal(appJs.includes('provider blocker disposition, fallback policy and stop reason'), true);
   assert.doesNotMatch(
     appJs,
     /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /provider approvals, secret injection references, account ownership, live validation plan, telemetry, fallback, and renewal evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target provider runtime, secret rotation, revocation, live validation, fallback, outage handling, and operations evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /provider account or architecture approval, target secret manager alias, live validation evidence, fallback evidence, provider operations evidence, and artifact refresh/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target provider evidence intake, provider operations evidence, and release artifact refresh are accepted/,
   );
   assert.equal(appJs.includes('target local provider endpoint ownership proof'), true);
   assert.equal(appJs.includes('LOCAL_PROVIDER_MODEL model pinning proof'), true);
