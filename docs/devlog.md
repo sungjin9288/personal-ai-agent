@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-23 Target Secret Manager UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for providerSecretEvidence so provider approval proof, approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, credential containment proof, target-boundary live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded target secret manager architecture and target secret manager operations command package proofIntent wording so migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, production readiness gate, and regenerated execution snapshot evidence are explicit UI proof requirements
+- extended UI harness browse smoke coverage so secret manager guidance cannot regress to generic target secret aliases, rotation, revocation, break-glass, audit, deployment injection, sanitized secret evidence, or provider-secret boundary shorthand
+
 ## 2026-05-23 Target Tenant Isolation UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for tenantIsolationEvidence so tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields

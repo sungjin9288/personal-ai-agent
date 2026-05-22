@@ -401,6 +401,41 @@ try {
     appJs,
     /hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment proof/,
   );
+  assert.equal(appJs.includes('providerSecretEvidence'), true);
+  assert.equal(appJs.includes('approved secret manager platform proof'), true);
+  assert.equal(appJs.includes('secret class inventory proof'), true);
+  assert.equal(appJs.includes('runtime injection proof'), true);
+  assert.equal(appJs.includes('least-privilege access policy proof'), true);
+  assert.equal(appJs.includes('rotation and revocation event proof'), true);
+  assert.equal(appJs.includes('secret access audit log proof'), true);
+  assert.equal(appJs.includes('break-glass governance proof'), true);
+  assert.equal(appJs.includes('leakage review proof'), true);
+  assert.equal(appJs.includes('credential containment proof'), true);
+  assert.equal(
+    appJs.includes('target secret manager operations evidence with secret injection proof'),
+    true,
+  );
+  assert.equal(appJs.includes('target secret manager architecture approval proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /selected providers, completed provider evidence intake references, provider account\/architecture approvals, target secret manager aliases, rotation proof, revocation path, break-glass approval, and target-boundary live validation evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target secret manager ownership, aliases, access policy, rotation, revocation, break-glass, audit, and deployment injection boundaries are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target secret injection, rotation proof, revocation path, audit export, and sanitized secret evidence references are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target secret manager aliases, runtime injection, rotation, revocation, break-glass, and audit evidence without exposing secret values/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /approved provider accounts, target secret aliases, injection proof, live validation boundary, quota guard, and fallback disable path/,
+  );
   assert.doesNotMatch(
     appJs,
     /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,
