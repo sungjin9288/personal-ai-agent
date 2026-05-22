@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T17:17:35.357Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T17:17:33.957Z
 - localDate: 2026-05-23
 - branch: codex/target-secret-manager-ui-proof-detail
 - commit: 56c463c86a53997de076d6469a6f62b4c9df647a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a](releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a](docs/releases/execution-v1/56c463c86a53997de076d6469a6f62b4c9df647a)
 - visualArtifactSetSha256: f7f0c08a85abe7fed40768a71b84b2365c2e041b2807cfb8d3a4a56073d2415d
 - commitPushStatus: not pushed, origin/codex/target-secret-manager-ui-proof-detail not found
 

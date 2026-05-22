@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T17:17:35.357Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T17:17:26.381Z
 - branch: codex/target-secret-manager-ui-proof-detail
 - commit: 56c463c86a53997de076d6469a6f62b4c9df647a
