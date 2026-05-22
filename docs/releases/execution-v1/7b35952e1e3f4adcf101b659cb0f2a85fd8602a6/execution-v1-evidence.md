@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T14:38:12.854Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T14:38:02.167Z
 - branch: codex/target-identity-session-ui-proof-detail
 - commit: 7b35952e1e3f4adcf101b659cb0f2a85fd8602a6

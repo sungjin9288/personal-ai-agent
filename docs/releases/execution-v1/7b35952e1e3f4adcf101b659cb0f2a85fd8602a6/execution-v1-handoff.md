@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T14:38:12.854Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T14:38:11.384Z
 - localDate: 2026-05-22
 - branch: codex/target-identity-session-ui-proof-detail
 - commit: 7b35952e1e3f4adcf101b659cb0f2a85fd8602a6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6](releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6](docs/releases/execution-v1/7b35952e1e3f4adcf101b659cb0f2a85fd8602a6)
 - visualArtifactSetSha256: 856016b6c34c4560a81efa3f0a69471c5dcefbb34ec41bd1e9e7402b807bd7b7
 - commitPushStatus: not pushed, origin/codex/target-identity-session-ui-proof-detail not found
 
