@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Provider Operations Proof Field Cleanup
+
+- expanded target provider operations account approval, blocker closure, and remediation renewal wording so billing and credit or quota state, account owner, customer or workspace approval, provider terms, model access, renewal owner, regenerated execution snapshot, release artifact references, endpoint renewal, and model access renewal are recorded as proof fields
+- aligned the production-ready target provider operations blocker in release readiness with the same proof-level wording instead of `billing/credit/quota`, `endpoint/model`, or regenerated artifact shorthand
+- extended target provider operations smoke coverage so the source contract and release blocker cannot reintroduce account approval, remediation renewal, or regenerated release artifact shorthand
+
 ## 2026-05-22 Target OpenAI Provider Account UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for the OpenAI provider account command so account ownership, billing and quota, API key and secret injection, OPENAI_MODEL model access, provider terms and customer approval, usage and cost guard, target-boundary live validation, telemetry, fallback and stop-condition, and renewal/review audit are recorded as proof fields
