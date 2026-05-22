@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T01:04:42.447Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T01:04:02.788Z
 - branch: codex/anthropic-provider-account-action-proof-detail
 - commit: cab6d6e51af20abb6f28eb19e295eb5b1d4ba678
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cab6d6e51af20abb6f28eb19e295eb5b1d4ba678/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
