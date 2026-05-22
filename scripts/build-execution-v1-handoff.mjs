@@ -229,7 +229,7 @@ function buildNextOperatorSteps(providerStates, pushStatus) {
   );
   steps.push(
     localProvider?.status === 'passed'
-      ? '3. Attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence to the target local provider architecture before adding local provider operation to a production claim.'
+      ? '3. Attach approved target-boundary local provider endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, telemetry proof, quota and resource guard proof, and local provider live validation evidence to the target local provider architecture before adding local provider operation to a production claim.'
       : '3. Complete target local provider architecture approval before adding local provider operation to a production claim.',
   );
   steps.push(
@@ -258,7 +258,7 @@ function buildCompletionBoundary(providerStates) {
   }
   if (localProvider?.status === 'passed') {
     blockers.push(
-      'target local provider architecture approval still requires endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence',
+      'target local provider architecture approval still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence',
     );
   } else {
     blockers.push('local provider live validation still requires target runtime configuration');

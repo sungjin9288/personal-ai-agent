@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T02:39:04.414Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T02:38:58.556Z
 - localDate: 2026-05-22
 - branch: codex/local-provider-architecture-proof-detail
 - commit: 0f3485372e594f9689119c80d8b91e213f3f3efe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe](releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe](docs/releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe)
 - visualArtifactSetSha256: 1f8b085bd5247df8574088f4db2d4abc981dc6ab319d76bdc471b8c0c949c149
 - commitPushStatus: not pushed, origin/codex/local-provider-architecture-proof-detail not found
 

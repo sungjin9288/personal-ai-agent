@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T02:39:04.414Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T02:38:33.811Z
 - branch: codex/local-provider-architecture-proof-detail
 - commit: 0f3485372e594f9689119c80d8b91e213f3f3efe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0f3485372e594f9689119c80d8b91e213f3f3efe/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
