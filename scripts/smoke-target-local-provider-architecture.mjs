@@ -46,7 +46,7 @@ assert.match(decision, /not permission to claim `production-ready`/);
 assert.match(decision, /Local provider readiness remains blocked/);
 assert.match(
   decision,
-  /Local provider readiness remains blocked until this architecture decision is approved and target evidence is generated for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence from the approved production-like or hosted target environment/,
+  /Local provider readiness remains blocked until this architecture decision is approved and target evidence is generated for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence from the approved production-like or hosted target environment/,
 );
 assert.doesNotMatch(
   decision,
@@ -109,7 +109,7 @@ for (const field of [
 assert.match(decision, /must reference a passed live validation generated from the approved target boundary/);
 assert.match(
   decision,
-  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
+  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
 );
 assert.match(decision, /must prove secret values are injected and redacted through approved controls/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
@@ -141,7 +141,7 @@ assert.match(releaseReadiness, /\[target-local-provider-architecture-v1\.md\]\(t
 assert.match(releaseReadiness, /target local provider architecture gate: passed/);
 assert.match(
   releaseReadiness,
-  /target local provider architecture gate: passed, with targetLocalProviderApproved false, endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
+  /target local provider architecture gate: passed, with targetLocalProviderApproved false, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation, release artifact hygiene, regenerated execution snapshot evidence requirements, and `productionReadyClaim: false`/,
 );
 assert.doesNotMatch(
   releaseReadiness,
@@ -164,7 +164,7 @@ assert.match(deployment, /## Target Local Provider Architecture/);
 assert.match(deployment, /npm run smoke:target-local-provider-architecture/);
 assert.match(
   deployment,
-  /Do not include local provider operation in a target provider claim until the target local provider architecture is approved and endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment/,
+  /Do not include local provider operation in a target provider claim until the target local provider architecture is approved and endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary `npm run live:execution-v1:local` pass, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved production-like or hosted target environment/,
 );
 assert.doesNotMatch(
   deployment,
@@ -175,7 +175,7 @@ assert.match(readme, /docs\/target-local-provider-architecture-v1\.md/);
 assert.match(readme, /npm run smoke:target-local-provider-architecture/);
 assert.match(
   readme,
-  /target local provider architecture evidence can be verified with `npm run smoke:target-local-provider-architecture`; it proves endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetLocalProviderApproved: false`/,
+  /target local provider architecture evidence can be verified with `npm run smoke:target-local-provider-architecture`; it proves endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetLocalProviderApproved: false`/,
 );
 assert.doesNotMatch(
   readme,

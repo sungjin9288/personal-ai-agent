@@ -135,12 +135,12 @@ assert.equal(
   true,
 );
 assert.equal(
-  handoff.includes('Attach approved target-boundary local provider endpoint/model, network isolation, telemetry, quota/resource guard, and local provider live validation evidence'),
+  handoff.includes('Attach approved target-boundary local provider endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, telemetry proof, quota and resource guard proof, and local provider live validation evidence'),
   true,
 );
 assert.equal(
   handoff.includes(
-    'Attach approved target provider architecture evidence for Hermes, including endpoint/model ownership, target secret injection, telemetry, fallback, customer approval, and target-boundary live validation',
+    'Attach approved target provider architecture evidence for Hermes, including endpoint ownership and model pinning proof, target secret injection, telemetry, fallback, customer approval, and target-boundary live validation',
   ),
   false,
 );

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Local Provider Architecture Proof Detail Alignment
+
+- expanded target local provider architecture wording so quota and resource guard requirements are recorded as proof fields across the source-of-record, README, release readiness, deployment guide, security model, runbook, onboarding, demo, roadmap, target deployment contract, and target environment intake references
+- updated execution-v1 handoff guidance generation so local provider production blockers require endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, telemetry proof, quota and resource guard proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence
+- extended local provider architecture, target deployment contract, target environment intake, production readiness, production-like drill, pilot export, and execution-v1 handoff smoke coverage so local provider claims cannot fall back to endpoint/model or quota/resource shorthand
+
 ## 2026-05-22 Target Provider Operations Proof Detail Alignment
 
 - expanded target provider operations source-of-record wording so model and endpoint pinning, quota, cost, and resource guard, fallback and disable path, provider fallback runtime audit, telemetry, incident triage, data and transcript handling, remediation and renewal review, evidence retention, and provider failure containment are recorded as proof fields instead of slash-based shorthand

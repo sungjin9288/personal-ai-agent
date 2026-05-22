@@ -60,7 +60,7 @@ for (const checklistItem of [
   /target Anthropic provider account approval when Anthropic is included/,
   /target local provider architecture approval when local provider is included/,
   /target Hermes provider architecture approval when Hermes is included/,
-  /target provider operations evidence for account approval, target secret injection, target-boundary live validation, model\/endpoint pinning, quota\/cost\/resource guard, fallback\/disable path, provider fallback runtime audit, telemetry, incident triage, data\/transcript handling, remediation\/renewal, evidence retention, and provider failure containment/,
+  /target provider operations evidence for account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment/,
   /identity provider owner, role owner, session policy owner, permission audit evidence, break-glass governance owner, support impersonation owner, compliance\/retention owner, and customer access containment evidence/,
   /tenant storage boundary, storage partitioning proof, encryption\/key policy, backup\/restore isolation proof, tenant admin evidence, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   /target secret manager architecture approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, target secret manager aliases, revocation path, and credential containment evidence/,
@@ -307,11 +307,11 @@ assert.doesNotMatch(
 );
 assert.match(
   intake,
-  /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,
+  /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,
 );
 assert.match(
   intake,
-  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota\/resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene pass, regenerated execution snapshot evidence, and acceptance record/,
+  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene pass, regenerated execution snapshot evidence, and acceptance record/,
 );
 assert.doesNotMatch(
   intake,
