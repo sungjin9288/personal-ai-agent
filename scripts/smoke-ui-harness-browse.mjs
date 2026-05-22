@@ -434,6 +434,40 @@ try {
     appJs,
     /target backup schedule, restore validation, tenant isolation, expiry\/deletion, disaster recovery, and backup audit evidence/,
   );
+  assert.equal(appJs.includes('target support architecture approval proof'), true);
+  assert.equal(appJs.includes('staffing model proof'), true);
+  assert.equal(appJs.includes('support queue platform proof'), true);
+  assert.equal(appJs.includes('severity routing proof'), true);
+  assert.equal(appJs.includes('customer communication boundary proof'), true);
+  assert.equal(appJs.includes('ticket audit and retention proof'), true);
+  assert.equal(appJs.includes('incident commander ownership proof'), true);
+  assert.equal(appJs.includes('escalation and backup coverage proof'), true);
+  assert.equal(appJs.includes('support data handling proof'), true);
+  assert.equal(appJs.includes('incident review governance proof'), true);
+  assert.equal(appJs.includes('missed-acknowledgement containment proof'), true);
+  assert.equal(appJs.includes('queue-misrouting containment proof'), true);
+  assert.equal(appJs.includes('unstaffed-escalation containment proof'), true);
+  assert.equal(appJs.includes('staffed support coverage proof'), true);
+  assert.equal(appJs.includes('support queue routing proof'), true);
+  assert.equal(appJs.includes('ticket audit history proof'), true);
+  assert.equal(appJs.includes('escalation ownership proof'), true);
+  assert.equal(appJs.includes('incident review cadence proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target support architecture approval, support queue, staffed coverage, escalation owner, ticket audit trail, customer communication, on-call handoff, and incident review cadence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target support queue, escalation policy, coverage model, ownership, customer communication, and incident review boundaries are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target support staffing, ticket flow, escalation, audit trail, on-call handoff, customer communication, and incident review evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /support queue, coverage owner, escalation flow, ticket audit trail, customer communication, on-call handoff, and incident review evidence/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
