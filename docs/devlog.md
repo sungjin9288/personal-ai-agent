@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Anthropic Provider Account Action Proof Detail Alignment
+
+- expanded `/api/execution-v1/status` Anthropic provider-account current open blocker action metadata so `nextEvidence` names account ownership, billing and credit remediation, active billing plan, available credit balance, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation, mission/session provenance, telemetry, fallback and stop-condition decision, remediation audit, release artifact hygiene, and regenerated execution snapshot proof
+- aligned the Anthropic action `stopReason` with the target Anthropic provider account evidence packet so operator triage records missing account, billing, secret, model, terms, quota, live-validation, provenance, telemetry, fallback, remediation, hygiene, and snapshot proof instead of generic billing/live-validation shorthand
+- extended execution-v1 status smoke coverage so Anthropic provider-account actions cannot fall back to generic target provider account or provider terms/quota shorthand
+
 ## 2026-05-22 Provider Architecture Action Proof Detail Alignment
 
 - expanded `/api/execution-v1/status` local provider current open blocker action metadata so `nextEvidence` and `stopReason` name endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session/artifact provenance, data residency/transcript policy, quota/resource guard, telemetry, fallback/customer approval, target-boundary live validation, release artifact hygiene, and regenerated execution snapshot proof
