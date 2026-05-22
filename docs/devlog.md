@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Provider Attention Fallback Audit Coverage
+
+- extended provider attention remediation smoke coverage so `action remediate-provider-attention --fallback-provider --fallback-policy` proves provider-failure-only fallback events are written to the mission timeline with fallback policy and stop reason counts
+- added recoverable-provider-failure-only remediation assertions for both recoverable provider failures and non-recoverable config failures so remediation-driven fallback events expose `eligible-provider-failure`, `mission-status-completed`, and `non-recoverable-provider-failure` stop reasons
+- verified provider events filtering for remediation-generated fallback audit events by policy and stop reason so target provider operations evidence can rely on action remediation, mission timeline, and provider events surfaces together
+
 ## 2026-05-22 Target Provider Evidence Operations UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for target provider evidence intake so provider owner, target boundary, account or architecture approval, target secret injection, quota and cost guard, model and endpoint pinning, archived live validation, fallback route, failure triage, blocker closure verification, stop-condition id, release artifact references, and decision owner are recorded as proof fields

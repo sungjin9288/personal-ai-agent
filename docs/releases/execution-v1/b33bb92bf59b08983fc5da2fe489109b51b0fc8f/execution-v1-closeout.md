@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T07:20:34.458Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T07:20:19.129Z
 - branch: codex/provider-attention-fallback-audit-coverage
 - commit: b33bb92bf59b08983fc5da2fe489109b51b0fc8f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

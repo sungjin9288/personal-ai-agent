@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T07:20:34.458Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T07:20:19.025Z
 - branch: codex/provider-attention-fallback-audit-coverage
 - commit: b33bb92bf59b08983fc5da2fe489109b51b0fc8f

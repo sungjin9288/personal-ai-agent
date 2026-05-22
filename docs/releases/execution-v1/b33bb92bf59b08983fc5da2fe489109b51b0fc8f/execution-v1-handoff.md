@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-22T07:20:34.458Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-22T07:20:32.915Z
 - localDate: 2026-05-22
 - branch: codex/provider-attention-fallback-audit-coverage
 - commit: b33bb92bf59b08983fc5da2fe489109b51b0fc8f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f](releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f](docs/releases/execution-v1/b33bb92bf59b08983fc5da2fe489109b51b0fc8f)
 - visualArtifactSetSha256: d824401e11eafbfe8993f3fc392ddb0a7af0b65093057497e8a6810c4665ee82
 - commitPushStatus: not pushed, origin/codex/provider-attention-fallback-audit-coverage not found
 
