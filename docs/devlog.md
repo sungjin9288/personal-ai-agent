@@ -1,5 +1,10 @@
 # Devlog
 
+## 2026-05-22 Target OpenAI Provider Account UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for the OpenAI provider account command so account ownership, billing and quota, API key and secret injection, OPENAI_MODEL model access, provider terms and customer approval, usage and cost guard, target-boundary live validation, telemetry, fallback and stop-condition, and renewal/review audit are recorded as proof fields
+- extended UI harness browse smoke coverage so OpenAI provider account guidance cannot fall back to billing/quota, API key injection, model access, terms, usage guard, live validation, telemetry, fallback, or review audit shorthand
+
 ## 2026-05-22 Target Anthropic Provider Account Action Proof Detail Alignment
 
 - expanded Anthropic provider account blocker action wording so account ownership, billing and credit remediation, active billing plan, available credit balance, API key and secret injection, ANTHROPIC_MODEL model access, provider terms and customer approval, quota and spend guard, target-boundary Anthropic live validation, mission and execution session provenance, telemetry, fallback and stop-condition, remediation audit, release artifact hygiene, and regenerated execution snapshot are recorded as proof fields
