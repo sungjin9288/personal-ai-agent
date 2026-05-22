@@ -394,6 +394,46 @@ try {
     appJs,
     /target SLO measurements, error budget review, alert route, incident response, customer notification, and missed-SLO containment evidence are captured/,
   );
+  assert.equal(appJs.includes('target data lifecycle architecture approval proof'), true);
+  assert.equal(appJs.includes('customer-approved data class matrix proof'), true);
+  assert.equal(appJs.includes('target retention configuration proof'), true);
+  assert.equal(appJs.includes('provider transcript handling proof'), true);
+  assert.equal(
+    appJs.includes(
+      'post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries',
+    ),
+    true,
+  );
+  assert.equal(appJs.includes('backup architecture proof'), true);
+  assert.equal(appJs.includes('backup schedule execution proof'), true);
+  assert.equal(appJs.includes('encrypted backup storage proof'), true);
+  assert.equal(appJs.includes('backup key ownership proof'), true);
+  assert.equal(appJs.includes('backup expiry/deletion proof'), true);
+  assert.equal(appJs.includes('disaster recovery proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target retention classes, export\/delete boundaries, provider transcript policy, data residency, audit, and lifecycle controls are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target retention enforcement, export approval, delete execution, post-delete absence proof, and retention audit evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target backup schedule, restore validation, tenant isolation, expiry\/deletion, disaster recovery, and backup audit evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target retention classes, export approval, delete execution, provider transcript policy, post-delete absence proof, and audit evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target backup schedule, restore validation, tenant isolation, expiry\/deletion, disaster recovery, and backup audit evidence/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);

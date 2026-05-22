@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Target Retention Backup UI Proof Detail Alignment
+
+- expanded release target evidence UI metadata for retentionBackupEvidence so customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields
+- expanded target data lifecycle architecture, target retention operations, and target backup operations command package proofIntent wording so data lifecycle approval, data class matrix, retention configuration, export/delete requests, provider transcript policy, post-delete absence, backup architecture, restore validation, key ownership, legal hold, delete conflict, provider transcript exception, customer communication containment, and artifact refresh evidence are explicit proof requirements
+- extended UI harness browse smoke coverage so retention and backup command package guidance cannot regress to generic retention/export/delete/backup shorthand or production gap wording
+
 ## 2026-05-22 Target Observability SLO UI Proof Detail Alignment
 
 - expanded target observability architecture and operations UI command package proofIntent wording so telemetry backend ownership, signal inventory, metric log trace and audit event boundaries, alert routing, alert delivery receipts, staffed on-call coverage, log and trace retention, customer status communication, incident response, audit export, disaster recovery, release artifact hygiene, and regenerated execution snapshot evidence are recorded as proof fields

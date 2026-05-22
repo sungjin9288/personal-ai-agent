@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T08:31:48.254Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T08:31:36.132Z
 - branch: codex/target-retention-backup-ui-proof-detail
 - commit: 3f548a8ca01282a40c1f1119a0806532c761a0df

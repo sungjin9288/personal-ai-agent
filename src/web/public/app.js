@@ -3573,7 +3573,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'retentionBackupEvidence',
-      requiredValue: 'retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry/deletion, and disaster recovery evidence',
+      requiredValue: 'customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries, audit history proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must prove lifecycle controls and DR evidence for the target customer boundary',
       primaryDocs: ['docs/target-retention-operations-v1.md', 'docs/target-backup-operations-v1.md', 'docs/production-retention-operating-v1.md'],
     },
@@ -3820,19 +3820,19 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-data-lifecycle-architecture',
       domain: 'data lifecycle architecture',
-      proofIntent: 'target retention classes, export/delete boundaries, provider transcript policy, data residency, audit, and lifecycle controls are defined',
+      proofIntent: 'target data lifecycle architecture approval proof, customer-approved data class matrix proof, target retention configuration proof, export request proof, delete request proof, provider transcript policy proof, post-delete absence proof, backup architecture proof, restore validation proof, backup key ownership proof, disaster recovery proof, legal hold proof, delete conflict containment proof, provider transcript exception proof, customer communication containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'target-data-lifecycle-architecture-missing',
     },
     {
       command: 'npm run smoke:target-retention-operations',
       domain: 'retention operations',
-      proofIntent: 'target retention enforcement, export approval, delete execution, post-delete absence proof, and retention audit evidence are captured',
+      proofIntent: 'target retention operations evidence with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'target-retention-operations-missing',
     },
     {
       command: 'npm run smoke:target-backup-operations',
       domain: 'backup operations',
-      proofIntent: 'target backup schedule, restore validation, tenant isolation, expiry/deletion, disaster recovery, and backup audit evidence are captured',
+      proofIntent: 'target backup operations evidence with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'target-backup-operations-missing',
     },
     {
@@ -4017,14 +4017,14 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'target retention enforcement',
-      missingProof: 'target retention classes, export approval, delete execution, provider transcript policy, post-delete absence proof, and audit evidence',
+      missingProof: 'customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       requiredEvidence: 'target data lifecycle architecture and target retention operations evidence',
       stopCondition: 'target-retention-operations-missing',
       claimGuard: 'do not claim production data lifecycle compliance',
     },
     {
       gap: 'production backup execution',
-      missingProof: 'target backup schedule, restore validation, tenant isolation, expiry/deletion, disaster recovery, and backup audit evidence',
+      missingProof: 'backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       requiredEvidence: 'target backup operations evidence generated from the approved target boundary',
       stopCondition: 'target-backup-operations-missing',
       claimGuard: 'do not claim production disaster recovery readiness',
