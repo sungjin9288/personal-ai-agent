@@ -3555,7 +3555,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'tenantIsolationEvidence',
-      requiredValue: 'tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment evidence',
+      requiredValue: 'tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption/key ownership proof, key rotation/revocation/escrow/break-glass proof, backup/restore isolation proof, tenant administration approval and audit proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must prove tenant data isolation and key ownership without exposing tenant payloads',
       primaryDocs: ['docs/hosted-tenant-isolation-architecture-v1.md', 'docs/target-tenant-isolation-operations-v1.md'],
     },
@@ -3760,13 +3760,13 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:hosted-tenant-isolation-architecture',
       domain: 'hosted tenant isolation architecture',
-      proofIntent: 'hosted tenant identity, authorization, storage partitioning, encryption/key ownership, observability, support, backup/restore, and lifecycle isolation are defined',
+      proofIntent: 'hosted tenant isolation architecture approval proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization policy proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption and key ownership proof, key rotation/revocation/escrow/break-glass proof, backup creation/restore authorization/non-interference/post-restore denial proof, tenant administration approval and audit proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, migration plan, rollback, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence are defined',
       stopCondition: 'hosted-tenant-isolation-approval-missing',
     },
     {
       command: 'npm run smoke:target-tenant-isolation-operations',
       domain: 'tenant isolation operations',
-      proofIntent: 'target tenant isolation tests, storage/encryption proof, backup/restore non-interference, lifecycle evidence, and negative cross-tenant checks are captured',
+      proofIntent: 'target tenant isolation operations evidence with tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence is captured',
       stopCondition: 'target-tenant-isolation-evidence-missing',
     },
     {
@@ -3989,7 +3989,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'hosted tenant storage or encryption',
-      missingProof: 'tenant storage partitioning, tenant key ownership, backup/restore isolation, tenant administration, and cross-tenant denial evidence from the hosted target boundary',
+      missingProof: 'tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence from the hosted target boundary',
       requiredEvidence: 'hosted tenant isolation architecture approval plus target tenant isolation operations evidence',
       stopCondition: 'hosted-tenant-isolation-approval-missing',
       claimGuard: 'do not claim hosted multi-tenant isolation readiness',
@@ -4181,8 +4181,8 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     },
     {
       exceptionId: 'hosted-tenant-isolation-blocked',
-      scope: 'block hosted multi-tenant isolation claims until tenant storage, authorization, encryption, lifecycle, backup/restore, observability, and support isolation evidence are accepted',
-      requiredEvidence: 'hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof',
+      scope: 'block hosted multi-tenant isolation claims until tenant identity source, authorization, storage partitioning, encryption/key ownership, lifecycle, backup/restore, observability/support isolation, and tenant data containment evidence are accepted',
+      requiredEvidence: 'hosted tenant isolation architecture approval proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence',
       allowedClaimText: 'local tenant controls only; hosted multi-tenant isolation claims remain blocked',
       stopCondition: 'hosted-tenant-isolation-approval-missing',
     },
@@ -5405,7 +5405,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
       id: 'hosted-tenant-isolation-approval',
       blocker: 'hosted tenant isolation approval',
       currentState: 'customer-approval-required',
-      requiredClosingEvidence: 'hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment proof',
+      requiredClosingEvidence: 'hosted tenant isolation architecture approval proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence',
       claimImpact: 'hosted multi-tenant isolation claims remain blocked',
       nextVerificationCommand: 'npm run smoke:hosted-tenant-isolation-architecture && npm run smoke:target-tenant-isolation-operations',
       stopCondition: 'hosted-tenant-isolation-approval-missing',
@@ -5419,7 +5419,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
       id: 'target-tenant-evidence',
       blocker: 'target tenant evidence',
       currentState: 'target-evidence-required',
-      requiredClosingEvidence: 'completed target tenant isolation operations evidence capture template, negative cross-tenant test matrix, tenant storage/encryption proof, backup/restore non-interference proof, lifecycle proof, artifact hygiene, and production readiness gate result',
+      requiredClosingEvidence: 'completed target tenant isolation operations evidence capture template, tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, production readiness gate result, and regenerated execution snapshot evidence',
       claimImpact: 'tenant-isolated production claims remain blocked',
       nextVerificationCommand: 'npm run smoke:target-tenant-isolation-operations && npm run smoke:production-readiness-gate',
       stopCondition: 'target-tenant-evidence-missing',
@@ -5621,7 +5621,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     {
       key: 'tenant-isolation-boundary',
       label: 'Tenant isolation boundary',
-      requiredBoundary: 'tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, and lifecycle containment',
+      requiredBoundary: 'tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, and tenant data containment scope',
       docs: [
         'docs/hosted-tenant-isolation-architecture-v1.md',
         'docs/target-tenant-isolation-operations-v1.md',
