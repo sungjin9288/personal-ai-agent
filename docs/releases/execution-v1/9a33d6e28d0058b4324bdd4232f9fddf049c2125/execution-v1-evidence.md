@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T06:52:46.976Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T06:52:38.310Z
 - branch: codex/provider-evidence-operations-ui-proof-detail
 - commit: 9a33d6e28d0058b4324bdd4232f9fddf049c2125
