@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-22T00:17:47.571Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-22T00:17:14.649Z
 - branch: codex/current-deployment-blocker-proof-detail
 - commit: c245a50ead888ec469d3cd957a21c09fe4507fb0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c245a50ead888ec469d3cd957a21c09fe4507fb0/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1333,9 +1333,9 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
         buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
         buildReleaseReadinessDoc('Production-like release drill', 'docs/production-like-release-drill-v1.md'),
       ],
-      nextEvidence: 'Target-environment evidence packet covering hosted identity/session, tenant isolation, providers, secrets, observability, SLO, data lifecycle, support, and clean deployment.',
+      nextEvidence: 'Target deployment name, deployment profile decision, mandatory controls, provider readiness, identity/tenant, secret/observability, data lifecycle/support, clean release artifact, stop-condition, production-ready claim decision, target submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence from the same target boundary.',
       owner: 'deployment-owner',
-      stopReason: 'Mandatory hosted and production-like deployment controls are not backed by target evidence.',
+      stopReason: 'Target deployment contract lacks same-boundary target deployment name/profile, mandatory control, provider, identity/tenant, secret/observability, data lifecycle/support, clean release, stop-condition, reviewer decision, artifact hygiene, production-like drill, and regenerated snapshot proof.',
     };
   }
 

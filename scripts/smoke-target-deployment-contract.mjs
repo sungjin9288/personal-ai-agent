@@ -389,6 +389,10 @@ assert.match(
   releaseReadiness,
   /secret and observability evidence with target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log\/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, target observability operations evidence, target SLO architecture approval, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, target SLO operations evidence, incident review evidence, release artifact hygiene, and regenerated execution snapshot evidence/,
 );
+assert.match(
+  releaseReadiness,
+  /target deployment contract remains blocked until target deployment name proof with approved environment, company\/workspace scope, deployment owner, evidence owner, review date, and release label, deployment profile decision proof with approved architecture decision, network boundary, runtime root alias, rollback owner, and customer approval, mandatory control evidence with required command output, production readiness gate result, and unresolved blocker list, provider readiness evidence, identity and tenant evidence, secret and observability evidence, data lifecycle and support evidence, clean release artifact evidence, stop-condition decision, production-ready claim decision, target environment submission packet, artifact hygiene result, production-like drill result, reviewer decision, and regenerated execution snapshot are recorded from the same approved target boundary/,
+);
 assert.doesNotMatch(
   releaseReadiness,
   /secret and observability evidence with target secret manager approval, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation\/revocation evidence, audit log proof, break-glass governance proof, leakage review proof, target observability architecture approval, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log\/trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, target observability operations evidence, target SLO architecture, target SLO operations, incident review evidence, release artifact hygiene, and regenerated execution snapshot evidence/,
@@ -400,6 +404,10 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   releaseReadiness,
   new RegExp('target deployment contract is not satisfied by target-environment evidence'),
+);
+assert.doesNotMatch(
+  releaseReadiness,
+  /target deployment contract is blocked until hosted identity\/session proof, target identity\/session operations proof, hosted tenant isolation proof, target tenant isolation operations proof, target provider operations, target OpenAI provider account, target Anthropic provider account, target local provider architecture, target Hermes provider architecture, target secret manager architecture proof, target secret manager injection\/audit, target observability architecture proof, target observability operations proof, target SLO architecture proof, target SLO operations proof, target data lifecycle architecture, target retention operations, target backup operations, target support architecture, target support operations, target clean deployment architecture, target clean deployment operations, SLO\/SLA, clean deployment, and support escalation review have target-environment evidence/,
 );
 assert.match(security, /\[target-deployment-contract-v1\.md\]\(target-deployment-contract-v1\.md\)/);
 assert.match(security, /\[hosted-saas-architecture-decision-v1\.md\]\(hosted-saas-architecture-decision-v1\.md\)/);
