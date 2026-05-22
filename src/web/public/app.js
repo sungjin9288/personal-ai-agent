@@ -3742,7 +3742,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-local-provider-architecture',
       domain: 'local provider architecture',
-      proofIntent: 'target local provider ownership, model pinning, network isolation, data residency, resource guard, telemetry, fallback, and customer acceptance are captured',
+      proofIntent: 'target local provider endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot evidence are captured',
       stopCondition: 'target-local-provider-approval-missing',
     },
     {
@@ -4168,7 +4168,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     {
       exceptionId: 'local-provider-pilot-only',
       scope: 'allow local provider only for approved pilot/local-first use while production provider approval remains blocked',
-      requiredEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+      requiredEvidence: 'target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance',
       allowedClaimText: 'local provider is pilot/local-only and not production-approved',
       stopCondition: 'target-local-provider-approval-missing',
     },
@@ -4323,7 +4323,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
       acceptedRisk: 'local provider can remain pilot/local-only but cannot be treated as production-approved without target architecture and customer acceptance evidence',
       rejectedClaims: 'local provider production-approved, production-ready',
       residualBlocker: 'target-local-provider-approval-missing',
-      requiredEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+      requiredEvidence: 'target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance',
     },
     {
       riskId: 'hosted-identity-session-gap',
@@ -5375,7 +5375,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
       id: 'target-local-provider-approval',
       blocker: 'target local provider approval',
       currentState: 'customer-approval-required',
-      requiredClosingEvidence: 'target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota/resource guard, telemetry, fallback evidence, and customer acceptance',
+      requiredClosingEvidence: 'target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance',
       claimImpact: 'local provider can remain pilot/local-only but cannot be production-approved',
       nextVerificationCommand: 'npm run smoke:target-local-provider-architecture && npm run live:execution-v1:local',
       stopCondition: 'target-local-provider-approval-missing',

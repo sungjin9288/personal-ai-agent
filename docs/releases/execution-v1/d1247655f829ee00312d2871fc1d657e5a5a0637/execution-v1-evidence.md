@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T05:54:53.990Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T05:54:42.822Z
 - branch: codex/local-provider-ui-proof-detail
 - commit: d1247655f829ee00312d2871fc1d657e5a5a0637

@@ -305,6 +305,21 @@ try {
     appJs,
     /target OpenAI account ownership, billing\/quota, API key injection, model access, terms, usage guard/,
   );
+  assert.equal(appJs.includes('target local provider endpoint ownership proof'), true);
+  assert.equal(appJs.includes('LOCAL_PROVIDER_MODEL model pinning proof'), true);
+  assert.equal(appJs.includes('secret and credential policy proof'), true);
+  assert.equal(appJs.includes('runtime lifecycle proof'), true);
+  assert.equal(appJs.includes('session and artifact provenance proof'), true);
+  assert.equal(appJs.includes('data residency and transcript policy proof'), true);
+  assert.equal(appJs.includes('target-boundary local live validation pass'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota\/resource guard, telemetry, fallback evidence, and customer acceptance/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target local provider ownership, model pinning, network isolation, data residency, resource guard, telemetry, fallback, and customer acceptance/,
+  );
   assert.equal(appJs.includes('Required commands package:'), true);
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
