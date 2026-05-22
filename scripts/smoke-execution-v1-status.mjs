@@ -338,12 +338,12 @@ try {
   assert.equal(Boolean(targetDeploymentBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.match(
     targetDeploymentBlockerAction.nextEvidence,
-    /Target deployment name, deployment profile decision, mandatory controls, provider readiness, identity\/tenant, secret\/observability, data lifecycle\/support, clean release artifact, stop-condition, production-ready claim decision, target submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence from the same target boundary/,
+    /Target deployment name proof, deployment profile decision proof, mandatory control evidence, provider readiness evidence, identity and tenant evidence, secret and observability evidence, data lifecycle and support evidence, clean release artifact evidence, stop-condition decision, production-ready claim decision, target environment submission packet, release artifact hygiene result, production-like drill result, reviewer decision, and regenerated execution snapshot evidence from the same target boundary/,
     JSON.stringify(targetDeploymentBlockerAction),
   );
   assert.match(
     targetDeploymentBlockerAction.stopReason,
-    /same-boundary target deployment name\/profile, mandatory control, provider, identity\/tenant, secret\/observability, data lifecycle\/support, clean release, stop-condition, reviewer decision, artifact hygiene, production-like drill, and regenerated snapshot proof/,
+    /same-boundary target deployment name proof, deployment profile decision proof, mandatory control evidence, provider readiness evidence, identity and tenant evidence, secret and observability evidence, data lifecycle and support evidence, clean release artifact evidence, stop-condition decision proof, production-ready claim decision proof, target environment submission packet proof, release artifact hygiene result, production-like drill result, reviewer decision proof, and regenerated execution snapshot proof/,
     JSON.stringify(targetDeploymentBlockerAction),
   );
   assert.equal(
@@ -362,13 +362,29 @@ try {
   assert.equal(Boolean(releaseDecisionBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.match(
     releaseDecisionBlockerAction.nextEvidence,
-    /Target provider evidence intake, provider operations, provider account\/architecture approvals, target-boundary live validation for every included provider, provider failure containment, enterprise controls, hosted identity\/session, hosted tenant isolation, target secret manager, observability\/SLO, data lifecycle\/support, target deployment contract, clean deployment release, production-like drill, artifact hygiene, accepted risk register, allowed claim text, release decision owner approval, next review date, and regenerated execution snapshot from the same target boundary/,
+    /Target provider evidence intake, provider operations, provider account or architecture approvals, target-boundary live validation for every included provider, provider failure containment, production enterprise controls, hosted identity and session evidence, hosted tenant isolation evidence, target secret manager evidence, target observability and SLO evidence, data lifecycle and support evidence, target deployment contract evidence, clean deployment release evidence, production-like drill result, release artifact hygiene result, accepted risk register, allowed claim text, release decision owner approval, next review date, and regenerated execution snapshot evidence from the same target boundary/,
     JSON.stringify(releaseDecisionBlockerAction),
   );
   assert.match(
     releaseDecisionBlockerAction.stopReason,
-    /same-boundary provider, enterprise control, identity\/tenant, secret\/observability\/SLO, data\/support, deployment, clean release, drill, hygiene, accepted-risk, allowed-claim, decision-owner, and regenerated snapshot proof/,
+    /same-boundary target provider evidence intake proof, target provider operations proof, provider account or architecture approval proof, target-boundary live validation proof, provider failure containment proof, production enterprise control proof, hosted identity and session proof, hosted tenant isolation proof, target secret manager proof, target observability and SLO proof, data lifecycle and support proof, target deployment contract proof, clean deployment release proof, production-like drill result, release artifact hygiene result, accepted risk register proof, allowed claim text proof, release decision owner approval proof, next review date proof, and regenerated execution snapshot proof/,
     JSON.stringify(releaseDecisionBlockerAction),
+  );
+  const deploymentReleaseActionGuidanceText = JSON.stringify([
+    targetDeploymentBlockerAction.nextEvidence,
+    targetDeploymentBlockerAction.stopReason,
+    releaseDecisionBlockerAction.nextEvidence,
+    releaseDecisionBlockerAction.stopReason,
+  ]);
+  assert.doesNotMatch(
+    deploymentReleaseActionGuidanceText,
+    /identity\/tenant|secret\/observability|data lifecycle\/support|target deployment name\/profile|provider account\/architecture|hosted identity\/session|observability\/SLO|data\/support/,
+    deploymentReleaseActionGuidanceText,
+  );
+  assert.doesNotMatch(
+    deploymentReleaseActionGuidanceText,
+    /artifact hygiene, production-like drill|drill, hygiene|accepted-risk|allowed-claim|decision-owner|regenerated snapshot proof/,
+    deploymentReleaseActionGuidanceText,
   );
   assert.equal(
     releaseDecisionBlockerAction.evidenceDocs.some(
