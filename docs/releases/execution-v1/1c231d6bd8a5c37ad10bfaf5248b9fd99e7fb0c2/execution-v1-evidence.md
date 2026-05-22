@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T03:10:24.717Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T03:09:44.574Z
 - branch: codex/hermes-provider-architecture-proof-detail
 - commit: 1c231d6bd8a5c37ad10bfaf5248b9fd99e7fb0c2
