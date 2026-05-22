@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-22 Release Label Open Blocker Proof Detail Alignment
+
+- expanded the release-readiness current open release label blocker from a generic provider/enterprise-controls verification line into proof-level provider intake, provider operations, provider approval, target-boundary live validation, provider failure containment, enterprise control, hosted identity/session, hosted tenant isolation, secret manager, observability/SLO, data lifecycle/support, target deployment, clean release, production-like drill, artifact hygiene, accepted-risk, allowed-claim, decision-owner, next-review, and regenerated execution snapshot evidence requirements
+- aligned `/api/execution-v1/status` release-decision blocker action metadata so operator triage surfaces the same proof-level `nextEvidence` and `stopReason` fields instead of generic release-label wording
+- extended production readiness and execution-v1 status smoke guards so current open blocker guidance cannot fall back to shorthand production release label wording
+
 ## 2026-05-22 Target Deployment Open Blocker Proof Detail Alignment
 
 - expanded the release-readiness current open target deployment blocker from a domain checklist into proof-level target deployment name, deployment profile, mandatory control, provider, identity/tenant, secret/observability, data lifecycle/support, clean release, stop-condition, production-ready claim, submission packet, artifact hygiene, production-like drill, reviewer decision, and regenerated execution snapshot evidence requirements

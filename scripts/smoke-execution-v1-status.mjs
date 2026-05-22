@@ -154,9 +154,16 @@ try {
   );
   assert.equal(
     status.releaseReadiness.currentOpenBlockers.some((item) =>
-      item.includes('production release label cannot be claimed until all target production providers'),
+      item.includes('production release label cannot be expanded until target provider evidence intake'),
     ),
     true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('production release label cannot be claimed until all target production providers'),
+    ),
+    false,
     JSON.stringify(status.releaseReadiness),
   );
   const anthropicBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
@@ -235,6 +242,30 @@ try {
     ),
     true,
     JSON.stringify(targetDeploymentBlockerAction),
+  );
+  const releaseDecisionBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.category === 'release-decision' &&
+      item.owner === 'release-owner' &&
+      item.commands.some((command) => command.command === 'npm run smoke:production-enterprise-controls'),
+  );
+  assert.equal(Boolean(releaseDecisionBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.match(
+    releaseDecisionBlockerAction.nextEvidence,
+    /Target provider evidence intake, provider operations, provider account\/architecture approvals, target-boundary live validation for every included provider, provider failure containment, enterprise controls, hosted identity\/session, hosted tenant isolation, target secret manager, observability\/SLO, data lifecycle\/support, target deployment contract, clean deployment release, production-like drill, artifact hygiene, accepted risk register, allowed claim text, release decision owner approval, next review date, and regenerated execution snapshot from the same target boundary/,
+    JSON.stringify(releaseDecisionBlockerAction),
+  );
+  assert.match(
+    releaseDecisionBlockerAction.stopReason,
+    /same-boundary provider, enterprise control, identity\/tenant, secret\/observability\/SLO, data\/support, deployment, clean release, drill, hygiene, accepted-risk, allowed-claim, decision-owner, and regenerated snapshot proof/,
+    JSON.stringify(releaseDecisionBlockerAction),
+  );
+  assert.equal(
+    releaseDecisionBlockerAction.evidenceDocs.some(
+      (doc) => doc.path === 'docs/production-enterprise-controls-v1.md' && doc.exists === true,
+    ),
+    true,
+    JSON.stringify(releaseDecisionBlockerAction),
   );
   assert.equal(status.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);
   assert.equal(status.baseline?.referenceAdoptionAggregate?.scriptCount, referenceAdoptionSmokeScriptCount);

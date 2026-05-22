@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T00:30:36.158Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T00:29:52.332Z
 - branch: codex/release-label-proof-detail
 - commit: 11aeb946b5905b62916584bde48db0edf2ae0469
