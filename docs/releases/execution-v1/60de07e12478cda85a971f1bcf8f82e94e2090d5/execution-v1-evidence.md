@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T05:10:39.861Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T05:10:30.828Z
 - branch: codex/target-provider-operations-proof-field-cleanup
 - commit: 60de07e12478cda85a971f1bcf8f82e94e2090d5
