@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T00:17:47.571Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T00:17:11.734Z
 - branch: codex/current-deployment-blocker-proof-detail
 - commit: c245a50ead888ec469d3cd957a21c09fe4507fb0
