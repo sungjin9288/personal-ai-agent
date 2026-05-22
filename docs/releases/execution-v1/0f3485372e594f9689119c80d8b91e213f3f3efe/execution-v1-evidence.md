@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T02:39:04.414Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T02:38:29.708Z
 - branch: codex/local-provider-architecture-proof-detail
 - commit: 0f3485372e594f9689119c80d8b91e213f3f3efe
