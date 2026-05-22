@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-22T01:32:59.440Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-22T01:32:17.797Z
 - branch: codex/deployment-release-action-guidance-proof-detail
 - commit: db6dbe26738e1700b717eeca62d5daafd4a12707
