@@ -252,12 +252,12 @@ try {
   assert.equal(Boolean(localBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.match(
     localBlockerAction.nextEvidence,
-    /Endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota\/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+    /Endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota and resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene result, and regenerated execution snapshot evidence/,
     JSON.stringify(localBlockerAction),
   );
   assert.match(
     localBlockerAction.stopReason,
-    /Target local provider architecture lacks endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret\/credential policy, runtime lifecycle, session\/artifact provenance, data residency\/transcript policy, quota\/resource guard, telemetry, fallback\/customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof/,
+    /Target local provider architecture lacks endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, and regenerated execution snapshot proof/,
     JSON.stringify(localBlockerAction),
   );
   assert.equal(
@@ -279,13 +279,29 @@ try {
   assert.equal(Boolean(hermesBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.match(
     hermesBlockerAction.nextEvidence,
-    /Endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot evidence/,
+    /Endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot evidence/,
     JSON.stringify(hermesBlockerAction),
   );
   assert.match(
     hermesBlockerAction.stopReason,
-    /Target Hermes provider architecture lacks endpoint ownership, HERMES_PROVIDER_MODEL pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback\/stop-condition decision, customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof/,
+    /Target Hermes provider architecture lacks endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle provenance proof, transcript policy proof, quota guard proof, telemetry proof, fallback and stop-condition decision proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene result, and regenerated execution snapshot proof/,
     JSON.stringify(hermesBlockerAction),
+  );
+  const providerArchitectureActionGuidanceText = JSON.stringify([
+    localBlockerAction.nextEvidence,
+    localBlockerAction.stopReason,
+    hermesBlockerAction.nextEvidence,
+    hermesBlockerAction.stopReason,
+  ]);
+  assert.doesNotMatch(
+    providerArchitectureActionGuidanceText,
+    /secret\/credential policy|session\/artifact provenance|data residency\/transcript policy|quota\/resource guard|fallback\/customer approval|release hygiene, and regenerated snapshot proof/,
+    providerArchitectureActionGuidanceText,
+  );
+  assert.doesNotMatch(
+    providerArchitectureActionGuidanceText,
+    /HERMES_PROVIDER_MODEL pinning|fallback\/stop-condition decision|target-boundary live validation, release hygiene/,
+    providerArchitectureActionGuidanceText,
   );
   const currentOpenBlockerActionsText = JSON.stringify(status.releaseReadiness.currentOpenBlockerActions);
   assert.doesNotMatch(
