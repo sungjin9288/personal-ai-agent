@@ -1286,10 +1286,10 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
         buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
         buildReleaseReadinessDoc('Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'),
       ],
-      nextEvidence: 'Approved endpoint/model runtime configuration and target-boundary local provider validation evidence.',
+      nextEvidence: 'Endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret and credential policy, runtime lifecycle, session and artifact provenance, data residency and transcript policy, quota/resource guard, telemetry, fallback and customer approval, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence.',
       owner: 'provider-ops',
       provider: 'local',
-      stopReason: 'Target local provider architecture approval and target-boundary evidence are missing.',
+      stopReason: 'Target local provider architecture lacks endpoint ownership, LOCAL_PROVIDER_MODEL model pinning, network isolation, secret/credential policy, runtime lifecycle, session/artifact provenance, data residency/transcript policy, quota/resource guard, telemetry, fallback/customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof.',
     };
   }
 
@@ -1311,10 +1311,10 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
         buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
         buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
       ],
-      nextEvidence: 'Approved Hermes-compatible endpoint/model runtime configuration and target-boundary Hermes live validation evidence.',
+      nextEvidence: 'Endpoint ownership, HERMES_PROVIDER_MODEL model pinning, target secret injection, tool-call parsing, session lifecycle provenance, transcript policy, quota guard, telemetry, fallback and stop-condition decision, customer approval, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot evidence.',
       owner: 'provider-ops',
       provider: 'hermes',
-      stopReason: 'Hermes endpoint/model runtime configuration and target-boundary evidence are missing.',
+      stopReason: 'Target Hermes provider architecture lacks endpoint ownership, HERMES_PROVIDER_MODEL pinning, target secret injection, tool-call parsing, session lifecycle, transcript policy, quota guard, telemetry, fallback/stop-condition decision, customer approval, target-boundary live validation, release hygiene, and regenerated snapshot proof.',
     };
   }
 
