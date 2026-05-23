@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-23T15:36:16.019Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-23T15:36:06.926Z
 - branch: codex/main-provider-secret-injection-artifact-sync
 - commit: e24f08314e918f5d1fd9933f0179d81bb49d1000
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
