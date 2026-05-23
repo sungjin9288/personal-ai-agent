@@ -114,7 +114,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 ## Target Provider Evidence Intake
 
-Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner proof, target boundary proof, secret manager alias proof, model and endpoint pinning proof, quota and cost guard proof, archived live validation proof, provider blocker closure verification proof, and fallback and stop-condition evidence.
+Before any provider is included in a production claim, the operator must verify [target-provider-evidence-intake-v1.md](target-provider-evidence-intake-v1.md) and attach provider owner proof, target boundary proof, approved secret manager platform proof, runtime injection proof, least-privilege access policy proof, and secret access audit log proof, model and endpoint pinning proof, quota and cost guard proof, archived live validation proof, provider blocker closure verification proof, and fallback and stop-condition evidence.
 
 ## Target Provider Operations
 

@@ -26,7 +26,7 @@ The current approved path remains OpenAI-scoped self-hosted/local-first pilot. H
 | --- | --- | --- | --- |
 | Endpoint ownership | approved Hermes-compatible endpoint owner, network boundary, base URL alias, transport, and availability owner | local adapter defaults exist without target endpoint approval | blocked |
 | Model pinning | approved model id, model version/source, compatibility profile, max token policy, and fallback model | `HERMES_PROVIDER_MODEL` is missing in current live validation evidence | blocked |
-| Secret injection | API key requirement, target secret manager alias, rotation path, break-glass owner, and redaction policy | optional local API key handling exists without target secret injection proof | blocked |
+| Secret injection | API key requirement decision, approved secret manager platform proof, runtime injection proof, rotation and revocation event proof, break-glass governance proof, and leakage and redaction review proof | optional local API key handling exists without target secret injection proof | blocked |
 | Tool-call parsing | approved Hermes `<tool_call>` contract, malformed-call handling, execution boundary, and audit record | parser smoke exists without target provider output history | blocked |
 | Session lifecycle | mission/session id mapping, provider response id retention, retry lineage, and artifact provenance | local execution records exist without Hermes target session evidence | blocked |
 | Data and transcript policy | prompt data class, provider transcript retention, customer data approval, delete request path, and post-delete absence proof | data lifecycle gates exist without Hermes provider transcript proof | blocked |
@@ -41,7 +41,7 @@ Any future target Hermes provider approval must include:
 
 - endpoint ownership proof with approved base URL alias, endpoint owner, network boundary, transport, availability owner, and health check record
 - model pinning proof with `HERMES_PROVIDER_MODEL`, model version/source, compatibility profile, max token policy, fallback model, and owner approval
-- secret injection proof with target secret manager alias, API key requirement decision, rotation path, break-glass owner, access audit, and redaction result
+- secret injection proof with approved secret manager platform proof, API key requirement decision, runtime injection proof, rotation and revocation event proof, break-glass governance proof, secret access audit log proof, and leakage and redaction review proof
 - tool-call parsing proof with Hermes `<tool_call>` sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence
 - session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference
 - data and transcript policy proof with prompt data class, provider transcript retention, customer data approval, delete request route, and post-delete absence evidence
@@ -61,7 +61,7 @@ When a target environment is ready for Hermes provider approval, fill this templ
 | targetEnvironmentName | approved target environment name, owner, and deployment boundary | must name the customer or production-like boundary where evidence was generated |
 | approvedEndpointAlias | non-secret Hermes-compatible base URL alias, endpoint owner, network boundary, transport, availability owner, and health check record | must use an alias or documented endpoint label, not a private URL containing credentials |
 | hermesProviderModel | `HERMES_PROVIDER_MODEL`, model version/source, compatibility profile, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
-| secretInjectionPolicy | API key requirement decision, target secret manager alias when used, rotation path, break-glass owner, access audit, and redaction result | must prove secret values are injected and redacted through approved controls |
+| secretInjectionPolicy | API key requirement decision, approved secret manager platform proof when credentials are used, runtime injection proof, rotation and revocation event proof, break-glass governance proof, secret access audit log proof, and leakage and redaction review proof | must prove secret values are injected and redacted through approved controls |
 | toolCallContractEvidence | Hermes `<tool_call>` sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence | must prove target provider output is compatible with the approved tool-call parser and containment policy |
 | sessionLifecycleEvidence | mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference | must connect target Hermes responses to durable execution evidence without exposing sensitive transcripts |
 | liveValidationEvidence | `npm run live:execution-v1:hermes` command, mission id, execution session id, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |
