@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-23T15:22:17.778Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-23T15:22:09.090Z
 - branch: codex/provider-secret-injection-proof-detail
 - commit: 4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790
