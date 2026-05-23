@@ -430,7 +430,7 @@ try {
   );
   assert.doesNotMatch(
     appJs,
-    /target secret manager aliases, runtime injection, rotation, revocation, break-glass, and audit evidence without exposing secret values/,
+    /approved secret manager platform proof, runtime injection proof, rotation and revocation event proof, break-glass governance proof, secret access audit log proof, leakage review proof, and credential containment proof without exposing secret values/,
   );
   assert.doesNotMatch(
     appJs,
@@ -450,7 +450,7 @@ try {
   );
   assert.doesNotMatch(
     appJs,
-    /provider account or architecture approval, target secret manager alias, live validation evidence, fallback evidence, provider operations evidence, and artifact refresh/,
+    /provider account or architecture approval proof, approved secret manager platform proof, runtime injection proof, secret access audit log proof, live validation evidence, fallback evidence, provider operations evidence, and artifact refresh/,
   );
   assert.doesNotMatch(
     appJs,

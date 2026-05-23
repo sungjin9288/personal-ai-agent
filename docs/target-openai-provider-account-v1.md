@@ -26,7 +26,7 @@ The current approved path remains OpenAI-scoped self-hosted/local-first pilot. O
 | --- | --- | --- | --- |
 | Account ownership | approved OpenAI organization/project owner, customer scope, evidence owner, and review date | archived OpenAI live validation proves only the scoped local-first pilot path | blocked |
 | Billing and quota | active billing plan, quota tier, spend cap, payment owner, and low-balance/quota alert route | no target production billing/quota evidence exists | blocked |
-| API key and secret injection | target secret manager alias, API key owner, rotation path, access audit, break-glass owner, and redaction result | `OPENAI_API_KEY` can be injected locally but target secret evidence is absent | blocked |
+| API key and secret injection | approved secret manager platform proof, API key owner proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, and credential containment proof | `OPENAI_API_KEY` can be injected locally but target secret evidence is absent | blocked |
 | Model access | approved `OPENAI_MODEL`, model availability, region/project access, max token policy, and fallback model | pilot model access is archived but target account model approval is absent | blocked |
 | Provider terms and customer approval | provider terms, data processing approval, allowed customer/workspace, transcript policy, and review date | no customer-approved target OpenAI provider evidence exists | blocked |
 | Usage and cost guard | usage envelope, concurrency, timeout, retry policy, spend owner, and saturation fallback | provider telemetry exists without target OpenAI quota evidence | blocked |
@@ -41,7 +41,7 @@ Any future target OpenAI provider approval must include:
 
 - account ownership proof with OpenAI organization/project owner, project/workspace alias, customer scope, evidence owner, and review date
 - billing and quota proof with active billing plan, quota tier, payment owner, spend cap, low-balance/quota alert route, and redacted evidence summary
-- API key and secret injection proof with target secret manager alias, `OPENAI_API_KEY` owner, rotation path, access audit, break-glass owner, and redaction result
+- API key and secret injection proof with approved secret manager platform proof, `OPENAI_API_KEY` owner proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, and credential containment proof
 - model access proof with `OPENAI_MODEL`, model availability, region/project access, max token policy, fallback model, and owner approval
 - provider terms and customer approval proof with provider terms, data processing approval, allowed customer/workspace, transcript/retention policy, support owner, and evidence owner
 - usage and cost guard proof with usage envelope, concurrency limit, timeout, retry policy, spend owner, saturation fallback, and budget review cadence
@@ -62,7 +62,7 @@ When a target environment is ready for OpenAI provider account approval, fill th
 | approvedAccountAlias | non-secret OpenAI organization/project alias, account owner, project/workspace alias, evidence owner, and review date | must use an alias or account label, not provider console identifiers that expose billing or private account details |
 | billingQuotaStatus | active billing plan, quota tier, payment owner, spend cap, low-balance/quota alert route, and redacted evidence summary | must prove the target account can sustain the approved usage envelope without exposing billing identifiers |
 | openaiModelAccess | `OPENAI_MODEL`, model availability, region/project access, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
-| secretInjectionPolicy | target secret manager alias, `OPENAI_API_KEY` owner, rotation path, access audit, break-glass owner, and redaction result | must prove secret values are injected and redacted through approved controls |
+| secretInjectionPolicy | approved secret manager platform proof, `OPENAI_API_KEY` owner proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, and credential containment proof | must prove secret values are injected and redacted through approved controls |
 | providerTermsCustomerApproval | provider terms, data-processing approval, allowed customer/workspace, transcript/retention policy, support owner, and evidence owner | must show customer-approved use of OpenAI for the target data boundary |
 | usageCostGuard | usage envelope, concurrency limit, timeout policy, retry policy, spend owner, saturation fallback, and budget review cadence | must explain how quota, spend, and rate-limit pressure are contained before fallback or stop condition |
 | liveValidationEvidence | `npm run live:execution-v1:openai` command, mission id, execution session id, provider response status, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |

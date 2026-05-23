@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-23T15:22:17.778Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-23T15:22:16.406Z
 - localDate: 2026-05-24
 - branch: codex/provider-secret-injection-proof-detail
 - commit: 4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790](releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790](docs/releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790)
 - visualArtifactSetSha256: 5f0dbd552e797718a88958afcf4726c424e2406147fe4f6fb88e51fff552399b
 - commitPushStatus: not pushed, origin/codex/provider-secret-injection-proof-detail not found
 

@@ -101,6 +101,7 @@ assert.doesNotMatch(
   /target local provider architecture remains the gate for endpoint ownership, model pinning, network isolation, credential policy, runtime lifecycle, session provenance, data residency, quota\/resource guard, telemetry, fallback, and customer approval decision requirements/,
 );
 assert.match(readiness, /archived live validation proof, provider blocker closure verification proof, and fallback and stop-condition evidence/);
+assert.doesNotMatch(readiness, /secret manager alias proof/);
 assert.match(readiness, /provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof/);
 assert.match(
   readiness,

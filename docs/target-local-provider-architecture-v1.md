@@ -42,7 +42,7 @@ Any future target local provider approval must include:
 - endpoint ownership proof with approved base URL alias, runtime owner, network boundary, transport, availability owner, and health check record
 - model pinning proof with `LOCAL_PROVIDER_MODEL`, model source/version, compatibility profile, max token policy, fallback model, and owner approval
 - network isolation proof with host boundary, ingress policy, egress policy, tenant/customer boundary, operator access policy, and firewall decision
-- secret and credential policy proof with auth mode, API key requirement, target secret manager alias when used, rotation path, redaction result, and access audit
+- secret and credential policy proof with auth mode, API key requirement decision, approved secret manager platform proof when credentials are used, runtime injection proof, rotation and revocation event proof, leakage and redaction review proof, and secret access audit log proof
 - runtime lifecycle proof with process manager, startup command, health endpoint, restart policy, resource limits, and log retention
 - session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference
 - data residency and transcript policy proof with prompt data class, local storage path alias, transcript retention, customer data approval, delete request route, and post-delete absence evidence
@@ -62,7 +62,7 @@ When a target environment is ready for local provider approval, fill this templa
 | approvedBaseUrlAlias | non-secret `LOCAL_PROVIDER_BASE_URL` alias, endpoint owner, network boundary, transport, availability owner, and health check record | must use an alias or documented endpoint label, not a private URL containing credentials |
 | localProviderModel | `LOCAL_PROVIDER_MODEL`, model source/version, compatibility profile, max token policy, fallback model, and model owner approval | must match the model used by target-boundary live validation |
 | networkIsolation | host boundary, ingress policy, egress policy, tenant/customer boundary, operator access policy, and firewall decision | must show how the local runtime is isolated from unauthorized tenants and networks |
-| credentialPolicy | auth mode, API key requirement decision, target secret manager alias when used, rotation path, redaction result, and access audit | must prove secret values are injected and redacted through approved controls |
+| credentialPolicy | auth mode, API key requirement decision, approved secret manager platform proof when credentials are used, runtime injection proof, rotation and revocation event proof, leakage and redaction review proof, and secret access audit log proof | must prove secret values are injected and redacted through approved controls |
 | runtimeLifecycle | process manager, startup command, health endpoint, restart policy, CPU/GPU/memory limits, and log retention | must identify the operational owner for start, restart, saturation, and log retention |
 | liveValidationEvidence | `npm run live:execution-v1:local` command, mission id, execution session id, evidence commit, snapshot path, and artifact hygiene result | must reference a passed live validation generated from the approved target boundary |
 | dataResidencyPolicy | prompt data class, local storage path alias, transcript retention, customer data approval, delete request route, and post-delete absence proof | must prove transcript handling and deletion are compatible with the target customer boundary |

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-23T15:22:17.778Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-23T15:22:09.134Z
 - branch: codex/provider-secret-injection-proof-detail
 - commit: 4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4ba2c88dcbbd9c94b71316d04f2cd1a428a7e790/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

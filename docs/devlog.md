@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Provider Secret Injection Proof Detail Alignment
+
+- expanded provider account secret injection requirements for OpenAI and Anthropic so approved secret manager platform proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, and credential containment proof replace target secret manager alias shorthand
+- aligned target provider operations, production provider readiness, target local provider architecture, and target Hermes provider architecture wording so provider credential evidence requires proof-level secret manager controls instead of alias, rotation, redaction, and access audit shorthand
+- updated target environment evidence intake, production readiness, production-like drill, and related smoke coverage so provider secret injection claims cannot regress to generic secret manager alias evidence
+
 ## 2026-05-23 Target Secret Manager UI Proof Detail Alignment
 
 - expanded release target evidence UI metadata for providerSecretEvidence so provider approval proof, approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, credential containment proof, target-boundary live validation proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded as proof fields
