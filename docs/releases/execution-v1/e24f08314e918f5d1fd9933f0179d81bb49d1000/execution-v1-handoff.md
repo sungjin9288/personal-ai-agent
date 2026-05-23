@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-23T15:36:16.019Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-23T15:36:14.659Z
 - localDate: 2026-05-24
 - branch: codex/main-provider-secret-injection-artifact-sync
 - commit: e24f08314e918f5d1fd9933f0179d81bb49d1000
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000](releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000](docs/releases/execution-v1/e24f08314e918f5d1fd9933f0179d81bb49d1000)
 - visualArtifactSetSha256: 6dccb241c267774631658cc983dabc785479f1fa09d21c0711af566dda2c38e7
 - commitPushStatus: pushed to origin/main
 

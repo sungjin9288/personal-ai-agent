@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-23T15:36:16.019Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-23T15:36:06.884Z
 - branch: codex/main-provider-secret-injection-artifact-sync
 - commit: e24f08314e918f5d1fd9933f0179d81bb49d1000
