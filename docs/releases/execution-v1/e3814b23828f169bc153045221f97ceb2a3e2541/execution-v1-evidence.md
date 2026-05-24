@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T05:45:34.713Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T05:45:26.035Z
 - branch: codex/hosted-tenant-gap-proof-detail
 - commit: e3814b23828f169bc153045221f97ceb2a3e2541

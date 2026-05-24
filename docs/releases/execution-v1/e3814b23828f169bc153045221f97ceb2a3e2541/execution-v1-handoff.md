@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T05:45:34.713Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T05:45:33.326Z
 - localDate: 2026-05-24
 - branch: codex/hosted-tenant-gap-proof-detail
 - commit: e3814b23828f169bc153045221f97ceb2a3e2541
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541](releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541](docs/releases/execution-v1/e3814b23828f169bc153045221f97ceb2a3e2541)
 - visualArtifactSetSha256: c72059a8ab536d8c6fdd6b346106ad05abdca846c2ede019701f7beecf6eed76
 - commitPushStatus: not pushed, origin/codex/hosted-tenant-gap-proof-detail not found
 
