@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-25 Retention Backup Boundary UI Proof Detail Alignment
+
+- expanded target data lifecycle architecture and target retention operations proofIntent wording so lifecycle approval, customer data class matrix, retention configuration, export request, delete workflow, provider transcript policy, post-delete absence, audit history, legal hold, conflict containment, exception review, customer handoff, hygiene, and snapshot evidence require owner, request id, timestamp, checksum, rollback, and containment details
+- expanded the target retention enforcement production gap and retention/backup boundary map so retention/export/delete/provider transcript/post-delete absence evidence is tied to branch, commit, release label, approved target boundary, reviewer, customer approval, evidence owner, lifecycle exception review, backup dependency, and disaster recovery handoff
+- kept the stop condition tied to `target-retention-operations-missing` and the production data lifecycle claim guard unchanged while extending UI harness browse smoke coverage against generic retention/backup boundary shorthand
+
 ## 2026-05-25 Staffed On-Call SLO Gap UI Proof Detail Alignment
 
 - expanded target SLO architecture and target SLO operations proofIntent wording so SLO/SLA approval, customer terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage, maintenance/degradation, service credit, evidence retention, missed-SLO containment, hygiene, and snapshot evidence require proof-level target-boundary details

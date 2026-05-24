@@ -871,43 +871,57 @@ try {
     /named on-call owner, alert acknowledgement, escalation route, customer communication owner, missed-alert containment, and incident review cadence/,
   );
   assert.equal(appJs.includes('target data lifecycle architecture approval proof'), true);
+  assert.equal(
+    appJs.includes('target data lifecycle architecture approval proof with approved architecture record'),
+    true,
+  );
   assert.equal(appJs.includes('customer-approved data class matrix proof'), true);
+  assert.equal(
+    appJs.includes('customer-approved data class matrix proof with legal basis, owner, retention window, exportability, delete eligibility, exception policy, legal hold owner, and customer approval'),
+    true,
+  );
   assert.equal(appJs.includes('target retention configuration proof'), true);
   assert.equal(appJs.includes('provider transcript handling proof'), true);
   assert.equal(
+    appJs.includes('target retention operations evidence with customer-approved data class proof for branch, commit, release label, approved target boundary'),
+    true,
+  );
+  assert.equal(
     appJs.includes(
-      'target retention operations evidence for customer-approved data class proof with class owner, legal basis, retention window, exportability, delete eligibility, and exception policy',
+      'target retention configuration proof with storage boundary, enforcement timestamp, policy owner, reviewer, exception workflow, audit record, and rollback route',
     ),
     true,
   );
   assert.equal(
     appJs.includes(
-      'target retention configuration proof with storage boundary, enforcement timestamp, policy owner, reviewer, and audit record',
+      'export approval proof with request id, requester, approver, package scope, delivery boundary, encryption mode, package hash, reviewer, customer receipt, and export owner',
     ),
     true,
   );
   assert.equal(
     appJs.includes(
-      'export approval proof with requester, approver, package scope, delivery boundary, encryption mode, package hash, and customer receipt',
+      'delete workflow proof with request id, authorization owner, confirmation control, execution owner, storage scope, timestamp, result, rollback route, and audit record',
     ),
     true,
   );
   assert.equal(
     appJs.includes(
-      'delete workflow proof with authorization, confirmation control, execution owner, storage scope, timestamp, result, and audit record',
+      'provider transcript handling proof with provider-side retention, deletion or non-retention evidence, exception review, customer disclosure, evidence owner, and next review date',
     ),
     true,
   );
   assert.equal(
     appJs.includes(
-      'provider transcript handling proof with provider-side retention, deletion or non-retention evidence, exception review, and customer disclosure',
+      'post-delete absence proof with runtime, tenant storage, backup, provider, export package, support packet, release artifact boundary checks, checker owner, timestamp, and absence result',
     ),
     true,
   );
   assert.equal(
-    appJs.includes(
-      'post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries',
-    ),
+    appJs.includes('audit history proof with actor, customer or tenant alias, lifecycle action, before/after state, timestamp, checksum or equivalent integrity proof, and retention owner'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('lifecycle exception review proof with exception owner, accepted-risk decision, customer handoff decision, residual risk, next review date, and lifecycle containment plan'),
     true,
   );
   assert.equal(appJs.includes('backup architecture proof'), true);
@@ -962,6 +976,10 @@ try {
   );
   assert.doesNotMatch(
     appJs,
+    /target data lifecycle architecture approval proof, customer-approved data class matrix proof, target retention configuration proof, export request proof, delete request proof, provider transcript policy proof, post-delete absence proof, backup architecture proof, restore validation proof, backup key ownership proof, disaster recovery proof, legal hold proof, delete conflict containment proof, provider transcript exception proof, customer communication containment proof, release artifact hygiene result, and regenerated execution snapshot evidence are defined/,
+  );
+  assert.doesNotMatch(
+    appJs,
     /target retention enforcement, export approval, delete execution, post-delete absence proof, and retention audit evidence are captured/,
   );
   assert.doesNotMatch(
@@ -987,6 +1005,10 @@ try {
   assert.doesNotMatch(
     appJs,
     /target retention classes, export approval, delete execution, provider transcript policy, post-delete absence proof, and audit evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /customer-approved data classes, export\/delete proof, provider transcript policy, post-delete absence, backup expiry, restore validation, and disaster recovery scope/,
   );
   assert.doesNotMatch(
     appJs,
