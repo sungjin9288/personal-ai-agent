@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T01:40:21.519Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T01:40:20.070Z
 - localDate: 2026-05-24
 - branch: codex/observability-slo-ui-proof-detail
 - commit: 1970c1bf8cebcea08e5deb39139b58d03e43fa46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46](releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46](docs/releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46)
 - visualArtifactSetSha256: 7fc92c433221452b022c41aef01004d20d2c5c03d5cbeab6c94bc7e75c848448
 - commitPushStatus: not pushed, origin/codex/observability-slo-ui-proof-detail not found
 
