@@ -780,13 +780,49 @@ try {
     true,
   );
   assert.equal(appJs.includes('target SLO/SLA architecture approval proof'), true);
+  assert.equal(
+    appJs.includes('target SLO/SLA architecture approval proof with approved architecture record'),
+    true,
+  );
   assert.equal(appJs.includes('customer-approved SLO/SLA terms proof'), true);
+  assert.equal(
+    appJs.includes('customer-approved SLO/SLA terms proof with availability target, latency target, error rate target'),
+    true,
+  );
   assert.equal(appJs.includes('error budget policy proof'), true);
+  assert.equal(
+    appJs.includes('error budget policy proof with measurement window, budget owner, burn-rate threshold'),
+    true,
+  );
   assert.equal(appJs.includes('provider outage playbook proof'), true);
+  assert.equal(
+    appJs.includes('provider outage playbook proof with provider health signal, fallback decision, retry/disable policy'),
+    true,
+  );
   assert.equal(appJs.includes('target SLO measurements proof'), true);
+  assert.equal(
+    appJs.includes('target SLO measurements proof for branch, commit, release label, approved target boundary'),
+    true,
+  );
   assert.equal(appJs.includes('staffed on-call response proof'), true);
   assert.equal(
-    appJs.includes('target SLO operations evidence for alert acknowledgement proof with severity mapping'),
+    appJs.includes('staffed on-call response proof with rota, primary owner, secondary owner, handoff rule'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('service credit proof with legal/commercial owner, contractual escalation path, customer approval'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('missed-SLO containment proof with detection signal, customer impact rule, escalation owner'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('alert acknowledgement proof with severity mapping, alert route, acknowledgement SLA, escalation timeout'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('target SLO operations evidence for customer-approved SLO/SLA terms proof with availability target'),
     true,
   );
   assert.equal(
@@ -794,10 +830,26 @@ try {
     true,
   );
   assert.equal(
-    appJs.includes('target support operations evidence for on-call handoff proof, missed-ack rule, paging fallback, handoff log'),
+    appJs.includes('target observability operations evidence for alert delivery proof, staffed on-call routing and acknowledgement proof with route, severity, delivery receipt'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('missed-ack rule, paging fallback, handoff log, escalation chain'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('target support operations evidence for on-call handoff proof with primary owner, secondary owner, acknowledgement timestamp'),
     true,
   );
   assert.equal(appJs.includes('missed-SLO containment proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target SLO operations evidence for alert acknowledgement proof with severity mapping, alert route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, and audit record; staffed on-call response proof with rota, primary owner, secondary owner, handoff rule, timezone coverage, absence handling, and escalation chain; target observability operations evidence for alert delivery proof, staffed on-call routing and acknowledgement proof with acknowledgement timestamp and escalation chain/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target SLO measurements proof, customer-approved SLO\/SLA terms proof, error budget review proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof/,
+  );
   assert.doesNotMatch(
     appJs,
     /target telemetry backend, log\/metric\/trace boundaries, alert routing, ownership, retention, and customer status paths are defined/,

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-25 Staffed On-Call SLO Gap UI Proof Detail Alignment
+
+- expanded target SLO architecture and target SLO operations proofIntent wording so SLO/SLA approval, customer terms, error budget, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage, maintenance/degradation, service credit, evidence retention, missed-SLO containment, hygiene, and snapshot evidence require proof-level target-boundary details
+- expanded the staffed on-call production gap so target SLO operations, target observability operations, and target support operations evidence name availability/latency/error/support targets, burn-rate rules, alert route, responder, acknowledgement timestamp, missed-ack handling, rota, response owner, customer-visible timestamp, service credit owner, support handoff log, closure evidence, and next review date
+- kept the stop condition tied to `target-slo-operations-missing` and the production incident response claim guard unchanged while extending UI harness browse smoke coverage against generic staffed on-call and target SLO operations shorthand
+
 ## 2026-05-25 Target Telemetry Gap UI Proof Detail Alignment
 
 - expanded release target evidence observabilitySloEvidence and production gap metadata for target telemetry so target observability architecture approval, telemetry backend, signal inventory, ingestion, alert routing, acknowledgement, on-call coverage, retention, customer status, incident response, audit export, disaster recovery, SLO, hygiene, and snapshot evidence require owner, route, timestamp, audit, retention, fallback, and recovery details instead of generic telemetry shorthand
