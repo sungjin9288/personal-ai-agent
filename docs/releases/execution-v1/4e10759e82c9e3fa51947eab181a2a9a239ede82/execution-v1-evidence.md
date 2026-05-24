@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T02:41:59.824Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T02:41:48.595Z
 - branch: codex/main-staffed-on-call-gap-artifact-sync
 - commit: 4e10759e82c9e3fa51947eab181a2a9a239ede82
