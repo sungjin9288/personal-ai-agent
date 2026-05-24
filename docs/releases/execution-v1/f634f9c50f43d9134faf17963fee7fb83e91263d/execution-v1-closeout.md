@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T17:58:29.561Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T17:58:21.881Z
 - branch: codex/main-deployment-clean-release-boundary-artifact-sync
 - commit: f634f9c50f43d9134faf17963fee7fb83e91263d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f634f9c50f43d9134faf17963fee7fb83e91263d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

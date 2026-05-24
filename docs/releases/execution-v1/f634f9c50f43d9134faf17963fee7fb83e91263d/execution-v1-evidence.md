@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T17:58:29.561Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T17:58:21.851Z
 - branch: codex/main-deployment-clean-release-boundary-artifact-sync
 - commit: f634f9c50f43d9134faf17963fee7fb83e91263d
