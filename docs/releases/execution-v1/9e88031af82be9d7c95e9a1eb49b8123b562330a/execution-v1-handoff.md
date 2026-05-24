@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T15:31:47.879Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T15:31:46.437Z
 - localDate: 2026-05-25
 - branch: codex/target-telemetry-gap-proof-detail
 - commit: 9e88031af82be9d7c95e9a1eb49b8123b562330a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a](releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a](docs/releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a)
 - visualArtifactSetSha256: d7f2a8f55a302af24761b20012885e1c6b19043f3d509f4fe63e11cf0a375ed8
 - commitPushStatus: not pushed, origin/codex/target-telemetry-gap-proof-detail not found
 

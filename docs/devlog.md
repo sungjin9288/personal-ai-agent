@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-25 Target Telemetry Gap UI Proof Detail Alignment
+
+- expanded release target evidence observabilitySloEvidence and production gap metadata for target telemetry so target observability architecture approval, telemetry backend, signal inventory, ingestion, alert routing, acknowledgement, on-call coverage, retention, customer status, incident response, audit export, disaster recovery, SLO, hygiene, and snapshot evidence require owner, route, timestamp, audit, retention, fallback, and recovery details instead of generic telemetry shorthand
+- aligned target observability architecture and target observability operations proofIntent wording so backend alias, region, tenancy boundary, data residency, event sample references, dropped-event review, delivery receipt, missed-ack handling, query access audit, corrective action closure, and evidence recovery are explicit target-boundary proof fields
+- kept the stop condition tied to `target-observability-operations-missing` and the staffed production observability/SLO claim guard unchanged while extending UI harness browse smoke coverage against generic target telemetry shorthand
+
 ## 2026-05-24 Staffed Support Operations Gap UI Proof Detail Alignment
 
 - expanded release target evidence supportOperationsEvidence and production gap metadata for staffed support operations so target support architecture approval proof names the approved architecture record, support owner, reviewer, customer/workspace scope, and review date instead of generic support approval shorthand

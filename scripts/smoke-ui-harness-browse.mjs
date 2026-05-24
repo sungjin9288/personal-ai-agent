@@ -656,14 +656,62 @@ try {
   );
   assert.equal(appJs.includes('observabilitySloEvidence'), true);
   assert.equal(appJs.includes('target observability architecture approval proof'), true);
+  assert.equal(
+    appJs.includes('target observability architecture approval proof with approved architecture record'),
+    true,
+  );
   assert.equal(appJs.includes('approved telemetry backend proof'), true);
+  assert.equal(
+    appJs.includes('approved telemetry backend proof with backend alias, region, tenancy boundary'),
+    true,
+  );
   assert.equal(appJs.includes('signal inventory proof'), true);
+  assert.equal(
+    appJs.includes('signal inventory proof for release, provider, mission, approval, runtime, security, support, and incident domains'),
+    true,
+  );
   assert.equal(appJs.includes('telemetry ingestion proof'), true);
+  assert.equal(
+    appJs.includes('telemetry ingestion proof for metrics, logs, traces, audit events, provider events, release events, and support events'),
+    true,
+  );
   assert.equal(appJs.includes('alert routing proof'), true);
+  assert.equal(
+    appJs.includes('alert routing proof with severity mapping, primary route, secondary route, retry policy'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('alert acknowledgement proof with responder, acknowledgement timestamp, escalation chain'),
+    true,
+  );
   assert.equal(appJs.includes('alert delivery receipt proof'), true);
   assert.equal(appJs.includes('staffed on-call coverage proof'), true);
+  assert.equal(
+    appJs.includes('staffed on-call coverage proof with rota, primary owner, backup owner, handoff rule'),
+    true,
+  );
   assert.equal(appJs.includes('log and trace retention proof'), true);
+  assert.equal(
+    appJs.includes('log and trace retention proof with period, storage class, redaction policy, query role'),
+    true,
+  );
   assert.equal(appJs.includes('customer status communication proof'), true);
+  assert.equal(
+    appJs.includes('customer status communication proof with route, owner, approval, timestamp, message, cadence, and closure evidence'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('incident response proof with timeline, mitigation owner, customer impact, review decision'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('audit export proof for alert delivery, acknowledgement, customer update, query access'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('disaster recovery proof for telemetry backend outage, alert route outage, incident bridge fallback'),
+    true,
+  );
   assert.equal(appJs.includes('target SLO architecture approval proof'), true);
   assert.equal(appJs.includes('customer-approved SLO/SLA terms proof'), true);
   assert.equal(appJs.includes('error budget policy proof'), true);
@@ -685,6 +733,10 @@ try {
     appJs,
     /target telemetry backend, log\/trace retention, alert route, staffed on-call, customer status route, SLO\/SLA terms, and incident review/,
   );
+  assert.doesNotMatch(
+    appJs,
+    /target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval proof/,
+  );
   assert.equal(appJs.includes('target local provider endpoint ownership proof'), true);
   assert.equal(appJs.includes('LOCAL_PROVIDER_MODEL model pinning proof'), true);
   assert.equal(appJs.includes('secret and credential policy proof'), true);
@@ -702,12 +754,31 @@ try {
   );
   assert.equal(appJs.includes('target observability architecture approval proof'), true);
   assert.equal(appJs.includes('telemetry backend ownership proof'), true);
+  assert.equal(
+    appJs.includes('telemetry backend ownership proof with backend alias, region, tenancy boundary'),
+    true,
+  );
   assert.equal(appJs.includes('metric log trace and audit event boundary proof'), true);
+  assert.equal(
+    appJs.includes('metric log trace and audit event boundary proof with sample references, ingestion timestamp, pipeline owner'),
+    true,
+  );
   assert.equal(appJs.includes('alert delivery receipt proof'), true);
   assert.equal(appJs.includes('staffed on-call coverage proof'), true);
-  assert.equal(appJs.includes('target observability telemetry ingestion proof'), true);
+  assert.equal(
+    appJs.includes('target observability operations evidence with telemetry ingestion proof for metrics, logs, traces'),
+    true,
+  );
   assert.equal(appJs.includes('trace and log retention proof'), true);
+  assert.equal(
+    appJs.includes('trace and log retention proof with period, storage class, redaction policy, query role'),
+    true,
+  );
   assert.equal(appJs.includes('staffed on-call routing and acknowledgement proof'), true);
+  assert.equal(
+    appJs.includes('staffed on-call routing and acknowledgement proof with rota, primary and backup owner'),
+    true,
+  );
   assert.equal(appJs.includes('target SLO/SLA architecture approval proof'), true);
   assert.equal(appJs.includes('customer-approved SLO/SLA terms proof'), true);
   assert.equal(appJs.includes('error budget policy proof'), true);
