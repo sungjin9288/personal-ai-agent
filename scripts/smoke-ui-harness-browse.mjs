@@ -381,6 +381,60 @@ try {
   assert.equal(appJs.includes('lifecycle isolation proof'), true);
   assert.equal(appJs.includes('target tenant isolation operations evidence with tenant identity source proof'), true);
   assert.equal(appJs.includes('hosted tenant isolation architecture approval proof'), true);
+  assert.equal(
+    appJs.includes(
+      'tenant identity source proof with source owner, customer organization mapping proof, tenant lifecycle owner, trust policy, source approval, and orphan tenant review',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'tenant identity source proof with tenant source owner, customer organization mapping proof, lifecycle owner, trust policy, and source approval',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'tenant-scoped authorization proof with permission policy, service-to-service tenant propagation proof, stale permission denial, delegated admin boundary, and denial owner',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'storage partitioning proof for runtime state and artifact/memory/search/export/index partitioning proof with schema/bucket/keyspace boundary and migration safety',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'per-tenant encryption/key ownership proof with key owner, rotation, revocation, escrow, break-glass, access audit, and key custody decision',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'backup/restore isolation proof with tenant-scoped backup selection, restore authorization, integrity result, other-tenant non-interference, post-restore denial, backup owner, and restore rollback route',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'cross-tenant denial proof across API, storage, memory, search, export, delete, backup, support, and observability',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'observability/support isolation proof with tenant-scoped logs, traces, alerts, support ticket visibility, incident review, customer status routing, evidence export, support owner, and retention class',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'lifecycle isolation proof with retention, export, delete, provider transcript, legal hold, backup expiry, post-delete absence, lifecycle owner, and exception policy',
+    ),
+    true,
+  );
   assert.doesNotMatch(
     appJs,
     /tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment evidence/,
@@ -400,6 +454,18 @@ try {
   assert.doesNotMatch(
     appJs,
     /hosted tenant isolation architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment proof/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence from the hosted target boundary/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target tenant isolation operations evidence with tenant identity source proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence is captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted tenant isolation architecture approval proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, storage partitioning proof, per-tenant encryption\/key ownership proof, backup\/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability\/support isolation proof, lifecycle isolation proof, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
   );
   assert.equal(appJs.includes('providerSecretEvidence'), true);
   assert.equal(appJs.includes('approved secret manager platform proof'), true);
