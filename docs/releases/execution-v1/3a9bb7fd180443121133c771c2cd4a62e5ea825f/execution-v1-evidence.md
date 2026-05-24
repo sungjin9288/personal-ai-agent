@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T01:52:56.935Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T01:52:47.309Z
 - branch: codex/main-observability-slo-ui-artifact-sync
 - commit: 3a9bb7fd180443121133c771c2cd4a62e5ea825f

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T01:52:56.935Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T01:52:47.371Z
 - branch: codex/main-observability-slo-ui-artifact-sync
 - commit: 3a9bb7fd180443121133c771c2cd4a62e5ea825f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3a9bb7fd180443121133c771c2cd4a62e5ea825f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
