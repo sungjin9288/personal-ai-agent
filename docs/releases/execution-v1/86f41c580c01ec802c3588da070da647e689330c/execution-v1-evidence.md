@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T00:32:26.089Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T00:32:16.345Z
 - branch: codex/clean-deployment-secret-injection-proof-detail
 - commit: 86f41c580c01ec802c3588da070da647e689330c

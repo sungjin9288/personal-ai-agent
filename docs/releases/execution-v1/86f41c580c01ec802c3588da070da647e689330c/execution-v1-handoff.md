@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T00:32:26.089Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T00:32:24.736Z
 - localDate: 2026-05-24
 - branch: codex/clean-deployment-secret-injection-proof-detail
 - commit: 86f41c580c01ec802c3588da070da647e689330c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c](releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c](docs/releases/execution-v1/86f41c580c01ec802c3588da070da647e689330c)
 - visualArtifactSetSha256: f3f212e4be0c6e9348c3b2bd20c4bccc659b1834dff0e3247ec5c0dae1d4aabf
 - commitPushStatus: not pushed, origin/codex/clean-deployment-secret-injection-proof-detail not found
 
