@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T06:54:20.372Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T06:54:18.916Z
 - localDate: 2026-05-24
 - branch: codex/hosted-identity-gap-proof-detail
 - commit: 1256221954242e98c83835bdfcce22f61656ef48
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48](releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48](docs/releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48)
 - visualArtifactSetSha256: e4203b9567d4ce2d4187b5ab6e3dcf74f0f797f0acf8557c3d4f262fd73fdd2a
 - commitPushStatus: not pushed, origin/codex/hosted-identity-gap-proof-detail not found
 

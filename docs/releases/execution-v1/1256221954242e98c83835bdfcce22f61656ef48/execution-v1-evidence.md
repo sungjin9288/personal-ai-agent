@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T06:54:20.372Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T06:54:10.092Z
 - branch: codex/hosted-identity-gap-proof-detail
 - commit: 1256221954242e98c83835bdfcce22f61656ef48
