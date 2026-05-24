@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T15:31:47.879Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T15:31:39.781Z
 - branch: codex/target-telemetry-gap-proof-detail
 - commit: 9e88031af82be9d7c95e9a1eb49b8123b562330a

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T15:31:47.879Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T15:31:39.816Z
 - branch: codex/target-telemetry-gap-proof-detail
 - commit: 9e88031af82be9d7c95e9a1eb49b8123b562330a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9e88031af82be9d7c95e9a1eb49b8123b562330a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
