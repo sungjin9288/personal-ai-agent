@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T04:23:08.730Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T04:23:07.192Z
 - localDate: 2026-05-24
 - branch: codex/backup-gap-proof-detail
 - commit: dd3f87f70cc575db636d398b9b57e822c9470b2e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e](releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e](docs/releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e)
 - visualArtifactSetSha256: eeb00f6c4d9ffff514409bbe217413f16badede62e4a8be60b47e08683534f8e
 - commitPushStatus: not pushed, origin/codex/backup-gap-proof-detail not found
 
