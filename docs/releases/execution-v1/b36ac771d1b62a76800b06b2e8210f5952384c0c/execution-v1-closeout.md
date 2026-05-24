@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T17:48:51.738Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T17:48:43.986Z
 - branch: codex/deployment-clean-release-boundary-proof-detail
 - commit: b36ac771d1b62a76800b06b2e8210f5952384c0c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b36ac771d1b62a76800b06b2e8210f5952384c0c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
