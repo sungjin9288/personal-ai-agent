@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T01:40:21.519Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T01:40:11.912Z
 - branch: codex/observability-slo-ui-proof-detail
 - commit: 1970c1bf8cebcea08e5deb39139b58d03e43fa46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1970c1bf8cebcea08e5deb39139b58d03e43fa46/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -114,7 +114,7 @@ assert.match(intake, /\[target-slo-architecture-v1\.md\]\(target-slo-architectur
 assert.match(intake, /npm run smoke:target-slo-architecture/);
 assert.match(
   intake,
-  /target SLO architecture approval, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, provider outage handling proof, maintenance\/degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+  /target SLO architecture approval proof, customer-approved SLO\/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, provider outage handling proof, maintenance and degradation proof, service credit proof, target SLO operations evidence, evidence retention proof, missed-SLO containment proof, customer SLO\/SLA review proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.match(releaseReadiness, /\[target-slo-architecture-v1\.md\]\(target-slo-architecture-v1\.md\)/);
 assert.match(releaseReadiness, /target SLO architecture gate: passed/);
