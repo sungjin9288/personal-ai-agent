@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T05:55:56.051Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T05:55:54.668Z
 - localDate: 2026-05-24
 - branch: codex/main-hosted-tenant-gap-artifact-sync
 - commit: 570ea89b1f1dbdef3722dbcc009eeba82e864ee4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4](releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4](docs/releases/execution-v1/570ea89b1f1dbdef3722dbcc009eeba82e864ee4)
 - visualArtifactSetSha256: 31cc837889ff8f653a1f29a8781aa070ba84d530570da3cfca2d0c7e4d5cac63
 - commitPushStatus: pushed to origin/main
 
