@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Target Environment Observability SLO UI Proof Detail Alignment
+
+- expanded target environment evidence intake observabilitySloEvidence so target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, staffed on-call response proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence replace SLO/SLA and telemetry shorthand
+- aligned release target evidence UI metadata and target telemetry blocker wording with the same proof-level observability/SLO packet so UI handoff guidance no longer falls back to generic target log, metric, trace, alert, incident handoff, customer status, and provider outage handling evidence
+- extended UI harness browse smoke coverage so observability/SLO guidance cannot regress to generic SLO/SLA terms, error budget owner, telemetry backend, alert route, on-call owner, customer status route, incident review, provider outage handling, or missed-SLO shorthand
+
 ## 2026-05-24 Clean Deployment Secret Injection Proof Detail Alignment
 
 - expanded target clean deployment architecture and operations secret injection requirements so approved secret manager platform proof, runtime injection path proof, least-privilege access policy proof, rotation and revocation event proof, redaction and leakage review proof, break-glass governance proof, secret access audit log proof, and credential containment proof replace target secret manager alias shorthand

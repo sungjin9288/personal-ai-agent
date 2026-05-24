@@ -456,6 +456,37 @@ try {
     appJs,
     /target provider evidence intake, provider operations evidence, and release artifact refresh are accepted/,
   );
+  assert.equal(appJs.includes('observabilitySloEvidence'), true);
+  assert.equal(appJs.includes('target observability architecture approval proof'), true);
+  assert.equal(appJs.includes('approved telemetry backend proof'), true);
+  assert.equal(appJs.includes('signal inventory proof'), true);
+  assert.equal(appJs.includes('telemetry ingestion proof'), true);
+  assert.equal(appJs.includes('alert routing proof'), true);
+  assert.equal(appJs.includes('alert delivery receipt proof'), true);
+  assert.equal(appJs.includes('staffed on-call coverage proof'), true);
+  assert.equal(appJs.includes('log and trace retention proof'), true);
+  assert.equal(appJs.includes('customer status communication proof'), true);
+  assert.equal(appJs.includes('target SLO architecture approval proof'), true);
+  assert.equal(appJs.includes('customer-approved SLO/SLA terms proof'), true);
+  assert.equal(appJs.includes('error budget policy proof'), true);
+  assert.equal(appJs.includes('telemetry measurement proof'), true);
+  assert.equal(appJs.includes('staffed on-call response proof'), true);
+  assert.equal(appJs.includes('maintenance and degradation proof'), true);
+  assert.equal(appJs.includes('service credit proof'), true);
+  assert.equal(appJs.includes('missed-SLO containment proof'), true);
+  assert.doesNotMatch(
+    appJs,
+    /SLO\/SLA terms, error budget owner, telemetry backend, telemetry ingestion, alert route, alert acknowledgement, on-call owner, customer status route, incident review, provider outage handling, and missed-SLO containment/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target log, metric, trace, alert, incident handoff, customer status, and provider outage handling evidence from the approved target boundary/,
+  );
+  assert.equal(appJs.includes('observability-slo-boundary'), true);
+  assert.doesNotMatch(
+    appJs,
+    /target telemetry backend, log\/trace retention, alert route, staffed on-call, customer status route, SLO\/SLA terms, and incident review/,
+  );
   assert.equal(appJs.includes('target local provider endpoint ownership proof'), true);
   assert.equal(appJs.includes('LOCAL_PROVIDER_MODEL model pinning proof'), true);
   assert.equal(appJs.includes('secret and credential policy proof'), true);

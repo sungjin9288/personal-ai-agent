@@ -3567,7 +3567,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'observabilitySloEvidence',
-      requiredValue: 'SLO/SLA terms, error budget owner, telemetry backend, telemetry ingestion, alert route, alert acknowledgement, on-call owner, customer status route, incident review, provider outage handling, and missed-SLO containment',
+      requiredValue: 'target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, alert acknowledgement proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, staffed on-call response proof, customer communication proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence',
       completionRule: 'must prove staffed monitoring and customer-facing SLO handling from target telemetry',
       primaryDocs: ['docs/target-observability-operations-v1.md', 'docs/target-slo-operations-v1.md', 'docs/production-slo-operating-v1.md'],
     },
@@ -4003,7 +4003,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'target telemetry',
-      missingProof: 'target log, metric, trace, alert, incident handoff, customer status, and provider outage handling evidence from the approved target boundary',
+      missingProof: 'target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, staffed on-call response proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence from the approved target boundary',
       requiredEvidence: 'target observability architecture and operations evidence plus SLO operations evidence',
       stopCondition: 'target-observability-operations-missing',
       claimGuard: 'do not claim staffed production observability or SLO operations',
@@ -5649,7 +5649,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     {
       key: 'observability-slo-boundary',
       label: 'Observability and SLO boundary',
-      requiredBoundary: 'target telemetry backend, log/trace retention, alert route, staffed on-call, customer status route, SLO/SLA terms, and incident review',
+      requiredBoundary: 'target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, staffed on-call response proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, and missed-SLO containment proof',
       docs: [
         'docs/target-observability-architecture-v1.md',
         'docs/target-observability-operations-v1.md',
