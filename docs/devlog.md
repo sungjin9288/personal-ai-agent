@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Target Retention Production Gap UI Proof Detail Alignment
+
+- expanded target environment evidence intake and release target evidence production gap metadata for target retention enforcement so customer-approved data class proof names class owner, legal basis, retention window, exportability, delete eligibility, and exception policy instead of generic data class shorthand
+- aligned target retention operations proofIntent and production gap guidance so retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level target-boundary details
+- kept the stop condition tied to `target-retention-operations-missing` and the production data lifecycle claim guard unchanged while extending UI harness browse smoke coverage against generic retention operations shorthand
+
 ## 2026-05-24 Staffed On-Call Production Gap UI Proof Detail Alignment
 
 - expanded release target evidence production gap metadata for staffed on-call so alert acknowledgement proof, staffed on-call response proof, target observability alert delivery proof, staffed on-call routing and acknowledgement proof, target support on-call handoff proof, incident review cadence proof, release artifact hygiene result, and regenerated execution snapshot evidence replace named owner and escalation route shorthand
