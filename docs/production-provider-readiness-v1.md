@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-24T06:22:13.581Z
-- sourceBranch: codex/target-secret-injection-gap-proof-detail
-- sourceCommit: c3e244c1d7adceae1facbf4a1bb10267498cd8ee
+- generatedAt: 2026-05-24T06:35:49.851Z
+- sourceBranch: codex/main-target-secret-gap-artifact-sync
+- sourceCommit: 6acf1d384c885f7f7096ff31662f7701d46606d9
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 7657 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 6974 |
 
 ## Key Signals
 

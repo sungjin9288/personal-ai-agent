@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T06:35:58.287Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T06:35:48.465Z
 - branch: codex/main-target-secret-gap-artifact-sync
 - commit: 6acf1d384c885f7f7096ff31662f7701d46606d9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T06:35:58.287Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T06:35:56.906Z
 - localDate: 2026-05-24
 - branch: codex/main-target-secret-gap-artifact-sync
 - commit: 6acf1d384c885f7f7096ff31662f7701d46606d9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9](releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9](docs/releases/execution-v1/6acf1d384c885f7f7096ff31662f7701d46606d9)
 - visualArtifactSetSha256: 63e1bd8aef9f39b2f9ab7ee13521304d7a2d17d96ee327a431fc88e958ba575c
 - commitPushStatus: pushed to origin/main
 
