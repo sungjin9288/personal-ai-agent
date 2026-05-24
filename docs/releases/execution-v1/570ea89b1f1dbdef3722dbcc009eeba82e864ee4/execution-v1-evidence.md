@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T05:55:56.051Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T05:55:47.837Z
 - branch: codex/main-hosted-tenant-gap-artifact-sync
 - commit: 570ea89b1f1dbdef3722dbcc009eeba82e864ee4
