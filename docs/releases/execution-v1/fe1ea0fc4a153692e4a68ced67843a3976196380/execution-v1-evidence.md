@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T14:58:26.406Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T14:58:17.554Z
 - branch: codex/support-operations-gap-proof-detail
 - commit: fe1ea0fc4a153692e4a68ced67843a3976196380

@@ -870,6 +870,42 @@ try {
     /target backup schedule, restore validation, tenant isolation, expiry\/deletion, disaster recovery, and backup audit evidence/,
   );
   assert.equal(appJs.includes('target support architecture approval proof'), true);
+  assert.equal(
+    appJs.includes('target support architecture approval proof with approved support architecture record'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('staffed support coverage proof with support owner, coverage window, primary rota'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('support queue routing proof with ticketing system, queue identifier, severity mapping'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('customer communication proof with approved channel, update cadence, message owner'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('ticket audit history proof with lifecycle history, assignment history, customer-visible update history'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('escalation ownership proof with incident commander, engineering escalation, provider escalation'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('incident review cadence proof with review cadence, timeline, mitigation owner'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('on-call handoff proof with primary owner, secondary owner, acknowledgement timestamp'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('support data handling proof with secret redaction, customer data redaction, provider transcript handling'),
+    true,
+  );
   assert.equal(appJs.includes('staffing model proof'), true);
   assert.equal(appJs.includes('support queue platform proof'), true);
   assert.equal(appJs.includes('severity routing proof'), true);
@@ -902,6 +938,14 @@ try {
   assert.doesNotMatch(
     appJs,
     /support queue, coverage owner, escalation flow, ticket audit trail, customer communication, on-call handoff, and incident review evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /support owner, staffed coverage, support queue routing, customer communication, ticket audit trail, escalation owner, and incident review cadence/,
   );
   assert.equal(appJs.includes('target deployment contract reference proof'), true);
   assert.equal(appJs.includes('approved target boundary proof'), true);
