@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Clean Deployment Secret Injection Proof Detail Alignment
+
+- expanded target clean deployment architecture and operations secret injection requirements so approved secret manager platform proof, runtime injection path proof, least-privilege access policy proof, rotation and revocation event proof, redaction and leakage review proof, break-glass governance proof, secret access audit log proof, and credential containment proof replace target secret manager alias shorthand
+- aligned target deployment contract, release readiness, and production-like drill wording so clean deployment secret evidence requires proof-level target controls instead of alias, rotation, redaction, and access-audit shorthand
+- extended clean deployment and production readiness smoke coverage so target clean deployment secret injection claims cannot regress to generic secret manager alias evidence
+
 ## 2026-05-24 Provider Secret Injection Proof Detail Alignment
 
 - expanded provider account secret injection requirements for OpenAI and Anthropic so approved secret manager platform proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, and credential containment proof replace target secret manager alias shorthand
