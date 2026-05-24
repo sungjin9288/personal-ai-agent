@@ -595,6 +595,42 @@ try {
   assert.equal(appJs.includes('backup key ownership proof'), true);
   assert.equal(appJs.includes('backup expiry/deletion proof'), true);
   assert.equal(appJs.includes('disaster recovery proof'), true);
+  assert.equal(
+    appJs.includes(
+      'target backup operations evidence for backup schedule execution proof with backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'encrypted backup storage proof with storage class, encryption mode, retention class, location alias, and access audit',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'backup key ownership proof with key owner, rotation cadence, revocation path, break-glass route, expiry/delete evidence, and access audit',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'restore validation proof with objective, duration, restored data class inventory, checksum or integrity proof, tenant isolation, cross-tenant denial, and validation owner',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'backup expiry/deletion proof with expiry schedule, delete proof, post-delete absence check, and audit record',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'disaster recovery proof with DR owner, runbook execution, outage scenario, restore priority, customer communication, rollback path, residual risk decision, and audit trail',
+    ),
+    true,
+  );
   assert.doesNotMatch(
     appJs,
     /retention classes, export approval, delete execution proof, provider transcript policy, post-delete absence evidence, backup schedule, restore validation, backup expiry\/deletion, and disaster recovery evidence/,
@@ -618,6 +654,14 @@ try {
   assert.doesNotMatch(
     appJs,
     /target backup schedule, restore validation, tenant isolation, expiry\/deletion, disaster recovery, and backup audit evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target backup operations evidence with backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   );
   assert.doesNotMatch(
     appJs,

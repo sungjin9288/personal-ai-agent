@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T04:23:08.730Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T04:22:56.913Z
 - branch: codex/backup-gap-proof-detail
 - commit: dd3f87f70cc575db636d398b9b57e822c9470b2e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dd3f87f70cc575db636d398b9b57e822c9470b2e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

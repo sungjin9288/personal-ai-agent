@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T04:23:08.730Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T04:22:56.853Z
 - branch: codex/backup-gap-proof-detail
 - commit: dd3f87f70cc575db636d398b9b57e822c9470b2e
