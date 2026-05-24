@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T03:24:07.896Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T03:24:06.399Z
 - localDate: 2026-05-24
 - branch: codex/main-retention-gap-artifact-sync
 - commit: 69eed14c1798143333cabceb84d622334fe4fa35
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35](releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35](docs/releases/execution-v1/69eed14c1798143333cabceb84d622334fe4fa35)
 - visualArtifactSetSha256: aebf9c20d867d50f7ba77c59f3975e406508a0ff2a30b8f1f01fcfabd11d7e00
 - commitPushStatus: pushed to origin/main
 
