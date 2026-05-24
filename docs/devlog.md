@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Target Secret Injection Gap UI Proof Detail Alignment
+
+- expanded release target evidence providerSecretEvidence and production gap metadata for target secret injection so approved secret manager platform proof names provider, region, tenancy boundary, owner, and fallback decision instead of generic platform shorthand
+- aligned target secret manager architecture and operations proofIntent wording so secret class inventory, runtime injection paths, least-privilege policy, rotation/revocation invalidation, audit log events, break-glass governance, leakage review, disaster recovery, credential containment, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level target-boundary details
+- kept the stop condition tied to `target-secret-injection-missing` and the production provider credential claim guard unchanged while extending UI harness browse smoke coverage against generic target secret injection shorthand
+
 ## 2026-05-24 Hosted Tenant Storage Encryption Gap UI Proof Detail Alignment
 
 - expanded release target evidence tenantIsolationEvidence and production gap metadata for hosted tenant storage/encryption so tenant identity source proof names source owner, customer organization mapping, tenant lifecycle owner, trust policy, source approval, and orphan tenant review instead of generic tenant identity shorthand

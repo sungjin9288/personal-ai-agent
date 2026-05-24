@@ -478,6 +478,66 @@ try {
   assert.equal(appJs.includes('leakage review proof'), true);
   assert.equal(appJs.includes('credential containment proof'), true);
   assert.equal(
+    appJs.includes(
+      'approved secret manager platform proof with provider, region, tenancy boundary, owner, and fallback decision',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'secret class inventory proof with provider, environment, owner, rotation cadence, and allowed consumers',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'runtime injection proof for CLI, UI, worker, live validation, clean deployment, rollback, and support paths',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'least-privilege access policy proof with reader, writer, admin, reviewer, service binding, and deny-by-default evidence',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'rotation and revocation event proof with previous secret invalidation and downstream redeploy or reload result',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'secret access audit log proof for read, write, rotate, revoke, break-glass, and failed access attempts',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'break-glass governance proof with approval, expiry, monitoring, customer notification, revocation, and post-use review',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'leakage review proof across production logs, traces, support packets, browser artifacts, screenshots, release exports, and provider errors',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'disaster recovery proof for secret backup, restore, key recovery, region outage, rollback, and compromised-secret containment',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'secret injection proof for secret manager path or logical secret identifier without the value',
+    ),
+    true,
+  );
+  assert.equal(
     appJs.includes('target secret manager operations evidence with secret injection proof'),
     true,
   );
@@ -497,6 +557,18 @@ try {
   assert.doesNotMatch(
     appJs,
     /approved secret manager platform proof, runtime injection proof, rotation and revocation event proof, break-glass governance proof, secret access audit log proof, leakage review proof, and credential containment proof without exposing secret values/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, credential containment proof, release artifact hygiene result, and regenerated execution snapshot evidence without exposing secret values/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target secret manager operations evidence with secret injection proof, scoped access policy proof, rotation and revocation evidence packet, audit trail proof, break-glass governance proof, leakage review proof, sanitized secret evidence references, release artifact hygiene result, production readiness gate result, and regenerated execution snapshot evidence is captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /provider account or architecture approval proof, approved secret manager platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, secret access audit log proof, target-boundary live validation proof, quota guard proof, and fallback disable path proof/,
   );
   assert.doesNotMatch(
     appJs,
