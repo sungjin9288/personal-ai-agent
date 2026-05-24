@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Hosted Tenant Storage Encryption Gap UI Proof Detail Alignment
+
+- expanded release target evidence tenantIsolationEvidence and production gap metadata for hosted tenant storage/encryption so tenant identity source proof names source owner, customer organization mapping, tenant lifecycle owner, trust policy, source approval, and orphan tenant review instead of generic tenant identity shorthand
+- aligned hosted tenant isolation architecture and target tenant isolation operations proofIntent wording so authorization propagation, storage/index partitioning, per-tenant encryption key custody, backup/restore non-interference, tenant administration audit, cross-surface denial, observability/support visibility, lifecycle controls, tenant data containment, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level details
+- kept the hosted tenant isolation stop conditions and blocked claim guards unchanged while extending UI harness browse smoke coverage against generic hosted tenant storage/encryption shorthand
+
 ## 2026-05-24 Release Approval Gap UI Proof Detail Alignment
 
 - expanded release target evidence acceptedRiskDecision and production gap metadata for release approval so reviewer decision proof names reviewer, decision owner, review date, decision state, accepted risk ids, rejected claims, allowed claim text, residual blockers reviewed, command rerun log review, release refresh evidence review, productionReadyClaim decision, and next review date instead of generic reviewer decision shorthand
