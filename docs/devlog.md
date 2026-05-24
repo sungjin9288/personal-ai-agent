@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Staffed Support Operations Gap UI Proof Detail Alignment
+
+- expanded release target evidence supportOperationsEvidence and production gap metadata for staffed support operations so target support architecture approval proof names the approved architecture record, support owner, reviewer, customer/workspace scope, and review date instead of generic support approval shorthand
+- aligned target support architecture and target support operations proofIntent wording so staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, support data handling, closure evidence, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level target-boundary details
+- kept the stop condition tied to `target-support-operations-missing` and the production customer support claim guard unchanged while extending UI harness browse smoke coverage against generic staffed support operations shorthand
+
 ## 2026-05-24 Hosted Identity Session Gap UI Proof Detail Alignment
 
 - expanded release target evidence identitySessionEvidence and production gap metadata for hosted identity/session administration so customer IdP onboarding proof names metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval instead of generic customer IdP shorthand
