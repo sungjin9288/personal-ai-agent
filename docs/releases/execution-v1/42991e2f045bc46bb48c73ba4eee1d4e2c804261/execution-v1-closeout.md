@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T16:49:47.089Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T16:49:36.463Z
 - branch: codex/retention-backup-boundary-proof-detail
 - commit: 42991e2f045bc46bb48c73ba4eee1d4e2c804261
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T16:49:47.089Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T16:49:45.696Z
 - localDate: 2026-05-25
 - branch: codex/retention-backup-boundary-proof-detail
 - commit: 42991e2f045bc46bb48c73ba4eee1d4e2c804261
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261](releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261](docs/releases/execution-v1/42991e2f045bc46bb48c73ba4eee1d4e2c804261)
 - visualArtifactSetSha256: 95aba124ac7fe6edd413e1a3c5c2aa06e60cb14eabe42d5a986d790142652c68
 - commitPushStatus: not pushed, origin/codex/retention-backup-boundary-proof-detail not found
 
