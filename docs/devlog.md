@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Release Approval Gap UI Proof Detail Alignment
+
+- expanded release target evidence acceptedRiskDecision and production gap metadata for release approval so reviewer decision proof names reviewer, decision owner, review date, decision state, accepted risk ids, rejected claims, allowed claim text, residual blockers reviewed, command rerun log review, release refresh evidence review, productionReadyClaim decision, and next review date instead of generic reviewer decision shorthand
+- aligned target environment evidence intake proofIntent and release approval gap guidance so sanitized submission packet and evidence register proof, boundary consistency map proof, command rerun log proof, blocker disposition register proof, release refresh evidence proof, artifact-sync-current proof, release artifact hygiene result, regenerated execution-v1 artifacts, and production readiness gate result require same-source-commit proof-level details
+- kept the stop condition tied to `target-environment-evidence-missing` and the productionReadyClaim guard unchanged while extending UI harness browse smoke coverage against generic release approval shorthand
+
 ## 2026-05-24 Production Backup Execution Gap UI Proof Detail Alignment
 
 - expanded target environment evidence intake and release target evidence production gap metadata for production backup execution so backup schedule execution proof names backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement instead of generic backup schedule shorthand

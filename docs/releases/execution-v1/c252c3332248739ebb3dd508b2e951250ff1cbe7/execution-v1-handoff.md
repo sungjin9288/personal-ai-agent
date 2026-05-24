@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T04:53:20.908Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T04:53:19.539Z
 - localDate: 2026-05-24
 - branch: codex/release-approval-gap-proof-detail
 - commit: c252c3332248739ebb3dd508b2e951250ff1cbe7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7](releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7](docs/releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7)
 - visualArtifactSetSha256: 97e2923a155853dcae1b308c07f102ef9078f8ea9631ec328c9719686f4eb9ee
 - commitPushStatus: not pushed, origin/codex/release-approval-gap-proof-detail not found
 

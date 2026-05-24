@@ -3591,7 +3591,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     },
     {
       field: 'acceptedRiskDecision',
-      requiredValue: 'accepted risks, residual blockers, decision owner, evidence owner, next review date, and explicit productionReadyClaim decision',
+      requiredValue: 'accepted risk decision proof with reviewer, decision owner, review date, decision state, accepted risk ids, rejected claims, allowed claim text, residual blockers reviewed, command rerun log review, release refresh evidence review, productionReadyClaim decision, and next review date',
       completionRule: 'must keep productionReadyClaim false unless every mandatory target deployment control is satisfied by target evidence',
       primaryDocs: ['docs/release-readiness-v1.md', 'docs/target-environment-evidence-intake-v1.md'],
     },
@@ -3706,7 +3706,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     {
       command: 'npm run smoke:target-environment-evidence-intake',
       domain: 'target evidence intake',
-      proofIntent: 'completed target evidence capture template, sanitized submission packet, boundary map, command log, reviewer decision, blocker disposition, release refresh evidence, and production readiness gate references are present',
+      proofIntent: 'target evidence approval packet proof with completed target evidence capture template, sanitized submission packet and evidence register proof with redaction note, retention class, and sha256 or signed export reference, boundary consistency map proof, command rerun log proof, reviewer decision proof with reviewer, decision owner, review date, decision state, accepted risk ids, rejected claims, allowed claim text, and productionReadyClaim decision, blocker disposition register proof with owner, current state, required closing evidence, allowed claim impact, and next verification command, release refresh evidence proof with verified source commit, generated time, result, repository-relative artifact path, release artifact hygiene result, regenerated execution-v1 artifacts, artifact-sync-current proof, and production readiness gate result is present',
       stopCondition: 'target-environment-evidence-missing',
     },
     {
@@ -4045,7 +4045,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'release approval',
-      missingProof: 'accepted target evidence packet, reviewer decision, blocker disposition register, release refresh evidence, artifact hygiene, regenerated execution-v1 artifacts, and production readiness gate result',
+      missingProof: 'target evidence approval packet proof with completed target evidence capture template, sanitized submission packet and evidence register proof with redaction note, retention class, and sha256 or signed export reference, boundary consistency map proof, command rerun log proof, reviewer decision record with reviewer, decision owner, review date, decision state, accepted risk ids, rejected claims, allowed claim text, residual blockers reviewed, command rerun log review, release refresh evidence review, productionReadyClaim decision, and next review date, blocker disposition register proof with owner, current state, required closing evidence, allowed claim impact, and next verification command, release refresh evidence proof with verified source commit, generated time, result, repository-relative artifact path, release artifact hygiene result, regenerated execution-v1 artifacts, artifact-sync-current proof, and production readiness gate result from the same approved source commit',
       requiredEvidence: 'completed target evidence submission packet and release refresh evidence signed off for the same source commit',
       stopCondition: 'target-environment-evidence-missing',
       claimGuard: 'keep productionReadyClaim=false until every mandatory target control is accepted',
