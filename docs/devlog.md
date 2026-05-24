@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Staffed On-Call Production Gap UI Proof Detail Alignment
+
+- expanded release target evidence production gap metadata for staffed on-call so alert acknowledgement proof, staffed on-call response proof, target observability alert delivery proof, staffed on-call routing and acknowledgement proof, target support on-call handoff proof, incident review cadence proof, release artifact hygiene result, and regenerated execution snapshot evidence replace named owner and escalation route shorthand
+- kept the stop condition tied to `target-slo-operations-missing` and the blocked production incident response claim guard unchanged while making the UI copy require proof-level target SLO, observability, and support operations evidence
+- extended UI harness browse smoke coverage so staffed on-call production gap guidance cannot regress to generic named on-call owner, alert acknowledgement, escalation route, customer communication owner, missed-alert containment, or incident review cadence shorthand
+
 ## 2026-05-24 Target Environment Observability SLO UI Proof Detail Alignment
 
 - expanded target environment evidence intake observabilitySloEvidence so target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, staffed on-call response proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, and regenerated execution snapshot evidence replace SLO/SLA and telemetry shorthand

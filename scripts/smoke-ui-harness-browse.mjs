@@ -516,6 +516,18 @@ try {
   assert.equal(appJs.includes('provider outage playbook proof'), true);
   assert.equal(appJs.includes('target SLO measurements proof'), true);
   assert.equal(appJs.includes('staffed on-call response proof'), true);
+  assert.equal(
+    appJs.includes('target SLO operations evidence for alert acknowledgement proof with severity mapping'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('target observability operations evidence for alert delivery proof, staffed on-call routing and acknowledgement proof'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('target support operations evidence for on-call handoff proof, missed-ack rule, paging fallback, handoff log'),
+    true,
+  );
   assert.equal(appJs.includes('missed-SLO containment proof'), true);
   assert.doesNotMatch(
     appJs,
@@ -532,6 +544,10 @@ try {
   assert.doesNotMatch(
     appJs,
     /target SLO measurements, error budget review, alert route, incident response, customer notification, and missed-SLO containment evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /named on-call owner, alert acknowledgement, escalation route, customer communication owner, missed-alert containment, and incident review cadence/,
   );
   assert.equal(appJs.includes('target data lifecycle architecture approval proof'), true);
   assert.equal(appJs.includes('customer-approved data class matrix proof'), true);

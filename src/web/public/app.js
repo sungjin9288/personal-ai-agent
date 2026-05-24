@@ -4010,7 +4010,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     },
     {
       gap: 'staffed on-call',
-      missingProof: 'named on-call owner, alert acknowledgement, escalation route, customer communication owner, missed-alert containment, and incident review cadence',
+      missingProof: 'target SLO operations evidence for alert acknowledgement proof with severity mapping, alert route, acknowledgement SLA, escalation timeout, delivery receipt, fallback route, and audit record; staffed on-call response proof with rota, primary owner, secondary owner, handoff rule, timezone coverage, absence handling, and escalation chain; target observability operations evidence for alert delivery proof, staffed on-call routing and acknowledgement proof with acknowledgement timestamp and escalation chain; target support operations evidence for on-call handoff proof, missed-ack rule, paging fallback, handoff log, incident review cadence proof, release artifact hygiene result, and regenerated execution snapshot evidence from the approved target boundary',
       requiredEvidence: 'target SLO operations and support operations evidence with staffing proof',
       stopCondition: 'target-slo-operations-missing',
       claimGuard: 'do not claim production incident response readiness',
