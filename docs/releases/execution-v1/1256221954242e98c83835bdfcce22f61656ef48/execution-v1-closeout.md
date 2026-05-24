@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T06:54:20.372Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T06:54:10.144Z
 - branch: codex/hosted-identity-gap-proof-detail
 - commit: 1256221954242e98c83835bdfcce22f61656ef48
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1256221954242e98c83835bdfcce22f61656ef48/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
