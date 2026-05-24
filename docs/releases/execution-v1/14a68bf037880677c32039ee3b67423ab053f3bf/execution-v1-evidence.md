@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T03:12:17.902Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T03:12:07.415Z
 - branch: codex/retention-gap-proof-detail
 - commit: 14a68bf037880677c32039ee3b67423ab053f3bf
