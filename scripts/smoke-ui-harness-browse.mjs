@@ -331,14 +331,62 @@ try {
   assert.equal(appJs.includes('identitySessionEvidence'), true);
   assert.equal(
     appJs.includes(
-      'customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof',
+      'customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback',
     ),
     true,
   );
   assert.equal(appJs.includes('permission propagation proof'), true);
+  assert.equal(
+    appJs.includes(
+      'permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('immutable audit export proof'), true);
+  assert.equal(
+    appJs.includes(
+      'immutable audit export proof with actor, subject, tenant, role, session, reason, before/after state, timestamp, and checksum',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('break-glass governance proof'), true);
+  assert.equal(
+    appJs.includes(
+      'break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('support impersonation proof'), true);
+  assert.equal(
+    appJs.includes(
+      'support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('customer access containment proof'), true);
   assert.equal(appJs.includes('migration plan proof'), true);
   assert.equal(appJs.includes('lockout recovery proof'), true);
@@ -366,6 +414,18 @@ try {
   assert.doesNotMatch(
     appJs,
     /hosted identity\/session architecture approval, customer IdP onboarding, user lifecycle, session lifecycle, role administration, audit export, break-glass, support impersonation, compliance, and retention proof/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence from the hosted target boundary/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target identity session operations evidence with customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /hosted identity\/session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   );
   assert.equal(appJs.includes('tenantIsolationEvidence'), true);
   assert.equal(appJs.includes('tenant identity source proof'), true);

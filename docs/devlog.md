@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Hosted Identity Session Gap UI Proof Detail Alignment
+
+- expanded release target evidence identitySessionEvidence and production gap metadata for hosted identity/session administration so customer IdP onboarding proof names metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval instead of generic customer IdP shorthand
+- aligned hosted identity session architecture and target identity session operations proofIntent wording so user lifecycle, session lifecycle, role administration, permission propagation, immutable audit export, break-glass governance, support impersonation, compliance retention, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level target-boundary details
+- kept the stop condition tied to `hosted-identity-session-approval-missing` and the hosted SaaS claim guard unchanged while extending UI harness browse smoke coverage against generic hosted identity/session shorthand
+
 ## 2026-05-24 Target Secret Injection Gap UI Proof Detail Alignment
 
 - expanded release target evidence providerSecretEvidence and production gap metadata for target secret injection so approved secret manager platform proof names provider, region, tenancy boundary, owner, and fallback decision instead of generic platform shorthand
