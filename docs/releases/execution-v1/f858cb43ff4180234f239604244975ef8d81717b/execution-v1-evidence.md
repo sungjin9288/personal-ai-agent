@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T16:59:19.522Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T16:59:11.784Z
 - branch: codex/main-retention-backup-boundary-artifact-sync
 - commit: f858cb43ff4180234f239604244975ef8d81717b
