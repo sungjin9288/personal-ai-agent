@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T17:48:51.738Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T17:48:43.954Z
 - branch: codex/deployment-clean-release-boundary-proof-detail
 - commit: b36ac771d1b62a76800b06b2e8210f5952384c0c

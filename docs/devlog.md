@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-25 Deployment Clean Release Boundary UI Proof Detail Alignment
+
+- expanded target clean deployment architecture, target clean deployment operations, and target deployment contract proofIntent wording so deployment approval, source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, failed-deployment containment, and snapshot evidence require owner, commit, artifact id, sha256, health result, rollback command, customer/workspace scope, and reviewer details
+- expanded the clean production deployment production gap plus deployment and clean-release boundary maps so clean checkout, command replay, artifact synchronization, production-like drill, pilot export package, release artifact hygiene, execution-v1 evidence, artifact-sync-current, and production readiness gate proof are tied to the same approved source commit and target boundary
+- kept stop conditions tied to `target-clean-deployment-operations-missing` and `clean-release-artifact-boundary-missing-or-stale` while preserving the production deployment readiness claim guard and extending UI harness browse smoke coverage against generic deployment/clean release shorthand
+
 ## 2026-05-25 Retention Backup Boundary UI Proof Detail Alignment
 
 - expanded target data lifecycle architecture and target retention operations proofIntent wording so lifecycle approval, customer data class matrix, retention configuration, export request, delete workflow, provider transcript policy, post-delete absence, audit history, legal hold, conflict containment, exception review, customer handoff, hygiene, and snapshot evidence require owner, request id, timestamp, checksum, rollback, and containment details

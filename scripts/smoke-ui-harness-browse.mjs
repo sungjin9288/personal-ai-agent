@@ -1094,21 +1094,73 @@ try {
   );
   assert.equal(appJs.includes('target deployment contract reference proof'), true);
   assert.equal(appJs.includes('approved target boundary proof'), true);
+  assert.equal(
+    appJs.includes('target deployment boundary proof with approved target environment name, company/workspace scope, deployment owner'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('deployment profile decision proof with selected profile, approved architecture decision, network boundary, runtime root alias'),
+    true,
+  );
   assert.equal(appJs.includes('source provenance proof'), true);
+  assert.equal(
+    appJs.includes('source provenance proof with branch, commit, review owner, build actor, release tag, tamper-control decision, and source approval'),
+    true,
+  );
   assert.equal(appJs.includes('artifact registry proof'), true);
+  assert.equal(
+    appJs.includes('artifact registry proof with immutable artifact id, registry path, sha256, retention policy, access owner, promotion rule, and pull/download proof'),
+    true,
+  );
   assert.equal(appJs.includes('dependency installation proof'), true);
+  assert.equal(
+    appJs.includes('dependency installation proof with lockfile source, install command, cache policy, vulnerability scan result, reproducibility record, install log, and owner'),
+    true,
+  );
   assert.equal(appJs.includes('runtime bootstrap proof'), true);
+  assert.equal(
+    appJs.includes('runtime bootstrap proof with deployment profile, runtime root, process manager, health endpoint result, startup log, restart policy, and bootstrap owner'),
+    true,
+  );
   assert.equal(appJs.includes('secret injection proof'), true);
   assert.equal(appJs.includes('environment boundary proof'), true);
+  assert.equal(
+    appJs.includes('environment boundary proof with target environment name, network boundary, storage boundary, tenant profile, operator access policy, rollback owner, and customer/workspace scope'),
+    true,
+  );
   assert.equal(appJs.includes('migration and data readiness proof'), true);
   assert.equal(appJs.includes('smoke and health verification proof'), true);
+  assert.equal(
+    appJs.includes('smoke and health verification proof with health, auth, provider, tenant isolation, artifact hygiene, release readiness, and target deployment contract results'),
+    true,
+  );
   assert.equal(appJs.includes('rollback and recovery proof'), true);
+  assert.equal(
+    appJs.includes('rollback and recovery proof with rollback artifact, rollback command, recovery time result, validation command, owner, and residual risk decision'),
+    true,
+  );
   assert.equal(appJs.includes('release approval proof'), true);
+  assert.equal(
+    appJs.includes('release approval proof with change ticket or equivalent approval, approver, evidence packet, customer communication, freeze exception, and final decision owner'),
+    true,
+  );
   assert.equal(appJs.includes('clean checkout proof'), true);
   assert.equal(appJs.includes('command replay proof'), true);
   assert.equal(appJs.includes('artifact synchronization proof'), true);
   assert.equal(appJs.includes('production-like environment proof'), true);
+  assert.equal(
+    appJs.includes('clean deployment release evidence with clean checkout proof, command replay proof, artifact synchronization proof, production-like environment proof, rollback readiness proof'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('production-like release drill evidence with target gates proof, provider checks proof, execution snapshot proof'),
+    true,
+  );
   assert.equal(appJs.includes('artifact-sync-current proof'), true);
+  assert.equal(
+    appJs.includes('execution-v1 artifact proof with evidence, closeout, handoff, immutable snapshot, visual manifest, archived live validation status'),
+    true,
+  );
   assert.equal(appJs.includes('misleading production-ready claim containment proof'), true);
   assert.equal(
     appJs.includes('target evidence approval packet proof with completed target evidence capture template'),
@@ -1173,7 +1225,15 @@ try {
   );
   assert.doesNotMatch(
     appJs,
+    /target deployment boundary proof, approved environment name proof, deployment profile proof, runtime root alias proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, target secret injection proof, environment boundary proof, rollback owner proof, release label proof, target evidence packet reference proof, production readiness blocker proof, and contract references are present/,
+  );
+  assert.doesNotMatch(
+    appJs,
     /clean checkout deployment, dependency proof, release snapshot, rollback, and artifact hygiene evidence remain current for the release review/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /clean checkout deployment, dependency\/runtime proof, rollback proof, release snapshot, export package, hygiene report, and production readiness gate result/,
   );
   assert.doesNotMatch(
     appJs,
