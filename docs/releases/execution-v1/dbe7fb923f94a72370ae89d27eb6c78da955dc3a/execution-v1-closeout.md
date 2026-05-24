@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T15:41:36.001Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T15:41:27.786Z
 - branch: codex/main-target-telemetry-gap-artifact-sync
 - commit: dbe7fb923f94a72370ae89d27eb6c78da955dc3a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

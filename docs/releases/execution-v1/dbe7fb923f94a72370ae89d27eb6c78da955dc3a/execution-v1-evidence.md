@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T15:41:36.001Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T15:41:27.753Z
 - branch: codex/main-target-telemetry-gap-artifact-sync
 - commit: dbe7fb923f94a72370ae89d27eb6c78da955dc3a
