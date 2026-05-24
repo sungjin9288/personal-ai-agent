@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T15:10:23.446Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T15:10:14.517Z
 - branch: codex/main-support-operations-gap-artifact-sync
 - commit: 089c713fea880fbc583179bcf65a8e02949e2ce3
