@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T02:29:01.746Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T02:28:51.586Z
 - branch: codex/staffed-on-call-gap-proof-detail
 - commit: a395f035d5a6f01ecf7fd2867763142a2460d83c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a395f035d5a6f01ecf7fd2867763142a2460d83c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
