@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T06:22:22.802Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T06:22:12.063Z
 - branch: codex/target-secret-injection-gap-proof-detail
 - commit: c3e244c1d7adceae1facbf4a1bb10267498cd8ee

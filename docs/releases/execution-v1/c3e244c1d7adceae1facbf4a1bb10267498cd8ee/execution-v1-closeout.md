@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T06:22:22.802Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T06:22:12.119Z
 - branch: codex/target-secret-injection-gap-proof-detail
 - commit: c3e244c1d7adceae1facbf4a1bb10267498cd8ee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

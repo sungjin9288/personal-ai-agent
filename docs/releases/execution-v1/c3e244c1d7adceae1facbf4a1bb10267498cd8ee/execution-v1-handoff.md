@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T06:22:22.802Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T06:22:21.317Z
 - localDate: 2026-05-24
 - branch: codex/target-secret-injection-gap-proof-detail
 - commit: c3e244c1d7adceae1facbf4a1bb10267498cd8ee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee](releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee](docs/releases/execution-v1/c3e244c1d7adceae1facbf4a1bb10267498cd8ee)
 - visualArtifactSetSha256: b4211b6865aae7bff9897001edb2f9793ff013c9373ff514c861f7bf6bed366c
 - commitPushStatus: not pushed, origin/codex/target-secret-injection-gap-proof-detail not found
 
