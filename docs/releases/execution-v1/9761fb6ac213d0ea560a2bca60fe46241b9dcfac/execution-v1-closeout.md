@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T16:16:55.466Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T16:16:45.947Z
 - branch: codex/main-staffed-on-call-slo-gap-artifact-sync
 - commit: 9761fb6ac213d0ea560a2bca60fe46241b9dcfac
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

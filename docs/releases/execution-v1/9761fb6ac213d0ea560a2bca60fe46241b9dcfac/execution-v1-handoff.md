@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T16:16:55.466Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T16:16:54.116Z
 - localDate: 2026-05-25
 - branch: codex/main-staffed-on-call-slo-gap-artifact-sync
 - commit: 9761fb6ac213d0ea560a2bca60fe46241b9dcfac
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac](releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac](docs/releases/execution-v1/9761fb6ac213d0ea560a2bca60fe46241b9dcfac)
 - visualArtifactSetSha256: fae8f3a4c3d28b3a702d1a6f96cadcfd063862d4d756339a0b26c92d0debd476
 - commitPushStatus: pushed to origin/main
 
