@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-24 Production Backup Execution Gap UI Proof Detail Alignment
+
+- expanded target environment evidence intake and release target evidence production gap metadata for production backup execution so backup schedule execution proof names backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement instead of generic backup schedule shorthand
+- aligned target backup operations proofIntent and production gap guidance so encrypted backup storage, backup key ownership, restore validation, backup expiry/deletion, disaster recovery, release artifact hygiene result, and regenerated execution snapshot evidence require proof-level target-boundary details
+- kept the stop condition tied to `target-backup-operations-missing` and the production disaster recovery claim guard unchanged while extending UI harness browse smoke coverage against generic backup operations shorthand
+
 ## 2026-05-24 Target Retention Production Gap UI Proof Detail Alignment
 
 - expanded target environment evidence intake and release target evidence production gap metadata for target retention enforcement so customer-approved data class proof names class owner, legal basis, retention window, exportability, delete eligibility, and exception policy instead of generic data class shorthand
