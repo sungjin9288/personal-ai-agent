@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T07:07:50.274Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T07:07:48.900Z
 - localDate: 2026-05-24
 - branch: codex/main-hosted-identity-gap-artifact-sync
 - commit: 38c62e4f7cd48dfe9fe532541e265994e68fabb2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2](releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2](docs/releases/execution-v1/38c62e4f7cd48dfe9fe532541e265994e68fabb2)
 - visualArtifactSetSha256: 68f86229f122ff1e0069abb81d3369c154a4d2ae36a744d84504156b73ce30e2
 - commitPushStatus: pushed to origin/main
 

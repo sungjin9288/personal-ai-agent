@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T07:07:50.274Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T07:07:41.285Z
 - branch: codex/main-hosted-identity-gap-artifact-sync
 - commit: 38c62e4f7cd48dfe9fe532541e265994e68fabb2
