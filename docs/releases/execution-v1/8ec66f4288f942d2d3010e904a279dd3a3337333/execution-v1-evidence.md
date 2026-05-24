@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T05:04:41.566Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T05:04:33.533Z
 - branch: codex/main-release-approval-artifact-sync
 - commit: 8ec66f4288f942d2d3010e904a279dd3a3337333
