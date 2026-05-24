@@ -555,6 +555,36 @@ try {
   assert.equal(appJs.includes('provider transcript handling proof'), true);
   assert.equal(
     appJs.includes(
+      'target retention operations evidence for customer-approved data class proof with class owner, legal basis, retention window, exportability, delete eligibility, and exception policy',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'target retention configuration proof with storage boundary, enforcement timestamp, policy owner, reviewer, and audit record',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'export approval proof with requester, approver, package scope, delivery boundary, encryption mode, package hash, and customer receipt',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'delete workflow proof with authorization, confirmation control, execution owner, storage scope, timestamp, result, and audit record',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'provider transcript handling proof with provider-side retention, deletion or non-retention evidence, exception review, and customer disclosure',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
       'post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries',
     ),
     true,
@@ -576,6 +606,14 @@ try {
   assert.doesNotMatch(
     appJs,
     /target retention enforcement, export approval, delete execution, post-delete absence proof, and retention audit evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target retention operations evidence with customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence is captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof across runtime, tenant storage, backup, provider, export package, support packet, and release artifact boundaries, audit history proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
   );
   assert.doesNotMatch(
     appJs,

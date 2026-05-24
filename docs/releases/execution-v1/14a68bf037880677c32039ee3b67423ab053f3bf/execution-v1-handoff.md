@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T03:12:17.902Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T03:12:16.497Z
 - localDate: 2026-05-24
 - branch: codex/retention-gap-proof-detail
 - commit: 14a68bf037880677c32039ee3b67423ab053f3bf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf](releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf](docs/releases/execution-v1/14a68bf037880677c32039ee3b67423ab053f3bf)
 - visualArtifactSetSha256: b903b56da40d9d9c0b61feea7544c21784822c9550d94294b5ca7b4e21b69951
 - commitPushStatus: not pushed, origin/codex/retention-gap-proof-detail not found
 
