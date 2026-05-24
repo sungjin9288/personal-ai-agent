@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T02:29:01.746Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T02:28:51.532Z
 - branch: codex/staffed-on-call-gap-proof-detail
 - commit: a395f035d5a6f01ecf7fd2867763142a2460d83c
