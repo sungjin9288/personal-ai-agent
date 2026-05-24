@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T16:59:19.522Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T16:59:18.143Z
 - localDate: 2026-05-25
 - branch: codex/main-retention-backup-boundary-artifact-sync
 - commit: f858cb43ff4180234f239604244975ef8d81717b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b](releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b](docs/releases/execution-v1/f858cb43ff4180234f239604244975ef8d81717b)
 - visualArtifactSetSha256: 05518fbe105b3dc5244ddfcfb2f1b8d6ec6d220acd0188dd7a65f1a56eff38c6
 - commitPushStatus: pushed to origin/main
 
