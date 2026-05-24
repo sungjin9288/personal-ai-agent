@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T15:41:36.001Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T15:41:34.486Z
 - localDate: 2026-05-25
 - branch: codex/main-target-telemetry-gap-artifact-sync
 - commit: dbe7fb923f94a72370ae89d27eb6c78da955dc3a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a](releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a](docs/releases/execution-v1/dbe7fb923f94a72370ae89d27eb6c78da955dc3a)
 - visualArtifactSetSha256: d1ccf7a248a973195141cedfbf441b95d8e95d57ec1572f4a3f8c5a215157e2c
 - commitPushStatus: pushed to origin/main
 
