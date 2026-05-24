@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T03:24:07.896Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T03:23:58.012Z
 - branch: codex/main-retention-gap-artifact-sync
 - commit: 69eed14c1798143333cabceb84d622334fe4fa35
