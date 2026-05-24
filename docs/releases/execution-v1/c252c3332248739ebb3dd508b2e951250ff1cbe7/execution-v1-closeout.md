@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-24T04:53:20.908Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-24T04:53:11.572Z
 - branch: codex/release-approval-gap-proof-detail
 - commit: c252c3332248739ebb3dd508b2e951250ff1cbe7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c252c3332248739ebb3dd508b2e951250ff1cbe7/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

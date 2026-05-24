@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-24T04:53:20.908Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-24T04:53:11.522Z
 - branch: codex/release-approval-gap-proof-detail
 - commit: c252c3332248739ebb3dd508b2e951250ff1cbe7
