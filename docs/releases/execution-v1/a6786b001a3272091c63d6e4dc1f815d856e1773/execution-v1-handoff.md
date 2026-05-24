@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-24T16:05:36.840Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-24T16:05:35.481Z
 - localDate: 2026-05-25
 - branch: codex/staffed-on-call-slo-gap-proof-detail
 - commit: a6786b001a3272091c63d6e4dc1f815d856e1773
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773](releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773](docs/releases/execution-v1/a6786b001a3272091c63d6e4dc1f815d856e1773)
 - visualArtifactSetSha256: 0ced7877810a3096b10a03a9ce0433c80bc7573395ab3009ec287f35810911b9
 - commitPushStatus: not pushed, origin/codex/staffed-on-call-slo-gap-proof-detail not found
 
