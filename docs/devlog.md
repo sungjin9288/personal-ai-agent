@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-25 Provider Boundary UI Proof Detail Alignment
+
+- expanded provider readiness handoff, target evidence capture, target provider evidence intake, target provider operations, and provider-specific account/architecture proofIntent wording so provider id, inclusion decision, account owner, customer/workspace approval, target boundary, release label, source commit, stop-condition id, evidence owner, reviewer, model/endpoint, live validation, fallback policy, stop reason, and blocker closure evidence require proof-level fields
+- expanded the provider/secret boundary map and provider reference guidance so fallback runtime audit, recoverable-provider-failure-only stop conditions, telemetry/incident evidence, data transcript handling, remediation/renewal evidence, artifact hygiene, refreshed execution-v1 snapshot, and production readiness gate proof must match the same target boundary
+- kept provider stop conditions and productionReadyClaim guards unchanged while extending UI harness browse smoke coverage against generic provider evidence intake, provider operations, and provider boundary shorthand
+
 ## 2026-05-25 Deployment Clean Release Boundary UI Proof Detail Alignment
 
 - expanded target clean deployment architecture, target clean deployment operations, and target deployment contract proofIntent wording so deployment approval, source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke/health verification, rollback/recovery, release approval, failed-deployment containment, and snapshot evidence require owner, commit, artifact id, sha256, health result, rollback command, customer/workspace scope, and reviewer details

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-25T14:10:43.210Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-25T14:10:35.123Z
 - branch: codex/provider-boundary-proof-detail
 - commit: ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-25T14:10:43.210Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-25T14:10:41.790Z
 - localDate: 2026-05-25
 - branch: codex/provider-boundary-proof-detail
 - commit: ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0](releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0](docs/releases/execution-v1/ff47e62ee655d8c1c961cbbf02f56b7cf0f65fb0)
 - visualArtifactSetSha256: 6e759a26e0ac1e5838509313cfd1045b34516dc5268502f202a42f0233331cc4
 - commitPushStatus: not pushed, origin/codex/provider-boundary-proof-detail not found
 
