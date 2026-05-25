@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-25T14:20:41.772Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-25T14:20:33.967Z
 - branch: codex/main-provider-boundary-artifact-sync
 - commit: 2c34e9a8c1a1add0a4f36f43d88458ef47427a70
