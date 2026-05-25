@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-26 Provider Exception Risk Register UI Proof Detail Alignment
+
+- expanded accepted-scope exception register, risk decision register, and blocker disposition register provider evidence wording so Anthropic, Hermes, and local provider exceptions require account/architecture owner, target-boundary live validation, fallback policy id, stop reason, recoverable-provider-failure-only stop evidence, telemetry, data transcript handling, remediation/renewal, artifact hygiene, and snapshot details
+- aligned provider exclusion and pilot-only accepted risk text with provider-specific account/architecture proof fields so exception rows cannot rely on generic provider operations evidence or target-boundary live validation shorthand
+- kept provider stop conditions, allowed claim guards, and productionReadyClaim=false behavior unchanged while extending UI harness browse smoke coverage against generic provider exception/risk evidence shorthand
+
 ## 2026-05-25 Provider Boundary UI Proof Detail Alignment
 
 - expanded provider readiness handoff, target evidence capture, target provider evidence intake, target provider operations, and provider-specific account/architecture proofIntent wording so provider id, inclusion decision, account owner, customer/workspace approval, target boundary, release label, source commit, stop-condition id, evidence owner, reviewer, model/endpoint, live validation, fallback policy, stop reason, and blocker closure evidence require proof-level fields
