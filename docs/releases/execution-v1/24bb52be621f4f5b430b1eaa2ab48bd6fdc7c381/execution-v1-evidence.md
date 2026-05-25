@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-25T16:02:25.442Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-25T16:02:17.672Z
 - branch: codex/main-provider-exception-risk-artifact-sync
 - commit: 24bb52be621f4f5b430b1eaa2ab48bd6fdc7c381
