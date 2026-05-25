@@ -315,7 +315,7 @@ try {
   assert.equal(appJs.includes('Target evidence required commands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
-  assert.equal(appJs.includes('target OpenAI account ownership proof'), true);
+  assert.equal(appJs.includes('OpenAI account ownership proof'), true);
   assert.equal(appJs.includes('billing and quota proof'), true);
   assert.equal(appJs.includes('API key and secret injection proof'), true);
   assert.equal(appJs.includes('OPENAI_MODEL model access proof'), true);
@@ -323,11 +323,69 @@ try {
   assert.equal(appJs.includes('usage and cost guard proof'), true);
   assert.equal(appJs.includes('fallback and stop-condition proof'), true);
   assert.equal(appJs.includes('renewal and review audit proof'), true);
-  assert.equal(appJs.includes('provider owner proof, target boundary proof'), true);
-  assert.equal(appJs.includes('provider blocker closure verification proof, stop-condition id'), true);
+  assert.equal(
+    appJs.includes(
+      'provider evidence intake proof with provider id, inclusion decision, account owner, customer/workspace approval, approved target boundary, target environment name, release label, source commit, stop-condition id, evidence owner, reviewer, and decision owner',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'provider owner proof with accountable provider owner, backup owner, account or architecture owner, and customer approval reference',
+    ),
+    true,
+  );
+  assert.equal(appJs.includes('provider blocker closure verification proof with blocker state'), true);
+  assert.equal(
+    appJs.includes(
+      'target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, mission id, execution session id, artifact provenance, and operator owner',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('provider fallback runtime audit proof with fallback policy and stop reason'), true);
-  assert.equal(appJs.includes('fallback policy and stop-condition proof, provider operations proof, blocker closure proof'), true);
-  assert.equal(appJs.includes('provider blocker disposition, fallback policy and stop reason'), true);
+  assert.equal(
+    appJs.includes(
+      'provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-policy',
+    ),
+    true,
+  );
+  assert.equal(appJs.includes('recoverable-provider-failure-only stop condition proof'), true);
+  assert.equal(
+    appJs.includes(
+      'provider boundary proof with provider id, inclusion decision, account owner, customer/workspace approval, approved target boundary, target environment name, release label, source commit',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'providerReferenceImpact: keep the provider as blocked until target provider evidence intake proof, target provider operations proof, provider blocker disposition, fallback policy, stop reason, recoverable-provider-failure-only decision',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'OpenAI account ownership proof with organization/project owner, project/workspace alias, customer scope, evidence owner, reviewer, and review date',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'Anthropic account ownership proof with account owner, organization/workspace alias, customer scope, evidence owner, reviewer, and review date',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'local provider endpoint ownership proof with approved base URL alias, runtime owner, network boundary, transport, availability owner, health check result, and customer approval',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'Hermes tool-call parsing proof with <tool_call> sample, malformed-call behavior, execution boundary decision, audit record, and no-unapproved-tool-execution evidence',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('identitySessionEvidence'), true);
   assert.equal(
     appJs.includes(
@@ -654,6 +712,18 @@ try {
     appJs,
     /target provider evidence intake, provider operations evidence, and release artifact refresh are accepted/,
   );
+  assert.doesNotMatch(
+    appJs,
+    /provider owner proof, target boundary proof, account or architecture approval proof, target secret injection proof, quota and cost guard proof, model and endpoint pinning proof, archived live validation proof, fallback route proof, failure triage route proof, provider blocker closure verification proof, stop-condition id, release artifact references, and decision owner are present for the target boundary/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /provider inventory proof, provider account or architecture approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof with fallback policy and stop reason, target blocker closure verification proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence are captured/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /provider account or architecture approval proof, approved secret manager platform proof with provider\/region\/tenancy boundary\/owner\/fallback decision, secret class inventory proof with provider\/environment\/owner\/rotation cadence\/allowed consumers, runtime injection proof for CLI\/UI\/worker\/live validation\/clean deployment\/rollback\/support paths, least-privilege access policy proof with reader\/writer\/admin\/reviewer\/service binding\/deny-by-default evidence, secret access audit log proof for read\/write\/rotate\/revoke\/break-glass\/failed access attempts, leakage review proof across logs\/traces\/support packets\/browser artifacts\/screenshots\/release exports\/provider errors, target-boundary live validation proof, quota guard proof, and fallback disable path proof/,
+  );
   assert.equal(appJs.includes('observabilitySloEvidence'), true);
   assert.equal(appJs.includes('target observability architecture approval proof'), true);
   assert.equal(
@@ -737,7 +807,7 @@ try {
     appJs,
     /target observability architecture approval proof, approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call coverage proof, log and trace retention proof, customer status communication proof, incident response proof, incident review proof, audit export proof, disaster recovery proof, target SLO architecture approval proof/,
   );
-  assert.equal(appJs.includes('target local provider endpoint ownership proof'), true);
+  assert.equal(appJs.includes('local provider endpoint ownership proof'), true);
   assert.equal(appJs.includes('LOCAL_PROVIDER_MODEL model pinning proof'), true);
   assert.equal(appJs.includes('secret and credential policy proof'), true);
   assert.equal(appJs.includes('runtime lifecycle proof'), true);
