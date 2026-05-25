@@ -386,6 +386,48 @@ try {
     ),
     true,
   );
+  assert.equal(
+    appJs.includes(
+      'target Anthropic provider account evidence with account ownership proof for account owner, organization/workspace alias, customer scope, evidence owner, reviewer, and review date',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'billing and credit remediation proof with active billing plan, available credit balance status, payment owner, renewal path, low-balance alert route, remediation ticket, and post-remediation live run reference',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'target Hermes provider architecture evidence with endpoint ownership proof for approved base URL alias, endpoint owner, network boundary, transport, availability owner, and health check result',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'target local provider architecture evidence with endpoint ownership proof for approved base URL alias, runtime owner, network boundary, transport, availability owner, health check result, and customer approval',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'provider operations proof with fallback runtime audit policy and stop reason, data transcript handling, remediation renewal evidence, evidence retention, and provider failure containment',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'target-boundary live:execution-v1:anthropic proof with mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference',
+    ),
+    true,
+  );
+  assert.equal(
+    appJs.includes(
+      'target-boundary live:execution-v1:local proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference',
+    ),
+    true,
+  );
   assert.equal(appJs.includes('identitySessionEvidence'), true);
   assert.equal(
     appJs.includes(
@@ -724,6 +766,18 @@ try {
     appJs,
     /provider account or architecture approval proof, approved secret manager platform proof with provider\/region\/tenancy boundary\/owner\/fallback decision, secret class inventory proof with provider\/environment\/owner\/rotation cadence\/allowed consumers, runtime injection proof for CLI\/UI\/worker\/live validation\/clean deployment\/rollback\/support paths, least-privilege access policy proof with reader\/writer\/admin\/reviewer\/service binding\/deny-by-default evidence, secret access audit log proof for read\/write\/rotate\/revoke\/break-glass\/failed access attempts, leakage review proof across logs\/traces\/support packets\/browser artifacts\/screenshots\/release exports\/provider errors, target-boundary live validation proof, quota guard proof, and fallback disable path proof/,
   );
+  assert.doesNotMatch(
+    appJs,
+    /target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene, and regenerated execution snapshot evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary live validation pass, provider operations evidence, and regenerated execution snapshot evidence/,
+  );
+  assert.doesNotMatch(
+    appJs,
+    /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,
+  );
   assert.equal(appJs.includes('observabilitySloEvidence'), true);
   assert.equal(appJs.includes('target observability architecture approval proof'), true);
   assert.equal(
@@ -813,7 +867,7 @@ try {
   assert.equal(appJs.includes('runtime lifecycle proof'), true);
   assert.equal(appJs.includes('session and artifact provenance proof'), true);
   assert.equal(appJs.includes('data residency and transcript policy proof'), true);
-  assert.equal(appJs.includes('target-boundary local live validation pass'), true);
+  assert.equal(appJs.includes('target-boundary local live validation proof'), true);
   assert.doesNotMatch(
     appJs,
     /target local provider architecture approval, endpoint ownership, model pinning, network isolation, data residency, quota\/resource guard, telemetry, fallback evidence, and customer acceptance/,
