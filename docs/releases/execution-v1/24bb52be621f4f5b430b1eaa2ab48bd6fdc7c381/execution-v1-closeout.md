@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-05-25T16:02:25.442Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-05-25T16:02:17.700Z
 - branch: codex/main-provider-exception-risk-artifact-sync
 - commit: 24bb52be621f4f5b430b1eaa2ab48bd6fdc7c381
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24bb52be621f4f5b430b1eaa2ab48bd6fdc7c381/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
