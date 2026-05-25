@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-25T15:52:18.195Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-25T15:52:16.464Z
 - localDate: 2026-05-26
 - branch: codex/provider-exception-risk-proof-detail
 - commit: 6511cff064e5f0452435c2328cda1ad39a528bd3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3](releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3](docs/releases/execution-v1/6511cff064e5f0452435c2328cda1ad39a528bd3)
 - visualArtifactSetSha256: 72a71fc58c36b466ba592bd762ac0c3cd9452379e574289c22c25d5fa7c4e15f
 - commitPushStatus: not pushed, origin/codex/provider-exception-risk-proof-detail not found
 

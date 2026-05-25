@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-25T15:52:18.195Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-25T15:52:10.126Z
 - branch: codex/provider-exception-risk-proof-detail
 - commit: 6511cff064e5f0452435c2328cda1ad39a528bd3
