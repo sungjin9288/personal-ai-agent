@@ -187,6 +187,7 @@ Demo path B, deterministic-only:
 - show `blockedCount: 0`
 - show `missingEnvCount`
 - show provider-specific `missingEnvCommand`
+- show provider-specific `stopConditionId`, `targetStopConditionId`, `stopReason`, `requiredClosingEvidence`, and `evidenceCommand`
 - explain that provider-backed readiness is not claimed yet
 
 Demo path C, approved live provider refresh:

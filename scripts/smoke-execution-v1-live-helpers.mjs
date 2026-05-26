@@ -7,36 +7,48 @@ const liveHelperProviders = [
   {
     command: 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai',
     envKey: 'OPENAI_API_KEY',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-openai',
     preflightChecks: [
       ['smoke:openai-provider', 'passed'],
       ['smoke:execution-flow', 'passed'],
     ],
     provider: 'openai',
+    stopConditionId: 'openai-live-env-missing',
+    targetStopConditionId: 'target-openai-provider-account-approval-missing',
   },
   {
     command: 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic',
     envKey: 'ANTHROPIC_API_KEY',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-anthropic',
     preflightChecks: [
       ['smoke:execution-flow', 'passed'],
     ],
     provider: 'anthropic',
+    stopConditionId: 'anthropic-live-env-missing',
+    targetStopConditionId: 'anthropic-live-validation-missing-or-failed',
   },
   {
     command: 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local',
     envKey: 'LOCAL_PROVIDER_MODEL',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-local',
     preflightChecks: [
       ['smoke:execution-flow', 'passed'],
     ],
     provider: 'local',
+    stopConditionId: 'local-live-env-missing',
+    targetStopConditionId: 'target-local-provider-approval-missing',
   },
   {
     command: 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes',
     envKey: 'HERMES_PROVIDER_MODEL',
+    evidenceCommand: 'node scripts/build-execution-v1-evidence.mjs --live-hermes',
     preflightChecks: [
       ['smoke:hermes-provider', 'passed'],
       ['smoke:execution-flow', 'passed'],
     ],
     provider: 'hermes',
+    stopConditionId: 'hermes-live-env-missing',
+    targetStopConditionId: 'target-hermes-provider-approval-missing',
   },
 ];
 
@@ -50,10 +62,19 @@ for (const providerConfig of liveHelperProviders) {
   assert.equal(preflight.provider, providerConfig.provider);
   assert.equal(preflight.envKey, providerConfig.envKey);
   assert.equal(preflight.envReady, false);
+  assert.equal(preflight.evidenceCommand, providerConfig.evidenceCommand);
   assert.equal(preflight.liveCommand, `npm run live:execution-v1:${providerConfig.provider}`);
   assert.equal(preflight.missingEnvCommand, providerConfig.command);
   assert.equal(preflight.ok, true);
+  assert.equal(preflight.stopConditionId, providerConfig.stopConditionId);
+  assert.equal(preflight.stopReason, `Missing ${providerConfig.envKey}`);
   assert.equal(preflight.status, 'ready-but-missing-env');
+  assert.equal(preflight.targetStopConditionId, providerConfig.targetStopConditionId);
+  assert.equal(preflight.stopCondition.id, providerConfig.stopConditionId);
+  assert.equal(preflight.stopCondition.nextVerificationCommand, `npm run live:execution-v1:${providerConfig.provider}`);
+  assert.equal(preflight.stopCondition.targetStopConditionId, providerConfig.targetStopConditionId);
+  assert.match(preflight.requiredClosingEvidence, /target|regenerated execution-v1 artifacts/i);
+  assert.match(preflight.claimImpact, /production-ready|live-provider-complete/);
   assert.deepEqual(
     preflight.checks.map((check) => [check.script, check.status]),
     providerConfig.preflightChecks,
@@ -91,13 +112,30 @@ assert.equal(aggregatePreflight.blockedCount, 0);
 assert.equal(aggregatePreflight.missingEnvCount, 4);
 assert.equal(aggregatePreflight.readyForLiveCount, 0);
 assert.equal(aggregatePreflight.status, 'ready-but-missing-env');
+assert.equal(aggregatePreflight.stopConditionCount, 4);
 assert.deepEqual(
-  aggregatePreflight.providers.map((entry) => [entry.provider, entry.envReady, entry.status, entry.missingEnvCommand]),
+  aggregatePreflight.providers.map((entry) => [
+    entry.provider,
+    entry.envReady,
+    entry.status,
+    entry.missingEnvCommand,
+    entry.stopConditionId,
+    entry.targetStopConditionId,
+  ]),
   [
-    ['openai', false, 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai'],
-    ['anthropic', false, 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic'],
-    ['local', false, 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local'],
-    ['hermes', false, 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes'],
+    ['openai', false, 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai', 'openai-live-env-missing', 'target-openai-provider-account-approval-missing'],
+    ['anthropic', false, 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic', 'anthropic-live-env-missing', 'anthropic-live-validation-missing-or-failed'],
+    ['local', false, 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local', 'local-live-env-missing', 'target-local-provider-approval-missing'],
+    ['hermes', false, 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes', 'hermes-live-env-missing', 'target-hermes-provider-approval-missing'],
+  ],
+);
+assert.deepEqual(
+  aggregatePreflight.stopConditions.map((entry) => [entry.id, entry.targetStopConditionId]),
+  [
+    ['openai-live-env-missing', 'target-openai-provider-account-approval-missing'],
+    ['anthropic-live-env-missing', 'anthropic-live-validation-missing-or-failed'],
+    ['local-live-env-missing', 'target-local-provider-approval-missing'],
+    ['hermes-live-env-missing', 'target-hermes-provider-approval-missing'],
   ],
 );
 

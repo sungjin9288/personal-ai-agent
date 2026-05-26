@@ -1784,6 +1784,8 @@ try {
   assert.equal(appJs.includes("const explicitCommand = String(item?.command || '').trim();"), true);
   assert.equal(appJs.includes('function getProviderLiveCommand'), true);
   assert.equal(appJs.includes('preflight?.missingEnvCommand'), true);
+  assert.equal(appJs.includes('preflightStopCondition'), true);
+  assert.equal(appJs.includes('targetStopCondition'), true);
   assert.equal(
     executionV1Status.deterministic.some((item) => item.script === 'smoke:reference-adoptions' && item.status === 'passed'),
     true,
@@ -1864,13 +1866,20 @@ try {
   assert.equal(aggregatePreflight.preflight.status, 'ready-but-missing-env');
   assert.equal(aggregatePreflight.preflight.blockedCount, 0);
   assert.equal(aggregatePreflight.preflight.missingEnvCount, 4);
+  assert.equal(aggregatePreflight.preflight.stopConditionCount, 4);
   assert.deepEqual(
-    aggregatePreflight.preflight.providers.map((entry) => [entry.provider, entry.status, entry.missingEnvCommand]),
+    aggregatePreflight.preflight.providers.map((entry) => [
+      entry.provider,
+      entry.status,
+      entry.missingEnvCommand,
+      entry.stopConditionId,
+      entry.targetStopConditionId,
+    ]),
     [
-      ['openai', 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai'],
-      ['anthropic', 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic'],
-      ['local', 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local'],
-      ['hermes', 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes'],
+      ['openai', 'ready-but-missing-env', 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai', 'openai-live-env-missing', 'target-openai-provider-account-approval-missing'],
+      ['anthropic', 'ready-but-missing-env', 'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic', 'anthropic-live-env-missing', 'anthropic-live-validation-missing-or-failed'],
+      ['local', 'ready-but-missing-env', 'export LOCAL_PROVIDER_MODEL="..." && npm run live:execution-v1:local', 'local-live-env-missing', 'target-local-provider-approval-missing'],
+      ['hermes', 'ready-but-missing-env', 'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes', 'hermes-live-env-missing', 'target-hermes-provider-approval-missing'],
     ],
   );
 
