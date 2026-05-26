@@ -83,6 +83,11 @@ const retrievalHandoffFocusTimeoutMs = parsePositiveIntegerEnv(
   'PERSONAL_AI_AGENT_RETRIEVAL_HANDOFF_FOCUS_TIMEOUT_MS',
   45_000,
 );
+const browserE2ETimeoutMs = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_BROWSER_E2E_TIMEOUT_MS',
+  15 * 60 * 1000,
+);
+const browserE2EStartedAt = Date.now();
 
 process.once('SIGINT', () => {
   restoreArtifactsFromBackup(artifactBackups);
@@ -286,6 +291,7 @@ function buildConsoleSmokeReport(smokeReport) {
     mode: smokeReport.mode,
     ok: smokeReport.ok,
     reportPath: smokeReport.reportPath,
+    timeoutMs: smokeReport.timeoutMs,
     releaseDocVerificationSummary: {
       artifactCount: smokeReport.releaseDocVerificationSummary?.artifactCount,
       exactMatchCount: smokeReport.releaseDocVerificationSummary?.exactMatchCount,
@@ -11966,6 +11972,7 @@ summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLine
     screenshotWidth: screenshotDimensions.width,
     screenshotPath,
     sessionId,
+    timeoutMs: browserE2ETimeoutMs,
     url: reloadState.href,
     workspaceId: workspace.id,
   };
@@ -15148,11 +15155,11 @@ summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLine
   }
 
   try {
-    runPw(['close'], { timeoutMs: 5_000 });
+    runPw(['close'], { enforceBudget: false, timeoutMs: 5_000 });
   } catch {}
   for (const handoffSessionId of Object.values(handoffSessionIds)) {
     try {
-      runPw(['close'], { session: handoffSessionId, timeoutMs: 5_000 });
+      runPw(['close'], { enforceBudget: false, session: handoffSessionId, timeoutMs: 5_000 });
     } catch {}
   }
 
@@ -15236,7 +15243,7 @@ function isPlaywrightTransientSessionError(error) {
 
 function closeBrowserSessionQuietly(session) {
   try {
-    runPw(['close'], { session, timeoutMs: 5_000 });
+    runPw(['close'], { enforceBudget: false, session, timeoutMs: 5_000 });
   } catch {}
 }
 
@@ -15263,20 +15270,26 @@ function getBrowserErrorState({ session = sessionId } = {}) {
   }
 }
 
-function runPw(args, { label = '', session = sessionId, timeoutMs = 60_000 } = {}) {
+function runPw(args, { enforceBudget = true, label = '', session = sessionId, timeoutMs = 60_000 } = {}) {
+  const effectiveTimeoutMs = enforceBudget
+    ? applyBrowserE2EBudget(timeoutMs, label || args.join(' '))
+    : timeoutMs;
   const result = runCommandWithHardTimeout(
     'npx',
     [...playwrightArgsBase, '--session', session, ...args],
     {
       cwd: repoDir,
       tempDir: tempRoot,
-      timeoutMs,
+      timeoutMs: effectiveTimeoutMs,
     },
   );
   const labelSegment = label ? ` [${label}]` : '';
 
   if (result.timedOut) {
-    throw new Error(`playwright-cli timed out${labelSegment} session=${session} (${args.join(' ')}) after ${timeoutMs}ms`);
+    throw new Error(
+      `playwright-cli timed out${labelSegment} session=${session} (${args.join(' ')}) `
+        + `after ${effectiveTimeoutMs}ms (requestedTimeoutMs=${timeoutMs}, browserE2ETimeoutMs=${browserE2ETimeoutMs})`,
+    );
   }
 
   if (result.error) {
@@ -15292,6 +15305,17 @@ function runPw(args, { label = '', session = sessionId, timeoutMs = 60_000 } = {
   }
 
   return String(result.stdout || '').trim();
+}
+
+function applyBrowserE2EBudget(timeoutMs, context) {
+  const elapsedMs = Date.now() - browserE2EStartedAt;
+  const remainingMs = browserE2ETimeoutMs - elapsedMs;
+  if (remainingMs <= 0) {
+    throw new Error(
+      `browser E2E timed out before ${context}: elapsedMs=${elapsedMs}, timeoutMs=${browserE2ETimeoutMs}`,
+    );
+  }
+  return Math.max(1, Math.min(timeoutMs, remainingMs));
 }
 
 function runPwJson(args, { label = '', session = sessionId, timeoutMs = 60_000 } = {}) {
