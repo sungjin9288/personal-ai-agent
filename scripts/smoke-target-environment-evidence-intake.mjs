@@ -264,11 +264,11 @@ assert.doesNotMatch(
 );
 assert.match(
   intake,
-  /target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, release artifact hygiene result, and regenerated execution snapshot evidence/,
+  /target Hermes provider architecture evidence with endpoint ownership proof for approved base URL alias, endpoint owner, network boundary, transport, availability owner, and health check result/,
 );
 assert.match(
   intake,
-  /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene pass, and regenerated execution snapshot evidence/,
+  /target-boundary live:execution-v1:hermes proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference/,
 );
 assert.doesNotMatch(
   intake,
@@ -277,6 +277,14 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   intake,
   /endpoint ownership, model pinning, target secret injection proof, tool-call parsing proof, session lifecycle\/provenance, transcript policy, quota guard, telemetry, fallback\/customer approval, Hermes live validation pass, release artifact hygiene pass, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /target Hermes provider architecture approval, endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary `live:execution-v1:hermes` pass, provider operations evidence, release artifact hygiene result, and regenerated execution snapshot evidence/,
+);
+assert.doesNotMatch(
+  intake,
+  /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene pass, and regenerated execution snapshot evidence/,
 );
 for (const state of [
   'still-blocking',
@@ -291,11 +299,19 @@ assert.match(intake, /target-boundary `npm run live:execution-v1:anthropic`/);
 assert.match(intake, /target-boundary `npm run live:execution-v1:hermes`/);
 assert.match(
   intake,
-  /target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene result, and regenerated execution-v1 artifacts/,
+  /target Anthropic provider account evidence with account ownership proof for account owner, organization\/workspace alias, customer scope, evidence owner, reviewer, and review date/,
 );
 assert.match(
   intake,
-  /account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
+  /target-boundary live:execution-v1:anthropic proof with mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference/,
+);
+assert.match(
+  intake,
+  /fallback and stop-condition proof with fallback provider, fallback policy id, stop reason, degraded mode, manual approval path, rollback owner, residual risk decision, and recoverable-provider-failure-only stop evidence/,
+);
+assert.match(
+  intake,
+  /provider operations proof with fallback runtime audit policy and stop reason, data transcript handling, remediation renewal evidence, evidence retention, and provider failure containment/,
 );
 assert.doesNotMatch(
   intake,
@@ -305,13 +321,21 @@ assert.doesNotMatch(
   intake,
   /account approval, billing\/credit remediation proof, target secret injection proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
 );
-assert.match(
+assert.doesNotMatch(
   intake,
-  /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,
+  /target Anthropic provider account approval, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene result, and regenerated execution-v1 artifacts/,
+);
+assert.doesNotMatch(
+  intake,
+  /account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
 );
 assert.match(
   intake,
-  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene pass, regenerated execution snapshot evidence, and acceptance record/,
+  /target local provider architecture evidence with endpoint ownership proof for approved base URL alias, runtime owner, network boundary, transport, availability owner, health check result, and customer approval/,
+);
+assert.match(
+  intake,
+  /target-boundary live:execution-v1:local proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference/,
 );
 assert.doesNotMatch(
   intake,
@@ -320,6 +344,14 @@ assert.doesNotMatch(
 assert.doesNotMatch(
   intake,
   /customer approval, target-boundary endpoint\/model ownership, network isolation, data residency, quota\/resource guard, telemetry, fallback evidence, target-boundary local provider live validation pass, and acceptance record/,
+);
+assert.doesNotMatch(
+  intake,
+  /target local provider architecture approval, endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene result, regenerated execution snapshot evidence, and customer acceptance/,
+);
+assert.doesNotMatch(
+  intake,
+  /endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation pass, release artifact hygiene pass, regenerated execution snapshot evidence, and acceptance record/,
 );
 assert.match(intake, /negative cross-tenant test matrix/);
 assert.match(intake, /boundary consistency map, command rerun log, reviewer decision, blocker disposition register, release refresh evidence/);
