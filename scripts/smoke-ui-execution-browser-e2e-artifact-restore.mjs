@@ -33,7 +33,7 @@ try {
     encoding: 'utf8',
     env: {
       ...process.env,
-      PERSONAL_AI_AGENT_BROWSER_GUARD_TIMEOUT_MS: '1',
+      PERSONAL_AI_AGENT_BROWSER_E2E_TIMEOUT_MS: '1',
     },
     maxBuffer: 10 * 1024 * 1024,
     timeout: 45_000,
@@ -41,6 +41,7 @@ try {
 
   assert.notEqual(result.status, 0, 'expected forced browser E2E timeout failure');
   assert.equal(result.error?.code === 'ETIMEDOUT', false, result.error?.message || '');
+  assert.match(result.stderr || result.stdout, /browser E2E timed out|browserE2ETimeoutMs/);
   assert.equal(fs.readFileSync(reportPath, 'utf8'), sentinelReport);
   assert.deepEqual(fs.readFileSync(screenshotPath), sentinelScreenshot);
 

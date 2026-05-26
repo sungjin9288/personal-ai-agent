@@ -21,7 +21,10 @@ const result = spawnSync(
   {
     cwd: repoDir,
     encoding: 'utf8',
-    env: process.env,
+    env: {
+      ...process.env,
+      PERSONAL_AI_AGENT_REFRESH_STEP_TIMEOUT_MS: '12345',
+    },
   },
 );
 
@@ -31,6 +34,7 @@ const payload = JSON.parse(String(result.stdout || '{}'));
 assert.equal(payload.ok, true);
 assert.equal(payload.dryRun, true);
 assert.equal(payload.preserveArchivedLiveValidation, true);
+assert.equal(payload.stepTimeoutMs, 12345);
 assert.deepEqual(payload.liveFlags, ['--live-openai', '--live-anthropic', '--live-local']);
 assert.deepEqual(
   payload.steps.map((step) => step.name),
@@ -48,6 +52,7 @@ assert.deepEqual(
 
 const evidenceStep = payload.steps.find((step) => step.name === 'evidence');
 assert.match(evidenceStep.command, /build-execution-v1-evidence\.mjs/);
+assert.equal(evidenceStep.timeoutMs, 12345);
 assert.match(evidenceStep.command, /--preserve-archived-live-validation/);
 assert.match(evidenceStep.command, /--live-openai/);
 assert.match(evidenceStep.command, /--live-anthropic/);

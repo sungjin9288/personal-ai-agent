@@ -1,6 +1,6 @@
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
 
 const repoDir = process.cwd();
 const evidencePath = path.join(repoDir, 'docs', 'execution-v1-evidence.md');
@@ -12,6 +12,10 @@ const explicitLiveFlags = args.filter((arg) => /^--live-(openai|anthropic|local|
 const archivedLiveFlags = explicitLiveFlags.length
   ? explicitLiveFlags
   : detectArchivedLiveFlags(readOptionalFile(evidencePath));
+const refreshStepTimeoutMs = parsePositiveIntegerEnv(
+  'PERSONAL_AI_AGENT_REFRESH_STEP_TIMEOUT_MS',
+  30 * 60 * 1000,
+);
 
 const steps = buildSteps({
   archivedLiveFlags,
@@ -25,10 +29,12 @@ if (dryRun) {
     ok: true,
     preserveArchivedLiveValidation,
     skippedEvidenceRefresh: skipEvidence,
+    stepTimeoutMs: refreshStepTimeoutMs,
     liveFlags: archivedLiveFlags,
     steps: steps.map((step) => ({
       name: step.name,
       command: formatCommand(step.args),
+      timeoutMs: refreshStepTimeoutMs,
     })),
   });
   process.exit(0);
@@ -44,6 +50,7 @@ printSummary({
   ok: true,
   preserveArchivedLiveValidation,
   skippedEvidenceRefresh: skipEvidence,
+  stepTimeoutMs: refreshStepTimeoutMs,
   liveFlags: archivedLiveFlags,
   steps: results,
 });
@@ -115,11 +122,10 @@ function extractMarkdownSection(markdown, heading) {
 
 function runStep(step) {
   const startedAt = Date.now();
-  const result = spawnSync(process.execPath, step.args, {
+  const result = runCommandWithHardTimeout(process.execPath, step.args, {
     cwd: repoDir,
-    encoding: 'utf8',
     env: process.env,
-    maxBuffer: 128 * 1024 * 1024,
+    timeoutMs: refreshStepTimeoutMs,
   });
   const durationMs = Date.now() - startedAt;
 
@@ -129,13 +135,17 @@ function runStep(step) {
   if (result.stderr) {
     process.stderr.write(result.stderr);
   }
-  if (result.error || result.status !== 0) {
+  if (result.timedOut || result.error || result.status !== 0) {
     throw new Error(
       [
         `execution-v1 artifact refresh step failed: ${step.name}`,
         `command=${formatCommand(step.args)}`,
-        result.error ? `error=${result.error.message}` : null,
+        result.timedOut ? 'timedOut=true' : null,
+        result.error ? `error=${result.error}` : null,
+        result.signal ? `signal=${result.signal}` : null,
         result.status !== null ? `exitCode=${result.status}` : null,
+        `durationMs=${durationMs}`,
+        `timeoutMs=${refreshStepTimeoutMs}`,
       ].filter(Boolean).join('\n'),
     );
   }
@@ -145,6 +155,8 @@ function runStep(step) {
     durationMs,
     exitCode: result.status,
     name: step.name,
+    timedOut: false,
+    timeoutMs: refreshStepTimeoutMs,
   };
 }
 
@@ -154,6 +166,15 @@ function formatCommand(stepArgs) {
 
 function printSummary(payload) {
   console.log(JSON.stringify(payload, null, 2));
+}
+
+function parsePositiveIntegerEnv(envKey, fallbackValue) {
+  const rawValue = process.env[envKey];
+  if (rawValue === undefined || rawValue === '') {
+    return fallbackValue;
+  }
+  const parsedValue = Number.parseInt(rawValue, 10);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallbackValue;
 }
 
 function readOptionalFile(filePath) {
