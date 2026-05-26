@@ -8,11 +8,28 @@ const defaultEvidencePath = path.join(docsDir, 'execution-v1-evidence.md');
 const defaultCloseoutPath = path.join(docsDir, 'execution-v1-closeout.md');
 const defaultOutputPath = path.join(docsDir, 'execution-v1-handoff.md');
 const snapshotsRoot = path.join(docsDir, 'releases', 'execution-v1');
-const hermesTargetProviderArchitectureEvidence =
-  'target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, ' +
-  'target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, ' +
-  'telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary npm run live:execution-v1:hermes pass, ' +
-  'release artifact hygiene result, and regenerated execution snapshot evidence';
+const anthropicTargetProviderAccountRequirements =
+  'account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof, ' +
+  'API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, ' +
+  'quota and spend guard proof, target-boundary live:execution-v1:anthropic proof with mission id, execution session id, ' +
+  'provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof, fallback and stop-condition proof ' +
+  'with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, ' +
+  'remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence';
+const localTargetProviderArchitectureRequirements =
+  'endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, ' +
+  'runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, ' +
+  'retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, ' +
+  'telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, ' +
+  'provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence';
+const hermesTargetProviderArchitectureRequirements =
+  'endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, ' +
+  'session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, ' +
+  'data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, ' +
+  'stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, ' +
+  'target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence';
+const anthropicTargetProviderAccountEvidence = `target Anthropic provider account evidence for ${anthropicTargetProviderAccountRequirements}`;
+const localTargetProviderArchitectureEvidence = `target local provider architecture evidence for ${localTargetProviderArchitectureRequirements}`;
+const hermesTargetProviderArchitectureEvidence = `target Hermes provider architecture evidence for ${hermesTargetProviderArchitectureRequirements}`;
 
 const evidencePath = resolveArgPath('--evidence-path', defaultEvidencePath);
 const closeoutPath = resolveArgPath('--closeout-path', defaultCloseoutPath);
@@ -229,7 +246,7 @@ function buildNextOperatorSteps(providerStates, pushStatus) {
   );
   steps.push(
     localProvider?.status === 'passed'
-      ? '3. Attach approved target-boundary local provider endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, telemetry proof, quota and resource guard proof, and local provider live validation evidence to the target local provider architecture before adding local provider operation to a production claim.'
+      ? `3. Attach ${localTargetProviderArchitectureEvidence} before adding local provider operation to a production claim.`
       : '3. Complete target local provider architecture approval before adding local provider operation to a production claim.',
   );
   steps.push(
@@ -251,15 +268,13 @@ function buildCompletionBoundary(providerStates) {
   const blockers = [];
 
   if (anthropic?.status !== 'passed') {
-    blockers.push('Anthropic is blocked by provider account billing/credit');
+    blockers.push(`Anthropic live validation still requires ${anthropicTargetProviderAccountEvidence}`);
   }
   if (hermes?.status !== 'passed') {
     blockers.push(`Hermes live validation still requires ${hermesTargetProviderArchitectureEvidence}`);
   }
   if (localProvider?.status === 'passed') {
-    blockers.push(
-      'target local provider architecture approval still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary npm run live:execution-v1:local pass, release artifact hygiene result, and regenerated execution snapshot evidence',
-    );
+    blockers.push(`target local provider architecture approval still requires ${localTargetProviderArchitectureRequirements}`);
   } else {
     blockers.push('local provider live validation still requires target runtime configuration');
   }
@@ -274,7 +289,8 @@ function buildMissingProviderEvidenceStep(missingProviders) {
   return (
     `Attach approved target provider account or architecture evidence for ${formatProviderLabels(missingProviders)}, ` +
     'including provider ownership or endpoint ownership, model access or model pinning, target secret injection, telemetry, ' +
-    'fallback and stop-condition decision, customer approval, target-boundary live validation, release artifact hygiene, ' +
+    'provider operations proof, fallback policy id, stop reason, recoverable-provider-failure-only stop evidence, customer approval, ' +
+    'target-boundary live validation proof with mission/session provenance, release artifact hygiene, ' +
     'and regenerated execution snapshot evidence, before claiming those provider paths.'
   );
 }

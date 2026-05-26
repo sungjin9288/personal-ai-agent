@@ -130,12 +130,14 @@ assert.equal(handoff.includes('pilot export package'), true);
 assert.equal(handoff.includes('node scripts/build-execution-v1-evidence.mjs --live-<provider>'), true);
 assert.equal(
   handoff.includes(
-    'Hermes live validation still requires target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence',
+    'Hermes live validation still requires target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence',
   ),
   true,
 );
 assert.equal(
-  handoff.includes('Attach approved target-boundary local provider endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, telemetry proof, quota and resource guard proof, and local provider live validation evidence'),
+  handoff.includes(
+    'Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.',
+  ),
   true,
 );
 assert.equal(
@@ -150,6 +152,10 @@ assert.equal(
   ),
   false,
 );
+assert.equal(handoff.includes('target-boundary npm run live:execution-v1:hermes pass'), false);
+assert.equal(handoff.includes('target-boundary npm run live:execution-v1:local pass'), false);
+assert.equal(handoff.includes('fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence'), true);
+assert.equal(handoff.includes('provider operations proof'), true);
 assert.equal(handoff.includes('npm run snapshot:execution-v1'), false);
 assert.equal(
   handoff.includes('Commit and push the refreshed release artifacts')
