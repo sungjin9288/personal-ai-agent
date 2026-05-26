@@ -7,6 +7,9 @@ const results = providers.map((provider) => runProviderPreflight(provider));
 const blocked = results.filter((result) => result.status === 'blocked' || !result.ok);
 const readyForLive = results.filter((result) => result.status === 'ready-for-live-validation');
 const missingEnv = results.filter((result) => result.status === 'ready-but-missing-env');
+const stopConditions = results
+  .map((result) => result.stopCondition)
+  .filter(Boolean);
 
 const ok = blocked.length === 0;
 console.log(
@@ -18,6 +21,8 @@ console.log(
       providers: results,
       readyForLiveCount: readyForLive.length,
       status: ok ? (missingEnv.length > 0 ? 'ready-but-missing-env' : 'ready-for-live-validation') : 'blocked',
+      stopConditionCount: stopConditions.length,
+      stopConditions,
     },
     null,
     2,
