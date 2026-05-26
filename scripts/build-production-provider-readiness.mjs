@@ -106,11 +106,19 @@ function buildProviderRow(provider, parsed) {
       : '',
     envKey: String(providerPreflight.envKey || ''),
     envReady: Boolean(providerPreflight.envReady),
+    evidenceCommand: String(providerPreflight.evidenceCommand || ''),
     liveCommand: String(providerPreflight.liveCommand || `npm run live:execution-v1:${provider}`),
     missingEnvCommand: String(providerPreflight.missingEnvCommand || ''),
     operationalState: operationalState.get(operationalKey) || 'unknown',
     preflightStatus: String(providerPreflight.status || 'missing-preflight'),
     provider,
+    requiredClosingEvidence: String(providerPreflight.requiredClosingEvidence || ''),
+    stopCondition: providerPreflight.stopCondition || null,
+    stopConditionId: String(providerPreflight.stopConditionId || providerPreflight.stopCondition?.id || ''),
+    stopReason: String(providerPreflight.stopReason || providerPreflight.stopCondition?.reason || ''),
+    targetStopConditionId: String(
+      providerPreflight.targetStopConditionId || providerPreflight.stopCondition?.targetStopConditionId || '',
+    ),
   };
 }
 
@@ -124,10 +132,11 @@ function renderProviderReadinessMarkdown({
 }) {
   const status = preflightResult.ok ? 'local-provider-readiness-current' : 'local-provider-readiness-failed';
   const operatingInterpretationRows = buildOperatingInterpretationRows(providerRows).join('\n');
+  const stopConditionRows = buildStopConditionRows(providerRows).join('\n');
   const rows = providerRows
     .map(
       (row) =>
-        `| ${formatTableCell(row.provider)} | ${formatTableCell(row.preflightStatus)} | ${formatTableCell(row.envKey)} | ${row.envReady ? 'yes' : 'no'} | ${formatTableCell(row.archivedLiveStatus)} | \`${formatTableCell(row.liveCommand)}\` |`,
+        `| ${formatTableCell(row.provider)} | ${formatTableCell(row.preflightStatus)} | ${formatTableCell(row.envKey)} | ${row.envReady ? 'yes' : 'no'} | ${formatTableCell(row.archivedLiveStatus)} | \`${formatTableCell(row.liveCommand)}\` | ${formatTableCell(row.stopConditionId || 'none')} | ${formatTableCell(row.targetStopConditionId || 'none')} |`,
     )
     .join('\n');
   const commandRows = [
@@ -144,7 +153,12 @@ function renderProviderReadinessMarkdown({
 - archivedLiveStatus: ${row.archivedLiveStatus}
 - operationalState: ${row.operationalState}
 - liveCommand: \`${row.liveCommand}\`
-- missingEnvCommand: \`${row.missingEnvCommand}\``,
+- missingEnvCommand: \`${row.missingEnvCommand}\`
+- evidenceCommand: \`${row.evidenceCommand}\`
+- stopConditionId: ${row.stopConditionId || 'none'}
+- stopReason: ${row.stopReason || 'none'}
+- targetStopConditionId: ${row.targetStopConditionId || 'none'}
+- requiredClosingEvidence: ${row.requiredClosingEvidence || 'not reported'}`,
     )
     .join('\n\n');
   const keySignals = JSON.stringify(
@@ -153,6 +167,7 @@ function renderProviderReadinessMarkdown({
       missingEnvCount: preflightResult.parsed.missingEnvCount,
       readyForLiveCount: preflightResult.parsed.readyForLiveCount,
       status: preflightResult.parsed.status,
+      stopConditionCount: preflightResult.parsed.stopConditionCount,
     },
     null,
     2,
@@ -200,13 +215,19 @@ ${keySignals}
 
 ## Provider Matrix
 
-| Provider | Preflight Status | Env Key | Env Ready | Archived Live Status | Live Command |
-| --- | --- | --- | --- | --- | --- |
+| Provider | Preflight Status | Env Key | Env Ready | Archived Live Status | Live Command | Stop Condition | Target Stop Condition |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 ${rows}
 
 ## Provider Details
 
 ${providerDetails}
+
+## Stop Condition Handoff
+
+| Provider | Stop Condition | Stop Reason | Target Stop Condition | Evidence Command | Required Closing Evidence |
+| --- | --- | --- | --- | --- | --- |
+${stopConditionRows}
 
 ## Operating Interpretation
 
@@ -239,6 +260,17 @@ The rehearsal is acceptable only when aggregate preflight reports \`blockedCount
 
 The rehearsal must keep \`productionReadyClaim: false\` until target provider evidence intake is complete and live validation evidence is archived for every provider included in the target production claim.
 `;
+}
+
+function buildStopConditionRows(providerRows) {
+  return providerRows.map((row) => {
+    const stopConditionId = row.stopConditionId || 'none';
+    const stopReason = row.stopReason || 'none';
+    const targetStopConditionId = row.targetStopConditionId || 'none';
+    const evidenceCommand = row.evidenceCommand || 'not reported';
+    const requiredClosingEvidence = row.requiredClosingEvidence || 'not reported';
+    return `| ${formatTableCell(row.provider)} | ${formatTableCell(stopConditionId)} | ${formatTableCell(stopReason)} | ${formatTableCell(targetStopConditionId)} | \`${formatTableCell(evidenceCommand)}\` | ${formatTableCell(requiredClosingEvidence)} |`;
+  });
 }
 
 function buildOperatingInterpretationRows(providerRows) {
