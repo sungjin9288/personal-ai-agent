@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-26T11:54:37.598Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-26T11:54:29.441Z
 - branch: codex/target-environment-provider-closure-proof-detail
 - commit: 1cde255f931295e68003f8a8517e9731197fc733

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-05-26 Target Environment Provider Closure Matrix Proof Detail Alignment
+
+- expanded target environment blocker disposition and blocker closure verification matrix provider rows so Anthropic, Hermes, and local provider closure evidence requires account/architecture owner fields, mission/session live validation provenance, fallback policy id, stop reason, recoverable-provider-failure-only stop evidence, provider operations proof, data transcript handling, remediation renewal, artifact hygiene, and snapshot details
+- replaced provider closure shorthand such as target-boundary live validation pass and provider operations evidence with proof-level stop-condition evidence for the same target boundary
+- kept blocker states, stop conditions, and productionReadyClaim=false behavior unchanged while extending target environment evidence intake smoke coverage against generic provider closure evidence shorthand
+
 ## 2026-05-26 Provider Exception Risk Register UI Proof Detail Alignment
 
 - expanded accepted-scope exception register, risk decision register, and blocker disposition register provider evidence wording so Anthropic, Hermes, and local provider exceptions require account/architecture owner, target-boundary live validation, fallback policy id, stop reason, recoverable-provider-failure-only stop evidence, telemetry, data transcript handling, remediation/renewal, artifact hygiene, and snapshot details
