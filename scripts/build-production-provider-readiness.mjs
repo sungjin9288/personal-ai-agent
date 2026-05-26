@@ -6,6 +6,13 @@ const repoDir = process.cwd();
 const docsDir = path.join(repoDir, 'docs');
 const outputPath = path.join(docsDir, 'production-provider-readiness-v1.md');
 const providerOrder = ['openai', 'anthropic', 'local', 'hermes'];
+const hermesTargetProviderArchitectureEvidence =
+  'target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, ' +
+  'target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, ' +
+  'provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, ' +
+  'quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, ' +
+  'and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, ' +
+  'target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence';
 
 const generatedAt = new Date().toISOString();
 const sourceCommit = runGit(['rev-parse', 'HEAD']);
@@ -258,9 +265,7 @@ function buildOperatingInterpretationRows(providerRows) {
   }
 
   if (!isPassedLiveStatus(rowByProvider.get('hermes')?.archivedLiveStatus)) {
-    rows.push(
-      '- Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded',
-    );
+    rows.push(`- Hermes remains blocked until ${hermesTargetProviderArchitectureEvidence} is recorded`);
   }
 
   rows.push(

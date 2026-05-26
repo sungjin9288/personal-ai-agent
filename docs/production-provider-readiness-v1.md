@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-26T12:18:06.287Z
-- sourceBranch: codex/main-target-environment-provider-closure-artifact-sync
-- sourceCommit: 70dbfd3028e2e271b1eeff626f5e57d5725bbb20
+- generatedAt: 2026-05-26T12:50:56.586Z
+- sourceBranch: codex/provider-live-blocker-proof-detail
+- sourceCommit: f7d84a06198411b1d5acd158d0b716b88b127454
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 6168 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 6271 |
 
 ## Key Signals
 
@@ -103,7 +103,7 @@ Production-ready remains blocked until every provider included in the target rel
 - archived passed live providers in the current release evidence: OpenAI, local
 - Anthropic remains blocked until provider account billing or credit is remediated and live validation passes
 - local provider live validation is archived as passed for the configured model and endpoint used by this rehearsal, while target local provider architecture remains the production gate
-- Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary npm run live:execution-v1:hermes pass, release artifact hygiene result, and regenerated execution snapshot evidence is recorded
+- Hermes remains blocked until target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence is recorded
 - deterministic provider preflight passing is necessary but not sufficient for production provider readiness
 - target provider evidence intake contract remains the gate for provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, failure triage evidence, and provider blocker closure verification proof
 - target provider operations contract remains the gate for model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, target blocker closure verification matrix, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, and provider failure containment evidence
