@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-26T12:18:13.888Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-26T12:18:04.878Z
 - branch: codex/main-target-environment-provider-closure-artifact-sync
 - commit: 70dbfd3028e2e271b1eeff626f5e57d5725bbb20
