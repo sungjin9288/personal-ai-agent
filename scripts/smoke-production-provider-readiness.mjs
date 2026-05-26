@@ -44,16 +44,57 @@ assert.match(readiness, /\| `npm run preflight:execution-v1:all` \| pass \| 0 \|
 assert.match(readiness, /"blockedCount": 0/);
 assert.match(readiness, /"missingEnvCount": 4/);
 assert.match(readiness, /"readyForLiveCount": 0/);
+assert.match(readiness, /"stopConditionCount": 4/);
+assert.match(readiness, /^## Stop Condition Handoff$/m);
+assert.match(
+  readiness,
+  /\| Provider \| Stop Condition \| Stop Reason \| Target Stop Condition \| Evidence Command \| Required Closing Evidence \|/,
+);
 
-for (const [provider, envKey] of [
-  ['openai', 'OPENAI_API_KEY'],
-  ['anthropic', 'ANTHROPIC_API_KEY'],
-  ['local', 'LOCAL_PROVIDER_MODEL'],
-  ['hermes', 'HERMES_PROVIDER_MODEL'],
+for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCommand] of [
+  [
+    'openai',
+    'OPENAI_API_KEY',
+    'openai-live-env-missing',
+    'target-openai-provider-account-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-openai',
+  ],
+  [
+    'anthropic',
+    'ANTHROPIC_API_KEY',
+    'anthropic-live-env-missing',
+    'anthropic-live-validation-missing-or-failed',
+    'node scripts/build-execution-v1-evidence.mjs --live-anthropic',
+  ],
+  [
+    'local',
+    'LOCAL_PROVIDER_MODEL',
+    'local-live-env-missing',
+    'target-local-provider-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-local',
+  ],
+  [
+    'hermes',
+    'HERMES_PROVIDER_MODEL',
+    'hermes-live-env-missing',
+    'target-hermes-provider-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-hermes',
+  ],
 ]) {
   assert.match(readiness, new RegExp(`\\| ${provider} \\| .* \\| ${envKey} \\|`), provider);
   assert.match(readiness, new RegExp(`### ${provider}\\n`), provider);
   assert.match(readiness, new RegExp(`- liveCommand: \`npm run live:execution-v1:${provider}\``), provider);
+  assert.match(readiness, new RegExp(`- evidenceCommand: \`${escapeRegExp(evidenceCommand)}\``), provider);
+  assert.match(readiness, new RegExp(`- stopConditionId: ${escapeRegExp(stopConditionId)}`), provider);
+  assert.match(readiness, new RegExp(`- stopReason: Missing ${escapeRegExp(envKey)}`), provider);
+  assert.match(readiness, new RegExp(`- targetStopConditionId: ${escapeRegExp(targetStopConditionId)}`), provider);
+  assert.match(
+    readiness,
+    new RegExp(
+      `\\| ${provider} \\| ${escapeRegExp(stopConditionId)} \\| Missing ${escapeRegExp(envKey)} \\| ${escapeRegExp(targetStopConditionId)} \\| \`${escapeRegExp(evidenceCommand)}\` \\|`,
+    ),
+    provider,
+  );
 }
 
 for (const phrase of [
@@ -122,10 +163,6 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(
   readiness,
-  /model\/endpoint pinning|quota\/cost guard|quota\/cost\/resource guard|fallback\/disable path|fallback\/stop-condition evidence|data\/transcript handling|remediation\/renewal|quota\/resource guard|release artifact hygiene, and regenerated execution snapshot evidence requirements/,
-);
-assert.doesNotMatch(
-  readiness,
   /target-boundary OpenAI live validation, telemetry proof|target-boundary Anthropic live validation, telemetry proof|target-boundary local provider live validation, release artifact hygiene/,
 );
 
@@ -175,4 +212,8 @@ function readRequiredFile(filePath) {
     throw new Error(`required file not found: ${filePath}`);
   }
   return fs.readFileSync(filePath, 'utf8');
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
