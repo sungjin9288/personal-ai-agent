@@ -332,7 +332,12 @@ try {
   );
   assert.match(
     providerOperationsBlockerAction.nextEvidence,
-    /provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan/,
+    /provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  assert.match(
+    providerOperationsBlockerAction.nextEvidence,
+    /provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan/,
     JSON.stringify(providerOperationsBlockerAction),
   );
   assert.match(
@@ -342,13 +347,22 @@ try {
   );
   assert.match(
     providerOperationsBlockerAction.stopReason,
-    /provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof/,
+    /provider fallback runtime audit proof with fallback policy id, timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  assert.match(
+    providerOperationsBlockerAction.stopReason,
+    /target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof/,
     JSON.stringify(providerOperationsBlockerAction),
   );
   for (const command of [
     'npm run smoke:target-provider-operations',
     'npm run smoke:target-provider-evidence-intake',
     'npm run smoke:provider-fallback-policy',
+    'npm run smoke:provider-events',
+    'npm run smoke:provider-attention-remediation',
+    'npm run smoke:mission-timeline',
+    'npm run smoke:operator-timeline',
     'npm run smoke:release-artifact-hygiene',
   ]) {
     assert.equal(
