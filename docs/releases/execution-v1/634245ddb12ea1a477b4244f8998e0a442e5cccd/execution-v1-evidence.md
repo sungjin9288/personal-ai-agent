@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-05-27T13:12:36.161Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-05-27T13:12:24.331Z
 - branch: codex/execution-v1-artifacts-634245d-refresh
 - commit: 634245ddb12ea1a477b4244f8998e0a442e5cccd
