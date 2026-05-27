@@ -1444,6 +1444,141 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
   return base;
 }
 
+function buildCurrentOpenBlockerClosureVerification(action = {}) {
+  const commands = Array.isArray(action.commands) ? action.commands : [];
+  const evidenceDocs = Array.isArray(action.evidenceDocs) ? action.evidenceDocs : [];
+  const category = String(action.category || 'release-readiness').trim() || 'release-readiness';
+  const provider = String(action.provider || '').trim();
+  const requiredProofs = [
+    'same-boundary target evidence packet proof',
+    'blocker disposition proof with accountable decision owner',
+    'target-boundary command rerun proof',
+    'release artifact hygiene pass proof',
+    'regenerated execution-v1 artifact snapshot proof',
+    'production readiness gate proof',
+  ];
+
+  if (category === 'provider-account') {
+    requiredProofs.push(
+      'provider account or billing/quota approval proof',
+      'approved target secret injection proof',
+      'target-boundary provider live validation proof',
+      'provider fallback policy and stop reason proof',
+    );
+  }
+
+  if (category === 'provider-architecture') {
+    requiredProofs.push(
+      'provider endpoint or model architecture approval proof',
+      'runtime lifecycle and provenance proof',
+      'target-boundary provider live validation proof',
+      'provider fallback policy and stop reason proof',
+    );
+  }
+
+  if (category === 'provider-operations') {
+    requiredProofs.push(
+      'per-provider operations capture template proof',
+      'provider fallback runtime audit proof',
+      'provider telemetry and incident triage proof',
+      'provider failure containment proof',
+    );
+  }
+
+  if (category === 'target-deployment') {
+    requiredProofs.push(
+      'target deployment name and profile decision proof',
+      'mandatory control evidence proof',
+      'target environment submission packet proof',
+      'production-like drill proof',
+    );
+  }
+
+  if (category === 'release-decision') {
+    requiredProofs.push(
+      'accepted risk register proof',
+      'allowed claim text proof',
+      'release decision owner approval proof',
+      'next review date proof',
+    );
+  }
+
+  return {
+    acceptedDispositionValues: [
+      'keep-blocked',
+      'closed-after-evidence',
+      'accepted-with-narrow-scope',
+      'rejected',
+    ],
+    artifactRequirements: {
+      executionV1ArtifactRefresh: true,
+      productionReadinessGate: true,
+      releaseArtifactHygiene: true,
+      snapshotRefresh: true,
+    },
+    blockerId: String(action.id || '').trim(),
+    category,
+    closureRules: [
+      'Close only with accepted evidence from the same approved target boundary.',
+      'Keep productionReadyClaim=false while any mandatory target stop-condition remains open.',
+      'Rerun every listed command after attaching closure evidence.',
+      'Refresh execution-v1 artifacts after source-of-record or live evidence changes.',
+      'Reject stale, ownerless, unreviewed, or secret-bearing evidence.',
+    ],
+    currentState: String(action.status || 'blocked').trim() || 'blocked',
+    defaultDisposition: 'keep-blocked',
+    forbiddenEvidence: [
+      'raw API keys or tokens',
+      'private endpoint credentials',
+      'customer personal data',
+      'tenant payloads',
+      'billing identifiers',
+      'private account identifiers',
+      'machine-local absolute paths',
+    ],
+    id: `${String(action.id || 'current-open-blocker').trim() || 'current-open-blocker'}-closure-verification`,
+    owner: String(action.owner || 'release-owner').trim() || 'release-owner',
+    productionReadyClaimAllowed: false,
+    productionReadyClaimRule:
+      'productionReadyClaim remains false until every mandatory target control is closed by accepted same-boundary evidence and final gates pass.',
+    provider,
+    requiredClosingEvidence: String(action.nextEvidence || '').trim(),
+    requiredCommands: commands.map((command) => ({
+      command: String(command?.command || '').trim(),
+      kind: String(command?.kind || 'verification').trim() || 'verification',
+      label: String(command?.label || '').trim(),
+    })),
+    requiredDecisionFields: [
+      'decisionOwner',
+      'evidenceOwner',
+      'reviewer',
+      'reviewDate',
+      'nextReviewDate',
+      'allowedClaimText',
+      'releaseReadinessNote',
+    ],
+    requiredEvidenceDocs: evidenceDocs.map((doc) => ({
+      exists: Boolean(doc?.exists),
+      href: String(doc?.href || '').trim(),
+      label: String(doc?.label || '').trim(),
+      path: String(doc?.path || '').trim(),
+    })),
+    requiredProofs,
+    sameBoundaryRequired: true,
+    status: 'blocked',
+    stopConditionId: String(action.id || '').trim(),
+    stopReason: String(action.stopReason || action.blocker || '').trim(),
+    targetBoundaryRequired: true,
+  };
+}
+
+function attachCurrentOpenBlockerClosureVerification(action = {}) {
+  return {
+    ...action,
+    closureVerification: buildCurrentOpenBlockerClosureVerification(action),
+  };
+}
+
 function incrementCountRecord(record, key) {
   const normalized = String(key || '').trim() || 'unassigned';
   record[normalized] = Number(record[normalized] || 0) + 1;
@@ -1464,6 +1599,11 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
   const ownerCounts = {};
   const providerCounts = {};
   const statusCounts = {};
+  let closureVerificationCommandCount = 0;
+  let closureVerificationCount = 0;
+  let closureVerificationEvidenceDocCount = 0;
+  let closureVerificationProductionReadyBlockedCount = 0;
+  let closureVerificationTargetBoundaryCount = 0;
   let commandCount = 0;
   let evidenceDocCount = 0;
   let runtimeAuditCommandCount = 0;
@@ -1487,6 +1627,21 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
       }
     }
     evidenceDocCount += Array.isArray(action?.evidenceDocs) ? action.evidenceDocs.length : 0;
+    if (action?.closureVerification) {
+      closureVerificationCount += 1;
+      closureVerificationCommandCount += Array.isArray(action.closureVerification.requiredCommands)
+        ? action.closureVerification.requiredCommands.length
+        : 0;
+      closureVerificationEvidenceDocCount += Array.isArray(action.closureVerification.requiredEvidenceDocs)
+        ? action.closureVerification.requiredEvidenceDocs.length
+        : 0;
+      if (action.closureVerification.targetBoundaryRequired === true) {
+        closureVerificationTargetBoundaryCount += 1;
+      }
+      if (action.closureVerification.productionReadyClaimAllowed === false) {
+        closureVerificationProductionReadyBlockedCount += 1;
+      }
+    }
 
     const priority = Number.isFinite(Number(action?.priority)) ? Number(action.priority) : index + 1;
     if (!topPriorityAction || priority < topPriorityValue) {
@@ -1498,6 +1653,11 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
   return {
     actionCount: actions.length,
     categoryCounts: sortCountRecord(categoryCounts),
+    closureVerificationCommandCount,
+    closureVerificationCount,
+    closureVerificationEvidenceDocCount,
+    closureVerificationProductionReadyBlockedCount,
+    closureVerificationTargetBoundaryCount,
     commandCount,
     commandKindCounts: sortCountRecord(commandKindCounts),
     evidenceDocCount,
@@ -1522,7 +1682,7 @@ function buildReleaseReadinessSummary(markdown = '') {
   const currentOpenBlockers = extractSectionBullets(markdown, 'Current Open Blockers');
   const currentOpenBlockerActions = currentOpenBlockers.map((blocker, index) =>
     buildCurrentOpenBlockerAction(blocker, index),
-  );
+  ).map((action) => attachCurrentOpenBlockerClosureVerification(action));
   const currentOpenBlockerActionSummary = buildCurrentOpenBlockerActionSummary(currentOpenBlockerActions);
   const productionReadyStatus = extractPlainStatus(productionReadySection) || 'not-tracked';
   const normalizedProductionReadyStatus = productionReadyStatus.toLowerCase();
