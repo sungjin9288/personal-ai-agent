@@ -2704,12 +2704,33 @@ function getReleaseBlockerSliceSummary({
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
   const evidenceDocKeys = new Set();
+  const requiredProofKeys = new Set();
   const commandCount = visibleActions.reduce((total, item) => {
-    const commands = Array.isArray(item.commands) ? item.commands : [];
+    const commands = getReleaseBlockerRequiredCommands(item);
     return total + commands.filter((command) => String(command.command || '').trim()).length;
   }, 0);
+  let closureVerificationCount = 0;
+  let productionReadyBlockedCount = 0;
+  let targetBoundaryRequiredCount = 0;
   visibleActions.forEach((item) => {
-    const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+    const closureVerification = getReleaseBlockerClosureVerification(item);
+    if (closureVerification.id || item.closureVerification) {
+      closureVerificationCount += 1;
+    }
+    if (closureVerification.targetBoundaryRequired === true) {
+      targetBoundaryRequiredCount += 1;
+    }
+    if (closureVerification.productionReadyClaimAllowed === false) {
+      productionReadyBlockedCount += 1;
+    }
+    const requiredProofs = getReleaseBlockerRequiredProofs(item);
+    requiredProofs.forEach((proof) => {
+      const proofText = String(proof || '').trim();
+      if (proofText) {
+        requiredProofKeys.add(proofText);
+      }
+    });
+    const evidenceDocs = getReleaseBlockerRequiredEvidenceDocs(item);
     evidenceDocs.forEach((doc) => {
       const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
       const docPath = String(doc.path || '').trim();
@@ -2723,8 +2744,12 @@ function getReleaseBlockerSliceSummary({
   const topVisibleAction = visibleActions[0] || null;
 
   return {
+    closureVerificationCount,
     commandCount,
     evidenceDocCount: evidenceDocKeys.size,
+    productionReadyBlockedCount,
+    requiredProofCount: requiredProofKeys.size,
+    targetBoundaryRequiredCount,
     topVisibleBlockerId: String(topVisibleAction?.id || '').trim(),
     topVisibleBlockerLabel: String(topVisibleAction?.blocker || topVisibleAction?.stopReason || '').trim(),
     totalCount: allActions.length,
@@ -2762,13 +2787,44 @@ function buildReleaseBlockerSliceSummaryText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- visibleBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
+    `- closureVerificationCount: ${sliceSummary.closureVerificationCount}`,
+    `- targetBoundaryRequired: ${sliceSummary.targetBoundaryRequiredCount}/${sliceSummary.visibleCount}`,
+    `- productionReadyClaimBlocked: ${sliceSummary.productionReadyBlockedCount}/${sliceSummary.visibleCount}`,
     `- commandCount: ${sliceSummary.commandCount}`,
     `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
+    `- requiredProofCount: ${sliceSummary.requiredProofCount}`,
     `- topVisibleBlocker: ${topBlockerLabel}`,
     `- releaseLink: ${sliceLink}`,
   ];
 
   return `${lines.join('\n')}\n`;
+}
+
+function getReleaseBlockerClosureVerification(blockerAction = {}) {
+  return blockerAction && typeof blockerAction.closureVerification === 'object' && blockerAction.closureVerification
+    ? blockerAction.closureVerification
+    : {};
+}
+
+function getReleaseBlockerRequiredCommands(blockerAction = {}) {
+  const closureVerification = getReleaseBlockerClosureVerification(blockerAction);
+  if (Array.isArray(closureVerification.requiredCommands)) {
+    return closureVerification.requiredCommands;
+  }
+  return Array.isArray(blockerAction.commands) ? blockerAction.commands : [];
+}
+
+function getReleaseBlockerRequiredEvidenceDocs(blockerAction = {}) {
+  const closureVerification = getReleaseBlockerClosureVerification(blockerAction);
+  if (Array.isArray(closureVerification.requiredEvidenceDocs)) {
+    return closureVerification.requiredEvidenceDocs;
+  }
+  return Array.isArray(blockerAction.evidenceDocs) ? blockerAction.evidenceDocs : [];
+}
+
+function getReleaseBlockerRequiredProofs(blockerAction = {}) {
+  const closureVerification = getReleaseBlockerClosureVerification(blockerAction);
+  return Array.isArray(closureVerification.requiredProofs) ? closureVerification.requiredProofs : [];
 }
 
 function buildReleaseBlockerHandoffText(blockerAction = null) {
@@ -3059,8 +3115,10 @@ function buildReleaseBlockerSliceHandoffText({
   const blockerLines = visibleActions.length
     ? visibleActions.flatMap((item, index) => {
         const actionId = String(item.id || '').trim();
-        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
-        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const closureVerification = getReleaseBlockerClosureVerification(item);
+        const evidenceDocs = getReleaseBlockerRequiredEvidenceDocs(item);
+        const commands = getReleaseBlockerRequiredCommands(item);
+        const requiredProofs = getReleaseBlockerRequiredProofs(item);
         return [
           `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
           `   - id: ${actionId || 'unknown'}`,
@@ -3069,6 +3127,9 @@ function buildReleaseBlockerSliceHandoffText({
           `   - status: ${String(item.status || 'blocked').trim()}`,
           `   - stopReason: ${String(item.stopReason || item.blocker || '').trim()}`,
           `   - nextEvidence: ${String(item.nextEvidence || '').trim()}`,
+          `   - closureVerification: ${String(closureVerification.id || 'not provided').trim()}`,
+          `   - targetBoundaryRequired: ${String(Boolean(closureVerification.targetBoundaryRequired ?? true))}`,
+          `   - requiredProofCount: ${requiredProofs.length}`,
           `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.map(formatEvidenceDoc).join('; ') : 'none'}`,
           `   - commands: ${commands.length ? commands.map(formatCommand).join('; ') : 'none'}`,
         ];
@@ -3123,8 +3184,11 @@ function buildReleaseBlockerSliceClosureChecklistText({
   const blockerLines = visibleActions.length
     ? visibleActions.flatMap((item, index) => {
         const actionId = String(item.id || '').trim();
-        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
-        const commands = Array.isArray(item.commands) ? item.commands : [];
+        const closureVerification = getReleaseBlockerClosureVerification(item);
+        const evidenceDocs = getReleaseBlockerRequiredEvidenceDocs(item);
+        const commands = getReleaseBlockerRequiredCommands(item);
+        const requiredProofs = getReleaseBlockerRequiredProofs(item);
+        const requiredProofSummary = requiredProofs.length ? requiredProofs.join('; ') : 'none';
         return [
           `${index + 1}. ${String(item.blocker || item.stopReason || 'current open blocker').trim()}`,
           `   - id: ${actionId || 'unknown'}`,
@@ -3132,7 +3196,12 @@ function buildReleaseBlockerSliceClosureChecklistText({
           `   - owner: ${String(item.owner || 'release-owner').trim()}`,
           `   - status: ${String(item.status || 'blocked').trim()}`,
           `   - stopReason: ${String(item.stopReason || item.blocker || '').trim()}`,
-          `   - closingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - closureVerification: ${String(closureVerification.id || 'not provided').trim()}`,
+          `   - targetBoundaryRequired: ${String(Boolean(closureVerification.targetBoundaryRequired ?? true))}`,
+          `   - sameBoundaryRequired: ${String(Boolean(closureVerification.sameBoundaryRequired ?? true))}`,
+          `   - productionReadyClaimAllowed: ${String(Boolean(closureVerification.productionReadyClaimAllowed))}`,
+          `   - closingEvidence: ${String(closureVerification.requiredClosingEvidence || item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - requiredProofs: ${requiredProofSummary}`,
           `   - evidenceDocs: ${evidenceDocs.length ? evidenceDocs.map(formatEvidenceDoc).join('; ') : 'none'}`,
           `   - commands: ${commands.length ? commands.map(formatCommand).join('; ') : 'none'}`,
         ];
@@ -3143,6 +3212,7 @@ function buildReleaseBlockerSliceClosureChecklistText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- closureVerificationCount: ${visibleActions.filter((item) => Boolean(getReleaseBlockerClosureVerification(item).id)).length}`,
     `- releaseLink: ${sliceLink}`,
     `- topVisibleBlocker: ${topVisibleAction ? `${String(topVisibleAction.id || 'unknown').trim()}: ${String(topVisibleAction.blocker || topVisibleAction.stopReason || 'current open blocker').trim()}` : 'none'}`,
     '',
@@ -3183,7 +3253,7 @@ function buildReleaseBlockerSliceCommandText({
   const commandEntries = visibleActions.flatMap((item) => {
     const actionId = String(item.id || '').trim();
     const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
-    const commands = Array.isArray(item.commands) ? item.commands : [];
+    const commands = getReleaseBlockerRequiredCommands(item);
     return commands
       .map((command) => ({
         blockerId: actionId,
@@ -3239,7 +3309,7 @@ function buildReleaseBlockerSliceEvidenceText({
   visibleActions.forEach((item) => {
     const actionId = String(item.id || '').trim();
     const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
-    const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+    const evidenceDocs = getReleaseBlockerRequiredEvidenceDocs(item);
     evidenceDocs.forEach((doc) => {
       const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
       const docPath = String(doc.path || '').trim();
@@ -3330,8 +3400,13 @@ function buildReleaseBlockerClosureMatrixPackageText({
     ? visibleActions.flatMap((item, index) => {
         const actionId = String(item.id || '').trim();
         const provider = String(item.provider || '').trim();
-        const commands = Array.isArray(item.commands) ? item.commands : [];
-        const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs : [];
+        const closureVerification = getReleaseBlockerClosureVerification(item);
+        const commands = getReleaseBlockerRequiredCommands(item);
+        const evidenceDocs = getReleaseBlockerRequiredEvidenceDocs(item);
+        const requiredProofs = getReleaseBlockerRequiredProofs(item);
+        const requiredDecisionFields = Array.isArray(closureVerification.requiredDecisionFields)
+          ? closureVerification.requiredDecisionFields
+          : [];
         const firstCommand = commands.find((command) => String(command.command || '').trim()) || null;
         const blockerLink = `${window.location.origin}${buildUiStateUrl({
           detailTab: 'release',
@@ -3352,9 +3427,14 @@ function buildReleaseBlockerClosureMatrixPackageText({
           `   - category: ${String(item.category || 'stop-condition').trim()}`,
           `   - owner: ${String(item.owner || 'release-owner').trim()}`,
           `   - currentState: ${String(item.status || 'blocked').trim()}`,
-          `   - stopConditionId: ${actionId || 'unknown'}`,
-          `   - stopReason: ${String(item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
-          `   - requiredClosingEvidence: ${String(item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - closureVerification: ${String(closureVerification.id || 'not provided').trim()}`,
+          `   - targetBoundaryRequired: ${String(Boolean(closureVerification.targetBoundaryRequired ?? true))}`,
+          `   - sameBoundaryRequired: ${String(Boolean(closureVerification.sameBoundaryRequired ?? true))}`,
+          `   - stopConditionId: ${String(closureVerification.stopConditionId || actionId || 'unknown').trim()}`,
+          `   - stopReason: ${String(closureVerification.stopReason || item.stopReason || item.blocker || '').trim() || 'not recorded'}`,
+          `   - requiredClosingEvidence: ${String(closureVerification.requiredClosingEvidence || item.nextEvidence || '').trim() || 'not recorded'}`,
+          `   - requiredProofs: ${requiredProofs.length ? requiredProofs.join(' | ') : 'none'}`,
+          `   - requiredDecisionFields: ${requiredDecisionFields.length ? requiredDecisionFields.join(' | ') : 'decisionOwner | evidenceOwner | reviewer | reviewDate'}`,
           `   - nextVerificationCommand: ${String(firstCommand?.command || '').trim() || 'not recorded'}`,
           `   - allVerificationCommands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
           `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
@@ -3370,6 +3450,7 @@ function buildReleaseBlockerClosureMatrixPackageText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
+    `- closureVerificationCount: ${visibleActions.filter((item) => Boolean(getReleaseBlockerClosureVerification(item).id)).length}`,
     `- releaseLink: ${sliceLink}`,
     `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
     `- targetProviderOperationsDoc: ${targetProviderOperationsDoc}`,
@@ -13513,6 +13594,10 @@ function renderReleaseStatus() {
                 : ''}
               <p class="item-meta" data-release-current-open-blocker-slice-summary="true">
                 slice metrics ·
+                <span data-release-current-open-blocker-slice-closure-count="${escapeHtml(String(currentOpenBlockerSliceSummary.closureVerificationCount))}">closure verifications ${escapeHtml(String(currentOpenBlockerSliceSummary.closureVerificationCount))}</span>
+                ·
+                <span data-release-current-open-blocker-slice-required-proof-count="${escapeHtml(String(currentOpenBlockerSliceSummary.requiredProofCount))}">required proofs ${escapeHtml(String(currentOpenBlockerSliceSummary.requiredProofCount))}</span>
+                ·
                 <span data-release-current-open-blocker-slice-command-count="${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}">commands ${escapeHtml(String(currentOpenBlockerSliceSummary.commandCount))}</span>
                 ·
                 <span data-release-current-open-blocker-slice-evidence-count="${escapeHtml(String(currentOpenBlockerSliceSummary.evidenceDocCount))}">evidence docs ${escapeHtml(String(currentOpenBlockerSliceSummary.evidenceDocCount))}</span>
