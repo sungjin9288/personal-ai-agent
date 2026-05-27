@@ -98,16 +98,16 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 7);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandCount, 28);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandCount, 29);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.evidenceDocCount, 22);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.runtimeAuditCommandCount, 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.runtimeAuditCommandCount, 6);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-operations'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['target-deployment'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['release-decision'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.verification, 15);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.['runtime-audit'], 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.['runtime-audit'], 6);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.['live-validation'], 4);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.preflight, 3);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.rehearsal, 1);
@@ -340,7 +340,7 @@ try {
   );
   assert.match(
     providerOperationsBlockerAction.nextEvidence,
-    /provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy/,
+    /provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy/,
     JSON.stringify(providerOperationsBlockerAction),
   );
   assert.match(
@@ -355,7 +355,7 @@ try {
   );
   assert.match(
     providerOperationsBlockerAction.stopReason,
-    /provider fallback runtime audit proof with fallback policy id, timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof/,
+    /provider fallback runtime audit proof with fallback policy id, mission timeline chronology, workspace timeline chronology, operator timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof/,
     JSON.stringify(providerOperationsBlockerAction),
   );
   assert.match(
@@ -379,6 +379,7 @@ try {
     'npm run smoke:provider-events',
     'npm run smoke:provider-attention-remediation',
     'npm run smoke:mission-timeline',
+    'npm run smoke:workspace-timeline',
     'npm run smoke:operator-timeline',
   ]) {
     assert.equal(

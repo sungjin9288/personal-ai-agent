@@ -127,6 +127,7 @@
     "smoke:ui-agent-blueprints": "node scripts/smoke-ui-agent-blueprints.mjs",
     "smoke:session-history": "node scripts/smoke-session-history.mjs",
     "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
+    "smoke:workspace-timeline": "node scripts/smoke-workspace-timeline.mjs",
     "smoke:workspace-overview": "node scripts/smoke-workspace-overview.mjs",
     "smoke:global-overview": "node scripts/smoke-global-overview.mjs",
     "smoke:provider-surface": "node scripts/smoke-provider-surface.mjs",

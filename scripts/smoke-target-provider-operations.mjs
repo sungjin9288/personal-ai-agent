@@ -33,6 +33,7 @@ assert.equal(packageJson.scripts['smoke:provider-fallback-policy'], 'node script
 assert.equal(packageJson.scripts['smoke:provider-events'], 'node scripts/smoke-provider-events.mjs');
 assert.equal(packageJson.scripts['smoke:provider-attention-remediation'], 'node scripts/smoke-provider-attention-remediation.mjs');
 assert.equal(packageJson.scripts['smoke:mission-timeline'], 'node scripts/smoke-mission-timeline.mjs');
+assert.equal(packageJson.scripts['smoke:workspace-timeline'], 'node scripts/smoke-workspace-timeline.mjs');
 assert.equal(packageJson.scripts['smoke:operator-timeline'], 'node scripts/smoke-operator-timeline.mjs');
 
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
@@ -162,6 +163,7 @@ for (const command of [
   'npm run smoke:provider-events',
   'npm run smoke:provider-attention-remediation',
   'npm run smoke:mission-timeline',
+  'npm run smoke:workspace-timeline',
   'npm run smoke:operator-timeline',
   'npm run rehearsal:production-provider-readiness',
   'npm run smoke:production-provider-readiness',
@@ -244,7 +246,7 @@ console.log(
       path: 'docs/target-provider-operations-v1.md',
       productionReadyClaim: false,
       providerPacketItemCount: 18,
-      requiredCommandCount: 19,
+      requiredCommandCount: 20,
       targetCaptureTemplate: true,
     },
     null,
