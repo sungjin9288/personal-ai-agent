@@ -91,21 +91,22 @@ try {
   assert.equal(status.summary.productionReadyStatus, 'blocked');
   assert.equal(status.summary.productionReadyBlocked, true);
   assert.equal(status.summary.productionBlockerCount, 24);
-  assert.equal(status.summary.currentOpenBlockerCount, 5);
-  assert.equal(status.summary.currentOpenBlockerActionCount, 5);
+  assert.equal(status.summary.currentOpenBlockerCount, 6);
+  assert.equal(status.summary.currentOpenBlockerActionCount, 6);
   assert.equal(status.releaseReadiness?.productionReadyClaimAllowed, false);
   assert.equal(status.releaseReadiness?.productionBlockerCount, 24);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 5);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 5);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 5);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 6);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 6);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 6);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['target-deployment'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['release-decision'], 1);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 3);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 4);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['deployment-owner'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['release-owner'], 1);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerActionCount, 3);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerActionCount, 4);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.openai, 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.anthropic, 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.local, 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerCounts?.hermes, 1);
@@ -141,6 +142,13 @@ try {
   assert.equal(
     status.releaseReadiness.currentOpenBlockers.some((item) =>
       item.includes('Anthropic live validation remains blocked until target Anthropic provider account evidence'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('target OpenAI provider account remains blocked until target OpenAI provider account evidence'),
     ),
     true,
     JSON.stringify(status.releaseReadiness),
@@ -248,6 +256,56 @@ try {
   assert.equal(anthropicEvidenceResponse.status, 200);
   assert.match(anthropicEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
   assert.match(await anthropicEvidenceResponse.text(), /Target Anthropic Provider Account/i);
+  const openaiBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.provider === 'openai' &&
+      item.category === 'provider-account' &&
+      item.commands.some((command) => command.command === 'npm run smoke:target-openai-provider-account'),
+  );
+  assert.equal(Boolean(openaiBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.match(
+    openaiBlockerAction.nextEvidence,
+    /Target OpenAI provider account evidence for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof/,
+    JSON.stringify(openaiBlockerAction),
+  );
+  assert.match(
+    openaiBlockerAction.nextEvidence,
+    /provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation pass, mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
+    JSON.stringify(openaiBlockerAction),
+  );
+  assert.match(
+    openaiBlockerAction.stopReason,
+    /Target OpenAI provider account lacks account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof/,
+    JSON.stringify(openaiBlockerAction),
+  );
+  assert.match(
+    openaiBlockerAction.stopReason,
+    /provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation pass, mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot proof/,
+    JSON.stringify(openaiBlockerAction),
+  );
+  assert.equal(
+    openaiBlockerAction.commands.some(
+      (command) =>
+        command.kind === 'live-validation' &&
+        command.command === 'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai',
+    ),
+    true,
+    JSON.stringify(openaiBlockerAction.commands),
+  );
+  const openaiEvidenceDoc = openaiBlockerAction.evidenceDocs.find(
+    (doc) => doc.path === 'docs/target-openai-provider-account-v1.md',
+  );
+  assert.equal(Boolean(openaiEvidenceDoc), true, JSON.stringify(openaiBlockerAction));
+  assert.equal(openaiEvidenceDoc.exists, true, JSON.stringify(openaiEvidenceDoc));
+  assert.equal(
+    openaiEvidenceDoc.href,
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-openai-provider-account-v1.md',
+    JSON.stringify(openaiEvidenceDoc),
+  );
+  const openaiEvidenceResponse = await fetch(`${baseUrl}${openaiEvidenceDoc.href}`);
+  assert.equal(openaiEvidenceResponse.status, 200);
+  assert.match(openaiEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
+  assert.match(await openaiEvidenceResponse.text(), /Target OpenAI Provider Account/i);
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(
       (item) =>

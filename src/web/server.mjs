@@ -65,6 +65,7 @@ const executionV1MutableArtifactPaths = new Set([
 ]);
 const executionV1ReleaseEvidenceDocPaths = new Set([
   ...executionV1MutableArtifactPaths,
+  'docs/target-openai-provider-account-v1.md',
   'docs/target-anthropic-provider-account-v1.md',
   'docs/target-clean-deployment-operations-v1.md',
   'docs/target-deployment-contract-v1.md',
@@ -1262,6 +1263,31 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       owner: 'provider-ops',
       provider: 'anthropic',
       stopReason: 'Target Anthropic provider account lacks account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot proof.',
+    };
+  }
+
+  if (normalized.includes('target openai provider account')) {
+    return {
+      ...base,
+      category: 'provider-account',
+      commands: [
+        buildReleaseReadinessCommand('OpenAI preflight', 'npm run preflight:execution-v1:openai', 'preflight'),
+        buildReleaseReadinessCommand(
+          'OpenAI live validation',
+          'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target OpenAI account gate', 'npm run smoke:target-openai-provider-account'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target OpenAI provider account', 'docs/target-openai-provider-account-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+      ],
+      nextEvidence: 'Target OpenAI provider account evidence for account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation pass, mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      provider: 'openai',
+      stopReason: 'Target OpenAI provider account lacks account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation pass, mission and execution session provenance proof, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene result, and regenerated execution snapshot proof.',
     };
   }
 
