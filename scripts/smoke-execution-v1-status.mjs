@@ -100,6 +100,11 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandCount, 29);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.evidenceDocCount, 22);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.closureVerificationCount, 7);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.closureVerificationCommandCount, 29);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.closureVerificationEvidenceDocCount, 22);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.closureVerificationTargetBoundaryCount, 7);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.closureVerificationProductionReadyBlockedCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.runtimeAuditCommandCount, 6);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
@@ -190,6 +195,9 @@ try {
     false,
     JSON.stringify(status.releaseReadiness),
   );
+  for (const action of status.releaseReadiness.currentOpenBlockerActions) {
+    assertCurrentOpenBlockerClosureVerification(action);
+  }
   const anthropicBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
     (item) =>
       item.category === 'provider-account' &&
@@ -198,6 +206,18 @@ try {
   );
   assert.equal(Boolean(anthropicBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
   assert.equal(anthropicBlockerAction.provider, 'anthropic', JSON.stringify(anthropicBlockerAction));
+  assert.equal(anthropicBlockerAction.closureVerification.provider, 'anthropic');
+  assert.equal(anthropicBlockerAction.closureVerification.category, 'provider-account');
+  assert.equal(
+    anthropicBlockerAction.closureVerification.requiredProofs.includes('provider account or billing/quota approval proof'),
+    true,
+    JSON.stringify(anthropicBlockerAction.closureVerification),
+  );
+  assert.equal(
+    anthropicBlockerAction.closureVerification.requiredProofs.includes('target-boundary provider live validation proof'),
+    true,
+    JSON.stringify(anthropicBlockerAction.closureVerification),
+  );
   assert.match(
     anthropicBlockerAction.nextEvidence,
     /account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof/,
@@ -374,6 +394,25 @@ try {
       JSON.stringify(providerOperationsBlockerAction.commands),
     );
   }
+  assert.equal(
+    providerOperationsBlockerAction.closureVerification.requiredProofs.includes('provider fallback runtime audit proof'),
+    true,
+    JSON.stringify(providerOperationsBlockerAction.closureVerification),
+  );
+  assert.equal(
+    providerOperationsBlockerAction.closureVerification.requiredCommands.some(
+      (entry) => entry.command === 'npm run smoke:workspace-timeline' && entry.kind === 'runtime-audit',
+    ),
+    true,
+    JSON.stringify(providerOperationsBlockerAction.closureVerification),
+  );
+  assert.equal(
+    providerOperationsBlockerAction.closureVerification.requiredEvidenceDocs.some(
+      (doc) => doc.path === 'docs/target-provider-operations-v1.md' && doc.exists === true,
+    ),
+    true,
+    JSON.stringify(providerOperationsBlockerAction.closureVerification),
+  );
   for (const command of [
     'npm run smoke:provider-fallback-policy',
     'npm run smoke:provider-events',
@@ -531,6 +570,16 @@ try {
       item.commands.some((command) => command.command === 'npm run smoke:production-enterprise-controls'),
   );
   assert.equal(Boolean(releaseDecisionBlockerAction), true, JSON.stringify(status.releaseReadiness.currentOpenBlockerActions));
+  assert.equal(
+    releaseDecisionBlockerAction.closureVerification.requiredProofs.includes('accepted risk register proof'),
+    true,
+    JSON.stringify(releaseDecisionBlockerAction.closureVerification),
+  );
+  assert.equal(
+    releaseDecisionBlockerAction.closureVerification.requiredProofs.includes('allowed claim text proof'),
+    true,
+    JSON.stringify(releaseDecisionBlockerAction.closureVerification),
+  );
   assert.match(
     releaseDecisionBlockerAction.nextEvidence,
     /Target provider evidence intake, provider operations, provider account or architecture approvals, target-boundary live validation for every included provider, provider failure containment, production enterprise controls, hosted identity and session evidence, hosted tenant isolation evidence, target secret manager evidence, target observability and SLO evidence, data lifecycle and support evidence, target deployment contract evidence, clean deployment release evidence, production-like drill result, release artifact hygiene result, accepted risk register, allowed claim text, release decision owner approval, next review date, and regenerated execution snapshot evidence from the same target boundary/,
@@ -724,6 +773,72 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/target-clean-deployment-operations-v1.md',
     'docs/release-readiness-v1.md',
   ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
+}
+
+function assertCurrentOpenBlockerClosureVerification(action) {
+  assert.equal(Boolean(action?.closureVerification), true, JSON.stringify(action));
+  assert.equal(action.closureVerification.blockerId, action.id, JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.stopConditionId, action.id, JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.status, 'blocked', JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.currentState, 'blocked', JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.targetBoundaryRequired, true, JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.sameBoundaryRequired, true, JSON.stringify(action.closureVerification));
+  assert.equal(action.closureVerification.productionReadyClaimAllowed, false, JSON.stringify(action.closureVerification));
+  assert.match(
+    action.closureVerification.productionReadyClaimRule,
+    /productionReadyClaim remains false/,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredCommands.length,
+    action.commands.length,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredEvidenceDocs.length,
+    action.evidenceDocs.length,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredProofs.includes('same-boundary target evidence packet proof'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredProofs.includes('release artifact hygiene pass proof'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredProofs.includes('regenerated execution-v1 artifact snapshot proof'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.requiredDecisionFields.includes('decisionOwner'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.acceptedDispositionValues.includes('closed-after-evidence'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.artifactRequirements.releaseArtifactHygiene,
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.artifactRequirements.executionV1ArtifactRefresh,
+    true,
+    JSON.stringify(action.closureVerification),
+  );
+  assert.equal(
+    action.closureVerification.forbiddenEvidence.includes('raw API keys or tokens'),
+    true,
+    JSON.stringify(action.closureVerification),
+  );
 }
 
 async function fetchJson(url) {

@@ -2835,9 +2835,30 @@ function buildReleaseBlockerClosureChecklistText(blockerAction = null) {
   }
 
   const blockerLabel = String(blockerAction.blocker || blockerAction.stopReason || 'current open blocker').trim();
-  const nextEvidence = String(blockerAction.nextEvidence || '').trim();
-  const evidenceDocs = Array.isArray(blockerAction.evidenceDocs) ? blockerAction.evidenceDocs : [];
-  const commands = Array.isArray(blockerAction.commands) ? blockerAction.commands : [];
+  const closureVerification = blockerAction.closureVerification || {};
+  const nextEvidence = String(closureVerification.requiredClosingEvidence || blockerAction.nextEvidence || '').trim();
+  const evidenceDocs = Array.isArray(closureVerification.requiredEvidenceDocs)
+    ? closureVerification.requiredEvidenceDocs
+    : Array.isArray(blockerAction.evidenceDocs)
+      ? blockerAction.evidenceDocs
+      : [];
+  const commands = Array.isArray(closureVerification.requiredCommands)
+    ? closureVerification.requiredCommands
+    : Array.isArray(blockerAction.commands)
+      ? blockerAction.commands
+      : [];
+  const closureRules = Array.isArray(closureVerification.closureRules)
+    ? closureVerification.closureRules
+    : [];
+  const requiredProofs = Array.isArray(closureVerification.requiredProofs)
+    ? closureVerification.requiredProofs
+    : [];
+  const requiredDecisionFields = Array.isArray(closureVerification.requiredDecisionFields)
+    ? closureVerification.requiredDecisionFields
+    : [];
+  const forbiddenEvidence = Array.isArray(closureVerification.forbiddenEvidence)
+    ? closureVerification.forbiddenEvidence
+    : [];
   const blockerLink = `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
     releaseFocusedBlockerId: actionId,
@@ -2857,6 +2878,11 @@ function buildReleaseBlockerClosureChecklistText(blockerAction = null) {
     `- status: ${String(blockerAction.status || 'blocked').trim()}`,
     `- stopReason: ${String(blockerAction.stopReason || blockerLabel).trim()}`,
     `- nextEvidence: ${nextEvidence || 'not recorded'}`,
+    `- closureVerification: ${closureVerification.id ? closureVerification.id : 'not provided'}`,
+    `- targetBoundaryRequired: ${String(Boolean(closureVerification.targetBoundaryRequired ?? true))}`,
+    `- sameBoundaryRequired: ${String(Boolean(closureVerification.sameBoundaryRequired ?? true))}`,
+    `- productionReadyClaimAllowed: ${String(Boolean(closureVerification.productionReadyClaimAllowed))}`,
+    `- defaultDisposition: ${String(closureVerification.defaultDisposition || 'keep-blocked')}`,
     `- releaseLink: ${blockerLink}`,
     '',
     'Closure requirements:',
@@ -2865,6 +2891,20 @@ function buildReleaseBlockerClosureChecklistText(blockerAction = null) {
     '3. Run the blocker-specific commands listed below and keep command output with the evidence packet.',
     '4. Regenerate execution-v1 artifacts if live proof or any release source-of-record changes.',
     '5. Keep productionReadyClaim=false until production readiness and artifact hygiene gates pass with no stop-condition.',
+    '',
+    'Closure rules:',
+    ...(
+      closureRules.length
+        ? closureRules.map((rule, index) => `${index + 1}. ${String(rule || '').trim()}`)
+        : ['- target-boundary evidence and reviewer decision are required']
+    ),
+    '',
+    'Required proofs:',
+    ...(
+      requiredProofs.length
+        ? requiredProofs.map((proof, index) => `${index + 1}. ${String(proof || '').trim()}`)
+        : ['- same-boundary target evidence packet proof']
+    ),
     '',
     'Evidence docs:',
     ...(
@@ -2891,8 +2931,22 @@ function buildReleaseBlockerClosureChecklistText(blockerAction = null) {
             const commandLabel = String(command.label || 'command').trim();
             const commandValue = String(command.command || '').trim();
             return `${index + 1}. ${commandLabel}: ${commandValue || 'command 없음'}`;
-          })
+      })
         : ['- none']
+    ),
+    '',
+    'Decision fields:',
+    ...(
+      requiredDecisionFields.length
+        ? requiredDecisionFields.map((field) => `- ${String(field || '').trim()}`)
+        : ['- decisionOwner', '- evidenceOwner', '- reviewer', '- reviewDate']
+    ),
+    '',
+    'Forbidden evidence:',
+    ...(
+      forbiddenEvidence.length
+        ? forbiddenEvidence.map((item) => `- ${String(item || '').trim()}`)
+        : ['- raw API keys or tokens', '- customer personal data']
     ),
     '',
     'Final verification:',
