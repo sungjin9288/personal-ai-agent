@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-27T15:08:19.089Z
-- sourceBranch: codex/execution-v1-artifacts-2abe35c-refresh
-- sourceCommit: 2abe35c359fe4fd2976f088857bf6666dba0389c
+- generatedAt: 2026-05-27T15:39:57.643Z
+- sourceBranch: codex/provider-readiness-doc-closure-linkage
+- sourceCommit: 9421d9e95363fd265a583ef0ffac1816be355ea4
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 8251 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 9049 |
 
 ## Key Signals
 
@@ -70,6 +70,17 @@ Production-ready remains blocked until every provider included in the target rel
 - stopReason: Missing OPENAI_API_KEY
 - targetStopConditionId: target-openai-provider-account-approval-missing
 - requiredClosingEvidence: target OpenAI account approval, billing/quota proof, target secret injection, model access, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts
+- linkedBlockers: target-openai-provider-account-remains-blocked-until-target-open, target-provider-operations-evidence-remains-blocked-until-comple
+- providerBlockers: target-openai-provider-account-remains-blocked-until-target-open
+- sharedProviderOperationsBlockers: target-provider-operations-evidence-remains-blocked-until-comple
+- closureVerificationIds: target-openai-provider-account-remains-blocked-until-target-open-closure-verification, target-provider-operations-evidence-remains-blocked-until-comple-closure-verification
+- closureVerificationCount: 2
+- requiredCommandCount: 12
+- requiredEvidenceDocCount: 5
+- requiredProofCount: 14
+- targetBoundaryRequiredCount: 2
+- productionReadyBlockedCount: 2
+- productionReadyClaimAllowed: false
 
 ### anthropic
 
@@ -86,6 +97,17 @@ Production-ready remains blocked until every provider included in the target rel
 - stopReason: Missing ANTHROPIC_API_KEY
 - targetStopConditionId: anthropic-live-validation-missing-or-failed
 - requiredClosingEvidence: target Anthropic account approval, billing/credit remediation, target secret injection, model access, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts
+- linkedBlockers: anthropic-live-validation-remains-blocked-until-target-anthropic, target-provider-operations-evidence-remains-blocked-until-comple
+- providerBlockers: anthropic-live-validation-remains-blocked-until-target-anthropic
+- sharedProviderOperationsBlockers: target-provider-operations-evidence-remains-blocked-until-comple
+- closureVerificationIds: anthropic-live-validation-remains-blocked-until-target-anthropic-closure-verification, target-provider-operations-evidence-remains-blocked-until-comple-closure-verification
+- closureVerificationCount: 2
+- requiredCommandCount: 12
+- requiredEvidenceDocCount: 6
+- requiredProofCount: 14
+- targetBoundaryRequiredCount: 2
+- productionReadyBlockedCount: 2
+- productionReadyClaimAllowed: false
 
 ### local
 
@@ -102,6 +124,17 @@ Production-ready remains blocked until every provider included in the target rel
 - stopReason: Missing LOCAL_PROVIDER_MODEL
 - targetStopConditionId: target-local-provider-approval-missing
 - requiredClosingEvidence: target local provider architecture approval, endpoint/model pinning, network isolation, quota/resource guard, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts
+- linkedBlockers: target-provider-operations-evidence-remains-blocked-until-comple, target-local-provider-architecture-remains-blocked-until-endpoin
+- providerBlockers: target-local-provider-architecture-remains-blocked-until-endpoin
+- sharedProviderOperationsBlockers: target-provider-operations-evidence-remains-blocked-until-comple
+- closureVerificationIds: target-provider-operations-evidence-remains-blocked-until-comple-closure-verification, target-local-provider-architecture-remains-blocked-until-endpoin-closure-verification
+- closureVerificationCount: 2
+- requiredCommandCount: 12
+- requiredEvidenceDocCount: 5
+- requiredProofCount: 14
+- targetBoundaryRequiredCount: 2
+- productionReadyBlockedCount: 2
+- productionReadyClaimAllowed: false
 
 ### hermes
 
@@ -118,6 +151,17 @@ Production-ready remains blocked until every provider included in the target rel
 - stopReason: Missing HERMES_PROVIDER_MODEL
 - targetStopConditionId: target-hermes-provider-approval-missing
 - requiredClosingEvidence: target Hermes provider architecture approval, endpoint/model pinning, target secret injection, tool-call parsing proof, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts
+- linkedBlockers: target-provider-operations-evidence-remains-blocked-until-comple, hermes-live-validation-is-blocked-until-target-hermes-provider-a
+- providerBlockers: hermes-live-validation-is-blocked-until-target-hermes-provider-a
+- sharedProviderOperationsBlockers: target-provider-operations-evidence-remains-blocked-until-comple
+- closureVerificationIds: target-provider-operations-evidence-remains-blocked-until-comple-closure-verification, hermes-live-validation-is-blocked-until-target-hermes-provider-a-closure-verification
+- closureVerificationCount: 2
+- requiredCommandCount: 12
+- requiredEvidenceDocCount: 5
+- requiredProofCount: 14
+- targetBoundaryRequiredCount: 2
+- productionReadyBlockedCount: 2
+- productionReadyClaimAllowed: false
 
 ## Stop Condition Handoff
 
@@ -127,6 +171,17 @@ Production-ready remains blocked until every provider included in the target rel
 | anthropic | anthropic-live-env-missing | Missing ANTHROPIC_API_KEY | anthropic-live-validation-missing-or-failed | `node scripts/build-execution-v1-evidence.mjs --live-anthropic` | target Anthropic account approval, billing/credit remediation, target secret injection, model access, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts |
 | local | local-live-env-missing | Missing LOCAL_PROVIDER_MODEL | target-local-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-local` | target local provider architecture approval, endpoint/model pinning, network isolation, quota/resource guard, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts |
 | hermes | hermes-live-env-missing | Missing HERMES_PROVIDER_MODEL | target-hermes-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-hermes` | target Hermes provider architecture approval, endpoint/model pinning, target secret injection, tool-call parsing proof, target-boundary live validation, provider operations proof, release artifact hygiene, and regenerated execution-v1 artifacts |
+
+## Provider Blocker Closure Linkage
+
+| Provider | Linked Blockers | Shared Provider Operations Blocker | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| openai | target-openai-provider-account-remains-blocked-until-target-open<br>target-provider-operations-evidence-remains-blocked-until-comple | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+| anthropic | anthropic-live-validation-remains-blocked-until-target-anthropic<br>target-provider-operations-evidence-remains-blocked-until-comple | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 6 | blocked |
+| local | target-provider-operations-evidence-remains-blocked-until-comple<br>target-local-provider-architecture-remains-blocked-until-endpoin | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+| hermes | target-provider-operations-evidence-remains-blocked-until-comple<br>hermes-live-validation-is-blocked-until-target-hermes-provider-a | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+
+Every provider readiness row must carry its provider-specific blocker plus the shared `provider-operations` blocker. Keep `productionReadyClaim: false` until both linked closure verifications have same-boundary target evidence, accepted decision owner proof, provider fallback policy and stop reason proof, release artifact hygiene, and regenerated execution-v1 snapshot evidence.
 
 ## Operating Interpretation
 

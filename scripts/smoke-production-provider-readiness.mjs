@@ -50,14 +50,36 @@ assert.match(
   readiness,
   /\| Provider \| Stop Condition \| Stop Reason \| Target Stop Condition \| Evidence Command \| Required Closing Evidence \|/,
 );
+assert.match(readiness, /^## Provider Blocker Closure Linkage$/m);
+assert.match(
+  readiness,
+  /\| Provider \| Linked Blockers \| Shared Provider Operations Blocker \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  readiness,
+  /Every provider readiness row must carry its provider-specific blocker plus the shared `provider-operations` blocker/,
+);
+assert.match(readiness, /provider fallback policy and stop reason proof/);
 
-for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCommand] of [
+const sharedProviderOperationsBlockerId = 'target-provider-operations-evidence-remains-blocked-until-comple';
+
+for (const [
+  provider,
+  envKey,
+  stopConditionId,
+  targetStopConditionId,
+  evidenceCommand,
+  expectedProviderBlockerId,
+  expectedEvidenceDocCount,
+] of [
   [
     'openai',
     'OPENAI_API_KEY',
     'openai-live-env-missing',
     'target-openai-provider-account-approval-missing',
     'node scripts/build-execution-v1-evidence.mjs --live-openai',
+    'target-openai-provider-account-remains-blocked-until-target-open',
+    5,
   ],
   [
     'anthropic',
@@ -65,6 +87,8 @@ for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCo
     'anthropic-live-env-missing',
     'anthropic-live-validation-missing-or-failed',
     'node scripts/build-execution-v1-evidence.mjs --live-anthropic',
+    'anthropic-live-validation-remains-blocked-until-target-anthropic',
+    6,
   ],
   [
     'local',
@@ -72,6 +96,8 @@ for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCo
     'local-live-env-missing',
     'target-local-provider-approval-missing',
     'node scripts/build-execution-v1-evidence.mjs --live-local',
+    'target-local-provider-architecture-remains-blocked-until-endpoin',
+    5,
   ],
   [
     'hermes',
@@ -79,8 +105,15 @@ for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCo
     'hermes-live-env-missing',
     'target-hermes-provider-approval-missing',
     'node scripts/build-execution-v1-evidence.mjs --live-hermes',
+    'hermes-live-validation-is-blocked-until-target-hermes-provider-a',
+    5,
   ],
 ]) {
+  const providerDetails = extractProviderDetails(readiness, provider);
+  const closureLinkageRow = extractTableRow(
+    extractMarkdownSection(readiness, 'Provider Blocker Closure Linkage'),
+    provider,
+  );
   assert.match(readiness, new RegExp(`\\| ${provider} \\| .* \\| ${envKey} \\|`), provider);
   assert.match(readiness, new RegExp(`### ${provider}\\n`), provider);
   assert.match(readiness, new RegExp(`- liveCommand: \`npm run live:execution-v1:${provider}\``), provider);
@@ -95,7 +128,39 @@ for (const [provider, envKey, stopConditionId, targetStopConditionId, evidenceCo
     ),
     provider,
   );
+  assert.match(providerDetails, new RegExp(`- linkedBlockers: .*${escapeRegExp(expectedProviderBlockerId)}`), provider);
+  assert.match(providerDetails, new RegExp(`- linkedBlockers: .*${escapeRegExp(sharedProviderOperationsBlockerId)}`), provider);
+  assert.match(providerDetails, new RegExp(`- providerBlockers: ${escapeRegExp(expectedProviderBlockerId)}`), provider);
+  assert.match(providerDetails, new RegExp(`- sharedProviderOperationsBlockers: ${escapeRegExp(sharedProviderOperationsBlockerId)}`), provider);
+  assert.match(
+    providerDetails,
+    new RegExp(`- closureVerificationIds: .*${escapeRegExp(expectedProviderBlockerId)}-closure-verification`),
+    provider,
+  );
+  assert.match(
+    providerDetails,
+    new RegExp(`- closureVerificationIds: .*${escapeRegExp(sharedProviderOperationsBlockerId)}-closure-verification`),
+    provider,
+  );
+  assert.match(providerDetails, /- closureVerificationCount: 2/, provider);
+  assert.match(providerDetails, /- requiredCommandCount: 12/, provider);
+  assert.match(providerDetails, new RegExp(`- requiredEvidenceDocCount: ${expectedEvidenceDocCount}`), provider);
+  assert.match(providerDetails, /- requiredProofCount: 14/, provider);
+  assert.match(providerDetails, /- targetBoundaryRequiredCount: 2/, provider);
+  assert.match(providerDetails, /- productionReadyBlockedCount: 2/, provider);
+  assert.match(providerDetails, /- productionReadyClaimAllowed: false/, provider);
+  assert.match(closureLinkageRow, new RegExp(escapeRegExp(expectedProviderBlockerId)), provider);
+  assert.match(closureLinkageRow, new RegExp(escapeRegExp(sharedProviderOperationsBlockerId)), provider);
+  assert.match(
+    closureLinkageRow,
+    new RegExp(`\\| 2 \\| 14 \\| 12 \\| ${expectedEvidenceDocCount} \\| blocked \\|$`),
+    provider,
+  );
 }
+
+assert.doesNotMatch(readiness, /linkedBlockers: none/);
+assert.doesNotMatch(readiness, /sharedProviderOperationsBlockers: none/);
+assert.doesNotMatch(readiness, /\| [a-z]+ \| none \| none \| 0 \|/);
 
 for (const phrase of [
   /archived passed live providers in the current release evidence: OpenAI, local/,
@@ -212,6 +277,26 @@ function readRequiredFile(filePath) {
     throw new Error(`required file not found: ${filePath}`);
   }
   return fs.readFileSync(filePath, 'utf8');
+}
+
+function extractProviderDetails(markdown, provider) {
+  const match = String(markdown || '').match(
+    new RegExp(`### ${escapeRegExp(provider)}\\n([\\s\\S]*?)(?:\\n### |\\n## |$)`),
+  );
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function extractMarkdownSection(markdown, heading) {
+  const match = String(markdown || '').match(
+    new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n([\\s\\S]*?)(?=\\n## |$)`),
+  );
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function extractTableRow(markdown, firstCell) {
+  return String(markdown || '')
+    .split('\n')
+    .find((line) => line.startsWith(`| ${firstCell} |`)) || '';
 }
 
 function escapeRegExp(value) {
