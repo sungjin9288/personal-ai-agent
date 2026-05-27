@@ -98,11 +98,19 @@ try {
   assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 7);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandCount, 28);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.evidenceDocCount, 22);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.runtimeAuditCommandCount, 5);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-operations'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['target-deployment'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['release-decision'], 1);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.verification, 15);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.['runtime-audit'], 5);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.['live-validation'], 4);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.preflight, 3);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.commandKindCounts?.rehearsal, 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 5);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['deployment-owner'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['release-owner'], 1);
@@ -358,15 +366,25 @@ try {
   for (const command of [
     'npm run smoke:target-provider-operations',
     'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:release-artifact-hygiene',
+  ]) {
+    assert.equal(
+      providerOperationsBlockerAction.commands.some((entry) => entry.command === command),
+      true,
+      JSON.stringify(providerOperationsBlockerAction.commands),
+    );
+  }
+  for (const command of [
     'npm run smoke:provider-fallback-policy',
     'npm run smoke:provider-events',
     'npm run smoke:provider-attention-remediation',
     'npm run smoke:mission-timeline',
     'npm run smoke:operator-timeline',
-    'npm run smoke:release-artifact-hygiene',
   ]) {
     assert.equal(
-      providerOperationsBlockerAction.commands.some((entry) => entry.command === command),
+      providerOperationsBlockerAction.commands.some(
+        (entry) => entry.command === command && entry.kind === 'runtime-audit',
+      ),
       true,
       JSON.stringify(providerOperationsBlockerAction.commands),
     );

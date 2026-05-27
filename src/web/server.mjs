@@ -1355,14 +1355,31 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
       commands: [
         buildReleaseReadinessCommand('Target provider operations gate', 'npm run smoke:target-provider-operations'),
         buildReleaseReadinessCommand('Target provider evidence intake gate', 'npm run smoke:target-provider-evidence-intake'),
-        buildReleaseReadinessCommand('Provider fallback policy smoke', 'npm run smoke:provider-fallback-policy'),
-        buildReleaseReadinessCommand('Provider events fallback audit', 'npm run smoke:provider-events'),
+        buildReleaseReadinessCommand(
+          'Provider fallback policy smoke',
+          'npm run smoke:provider-fallback-policy',
+          'runtime-audit',
+        ),
+        buildReleaseReadinessCommand(
+          'Provider events fallback audit',
+          'npm run smoke:provider-events',
+          'runtime-audit',
+        ),
         buildReleaseReadinessCommand(
           'Provider attention remediation fallback audit',
           'npm run smoke:provider-attention-remediation',
+          'runtime-audit',
         ),
-        buildReleaseReadinessCommand('Mission timeline fallback audit', 'npm run smoke:mission-timeline'),
-        buildReleaseReadinessCommand('Operator timeline fallback audit', 'npm run smoke:operator-timeline'),
+        buildReleaseReadinessCommand(
+          'Mission timeline fallback audit',
+          'npm run smoke:mission-timeline',
+          'runtime-audit',
+        ),
+        buildReleaseReadinessCommand(
+          'Operator timeline fallback audit',
+          'npm run smoke:operator-timeline',
+          'runtime-audit',
+        ),
         buildReleaseReadinessCommand('Release artifact hygiene smoke', 'npm run smoke:release-artifact-hygiene'),
       ],
       evidenceDocs: [
@@ -1438,11 +1455,13 @@ function sortCountRecord(record = {}) {
 
 function buildCurrentOpenBlockerActionSummary(actions = []) {
   const categoryCounts = {};
+  const commandKindCounts = {};
   const ownerCounts = {};
   const providerCounts = {};
   const statusCounts = {};
   let commandCount = 0;
   let evidenceDocCount = 0;
+  let runtimeAuditCommandCount = 0;
   let topPriorityAction = null;
   let topPriorityValue = Number.POSITIVE_INFINITY;
 
@@ -1453,7 +1472,15 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
       incrementCountRecord(providerCounts, action.provider);
     }
     incrementCountRecord(statusCounts, action?.status || 'blocked');
-    commandCount += Array.isArray(action?.commands) ? action.commands.length : 0;
+    const commands = Array.isArray(action?.commands) ? action.commands : [];
+    commandCount += commands.length;
+    for (const command of commands) {
+      const kind = String(command?.kind || 'verification').trim() || 'verification';
+      incrementCountRecord(commandKindCounts, kind);
+      if (kind === 'runtime-audit') {
+        runtimeAuditCommandCount += 1;
+      }
+    }
     evidenceDocCount += Array.isArray(action?.evidenceDocs) ? action.evidenceDocs.length : 0;
 
     const priority = Number.isFinite(Number(action?.priority)) ? Number(action.priority) : index + 1;
@@ -1467,10 +1494,12 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
     actionCount: actions.length,
     categoryCounts: sortCountRecord(categoryCounts),
     commandCount,
+    commandKindCounts: sortCountRecord(commandKindCounts),
     evidenceDocCount,
     ownerCounts: sortCountRecord(ownerCounts),
     providerActionCount: Object.values(providerCounts).reduce((total, value) => total + Number(value || 0), 0),
     providerCounts: sortCountRecord(providerCounts),
+    runtimeAuditCommandCount,
     statusCounts: sortCountRecord(statusCounts),
     topPriorityBlocker: String(topPriorityAction?.blocker || topPriorityAction?.stopReason || '').trim(),
     topPriorityBlockerId: String(topPriorityAction?.id || '').trim(),
