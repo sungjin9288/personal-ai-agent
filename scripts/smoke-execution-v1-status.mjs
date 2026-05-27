@@ -91,18 +91,19 @@ try {
   assert.equal(status.summary.productionReadyStatus, 'blocked');
   assert.equal(status.summary.productionReadyBlocked, true);
   assert.equal(status.summary.productionBlockerCount, 24);
-  assert.equal(status.summary.currentOpenBlockerCount, 6);
-  assert.equal(status.summary.currentOpenBlockerActionCount, 6);
+  assert.equal(status.summary.currentOpenBlockerCount, 7);
+  assert.equal(status.summary.currentOpenBlockerActionCount, 7);
   assert.equal(status.releaseReadiness?.productionReadyClaimAllowed, false);
   assert.equal(status.releaseReadiness?.productionBlockerCount, 24);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 6);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 6);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 6);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerCount, 7);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionCount, 7);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.actionCount, 7);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-account'], 2);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-architecture'], 2);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['provider-operations'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['target-deployment'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.categoryCounts?.['release-decision'], 1);
-  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 4);
+  assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['provider-ops'], 5);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['deployment-owner'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.ownerCounts?.['release-owner'], 1);
   assert.equal(status.releaseReadiness?.currentOpenBlockerActionSummary?.providerActionCount, 4);
@@ -149,6 +150,13 @@ try {
   assert.equal(
     status.releaseReadiness.currentOpenBlockers.some((item) =>
       item.includes('target OpenAI provider account remains blocked until target OpenAI provider account evidence'),
+    ),
+    true,
+    JSON.stringify(status.releaseReadiness),
+  );
+  assert.equal(
+    status.releaseReadiness.currentOpenBlockers.some((item) =>
+      item.includes('target provider operations evidence remains blocked until completed per-provider operations capture template'),
     ),
     true,
     JSON.stringify(status.releaseReadiness),
@@ -306,6 +314,63 @@ try {
   assert.equal(openaiEvidenceResponse.status, 200);
   assert.match(openaiEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
   assert.match(await openaiEvidenceResponse.text(), /Target OpenAI Provider Account/i);
+  const providerOperationsBlockerAction = status.releaseReadiness.currentOpenBlockerActions.find(
+    (item) =>
+      item.category === 'provider-operations' &&
+      item.owner === 'provider-ops' &&
+      item.commands.some((command) => command.command === 'npm run smoke:target-provider-operations'),
+  );
+  assert.equal(
+    Boolean(providerOperationsBlockerAction),
+    true,
+    JSON.stringify(status.releaseReadiness.currentOpenBlockerActions),
+  );
+  assert.match(
+    providerOperationsBlockerAction.nextEvidence,
+    /Completed per-provider operations capture template, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  assert.match(
+    providerOperationsBlockerAction.nextEvidence,
+    /provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  assert.match(
+    providerOperationsBlockerAction.stopReason,
+    /Target provider operations lacks same-boundary per-provider operations capture template proof, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  assert.match(
+    providerOperationsBlockerAction.stopReason,
+    /provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof/,
+    JSON.stringify(providerOperationsBlockerAction),
+  );
+  for (const command of [
+    'npm run smoke:target-provider-operations',
+    'npm run smoke:target-provider-evidence-intake',
+    'npm run smoke:provider-fallback-policy',
+    'npm run smoke:release-artifact-hygiene',
+  ]) {
+    assert.equal(
+      providerOperationsBlockerAction.commands.some((entry) => entry.command === command),
+      true,
+      JSON.stringify(providerOperationsBlockerAction.commands),
+    );
+  }
+  const providerOperationsEvidenceDoc = providerOperationsBlockerAction.evidenceDocs.find(
+    (doc) => doc.path === 'docs/target-provider-operations-v1.md',
+  );
+  assert.equal(Boolean(providerOperationsEvidenceDoc), true, JSON.stringify(providerOperationsBlockerAction));
+  assert.equal(providerOperationsEvidenceDoc.exists, true, JSON.stringify(providerOperationsEvidenceDoc));
+  assert.equal(
+    providerOperationsEvidenceDoc.href,
+    '/api/execution-v1/release-doc?path=docs%2Ftarget-provider-operations-v1.md',
+    JSON.stringify(providerOperationsEvidenceDoc),
+  );
+  const providerOperationsEvidenceResponse = await fetch(`${baseUrl}${providerOperationsEvidenceDoc.href}`);
+  assert.equal(providerOperationsEvidenceResponse.status, 200);
+  assert.match(providerOperationsEvidenceResponse.headers.get('content-type') || '', /^text\/markdown/);
+  assert.match(await providerOperationsEvidenceResponse.text(), /Target Provider Operations/i);
   assert.equal(
     status.releaseReadiness.currentOpenBlockerActions.some(
       (item) =>
