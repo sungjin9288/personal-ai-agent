@@ -291,7 +291,12 @@ try {
   assert.doesNotMatch(appJs, /quota\/cost guard, model\/endpoint pinning/);
   assert.doesNotMatch(appJs, /data\/transcript handling, remediation\/renewal/);
   assert.equal(appJs.includes('getReleaseProviderBlockerActions'), true);
+  assert.equal(appJs.includes('isReleaseSharedProviderBlockerAction'), true);
   assert.equal(appJs.includes('Linked provider blockers:'), true);
+  assert.equal(appJs.includes('linkedSharedBlockers:'), true);
+  assert.equal(appJs.includes('linkedClosureVerifications:'), true);
+  assert.equal(appJs.includes('linkedRequiredProofCount:'), true);
+  assert.equal(appJs.includes('sharedProviderBlocker:'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-count'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-count'), true);
