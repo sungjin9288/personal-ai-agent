@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-05-27T15:40:08.408Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-05-27T15:40:06.884Z
 - localDate: 2026-05-28
 - branch: codex/provider-readiness-doc-closure-linkage
 - commit: 9421d9e95363fd265a583ef0ffac1816be355ea4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4](releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4](docs/releases/execution-v1/9421d9e95363fd265a583ef0ffac1816be355ea4)
 - visualArtifactSetSha256: e48805050ddb80259d5a2cf2333eb6c3dacb2926a04c744cdc7d7942ab3e9579
 - commitPushStatus: not pushed, origin/codex/provider-readiness-doc-closure-linkage not found
 
