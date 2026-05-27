@@ -106,6 +106,7 @@ npm run smoke:provider-fallback-policy
 npm run smoke:provider-events
 npm run smoke:provider-attention-remediation
 npm run smoke:mission-timeline
+npm run smoke:workspace-timeline
 npm run smoke:operator-timeline
 npm run rehearsal:production-provider-readiness
 npm run smoke:production-provider-readiness
