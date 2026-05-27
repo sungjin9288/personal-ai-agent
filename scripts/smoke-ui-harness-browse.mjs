@@ -1554,14 +1554,24 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-owner'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-clear'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-summary'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-slice-closure-count'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-slice-required-proof-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-command-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-evidence-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-top'), true);
   assert.equal(appJs.includes('getReleaseBlockerSliceSummary'), true);
+  assert.equal(appJs.includes('getReleaseBlockerClosureVerification'), true);
+  assert.equal(appJs.includes('getReleaseBlockerRequiredCommands'), true);
+  assert.equal(appJs.includes('getReleaseBlockerRequiredEvidenceDocs'), true);
+  assert.equal(appJs.includes('getReleaseBlockerRequiredProofs'), true);
   assert.equal(appJs.includes('buildReleaseBlockerSliceSummaryText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary-copy'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-summary'), true);
   assert.equal(appJs.includes('Release blocker slice summary'), true);
+  assert.equal(appJs.includes('closureVerificationCount:'), true);
+  assert.equal(appJs.includes('requiredProofCount:'), true);
+  assert.equal(appJs.includes('closure verifications'), true);
+  assert.equal(appJs.includes('required proofs'), true);
   assert.equal(appJs.includes('buildReleaseBlockerSlicePackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
@@ -1572,6 +1582,9 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-filter-closure-checklist'), true);
   assert.equal(appJs.includes('Release blocker slice closure checklist'), true);
   assert.equal(appJs.includes('Blocker checklist:'), true);
+  assert.equal(appJs.includes('targetBoundaryRequired:'), true);
+  assert.equal(appJs.includes('sameBoundaryRequired:'), true);
+  assert.equal(appJs.includes('productionReadyClaimAllowed:'), true);
   assert.equal(appJs.includes('Artifact refresh: npm run refresh:execution-v1-artifacts'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-handoff'), true);
@@ -1601,6 +1614,9 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-closure-checklist'), true);
   assert.equal(appJs.includes('Release blocker closure checklist'), true);
   assert.equal(appJs.includes('Closure requirements:'), true);
+  assert.equal(appJs.includes('Closure rules:'), true);
+  assert.equal(appJs.includes('Required proofs:'), true);
+  assert.equal(appJs.includes('Forbidden evidence:'), true);
   assert.equal(appJs.includes('Artifact refresh: npm run refresh:execution-v1-artifacts'), true);
   assert.equal(appJs.includes('buildReleaseBlockerPackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-package'), true);
@@ -1707,6 +1723,14 @@ try {
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions.length, 1);
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].category, 'release-readiness');
   assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.actionCount, 1);
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.closureVerificationCount, 1);
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.closureVerificationCommandCount, 1);
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.closureVerificationEvidenceDocCount, 1);
+  assert.equal(executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.closureVerificationTargetBoundaryCount, 1);
+  assert.equal(
+    executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.closureVerificationProductionReadyBlockedCount,
+    1,
+  );
   assert.equal(
     executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.categoryCounts['release-readiness'],
     1,
@@ -1721,20 +1745,44 @@ try {
     executionV1Status.releaseReadiness.currentOpenBlockerActionSummary.topPriorityBlockerId,
     executionV1Status.releaseReadiness.currentOpenBlockerActions[0].id,
   );
+  const fixtureBlockerAction = executionV1Status.releaseReadiness.currentOpenBlockerActions[0];
+  assert.equal(fixtureBlockerAction.closureVerification.blockerId, fixtureBlockerAction.id);
+  assert.equal(fixtureBlockerAction.closureVerification.targetBoundaryRequired, true);
+  assert.equal(fixtureBlockerAction.closureVerification.sameBoundaryRequired, true);
+  assert.equal(fixtureBlockerAction.closureVerification.productionReadyClaimAllowed, false);
   assert.equal(
-    executionV1Status.releaseReadiness.currentOpenBlockerActions[0].evidenceDocs.some(
+    fixtureBlockerAction.closureVerification.requiredCommands.some(
+      (command) => command.command === 'npm run smoke:production-readiness-gate',
+    ),
+    true,
+    JSON.stringify(fixtureBlockerAction.closureVerification),
+  );
+  assert.equal(
+    fixtureBlockerAction.closureVerification.requiredEvidenceDocs.some(
+      (doc) => doc.path === 'docs/release-readiness-v1.md' && doc.exists === true,
+    ),
+    true,
+    JSON.stringify(fixtureBlockerAction.closureVerification),
+  );
+  assert.equal(
+    fixtureBlockerAction.closureVerification.requiredProofs.includes('same-boundary target evidence packet proof'),
+    true,
+    JSON.stringify(fixtureBlockerAction.closureVerification),
+  );
+  assert.equal(
+    fixtureBlockerAction.evidenceDocs.some(
       (doc) =>
         doc.path === 'docs/release-readiness-v1.md' &&
         doc.exists === true &&
         doc.href === '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
     ),
     true,
-    JSON.stringify(executionV1Status.releaseReadiness.currentOpenBlockerActions[0].evidenceDocs),
+    JSON.stringify(fixtureBlockerAction.evidenceDocs),
   );
   const releaseReadinessDoc = await fetchText(`${baseUrl}/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md`);
   assert.match(releaseReadinessDoc, /Release Readiness v1/);
   assert.equal(
-    executionV1Status.releaseReadiness.currentOpenBlockerActions[0].commands.some(
+    fixtureBlockerAction.commands.some(
       (command) => command.command === 'npm run smoke:production-readiness-gate',
     ),
     true,
