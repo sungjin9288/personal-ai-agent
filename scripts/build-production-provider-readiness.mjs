@@ -25,7 +25,17 @@ const currentStatus = extractStatusMap(closeout, 'Current Status');
 const operationalState = extractStatusMap(handoff, 'Operational State');
 
 const preflightResult = runPreflightAll();
-const providerRows = providerOrder.map((provider) => buildProviderRow(provider, preflightResult.parsed));
+const currentOpenBlockerActions = buildCurrentOpenBlockerActions(releaseReadiness);
+const providerRows = providerOrder.map((provider) => {
+  const row = buildProviderRow(provider, preflightResult.parsed);
+  return {
+    ...row,
+    blockerClosureVerification: buildProviderBlockerClosureVerificationSummary(
+      provider,
+      currentOpenBlockerActions,
+    ),
+  };
+});
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(
@@ -131,6 +141,7 @@ function renderProviderReadinessMarkdown({
   sourceCommit,
 }) {
   const status = preflightResult.ok ? 'local-provider-readiness-current' : 'local-provider-readiness-failed';
+  const providerClosureLinkageRows = buildProviderClosureLinkageRows(providerRows).join('\n');
   const operatingInterpretationRows = buildOperatingInterpretationRows(providerRows).join('\n');
   const stopConditionRows = buildStopConditionRows(providerRows).join('\n');
   const rows = providerRows
@@ -144,7 +155,9 @@ function renderProviderReadinessMarkdown({
   ].join('\n');
   const providerDetails = providerRows
     .map(
-      (row) => `### ${row.provider}
+      (row) => {
+        const closureSummary = row.blockerClosureVerification || {};
+        return `### ${row.provider}
 
 - preflightStatus: ${row.preflightStatus}
 - envKey: ${row.envKey}
@@ -158,7 +171,19 @@ function renderProviderReadinessMarkdown({
 - stopConditionId: ${row.stopConditionId || 'none'}
 - stopReason: ${row.stopReason || 'none'}
 - targetStopConditionId: ${row.targetStopConditionId || 'none'}
-- requiredClosingEvidence: ${row.requiredClosingEvidence || 'not reported'}`,
+- requiredClosingEvidence: ${row.requiredClosingEvidence || 'not reported'}
+- linkedBlockers: ${formatInlineList(closureSummary.actionIds)}
+- providerBlockers: ${formatInlineList(closureSummary.providerActionIds)}
+- sharedProviderOperationsBlockers: ${formatInlineList(closureSummary.sharedActionIds)}
+- closureVerificationIds: ${formatInlineList(closureSummary.closureVerificationIds)}
+- closureVerificationCount: ${closureSummary.closureVerificationCount ?? 0}
+- requiredCommandCount: ${closureSummary.commandCount ?? 0}
+- requiredEvidenceDocCount: ${closureSummary.evidenceDocCount ?? 0}
+- requiredProofCount: ${closureSummary.requiredProofCount ?? 0}
+- targetBoundaryRequiredCount: ${closureSummary.targetBoundaryRequiredCount ?? 0}
+- productionReadyBlockedCount: ${closureSummary.productionReadyBlockedCount ?? 0}
+- productionReadyClaimAllowed: ${closureSummary.productionReadyClaimAllowed === true ? 'true' : 'false'}`;
+      },
     )
     .join('\n\n');
   const keySignals = JSON.stringify(
@@ -229,6 +254,14 @@ ${providerDetails}
 | --- | --- | --- | --- | --- | --- |
 ${stopConditionRows}
 
+## Provider Blocker Closure Linkage
+
+| Provider | Linked Blockers | Shared Provider Operations Blocker | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+${providerClosureLinkageRows}
+
+Every provider readiness row must carry its provider-specific blocker plus the shared \`provider-operations\` blocker. Keep \`productionReadyClaim: false\` until both linked closure verifications have same-boundary target evidence, accepted decision owner proof, provider fallback policy and stop reason proof, release artifact hygiene, and regenerated execution-v1 snapshot evidence.
+
 ## Operating Interpretation
 
 ${operatingInterpretationRows}
@@ -273,6 +306,13 @@ function buildStopConditionRows(providerRows) {
   });
 }
 
+function buildProviderClosureLinkageRows(providerRows) {
+  return providerRows.map((row) => {
+    const summary = row.blockerClosureVerification || {};
+    return `| ${formatTableCell(row.provider)} | ${formatTableCell(formatTableList(summary.actionIds))} | ${formatTableCell(formatTableList(summary.sharedActionIds))} | ${summary.closureVerificationCount ?? 0} | ${summary.requiredProofCount ?? 0} | ${summary.commandCount ?? 0} | ${summary.evidenceDocCount ?? 0} | ${summary.productionReadyClaimAllowed === true ? 'allowed' : 'blocked'} |`;
+  });
+}
+
 function buildOperatingInterpretationRows(providerRows) {
   const rowByProvider = new Map(providerRows.map((row) => [row.provider, row]));
   const passedProviders = providerRows
@@ -311,6 +351,480 @@ function buildOperatingInterpretationRows(providerRows) {
   );
 
   return rows;
+}
+
+function buildCurrentOpenBlockerActions(markdown = '') {
+  return extractListItems(extractSection(markdown, '## Current Open Blockers'))
+    .map((blocker, index) => buildCurrentOpenBlockerAction(blocker, index))
+    .map((action) => attachCurrentOpenBlockerClosureVerification(action));
+}
+
+function buildReleaseReadinessCommand(label, command, kind = 'verification') {
+  return {
+    command,
+    kind,
+    label,
+  };
+}
+
+function buildReleaseReadinessDoc(label, docPath) {
+  const relativePath = String(docPath || '').trim();
+  return {
+    exists: Boolean(relativePath && fs.existsSync(path.join(repoDir, relativePath))),
+    href: relativePath,
+    label,
+    path: relativePath,
+  };
+}
+
+function buildCurrentOpenBlockerActionId(blocker = '', index = 0) {
+  const normalized = String(blocker || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64);
+  return normalized || `current-open-blocker-${index + 1}`;
+}
+
+function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
+  const normalized = String(blocker || '').toLowerCase();
+  const base = {
+    blocker: String(blocker || '').trim(),
+    category: 'release-readiness',
+    commands: [
+      buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
+    ],
+    evidenceDocs: [
+      buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+    ],
+    id: buildCurrentOpenBlockerActionId(blocker, index),
+    nextEvidence: 'Record blocker disposition, closing evidence, and release decision update before changing the release label.',
+    owner: 'release-owner',
+    priority: index + 1,
+    status: 'blocked',
+    stopReason: String(blocker || '').trim(),
+  };
+
+  if (normalized.includes('anthropic live validation')) {
+    return {
+      ...base,
+      category: 'provider-account',
+      commands: [
+        buildReleaseReadinessCommand('Anthropic preflight', 'npm run preflight:execution-v1:anthropic', 'preflight'),
+        buildReleaseReadinessCommand(
+          'Anthropic live validation',
+          'export ANTHROPIC_API_KEY="..." && npm run live:execution-v1:anthropic',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target Anthropic account gate', 'npm run smoke:target-anthropic-provider-account'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target Anthropic provider account', 'docs/target-anthropic-provider-account-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+      ],
+      nextEvidence: 'Target Anthropic provider account evidence, target-boundary Anthropic live validation proof, provider operations proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      provider: 'anthropic',
+      stopReason: 'Target Anthropic provider account lacks accepted same-boundary closure evidence.',
+    };
+  }
+
+  if (normalized.includes('target openai provider account')) {
+    return {
+      ...base,
+      category: 'provider-account',
+      commands: [
+        buildReleaseReadinessCommand('OpenAI preflight', 'npm run preflight:execution-v1:openai', 'preflight'),
+        buildReleaseReadinessCommand(
+          'OpenAI live validation',
+          'export OPENAI_RUN_TIMEOUT_MS=60000 OPENAI_API_KEY="..." && npm run live:execution-v1:openai',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target OpenAI account gate', 'npm run smoke:target-openai-provider-account'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target OpenAI provider account', 'docs/target-openai-provider-account-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+      ],
+      nextEvidence: 'Target OpenAI provider account evidence, target-boundary OpenAI live validation proof, provider operations proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      provider: 'openai',
+      stopReason: 'Target OpenAI provider account lacks accepted same-boundary closure evidence.',
+    };
+  }
+
+  if (
+    normalized.includes('target local provider architecture')
+      && !normalized.includes('target deployment contract')
+  ) {
+    return {
+      ...base,
+      category: 'provider-architecture',
+      commands: [
+        buildReleaseReadinessCommand('Target local provider architecture gate', 'npm run smoke:target-local-provider-architecture'),
+        buildReleaseReadinessCommand(
+          'Local provider live validation',
+          'export LOCAL_PROVIDER_MODEL="..." LOCAL_PROVIDER_BASE_URL="..." && npm run live:execution-v1:local',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Target provider operations gate', 'npm run smoke:target-provider-operations'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target local provider architecture', 'docs/target-local-provider-architecture-v1.md'),
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+        buildReleaseReadinessDoc('Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'),
+      ],
+      nextEvidence: 'Target local provider architecture evidence, target-boundary local provider live validation proof, provider operations proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      provider: 'local',
+      stopReason: 'Target local provider architecture lacks accepted same-boundary closure evidence.',
+    };
+  }
+
+  if (normalized.includes('hermes live validation')) {
+    return {
+      ...base,
+      category: 'provider-architecture',
+      commands: [
+        buildReleaseReadinessCommand('Target Hermes provider architecture gate', 'npm run smoke:target-hermes-provider-architecture'),
+        buildReleaseReadinessCommand(
+          'Hermes live validation',
+          'export HERMES_PROVIDER_MODEL="..." && npm run live:execution-v1:hermes',
+          'live-validation',
+        ),
+        buildReleaseReadinessCommand('Provider readiness rehearsal', 'npm run rehearsal:production-provider-readiness'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target Hermes provider architecture', 'docs/target-hermes-provider-architecture-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+      ],
+      nextEvidence: 'Target Hermes provider architecture evidence, target-boundary Hermes live validation proof, provider operations proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      provider: 'hermes',
+      stopReason: 'Target Hermes provider architecture lacks accepted same-boundary closure evidence.',
+    };
+  }
+
+  if (
+    normalized.includes('target provider operations evidence')
+      && !normalized.includes('production release label')
+      && !normalized.includes('target deployment contract')
+  ) {
+    return {
+      ...base,
+      category: 'provider-operations',
+      commands: [
+        buildReleaseReadinessCommand('Target provider operations gate', 'npm run smoke:target-provider-operations'),
+        buildReleaseReadinessCommand('Target provider evidence intake gate', 'npm run smoke:target-provider-evidence-intake'),
+        buildReleaseReadinessCommand('Provider fallback policy smoke', 'npm run smoke:provider-fallback-policy', 'runtime-audit'),
+        buildReleaseReadinessCommand('Provider events fallback audit', 'npm run smoke:provider-events', 'runtime-audit'),
+        buildReleaseReadinessCommand(
+          'Provider attention remediation fallback audit',
+          'npm run smoke:provider-attention-remediation',
+          'runtime-audit',
+        ),
+        buildReleaseReadinessCommand('Mission timeline fallback audit', 'npm run smoke:mission-timeline', 'runtime-audit'),
+        buildReleaseReadinessCommand('Workspace timeline fallback audit', 'npm run smoke:workspace-timeline', 'runtime-audit'),
+        buildReleaseReadinessCommand('Operator timeline fallback audit', 'npm run smoke:operator-timeline', 'runtime-audit'),
+        buildReleaseReadinessCommand('Release artifact hygiene smoke', 'npm run smoke:release-artifact-hygiene'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+        buildReleaseReadinessDoc('Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+      ],
+      nextEvidence: 'Target provider operations evidence with fallback runtime audit policy, stop reason, target blocker closure verification proof, release artifact hygiene result, and regenerated execution snapshot evidence.',
+      owner: 'provider-ops',
+      stopReason: 'Target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence.',
+    };
+  }
+
+  if (normalized.includes('production release label')) {
+    return {
+      ...base,
+      category: 'release-decision',
+      commands: [
+        buildReleaseReadinessCommand('Aggregate provider preflight', 'npm run preflight:execution-v1:all', 'preflight'),
+        buildReleaseReadinessCommand('Production readiness gate', 'npm run smoke:production-readiness-gate'),
+        buildReleaseReadinessCommand('Production provider readiness smoke', 'npm run smoke:production-provider-readiness'),
+        buildReleaseReadinessCommand('Production enterprise controls smoke', 'npm run smoke:production-enterprise-controls'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Release readiness decision', 'docs/release-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+        buildReleaseReadinessDoc('Production enterprise controls', 'docs/production-enterprise-controls-v1.md'),
+      ],
+      owner: 'release-owner',
+    };
+  }
+
+  if (normalized.includes('target deployment contract')) {
+    return {
+      ...base,
+      category: 'target-deployment',
+      commands: [
+        buildReleaseReadinessCommand('Target deployment contract gate', 'npm run smoke:target-deployment-contract'),
+        buildReleaseReadinessCommand('Target environment evidence intake gate', 'npm run smoke:target-environment-evidence-intake'),
+        buildReleaseReadinessCommand('Production-like release drill', 'npm run drill:production-like-release', 'rehearsal'),
+        buildReleaseReadinessCommand('Production-like release drill smoke', 'npm run smoke:production-like-release-drill'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target deployment contract', 'docs/target-deployment-contract-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Production-like release drill', 'docs/production-like-release-drill-v1.md'),
+      ],
+      owner: 'deployment-owner',
+    };
+  }
+
+  return base;
+}
+
+function buildCurrentOpenBlockerClosureVerification(action = {}) {
+  const commands = Array.isArray(action.commands) ? action.commands : [];
+  const evidenceDocs = Array.isArray(action.evidenceDocs) ? action.evidenceDocs : [];
+  const category = String(action.category || 'release-readiness').trim() || 'release-readiness';
+  const provider = String(action.provider || '').trim();
+  const requiredProofs = [
+    'same-boundary target evidence packet proof',
+    'blocker disposition proof with accountable decision owner',
+    'target-boundary command rerun proof',
+    'release artifact hygiene pass proof',
+    'regenerated execution-v1 artifact snapshot proof',
+    'production readiness gate proof',
+  ];
+
+  if (category === 'provider-account') {
+    requiredProofs.push(
+      'provider account or billing/quota approval proof',
+      'approved target secret injection proof',
+      'target-boundary provider live validation proof',
+      'provider fallback policy and stop reason proof',
+    );
+  }
+
+  if (category === 'provider-architecture') {
+    requiredProofs.push(
+      'provider endpoint or model architecture approval proof',
+      'runtime lifecycle and provenance proof',
+      'target-boundary provider live validation proof',
+      'provider fallback policy and stop reason proof',
+    );
+  }
+
+  if (category === 'provider-operations') {
+    requiredProofs.push(
+      'per-provider operations capture template proof',
+      'provider fallback runtime audit proof',
+      'provider telemetry and incident triage proof',
+      'provider failure containment proof',
+    );
+  }
+
+  if (category === 'target-deployment') {
+    requiredProofs.push(
+      'target deployment name and profile decision proof',
+      'mandatory control evidence proof',
+      'target environment submission packet proof',
+      'production-like drill proof',
+    );
+  }
+
+  if (category === 'release-decision') {
+    requiredProofs.push(
+      'accepted risk register proof',
+      'allowed claim text proof',
+      'release decision owner approval proof',
+      'next review date proof',
+    );
+  }
+
+  return {
+    blockerId: String(action.id || '').trim(),
+    category,
+    currentState: String(action.status || 'blocked').trim() || 'blocked',
+    id: `${String(action.id || 'current-open-blocker').trim() || 'current-open-blocker'}-closure-verification`,
+    owner: String(action.owner || 'release-owner').trim() || 'release-owner',
+    productionReadyClaimAllowed: false,
+    provider,
+    requiredClosingEvidence: String(action.nextEvidence || '').trim(),
+    requiredCommands: commands.map((command) => ({
+      command: String(command?.command || '').trim(),
+      kind: String(command?.kind || 'verification').trim() || 'verification',
+      label: String(command?.label || '').trim(),
+    })),
+    requiredEvidenceDocs: evidenceDocs.map((doc) => ({
+      exists: Boolean(doc?.exists),
+      href: String(doc?.href || '').trim(),
+      label: String(doc?.label || '').trim(),
+      path: String(doc?.path || '').trim(),
+    })),
+    requiredProofs,
+    sameBoundaryRequired: true,
+    status: 'blocked',
+    stopConditionId: String(action.id || '').trim(),
+    stopReason: String(action.stopReason || action.blocker || '').trim(),
+    targetBoundaryRequired: true,
+  };
+}
+
+function attachCurrentOpenBlockerClosureVerification(action = {}) {
+  return {
+    ...action,
+    closureVerification: buildCurrentOpenBlockerClosureVerification(action),
+  };
+}
+
+function getCurrentOpenBlockerProviderNeedles(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerNeedles = {
+    anthropic: ['anthropic', 'anthropic_api_key', 'target-anthropic-provider-account'],
+    hermes: ['hermes', 'hermes_provider_model', 'target-hermes-provider-architecture'],
+    local: ['local provider', 'local_provider_model', 'local_provider_base_url', 'target-local-provider-architecture'],
+    openai: ['openai', 'openai_api_key', 'target-openai-provider-account'],
+  };
+  return providerNeedles[normalizedProvider] || (normalizedProvider ? [normalizedProvider] : []);
+}
+
+function getCurrentOpenBlockerActionSearchText(action = {}) {
+  const commands = Array.isArray(action?.commands) ? action.commands : [];
+  const evidenceDocs = Array.isArray(action?.evidenceDocs) ? action.evidenceDocs : [];
+  return [
+    action?.blocker,
+    action?.category,
+    action?.id,
+    action?.nextEvidence,
+    action?.owner,
+    action?.provider,
+    action?.status,
+    action?.stopReason,
+    ...commands.flatMap((command) => [command?.command, command?.kind, command?.label]),
+    ...evidenceDocs.flatMap((doc) => [doc?.href, doc?.label, doc?.path]),
+  ]
+    .map((item) => String(item || '').toLowerCase())
+    .filter(Boolean)
+    .join(' ');
+}
+
+function isSharedProviderBlockerAction(action = {}) {
+  return String(action?.category || '').trim() === 'provider-operations';
+}
+
+function doesCurrentOpenBlockerActionMatchProvider(action = {}, provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  if (!action || !normalizedProvider) {
+    return false;
+  }
+  if (String(action.provider || '').trim() === normalizedProvider) {
+    return true;
+  }
+
+  const searchText = getCurrentOpenBlockerActionSearchText(action);
+  return getCurrentOpenBlockerProviderNeedles(normalizedProvider).some((needle) =>
+    searchText.includes(String(needle || '').toLowerCase()),
+  );
+}
+
+function getProviderCurrentOpenBlockerActions(provider = '', actions = []) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return [];
+  }
+
+  const actionList = Array.isArray(actions) ? actions : [];
+  const hasExplicitProviderMapping = actionList.some((item) => String(item?.provider || '').trim());
+  return actionList.filter((item) => {
+    if (String(item?.provider || '').trim() === normalizedProvider) {
+      return true;
+    }
+    if (isSharedProviderBlockerAction(item)) {
+      return true;
+    }
+    if (hasExplicitProviderMapping) {
+      return false;
+    }
+    return doesCurrentOpenBlockerActionMatchProvider(item, normalizedProvider);
+  });
+}
+
+function buildProviderBlockerClosureVerificationSummary(provider = '', actions = []) {
+  const linkedActions = getProviderCurrentOpenBlockerActions(provider, actions);
+  const actionIds = [];
+  const closureVerificationIds = [];
+  const evidenceDocKeys = new Set();
+  const providerActionIds = [];
+  const requiredProofKeys = new Set();
+  const sharedActionIds = [];
+  let commandCount = 0;
+  let productionReadyBlockedCount = 0;
+  let targetBoundaryRequiredCount = 0;
+
+  for (const [index, action] of linkedActions.entries()) {
+    const actionId = String(action?.id || '').trim() || `provider-blocker-${index + 1}`;
+    actionIds.push(actionId);
+    if (String(action?.provider || '').trim()) {
+      providerActionIds.push(actionId);
+    }
+    if (isSharedProviderBlockerAction(action)) {
+      sharedActionIds.push(actionId);
+    }
+
+    const closureVerification = action?.closureVerification || {};
+    const closureVerificationId = String(closureVerification.id || '').trim();
+    if (closureVerificationId) {
+      closureVerificationIds.push(closureVerificationId);
+    }
+    const commands = Array.isArray(closureVerification.requiredCommands)
+      ? closureVerification.requiredCommands
+      : Array.isArray(action?.commands)
+        ? action.commands
+        : [];
+    commandCount += commands.filter((command) => String(command?.command || '').trim()).length;
+    const evidenceDocs = Array.isArray(closureVerification.requiredEvidenceDocs)
+      ? closureVerification.requiredEvidenceDocs
+      : Array.isArray(action?.evidenceDocs)
+        ? action.evidenceDocs
+        : [];
+    for (const doc of evidenceDocs) {
+      const key = String(doc?.href || doc?.path || doc?.label || '').trim();
+      if (key) {
+        evidenceDocKeys.add(key);
+      }
+    }
+    const requiredProofs = Array.isArray(closureVerification.requiredProofs)
+      ? closureVerification.requiredProofs
+      : [];
+    for (const proof of requiredProofs) {
+      const proofText = String(proof || '').trim();
+      if (proofText) {
+        requiredProofKeys.add(proofText);
+      }
+    }
+    if (closureVerification.targetBoundaryRequired === true) {
+      targetBoundaryRequiredCount += 1;
+    }
+    if (closureVerification.productionReadyClaimAllowed === false) {
+      productionReadyBlockedCount += 1;
+    }
+  }
+
+  return {
+    actionIds,
+    closureVerificationCount: closureVerificationIds.length,
+    closureVerificationIds,
+    commandCount,
+    evidenceDocCount: evidenceDocKeys.size,
+    productionReadyBlockedCount,
+    productionReadyClaimAllowed: productionReadyBlockedCount === 0,
+    providerActionIds,
+    requiredProofCount: requiredProofKeys.size,
+    sharedActionIds,
+    targetBoundaryRequiredCount,
+  };
 }
 
 function isPassedLiveStatus(value) {
@@ -407,4 +921,14 @@ function escapeRegExp(value) {
 
 function formatTableCell(value) {
   return String(value || '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+}
+
+function formatInlineList(values) {
+  const list = Array.isArray(values) ? values.map((value) => String(value || '').trim()).filter(Boolean) : [];
+  return list.length ? list.join(', ') : 'none';
+}
+
+function formatTableList(values) {
+  const list = Array.isArray(values) ? values.map((value) => String(value || '').trim()).filter(Boolean) : [];
+  return list.length ? list.join('<br>') : 'none';
 }
