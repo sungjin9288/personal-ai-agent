@@ -1676,6 +1676,154 @@ function buildCurrentOpenBlockerActionSummary(actions = []) {
   };
 }
 
+function getCurrentOpenBlockerProviderNeedles(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerNeedles = {
+    anthropic: ['anthropic', 'anthropic_api_key', 'target-anthropic-provider-account'],
+    hermes: ['hermes', 'hermes_provider_model', 'target-hermes-provider-architecture'],
+    local: ['local provider', 'local_provider_model', 'local_provider_base_url', 'target-local-provider-architecture'],
+    openai: ['openai', 'openai_api_key', 'target-openai-provider-account'],
+  };
+  return providerNeedles[normalizedProvider] || (normalizedProvider ? [normalizedProvider] : []);
+}
+
+function getCurrentOpenBlockerActionSearchText(action = {}) {
+  const commands = Array.isArray(action?.commands) ? action.commands : [];
+  const evidenceDocs = Array.isArray(action?.evidenceDocs) ? action.evidenceDocs : [];
+  return [
+    action?.blocker,
+    action?.category,
+    action?.id,
+    action?.nextEvidence,
+    action?.owner,
+    action?.provider,
+    action?.status,
+    action?.stopReason,
+    ...commands.flatMap((command) => [command?.command, command?.kind, command?.label]),
+    ...evidenceDocs.flatMap((doc) => [doc?.href, doc?.label, doc?.path]),
+  ]
+    .map((item) => String(item || '').toLowerCase())
+    .filter(Boolean)
+    .join(' ');
+}
+
+function isSharedProviderBlockerAction(action = {}) {
+  return String(action?.category || '').trim() === 'provider-operations';
+}
+
+function doesCurrentOpenBlockerActionMatchProvider(action = {}, provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  if (!action || !normalizedProvider) {
+    return false;
+  }
+  if (String(action.provider || '').trim() === normalizedProvider) {
+    return true;
+  }
+
+  const searchText = getCurrentOpenBlockerActionSearchText(action);
+  return getCurrentOpenBlockerProviderNeedles(normalizedProvider).some((needle) =>
+    searchText.includes(String(needle || '').toLowerCase()),
+  );
+}
+
+function getProviderCurrentOpenBlockerActions(provider = '', actions = []) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return [];
+  }
+
+  const actionList = Array.isArray(actions) ? actions : [];
+  const hasExplicitProviderMapping = actionList.some((item) => String(item?.provider || '').trim());
+  return actionList.filter((item) => {
+    if (String(item?.provider || '').trim() === normalizedProvider) {
+      return true;
+    }
+    if (isSharedProviderBlockerAction(item)) {
+      return true;
+    }
+    if (hasExplicitProviderMapping) {
+      return false;
+    }
+    return doesCurrentOpenBlockerActionMatchProvider(item, normalizedProvider);
+  });
+}
+
+function buildProviderBlockerClosureVerificationSummary(provider = '', actions = []) {
+  const linkedActions = getProviderCurrentOpenBlockerActions(provider, actions);
+  const actionIds = [];
+  const closureVerificationIds = [];
+  const evidenceDocKeys = new Set();
+  const providerActionIds = [];
+  const requiredProofKeys = new Set();
+  const sharedActionIds = [];
+  let commandCount = 0;
+  let productionReadyBlockedCount = 0;
+  let targetBoundaryRequiredCount = 0;
+
+  for (const [index, action] of linkedActions.entries()) {
+    const actionId = String(action?.id || '').trim() || `provider-blocker-${index + 1}`;
+    actionIds.push(actionId);
+    if (String(action?.provider || '').trim()) {
+      providerActionIds.push(actionId);
+    }
+    if (isSharedProviderBlockerAction(action)) {
+      sharedActionIds.push(actionId);
+    }
+
+    const closureVerification = action?.closureVerification || {};
+    const closureVerificationId = String(closureVerification.id || '').trim();
+    if (closureVerificationId) {
+      closureVerificationIds.push(closureVerificationId);
+    }
+    const commands = Array.isArray(closureVerification.requiredCommands)
+      ? closureVerification.requiredCommands
+      : Array.isArray(action?.commands)
+        ? action.commands
+        : [];
+    commandCount += commands.filter((command) => String(command?.command || '').trim()).length;
+    const evidenceDocs = Array.isArray(closureVerification.requiredEvidenceDocs)
+      ? closureVerification.requiredEvidenceDocs
+      : Array.isArray(action?.evidenceDocs)
+        ? action.evidenceDocs
+        : [];
+    for (const doc of evidenceDocs) {
+      const key = String(doc?.href || doc?.path || doc?.label || '').trim();
+      if (key) {
+        evidenceDocKeys.add(key);
+      }
+    }
+    const requiredProofs = Array.isArray(closureVerification.requiredProofs)
+      ? closureVerification.requiredProofs
+      : [];
+    for (const proof of requiredProofs) {
+      const proofText = String(proof || '').trim();
+      if (proofText) {
+        requiredProofKeys.add(proofText);
+      }
+    }
+    if (closureVerification.targetBoundaryRequired === true) {
+      targetBoundaryRequiredCount += 1;
+    }
+    if (closureVerification.productionReadyClaimAllowed === false) {
+      productionReadyBlockedCount += 1;
+    }
+  }
+
+  return {
+    actionIds,
+    closureVerificationCount: closureVerificationIds.length,
+    closureVerificationIds,
+    commandCount,
+    evidenceDocCount: evidenceDocKeys.size,
+    productionReadyBlockedCount,
+    productionReadyClaimAllowed: productionReadyBlockedCount === 0,
+    providerActionIds,
+    requiredProofCount: requiredProofKeys.size,
+    sharedActionIds,
+    targetBoundaryRequiredCount,
+  };
+}
+
 function buildReleaseReadinessSummary(markdown = '') {
   const productionReadySection = extractMarkdownSection(markdown, 'Production Ready', 3);
   const productionBlockers = extractBulletsAfterLabel(productionReadySection, 'Blockers');
@@ -1786,16 +1934,25 @@ function buildExecutionV1Status() {
   const currentCommit = runGit(['rev-parse', 'HEAD']);
   const currentArtifacts = buildExecutionV1ArtifactSummary(evidenceMarkdown, closeoutMarkdown);
   const releaseReadiness = buildReleaseReadinessSummary(releaseReadinessMarkdown);
-  const providerReadiness = liveValidationProviders.map((item) => ({
-    command: item.command,
-    envKey: item.envKey,
-    evidenceCommand: item.evidenceCommand,
-    label: item.label,
-    preflightCommand: `npm run preflight:execution-v1:${item.provider}`,
-    provider: item.provider,
-    ready: Boolean(process.env[item.envKey]),
-    status: process.env[item.envKey] ? 'ready' : 'missing-env',
-  }));
+  const providerReadiness = liveValidationProviders.map((item) => {
+    const blockerClosureVerification = buildProviderBlockerClosureVerificationSummary(
+      item.provider,
+      releaseReadiness.currentOpenBlockerActions,
+    );
+    return {
+      blockerClosureVerification,
+      command: item.command,
+      envKey: item.envKey,
+      evidenceCommand: item.evidenceCommand,
+      label: item.label,
+      linkedBlockerActionIds: blockerClosureVerification.actionIds,
+      linkedClosureVerificationIds: blockerClosureVerification.closureVerificationIds,
+      preflightCommand: `npm run preflight:execution-v1:${item.provider}`,
+      provider: item.provider,
+      ready: Boolean(process.env[item.envKey]),
+      status: process.env[item.envKey] ? 'ready' : 'missing-env',
+    };
+  });
   const generatedCommit = currentArtifacts.commit;
   const generatedBranch = currentArtifacts.branch;
   const artifactSyncCommit = buildExecutionV1ArtifactSyncCommit(currentCommit, generatedCommit);

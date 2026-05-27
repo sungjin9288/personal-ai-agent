@@ -2429,6 +2429,10 @@ function doesReleaseBlockerActionMatchProvider(blockerAction = null, provider = 
   );
 }
 
+function isReleaseSharedProviderBlockerAction(blockerAction = null) {
+  return String(blockerAction?.category || '').trim() === 'provider-operations';
+}
+
 function getReleaseProviderBlockerActions({
   provider = '',
   releaseStatus = state.releaseStatus,
@@ -2441,8 +2445,14 @@ function getReleaseProviderBlockerActions({
   const blockerActions = getReleaseCurrentOpenBlockerActions(releaseStatus);
   const hasExplicitProviderMapping = blockerActions.some((item) => String(item?.provider || '').trim());
   return blockerActions.filter((item) => {
+    if (String(item?.provider || '').trim() === normalizedProvider) {
+      return true;
+    }
+    if (isReleaseSharedProviderBlockerAction(item)) {
+      return true;
+    }
     if (hasExplicitProviderMapping) {
-      return String(item?.provider || '').trim() === normalizedProvider;
+      return false;
     }
     return doesReleaseBlockerActionMatchProvider(item, normalizedProvider);
   });
@@ -2469,6 +2479,8 @@ function buildReleaseProviderBlockerPackageLines(blockerActions = []) {
   return actions.map((action, index) => {
     const actionId = String(action.id || '').trim();
     const actionProvider = String(action.provider || '').trim();
+    const closureVerification = getReleaseBlockerClosureVerification(action);
+    const requiredProofs = getReleaseBlockerRequiredProofs(action);
     const releaseLink = `${window.location.origin}${buildUiStateUrl({
       detailTab: 'release',
       releaseBlockerCategoryFilter: '',
@@ -2490,11 +2502,16 @@ function buildReleaseProviderBlockerPackageLines(blockerActions = []) {
       `   - category: ${String(action.category || 'stop-condition').trim()}`,
       `   - owner: ${String(action.owner || 'release-owner').trim()}`,
       `   - status: ${String(action.status || 'blocked').trim()}`,
+      `   - sharedProviderBlocker: ${String(isReleaseSharedProviderBlockerAction(action))}`,
+      `   - closureVerification: ${String(closureVerification.id || 'not provided').trim()}`,
+      `   - targetBoundaryRequired: ${String(Boolean(closureVerification.targetBoundaryRequired ?? true))}`,
+      `   - productionReadyClaimAllowed: ${String(Boolean(closureVerification.productionReadyClaimAllowed))}`,
       `   - stopReason: ${String(action.stopReason || action.blocker || '').trim() || 'not recorded'}`,
       `   - nextEvidence: ${String(action.nextEvidence || '').trim() || 'not recorded'}`,
       `   - releaseLink: ${releaseLink}`,
       `   - commands: ${commands.map((command) => String(command.command || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
       `   - evidenceDocs: ${evidenceDocs.map((doc) => String(doc.path || doc.label || '').trim()).filter(Boolean).join(' | ') || 'none'}`,
+      `   - requiredProofs: ${requiredProofs.length ? requiredProofs.join(' | ') : 'none'}`,
     ].join('\n');
   });
 }
@@ -2613,6 +2630,20 @@ function buildReleaseProviderReadinessPackageText({
     const preflightStatus = String(preflight?.status || 'not-run').trim();
     const liveStatus = getReleaseProviderLiveStatus(itemProvider, releaseStatus) || 'not archived';
     const liveCommand = getProviderLiveCommand(item, preflight);
+    const linkedBlockers = getReleaseProviderBlockerActions({ provider: itemProvider, releaseStatus });
+    const linkedBlockerIds = linkedBlockers.map((action) => String(action.id || '').trim()).filter(Boolean);
+    const linkedSharedBlockerIds = linkedBlockers
+      .filter((action) => isReleaseSharedProviderBlockerAction(action))
+      .map((action) => String(action.id || '').trim())
+      .filter(Boolean);
+    const linkedClosureVerificationIds = Array.isArray(item.blockerClosureVerification?.closureVerificationIds)
+      ? item.blockerClosureVerification.closureVerificationIds
+      : linkedBlockers
+        .map((action) => String(getReleaseBlockerClosureVerification(action).id || '').trim())
+        .filter(Boolean);
+    const linkedRequiredProofCount = Number.isFinite(Number(item.blockerClosureVerification?.requiredProofCount))
+      ? Number(item.blockerClosureVerification.requiredProofCount)
+      : new Set(linkedBlockers.flatMap((action) => getReleaseBlockerRequiredProofs(action))).size;
     return [
       `${index + 1}. ${item.label || itemProvider}`,
       `   - provider: ${itemProvider}`,
@@ -2621,6 +2652,10 @@ function buildReleaseProviderReadinessPackageText({
       `   - readinessStatus: ${item.status || 'unknown'}`,
       `   - preflightStatus: ${preflightStatus}`,
       `   - archivedLiveStatus: ${liveStatus}`,
+      `   - linkedCurrentBlockers: ${linkedBlockerIds.length ? linkedBlockerIds.join(', ') : 'none'}`,
+      `   - linkedSharedBlockers: ${linkedSharedBlockerIds.length ? linkedSharedBlockerIds.join(', ') : 'none'}`,
+      `   - linkedClosureVerifications: ${linkedClosureVerificationIds.length ? linkedClosureVerificationIds.join(', ') : 'none'}`,
+      `   - linkedRequiredProofCount: ${String(linkedRequiredProofCount)}`,
       `   - preflightCommand: ${item.preflightCommand || `npm run preflight:execution-v1:${itemProvider}`}`,
       `   - liveCommand: ${liveCommand || item.command || '-'}`,
       `   - evidenceCommand: ${item.evidenceCommand || `node scripts/build-execution-v1-evidence.mjs --live-${itemProvider}`}`,
@@ -4619,6 +4654,18 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
         const linkedBlockerIds = linkedBlockers
           .map((action) => String(action.id || '').trim())
           .filter(Boolean);
+        const linkedSharedBlockerIds = linkedBlockers
+          .filter((action) => isReleaseSharedProviderBlockerAction(action))
+          .map((action) => String(action.id || '').trim())
+          .filter(Boolean);
+        const linkedClosureVerificationIds = Array.isArray(item.blockerClosureVerification?.closureVerificationIds)
+          ? item.blockerClosureVerification.closureVerificationIds
+          : linkedBlockers
+            .map((action) => String(getReleaseBlockerClosureVerification(action).id || '').trim())
+            .filter(Boolean);
+        const linkedRequiredProofCount = Number.isFinite(Number(item.blockerClosureVerification?.requiredProofCount))
+          ? Number(item.blockerClosureVerification.requiredProofCount)
+          : new Set(linkedBlockers.flatMap((action) => getReleaseBlockerRequiredProofs(action))).size;
         const visibleLinkedBlockerIds = linkedBlockers
           .filter((action) => visibleActions.some((visibleAction) =>
             String(visibleAction.id || '').trim() === String(action.id || '').trim()))
@@ -4640,6 +4687,9 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
           `   - stopReason: ${String(preflight?.stopReason || preflight?.stopCondition?.reason || 'not recorded').trim()}`,
           `   - archivedLiveStatus: ${archivedLiveStatus}`,
           `   - linkedCurrentBlockers: ${linkedBlockerIds.length ? linkedBlockerIds.join(', ') : 'none'}`,
+          `   - linkedSharedBlockers: ${linkedSharedBlockerIds.length ? linkedSharedBlockerIds.join(', ') : 'none'}`,
+          `   - linkedClosureVerifications: ${linkedClosureVerificationIds.length ? linkedClosureVerificationIds.join(', ') : 'none'}`,
+          `   - linkedRequiredProofCount: ${String(linkedRequiredProofCount)}`,
           `   - linkedVisibleBlockers: ${visibleLinkedBlockerIds.length ? visibleLinkedBlockerIds.join(', ') : 'none in current slice'}`,
           `   - preflightCommand: ${String(item.preflightCommand || '').trim() || `npm run preflight:execution-v1:${provider}`}`,
           `   - liveCommand: ${String(liveCommand || '').trim() || 'not recorded'}`,

@@ -654,6 +654,9 @@ try {
     true,
     JSON.stringify(status.providerReadiness),
   );
+  for (const provider of ['openai', 'anthropic', 'local', 'hermes']) {
+    assertProviderReadinessClosureSummary(status, provider);
+  }
   assert.equal(
     status.recommendedActions.some((entry) => entry.provider === 'openai'),
     false,
@@ -838,6 +841,39 @@ function assertCurrentOpenBlockerClosureVerification(action) {
     action.closureVerification.forbiddenEvidence.includes('raw API keys or tokens'),
     true,
     JSON.stringify(action.closureVerification),
+  );
+}
+
+function assertProviderReadinessClosureSummary(status, provider) {
+  const providerEntry = status.providerReadiness.find((entry) => entry.provider === provider);
+  assert.equal(Boolean(providerEntry), true, JSON.stringify(status.providerReadiness));
+  const summary = providerEntry.blockerClosureVerification;
+  assert.equal(Boolean(summary), true, JSON.stringify(providerEntry));
+  assert.equal(summary.actionIds.length, 2, JSON.stringify(summary));
+  assert.equal(summary.providerActionIds.length, 1, JSON.stringify(summary));
+  assert.equal(summary.sharedActionIds.length, 1, JSON.stringify(summary));
+  assert.equal(summary.closureVerificationCount, 2, JSON.stringify(summary));
+  assert.equal(summary.commandCount, 12, JSON.stringify(summary));
+  assert.equal(summary.evidenceDocCount, provider === 'anthropic' ? 6 : 5, JSON.stringify(summary));
+  assert.equal(summary.requiredProofCount, 14, JSON.stringify(summary));
+  assert.equal(summary.targetBoundaryRequiredCount, 2, JSON.stringify(summary));
+  assert.equal(summary.productionReadyBlockedCount, 2, JSON.stringify(summary));
+  assert.equal(summary.productionReadyClaimAllowed, false, JSON.stringify(summary));
+  assert.deepEqual(providerEntry.linkedBlockerActionIds, summary.actionIds, JSON.stringify(providerEntry));
+  assert.deepEqual(
+    providerEntry.linkedClosureVerificationIds,
+    summary.closureVerificationIds,
+    JSON.stringify(providerEntry),
+  );
+  assert.equal(
+    summary.sharedActionIds.some((id) => String(id || '').includes('target-provider-operations-evidence')),
+    true,
+    JSON.stringify(summary),
+  );
+  assert.equal(
+    summary.closureVerificationIds.every((id) => String(id || '').endsWith('-closure-verification')),
+    true,
+    JSON.stringify(summary),
   );
 }
 
