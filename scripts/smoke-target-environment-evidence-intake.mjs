@@ -227,6 +227,7 @@ assert.match(
   /do not record customer personal data, private tenant identifiers, billing identifiers, raw provider account ids, secret names that reveal credentials, raw endpoint credentials, or machine-local absolute paths/,
 );
 for (const blocker of [
+  'target OpenAI provider approval',
   'Anthropic billing/live validation',
   'target Hermes provider approval',
   'target local provider approval',
@@ -238,6 +239,10 @@ for (const blocker of [
 ]) {
   assert.match(intake, new RegExp(`\\| ${escapeRegExp(blocker)} \\|`), blocker);
 }
+assert.match(
+  intake,
+  /target OpenAI provider approval \| account-approval-required \| target OpenAI provider account evidence with account ownership proof for account owner, organization\/project alias, customer scope, evidence owner, reviewer, and review date; billing and quota proof with active billing plan, quota tier, spend cap, payment owner, and alert route/,
+);
 assert.match(
   intake,
   /hosted identity\/session approval \| customer-approval-required \| hosted identity\/session architecture approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
@@ -367,6 +372,7 @@ assert.match(intake, /## Blocker Closure Verification Matrix/);
 assert.match(intake, /Every blocker disposition change must carry a matching verification row/);
 assert.match(intake, /the stop-condition that remains in force when the command is missing, stale, or generated from the wrong boundary/);
 for (const stopCondition of [
+  'target-openai-provider-account-approval-missing',
   'anthropic-live-validation-missing-or-failed',
   'target-hermes-provider-approval-missing',
   'target-local-provider-approval-missing',
@@ -378,6 +384,10 @@ for (const stopCondition of [
 ]) {
   assert.match(intake, new RegExp(`\\| \`${escapeRegExp(stopCondition)}\` \\|`), stopCondition);
 }
+assert.match(
+  intake,
+  /target OpenAI provider approval \| `npm run smoke:target-openai-provider-account` and target-boundary `npm run live:execution-v1:openai` \| account ownership proof with account owner, organization\/project alias, customer scope, evidence owner, reviewer, and review date; billing and quota proof with active billing plan, quota tier, spend cap, payment owner, and alert route/,
+);
 assert.match(
   intake,
   /hosted identity\/session approval \| `npm run smoke:hosted-identity-session-architecture` and `npm run smoke:target-identity-session-operations` \| hosted identity architecture approval, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment, release artifact hygiene pass, and regenerated execution snapshot evidence \| `hosted-identity-session-approval-missing`/,
@@ -399,9 +409,11 @@ assert.doesNotMatch(
   /hosted tenant isolation approval \| `npm run smoke:hosted-tenant-isolation-architecture` and `npm run smoke:target-tenant-isolation-operations` \| hosted tenant architecture approval, tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and containment proof/,
 );
 for (const closureCommand of [
+  'npm run live:execution-v1:openai',
   'npm run live:execution-v1:anthropic',
   'npm run live:execution-v1:hermes',
   'npm run live:execution-v1:local',
+  'npm run smoke:target-openai-provider-account',
   'npm run smoke:target-anthropic-provider-account',
   'npm run smoke:target-hermes-provider-architecture',
   'npm run smoke:target-local-provider-architecture',
@@ -502,8 +514,8 @@ console.log(
       blockerDispositionRegister: true,
       blockerClosureVerificationMatrix: true,
       submissionPacketItemCount: 7,
-      blockerDispositionItemCount: 8,
-      blockerClosureVerificationItemCount: 8,
+      blockerDispositionItemCount: 9,
+      blockerClosureVerificationItemCount: 9,
       requiredCommandCount: 30,
     },
     null,
