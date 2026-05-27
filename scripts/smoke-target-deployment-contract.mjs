@@ -33,6 +33,7 @@ for (const heading of [
   '## Target Deployment Profiles',
   '## Mandatory Controls',
   '## Target Evidence Capture Template',
+  '## Release Blocker Closure Linkage',
   '## Required Commands',
   '## Blocking Rules',
   '## Operator Handoff',
@@ -242,6 +243,39 @@ assert.match(contract, /must record why `productionReadyClaim` remains false whe
 assert.match(
   contract,
   /target environment evidence intake, target provider evidence intake, target provider operations, target identity\/session operations, target tenant isolation operations, target observability architecture, target observability operations, target SLO architecture, target SLO operations, target clean deployment operations, release artifact hygiene, production-like release drill, clean deployment release, and production readiness gate evidence/,
+);
+assert.match(contract, /## Release Blocker Closure Linkage/);
+assert.match(
+  contract,
+  /\| Blocker \| Category \| Stop Condition \| Required Commands \| Required Evidence Docs \| Required Proofs \| Production Claim \|/,
+);
+assert.match(
+  contract,
+  /\| target deployment contract \| target-deployment \| target-deployment-contract-remains-blocked-until-target-deployme \| 4 \| 3 \| 10 \| blocked \|/,
+);
+assert.match(
+  contract,
+  /\| production release label \| release-decision \| production-release-label-cannot-be-expanded-until-target-provide \| 4 \| 3 \| 10 \| blocked \|/,
+);
+assert.match(
+  contract,
+  /Both closure checks are same-boundary target evidence stop-conditions/,
+);
+assert.match(
+  contract,
+  /The target deployment contract row must be closed with accepted target deployment evidence before the production release label row can move beyond `keep-blocked`/,
+);
+assert.match(
+  contract,
+  /The target deployment closure command set is `npm run smoke:target-deployment-contract`, `npm run smoke:target-environment-evidence-intake`, `npm run drill:production-like-release`, and `npm run smoke:production-like-release-drill`/,
+);
+assert.match(
+  contract,
+  /The release decision closure command set is `npm run preflight:execution-v1:all`, `npm run smoke:production-readiness-gate`, `npm run smoke:production-provider-readiness`, and `npm run smoke:production-enterprise-controls`/,
+);
+assert.match(
+  contract,
+  /Keep `productionReadyClaim: false` until target deployment packet proof, release artifact hygiene pass proof, production readiness gate proof, accepted risk register proof, allowed claim text proof, release decision owner approval proof, next review date proof, and regenerated execution-v1 artifact snapshot proof are recorded from the same approved target boundary/,
 );
 
 for (const command of [
