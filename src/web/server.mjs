@@ -1344,6 +1344,32 @@ function buildCurrentOpenBlockerAction(blocker = '', index = 0) {
     };
   }
 
+  if (
+    normalized.includes('target provider operations evidence')
+      && !normalized.includes('production release label')
+      && !normalized.includes('target deployment contract')
+  ) {
+    return {
+      ...base,
+      category: 'provider-operations',
+      commands: [
+        buildReleaseReadinessCommand('Target provider operations gate', 'npm run smoke:target-provider-operations'),
+        buildReleaseReadinessCommand('Target provider evidence intake gate', 'npm run smoke:target-provider-evidence-intake'),
+        buildReleaseReadinessCommand('Provider fallback policy smoke', 'npm run smoke:provider-fallback-policy'),
+        buildReleaseReadinessCommand('Release artifact hygiene smoke', 'npm run smoke:release-artifact-hygiene'),
+      ],
+      evidenceDocs: [
+        buildReleaseReadinessDoc('Target provider operations', 'docs/target-provider-operations-v1.md'),
+        buildReleaseReadinessDoc('Target provider evidence intake', 'docs/target-provider-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Target environment evidence intake', 'docs/target-environment-evidence-intake-v1.md'),
+        buildReleaseReadinessDoc('Production provider readiness', 'docs/production-provider-readiness-v1.md'),
+      ],
+      nextEvidence: 'Completed per-provider operations capture template, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan, artifact hygiene result, production readiness gate result, residual risk, decision owner, and next review date from the approved target boundary.',
+      owner: 'provider-ops',
+      stopReason: 'Target provider operations lacks same-boundary per-provider operations capture template proof, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof, artifact hygiene result, production readiness gate result, residual risk decision, decision owner proof, and next review date proof.',
+    };
+  }
+
   if (normalized.includes('production release label')) {
     return {
       ...base,
