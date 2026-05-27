@@ -97,7 +97,11 @@ assert.match(
 );
 assert.match(
   intake,
-  /Provider blocker closure verification \| provider-specific blocker state proof, next verification command proof, required closing evidence proof, stop-condition id proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded/,
+  /Provider blocker closure verification \| provider-specific blocker state proof, next verification command proof, required closing evidence proof, stop-condition id proof, stop reason proof, target stop-condition id proof, evidence command proof, release artifact hygiene result, and regenerated execution snapshot evidence are recorded/,
+);
+assert.match(
+  intake,
+  /production provider readiness exposes Stop Condition Handoff rows with stopConditionId, stopReason, targetStopConditionId, evidenceCommand, and requiredClosingEvidence for OpenAI, Anthropic, local, and Hermes/,
 );
 assert.doesNotMatch(
   intake,
@@ -120,7 +124,8 @@ for (const checklistItem of [
   /live validation command and archived execution-v1 evidence commit/,
   /quota and spend owner proof and expected usage envelope proof/,
   /fallback provider or stop condition when live validation fails/,
-  /provider-specific blocker closure verification matrix row with current state proof, next verification command proof, required closing evidence proof, stop-condition id proof, artifact hygiene result, regenerated execution snapshot evidence, refreshed release artifact references, and decision owner proof/,
+  /provider-specific blocker closure verification matrix row with current state proof, next verification command proof, required closing evidence proof, stop-condition id proof, stop reason proof, target stop-condition id proof, evidence command proof, artifact hygiene result, regenerated execution snapshot evidence, refreshed release artifact references, and decision owner proof/,
+  /production-provider-readiness Stop Condition Handoff row for every included provider, including provider id, stopConditionId, stopReason, targetStopConditionId, evidenceCommand, requiredClosingEvidence, and productionReadyClaim false proof/,
   /account remediation proof for billing, credit, region, or terms blockers/,
   /artifact hygiene result after evidence refresh/,
   /target provider operations evidence with provider failure containment plan/,
@@ -147,6 +152,19 @@ for (const command of [
 
 assert.match(providerReadiness, /\[target-provider-evidence-intake-v1\.md\]\(target-provider-evidence-intake-v1\.md\)/);
 assert.match(providerReadiness, /target provider evidence intake contract/);
+assert.match(providerReadiness, /^## Stop Condition Handoff$/m);
+for (const [provider, stopConditionId, targetStopConditionId] of [
+  ['openai', 'openai-live-env-missing', 'target-openai-provider-account-approval-missing'],
+  ['anthropic', 'anthropic-live-env-missing', 'anthropic-live-validation-missing-or-failed'],
+  ['local', 'local-live-env-missing', 'target-local-provider-approval-missing'],
+  ['hermes', 'hermes-live-env-missing', 'target-hermes-provider-approval-missing'],
+]) {
+  assert.match(
+    providerReadiness,
+    new RegExp(`\\| ${provider} \\| ${escapeRegExp(stopConditionId)} \\| .* \\| ${escapeRegExp(targetStopConditionId)} \\|`),
+    provider,
+  );
+}
 assert.match(targetProviderOperations, /^# Target Provider Operations v1$/m);
 assert.match(targetProviderOperations, /## Target Evidence Capture Template/);
 assert.match(targetProviderOperations, /blockerClosureVerificationEvidence/);
