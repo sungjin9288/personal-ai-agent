@@ -105,6 +105,24 @@ assert.match(decision, /must prove secret values are injected and redacted throu
 assert.doesNotMatch(decision, /target secret manager alias/);
 assert.doesNotMatch(decision, /secret injection proof with target secret manager alias/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Provider \| Provider-Specific Blocker \| Stop Condition \| Target Stop Condition \| Evidence Command \| Shared Operations Blocker \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| hermes \| hermes-live-validation-is-blocked-until-target-hermes-provider-a \| hermes-live-env-missing \| target-hermes-provider-approval-missing \| `node scripts\/build-execution-v1-evidence\.mjs --live-hermes` \| target-provider-operations-evidence-remains-blocked-until-comple \| 2 \| 14 \| 12 \| 5 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Hermes provider architecture approval owns the provider-specific endpoint, model, tool-call, transcript, and customer approval proof/,
+);
+assert.match(decision, /Target provider operations owns the shared runtime operations proof/);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetHermesProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, Hermes fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence/,
+);
 assert.match(
   decision,
   /endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,

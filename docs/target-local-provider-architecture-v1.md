@@ -72,6 +72,14 @@ When a target environment is ready for local provider approval, fill this templa
 
 The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
+## Release Blocker Closure Linkage
+
+| Provider | Provider-Specific Blocker | Stop Condition | Target Stop Condition | Evidence Command | Shared Operations Blocker | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| local | target-local-provider-architecture-remains-blocked-until-endpoin | local-live-env-missing | target-local-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-local` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+
+Local provider architecture approval owns the provider-specific endpoint, model, network, and data-boundary proof. Target provider operations owns the shared runtime operations proof. Keep `productionReadyClaim: false` and `targetLocalProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, local provider fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence.
+
 ## Required Commands
 
 ```bash

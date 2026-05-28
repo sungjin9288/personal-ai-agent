@@ -116,6 +116,24 @@ assert.match(decision, /must prove secret values are injected and redacted throu
 assert.doesNotMatch(decision, /target secret manager alias when used/);
 assert.doesNotMatch(decision, /secret and credential policy proof with auth mode, API key requirement, target secret manager alias/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Provider \| Provider-Specific Blocker \| Stop Condition \| Target Stop Condition \| Evidence Command \| Shared Operations Blocker \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| local \| target-local-provider-architecture-remains-blocked-until-endpoin \| local-live-env-missing \| target-local-provider-approval-missing \| `node scripts\/build-execution-v1-evidence\.mjs --live-local` \| target-provider-operations-evidence-remains-blocked-until-comple \| 2 \| 14 \| 12 \| 5 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Local provider architecture approval owns the provider-specific endpoint, model, network, and data-boundary proof/,
+);
+assert.match(decision, /Target provider operations owns the shared runtime operations proof/);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetLocalProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, local provider fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence/,
+);
 
 for (const command of [
   'npm run smoke:target-local-provider-architecture',

@@ -72,6 +72,14 @@ When a target environment is ready for OpenAI provider account approval, fill th
 
 The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
+## Release Blocker Closure Linkage
+
+| Provider | Provider-Specific Blocker | Stop Condition | Target Stop Condition | Evidence Command | Shared Operations Blocker | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| openai | target-openai-provider-account-remains-blocked-until-target-open | openai-live-env-missing | target-openai-provider-account-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-openai` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+
+OpenAI provider approval owns the provider-specific account proof. Target provider operations owns the shared runtime operations proof. Keep `productionReadyClaim: false` and `targetOpenAIProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, OpenAI fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence.
+
 ## Required Commands
 
 ```bash

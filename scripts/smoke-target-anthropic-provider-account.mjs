@@ -107,6 +107,21 @@ assert.match(decision, /must prove secret values are injected and redacted throu
 assert.doesNotMatch(decision, /target secret manager alias, `ANTHROPIC_API_KEY` owner/);
 assert.doesNotMatch(decision, /API key and secret injection proof with target secret manager alias/);
 assert.match(decision, /target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/);
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Provider \| Provider-Specific Blocker \| Stop Condition \| Target Stop Condition \| Evidence Command \| Shared Operations Blocker \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| anthropic \| anthropic-live-validation-remains-blocked-until-target-anthropic \| anthropic-live-env-missing \| anthropic-live-validation-missing-or-failed \| `node scripts\/build-execution-v1-evidence\.mjs --live-anthropic` \| target-provider-operations-evidence-remains-blocked-until-comple \| 2 \| 14 \| 12 \| 6 \| blocked \|/,
+);
+assert.match(decision, /Anthropic provider approval owns the provider-specific account and billing\/credit remediation proof/);
+assert.match(decision, /Target provider operations owns the shared runtime operations proof/);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetAnthropicProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, Anthropic fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence/,
+);
 assert.match(
   decision,
   /Anthropic provider readiness remains blocked until a replacement account decision is approved, implementation is completed in the target environment, account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live:execution-v1:anthropic proof with mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence are generated from the approved boundary/,
