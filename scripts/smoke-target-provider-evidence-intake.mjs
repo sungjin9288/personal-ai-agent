@@ -135,6 +135,78 @@ for (const checklistItem of [
   assert.match(intake, checklistItem);
 }
 
+assert.match(intake, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  intake,
+  /\| Provider \| Provider-Specific Blocker \| Target Stop Condition \| Evidence Command \| Provider-Specific Gate \| Shared Operations Link \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+for (const [
+  provider,
+  providerBlocker,
+  targetStopConditionId,
+  evidenceCommand,
+  providerSpecificGate,
+  evidenceDocCount,
+] of [
+  [
+    'openai',
+    'target-openai-provider-account-remains-blocked-until-target-open',
+    'target-openai-provider-account-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-openai',
+    'npm run smoke:target-openai-provider-account',
+    5,
+  ],
+  [
+    'anthropic',
+    'anthropic-live-validation-remains-blocked-until-target-anthropic',
+    'anthropic-live-validation-missing-or-failed',
+    'node scripts/build-execution-v1-evidence.mjs --live-anthropic',
+    'npm run smoke:target-anthropic-provider-account',
+    6,
+  ],
+  [
+    'local',
+    'target-local-provider-architecture-remains-blocked-until-endpoin',
+    'target-local-provider-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-local',
+    'npm run smoke:target-local-provider-architecture',
+    5,
+  ],
+  [
+    'hermes',
+    'hermes-live-validation-is-blocked-until-target-hermes-provider-a',
+    'target-hermes-provider-approval-missing',
+    'node scripts/build-execution-v1-evidence.mjs --live-hermes',
+    'npm run smoke:target-hermes-provider-architecture',
+    5,
+  ],
+]) {
+  assert.match(
+    intake,
+    new RegExp(
+      `\\| ${provider} \\| ${escapeRegExp(providerBlocker)} \\| ${escapeRegExp(targetStopConditionId)} \\| \`${escapeRegExp(evidenceCommand)}\` \\| \`${escapeRegExp(providerSpecificGate)}\` \\| target-provider-operations-evidence-remains-blocked-until-comple \\| 2 \\| 14 \\| 12 \\| ${evidenceDocCount} \\| blocked \\|`,
+    ),
+    provider,
+  );
+}
+assert.match(
+  intake,
+  /Provider evidence intake owns the provider-specific account or architecture proof/,
+);
+assert.match(intake, /Target provider operations owns the shared runtime operations proof/);
+assert.match(
+  intake,
+  /A provider can only move beyond `keep-blocked` when both linked closure verifications have same-boundary evidence, matching Stop Condition Handoff details, accepted decision owner proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence/,
+);
+assert.match(
+  intake,
+  /The Stop Condition Handoff source is \[production-provider-readiness-v1\.md\]\(production-provider-readiness-v1\.md\)/,
+);
+assert.match(
+  intake,
+  /Each intake row must retain provider id, stopConditionId, stopReason, targetStopConditionId, evidenceCommand, requiredClosingEvidence, provider-specific gate, shared operations blocker id, and `productionReadyClaim: false` proof/,
+);
+
 for (const command of [
   'npm run smoke:target-provider-evidence-intake',
   'npm run smoke:target-provider-operations',
