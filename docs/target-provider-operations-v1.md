@@ -89,6 +89,21 @@ When an approved production-like or hosted target boundary is ready for provider
 
 The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, provider-specific account or architecture approvals, target secret manager evidence, target observability operations, provider fallback policy, provider events, provider attention remediation, mission timeline, operator timeline, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
+## Release Blocker Closure Linkage
+
+| Provider | Provider-Specific Blocker | Shared Operations Blocker | Stop Reason | Shared Commands | Linked Commands | Linked Evidence Docs | Linked Proofs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| openai | target-openai-provider-account-remains-blocked-until-target-open | target-provider-operations-evidence-remains-blocked-until-comple | target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence | 9 | 12 | 5 | 14 | blocked |
+| anthropic | anthropic-live-validation-remains-blocked-until-target-anthropic | target-provider-operations-evidence-remains-blocked-until-comple | target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence | 9 | 12 | 6 | 14 | blocked |
+| local | target-local-provider-architecture-remains-blocked-until-endpoin | target-provider-operations-evidence-remains-blocked-until-comple | target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence | 9 | 12 | 5 | 14 | blocked |
+| hermes | hermes-live-validation-is-blocked-until-target-hermes-provider-a | target-provider-operations-evidence-remains-blocked-until-comple | target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence | 9 | 12 | 5 | 14 | blocked |
+
+Every provider row must close the provider-specific blocker and the shared `provider-operations` blocker from the same approved target boundary. The shared operations blocker cannot be closed globally by one provider packet; each included provider must carry its own provider operations packet, fallback runtime audit, target blocker closure verification proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence.
+
+The shared provider operations closure command set is `npm run smoke:target-provider-operations`, `npm run smoke:target-provider-evidence-intake`, `npm run smoke:provider-fallback-policy`, `npm run smoke:provider-events`, `npm run smoke:provider-attention-remediation`, `npm run smoke:mission-timeline`, `npm run smoke:workspace-timeline`, `npm run smoke:operator-timeline`, and `npm run smoke:release-artifact-hygiene`.
+
+The linked provider closure summary must also include the provider-specific account or architecture gate, target-boundary live validation command, production provider readiness smoke, and any provider-specific evidence docs required by the current blocker. Keep `productionReadyClaim: false` until every linked closure verification records same-boundary provider account or architecture proof, target secret injection proof, target-boundary live validation proof, provider fallback policy and stop reason proof, provider failure containment proof, release artifact hygiene pass proof, and regenerated execution-v1 artifact snapshot proof.
+
 ## Provider Operation Rules
 
 - define provider owner, account owner, secret owner, quota/spend owner, telemetry owner, incident owner, data owner, and evidence owner before a target deployment is presented as provider-operation-ready

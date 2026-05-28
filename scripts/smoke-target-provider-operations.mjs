@@ -64,6 +64,7 @@ for (const heading of [
   '## Provider Operation Controls',
   '## Provider Operations Evidence Packet',
   '## Target Evidence Capture Template',
+  '## Release Blocker Closure Linkage',
   '## Provider Operation Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -147,6 +148,49 @@ assert.match(
 assert.match(
   targetProviderOperations,
   /target provider evidence intake, provider-specific account or architecture approvals, target secret manager evidence, target observability operations, provider fallback policy, provider events, provider attention remediation, mission timeline, operator timeline, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence/,
+);
+assert.match(targetProviderOperations, /## Release Blocker Closure Linkage/);
+assert.match(
+  targetProviderOperations,
+  /\| Provider \| Provider-Specific Blocker \| Shared Operations Blocker \| Stop Reason \| Shared Commands \| Linked Commands \| Linked Evidence Docs \| Linked Proofs \| Production Claim \|/,
+);
+for (const [provider, providerBlocker, evidenceDocCount] of [
+  ['openai', 'target-openai-provider-account-remains-blocked-until-target-open', 5],
+  ['anthropic', 'anthropic-live-validation-remains-blocked-until-target-anthropic', 6],
+  ['local', 'target-local-provider-architecture-remains-blocked-until-endpoin', 5],
+  ['hermes', 'hermes-live-validation-is-blocked-until-target-hermes-provider-a', 5],
+]) {
+  assert.match(
+    targetProviderOperations,
+    new RegExp(
+      `\\| ${provider} \\| ${escapeRegExp(providerBlocker)} \\| target-provider-operations-evidence-remains-blocked-until-comple \\| target provider operations lacks accepted same-boundary runtime audit and blocker closure verification evidence \\| 9 \\| 12 \\| ${evidenceDocCount} \\| 14 \\| blocked \\|`,
+    ),
+    provider,
+  );
+}
+assert.match(
+  targetProviderOperations,
+  /Every provider row must close the provider-specific blocker and the shared `provider-operations` blocker from the same approved target boundary/,
+);
+assert.match(
+  targetProviderOperations,
+  /The shared operations blocker cannot be closed globally by one provider packet/,
+);
+assert.match(
+  targetProviderOperations,
+  /provider operations packet, fallback runtime audit, target blocker closure verification proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence/,
+);
+assert.match(
+  targetProviderOperations,
+  /The shared provider operations closure command set is `npm run smoke:target-provider-operations`, `npm run smoke:target-provider-evidence-intake`, `npm run smoke:provider-fallback-policy`, `npm run smoke:provider-events`, `npm run smoke:provider-attention-remediation`, `npm run smoke:mission-timeline`, `npm run smoke:workspace-timeline`, `npm run smoke:operator-timeline`, and `npm run smoke:release-artifact-hygiene`/,
+);
+assert.match(
+  targetProviderOperations,
+  /provider-specific account or architecture gate, target-boundary live validation command, production provider readiness smoke, and any provider-specific evidence docs required by the current blocker/,
+);
+assert.match(
+  targetProviderOperations,
+  /Keep `productionReadyClaim: false` until every linked closure verification records same-boundary provider account or architecture proof, target secret injection proof, target-boundary live validation proof, provider fallback policy and stop reason proof, provider failure containment proof, release artifact hygiene pass proof, and regenerated execution-v1 artifact snapshot proof/,
 );
 assert.doesNotMatch(targetProviderOperations, /target secret injection proof with secret manager alias/);
 assert.doesNotMatch(targetProviderOperations, /secretInjectionEvidence \| target secret manager alias/);
