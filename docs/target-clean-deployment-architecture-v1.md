@@ -54,6 +54,14 @@ Any future target clean deployment approval must include:
 - migration plan from tracked-files-only local clean rehearsal to approved target clean deployment workflow
 - explicit containment plan for dependency drift, failed bootstrap, failed secret injection, rollback failure, and misleading release approval
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target clean deployment architecture | target-clean-deployment-architecture-missing | target-clean-deployment-operations-missing | target-clean-release-boundary-missing-or-mismatched | 3 | 19 | 12 | 6 | blocked |
+
+Target clean deployment architecture owns the release architecture decision proof for source provenance, artifact registry, dependency installation, runtime bootstrap, secret injection, environment boundary, migration/data readiness, smoke and health verification, rollback, and release approval. Target clean deployment operations owns the target execution evidence, evidence retention, and failed-deployment containment proof. Clean deployment release, production-like release drill, and pilot export package own the regenerated release artifact proof. Target deployment contract and target environment evidence intake own the same-boundary clean release evidence verification. Keep `productionReadyClaim: false` and `targetCleanDeploymentApproved: false` until linked closure verifications have target clean deployment architecture approval proof, source provenance proof, artifact registry proof, dependency installation proof, runtime bootstrap proof, secret injection proof, environment boundary proof, migration and data readiness proof, smoke and health verification proof, rollback and recovery proof, release approval proof, target clean deployment operations proof, clean deployment release proof, production-like release drill proof, pilot export package proof, failed-deployment containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
