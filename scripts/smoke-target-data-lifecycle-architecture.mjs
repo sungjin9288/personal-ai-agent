@@ -79,6 +79,29 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| target data lifecycle architecture \| target-data-lifecycle-architecture-missing \| target-retention-backup-operations-missing \| target-retention-backup-boundary-missing-or-mismatched \| 3 \| 19 \| 10 \| 6 \| blocked \|/,
+);
+assert.match(decision, /Target data lifecycle architecture owns the lifecycle decision proof/);
+assert.match(decision, /Target retention operations owns customer-approved data class, retention configuration/);
+assert.match(decision, /Target backup operations owns backup schedule, encrypted storage, backup key ownership/);
+assert.match(
+  decision,
+  /Target deployment contract and target environment evidence intake own the same-boundary retention and backup evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetDataLifecycleApproved: false` until linked closure verifications have target data lifecycle architecture approval proof/,
+);
+assert.match(decision, /tenant isolation proof, backup expiry\/deletion proof, disaster recovery proof/);
+assert.match(decision, /release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary/);
+
 for (const command of [
   'npm run smoke:target-data-lifecycle-architecture',
   'npm run smoke:retention-delete-policy',
