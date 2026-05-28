@@ -73,6 +73,25 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| target support architecture \| target-support-architecture-missing \| target-support-operations-missing \| target-support-boundary-missing-or-mismatched \| 3 \| 15 \| 11 \| 5 \| blocked \|/,
+);
+assert.match(decision, /Target support architecture owns the support decision proof/);
+assert.match(decision, /Target support operations owns the staffed operational proof/);
+assert.match(decision, /Target deployment contract and target environment evidence intake own the same-boundary support evidence verification/);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetSupportApproved: false` until linked closure verifications have target support architecture approval proof/,
+);
+assert.match(decision, /support data handling proof, incident review governance proof, migration and containment proof/);
+assert.match(decision, /release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary/);
+
 for (const command of [
   'npm run smoke:target-support-architecture',
   'npm run smoke:customer-support-operations',

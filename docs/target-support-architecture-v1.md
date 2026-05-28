@@ -56,6 +56,14 @@ Any future target support approval must include:
 - migration plan from local customer support operations, support escalation review, and target support operations gates to approved target support architecture
 - explicit containment plan for missed acknowledgement, queue misrouting, customer communication failure, ticket audit gaps, and unstaffed escalation
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target support architecture | target-support-architecture-missing | target-support-operations-missing | target-support-boundary-missing-or-mismatched | 3 | 15 | 11 | 5 | blocked |
+
+Target support architecture owns the support decision proof. Target support operations owns the staffed operational proof. Target deployment contract and target environment evidence intake own the same-boundary support evidence verification. Keep `productionReadyClaim: false` and `targetSupportApproved: false` until linked closure verifications have target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit proof, on-call handoff proof, incident commander proof, escalation and backup proof, support data handling proof, incident review governance proof, migration and containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
