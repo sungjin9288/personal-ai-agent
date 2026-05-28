@@ -64,6 +64,19 @@ Every provider promoted into a target release must record:
 - blockerClosureVerificationEvidence from target provider operations for every provider included in the target provider claim
 - productionReadyClaim remains false unless every mandatory target deployment control also has target evidence
 
+## Release Blocker Closure Linkage
+
+| Provider | Provider-Specific Blocker | Target Stop Condition | Evidence Command | Provider-Specific Gate | Shared Operations Link | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| openai | target-openai-provider-account-remains-blocked-until-target-open | target-openai-provider-account-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-openai` | `npm run smoke:target-openai-provider-account` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+| anthropic | anthropic-live-validation-remains-blocked-until-target-anthropic | anthropic-live-validation-missing-or-failed | `node scripts/build-execution-v1-evidence.mjs --live-anthropic` | `npm run smoke:target-anthropic-provider-account` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 6 | blocked |
+| local | target-local-provider-architecture-remains-blocked-until-endpoin | target-local-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-local` | `npm run smoke:target-local-provider-architecture` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+| hermes | hermes-live-validation-is-blocked-until-target-hermes-provider-a | target-hermes-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-hermes` | `npm run smoke:target-hermes-provider-architecture` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+
+Provider evidence intake owns the provider-specific account or architecture proof. Target provider operations owns the shared runtime operations proof. A provider can only move beyond `keep-blocked` when both linked closure verifications have same-boundary evidence, matching Stop Condition Handoff details, accepted decision owner proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence.
+
+The Stop Condition Handoff source is [production-provider-readiness-v1.md](production-provider-readiness-v1.md). Each intake row must retain provider id, stopConditionId, stopReason, targetStopConditionId, evidenceCommand, requiredClosingEvidence, provider-specific gate, shared operations blocker id, and `productionReadyClaim: false` proof.
+
 ## Required Commands
 
 ```bash
