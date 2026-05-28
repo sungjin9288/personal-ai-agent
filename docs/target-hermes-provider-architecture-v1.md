@@ -72,6 +72,14 @@ When a target environment is ready for Hermes provider approval, fill this templ
 
 The completed template is still not sufficient for `production-ready` by itself. It must be paired with target provider evidence intake, target provider operations, target deployment contract, target environment evidence intake, release artifact hygiene, and production readiness gate evidence.
 
+## Release Blocker Closure Linkage
+
+| Provider | Provider-Specific Blocker | Stop Condition | Target Stop Condition | Evidence Command | Shared Operations Blocker | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| hermes | hermes-live-validation-is-blocked-until-target-hermes-provider-a | hermes-live-env-missing | target-hermes-provider-approval-missing | `node scripts/build-execution-v1-evidence.mjs --live-hermes` | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
+
+Hermes provider architecture approval owns the provider-specific endpoint, model, tool-call, transcript, and customer approval proof. Target provider operations owns the shared runtime operations proof. Keep `productionReadyClaim: false` and `targetHermesProviderApproved: false` until both linked closure verifications have same-boundary target evidence, matching Stop Condition Handoff details, accepted decision owner proof, Hermes fallback policy and stop reason proof, release artifact hygiene result, and regenerated execution-v1 snapshot evidence.
+
 ## Required Commands
 
 ```bash
