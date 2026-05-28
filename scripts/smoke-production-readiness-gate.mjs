@@ -709,6 +709,12 @@ assert.match(targetObservabilityArchitecture, /npm run smoke:target-observabilit
 assert.match(targetObservabilityArchitecture, /not target telemetry implementation/);
 assert.match(targetObservabilityArchitecture, /Target observability readiness remains blocked/);
 assert.match(targetObservabilityArchitecture, /release artifact hygiene result and regenerated execution snapshot evidence/);
+assert.match(targetObservabilityArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetObservabilityArchitecture, /target-observability-architecture-missing/);
+assert.match(targetObservabilityArchitecture, /target-observability-operations-missing/);
+assert.match(targetObservabilityArchitecture, /target-observability-slo-boundary-missing-or-mismatched/);
+assert.match(targetObservabilityArchitecture, /same-boundary observability evidence verification/);
+assert.match(targetObservabilityArchitecture, /regenerated execution-v1 snapshot evidence from the same approved target boundary/);
 assert.match(targetObservabilityOperations, /^# Target Observability Operations v1$/m);
 assert.match(targetObservabilityOperations, /^- status: local-target-observability-operations-current$/m);
 assert.match(targetObservabilityOperations, /^- productionReadyClaim: false$/m);

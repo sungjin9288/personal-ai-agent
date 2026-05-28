@@ -55,6 +55,14 @@ Any future target observability approval must include:
 - explicit rollback, false-positive triage, alert fatigue, and customer communication containment plan
 - release artifact hygiene result and regenerated execution snapshot evidence after target observability architecture evidence is attached
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target observability architecture | target-observability-architecture-missing | target-observability-operations-missing | target-observability-slo-boundary-missing-or-mismatched | 3 | 15 | 9 | 6 | blocked |
+
+Target observability architecture owns the telemetry backend and signal taxonomy decision proof. Target observability operations owns the telemetry ingestion, alert delivery, retention, on-call acknowledgement, customer status communication, incident response, incident review, and audit export proof. Target SLO architecture and operations own the linked SLO/SLA evidence boundary. Target deployment contract and target environment evidence intake own the same-boundary observability evidence verification. Keep `productionReadyClaim: false` and `targetObservabilityApproved: false` until linked closure verifications have approved telemetry backend proof, signal inventory proof, telemetry ingestion proof, alert routing proof, alert delivery receipt proof, staffed on-call proof, log and trace retention proof, customer status communication proof, incident response proof, audit export proof, disaster recovery proof, rollback and containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
