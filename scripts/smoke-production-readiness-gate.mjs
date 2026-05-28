@@ -765,6 +765,15 @@ assert.match(targetCleanDeploymentArchitecture, /^- targetCleanDeploymentApprove
 assert.match(targetCleanDeploymentArchitecture, /npm run smoke:target-clean-deployment-architecture/);
 assert.match(targetCleanDeploymentArchitecture, /not target deployment execution/);
 assert.match(targetCleanDeploymentArchitecture, /Target clean deployment readiness remains blocked/);
+assert.match(targetCleanDeploymentArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetCleanDeploymentArchitecture, /target-clean-deployment-architecture-missing/);
+assert.match(targetCleanDeploymentArchitecture, /target-clean-deployment-operations-missing/);
+assert.match(targetCleanDeploymentArchitecture, /target-clean-release-boundary-missing-or-mismatched/);
+assert.match(targetCleanDeploymentArchitecture, /same-boundary clean release evidence verification/);
+assert.match(
+  targetCleanDeploymentArchitecture,
+  /regenerated execution-v1 snapshot evidence from the same approved target boundary/,
+);
 assert.match(targetCleanDeploymentOperations, /^# Target Clean Deployment Operations v1$/m);
 assert.match(targetCleanDeploymentOperations, /^- status: local-target-clean-deployment-operations-current$/m);
 assert.match(targetCleanDeploymentOperations, /^- productionReadyClaim: false$/m);

@@ -72,6 +72,31 @@ for (const packetItem of [
 ]) {
   assert.match(decision, packetItem);
 }
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| target clean deployment architecture \| target-clean-deployment-architecture-missing \| target-clean-deployment-operations-missing \| target-clean-release-boundary-missing-or-mismatched \| 3 \| 19 \| 12 \| 6 \| blocked \|/,
+);
+assert.match(decision, /Target clean deployment architecture owns the release architecture decision proof/);
+assert.match(decision, /Target clean deployment operations owns the target execution evidence/);
+assert.match(
+  decision,
+  /Clean deployment release, production-like release drill, and pilot export package own the regenerated release artifact proof/,
+);
+assert.match(
+  decision,
+  /Target deployment contract and target environment evidence intake own the same-boundary clean release evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetCleanDeploymentApproved: false` until linked closure verifications have target clean deployment architecture approval proof/,
+);
+assert.match(decision, /clean deployment release proof, production-like release drill proof, pilot export package proof/);
+assert.match(decision, /release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary/);
 assert.doesNotMatch(decision, /target secret manager alias, injection path/);
 assert.doesNotMatch(decision, /secret injection proof with target secret manager alias/);
 
