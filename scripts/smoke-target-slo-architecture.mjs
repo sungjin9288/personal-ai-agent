@@ -80,6 +80,32 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| target SLO architecture \| target-slo-architecture-missing \| target-slo-operations-missing \| target-observability-slo-boundary-missing-or-mismatched \| 3 \| 16 \| 14 \| 6 \| blocked \|/,
+);
+assert.match(decision, /Target SLO architecture owns the customer SLO\/SLA decision proof/);
+assert.match(decision, /Target SLO operations owns the staffed operating evidence/);
+assert.match(
+  decision,
+  /Target observability architecture and operations own telemetry measurement, alert delivery, and on-call signal proof/,
+);
+assert.match(
+  decision,
+  /Target deployment contract and target environment evidence intake own the same-boundary SLO evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetSloApproved: false` until linked closure verifications have customer-approved SLO\/SLA terms proof/,
+);
+assert.match(decision, /evidence retention proof, missed-SLO containment proof/);
+assert.match(decision, /release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary/);
+
 for (const command of [
   'npm run smoke:target-slo-architecture',
   'npm run smoke:target-slo-operations',

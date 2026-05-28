@@ -59,6 +59,14 @@ Any future target SLO approval must include:
 - explicit rollback, communication misfire, false-positive alert, alert fatigue, and missed-SLO containment plan
 - release artifact hygiene result and regenerated execution snapshot evidence after target SLO/SLA architecture evidence is attached
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target SLO architecture | target-slo-architecture-missing | target-slo-operations-missing | target-observability-slo-boundary-missing-or-mismatched | 3 | 16 | 14 | 6 | blocked |
+
+Target SLO architecture owns the customer SLO/SLA decision proof. Target SLO operations owns the staffed operating evidence. Target observability architecture and operations own telemetry measurement, alert delivery, and on-call signal proof. Target deployment contract and target environment evidence intake own the same-boundary SLO evidence verification. Keep `productionReadyClaim: false` and `targetSloApproved: false` until linked closure verifications have customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call proof, customer communication proof, incident review proof, provider outage playbook proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
