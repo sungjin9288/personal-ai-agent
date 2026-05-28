@@ -749,6 +749,15 @@ assert.match(targetDataLifecycleArchitecture, /^- targetDataLifecycleApproved: f
 assert.match(targetDataLifecycleArchitecture, /npm run smoke:target-data-lifecycle-architecture/);
 assert.match(targetDataLifecycleArchitecture, /not target retention implementation/);
 assert.match(targetDataLifecycleArchitecture, /Target data lifecycle readiness remains blocked/);
+assert.match(targetDataLifecycleArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetDataLifecycleArchitecture, /target-data-lifecycle-architecture-missing/);
+assert.match(targetDataLifecycleArchitecture, /target-retention-backup-operations-missing/);
+assert.match(targetDataLifecycleArchitecture, /target-retention-backup-boundary-missing-or-mismatched/);
+assert.match(targetDataLifecycleArchitecture, /same-boundary retention and backup evidence verification/);
+assert.match(
+  targetDataLifecycleArchitecture,
+  /regenerated execution-v1 snapshot evidence from the same approved target boundary/,
+);
 assert.match(targetCleanDeploymentArchitecture, /^# Target Clean Deployment Architecture v1$/m);
 assert.match(targetCleanDeploymentArchitecture, /^- status: local-target-clean-deployment-architecture-current$/m);
 assert.match(targetCleanDeploymentArchitecture, /^- productionReadyClaim: false$/m);

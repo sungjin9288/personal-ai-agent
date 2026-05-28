@@ -55,6 +55,14 @@ Any future target data lifecycle approval must include:
 - migration plan from local pilot retention/export/delete and backup workflows to the approved target lifecycle architecture
 - explicit rollback, legal hold, delete conflict, provider transcript exception, and customer communication containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target data lifecycle architecture | target-data-lifecycle-architecture-missing | target-retention-backup-operations-missing | target-retention-backup-boundary-missing-or-mismatched | 3 | 19 | 10 | 6 | blocked |
+
+Target data lifecycle architecture owns the lifecycle decision proof for retention, export, delete, provider transcript handling, backup, restore, and disaster recovery. Target retention operations owns customer-approved data class, retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, and audit history proof. Target backup operations owns backup schedule, encrypted storage, backup key ownership, restore validation, tenant isolation, backup expiry/deletion, and disaster recovery proof. Target deployment contract and target environment evidence intake own the same-boundary retention and backup evidence verification. Keep `productionReadyClaim: false` and `targetDataLifecycleApproved: false` until linked closure verifications have target data lifecycle architecture approval proof, customer-approved data class matrix proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, backup schedule proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, migration and containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
