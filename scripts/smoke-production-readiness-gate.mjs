@@ -591,6 +591,17 @@ assert.match(hostedIdentitySessionArchitecture, /^- hostedIdentitySessionApprove
 assert.match(hostedIdentitySessionArchitecture, /npm run smoke:hosted-identity-session-architecture/);
 assert.match(hostedIdentitySessionArchitecture, /not hosted identity implementation/);
 assert.match(hostedIdentitySessionArchitecture, /Hosted identity-backed RBAC and session administration remain blocked/);
+assert.match(hostedIdentitySessionArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(hostedIdentitySessionArchitecture, /hosted-identity-session-architecture-missing/);
+assert.match(hostedIdentitySessionArchitecture, /target-identity-session-operations-missing/);
+assert.match(hostedIdentitySessionArchitecture, /hosted-identity-boundary-missing-or-mismatched/);
+assert.match(hostedIdentitySessionArchitecture, /same-boundary hosted identity evidence verification/);
+assert.match(hostedIdentitySessionArchitecture, /hosted identity session architecture approval proof/);
+assert.match(hostedIdentitySessionArchitecture, /customer access containment proof/);
+assert.match(
+  hostedIdentitySessionArchitecture,
+  /regenerated execution-v1 snapshot evidence from the same approved hosted or production-like identity boundary/,
+);
 assert.match(
   hostedIdentitySessionArchitecture,
   /customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval/,

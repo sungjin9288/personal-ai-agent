@@ -82,6 +82,37 @@ assert.match(
   /Hosted identity-backed RBAC and session administration remain blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved hosted or production-like environment for customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before\/after state, timestamp, and checksum, break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review, support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure, compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| hosted identity session architecture \| hosted-identity-session-architecture-missing \| target-identity-session-operations-missing \| hosted-identity-boundary-missing-or-mismatched \| 3 \| 17 \| 8 \| 6 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Hosted identity session architecture owns the customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit, break-glass, support impersonation, compliance, and retention decision proof/,
+);
+assert.match(
+  decision,
+  /Target identity\/session operations owns the target identity provider onboarding, session lifecycle execution, role administration, permission propagation, audit export, break-glass, support impersonation, and identity retention evidence contract/,
+);
+assert.match(decision, /Identity session administration owns the local pilot identity\/session stop condition/);
+assert.match(
+  decision,
+  /Hosted SaaS architecture, target deployment contract, and target environment evidence intake own the same-boundary hosted identity evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `hostedIdentitySessionApproved: false` until linked closure verifications have hosted identity session architecture approval proof/,
+);
+assert.match(
+  decision,
+  /customer access containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or production-like identity boundary/,
+);
+
 for (const command of [
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:hosted-saas-architecture-decision',
