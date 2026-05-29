@@ -54,6 +54,14 @@ Any future hosted identity/session approval must include:
 - migration plan from local shared-secret/OIDC pilot mode to hosted identity control plane
 - explicit rollback, lockout recovery, and customer access containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| hosted identity session architecture | hosted-identity-session-architecture-missing | target-identity-session-operations-missing | hosted-identity-boundary-missing-or-mismatched | 3 | 17 | 8 | 6 | blocked |
+
+Hosted identity session architecture owns the customer IdP, user lifecycle, session lifecycle, role administration, permission propagation, immutable audit, break-glass, support impersonation, compliance, and retention decision proof. Target identity/session operations owns the target identity provider onboarding, session lifecycle execution, role administration, permission propagation, audit export, break-glass, support impersonation, and identity retention evidence contract. Identity session administration owns the local pilot identity/session stop condition. Hosted SaaS architecture, target deployment contract, and target environment evidence intake own the same-boundary hosted identity evidence verification. Keep `productionReadyClaim: false` and `hostedIdentitySessionApproved: false` until linked closure verifications have hosted identity session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration proof, rollback proof, lockout recovery proof, customer access containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or production-like identity boundary.
+
 ## Required Commands
 
 ```bash
