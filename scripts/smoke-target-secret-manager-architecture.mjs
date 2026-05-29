@@ -87,6 +87,41 @@ assert.doesNotMatch(
   /Target secret manager readiness remains blocked until a replacement architecture decision is approved, implementation is completed, target evidence is generated from the approved production-like or hosted environment/,
 );
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| target secret manager architecture \| target-secret-manager-architecture-missing \| target-secret-manager-evidence-missing \| target-secret-manager-boundary-missing-or-mismatched \| 3 \| 17 \| 7 \| 6 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Target secret manager architecture owns the approved platform, secret class inventory, runtime injection, access policy, rotation\/revocation, audit, break-glass, leakage review, and disaster recovery decision proof/,
+);
+assert.match(
+  decision,
+  /Target secret manager owns the rotation packet, break-glass, target injection, and target audit evidence contract/,
+);
+assert.match(decision, /Secret management owns the local redaction and artifact hygiene stop condition/);
+assert.match(
+  decision,
+  /Target provider operations and target clean deployment operations own provider credential injection and clean deployment secret injection integration proof/,
+);
+assert.match(
+  decision,
+  /Target deployment contract and target environment evidence intake own the same-boundary secret manager evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `targetSecretManagerApproved: false` until linked closure verifications have target secret manager architecture approval proof/,
+);
+assert.match(
+  decision,
+  /credential containment proof, provider credential injection proof, clean deployment secret injection proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary/,
+);
+
 for (const command of [
   'npm run smoke:target-secret-manager-architecture',
   'npm run smoke:target-secret-manager',

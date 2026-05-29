@@ -691,6 +691,17 @@ assert.match(targetSecretManagerArchitecture, /^- targetSecretManagerApproved: f
 assert.match(targetSecretManagerArchitecture, /npm run smoke:target-secret-manager-architecture/);
 assert.match(targetSecretManagerArchitecture, /not target secret manager implementation/);
 assert.match(targetSecretManagerArchitecture, /Target secret manager readiness remains blocked/);
+assert.match(targetSecretManagerArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetSecretManagerArchitecture, /target-secret-manager-architecture-missing/);
+assert.match(targetSecretManagerArchitecture, /target-secret-manager-evidence-missing/);
+assert.match(targetSecretManagerArchitecture, /target-secret-manager-boundary-missing-or-mismatched/);
+assert.match(targetSecretManagerArchitecture, /same-boundary secret manager evidence verification/);
+assert.match(targetSecretManagerArchitecture, /provider credential injection proof/);
+assert.match(targetSecretManagerArchitecture, /clean deployment secret injection proof/);
+assert.match(
+  targetSecretManagerArchitecture,
+  /regenerated execution-v1 snapshot evidence from the same approved target boundary/,
+);
 assert.match(targetSecretManager, /^# Target Secret Manager v1$/m);
 assert.match(targetSecretManager, /^- status: local-target-secret-manager-current$/m);
 assert.match(targetSecretManager, /^- productionReadyClaim: false$/m);
