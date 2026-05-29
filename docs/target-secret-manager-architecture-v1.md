@@ -52,6 +52,14 @@ Any future target secret manager approval must include:
 - explicit rollback, lockout recovery, and credential containment plan
 - release artifact hygiene result and regenerated execution snapshot evidence from the approved target boundary
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target secret manager architecture | target-secret-manager-architecture-missing | target-secret-manager-evidence-missing | target-secret-manager-boundary-missing-or-mismatched | 3 | 17 | 7 | 6 | blocked |
+
+Target secret manager architecture owns the approved platform, secret class inventory, runtime injection, access policy, rotation/revocation, audit, break-glass, leakage review, and disaster recovery decision proof. Target secret manager owns the rotation packet, break-glass, target injection, and target audit evidence contract. Secret management owns the local redaction and artifact hygiene stop condition. Target provider operations and target clean deployment operations own provider credential injection and clean deployment secret injection integration proof. Target deployment contract and target environment evidence intake own the same-boundary secret manager evidence verification. Keep `productionReadyClaim: false` and `targetSecretManagerApproved: false` until linked closure verifications have target secret manager architecture approval proof, approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration and rollback proof, lockout recovery proof, credential containment proof, provider credential injection proof, clean deployment secret injection proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved target boundary.
+
 ## Required Commands
 
 ```bash
