@@ -54,6 +54,14 @@ Any future hosted tenant isolation approval must include:
 - migration plan from self-hosted/local-first runtime roots to hosted tenant partitions
 - explicit rollback and tenant data containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Shared Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| hosted tenant isolation architecture | hosted-tenant-isolation-architecture-missing | target-tenant-isolation-operations-missing | hosted-tenant-boundary-missing-or-mismatched | 3 | 21 | 8 | 6 | blocked |
+
+Hosted tenant isolation architecture owns the tenant identity source, customer organization mapping, tenant lifecycle, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, artifact/memory/search/export/index partitioning, per-tenant encryption and key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, migration, rollback, and tenant data containment decision proof. Target tenant isolation operations owns the target tenant identity, authorization, storage, encryption/key, backup/restore, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment evidence contract. Tenant storage administration owns the local pilot tenant storage stop condition. Hosted SaaS architecture, target deployment contract, and target environment evidence intake own the same-boundary hosted tenant isolation evidence verification. Keep `productionReadyClaim: false` and `hostedTenantIsolationApproved: false` until linked closure verifications have hosted tenant isolation architecture approval proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-aware authorization proof, service-to-service tenant propagation proof, storage partitioning proof, artifact/memory/search/export/index partitioning proof, per-tenant encryption and key ownership proof, key rotation/revocation/escrow/break-glass proof, backup/restore isolation proof, tenant administration approval and audit proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, migration proof, rollback proof, tenant data containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or production-like tenant boundary.
+
 ## Required Commands
 
 ```bash
