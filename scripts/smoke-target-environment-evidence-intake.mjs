@@ -334,6 +334,39 @@ assert.doesNotMatch(
   intake,
   /account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation pass, telemetry proof, fallback and stop-condition proof, remediation audit proof, provider operations evidence, release artifact hygiene pass, and regenerated execution-v1 artifacts/,
 );
+assert.match(intake, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  intake,
+  /\| Blocker \| Intake Stop Condition \| Deployment Stop Condition \| Closure Matrix Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  intake,
+  /\| target environment evidence intake \| target-environment-evidence-missing \| target-deployment-contract-remains-blocked-until-target-deployme \| blocker-closure-verification-missing-or-stale \| target-environment-boundary-missing-or-mismatched \| 4 \| 9 \| 30 \| 8 \| blocked \|/,
+);
+assert.match(
+  intake,
+  /Target environment evidence intake owns the deployment boundary, identity\/session, tenant storage\/encryption, provider\/secrets, observability\/SLO, retention\/backup, support, clean release, artifact hygiene, submission packet, blocker disposition register, blocker closure verification matrix, accepted risk, decision owner, and next review date evidence contract/,
+);
+assert.match(
+  intake,
+  /Target deployment contract owns the production target control list and release claim decision proof/,
+);
+assert.match(
+  intake,
+  /Target provider, identity, tenant, secret, observability, SLO, retention, backup, support, and clean deployment gates own their domain-specific closing evidence/,
+);
+assert.match(
+  intake,
+  /The closure matrix owns the next command, required closing evidence, and stop-condition audit trail for every blocker state transition/,
+);
+assert.match(
+  intake,
+  /Keep `productionReadyClaim: false` until linked closure verifications have completed target environment evidence capture template proof/,
+);
+assert.match(
+  intake,
+  /refreshed clean deployment release, refreshed production-like release drill, refreshed pilot export package, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target boundary/,
+);
 assert.match(
   intake,
   /target local provider architecture evidence with endpoint ownership proof for approved base URL alias, runtime owner, network boundary, transport, availability owner, health check result, and customer approval/,

@@ -688,6 +688,21 @@ assert.match(targetEnvironmentEvidenceIntake, /target-environment-evidence-missi
 assert.match(targetEnvironmentEvidenceIntake, /customer-exception-scope-missing/);
 assert.match(targetEnvironmentEvidenceIntake, /matching target boundary, release artifact hygiene, and regenerated release artifacts/);
 assert.match(targetEnvironmentEvidenceIntake, /exceptions cannot convert a blocked production-ready claim into production-ready/);
+assert.match(targetEnvironmentEvidenceIntake, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetEnvironmentEvidenceIntake, /target-deployment-contract-remains-blocked-until-target-deployme/);
+assert.match(targetEnvironmentEvidenceIntake, /blocker-closure-verification-missing-or-stale/);
+assert.match(targetEnvironmentEvidenceIntake, /target-environment-boundary-missing-or-mismatched/);
+assert.match(targetEnvironmentEvidenceIntake, /production target control list and release claim decision proof/);
+assert.match(targetEnvironmentEvidenceIntake, /domain-specific closing evidence/);
+assert.match(targetEnvironmentEvidenceIntake, /stop-condition audit trail for every blocker state transition/);
+assert.match(targetEnvironmentEvidenceIntake, /completed target environment evidence capture template proof/);
+assert.match(targetEnvironmentEvidenceIntake, /sanitized submission packet proof/);
+assert.match(targetEnvironmentEvidenceIntake, /boundary consistency map proof/);
+assert.match(targetEnvironmentEvidenceIntake, /blocker closure verification matrix proof/);
+assert.match(
+  targetEnvironmentEvidenceIntake,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target boundary/,
+);
 assert.match(targetEnvironmentEvidenceIntake, /not hosted production evidence/);
 assert.match(targetEnvironmentEvidenceIntake, /Target environment readiness remains blocked for production-ready claims/);
 assert.match(backupRestoreDrill, /^# Backup Restore Drill v1$/m);
