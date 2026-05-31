@@ -55,6 +55,14 @@ Every target tenant isolation operations review must include:
 - release artifact hygiene result, production readiness gate result, and regenerated execution snapshot evidence from the approved production-like or hosted tenant boundary
 - residual risk, decision owner, next review date, and tenant data containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target tenant isolation operations | target-tenant-isolation-operations-missing | hosted-tenant-isolation-architecture-missing | target-tenant-boundary-missing-or-mismatched | 3 | 18 | 11 | 7 | blocked |
+
+Target tenant isolation operations owns the target tenant identity, authorization, storage partitioning, encryption/key ownership, backup/restore isolation, tenant administration, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant containment evidence contract. Hosted tenant isolation architecture owns the tenant isolation architecture approval and tenant control-plane decision proof. Tenant storage administration owns the local pilot tenant storage stop condition. Target deployment contract and target environment evidence intake own the same-boundary target tenant isolation evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target tenant isolation operations evidence capture template proof, tenant identity source proof, customer organization mapping proof, tenant lifecycle proof, tenant-scoped authorization proof, service-to-service tenant propagation proof, stale permission denial proof, storage partitioning proof, per-tenant encryption/key ownership proof, backup/restore isolation proof, tenant administration proof, cross-tenant denial proof, observability/support isolation proof, lifecycle isolation proof, tenant data containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted tenant boundary.
+
 ## Target Evidence Capture Template
 
 When an approved production-like or hosted target boundary is ready for tenant isolation operations review, fill this template with target-boundary evidence. Do not record raw tenant payloads, customer personal data, private tenant identifiers, encryption key material, customer secrets, private account identifiers, or machine-local absolute paths.

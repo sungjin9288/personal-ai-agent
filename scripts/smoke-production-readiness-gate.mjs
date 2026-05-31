@@ -640,6 +640,17 @@ assert.match(targetTenantIsolationOperations, /^- productionReadyClaim: false$/m
 assert.match(targetTenantIsolationOperations, /npm run smoke:target-tenant-isolation-operations/);
 assert.match(targetTenantIsolationOperations, /not target tenant isolation evidence/);
 assert.match(targetTenantIsolationOperations, /Target tenant isolation operations remain blocked for production-ready claims/);
+assert.match(targetTenantIsolationOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetTenantIsolationOperations, /target-tenant-isolation-operations-missing/);
+assert.match(targetTenantIsolationOperations, /hosted-tenant-isolation-architecture-missing/);
+assert.match(targetTenantIsolationOperations, /target-tenant-boundary-missing-or-mismatched/);
+assert.match(targetTenantIsolationOperations, /same-boundary target tenant isolation evidence verification/);
+assert.match(targetTenantIsolationOperations, /target tenant isolation operations evidence capture template proof/);
+assert.match(targetTenantIsolationOperations, /tenant data containment proof/);
+assert.match(
+  targetTenantIsolationOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted tenant boundary/,
+);
 assert.match(targetEnvironmentEvidenceIntake, /^# Target Environment Evidence Intake v1$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- status: local-target-environment-evidence-intake-current$/m);
 assert.match(targetEnvironmentEvidenceIntake, /^- productionReadyClaim: false$/m);
