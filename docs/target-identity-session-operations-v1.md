@@ -56,6 +56,14 @@ Every target identity/session operations review must include:
 - regenerated execution snapshot evidence from the approved production-like or hosted identity boundary
 - residual risk, decision owner, next review date, and customer access containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target identity session operations | target-identity-session-operations-missing | hosted-identity-session-architecture-missing | target-identity-boundary-missing-or-mismatched | 3 | 17 | 10 | 7 | blocked |
+
+Target identity/session operations owns the target identity provider onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, and customer access containment evidence contract. Hosted identity session architecture owns the hosted identity architecture approval and identity control-plane decision proof. Identity session administration owns the local pilot identity/session stop condition. Target deployment contract and target environment evidence intake own the same-boundary target identity/session evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target identity/session operations evidence capture template proof, hosted identity session architecture approval proof, customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, customer access containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted identity boundary.
+
 ## Target Evidence Capture Template
 
 When an approved production-like or hosted target boundary is ready for identity/session operations review, fill this template with target-boundary evidence. Do not record raw tokens, private IdP credentials, customer secrets, customer personal data, tenant payloads, private account identifiers, or machine-local absolute paths.

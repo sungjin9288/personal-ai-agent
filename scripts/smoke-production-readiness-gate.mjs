@@ -612,9 +612,16 @@ assert.match(targetIdentitySessionOperations, /^- productionReadyClaim: false$/m
 assert.match(targetIdentitySessionOperations, /npm run smoke:target-identity-session-operations/);
 assert.match(targetIdentitySessionOperations, /not target identity\/session evidence/);
 assert.match(targetIdentitySessionOperations, /Target identity\/session operations remain blocked for production-ready claims/);
+assert.match(targetIdentitySessionOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetIdentitySessionOperations, /target-identity-session-operations-missing/);
+assert.match(targetIdentitySessionOperations, /hosted-identity-session-architecture-missing/);
+assert.match(targetIdentitySessionOperations, /target-identity-boundary-missing-or-mismatched/);
+assert.match(targetIdentitySessionOperations, /same-boundary target identity\/session evidence verification/);
+assert.match(targetIdentitySessionOperations, /target identity\/session operations evidence capture template proof/);
+assert.match(targetIdentitySessionOperations, /customer access containment proof/);
 assert.match(
   targetIdentitySessionOperations,
-  /regenerated execution snapshot evidence from the approved production-like or hosted identity boundary/,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted identity boundary/,
 );
 assert.match(hostedTenantIsolationArchitecture, /^# Hosted Tenant Isolation Architecture v1$/m);
 assert.match(hostedTenantIsolationArchitecture, /^- status: local-hosted-tenant-isolation-architecture-current$/m);
