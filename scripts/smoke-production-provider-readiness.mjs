@@ -60,6 +60,39 @@ assert.match(
   /Every provider readiness row must carry its provider-specific blocker plus the shared `provider-operations` blocker/,
 );
 assert.match(readiness, /provider fallback policy and stop reason proof/);
+assert.match(readiness, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  readiness,
+  /\| Blocker \| Provider Stop Condition \| Provider Evidence Stop Condition \| Provider Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  readiness,
+  /\| production provider readiness \| provider-live-validation-missing-or-failed \| target-provider-evidence-intake-missing \| target-provider-operations-evidence-remains-blocked-until-comple \| provider-target-boundary-missing-or-mismatched \| 4 \| 14 \| 12 \| 6 \| blocked \|/,
+);
+assert.match(
+  readiness,
+  /Production provider readiness owns the aggregate provider preflight, live validation handoff, stop condition handoff, provider blocker closure linkage, missing environment visibility, archived live status, and production provider claim decision proof/,
+);
+assert.match(
+  readiness,
+  /Target provider evidence intake owns provider account or architecture approval, target secret injection, target-boundary live validation, quota and cost guard, model and endpoint pinning, failure triage, and provider blocker closure verification proof/,
+);
+assert.match(
+  readiness,
+  /Target provider operations owns shared provider runtime operations, fallback and disable path, provider fallback runtime audit, telemetry, incident triage, transcript handling, remediation and renewal, evidence retention, and provider failure containment proof/,
+);
+assert.match(
+  readiness,
+  /Provider-specific account or architecture gates own OpenAI, Anthropic, local, and Hermes closing evidence/,
+);
+assert.match(
+  readiness,
+  /Keep `productionReadyClaim: false` until linked closure verifications have every included provider's account or architecture approval proof/,
+);
+assert.match(
+  readiness,
+  /refreshed provider readiness rehearsal, refreshed execution-v1 evidence, and regenerated execution-v1 snapshot evidence from the same approved production-like provider boundary/,
+);
 
 const sharedProviderOperationsBlockerId = 'target-provider-operations-evidence-remains-blocked-until-comple';
 

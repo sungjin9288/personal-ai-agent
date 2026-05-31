@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-05-31T17:28:53.291Z
-- sourceBranch: codex/execution-v1-artifacts-8959436-refresh
-- sourceCommit: 89594362c4b5e8b3e537af40310905a8abe55315
+- generatedAt: 2026-05-31T18:06:47.458Z
+- sourceBranch: codex/production-provider-readiness-closure-linkage
+- sourceCommit: 1a2037d74b5b94f1954b9409bcbbaf2c5d60d706
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 6068 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 8937 |
 
 ## Key Signals
 
@@ -182,6 +182,14 @@ Production-ready remains blocked until every provider included in the target rel
 | hermes | target-provider-operations-evidence-remains-blocked-until-comple<br>hermes-live-validation-is-blocked-until-target-hermes-provider-a | target-provider-operations-evidence-remains-blocked-until-comple | 2 | 14 | 12 | 5 | blocked |
 
 Every provider readiness row must carry its provider-specific blocker plus the shared `provider-operations` blocker. Keep `productionReadyClaim: false` until both linked closure verifications have same-boundary target evidence, accepted decision owner proof, provider fallback policy and stop reason proof, release artifact hygiene, and regenerated execution-v1 snapshot evidence.
+
+## Release Blocker Closure Linkage
+
+| Blocker | Provider Stop Condition | Provider Evidence Stop Condition | Provider Operations Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| production provider readiness | provider-live-validation-missing-or-failed | target-provider-evidence-intake-missing | target-provider-operations-evidence-remains-blocked-until-comple | provider-target-boundary-missing-or-mismatched | 4 | 14 | 12 | 6 | blocked |
+
+Production provider readiness owns the aggregate provider preflight, live validation handoff, stop condition handoff, provider blocker closure linkage, missing environment visibility, archived live status, and production provider claim decision proof. Target provider evidence intake owns provider account or architecture approval, target secret injection, target-boundary live validation, quota and cost guard, model and endpoint pinning, failure triage, and provider blocker closure verification proof. Target provider operations owns shared provider runtime operations, fallback and disable path, provider fallback runtime audit, telemetry, incident triage, transcript handling, remediation and renewal, evidence retention, and provider failure containment proof. Provider-specific account or architecture gates own OpenAI, Anthropic, local, and Hermes closing evidence. Keep `productionReadyClaim: false` until linked closure verifications have every included provider's account or architecture approval proof, target secret injection proof, target-boundary live validation proof, provider operations proof, provider fallback policy and stop reason proof, release artifact hygiene result, production readiness gate result, refreshed provider readiness rehearsal, refreshed execution-v1 evidence, and regenerated execution-v1 snapshot evidence from the same approved production-like provider boundary.
 
 ## Operating Interpretation
 
