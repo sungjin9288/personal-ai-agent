@@ -522,6 +522,19 @@ assert.match(productionProviderReadiness, /\[target-local-provider-architecture-
 assert.match(productionProviderReadiness, /\[target-hermes-provider-architecture-v1\.md\]\(target-hermes-provider-architecture-v1\.md\)/);
 assert.match(productionProviderReadiness, /provider blocker closure verification/);
 assert.match(productionProviderReadiness, /target blocker closure verification matrix/);
+assert.match(productionProviderReadiness, /^## Release Blocker Closure Linkage$/m);
+assert.match(productionProviderReadiness, /provider-live-validation-missing-or-failed/);
+assert.match(productionProviderReadiness, /target-provider-evidence-intake-missing/);
+assert.match(productionProviderReadiness, /target-provider-operations-evidence-remains-blocked-until-comple/);
+assert.match(productionProviderReadiness, /provider-target-boundary-missing-or-mismatched/);
+assert.match(productionProviderReadiness, /aggregate provider preflight, live validation handoff, stop condition handoff/);
+assert.match(productionProviderReadiness, /provider account or architecture approval, target secret injection, target-boundary live validation/);
+assert.match(productionProviderReadiness, /shared provider runtime operations, fallback and disable path, provider fallback runtime audit/);
+assert.match(productionProviderReadiness, /every included provider's account or architecture approval proof/);
+assert.match(
+  productionProviderReadiness,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like provider boundary/,
+);
 assert.match(targetProviderEvidenceIntake, /^# Target Provider Evidence Intake v1$/m);
 assert.match(targetProviderEvidenceIntake, /^- status: local-target-provider-evidence-intake-current$/m);
 assert.match(targetProviderEvidenceIntake, /^- productionReadyClaim: false$/m);
