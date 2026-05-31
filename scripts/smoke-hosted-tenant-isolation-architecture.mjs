@@ -77,6 +77,37 @@ assert.doesNotMatch(decision, /tenant identity source and customer organization 
 assert.doesNotMatch(decision, /tenant-aware authorization policy and service propagation rules/);
 assert.doesNotMatch(decision, /per-tenant encryption, key rotation, revocation, and break-glass evidence/);
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Shared Operations Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| hosted tenant isolation architecture \| hosted-tenant-isolation-architecture-missing \| target-tenant-isolation-operations-missing \| hosted-tenant-boundary-missing-or-mismatched \| 3 \| 21 \| 8 \| 6 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Hosted tenant isolation architecture owns the tenant identity source, customer organization mapping, tenant lifecycle, tenant-aware authorization, service-to-service tenant propagation, storage partitioning, artifact\/memory\/search\/export\/index partitioning, per-tenant encryption and key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, migration, rollback, and tenant data containment decision proof/,
+);
+assert.match(
+  decision,
+  /Target tenant isolation operations owns the target tenant identity, authorization, storage, encryption\/key, backup\/restore, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment evidence contract/,
+);
+assert.match(decision, /Tenant storage administration owns the local pilot tenant storage stop condition/);
+assert.match(
+  decision,
+  /Hosted SaaS architecture, target deployment contract, and target environment evidence intake own the same-boundary hosted tenant isolation evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `hostedTenantIsolationApproved: false` until linked closure verifications have hosted tenant isolation architecture approval proof/,
+);
+assert.match(
+  decision,
+  /tenant data containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or production-like tenant boundary/,
+);
+
 for (const command of [
   'npm run smoke:hosted-tenant-isolation-architecture',
   'npm run smoke:hosted-saas-architecture-decision',

@@ -623,6 +623,17 @@ assert.match(hostedTenantIsolationArchitecture, /^- hostedTenantIsolationApprove
 assert.match(hostedTenantIsolationArchitecture, /npm run smoke:hosted-tenant-isolation-architecture/);
 assert.match(hostedTenantIsolationArchitecture, /not hosted tenant isolation implementation/);
 assert.match(hostedTenantIsolationArchitecture, /Hosted multi-tenant isolation remains blocked/);
+assert.match(hostedTenantIsolationArchitecture, /^## Release Blocker Closure Linkage$/m);
+assert.match(hostedTenantIsolationArchitecture, /hosted-tenant-isolation-architecture-missing/);
+assert.match(hostedTenantIsolationArchitecture, /target-tenant-isolation-operations-missing/);
+assert.match(hostedTenantIsolationArchitecture, /hosted-tenant-boundary-missing-or-mismatched/);
+assert.match(hostedTenantIsolationArchitecture, /same-boundary hosted tenant isolation evidence verification/);
+assert.match(hostedTenantIsolationArchitecture, /hosted tenant isolation architecture approval proof/);
+assert.match(hostedTenantIsolationArchitecture, /tenant data containment proof/);
+assert.match(
+  hostedTenantIsolationArchitecture,
+  /regenerated execution-v1 snapshot evidence from the same approved hosted or production-like tenant boundary/,
+);
 assert.match(targetTenantIsolationOperations, /^# Target Tenant Isolation Operations v1$/m);
 assert.match(targetTenantIsolationOperations, /^- status: local-target-tenant-isolation-operations-current$/m);
 assert.match(targetTenantIsolationOperations, /^- productionReadyClaim: false$/m);
