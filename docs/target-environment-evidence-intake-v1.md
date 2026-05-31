@@ -148,6 +148,14 @@ Every blocker disposition change must carry a matching verification row. The ver
 
 The closure matrix is mandatory for any blocker state transition. A closure row without fresh command evidence, matching target boundary, release artifact hygiene, and regenerated release artifacts must keep `productionReadyClaim: false` and must be recorded as a stop-condition.
 
+## Release Blocker Closure Linkage
+
+| Blocker | Intake Stop Condition | Deployment Stop Condition | Closure Matrix Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target environment evidence intake | target-environment-evidence-missing | target-deployment-contract-remains-blocked-until-target-deployme | blocker-closure-verification-missing-or-stale | target-environment-boundary-missing-or-mismatched | 4 | 9 | 30 | 8 | blocked |
+
+Target environment evidence intake owns the deployment boundary, identity/session, tenant storage/encryption, provider/secrets, observability/SLO, retention/backup, support, clean release, artifact hygiene, submission packet, blocker disposition register, blocker closure verification matrix, accepted risk, decision owner, and next review date evidence contract. Target deployment contract owns the production target control list and release claim decision proof. Target provider, identity, tenant, secret, observability, SLO, retention, backup, support, and clean deployment gates own their domain-specific closing evidence. The closure matrix owns the next command, required closing evidence, and stop-condition audit trail for every blocker state transition. Keep `productionReadyClaim: false` until linked closure verifications have completed target environment evidence capture template proof, sanitized submission packet proof, boundary consistency map proof, command rerun log proof, reviewer decision proof, blocker disposition register proof, blocker closure verification matrix proof, release artifact hygiene result, production readiness gate result, refreshed clean deployment release, refreshed production-like release drill, refreshed pilot export package, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target boundary.
+
 ## Required Commands
 
 ```bash
