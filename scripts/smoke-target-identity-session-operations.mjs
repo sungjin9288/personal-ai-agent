@@ -46,6 +46,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Identity Operation Controls',
   '## Identity Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Target Evidence Capture Template',
   '## Identity Operation Rules',
   '## Required Commands',
@@ -93,6 +94,36 @@ assert.match(
 assert.match(
   targetIdentity,
   /Target identity\/session operations remain blocked for production-ready claims until customer IdP onboarding proof with metadata alias, issuer, audience, JWKS rotation owner, fallback owner, and customer approval, user lifecycle proof with provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review, session lifecycle proof with login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth, role administration proof with persistent assignment, revocation, delegated admin approval, separation-of-duties, and rollback, permission propagation proof across API, worker, agent, support, observability, cache invalidation, and stale permission denial, immutable audit export proof with actor, subject, tenant, role, session, reason, before\/after state, timestamp, and checksum, break-glass governance proof with owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review, support impersonation proof with approval, scoped session, action log, customer-safe update, denial tests, expiry, and closure, compliance and retention proof with identity log retention, legal hold, audit export, privacy deletion, post-delete absence, and customer handoff, customer access containment, release artifact hygiene result, and regenerated execution snapshot evidence are captured from the approved production-like or hosted target environment/,
+);
+
+assert.match(
+  targetIdentity,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetIdentity,
+  /\| target identity session operations \| target-identity-session-operations-missing \| hosted-identity-session-architecture-missing \| target-identity-boundary-missing-or-mismatched \| 3 \| 17 \| 10 \| 7 \| blocked \|/,
+);
+assert.match(
+  targetIdentity,
+  /Target identity\/session operations owns the target identity provider onboarding, user lifecycle, session lifecycle, role administration, permission propagation, audit export, break-glass, support impersonation, compliance, retention, and customer access containment evidence contract/,
+);
+assert.match(
+  targetIdentity,
+  /Hosted identity session architecture owns the hosted identity architecture approval and identity control-plane decision proof/,
+);
+assert.match(targetIdentity, /Identity session administration owns the local pilot identity\/session stop condition/);
+assert.match(
+  targetIdentity,
+  /Target deployment contract and target environment evidence intake own the same-boundary target identity\/session evidence verification/,
+);
+assert.match(
+  targetIdentity,
+  /Keep `productionReadyClaim: false` until linked closure verifications have target identity\/session operations evidence capture template proof/,
+);
+assert.match(
+  targetIdentity,
+  /customer access containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted identity boundary/,
 );
 
 assert.match(targetIdentity, /## Target Evidence Capture Template/);
