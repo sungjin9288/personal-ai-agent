@@ -52,6 +52,14 @@ Any future hosted SaaS or hybrid control-plane proposal must include:
 - migration plan from self-hosted/local-first pilot to hosted or hybrid mode
 - explicit non-goals and stop conditions
 
+## Release Blocker Closure Linkage
+
+| Blocker | Architecture Stop Condition | Identity Architecture Stop Condition | Tenant Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| hosted SaaS architecture decision | hosted-saas-architecture-decision-missing | hosted-identity-session-architecture-missing | hosted-tenant-isolation-architecture-missing | hosted-saas-boundary-missing-or-mismatched | 4 | 19 | 7 | 6 | blocked |
+
+Hosted SaaS architecture decision owns the tenant model, control plane, customer runtime responsibility split, identity/session dependency, tenant isolation dependency, hosted storage, encryption, backup, provider credential ownership, billing, entitlement, observability, support, data lifecycle, deployment, rollback, vulnerability management, artifact hygiene, compliance, migration, non-goal, and stop-condition decision proof. Hosted identity session architecture owns the customer IdP, session administration, RBAC, audit, break-glass, support impersonation, and customer access containment architecture stop condition. Hosted tenant isolation architecture owns the tenant identity, authorization, storage partitioning, per-tenant encryption, backup/restore, cross-tenant denial, observability/support isolation, lifecycle isolation, and tenant data containment architecture stop condition. Target deployment contract and target environment evidence intake own the same-boundary hosted SaaS and hybrid control-plane evidence verification. Keep `productionReadyClaim: false` and `hostedSaasApproved: false` until linked closure verifications have hosted SaaS architecture approval proof, tenant model proof, control-plane ownership proof, customer runtime responsibility split proof, hosted identity/session approval proof, hosted tenant isolation approval proof, storage/encryption/backup/data residency model proof, provider credential ownership and fallback policy proof, billing/entitlement/metering/suspension proof, observability/support/incident/status communication proof, retention/export/delete/provider transcript/legal hold/backup expiry/post-delete absence proof, deployment/rollback/vulnerability/artifact hygiene/compliance proof, migration proof, explicit non-goal and stop-condition proof, target deployment contract proof, target environment evidence intake proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or hybrid control-plane boundary.
+
 ## Required Commands
 
 ```bash

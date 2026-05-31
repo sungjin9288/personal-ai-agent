@@ -66,6 +66,40 @@ for (const packetItem of [
   assert.match(decision, packetItem);
 }
 
+assert.match(decision, /^## Release Blocker Closure Linkage$/m);
+assert.match(
+  decision,
+  /\| Blocker \| Architecture Stop Condition \| Identity Architecture Stop Condition \| Tenant Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  decision,
+  /\| hosted SaaS architecture decision \| hosted-saas-architecture-decision-missing \| hosted-identity-session-architecture-missing \| hosted-tenant-isolation-architecture-missing \| hosted-saas-boundary-missing-or-mismatched \| 4 \| 19 \| 7 \| 6 \| blocked \|/,
+);
+assert.match(
+  decision,
+  /Hosted SaaS architecture decision owns the tenant model, control plane, customer runtime responsibility split, identity\/session dependency, tenant isolation dependency, hosted storage, encryption, backup, provider credential ownership, billing, entitlement, observability, support, data lifecycle, deployment, rollback, vulnerability management, artifact hygiene, compliance, migration, non-goal, and stop-condition decision proof/,
+);
+assert.match(
+  decision,
+  /Hosted identity session architecture owns the customer IdP, session administration, RBAC, audit, break-glass, support impersonation, and customer access containment architecture stop condition/,
+);
+assert.match(
+  decision,
+  /Hosted tenant isolation architecture owns the tenant identity, authorization, storage partitioning, per-tenant encryption, backup\/restore, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant data containment architecture stop condition/,
+);
+assert.match(
+  decision,
+  /Target deployment contract and target environment evidence intake own the same-boundary hosted SaaS and hybrid control-plane evidence verification/,
+);
+assert.match(
+  decision,
+  /Keep `productionReadyClaim: false` and `hostedSaasApproved: false` until linked closure verifications have hosted SaaS architecture approval proof/,
+);
+assert.match(
+  decision,
+  /explicit non-goal and stop-condition proof, target deployment contract proof, target environment evidence intake proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved hosted or hybrid control-plane boundary/,
+);
+
 for (const command of [
   'npm run smoke:hosted-saas-architecture-decision',
   'npm run smoke:hosted-identity-session-architecture',

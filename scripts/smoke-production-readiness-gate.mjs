@@ -584,6 +584,19 @@ assert.match(hostedSaasArchitectureDecision, /^- hostedSaasApproved: false$/m);
 assert.match(hostedSaasArchitectureDecision, /npm run smoke:hosted-saas-architecture-decision/);
 assert.match(hostedSaasArchitectureDecision, /not hosted SaaS implementation/);
 assert.match(hostedSaasArchitectureDecision, /Hosted SaaS and hybrid control-plane readiness remain blocked/);
+assert.match(hostedSaasArchitectureDecision, /^## Release Blocker Closure Linkage$/m);
+assert.match(hostedSaasArchitectureDecision, /hosted-saas-architecture-decision-missing/);
+assert.match(hostedSaasArchitectureDecision, /hosted-identity-session-architecture-missing/);
+assert.match(hostedSaasArchitectureDecision, /hosted-tenant-isolation-architecture-missing/);
+assert.match(hostedSaasArchitectureDecision, /hosted-saas-boundary-missing-or-mismatched/);
+assert.match(hostedSaasArchitectureDecision, /same-boundary hosted SaaS and hybrid control-plane evidence verification/);
+assert.match(hostedSaasArchitectureDecision, /hosted SaaS architecture approval proof/);
+assert.match(hostedSaasArchitectureDecision, /target deployment contract proof/);
+assert.match(hostedSaasArchitectureDecision, /target environment evidence intake proof/);
+assert.match(
+  hostedSaasArchitectureDecision,
+  /regenerated execution-v1 snapshot evidence from the same approved hosted or hybrid control-plane boundary/,
+);
 assert.match(hostedIdentitySessionArchitecture, /^# Hosted Identity Session Architecture v1$/m);
 assert.match(hostedIdentitySessionArchitecture, /^- status: local-hosted-identity-session-architecture-current$/m);
 assert.match(hostedIdentitySessionArchitecture, /^- productionReadyClaim: false$/m);
