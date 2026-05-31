@@ -46,6 +46,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Tenant Isolation Controls',
   '## Tenant Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Target Evidence Capture Template',
   '## Tenant Isolation Rules',
   '## Required Commands',
@@ -88,6 +89,36 @@ for (const packetItem of [
 assert.doesNotMatch(targetTenant, /tenant identity source, customer organization mapping, tenant lifecycle owner, and trust policy/);
 assert.doesNotMatch(targetTenant, /storage partitioning evidence for runtime state, artifacts, memory, search, exports, indexes, and migration safety/);
 assert.doesNotMatch(targetTenant, /artifact hygiene and production readiness gate result/);
+
+assert.match(
+  targetTenant,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetTenant,
+  /\| target tenant isolation operations \| target-tenant-isolation-operations-missing \| hosted-tenant-isolation-architecture-missing \| target-tenant-boundary-missing-or-mismatched \| 3 \| 18 \| 11 \| 7 \| blocked \|/,
+);
+assert.match(
+  targetTenant,
+  /Target tenant isolation operations owns the target tenant identity, authorization, storage partitioning, encryption\/key ownership, backup\/restore isolation, tenant administration, cross-tenant denial, observability\/support isolation, lifecycle isolation, and tenant containment evidence contract/,
+);
+assert.match(
+  targetTenant,
+  /Hosted tenant isolation architecture owns the tenant isolation architecture approval and tenant control-plane decision proof/,
+);
+assert.match(targetTenant, /Tenant storage administration owns the local pilot tenant storage stop condition/);
+assert.match(
+  targetTenant,
+  /Target deployment contract and target environment evidence intake own the same-boundary target tenant isolation evidence verification/,
+);
+assert.match(
+  targetTenant,
+  /Keep `productionReadyClaim: false` until linked closure verifications have target tenant isolation operations evidence capture template proof/,
+);
+assert.match(
+  targetTenant,
+  /tenant data containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted tenant boundary/,
+);
 
 assert.match(targetTenant, /## Target Evidence Capture Template/);
 assert.match(
