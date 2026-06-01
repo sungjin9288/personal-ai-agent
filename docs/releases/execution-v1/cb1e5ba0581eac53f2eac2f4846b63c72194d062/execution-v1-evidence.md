@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T18:04:11.385Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T18:03:56.585Z
 - branch: codex/identity-session-audit-surface
 - commit: cb1e5ba0581eac53f2eac2f4846b63c72194d062
