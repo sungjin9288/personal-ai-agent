@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T14:38:22.907Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T14:38:21.480Z
 - localDate: 2026-06-01
 - branch: codex/provider-fallback-route-inspection
 - commit: f8e8f5fc521e1378989bdb068e9f021dd39860cf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf](releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf](docs/releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf)
 - visualArtifactSetSha256: e2b06b41d9ba0ddc915f94ade49770a9d4c4480623443406d212bc5a52b1cb6d
 - commitPushStatus: not pushed, origin/codex/provider-fallback-route-inspection not found
 
