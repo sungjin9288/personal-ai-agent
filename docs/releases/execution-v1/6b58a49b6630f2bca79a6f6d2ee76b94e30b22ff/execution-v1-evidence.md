@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T06:36:14.455Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T06:36:06.029Z
 - branch: codex/scoped-learning-promotion-queue
 - commit: 6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff
