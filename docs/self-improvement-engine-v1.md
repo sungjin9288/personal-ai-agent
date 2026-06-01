@@ -75,6 +75,12 @@ observe
 | Provider policy | Provider event evidence, fallback policy id, stop reason, and recoverability signal | Provider operations gate and customer impact rule |
 | Automation | Schedule, owner, delivery target, stop rule, and audit event | Approval gate and operator-visible disable path |
 
+## Provider Fallback Lessons
+
+Provider fallback runs create review-only provider lessons when the fallback attempt set includes provider failure metadata. The candidate evidence records sanitized fallback attempts, `providerFallbackPolicy`, stop-reason counts, selected fallback provider, primary provider, final status, provider failure kind, and recoverability signal without copying raw provider error text into the fallback summary.
+
+Fallback metadata alone does not reclassify deterministic reviewer failures as provider lessons. If a fallback plan stops with `no-provider-failure-metadata`, the existing quality regression or failure pattern classification remains intact while the fallback stop reason is still attached as evidence.
+
 ## Promotion Queue Operations
 
 Learning candidates are review-only by default. Each candidate records `retention.policy: pending-review-expires-unpromoted`, `retention.reviewTtlHours: 168`, and an explicit `retention.expiresAt` timestamp so unresolved proposals do not stay actionable forever.
@@ -134,6 +140,7 @@ npm run smoke:mission-quality-gate
 npm run smoke:orchestration-profiles
 npm run smoke:specialist-follow-up-inbox
 npm run smoke:provider-fallback-policy
+npm run smoke:provider-fallback-learning-lessons
 npm run smoke:provider-events
 npm run smoke:release-artifact-hygiene
 npm run smoke:production-readiness-gate
@@ -152,5 +159,5 @@ This document does not prove production readiness or continuous learning safety 
 1. Add a `learningCandidate` artifact that can be emitted from mission closeout and reviewer feedback. Mission terminal states now emit review-only `learningCandidate` records and `learning-candidate.json` artifacts; promotion remains manual and scope-locked.
 2. Add a scoped promotion queue for memory, skill, template, provider policy, and automation proposals. Pending `learningCandidate` records now appear as human-decision queue items, and approve/reject decisions stay scope-locked.
 3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion, rejected promotion, rollback execution, and expiration policy are covered by `smoke:learning-promotion-queue`.
-4. Add provider fallback lesson extraction from provider events and stop-condition timelines.
+4. Add provider fallback lesson extraction from provider events and stop-condition timelines. Provider fallback attempts with provider failure metadata now update learning candidates as provider-policy lessons with sanitized policy, stop reason, selected fallback provider, and recoverability evidence, backed by `smoke:provider-fallback-learning-lessons`.
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default. The web action inbox now renders learning candidates with manual approve, reject, expire, and rollback controls, backed by `smoke:ui-learning-promotion-surface`.

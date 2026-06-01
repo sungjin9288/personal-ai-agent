@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T08:26:48.990Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T08:26:40.097Z
 - branch: codex/provider-fallback-learning-lessons
 - commit: 993263b110957308efbe7a4b82eb1063fbd313b9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

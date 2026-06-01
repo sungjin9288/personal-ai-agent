@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T08:26:48.990Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T08:26:35.779Z
 - branch: codex/provider-fallback-learning-lessons
 - commit: 993263b110957308efbe7a4b82eb1063fbd313b9

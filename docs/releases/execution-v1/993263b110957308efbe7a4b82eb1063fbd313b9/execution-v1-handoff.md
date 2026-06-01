@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T08:26:48.990Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T08:26:47.599Z
 - localDate: 2026-06-01
 - branch: codex/provider-fallback-learning-lessons
 - commit: 993263b110957308efbe7a4b82eb1063fbd313b9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9](releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9](docs/releases/execution-v1/993263b110957308efbe7a4b82eb1063fbd313b9)
 - visualArtifactSetSha256: f8b1069e9c0ab9366364a603d58537d8f065f63736f45cbc6faa1ae8da21d0dd
 - commitPushStatus: not pushed, origin/codex/provider-fallback-learning-lessons not found
 
