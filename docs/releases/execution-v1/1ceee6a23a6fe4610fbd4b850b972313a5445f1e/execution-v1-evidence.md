@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T14:02:16.750Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T14:01:53.608Z
 - branch: codex/sandbox-decision-timelines
 - commit: 1ceee6a23a6fe4610fbd4b850b972313a5445f1e
