@@ -23,6 +23,8 @@
 
 다음 개발 방향은 OpenClaw as the orchestration backbone and Hermes-style self-improvement engine이다. OpenClaw-style backbone은 gateway, channel ingress, session separation, workspace routing, permission policy, sandbox policy, provider route, and evidence event를 안정적으로 소유하고, Hermes-style engine은 그 뒤에서 memory, skill/template promotion, provider lesson, quality regression, and learning candidate를 제안하되 approval/reviewer/evidence boundary를 통과해야 한다.
 
+현재 channel adapter seam은 manifest-only 단계로 둔다. CLI/web 같은 local control-plane 입력만 enabled adapter로 노출하고, Slack/Telegram/WhatsApp/Discord/email 같은 external messaging adapter는 `channel-adapter-disabled-by-default` stop reason과 `externalMessagingEnabled=false` 상태로 pairing, identity binding, workspace routing, retention, permission, sandbox, support boundary evidence가 준비될 때까지 비활성화한다.
+
 ## Target Users
 
 - engineering lead: 릴리즈, 검증, 코드 변경 계획, 리스크 판단을 evidence 기반으로 관리한다.
@@ -72,6 +74,7 @@
 - Fact memory with provenance and revision lifecycle
 - Browser E2E and deterministic smoke verification
 - OpenClaw-style orchestration backbone documented in [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
+- Manifest-only channel adapter seam with external messaging disabled by default
 - Hermes-style self-improvement engine documented in [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 
 ## Explicit Non-Scope For v1

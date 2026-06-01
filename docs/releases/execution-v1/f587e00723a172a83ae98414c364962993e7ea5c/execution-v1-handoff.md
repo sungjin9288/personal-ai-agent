@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T15:45:03.545Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T15:45:02.142Z
 - localDate: 2026-06-02
 - branch: codex/channel-adapter-seam
 - commit: f587e00723a172a83ae98414c364962993e7ea5c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c](releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c](docs/releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c)
 - visualArtifactSetSha256: e69d59c922d1bc0c76aaae9f0617709933cc22a3dcfe0ec241aa40ba7f57c0ec
 - commitPushStatus: not pushed, origin/codex/channel-adapter-seam not found
 

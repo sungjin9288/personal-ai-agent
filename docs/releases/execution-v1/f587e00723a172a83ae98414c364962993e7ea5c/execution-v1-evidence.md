@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T15:45:03.545Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T15:44:50.182Z
 - branch: codex/channel-adapter-seam
 - commit: f587e00723a172a83ae98414c364962993e7ea5c

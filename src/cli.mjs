@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { GLOBAL_USER_SCOPE_ID } from './core/constants.mjs';
+import { buildChannelAdapterSourceContext } from './core/channel-adapter-registry.mjs';
 import {
   convertMissionAttachmentFile,
   getDocumentConversionCapabilities,
@@ -107,6 +108,8 @@ Commands:
   provider history [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]
   provider timeline [--provider <stub|openai|anthropic|local|hermes>] [--ok <true|false>] [--attempted <true|false>]
 
+  channel adapters [--channel <cli|web|schedule|slack|telegram|whatsapp|discord|email>] [--status <enabled|disabled>] [--enabled-only]
+
   workspace add <path> [--name <name>]
   workspace list
   workspace show <workspaceId>
@@ -172,6 +175,23 @@ Commands:
 }
 
 function printCommandHelp(group, command) {
+  if (group === 'channel' && command === 'adapters') {
+    console.log(`Personal AI Agent
+
+Usage:
+  channel adapters [--channel <cli|web|schedule|slack|telegram|whatsapp|discord|email>] [--status <enabled|disabled>] [--enabled-only]
+
+Options:
+  --channel <channel>       Filter by adapter id or channel name.
+  --status <status>         Filter by enabled or disabled adapter status.
+  --enabled-only            Hide disabled future adapters.
+
+Channel adapter policy:
+  External messaging adapters are registered as manifests only and stay disabled by default.
+`);
+    return true;
+  }
+
   if (group === 'mission' && command === 'run') {
     console.log(`Personal AI Agent
 
@@ -436,6 +456,17 @@ async function main() {
     return;
   }
 
+  if (group === 'channel' && command === 'adapters') {
+    printJson(
+      service.listChannelAdapters({
+        channel: readOption(rest, '--channel', ''),
+        includeDisabled: !hasOption(rest, '--enabled-only'),
+        status: readOption(rest, '--status', ''),
+      }),
+    );
+    return;
+  }
+
   if (group === 'workspace' && command === 'add') {
     printJson(
       service.addWorkspace({
@@ -497,12 +528,10 @@ async function main() {
         objective: readOption(rest, '--objective', 'Clarify the next best move.'),
         deliverableType: readOption(rest, '--deliverable', ''),
         constraints: parseConstraints(readOption(rest, '--constraints', '')),
-        sourceContext: {
-          channel: 'cli',
+        sourceContext: buildChannelAdapterSourceContext('cli', {
           command: 'mission create',
           route: 'mission.create',
-          sourceType: 'cli',
-        },
+        }),
       }),
     );
     return;
@@ -533,12 +562,10 @@ async function main() {
       fallbackPolicy,
       provider,
       providerSpecified: hasOption(rest, '--provider'),
-      sourceContext: {
-        channel: 'cli',
+      sourceContext: buildChannelAdapterSourceContext('cli', {
         command: commandParts.join(' '),
         route: 'mission.run',
-        sourceType: 'cli',
-      },
+      }),
     });
 
     printJson({

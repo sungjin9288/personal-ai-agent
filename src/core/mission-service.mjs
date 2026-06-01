@@ -63,6 +63,10 @@ import {
   hasProviderFallbackProviderFailure,
 } from './learning-candidate-service.mjs';
 import { buildRetrievalContext, summarizeMissionRetrievalPreview } from './retrieval-service.mjs';
+import {
+  buildChannelAdapterRegistry,
+  getChannelAdapter as getRegisteredChannelAdapter,
+} from './channel-adapter-registry.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
@@ -1343,7 +1347,12 @@ function normalizeSessionSourceContext(value = {}) {
   const sourceType = normalizeText(value.sourceType, 'service');
   const sourceContext = {
     channel: normalizeText(value.channel) || sourceType,
+    channelAdapterId: normalizeText(value.channelAdapterId) || null,
+    channelAdapterPolicyId: normalizeText(value.channelAdapterPolicyId) || null,
+    channelAdapterStatus: normalizeText(value.channelAdapterStatus) || null,
+    channelAdapterStopReason: normalizeText(value.channelAdapterStopReason) || null,
     command: normalizeText(value.command),
+    externalMessagingEnabled: value.externalMessagingEnabled === true,
     requestId: normalizeText(value.requestId),
     route: normalizeText(value.route),
     sourceType,
@@ -5974,6 +5983,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
 
     return workspace;
+  }
+
+  function listChannelAdapters(filter = {}) {
+    return buildChannelAdapterRegistry(filter);
+  }
+
+  function getChannelAdapter(adapterId) {
+    const adapter = getRegisteredChannelAdapter(adapterId);
+    if (!adapter) {
+      throw new Error(`Channel adapter not found: ${adapterId}`);
+    }
+
+    return adapter;
   }
 
   function createMission(input) {
@@ -17863,6 +17885,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getProviderOverview,
     getProviderProbeTimeline,
     getReviewerFollowUpInbox,
+    getChannelAdapter,
     getWorkspace,
     getWorkspaceOverview,
     getWorkspaceTimeline,
@@ -17870,6 +17893,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getExecutionLogs,
     getExecutionStatus,
     listApprovals,
+    listChannelAdapters,
     listMemory,
     listFactGraph,
     listMissions,

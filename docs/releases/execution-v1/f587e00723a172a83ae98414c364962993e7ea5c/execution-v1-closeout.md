@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T15:45:03.545Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T15:44:55.019Z
 - branch: codex/channel-adapter-seam
 - commit: f587e00723a172a83ae98414c364962993e7ea5c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f587e00723a172a83ae98414c364962993e7ea5c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
