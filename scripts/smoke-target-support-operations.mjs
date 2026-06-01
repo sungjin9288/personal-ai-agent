@@ -43,6 +43,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Support Operation Controls',
   '## Support Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Customer Support Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -80,6 +81,23 @@ for (const packetItem of [
 ]) {
   assert.match(targetSupport, packetItem);
 }
+
+assert.match(
+  targetSupport,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetSupport,
+  /\| target support operations \| target-support-operations-missing \| target-support-architecture-missing \| target-support-boundary-missing-or-mismatched \| 3 \| 12 \| 11 \| 7 \| blocked \|/,
+);
+assert.match(targetSupport, /Target support operations owns the staffed support coverage/);
+assert.match(targetSupport, /Target support architecture owns the support decision proof/);
+assert.match(targetSupport, /Customer support operations and support escalation review own the local pilot support stop conditions/);
+assert.match(targetSupport, /Target deployment contract and target environment evidence intake own the same-boundary support evidence verification/);
+assert.match(
+  targetSupport,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target support boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-support-operations',

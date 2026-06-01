@@ -760,6 +760,15 @@ assert.match(targetSupportOperations, /^- status: local-target-support-operation
 assert.match(targetSupportOperations, /^- productionReadyClaim: false$/m);
 assert.match(targetSupportOperations, /not staffed target support evidence/);
 assert.match(targetSupportOperations, /Target support operations remain blocked for production-ready claims/);
+assert.match(targetSupportOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetSupportOperations, /target-support-operations-missing/);
+assert.match(targetSupportOperations, /target-support-architecture-missing/);
+assert.match(targetSupportOperations, /target-support-boundary-missing-or-mismatched/);
+assert.match(targetSupportOperations, /same-boundary support evidence verification/);
+assert.match(
+  targetSupportOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target support boundary/,
+);
 assert.match(secretManagement, /^# Secret Management v1$/m);
 assert.match(secretManagement, /^- status: local-secret-management-current$/m);
 assert.match(secretManagement, /^- productionReadyClaim: false$/m);
