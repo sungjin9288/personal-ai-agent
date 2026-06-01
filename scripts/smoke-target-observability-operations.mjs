@@ -44,6 +44,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Observability Operation Controls',
   '## Operations Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## On-Call Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -91,6 +92,24 @@ for (const packetItem of [
 ]) {
   assert.match(targetObservability, packetItem);
 }
+
+assert.match(
+  targetObservability,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetObservability,
+  /\| target observability operations \| target-observability-operations-missing \| target-observability-architecture-missing \| target-observability-slo-boundary-missing-or-mismatched \| 3 \| 10 \| 9 \| 6 \| blocked \|/,
+);
+assert.match(targetObservability, /Target observability operations owns the telemetry ingestion/);
+assert.match(targetObservability, /Target observability architecture owns the telemetry backend and signal taxonomy decision proof/);
+assert.match(targetObservability, /Observability telemetry owns the local observability stop condition/);
+assert.match(targetObservability, /Target SLO architecture and target SLO operations own the linked SLO\/SLA evidence boundary/);
+assert.match(targetObservability, /Target deployment contract and target environment evidence intake own the same-boundary observability evidence verification/);
+assert.match(
+  targetObservability,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target observability boundary/,
+);
 
 assert.match(releaseReadiness, /\[target-observability-operations-v1\.md\]\(target-observability-operations-v1\.md\)/);
 assert.match(targetObservability, /\[target-observability-architecture-v1\.md\]\(target-observability-architecture-v1\.md\)/);

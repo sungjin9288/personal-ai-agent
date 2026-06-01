@@ -831,6 +831,15 @@ assert.match(targetObservabilityOperations, /^- productionReadyClaim: false$/m);
 assert.match(targetObservabilityOperations, /not target observability evidence/);
 assert.match(targetObservabilityOperations, /Target observability operations remain blocked for production-ready claims/);
 assert.match(targetObservabilityOperations, /audit export proof, release artifact hygiene result, and regenerated execution snapshot evidence/);
+assert.match(targetObservabilityOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetObservabilityOperations, /target-observability-operations-missing/);
+assert.match(targetObservabilityOperations, /target-observability-architecture-missing/);
+assert.match(targetObservabilityOperations, /target-observability-slo-boundary-missing-or-mismatched/);
+assert.match(targetObservabilityOperations, /same-boundary observability evidence verification/);
+assert.match(
+  targetObservabilityOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target observability boundary/,
+);
 assert.match(targetSloArchitecture, /^# Target SLO Architecture v1$/m);
 assert.match(targetSloArchitecture, /^- status: local-target-slo-architecture-current$/m);
 assert.match(targetSloArchitecture, /^- productionReadyClaim: false$/m);

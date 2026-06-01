@@ -49,6 +49,14 @@ Every target observability operations review must include:
 - audit export proof for alert delivery, acknowledgement, customer update, query access, review decision, and corrective action closure
 - release artifact hygiene result, regenerated execution snapshot evidence, production readiness gate result, residual risk, decision owner, and next review date
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target observability operations | target-observability-operations-missing | target-observability-architecture-missing | target-observability-slo-boundary-missing-or-mismatched | 3 | 10 | 9 | 6 | blocked |
+
+Target observability operations owns the telemetry ingestion, alert delivery, log and trace retention, staffed on-call acknowledgement, customer status communication, incident response, incident review history, audit export, residual risk, decision owner, and next review evidence contract. Target observability architecture owns the telemetry backend and signal taxonomy decision proof. Observability telemetry owns the local observability stop condition. Target SLO architecture and target SLO operations own the linked SLO/SLA evidence boundary. Target deployment contract and target environment evidence intake own the same-boundary observability evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target observability operations evidence packet proof, target observability architecture approval proof, telemetry ingestion proof, alert delivery proof, trace and log retention proof, staffed on-call acknowledgement proof, customer status communication proof, incident response proof, incident review history proof, audit export proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target observability boundary.
+
 ## On-Call Rules
 
 - define primary and secondary owner before target deployment is presented as production-like
