@@ -133,7 +133,8 @@ Commands:
   action provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
   action provider-health-drift [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--overdue]
   action specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--needs-reminder] [--overdue]
-  action learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--status <pending-review|approved|promoted|rejected|all>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>]
+  action learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--status <pending-review|approved|promoted|rejected|expired|rolled-back|all>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>]
+  action expire-learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--before <iso-timestamp>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--note <text>]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
   action owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <pending|acknowledged>] [--needs-reminder] [--overdue]
@@ -148,6 +149,7 @@ Commands:
   action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
   action remediate-specialist-follow-up <actionId>
   action resolve-learning-promotion <learningCandidateId> --decision <approve|reject> [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--note <text>]
+  action rollback-learning-promotion <learningCandidateId> [--note <text>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
   action acknowledge-provider-attention <actionId> [--note <text>]
   action resolve-provider-attention <actionId> [--note <text>]
@@ -704,6 +706,21 @@ async function main() {
     return;
   }
 
+  if (group === 'action' && command === 'expire-learning-promotions') {
+    printJson(
+      service.expireLearningPromotions({
+        before: readOption(rest, '--before', ''),
+        missionId: readOption(rest, '--mission', ''),
+        note: readOption(rest, '--note', ''),
+        recordType: readOption(rest, '--record-type', ''),
+        scope: readOption(rest, '--scope', ''),
+        target: readOption(rest, '--target', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
   if (group === 'action' && command === 'maintenance-history') {
     printJson(
       service.getMaintenanceOverview({
@@ -878,6 +895,15 @@ async function main() {
         note: readOption(rest, '--note', ''),
         scope: readOption(rest, '--scope', ''),
         target: readOption(rest, '--target', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'rollback-learning-promotion') {
+    printJson(
+      service.rollbackLearningPromotion(rest[0], {
+        note: readOption(rest, '--note', ''),
       }),
     );
     return;

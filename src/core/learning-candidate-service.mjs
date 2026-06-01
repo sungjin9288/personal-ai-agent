@@ -1,3 +1,5 @@
+import { LEARNING_PROMOTION_REVIEW_TTL_HOURS } from './constants.mjs';
+
 export const LEARNING_CANDIDATE_SCHEMA_VERSION = 'personal-ai-agent-learning-candidate/v1';
 
 function normalizeText(value, fallback = '') {
@@ -10,6 +12,15 @@ function ensureArray(value) {
 
 function ensureObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function addHours(isoTimestamp, hours) {
+  const timestamp = Date.parse(String(isoTimestamp || ''));
+  if (!Number.isFinite(timestamp)) {
+    return null;
+  }
+
+  return new Date(timestamp + hours * 60 * 60 * 1000).toISOString();
 }
 
 function countBy(items, fieldName) {
@@ -119,6 +130,8 @@ export function buildLearningCandidate({
       action: 'review-and-promote-manually',
       approvalRequired: true,
       autoPromotion: false,
+      expiresAt: addHours(at, LEARNING_PROMOTION_REVIEW_TTL_HOURS),
+      reviewTtlHours: LEARNING_PROMOTION_REVIEW_TTL_HOURS,
       reviewerRequired: true,
       target: deriveProposalTarget(recordType),
     },
@@ -126,7 +139,9 @@ export function buildLearningCandidate({
     retention: {
       class: 'mission-evidence',
       deleteWithMissionScope: true,
-      expiresAt: null,
+      expiresAt: addHours(at, LEARNING_PROMOTION_REVIEW_TTL_HOURS),
+      policy: 'pending-review-expires-unpromoted',
+      reviewTtlHours: LEARNING_PROMOTION_REVIEW_TTL_HOURS,
     },
     rollback: {
       action: 'delete-or-ignore-learning-candidate',
