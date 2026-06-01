@@ -94,6 +94,7 @@ function printHelp() {
 
 Commands:
   overview global [--provider-since <iso-timestamp>]
+  overview gateway-events [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--event-type <mission-create|mission-run>] [--route <route>] [--source-type <cli|web|service>] [--permission-decision <allow|approval-required|deny>] [--sandbox-mode <mode>] [--since <iso-timestamp>]
   overview identity-sessions [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--binding-status <bound|partial>] [--source-type <cli|web|service>] [--since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
@@ -176,6 +177,29 @@ Commands:
 }
 
 function printCommandHelp(group, command) {
+  if (group === 'overview' && command === 'gateway-events') {
+    console.log(`Personal AI Agent
+
+Usage:
+  overview gateway-events [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--event-type <mission-create|mission-run>] [--route <route>] [--source-type <cli|web|service>] [--permission-decision <allow|approval-required|deny>] [--sandbox-mode <mode>] [--since <iso-timestamp>]
+
+Options:
+  --workspace <workspaceId>       Filter gatewayEvent records to one workspace.
+  --mission <missionId>           Filter gatewayEvent records to one mission.
+  --session <sessionId>           Filter gatewayEvent records to one session.
+  --event-type <eventType>        Filter by gateway event type.
+  --route <route>                 Filter by normalized route name.
+  --source-type <sourceType>      Filter by gateway source type.
+  --permission-decision <result>  Filter by permission decision result.
+  --sandbox-mode <mode>           Filter by sandbox execution mode.
+  --since <iso-timestamp>         Include records at or after this timestamp.
+
+Audit policy:
+  This command summarizes gatewayEvent records, identity/session bindings, permission decisions, sandbox decisions, provider route metadata, and channel adapter policy without raw secrets or customer payloads.
+`);
+    return true;
+  }
+
   if (group === 'overview' && command === 'identity-sessions') {
     console.log(`Personal AI Agent
 
@@ -352,6 +376,23 @@ async function main() {
         outcome: readOption(rest, '--outcome', ''),
         owner: readOption(rest, '--owner', ''),
         since: readOption(rest, '--since', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'overview' && command === 'gateway-events') {
+    printJson(
+      service.getGatewayEventAudit({
+        eventType: readOption(rest, '--event-type', ''),
+        missionId: readOption(rest, '--mission', ''),
+        permissionDecision: readOption(rest, '--permission-decision', ''),
+        route: readOption(rest, '--route', ''),
+        sandboxMode: readOption(rest, '--sandbox-mode', ''),
+        sessionId: readOption(rest, '--session', ''),
+        since: readOption(rest, '--since', ''),
+        sourceType: readOption(rest, '--source-type', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

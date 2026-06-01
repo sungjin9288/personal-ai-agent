@@ -14,6 +14,7 @@ export const referenceAdoptionSmokeScripts = Object.freeze([
   'scripts/smoke-channel-adapter-seam.mjs',
   'scripts/smoke-identity-session-context-records.mjs',
   'scripts/smoke-identity-session-audit-surface.mjs',
+  'scripts/smoke-gateway-event-audit-surface.mjs',
   'scripts/smoke-permission-decision-records.mjs',
   'scripts/smoke-sandbox-decision-timelines.mjs',
   'scripts/smoke-gateway-event-learning-candidate.mjs',

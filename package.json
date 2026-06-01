@@ -126,6 +126,7 @@
     "smoke:channel-adapter-seam": "node scripts/smoke-channel-adapter-seam.mjs",
     "smoke:identity-session-context-records": "node scripts/smoke-identity-session-context-records.mjs",
     "smoke:identity-session-audit-surface": "node scripts/smoke-identity-session-audit-surface.mjs",
+    "smoke:gateway-event-audit-surface": "node scripts/smoke-gateway-event-audit-surface.mjs",
     "smoke:permission-decision-records": "node scripts/smoke-permission-decision-records.mjs",
     "smoke:sandbox-decision-timelines": "node scripts/smoke-sandbox-decision-timelines.mjs",
     "smoke:gateway-event-learning-candidate": "node scripts/smoke-gateway-event-learning-candidate.mjs",

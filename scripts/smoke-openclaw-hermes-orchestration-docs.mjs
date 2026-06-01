@@ -46,6 +46,10 @@ assert.equal(
   'node scripts/smoke-identity-session-audit-surface.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:gateway-event-audit-surface'],
+  'node scripts/smoke-gateway-event-audit-surface.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -82,6 +86,10 @@ assert.ok(
   'reference adoption smoke list must include the identity/session audit surface smoke',
 );
 assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-gateway-event-audit-surface.mjs'),
+  'reference adoption smoke list must include the gateway event audit surface smoke',
+);
+assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
   'reference adoption smoke list must include the scoped learning promotion smoke',
 );
@@ -115,6 +123,7 @@ for (const term of [
   'channel adapter',
   'identitySessionContext',
   'overview identity-sessions',
+  'overview gateway-events',
   'evidence routing',
 ]) {
   assertContains(backbone, term, `backbone must include ${term}`);
@@ -132,6 +141,7 @@ for (const heading of [
   '## Provider Route Decisions',
   '## Channel Adapter Seam',
   '## Identity Session Context Records',
+  '## Gateway Event Audit Surface',
   '## Backbone Interfaces',
   '## Required Commands',
   '## Acceptance Rule',
@@ -149,6 +159,7 @@ for (const command of [
   'npm run smoke:channel-adapter-seam',
   'npm run smoke:identity-session-context-records',
   'npm run smoke:identity-session-audit-surface',
+  'npm run smoke:gateway-event-audit-surface',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',
