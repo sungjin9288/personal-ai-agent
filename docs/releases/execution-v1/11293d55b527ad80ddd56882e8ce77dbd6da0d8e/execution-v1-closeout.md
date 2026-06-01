@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T08:07:25.715Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T08:07:16.756Z
 - branch: codex/learning-promotion-operator-surface
 - commit: 11293d55b527ad80ddd56882e8ce77dbd6da0d8e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
