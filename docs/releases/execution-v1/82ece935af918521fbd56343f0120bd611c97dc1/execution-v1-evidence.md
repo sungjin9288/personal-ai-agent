@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T04:02:32.323Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T04:02:24.720Z
 - branch: codex/openclaw-hermes-orchestration-docs
 - commit: 82ece935af918521fbd56343f0120bd611c97dc1
