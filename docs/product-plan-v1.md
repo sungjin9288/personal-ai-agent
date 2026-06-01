@@ -6,6 +6,8 @@
 - implementationBaseline: provider-scoped pilot ready for OpenAI-backed local-first path
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-closeout.md](execution-v1-closeout.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
+- relatedOrchestrationBackbone: [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
+- relatedSelfImprovementEngine: [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedOnboarding: [pilot-onboarding-v1.md](pilot-onboarding-v1.md)
@@ -18,6 +20,8 @@
 이 제품은 다른 회사의 개발팀과 운영팀이 자기 저장소와 내부 문서를 기준으로 `계획 -> 실행 -> 검토 -> 증거화 -> 운영 handoff`를 반복할 수 있게 하는 local-first multi-agent engineering harness이다.
 
 핵심 차별점은 autonomous swarm이 아니라, 사람이 통제할 수 있는 managed multi-agent runtime이다. manager, planner, executor, reviewer, specialist lane, provider guard, approval gate, retrieval memory, fact graph, execution evidence, immutable release snapshot이 하나의 운영 루프로 묶여야 한다.
+
+다음 개발 방향은 OpenClaw as the orchestration backbone and Hermes-style self-improvement engine이다. OpenClaw-style backbone은 gateway, channel ingress, session separation, workspace routing, permission policy, sandbox policy, provider route, and evidence event를 안정적으로 소유하고, Hermes-style engine은 그 뒤에서 memory, skill/template promotion, provider lesson, quality regression, and learning candidate를 제안하되 approval/reviewer/evidence boundary를 통과해야 한다.
 
 ## Target Users
 
@@ -67,6 +71,8 @@
 - Text-first attachment ingestion, optional document conversion boundary, retrieval memory
 - Fact memory with provenance and revision lifecycle
 - Browser E2E and deterministic smoke verification
+- OpenClaw-style orchestration backbone documented in [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
+- Hermes-style self-improvement engine documented in [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 
 ## Explicit Non-Scope For v1
 
@@ -74,6 +80,7 @@
 - Direct remote terminal ownership across customer infrastructure
 - Automatic code push, deployment, or production mutation without approval
 - Autonomous unbounded swarm or recursive self-improving agents
+- Self-improvement that bypasses session separation, workspace scope, approval, reviewer judgment, permission policy, sandbox policy, or evidence gates
 - Full vector database dependency as a required runtime component
 - OCR or vision-based document understanding as a default ingestion path
 - Vendor-specific Claude Code or Hermes application parity claims
@@ -140,6 +147,8 @@
 - [x] Backup/restore drill verification gate implemented
 - [x] Target retention operations gate implemented
 - [x] Target backup operations gate implemented
+- [x] OpenClaw-style orchestration backbone documented
+- [x] Hermes-style self-improvement engine documented
 - [x] Target support operations gate implemented
 - [x] Target support architecture gate implemented
 - [x] Retention/delete policy gate implemented

@@ -33,16 +33,20 @@ Reference repos are design input, not vendored implementation:
 - `everything-claude-code`: `agents / skills / hooks / rules` separation
 - `mrstack`: persistent memory mindset
 - `multi-agent-workflow`: deterministic role sequencing
+- `openclaw/openclaw`: OpenClaw as the orchestration backbone for gateway, channels, sessions, workspaces, routing, permissions, and sandbox policy
+- `ultraworkers/claw-code`: CLI harness, doctor/parity, and provider/runtime separation discipline
 - `OpenHarness`: harness boundary, governance hooks, session-first orchestration
 - `harness/harness`: pipeline, artifact registry, and local runner boundary as operating-system-level harness input
 - `Claude Code Harness`: agent loop, tool orchestration, permissions, hooks, context, skills, and fail-closed engineering principles
-- `hermes-agent`: provider-aware tool calling, parallel subagents, memory/session lifecycle, gateway-style approval/interrupt patterns, and Hermes-compatible tool-call parsing
+- `hermes-agent`: Hermes-style self-improvement engine for provider-aware tool calling, parallel subagents, memory/session lifecycle, learning candidates, skill/template promotion, gateway-style approval/interrupt patterns, and Hermes-compatible tool-call parsing
 
 See [docs/reference-repos.md](docs/reference-repos.md) for the borrowed and rejected patterns.
 
 ## Product Plan
 
 The product planning source of record is [docs/product-plan-v1.md](docs/product-plan-v1.md).
+The OpenClaw-style orchestration backbone source of record is [docs/orchestration-backbone-v1.md](docs/orchestration-backbone-v1.md).
+The Hermes-style self-improvement engine source of record is [docs/self-improvement-engine-v1.md](docs/self-improvement-engine-v1.md).
 The v1 security planning source of record is [docs/security-model-v1.md](docs/security-model-v1.md).
 The v1 operator runbook is [docs/operator-runbook-v1.md](docs/operator-runbook-v1.md).
 The self-hosted pilot deployment guide is [docs/deployment-pilot-v1.md](docs/deployment-pilot-v1.md).
