@@ -276,9 +276,23 @@ assert.equal(missionShow.summary.providerAttentionResolvedCount, 0);
 assert.equal(missionShow.summary.providerExecutionFailedCount, 0);
 assert.equal(missionShow.summary.providerTouchedCount, 1);
 assert.deepEqual(missionShow.summary.providerTouchedIds, ['stub']);
+assert.equal(missionShow.summary.sandboxDecisionCount, 3);
+assert.equal(missionShow.summary.sandboxDecisionModeCounts['local-runtime'], 3);
+assert.equal(missionShow.summary.sandboxDecisionPolicyCounts['local-runtime-sandbox-policy/v1'], 3);
 
 assert.equal(timeline.summary.sessionCount, 2);
 assert.equal(timeline.timeline.some((event) => event.kind === 'mission-created'), true);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'gateway-event-recorded').length, 3);
+assert.equal(timeline.timeline.filter((event) => event.kind === 'sandbox-decision-recorded').length, 3);
+assert.equal(
+  timeline.timeline.some(
+    (event) =>
+      event.kind === 'sandbox-decision-recorded' &&
+      event.sandboxMode === 'local-runtime' &&
+      event.sandboxPolicyId === 'local-runtime-sandbox-policy/v1',
+  ),
+  true,
+);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'session-started').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-requested').length, 2);
 assert.equal(timeline.timeline.filter((event) => event.kind === 'approval-resolved').length, 1);
@@ -321,6 +335,8 @@ assert.equal(providerMissionShow.summary.providerExecutionCompletedCount, 3);
 assert.equal(providerMissionShow.summary.providerExecutionFailedCount, 1);
 assert.equal(providerMissionShow.summary.providerTouchedCount, 1);
 assert.deepEqual(providerMissionShow.summary.providerTouchedIds, ['stub']);
+assert.equal(providerMissionShow.summary.sandboxDecisionCount, 2);
+assert.equal(providerMissionShow.summary.sandboxDecisionModeCounts['local-runtime'], 2);
 assert.equal(providerMissionShow.summary.latestProviderAttentionResolution.providerId, 'stub');
 assert.equal(providerMissionShow.summary.latestFailedProviderExecution.providerId, 'stub');
 assert.equal(providerMissionShow.summary.latestProviderExecution.providerId, 'stub');
@@ -358,6 +374,8 @@ assert.equal(recentProviderMissionShow.providerRecentWindow.executionWeeklyBucke
 assert.equal(recentProviderMissionShow.providerRecentWindow.executionLatestWeeklyBucketDelta.previousWeekStartDate, null);
 
 assert.equal(providerTimeline.summary.sessionCount, 1);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'gateway-event-recorded').length, 2);
+assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'sandbox-decision-recorded').length, 2);
 assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-succeeded').length, 3);
 assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-execution-failed').length, 1);
 assert.equal(providerTimeline.timeline.filter((event) => event.kind === 'provider-attention-opened').length, 1);

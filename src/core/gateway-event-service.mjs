@@ -2,6 +2,10 @@ import {
   buildGatewayPermissionDecision,
   summarizePermissionDecisionForTimeline,
 } from './permission-decision-service.mjs';
+import {
+  buildGatewaySandboxDecision,
+  summarizeSandboxDecisionForTimeline,
+} from './sandbox-decision-service.mjs';
 
 export const GATEWAY_EVENT_SCHEMA_VERSION = 'personal-ai-agent-gateway-event/v1';
 
@@ -89,6 +93,18 @@ export function normalizeGatewayEvent({
     source,
     workspace,
   });
+  const sandboxDecision = buildGatewaySandboxDecision({
+    at,
+    eventId: id,
+    eventType: normalizedEventType,
+    mission,
+    providerId,
+    route: normalizedRoute,
+    sandboxPolicy,
+    session,
+    source,
+    workspace,
+  });
 
   return {
     at,
@@ -144,10 +160,13 @@ export function normalizeGatewayEvent({
       name: normalizedRoute,
       surface: source.surface,
     },
+    sandboxDecision,
     sandboxPolicy: {
-      deniedCapabilities: ensureArray(sandboxPolicy.deniedCapabilities).map((item) => normalizeText(item)).filter(Boolean),
-      mode: normalizeText(sandboxPolicy.mode, 'local-runtime'),
-      reason: normalizeText(sandboxPolicy.reason, 'default-local-runtime-boundary'),
+      deniedCapabilities: sandboxDecision.capabilities.deniedCapabilities,
+      mode: sandboxDecision.mode,
+      policyId: sandboxDecision.policyId,
+      reason: sandboxDecision.reason,
+      sandboxDecisionId: sandboxDecision.id,
     },
     schemaVersion: GATEWAY_EVENT_SCHEMA_VERSION,
     source,
@@ -165,6 +184,7 @@ export function attachGatewayEventToSourceContext(sourceContext = {}, gatewayEve
     ...normalizeProviderFallbackContext(sourceContext),
     gatewayEventId: gatewayEvent?.id || null,
     gatewayPermissionDecisionId: gatewayEvent?.permissionDecision?.id || null,
+    gatewaySandboxDecisionId: gatewayEvent?.sandboxDecision?.id || null,
     gatewayEventSchemaVersion: gatewayEvent?.schemaVersion || GATEWAY_EVENT_SCHEMA_VERSION,
     gatewayEventType: gatewayEvent?.eventType || null,
     gatewayEventRoute: gatewayEvent?.route?.name || source.route,
@@ -181,6 +201,8 @@ export function summarizeGatewayEventForTimeline(event) {
   const fallbackSuffix = fallbackPolicy ? ` fallbackPolicy=${fallbackPolicy}` : '';
   const permissionSummary = summarizePermissionDecisionForTimeline(event?.permissionDecision);
   const permissionSuffix = permissionSummary ? ` ${permissionSummary}.` : '';
+  const sandboxSummary = summarizeSandboxDecisionForTimeline(event?.sandboxDecision);
+  const sandboxSuffix = sandboxSummary ? ` ${sandboxSummary}.` : '';
 
-  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}${permissionSuffix}`;
+  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}${permissionSuffix}${sandboxSuffix}`;
 }

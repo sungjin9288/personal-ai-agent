@@ -76,6 +76,7 @@ import { listOrchestrationProfiles, resolveOrchestrationProfile } from './orches
 import {
   buildProviderAttentionRemediationPermissionDecision,
 } from './permission-decision-service.mjs';
+import { summarizeSandboxDecisionForTimeline } from './sandbox-decision-service.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -2508,9 +2509,12 @@ function summarizeOperatorTimeline(events) {
   const eventCounts = {};
   const providerFallbackPolicyCounts = {};
   const providerFallbackStopReasonCounts = {};
+  const sandboxDecisionModeCounts = {};
+  const sandboxDecisionPolicyCounts = {};
   const workspaceCounts = {};
   const providerFallbackEvents = [];
   const providerFallbackUsedEvents = [];
+  const sandboxDecisionEvents = [];
 
   for (const event of events) {
     eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
@@ -2532,12 +2536,24 @@ function summarizeOperatorTimeline(events) {
     if (event.kind === 'provider-fallback-used') {
       providerFallbackUsedEvents.push(event);
     }
+    if (event.kind === 'sandbox-decision-recorded') {
+      sandboxDecisionEvents.push(event);
+      const sandboxMode = normalizeText(event.sandboxMode);
+      if (sandboxMode) {
+        sandboxDecisionModeCounts[sandboxMode] = (sandboxDecisionModeCounts[sandboxMode] || 0) + 1;
+      }
+      const sandboxPolicyId = normalizeText(event.sandboxPolicyId);
+      if (sandboxPolicyId) {
+        sandboxDecisionPolicyCounts[sandboxPolicyId] = (sandboxDecisionPolicyCounts[sandboxPolicyId] || 0) + 1;
+      }
+    }
   }
 
   return {
     eventCounts,
     latestEvent: events.at(-1) || null,
     latestProviderFallbackEvent: getLatestItem(providerFallbackEvents, 'at'),
+    latestSandboxDecisionEvent: getLatestItem(sandboxDecisionEvents, 'at'),
     providerFallbackAttemptCount: providerFallbackEvents.length,
     providerFallbackPolicyCounts,
     providerFallbackPrimaryProviderIds: [
@@ -2548,8 +2564,52 @@ function summarizeOperatorTimeline(events) {
     providerFallbackUsedProviderIds: [
       ...new Set(providerFallbackUsedEvents.map((event) => event.providerId).filter(Boolean)),
     ],
+    sandboxDecisionCount: sandboxDecisionEvents.length,
+    sandboxDecisionModeCounts,
+    sandboxDecisionPolicyCounts,
     total: events.length,
     workspaceCounts,
+  };
+}
+
+function buildSandboxDecisionTimelineEvent({ event, mission = null, workspace = null }) {
+  const sandboxDecision = event?.sandboxDecision || null;
+  if (!sandboxDecision) {
+    return null;
+  }
+
+  const deniedCapabilities = ensureArray(
+    sandboxDecision.capabilities?.deniedCapabilities || event.sandboxPolicy?.deniedCapabilities,
+  )
+    .map((item) => normalizeText(item))
+    .filter(Boolean);
+  const sandboxMode = normalizeText(sandboxDecision.mode || event.sandboxPolicy?.mode, 'local-runtime');
+  const sandboxPolicyId = normalizeText(
+    sandboxDecision.policyId || event.sandboxPolicy?.policyId,
+    'local-runtime-sandbox-policy/v1',
+  );
+
+  return {
+    at: event.at,
+    detail: summarizeSandboxDecisionForTimeline(sandboxDecision),
+    gatewayEventId: event.id,
+    gatewayEventType: event.eventType,
+    kind: 'sandbox-decision-recorded',
+    missionId: mission?.id || event.bindings?.missionId || null,
+    missionTitle: mission?.title || null,
+    providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
+    route: event.route?.name || sandboxDecision.action?.route || null,
+    sandboxDecision,
+    sandboxDecisionId: sandboxDecision.id || event.sandboxPolicy?.sandboxDecisionId || null,
+    sandboxDeniedCapabilities: deniedCapabilities,
+    sandboxMode,
+    sandboxPolicyId,
+    sandboxReason: normalizeText(sandboxDecision.reason || event.sandboxPolicy?.reason) || null,
+    sessionId: event.bindings?.sessionId || null,
+    sourceType: event.source?.sourceType || null,
+    status: sandboxDecision.status || event.status || 'recorded',
+    workspaceId: workspace?.id || event.bindings?.workspaceId || mission?.workspaceId || null,
+    workspaceName: workspace?.name || null,
   };
 }
 
@@ -9888,10 +9948,12 @@ function summarizeProviderExecutions(executions) {
     const approvals = store.listApprovals({ missionId, sessionId: session.id });
     const artifacts = store.listArtifactsBySession(session.id);
     const gatewayEvents = store.listGatewayEvents({ sessionId: session.id });
+    const sandboxDecisions = gatewayEvents.map((event) => event.sandboxDecision).filter(Boolean);
     const learningCandidates = store.listLearningCandidates({ sessionId: session.id });
     const latestApproval = getLatestItem(approvals, 'createdAt');
     const latestArtifact = getLatestItem(artifacts, 'createdAt');
     const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestSandboxDecision = getLatestItem(sandboxDecisions, 'at');
     const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const reviewerRun = agentRuns.find((run) => run.role === 'reviewer') || null;
 
@@ -9906,10 +9968,13 @@ function summarizeProviderExecutions(executions) {
       gatewayEventCount: gatewayEvents.length,
       gatewayEventId: latestGatewayEvent?.id || session.sourceContext?.gatewayEventId || null,
       gatewayEventType: latestGatewayEvent?.eventType || session.sourceContext?.gatewayEventType || null,
+      latestSandboxDecision,
       learningCandidateCount: learningCandidates.length,
       latestLearningCandidateId: latestLearningCandidate?.id || null,
       latestLearningCandidateRecordType: latestLearningCandidate?.recordType || null,
       provider: session.provider,
+      sandboxDecisionCount: sandboxDecisions.length,
+      sandboxDecisionModeCounts: countByNormalizedField(sandboxDecisions, 'mode'),
       reviewerStatus: reviewerRun ? reviewerRun.status : null,
       reviewerSummary: reviewerRun ? reviewerRun.outputSummary : null,
       startedAt: session.startedAt,
@@ -9939,8 +10004,10 @@ function summarizeProviderExecutions(executions) {
     const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const gatewayEvents = store.listGatewayEvents({ missionId: mission.id });
+    const sandboxDecisions = gatewayEvents.map((event) => event.sandboxDecision).filter(Boolean);
     const learningCandidates = store.listLearningCandidates({ missionId: mission.id });
     const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestSandboxDecision = getLatestItem(sandboxDecisions, 'at');
     const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const missionAttachments = store.listMissionAttachments({ missionId: mission.id });
     const latestSession = sessions.at(-1) || null;
@@ -9991,6 +10058,7 @@ function summarizeProviderExecutions(executions) {
       gatewayEventCount: gatewayEvents.length,
       gatewayEventTypeCounts: countByNormalizedField(gatewayEvents, 'eventType'),
       latestGatewayEvent,
+      latestSandboxDecision,
       learningCandidateCount: learningCandidates.length,
       learningCandidateRecordTypeCounts: countByNormalizedField(learningCandidates, 'recordType'),
       learningCandidateStatusCounts: countByNormalizedField(learningCandidates, 'status'),
@@ -10019,6 +10087,9 @@ function summarizeProviderExecutions(executions) {
       maintenanceImpactRunCount: maintenanceImpactSummary.runCount,
       maintenanceImpactTotalRemindedCount: maintenanceImpactSummary.totalRemindedCount,
       maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
+      sandboxDecisionCount: sandboxDecisions.length,
+      sandboxDecisionModeCounts: countByNormalizedField(sandboxDecisions, 'mode'),
+      sandboxDecisionPolicyCounts: countByNormalizedField(sandboxDecisions, 'policyId'),
       maintenanceResolvedMaintenanceRequiredCountTotal:
         maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
       maintenanceRemainingMaintenanceRequiredCountTotal:
@@ -16203,6 +16274,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     for (const event of gatewayEvents) {
+      const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission });
       timeline.push({
         at: event.at,
         detail: summarizeGatewayEventForTimeline(event),
@@ -16218,11 +16290,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         providerFallbackPolicy: event.providerRoute?.policyId || null,
         providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
         route: event.route?.name || null,
+        sandboxDecision: event.sandboxDecision || null,
+        sandboxDecisionId: event.sandboxDecision?.id || event.sandboxPolicy?.sandboxDecisionId || null,
+        sandboxDeniedCapabilities:
+          event.sandboxDecision?.capabilities?.deniedCapabilities || event.sandboxPolicy?.deniedCapabilities || [],
+        sandboxMode: event.sandboxDecision?.mode || event.sandboxPolicy?.mode || null,
+        sandboxPolicyId: event.sandboxDecision?.policyId || event.sandboxPolicy?.policyId || null,
+        sandboxReason: event.sandboxDecision?.reason || event.sandboxPolicy?.reason || null,
         sessionId: event.bindings?.sessionId || null,
         sourceType: event.source?.sourceType || null,
         status: event.status || 'recorded',
         workspaceId: event.bindings?.workspaceId || mission.workspaceId,
       });
+
+      if (sandboxTimelineEvent) {
+        timeline.push(sandboxTimelineEvent);
+      }
     }
 
     for (const candidate of learningCandidates) {
@@ -16792,6 +16875,32 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceId: workspace.id,
           workspaceName: workspace.name,
         });
+      }
+    }
+
+    for (const event of store.listGatewayEvents({
+      missionId: filter.missionId,
+      workspaceId: filter.workspaceId,
+    })) {
+      const mission = event.bindings?.missionId ? missionById.get(event.bindings.missionId) : null;
+      const workspace = event.bindings?.workspaceId
+        ? workspaceById.get(event.bindings.workspaceId)
+        : mission
+          ? workspaceById.get(mission.workspaceId)
+          : null;
+      if (!workspace) {
+        continue;
+      }
+      if (filter.missionId && event.bindings?.missionId !== filter.missionId) {
+        continue;
+      }
+      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
+        continue;
+      }
+
+      const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission, workspace });
+      if (sandboxTimelineEvent) {
+        events.push(sandboxTimelineEvent);
       }
     }
 

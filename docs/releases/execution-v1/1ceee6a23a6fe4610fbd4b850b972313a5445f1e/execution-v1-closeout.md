@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T14:02:16.750Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T14:02:07.770Z
 - branch: codex/sandbox-decision-timelines
 - commit: 1ceee6a23a6fe4610fbd4b850b972313a5445f1e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

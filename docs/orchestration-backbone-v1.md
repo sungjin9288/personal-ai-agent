@@ -84,6 +84,12 @@ Gateway events and provider attention remediation now carry a policy-owned `perm
 
 The first reusable surfaces are CLI mission ingress and provider remediation actions. Mission create/run gateway events record `local-runtime-gateway-permission/v1`, while `action remediate-provider-attention` records `provider-attention-remediation-permission/v1` with same-provider rerun or explicit fallback rerun capabilities. Future tool and channel adapters should reuse this record shape instead of inventing separate allow/deny payloads.
 
+## Sandbox Decision Timelines
+
+Gateway events now also carry a policy-owned `sandboxDecision` record. The record uses `personal-ai-agent-sandbox-decision/v1`, keeps the legacy `sandboxPolicy` compatibility fields, and records the sandbox policy id, selected execution mode, route/resource binding, denied capability metadata, and no-raw-secrets evidence policy.
+
+Mission create/run gateway events record `local-runtime-sandbox-policy/v1` and expose the same decision in three places: the gateway event payload, the mission `gateway-event-recorded` entry, and a dedicated `sandbox-decision-recorded` timeline event. Workspace and global operator timelines also emit `sandbox-decision-recorded`, with summary counts by sandbox mode and policy id so the local runtime boundary can be audited without reconstructing gateway state.
+
 ## Backbone Interfaces
 
 | Interface | Purpose | Initial implementation posture |
@@ -100,6 +106,7 @@ The first reusable surfaces are CLI mission ingress and provider remediation act
 ```bash
 npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:permission-decision-records
+npm run smoke:sandbox-decision-timelines
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:orchestration-profiles
 npm run smoke:runtime-isolation
@@ -125,6 +132,6 @@ This document does not prove production readiness. Before any production or host
 
 1. Define a normalized `gatewayEvent` schema for CLI, web, schedule, and future channel ingress. CLI `mission create` and `mission run` now emit `gatewayEvent` records with session/workspace/provider route bindings; web, schedule, and external channel ingress remain future adapters.
 2. Add a policy-owned permission decision record that can be reused by tools, provider remediation, and channel actions. Gateway events and provider attention remediation now expose `permissionDecision` records with policy id, decision result, approval requirement, route/resource bindings, capability metadata, and no-secret evidence policy, backed by `smoke:permission-decision-records`.
-3. Attach sandbox decisions to mission timelines and operator timelines.
+3. Attach sandbox decisions to mission timelines and operator timelines. Gateway events now expose `sandboxDecision` records with policy id, mode, denied capability metadata, and no-secret evidence policy; mission, workspace, and operator timelines emit `sandbox-decision-recorded` evidence backed by `smoke:sandbox-decision-timelines`.
 4. Extend provider fallback events so the route can be inspected from mission, workspace, operator, and provider views.
 5. Add an adapter seam for future channel connectors without enabling external messaging by default.

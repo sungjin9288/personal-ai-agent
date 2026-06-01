@@ -609,6 +609,8 @@ node src/cli.mjs overview maintenance --since 2026-04-01T00:00:00.000Z
 
 Gateway event와 provider attention remediation은 이제 같은 `permissionDecision` record shape를 노출합니다. `mission create/run`의 gateway event는 `local-runtime-gateway-permission/v1` policy id, allow/approval/deny decision, route/resource binding, capability metadata, no-secret evidence policy를 남기고, `action remediate-provider-attention`은 `provider-attention-remediation-permission/v1` decision으로 same-provider rerun 또는 explicit fallback rerun capability를 기록합니다. 기존 `permissionPolicy` field는 compatibility 용도로 유지됩니다.
 
+Gateway event는 같은 방식으로 `sandboxDecision` record도 노출합니다. `mission create/run`은 `personal-ai-agent-sandbox-decision/v1` schema와 `local-runtime-sandbox-policy/v1` policy id로 selected sandbox mode, denied capability metadata, route/resource binding, no-secret evidence policy를 남기며, mission timeline의 `gateway-event-recorded`와 별도 `sandbox-decision-recorded` event에 함께 표시됩니다. `workspace timeline`과 `overview operator-timeline`도 `sandbox-decision-recorded` chronology와 sandbox mode/policy summary를 반환하므로 sandbox boundary를 gateway payload 재해석 없이 audit할 수 있습니다.
+
 운영 콘솔에서도 같은 정책이 적용됩니다. UI 실행 제어는 primary provider, fallback provider, fallback policy를 같은 mission run API로 전달하며, fallback provider를 고르지 않으면 fallback policy selector는 비활성화됩니다. UI에서 provider를 비워 두고 실행하면 현재 런타임 기본 provider 정책을 그대로 따릅니다. Web action inbox의 provider-attention 항목도 `action remediate-provider-attention`과 같은 service path를 호출하므로 same-provider 복구, default `provider-failure-only` fallback 복구, strict `recoverable-provider-failure-only` fallback 복구를 버튼 단위로 실행할 수 있습니다.
 
 `mission execution ...` 명령군은 execution-capable `engineering` mission 전용입니다.

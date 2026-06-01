@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T14:02:16.750Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T14:02:15.336Z
 - localDate: 2026-06-01
 - branch: codex/sandbox-decision-timelines
 - commit: 1ceee6a23a6fe4610fbd4b850b972313a5445f1e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e](releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e](docs/releases/execution-v1/1ceee6a23a6fe4610fbd4b850b972313a5445f1e)
 - visualArtifactSetSha256: 288d6ec5aa171f272adc4efe6ca938a66b1ae0a67edfe7bd3defb18270b620b9
 - commitPushStatus: not pushed, origin/codex/sandbox-decision-timelines not found
 

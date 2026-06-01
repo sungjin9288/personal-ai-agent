@@ -285,6 +285,7 @@ assert.equal(workspaceTimeline.summary.eventCounts['approval-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-opened'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['escalation-resolved'], 1);
 assert.equal(workspaceTimeline.summary.eventCounts['maintenance-run'], 1);
+assert.equal(workspaceTimeline.summary.eventCounts['sandbox-decision-recorded'], 3);
 assert.equal(workspaceTimeline.summary.eventCounts['provider-execution-failed'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-opened'] || 0, 0);
 assert.equal(workspaceTimeline.summary.eventCounts['provider-attention-acknowledged'] || 0, 0);
@@ -296,6 +297,9 @@ assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketStartDate, 
 assert.equal(workspaceTimeline.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.currentMonthStartDate, currentUtcMonthStartDate());
 assert.equal(workspaceTimeline.summary.maintenanceLatestMonthlyBucketDelta.previousMonthStartDate, null);
+assert.equal(workspaceTimeline.summary.sandboxDecisionCount, 3);
+assert.equal(workspaceTimeline.summary.sandboxDecisionModeCounts['local-runtime'], 3);
+assert.equal(workspaceTimeline.summary.sandboxDecisionPolicyCounts['local-runtime-sandbox-policy/v1'], 3);
 assert.equal(workspaceTimeline.summary.specialistFollowUpRequiredCount || 0, 0);
 assert.equal(workspaceTimeline.summary.specialistFollowUpNeedsReminderCount || 0, 0);
 assert.equal(workspaceTimeline.summary.specialistFollowUpOverdueCount || 0, 0);
@@ -318,7 +322,11 @@ assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['reviewer-follow-up-r
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-opened'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-acknowledged'], 1);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['provider-attention-resolved'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['sandbox-decision-recorded'], 4);
 assert.equal(reviewerWorkspaceTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
+assert.equal(reviewerWorkspaceTimeline.summary.sandboxDecisionCount, 4);
+assert.equal(reviewerWorkspaceTimeline.summary.sandboxDecisionModeCounts['local-runtime'], 4);
+assert.equal(reviewerWorkspaceTimeline.summary.sandboxDecisionPolicyCounts['local-runtime-sandbox-policy/v1'], 4);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpRequiredCount, 1);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpNeedsReminderCount, 0);
 assert.equal(reviewerWorkspaceTimeline.summary.specialistFollowUpOverdueCount, 1);
@@ -400,6 +408,7 @@ assert.equal(globalTimeline.summary.eventCounts['provider-attention-acknowledged
 assert.equal(globalTimeline.summary.eventCounts['provider-attention-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1);
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
+assert.equal(globalTimeline.summary.eventCounts['sandbox-decision-recorded'], 7);
 assert.equal(globalTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
 assert.equal(globalTimeline.summary.maintenanceMonthlyBucketCount, 1);
 assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
@@ -414,8 +423,11 @@ assert.equal(globalTimeline.summary.specialistLatestFollowUp.missionId, speciali
 assert.equal(globalTimeline.summary.specialistLatestFollowUp.specialistKind, 'documentation');
 assert.ok(globalTimeline.summary.specialistLatestReminderAt);
 assert.ok(globalTimeline.summary.specialistNextReminderAt);
+assert.equal(globalTimeline.summary.sandboxDecisionCount, 7);
+assert.equal(globalTimeline.summary.sandboxDecisionModeCounts['local-runtime'], 7);
+assert.equal(globalTimeline.summary.sandboxDecisionPolicyCounts['local-runtime-sandbox-policy/v1'], 7);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 10);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 14);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
 assert.equal(
