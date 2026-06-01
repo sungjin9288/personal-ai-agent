@@ -93,6 +93,7 @@ Backbone evidence routing must make the route inspectable from mission, workspac
 
 ```bash
 npm run smoke:openclaw-hermes-orchestration-docs
+npm run smoke:gateway-event-learning-candidate
 npm run smoke:orchestration-profiles
 npm run smoke:runtime-isolation
 npm run smoke:provider-fallback-policy
@@ -115,7 +116,7 @@ This document does not prove production readiness. Before any production or host
 
 ## Next Implementation Slices
 
-1. Define a normalized `gatewayEvent` schema for CLI, web, schedule, and future channel ingress.
+1. Define a normalized `gatewayEvent` schema for CLI, web, schedule, and future channel ingress. CLI `mission create` and `mission run` now emit `gatewayEvent` records with session/workspace/provider route bindings; web, schedule, and external channel ingress remain future adapters.
 2. Add a policy-owned permission decision record that can be reused by tools, provider remediation, and channel actions.
 3. Attach sandbox decisions to mission timelines and operator timelines.
 4. Extend provider fallback events so the route can be inspected from mission, workspace, operator, and provider views.

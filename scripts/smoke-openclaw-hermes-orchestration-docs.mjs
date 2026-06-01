@@ -17,9 +17,17 @@ assert.equal(
   packageJson.scripts['smoke:openclaw-hermes-orchestration-docs'],
   'node scripts/smoke-openclaw-hermes-orchestration-docs.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:gateway-event-learning-candidate'],
+  'node scripts/smoke-gateway-event-learning-candidate.mjs',
+);
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-openclaw-hermes-orchestration-docs.mjs'),
   'reference adoption smoke list must include the OpenClaw/Hermes orchestration smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-gateway-event-learning-candidate.mjs'),
+  'reference adoption smoke list must include the gateway event and learning candidate smoke',
 );
 
 assertDocumentBasics(backbone, {
@@ -70,6 +78,7 @@ for (const heading of [
 }
 
 for (const command of [
+  'npm run smoke:gateway-event-learning-candidate',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',
@@ -123,6 +132,7 @@ for (const heading of [
 }
 
 for (const command of [
+  'npm run smoke:gateway-event-learning-candidate',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:memory-rerun',

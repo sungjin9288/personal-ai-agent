@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T05:41:38.314Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T05:41:36.806Z
 - localDate: 2026-06-01
 - branch: codex/gateway-event-learning-candidate
 - commit: 19b6d49eee8b840e378307dc7d24be064f541408
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408](releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408)
 - visualArtifactSetSha256: 9930bd196174c350d14837aafcf2662abd724bd6fccd87b81582a90aa4eb32a9
 - commitPushStatus: pushed to origin/main
 
