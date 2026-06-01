@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T05:51:50.011Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T05:51:41.744Z
 - branch: codex/gateway-event-learning-candidate
 - commit: 9484ef2a792f3d89f237121edf230e883aa140e5
