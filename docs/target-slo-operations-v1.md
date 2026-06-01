@@ -58,6 +58,14 @@ Every target SLO operations review must include:
 - release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result
 - residual risk, decision owner, next review date, evidence retention decision, and missed-SLO containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target SLO operations | target-slo-operations-missing | target-slo-architecture-missing | target-observability-slo-boundary-missing-or-mismatched | 3 | 14 | 14 | 6 | blocked |
+
+Target SLO operations owns the customer-approved SLO/SLA terms, error budget policy, telemetry measurement, alert acknowledgement, staffed on-call response, customer communication, incident review, provider outage handling, maintenance and degradation, service credit, evidence retention, missed-SLO containment, residual risk, decision owner, and next review evidence contract. Target SLO architecture owns the customer SLO/SLA decision proof. Production SLO operating and incident SLO policy own the local pilot SLO stop conditions. Target observability architecture and target observability operations own the linked telemetry measurement, alert delivery, and on-call signal proof. Target deployment contract and target environment evidence intake own the same-boundary SLO evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target SLO operations evidence packet proof, target SLO architecture approval proof, customer-approved SLO/SLA terms proof, error budget policy proof, telemetry measurement proof, alert acknowledgement proof, staffed on-call response proof, customer communication proof, incident review proof, provider outage handling proof, maintenance and degradation proof, service credit proof, evidence retention proof, missed-SLO containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target SLO boundary.
+
 ## SLO Operation Rules
 
 - define SLO owner, error budget owner, telemetry owner, alert route owner, on-call owner, customer communication owner, incident review owner, legal/commercial owner, and evidence owner before a target deployment is presented as SLO/SLA-ready

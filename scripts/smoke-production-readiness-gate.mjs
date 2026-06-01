@@ -861,6 +861,15 @@ assert.match(targetSloOperations, /npm run smoke:target-slo-operations/);
 assert.match(targetSloOperations, /not contractual SLA approval/);
 assert.match(targetSloOperations, /Target SLO operations remain blocked for production-ready claims/);
 assert.match(targetSloOperations, /release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result/);
+assert.match(targetSloOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetSloOperations, /target-slo-operations-missing/);
+assert.match(targetSloOperations, /target-slo-architecture-missing/);
+assert.match(targetSloOperations, /target-observability-slo-boundary-missing-or-mismatched/);
+assert.match(targetSloOperations, /same-boundary SLO evidence verification/);
+assert.match(
+  targetSloOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target SLO boundary/,
+);
 assert.match(targetDataLifecycleArchitecture, /^# Target Data Lifecycle Architecture v1$/m);
 assert.match(targetDataLifecycleArchitecture, /^- status: local-target-data-lifecycle-architecture-current$/m);
 assert.match(targetDataLifecycleArchitecture, /^- productionReadyClaim: false$/m);
