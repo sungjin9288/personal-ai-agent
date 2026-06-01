@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T04:02:32.323Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T04:02:31.026Z
 - localDate: 2026-06-01
 - branch: codex/openclaw-hermes-orchestration-docs
 - commit: 82ece935af918521fbd56343f0120bd611c97dc1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1](releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1](docs/releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1)
 - visualArtifactSetSha256: d4f8018e3d5a2e8c832e3d3912b661dd6d76eda9e1396b91f93912441fe8caca
 - commitPushStatus: not pushed, origin/codex/openclaw-hermes-orchestration-docs not found
 

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T04:02:32.323Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T04:02:24.775Z
 - branch: codex/openclaw-hermes-orchestration-docs
 - commit: 82ece935af918521fbd56343f0120bd611c97dc1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/82ece935af918521fbd56343f0120bd611c97dc1/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
