@@ -915,6 +915,16 @@ assert.match(targetRetentionOperations, /not target retention evidence/);
 assert.match(targetRetentionOperations, /customer-approved data class proof with class owner, legal basis, retention window, exportability, delete eligibility, and exception policy/);
 assert.match(targetRetentionOperations, /release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result/);
 assert.match(targetRetentionOperations, /Target retention operations remain blocked for production-ready claims/);
+assert.match(targetRetentionOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetRetentionOperations, /target-retention-operations-missing/);
+assert.match(targetRetentionOperations, /target-data-lifecycle-architecture-missing/);
+assert.match(targetRetentionOperations, /target-backup-operations-missing/);
+assert.match(targetRetentionOperations, /target-retention-backup-boundary-missing-or-mismatched/);
+assert.match(targetRetentionOperations, /same-boundary retention evidence verification/);
+assert.match(
+  targetRetentionOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target retention boundary/,
+);
 assert.match(targetBackupOperations, /^# Target Backup Operations v1$/m);
 assert.match(targetBackupOperations, /^- status: local-target-backup-operations-current$/m);
 assert.match(targetBackupOperations, /^- productionReadyClaim: false$/m);

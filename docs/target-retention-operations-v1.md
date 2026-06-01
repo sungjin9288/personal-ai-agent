@@ -49,6 +49,14 @@ Every target retention operations review must include:
 - release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result
 - residual risk, exception owner, next review date, customer handoff decision, and lifecycle containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Backup Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target retention operations | target-retention-operations-missing | target-data-lifecycle-architecture-missing | target-backup-operations-missing | target-retention-backup-boundary-missing-or-mismatched | 4 | 10 | 10 | 6 | blocked |
+
+Target retention operations owns the customer-approved data class, target retention configuration, export approval, delete workflow, provider transcript handling, post-delete absence, audit history, residual risk, exception owner, customer handoff, and lifecycle containment evidence contract. Target data lifecycle architecture owns the retention/export/delete lifecycle decision proof. Target backup operations owns backup expiry, restore-impact, and backup post-delete absence proof that can affect retention closure. Production retention operating and retention-delete policy own the local pilot lifecycle stop conditions. Target deployment contract and target environment evidence intake own the same-boundary retention evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target retention operations evidence packet proof, target data lifecycle architecture approval proof, target backup operations proof, customer-approved data class proof, target retention configuration proof, export approval proof, delete workflow proof, provider transcript handling proof, post-delete absence proof, audit history proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target retention boundary.
+
 ## Data Lifecycle Rules
 
 - define data class owner, retention owner, export approver, delete approver, and evidence owner before target deployment is presented as production-like

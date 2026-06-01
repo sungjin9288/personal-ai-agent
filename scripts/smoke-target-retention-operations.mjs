@@ -40,6 +40,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Retention Operation Controls',
   '## Retention Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Data Lifecycle Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -72,6 +73,24 @@ for (const packetItem of [
 ]) {
   assert.match(targetRetention, packetItem);
 }
+
+assert.match(
+  targetRetention,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Backup Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetRetention,
+  /\| target retention operations \| target-retention-operations-missing \| target-data-lifecycle-architecture-missing \| target-backup-operations-missing \| target-retention-backup-boundary-missing-or-mismatched \| 4 \| 10 \| 10 \| 6 \| blocked \|/,
+);
+assert.match(targetRetention, /Target retention operations owns the customer-approved data class/);
+assert.match(targetRetention, /Target data lifecycle architecture owns the retention\/export\/delete lifecycle decision proof/);
+assert.match(targetRetention, /Target backup operations owns backup expiry, restore-impact, and backup post-delete absence proof/);
+assert.match(targetRetention, /Production retention operating and retention-delete policy own the local pilot lifecycle stop conditions/);
+assert.match(targetRetention, /Target deployment contract and target environment evidence intake own the same-boundary retention evidence verification/);
+assert.match(
+  targetRetention,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target retention boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-retention-operations',
