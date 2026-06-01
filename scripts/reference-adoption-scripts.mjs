@@ -10,6 +10,7 @@ export const referenceAdoptionSmokeScripts = Object.freeze([
   'scripts/smoke-retrieval-memory.mjs',
   'scripts/smoke-fact-graph-memory.mjs',
   'scripts/smoke-instruction-boundary-fixture.mjs',
+  'scripts/smoke-openclaw-hermes-orchestration-docs.mjs',
   'scripts/smoke-orchestration-profiles.mjs',
   'scripts/smoke-ui-agent-blueprints.mjs',
   'scripts/smoke-parallel-specialists.mjs',

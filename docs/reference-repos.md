@@ -18,8 +18,17 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 
 ### claw-code
 - source: https://github.com/ultraworkers/claw-code
-- borrowed: runtime/provider separation mindset
-- rejected for now: low-level harness rewrite and broader platform scope
+- inspected: 2026-06-01, shallow clone into `/tmp/personal-ai-agent-reference.DTxitv/claw-code`
+- borrowed: CLI harness discipline, `doctor`/parity mindset, build-from-source clarity, and provider/runtime separation mindset
+- rejected for now: Rust harness rewrite, deprecated package assumptions, low-level harness replacement, and broader platform scope
+- 2026-06-01 status: used as a secondary harness reference for [orchestration-backbone-v1.md](orchestration-backbone-v1.md), not as the runtime backbone
+
+### openclaw/openclaw
+- source: https://github.com/openclaw/openclaw
+- inspected: 2026-06-01, shallow clone into `/tmp/personal-ai-agent-reference.DTxitv/openclaw`
+- borrowed: local-first gateway/control plane, channel ingress and channel adapter model, session separation, workspace routing, pairing and permission posture, sandbox modes, tool/skill/plugin registry, provider gateway surface, operator status commands, and always-on assistant control-plane framing
+- rejected for now: broad production messaging matrix, public always-on deployment claim, direct plugin vendoring, remote gateway exposure, voice/mobile companion scope, and treating sandboxing as a complete security boundary before target evidence
+- 2026-06-01 status: OpenClaw is the primary backbone reference for [orchestration-backbone-v1.md](orchestration-backbone-v1.md); channel and gateway expansion remains disabled by default until identity, retention, support, and deployment evidence are present
 
 ### oh-my-codex
 - source: https://github.com/Yeachan-Heo/oh-my-codex
@@ -62,6 +71,8 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: pipeline-oriented execution boundary, artifact registry mindset, local runner/server separation, durable state volume warning, and explicit operator-facing DevOps surface framing
 - rejected for now: Go/Gitness platform rewrite, hosted SCM, Gitspaces, containerized CI pipeline engine, artifact registry implementation, and Docker socket coupling inside the local agent runtime
 - 2026-04-30 status: existing execution-v1 evidence/closeout/snapshot artifacts, runtime job/request registries, provider preflight matrix, approval gates, and release UI carry the harness operating model without vendoring Harness platform code
+- inspected again: 2026-06-01, shallow clone into `/tmp/personal-ai-agent-reference.DTxitv/harness`
+- 2026-06-01 status: retained as the artifact/runner/pipeline boundary reference for [orchestration-backbone-v1.md](orchestration-backbone-v1.md) and [self-improvement-engine-v1.md](self-improvement-engine-v1.md); no Go platform, Gitspaces, SCM, Docker-socket CI, or registry implementation is adopted
 
 ### Claude Code Harness
 - source: https://claude-code-harness-ko.vercel.app/read/preface
@@ -124,6 +135,10 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: Hermes Agent's parallel subagent, provider-aware tool calling, memory/session lifecycle, approval/interrupt, background-task notification, model switching, plugin hook, and security-hardening patterns as metadata and UI selection guidance for the existing managed runtime
 - rejected for now: vendoring the Python Hermes application, gateway matrix, remote terminal backends, cron delivery, automatic skill mutation, RL/data generation, and direct process ownership because those would expand the v1 blast radius beyond the Node local-first harness
 - 2026-04-30 status: `engineering-full-spectrum` now carries `runtimeBlueprint=hermes-agent-full-spectrum`, `recommendedProvider=hermes`, and Hermes harness pattern metadata, and the UI exposes a dedicated `Hermes 에이전트` AI configuration card that selects the existing full-spectrum five-lane specialist profile without increasing the runtime's 9-agent surface cap
+- inspected again: 2026-06-01, shallow clone into `/tmp/personal-ai-agent-reference.DTxitv/hermes-agent`
+- borrowed: Hermes Agent's self-improving learning loop, agent-curated memory, periodic persistence nudges, skill creation from repeated work, skill improvement during use, session search/summarization, provider/model switching metadata, subagent and automation signals, trajectory compression mindset, and user-modeling caution as inputs for [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
+- rejected for now: uncontrolled automatic skill mutation, cross-scope memory sharing, remote terminal backends, broad messaging gateway ownership, RL/data generation pipeline, and Python process ownership
+- 2026-06-01 status: Hermes is the engine reference only; OpenClaw-style backbone still owns gateway, session, workspace, permission, sandbox, provider routing, and evidence boundaries
 
 ### openscreen
 - source: https://github.com/siddharthvaddem/openscreen
@@ -143,6 +158,8 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - managed multi-agent role order
 - provider abstraction boundary
 - harness-level approval and memory hooks
+- OpenClaw-style gateway/session/workspace/channel/permission/sandbox backbone
+- Hermes-style scoped self-improvement engine behind approval, reviewer, and evidence gates
 - repo-native strategy and incident documentation
 
 ## 2026-04-27 External Reference Review
