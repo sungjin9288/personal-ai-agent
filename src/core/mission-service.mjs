@@ -20,6 +20,7 @@ import {
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
   LEARNING_PROMOTION_DECISIONS,
+  LEARNING_PROMOTION_REVIEW_TTL_HOURS,
   LEARNING_PROMOTION_STATUSES,
   LEARNING_PROMOTION_TARGETS,
   MAINTENANCE_RUN_OUTCOMES,
@@ -3860,6 +3861,45 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return normalized;
   }
 
+  function normalizeLearningPromotionExpirationCutoff(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) {
+      return now();
+    }
+
+    const timestamp = Date.parse(normalized);
+    if (!Number.isFinite(timestamp)) {
+      throw new Error(`Invalid learning promotion expiration cutoff: ${normalized}`);
+    }
+
+    return new Date(timestamp).toISOString();
+  }
+
+  function getLearningPromotionExpiresAt(candidate) {
+    return candidate?.retention?.expiresAt || candidate?.proposal?.expiresAt || null;
+  }
+
+  function getLearningPromotionExpirationPolicy(candidate) {
+    const expiresAt = getLearningPromotionExpiresAt(candidate);
+    const ttlHours =
+      Number(candidate?.retention?.reviewTtlHours || candidate?.proposal?.reviewTtlHours) ||
+      LEARNING_PROMOTION_REVIEW_TTL_HOURS;
+    const expiresAtMs = Date.parse(String(expiresAt || ''));
+    const expiredAt = candidate?.promotionExpiration?.expiredAt || null;
+    const expiredByStatus = candidate?.promotionStatus === 'expired';
+    const expiredByClock =
+      candidate?.promotionStatus === 'pending-review' && Number.isFinite(expiresAtMs) && Date.now() >= expiresAtMs;
+
+    return {
+      expired: Boolean(expiredByStatus || expiredByClock),
+      expiredAt,
+      expiresAt,
+      policyId: candidate?.retention?.policy || 'pending-review-expires-unpromoted',
+      reviewTtlHours: ttlHours,
+      status: expiredByStatus ? 'expired' : expiredByClock ? 'overdue-for-expiration' : 'active',
+    };
+  }
+
   function defaultLearningPromotionTarget(candidate) {
     const target = normalizeText(candidate?.proposal?.target, 'memory');
     if (LEARNING_PROMOTION_TARGETS.includes(target)) {
@@ -3906,25 +3946,38 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
     const target = defaultLearningPromotionTarget(candidate);
     const scope = normalizeText(candidate.scope, 'mission');
+    const promotionStatus = normalizeText(candidate.promotionStatus, 'pending-review');
+    const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
     const resolveCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision <approve|reject> --target ${target} --scope ${scope} --note "<note>"`;
+    const rollbackCommand = `node src/cli.mjs action rollback-learning-promotion ${candidate.id} --note "<note>"`;
+    const expireCommand = `node src/cli.mjs action expire-learning-promotions --mission ${mission.id} --before ${expirationPolicy.expiresAt || '<iso-timestamp>'} --note "<note>"`;
+    const isPending = promotionStatus === 'pending-review';
+    const isRollbackEligible = ['approved', 'promoted'].includes(promotionStatus);
+    const actionClass = isPending ? 'awaiting-human-decision' : 'monitoring-required';
+    const recommendedCommand = isPending ? resolveCommand : isRollbackEligible ? rollbackCommand : null;
+    const recommendedOwner = isPending ? 'human-approver' : 'mission-owner';
 
     return addOperationalMetadata(
       addDispatchMetadata(
         {
-          actionClass: 'awaiting-human-decision',
+          actionClass,
           actionId: `learning-promotion:${candidate.id}`,
           actionType: 'learning-promotion',
           createdAt: candidate.createdAt,
+          expirationPolicy,
+          expireCommand,
           learningCandidateId: candidate.id,
           missionId: mission.id,
           missionStatus: mission.status,
           missionTitle: mission.title,
           mode: mission.mode,
-          promotionStatus: candidate.promotionStatus,
+          promotionStatus,
           proposalTarget: target,
           reason: candidate.summary,
           recordType: candidate.recordType,
           resolveCommand,
+          rollbackCommand,
+          rollbackEligible: isRollbackEligible,
           scope,
           scopeId: candidate.scopeId,
           sessionId: candidate.sessionId,
@@ -3935,12 +3988,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         },
         {
           priority: learningPromotionPriority(candidate),
-          recommendedCommand: resolveCommand,
-          recommendedOwner: 'human-approver',
+          recommendedCommand,
+          recommendedOwner,
         },
       ),
       {
-        escalationRule: 'If overdue, keep the candidate scoped and request an explicit approve or reject decision.',
+        escalationRule: isPending
+          ? 'If overdue, expire the candidate or request an explicit approve or reject decision.'
+          : 'If promoted behavior regresses, rollback the promotion before broader reuse.',
         slaHours: 72,
       },
     );
@@ -3972,7 +4027,16 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function summarizeLearningPromotionQueue(items) {
+    const expirationCounts = {
+      active: items.filter((item) => item.expirationPolicy?.status === 'active').length,
+      expired: items.filter((item) => item.expirationPolicy?.status === 'expired').length,
+      notConfigured: items.filter((item) => !item.expirationPolicy?.expiresAt).length,
+      overdueForExpiration: items.filter((item) => item.expirationPolicy?.status === 'overdue-for-expiration').length,
+      total: items.length,
+    };
+
     return {
+      expirationCounts,
       pendingCount: items.filter((item) => item.promotionStatus === 'pending-review').length,
       priorityCounts: countByNormalizedField(items, 'priority'),
       recordTypeCounts: countByNormalizedField(items, 'recordType'),
@@ -4087,6 +4151,154 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       learningCandidate: updatedCandidate,
       memoryEntry,
       queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+    };
+  }
+
+  function expireLearningPromotions({
+    before = '',
+    missionId = '',
+    note = '',
+    recordType = '',
+    scope = '',
+    target = '',
+    workspaceId = '',
+  } = {}) {
+    if (workspaceId) {
+      getWorkspace(workspaceId);
+    }
+    if (missionId) {
+      getMission(missionId);
+    }
+
+    const cutoffAt = normalizeLearningPromotionExpirationCutoff(before);
+    const cutoffMs = Date.parse(cutoffAt);
+    const normalizedScope = scope ? normalizeLearningPromotionScope(scope) : '';
+    const normalizedTarget = target ? normalizeLearningPromotionTarget(target) : '';
+    const expirationNote = normalizeText(note, 'Expired pending learning promotion after review TTL.');
+
+    const candidates = store
+      .listLearningCandidates({
+        missionId,
+        promotionStatus: 'pending-review',
+        recordType,
+        workspaceId,
+      })
+      .filter((candidate) => {
+        if (normalizedScope && normalizeText(candidate.scope, 'mission') !== normalizedScope) {
+          return false;
+        }
+        if (normalizedTarget && defaultLearningPromotionTarget(candidate) !== normalizedTarget) {
+          return false;
+        }
+
+        const expiresAtMs = Date.parse(String(getLearningPromotionExpiresAt(candidate) || ''));
+        return Number.isFinite(expiresAtMs) && expiresAtMs <= cutoffMs;
+      });
+
+    const expiredAt = now();
+    const expiredCandidates = candidates.map((candidate) => {
+      const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
+      const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+        ...current,
+        promotionExpiration: {
+          cutoffAt,
+          expiredAt,
+          expiredBy: 'local-operator',
+          note: expirationNote,
+          policyId: expirationPolicy.policyId,
+          previousPromotionStatus: current.promotionStatus,
+          reviewTtlHours: expirationPolicy.reviewTtlHours,
+        },
+        promotionStatus: 'expired',
+        updatedAt: expiredAt,
+      }));
+      writeUpdatedLearningCandidateArtifact(updatedCandidate);
+      return updatedCandidate;
+    });
+
+    const items = expiredCandidates.map((candidate) => buildLearningPromotionQueueItem(candidate)).filter(Boolean);
+
+    return {
+      expiredCandidates,
+      filters: {
+        before: cutoffAt,
+        missionId: missionId || null,
+        recordType: recordType || null,
+        scope: normalizedScope || null,
+        target: normalizedTarget || null,
+        workspaceId: workspaceId || null,
+      },
+      items,
+      summary: {
+        expiredCount: expiredCandidates.length,
+        statusCounts: countByNormalizedField(items, 'promotionStatus'),
+      },
+    };
+  }
+
+  function rollbackLearningPromotion(candidateId, { note = '' } = {}) {
+    const candidate = store.getLearningCandidate(candidateId);
+    if (!candidate) {
+      throw new Error(`Learning candidate not found: ${candidateId}`);
+    }
+    if (!['approved', 'promoted'].includes(candidate.promotionStatus)) {
+      throw new Error(`Learning candidate ${candidateId} is not rollback eligible.`);
+    }
+    if (!candidate.promotionDecision) {
+      throw new Error(`Learning candidate ${candidateId} has no promotion decision to rollback.`);
+    }
+
+    const rolledBackAt = now();
+    const rollbackNote = normalizeText(note, 'Rolled back learning promotion by local operator.');
+    const decision = candidate.promotionDecision;
+    const memoryId = decision.memoryId || null;
+    const scope = normalizeLearningPromotionScope(decision.scope, candidate.scope || 'mission');
+    const scopeId = decision.scopeId || resolveLearningPromotionScopeId(candidate, scope);
+    let memoryRollbackStatus = memoryId ? 'memory-not-found' : 'not-applicable';
+    let removedMemoryEntry = null;
+
+    if (memoryId) {
+      const existingMemory = store.listMemoryEntries({ scope, scopeId }).find((entry) => entry.id === memoryId);
+      if (existingMemory) {
+        removedMemoryEntry = deleteMemory({ memoryId, scope, scopeId });
+        memoryRollbackStatus = 'memory-deleted';
+      }
+    }
+
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      promotionDecision: {
+        ...current.promotionDecision,
+        rollback: {
+          ...(current.promotionDecision?.rollback || {}),
+          completedAt: rolledBackAt,
+          memoryId,
+          memoryRollbackStatus,
+          note: rollbackNote,
+          status: 'completed',
+        },
+      },
+      promotionRollback: {
+        memoryId,
+        memoryRollbackStatus,
+        note: rollbackNote,
+        previousPromotionStatus: current.promotionStatus,
+        rolledBackAt,
+        rolledBackBy: 'local-operator',
+        scope,
+        scopeId,
+        target: decision.target || defaultLearningPromotionTarget(candidate),
+      },
+      promotionStatus: 'rolled-back',
+      updatedAt: rolledBackAt,
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+
+    return {
+      learningCandidate: updatedCandidate,
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      removedMemoryEntry,
     };
   }
 
@@ -15984,6 +16196,39 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           workspaceId: candidate.workspaceId || mission.workspaceId,
         });
       }
+
+      if (candidate.promotionExpiration?.expiredAt) {
+        timeline.push({
+          at: candidate.promotionExpiration.expiredAt,
+          detail: `expired learning candidate promotion policy=${candidate.promotionExpiration.policyId}: ${candidate.promotionExpiration.note}`,
+          kind: 'learning-candidate-promotion-expired',
+          learningCandidateId: candidate.id,
+          missionId: mission.id,
+          promotionStatus: candidate.promotionStatus || null,
+          recordType: candidate.recordType,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
+
+      if (candidate.promotionRollback?.rolledBackAt) {
+        timeline.push({
+          at: candidate.promotionRollback.rolledBackAt,
+          detail: `rolled back learning candidate promotion target=${candidate.promotionRollback.target} scope=${candidate.promotionRollback.scope}: ${candidate.promotionRollback.note}`,
+          kind: 'learning-candidate-promotion-rolled-back',
+          learningCandidateId: candidate.id,
+          memoryId: candidate.promotionRollback.memoryId || null,
+          memoryRollbackStatus: candidate.promotionRollback.memoryRollbackStatus || null,
+          missionId: mission.id,
+          promotionStatus: candidate.promotionStatus || null,
+          recordType: candidate.recordType,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          target: candidate.promotionRollback.target,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
     }
 
     for (const execution of buildProviderExecutionTimeline(providerExecutions)) {
@@ -17273,6 +17518,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     browseMissionHarnessMemory,
     checkProvider,
     createMission,
+    expireLearningPromotions,
     getActionInbox,
     getApprovalInbox,
     getGlobalOperatorTimeline,
@@ -17321,6 +17567,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     resolveEscalation,
     resolveApproval,
     resolveLearningPromotion,
+    rollbackLearningPromotion,
     resolveReviewerFollowUp,
     probeProvider,
     remediateProviderAttention,

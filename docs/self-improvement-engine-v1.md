@@ -75,6 +75,29 @@ observe
 | Provider policy | Provider event evidence, fallback policy id, stop reason, and recoverability signal | Provider operations gate and customer impact rule |
 | Automation | Schedule, owner, delivery target, stop rule, and audit event | Approval gate and operator-visible disable path |
 
+## Promotion Queue Operations
+
+Learning candidates are review-only by default. Each candidate records `retention.policy: pending-review-expires-unpromoted`, `retention.reviewTtlHours: 168`, and an explicit `retention.expiresAt` timestamp so unresolved proposals do not stay actionable forever.
+
+Operators can inspect the queue with:
+
+```bash
+npm run smoke:learning-promotion-queue
+node src/cli.mjs action learning-promotions --mission <missionId>
+```
+
+Operators can expire pending review items without promoting them:
+
+```bash
+node src/cli.mjs action expire-learning-promotions --mission <missionId> --before <iso-timestamp> --note "<reason>"
+```
+
+Operators can rollback an approved or promoted item. For memory promotion, rollback deletes the generated scoped memory entry and records `promotionRollback.memoryRollbackStatus` on the candidate:
+
+```bash
+node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note "<reason>"
+```
+
 ## Memory And Privacy Rules
 
 1. Session memory, workspace memory, user preference, provider lesson, and global operating rule are separate stores or separately labeled records.
@@ -125,6 +148,6 @@ This document does not prove production readiness or continuous learning safety 
 
 1. Add a `learningCandidate` artifact that can be emitted from mission closeout and reviewer feedback. Mission terminal states now emit review-only `learningCandidate` records and `learning-candidate.json` artifacts; promotion remains manual and scope-locked.
 2. Add a scoped promotion queue for memory, skill, template, provider policy, and automation proposals. Pending `learningCandidate` records now appear as human-decision queue items, and approve/reject decisions stay scope-locked.
-3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion and rejected promotion are covered; rollback execution and expiration policy remain future slices.
+3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion, rejected promotion, rollback execution, and expiration policy are covered by `smoke:learning-promotion-queue`.
 4. Add provider fallback lesson extraction from provider events and stop-condition timelines.
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default.
