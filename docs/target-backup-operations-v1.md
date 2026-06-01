@@ -49,6 +49,14 @@ Every target backup operations review must include:
 - release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result
 - residual recovery risk, next review date, customer handoff decision, and failed-restore containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Retention Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target backup operations | target-backup-operations-missing | target-data-lifecycle-architecture-missing | target-retention-operations-missing | target-retention-backup-boundary-missing-or-mismatched | 4 | 10 | 9 | 6 | blocked |
+
+Target backup operations owns the backup schedule execution, encrypted backup storage, backup key ownership, restore validation, tenant isolation, backup expiry/deletion, disaster recovery, residual recovery risk, customer handoff, and failed-restore containment evidence contract. Target data lifecycle architecture owns the backup, restore, and disaster recovery decision proof. Target retention operations owns the retention/delete and post-delete absence proof affected by backup expiry and restore behavior. Backup/restore drill and production retention operating own the local pilot recovery stop conditions. Target deployment contract and target environment evidence intake own the same-boundary backup evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target backup operations evidence packet proof, target data lifecycle architecture approval proof, target retention operations proof, backup schedule execution proof, encrypted backup storage proof, backup key ownership proof, restore validation proof, tenant isolation proof, backup expiry/deletion proof, disaster recovery proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target backup boundary.
+
 ## Disaster Recovery Rules
 
 - define backup owner, restore owner, and disaster recovery decision owner before target deployment is presented as production-like

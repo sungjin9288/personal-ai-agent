@@ -40,6 +40,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Backup Operation Controls',
   '## Recovery Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Disaster Recovery Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -72,6 +73,24 @@ for (const packetItem of [
 ]) {
   assert.match(targetBackup, packetItem);
 }
+
+assert.match(
+  targetBackup,
+  /\| Blocker \| Operations Stop Condition \| Architecture Stop Condition \| Retention Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetBackup,
+  /\| target backup operations \| target-backup-operations-missing \| target-data-lifecycle-architecture-missing \| target-retention-operations-missing \| target-retention-backup-boundary-missing-or-mismatched \| 4 \| 10 \| 9 \| 6 \| blocked \|/,
+);
+assert.match(targetBackup, /Target backup operations owns the backup schedule execution/);
+assert.match(targetBackup, /Target data lifecycle architecture owns the backup, restore, and disaster recovery decision proof/);
+assert.match(targetBackup, /Target retention operations owns the retention\/delete and post-delete absence proof affected by backup expiry and restore behavior/);
+assert.match(targetBackup, /Backup\/restore drill and production retention operating own the local pilot recovery stop conditions/);
+assert.match(targetBackup, /Target deployment contract and target environment evidence intake own the same-boundary backup evidence verification/);
+assert.match(
+  targetBackup,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target backup boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-backup-operations',

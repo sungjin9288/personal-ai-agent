@@ -932,6 +932,16 @@ assert.match(targetBackupOperations, /not target backup evidence/);
 assert.match(targetBackupOperations, /backup schedule execution proof with backup policy id, schedule, execution timestamps, missed-run handling, and owner acknowledgement/);
 assert.match(targetBackupOperations, /release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result/);
 assert.match(targetBackupOperations, /Target backup operations remain blocked for production-ready claims/);
+assert.match(targetBackupOperations, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetBackupOperations, /target-backup-operations-missing/);
+assert.match(targetBackupOperations, /target-data-lifecycle-architecture-missing/);
+assert.match(targetBackupOperations, /target-retention-operations-missing/);
+assert.match(targetBackupOperations, /target-retention-backup-boundary-missing-or-mismatched/);
+assert.match(targetBackupOperations, /same-boundary backup evidence verification/);
+assert.match(
+  targetBackupOperations,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target backup boundary/,
+);
 for (const severity of ['SEV1', 'SEV2', 'SEV3', 'SEV4']) {
   assert.match(incidentSlo, new RegExp(`\\| ${severity} \\|`));
 }
