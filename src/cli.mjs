@@ -94,6 +94,7 @@ function printHelp() {
 
 Commands:
   overview global [--provider-since <iso-timestamp>]
+  overview identity-sessions [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--binding-status <bound|partial>] [--source-type <cli|web|service>] [--since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
   overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--adoption-drift-status <growing|steady|declining|unused>] [--adoption-drift-reason-code <mission-volume-growing|mission-volume-declining|workspace-footprint-growing|workspace-footprint-declining|unused-profile>] [--usage-trend <growing|steady|declining|unused>] [--workspace-usage-trend <growing|steady|declining|unused>] [--workspace-adoption-drift-status <growing|steady|declining|unused>] [--workspace-adoption-drift-reason-code <workspace-mission-volume-growing|workspace-mission-volume-declining|workspace-profile-footprint-growing|workspace-profile-footprint-declining|unused-workspace>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
@@ -175,6 +176,26 @@ Commands:
 }
 
 function printCommandHelp(group, command) {
+  if (group === 'overview' && command === 'identity-sessions') {
+    console.log(`Personal AI Agent
+
+Usage:
+  overview identity-sessions [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--binding-status <bound|partial>] [--source-type <cli|web|service>] [--since <iso-timestamp>]
+
+Options:
+  --workspace <workspaceId>       Filter identity/session records to one workspace.
+  --mission <missionId>           Filter identity/session records to one mission.
+  --session <sessionId>           Filter identity/session records to one session.
+  --binding-status <status>       Filter by bound or partial binding status.
+  --source-type <sourceType>      Filter by gateway source type.
+  --since <iso-timestamp>         Include records at or after this timestamp.
+
+Audit policy:
+  This command summarizes identitySessionContext records without raw secrets or customer payloads.
+`);
+    return true;
+  }
+
   if (group === 'channel' && command === 'adapters') {
     console.log(`Personal AI Agent
 
@@ -331,6 +352,20 @@ async function main() {
         outcome: readOption(rest, '--outcome', ''),
         owner: readOption(rest, '--owner', ''),
         since: readOption(rest, '--since', ''),
+        workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'overview' && command === 'identity-sessions') {
+    printJson(
+      service.getIdentitySessionAudit({
+        bindingStatus: readOption(rest, '--binding-status', ''),
+        missionId: readOption(rest, '--mission', ''),
+        sessionId: readOption(rest, '--session', ''),
+        since: readOption(rest, '--since', ''),
+        sourceType: readOption(rest, '--source-type', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
     );

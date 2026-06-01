@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T18:04:11.385Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T18:04:10.000Z
 - localDate: 2026-06-02
 - branch: codex/identity-session-audit-surface
 - commit: cb1e5ba0581eac53f2eac2f4846b63c72194d062
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062](releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062](docs/releases/execution-v1/cb1e5ba0581eac53f2eac2f4846b63c72194d062)
 - visualArtifactSetSha256: b0921d84f8efad4f08339c0713b212816ebf06012ec843b4620ebe6507154fc0
 - commitPushStatus: not pushed, origin/codex/identity-session-audit-surface not found
 

@@ -2668,6 +2668,183 @@ function buildIdentitySessionContextTimelineEvent({ event, mission = null, works
   };
 }
 
+function buildIdentitySessionAuditRecord({ event, mission = null, workspace = null }) {
+  const identitySessionContext = event?.identitySessionContext || null;
+  if (!identitySessionContext) {
+    return null;
+  }
+
+  const bindings = identitySessionContext.bindings || {};
+  const source = identitySessionContext.source || {};
+  const scope = identitySessionContext.scope || {};
+  const subject = identitySessionContext.subject || {};
+
+  return {
+    actorType: identitySessionContext.actor?.actorType || event.identity?.actorType || null,
+    at: identitySessionContext.at || event.at,
+    bindingStatus: identitySessionContext.bindingStatus || 'partial',
+    channel: source.channel || event.source?.channel || null,
+    channelAdapterId: source.channelAdapterId || event.source?.channelAdapterId || null,
+    channelAdapterPolicyId: source.channelAdapterPolicyId || event.source?.channelAdapterPolicyId || null,
+    channelAdapterStatus: source.channelAdapterStatus || event.source?.channelAdapterStatus || null,
+    crossScopePromotionAllowed: scope.crossScopePromotionAllowed === true,
+    detail: summarizeIdentitySessionContextForTimeline(identitySessionContext),
+    evidencePolicy: {
+      noRawCustomerPayloads: identitySessionContext.evidencePolicy?.noRawCustomerPayloads === true,
+      noRawSecrets: identitySessionContext.evidencePolicy?.noRawSecrets === true,
+      rawPayloadIncluded: false,
+      routeVisibleInTimeline: identitySessionContext.evidencePolicy?.routeVisibleInTimeline === true,
+    },
+    externalMessagingEnabled: source.externalMessagingEnabled === true,
+    gatewayEventId: event.id,
+    gatewayEventType: event.eventType,
+    identitySessionContextId: identitySessionContext.id || event.identity?.identitySessionContextId || null,
+    memoryLookupAfterBinding: scope.memoryLookupAfterBinding === true,
+    memoryScope: scope.memoryScope || null,
+    missionBound: subject.missionBound === true,
+    missionId: mission?.id || bindings.missionId || event.bindings?.missionId || null,
+    missionTitle: mission?.title || null,
+    policyId: identitySessionContext.policyId || null,
+    providerId: bindings.providerId || event.bindings?.providerId || null,
+    route: identitySessionContext.route?.name || event.route?.name || null,
+    schemaVersion: identitySessionContext.schemaVersion || null,
+    sessionBound: subject.sessionBound === true,
+    sessionId: bindings.sessionId || event.bindings?.sessionId || null,
+    sessionRequired: subject.sessionRequired === true,
+    sessionSeparationRequired: scope.sessionSeparationRequired === true,
+    sourceType: source.sourceType || event.source?.sourceType || null,
+    status: identitySessionContext.status || event.status || 'recorded',
+    surface: source.surface || event.source?.surface || null,
+    trustBoundary: identitySessionContext.actor?.trustBoundary || event.identity?.trustBoundary || null,
+    workspaceBound: subject.workspaceBound === true,
+    workspaceId: workspace?.id || bindings.workspaceId || event.bindings?.workspaceId || mission?.workspaceId || null,
+    workspaceName: workspace?.name || null,
+  };
+}
+
+function summarizeIdentitySessionAudit(records, filter = {}) {
+  const bindingStatusCounts = {};
+  const channelAdapterStatusCounts = {};
+  const channelCounts = {};
+  const memoryScopeCounts = {};
+  const missionCounts = {};
+  const policyCounts = {};
+  const providerCounts = {};
+  const sourceTypeCounts = {};
+  const workspaceCounts = {};
+  let crossScopePromotionAllowedCount = 0;
+  let externalMessagingEnabledCount = 0;
+  let memoryLookupAfterBindingCount = 0;
+  let missionBoundCount = 0;
+  let noRawCustomerPayloadsCount = 0;
+  let noRawSecretsCount = 0;
+  let routeVisibleInTimelineCount = 0;
+  let sessionBoundCount = 0;
+  let sessionRequiredCount = 0;
+  let sessionSeparationRequiredCount = 0;
+  let workspaceBoundCount = 0;
+
+  for (const record of records) {
+    const bindingStatus = normalizeText(record.bindingStatus, 'unknown');
+    bindingStatusCounts[bindingStatus] = (bindingStatusCounts[bindingStatus] || 0) + 1;
+
+    const channelAdapterStatus = normalizeText(record.channelAdapterStatus, 'unknown');
+    channelAdapterStatusCounts[channelAdapterStatus] =
+      (channelAdapterStatusCounts[channelAdapterStatus] || 0) + 1;
+
+    const channel = normalizeText(record.channel, 'unknown');
+    channelCounts[channel] = (channelCounts[channel] || 0) + 1;
+
+    const memoryScope = normalizeText(record.memoryScope, 'unknown');
+    memoryScopeCounts[memoryScope] = (memoryScopeCounts[memoryScope] || 0) + 1;
+
+    const missionId = normalizeText(record.missionId);
+    if (missionId) {
+      missionCounts[missionId] = (missionCounts[missionId] || 0) + 1;
+    }
+
+    const policyId = normalizeText(record.policyId, 'unknown');
+    policyCounts[policyId] = (policyCounts[policyId] || 0) + 1;
+
+    const providerId = normalizeText(record.providerId, 'none');
+    providerCounts[providerId] = (providerCounts[providerId] || 0) + 1;
+
+    const sourceType = normalizeText(record.sourceType, 'unknown');
+    sourceTypeCounts[sourceType] = (sourceTypeCounts[sourceType] || 0) + 1;
+
+    const workspaceId = normalizeText(record.workspaceId);
+    if (workspaceId) {
+      workspaceCounts[workspaceId] = (workspaceCounts[workspaceId] || 0) + 1;
+    }
+
+    if (record.crossScopePromotionAllowed === true) {
+      crossScopePromotionAllowedCount += 1;
+    }
+    if (record.externalMessagingEnabled === true) {
+      externalMessagingEnabledCount += 1;
+    }
+    if (record.memoryLookupAfterBinding === true) {
+      memoryLookupAfterBindingCount += 1;
+    }
+    if (record.missionBound === true) {
+      missionBoundCount += 1;
+    }
+    if (record.evidencePolicy?.noRawCustomerPayloads === true) {
+      noRawCustomerPayloadsCount += 1;
+    }
+    if (record.evidencePolicy?.noRawSecrets === true) {
+      noRawSecretsCount += 1;
+    }
+    if (record.evidencePolicy?.routeVisibleInTimeline === true) {
+      routeVisibleInTimelineCount += 1;
+    }
+    if (record.sessionBound === true) {
+      sessionBoundCount += 1;
+    }
+    if (record.sessionRequired === true) {
+      sessionRequiredCount += 1;
+    }
+    if (record.sessionSeparationRequired === true) {
+      sessionSeparationRequiredCount += 1;
+    }
+    if (record.workspaceBound === true) {
+      workspaceBoundCount += 1;
+    }
+  }
+
+  return {
+    bindingStatusCounts,
+    channelAdapterStatusCounts,
+    channelCounts,
+    crossScopePromotionAllowedCount,
+    evidencePolicy: {
+      noRawCustomerPayloadsCount,
+      noRawSecretsCount,
+      rawPayloadIncluded: false,
+      routeVisibleInTimelineCount,
+    },
+    externalMessagingEnabledCount,
+    filter,
+    latestRecord: getLatestItem(records, 'at'),
+    memoryLookupAfterBindingCount,
+    memoryScopeCounts,
+    missionBoundCount,
+    missionCounts,
+    policyCounts,
+    productionReadyClaim: false,
+    providerCounts,
+    recordCount: records.length,
+    sessionBoundCount,
+    sessionRequiredCount,
+    sessionSeparationRequiredCount,
+    sourceTypeCounts,
+    stopReason: records.length ? '' : 'no-identity-session-context-records',
+    targetIdentitySessionOperationsClaimAllowed: false,
+    workspaceBoundCount,
+    workspaceCounts,
+  };
+}
+
 function buildSandboxDecisionTimelineEvent({ event, mission = null, workspace = null }) {
   const sandboxDecision = event?.sandboxDecision || null;
   if (!sandboxDecision) {
@@ -17566,6 +17743,75 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
+  function getIdentitySessionAudit(filter = {}) {
+    const workspaceId = normalizeText(filter.workspaceId);
+    const missionId = normalizeText(filter.missionId);
+    const sessionId = normalizeText(filter.sessionId);
+    const bindingStatus = normalizeText(filter.bindingStatus);
+    const sourceType = normalizeText(filter.sourceType);
+    const since = normalizeTimestampFilter(filter.since, 'identity session audit since timestamp');
+
+    if (bindingStatus && !['bound', 'partial'].includes(bindingStatus)) {
+      throw new Error(`Unsupported identity session binding status: ${bindingStatus}`);
+    }
+
+    const workspaceFilter = workspaceId ? getWorkspace(workspaceId) : null;
+    const missionFilter = missionId ? getMission(missionId) : null;
+    if (workspaceFilter && missionFilter && missionFilter.workspaceId !== workspaceFilter.id) {
+      throw new Error(`Mission ${missionFilter.id} does not belong to workspace ${workspaceFilter.id}.`);
+    }
+
+    const sessionFilter = sessionId ? store.getSession(sessionId) : null;
+    if (sessionId && !sessionFilter) {
+      throw new Error(`Session not found: ${sessionId}`);
+    }
+    if (sessionFilter && missionFilter && sessionFilter.missionId !== missionFilter.id) {
+      throw new Error(`Session ${sessionFilter.id} does not belong to mission ${missionFilter.id}.`);
+    }
+    if (sessionFilter && workspaceFilter) {
+      const sessionMission = getMission(sessionFilter.missionId);
+      if (sessionMission.workspaceId !== workspaceFilter.id) {
+        throw new Error(`Session ${sessionFilter.id} does not belong to workspace ${workspaceFilter.id}.`);
+      }
+    }
+
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+    const missionById = new Map(store.listMissions().map((mission) => [mission.id, mission]));
+    const records = store
+      .listGatewayEvents({
+        missionId,
+        sessionId,
+        workspaceId: workspaceFilter?.id || missionFilter?.workspaceId || '',
+      })
+      .map((event) => {
+        const mission = event.bindings?.missionId ? missionById.get(event.bindings.missionId) : null;
+        const workspace = event.bindings?.workspaceId
+          ? workspaceById.get(event.bindings.workspaceId)
+          : mission
+            ? workspaceById.get(mission.workspaceId)
+            : null;
+        return buildIdentitySessionAuditRecord({ event, mission, workspace });
+      })
+      .filter(Boolean)
+      .filter((record) => !since || String(record.at || '') >= since)
+      .filter((record) => !bindingStatus || record.bindingStatus === bindingStatus)
+      .filter((record) => !sourceType || record.sourceType === sourceType);
+
+    const normalizedFilter = {
+      bindingStatus: bindingStatus || null,
+      missionId: missionId || null,
+      sessionId: sessionId || null,
+      since: since || null,
+      sourceType: sourceType || null,
+      workspaceId: workspaceId || null,
+    };
+
+    return {
+      records,
+      summary: summarizeIdentitySessionAudit(records, normalizedFilter),
+    };
+  }
+
   function listSessions(missionId) {
     const mission = getMission(missionId);
     return store.listSessionsByMission(mission.id).map((session) => summarizeSession(session, mission.id));
@@ -17964,6 +18210,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
+    getIdentitySessionAudit,
     getLearningPromotionQueue,
     getMaintenanceOverview,
     getOrchestrationProfilesOverview,
