@@ -98,6 +98,8 @@ Operators can rollback an approved or promoted item. For memory promotion, rollb
 node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note "<reason>"
 ```
 
+The web operator action inbox uses the same service contract through `/api/actions/learning-promotions/:learningCandidateId/resolve`, `/api/actions/learning-promotions/:learningCandidateId/rollback`, and `/api/actions/learning-promotions/expire`. The UI intentionally keeps promotion manual: pending items expose approve, reject, and expire actions; promoted or approved items expose rollback only when `rollbackEligible` is true. Resolved terminal states are excluded from the default operator surface through the `promotionStatus=operator-active` action inbox filter.
+
 ## Memory And Privacy Rules
 
 1. Session memory, workspace memory, user preference, provider lesson, and global operating rule are separate stores or separately labeled records.
@@ -124,6 +126,7 @@ node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note
 npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:learning-promotion-queue
+npm run smoke:ui-learning-promotion-surface
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:memory-rerun
@@ -150,4 +153,4 @@ This document does not prove production readiness or continuous learning safety 
 2. Add a scoped promotion queue for memory, skill, template, provider policy, and automation proposals. Pending `learningCandidate` records now appear as human-decision queue items, and approve/reject decisions stay scope-locked.
 3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion, rejected promotion, rollback execution, and expiration policy are covered by `smoke:learning-promotion-queue`.
 4. Add provider fallback lesson extraction from provider events and stop-condition timelines.
-5. Add an operator surface that shows learning candidates without enabling automatic promotion by default.
+5. Add an operator surface that shows learning candidates without enabling automatic promotion by default. The web action inbox now renders learning candidates with manual approve, reject, expire, and rollback controls, backed by `smoke:ui-learning-promotion-surface`.

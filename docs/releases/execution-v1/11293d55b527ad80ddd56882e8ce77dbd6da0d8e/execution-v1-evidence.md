@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T08:07:25.715Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T08:07:16.587Z
 - branch: codex/learning-promotion-operator-surface
 - commit: 11293d55b527ad80ddd56882e8ce77dbd6da0d8e

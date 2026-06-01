@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T08:07:25.715Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T08:07:24.214Z
 - localDate: 2026-06-01
 - branch: codex/learning-promotion-operator-surface
 - commit: 11293d55b527ad80ddd56882e8ce77dbd6da0d8e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e](releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e](docs/releases/execution-v1/11293d55b527ad80ddd56882e8ce77dbd6da0d8e)
 - visualArtifactSetSha256: f8b1069e9c0ab9366364a603d58537d8f065f63736f45cbc6faa1ae8da21d0dd
 - commitPushStatus: not pushed, origin/codex/learning-promotion-operator-surface not found
 
