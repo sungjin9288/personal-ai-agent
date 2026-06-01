@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T13:23:45.078Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T13:23:43.668Z
 - localDate: 2026-06-01
 - branch: codex/permission-decision-records
 - commit: 91d3eee263823dd71241c25a4448350e073aa075
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075](releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075](docs/releases/execution-v1/91d3eee263823dd71241c25a4448350e073aa075)
 - visualArtifactSetSha256: b04b7d65b292b45fc98405bfa1b6a79459957f41b7496afff164cdc64058904f
 - commitPushStatus: not pushed, origin/codex/permission-decision-records not found
 

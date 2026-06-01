@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T13:23:45.078Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T13:23:27.586Z
 - branch: codex/permission-decision-records
 - commit: 91d3eee263823dd71241c25a4448350e073aa075

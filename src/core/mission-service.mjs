@@ -73,6 +73,9 @@ import {
   roundUsdAmount,
 } from '../providers/provider-runtime-utils.mjs';
 import { listOrchestrationProfiles, resolveOrchestrationProfile } from './orchestration-profiles.mjs';
+import {
+  buildProviderAttentionRemediationPermissionDecision,
+} from './permission-decision-service.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -12217,6 +12220,25 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
         const recommendedCommand =
           latestEvent.eventFamily === 'execution' ? remediationCommand : `node src/cli.mjs provider probe ${provider.id}`;
+        const permissionDecision = buildProviderAttentionRemediationPermissionDecision({
+          actionId,
+          at: latestEvent.at,
+          attentionItem: {
+            eventFamily: latestEvent.eventFamily,
+            missionId: latestEvent.missionId || null,
+            providerId: provider.id,
+            sessionId: latestEvent.sessionId || null,
+            workspaceId: latestEvent.workspaceId || null,
+          },
+          fallbackPolicy: fallbackProviderId ? fallbackPolicyId : '',
+          fallbackProvider: fallbackProviderId,
+          remediationKind:
+            latestEvent.eventFamily === 'execution'
+              ? fallbackProviderId
+                ? 'mission-fallback-rerun'
+                : 'mission-rerun'
+              : 'provider-probe',
+        });
         const baseItem = addOperationalMetadata(
           addDispatchMetadata(
             {
@@ -12235,6 +12257,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               fallbackRecommendedCommand,
               inspectCommand,
               missionId: latestEvent.missionId || null,
+              permissionDecision,
+              permissionDecisionId: permissionDecision.id,
               providerDisplayName: provider.displayName,
               providerId: provider.id,
               recoverableFallbackRecommendedCommand,
@@ -14388,11 +14412,22 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       throw new Error(`Unsupported provider attention event family: ${attentionItem.eventFamily}`);
     }
 
+    const permissionDecision = buildProviderAttentionRemediationPermissionDecision({
+      actionId,
+      at: now(),
+      attentionItem,
+      fallbackPolicy,
+      fallbackProvider,
+      remediationKind,
+    });
+
     return {
       actionId,
       eventFamily: attentionItem.eventFamily,
       fallbackPolicy: attentionItem.eventFamily === 'execution' ? fallbackPolicy : null,
       missionId: attentionItem.missionId || null,
+      permissionDecision,
+      permissionDecisionId: permissionDecision.id,
       postAttention: summarizeProviderAttentionScopedState({
         missionId: attentionItem.missionId || null,
         providerId: attentionItem.providerId,
@@ -16175,6 +16210,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         gatewayEventType: event.eventType,
         kind: 'gateway-event-recorded',
         missionId: mission.id,
+        permissionApprovalRequired: Boolean(event.permissionDecision?.approvalRequired),
+        permissionDecision: event.permissionDecision || null,
+        permissionDecisionId: event.permissionDecision?.id || event.permissionPolicy?.permissionDecisionId || null,
+        permissionDecisionResult: event.permissionDecision?.decision || event.permissionPolicy?.decision || null,
+        permissionPolicyId: event.permissionDecision?.policyId || event.permissionPolicy?.policyId || null,
         providerFallbackPolicy: event.providerRoute?.policyId || null,
         providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
         route: event.route?.name || null,
