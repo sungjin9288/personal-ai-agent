@@ -4004,17 +4004,21 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   function buildLearningPromotionItems(filter = {}) {
     const promotionStatus = normalizeText(filter.promotionStatus || filter.status, 'pending-review');
     const includeAllStatuses = promotionStatus === 'all';
+    const includeOperatorActiveStatuses = promotionStatus === 'operator-active';
     const candidates = store.listLearningCandidates({
       missionId: filter.missionId,
       recordType: filter.recordType,
       workspaceId: filter.workspaceId,
-      ...(includeAllStatuses ? {} : { promotionStatus }),
+      ...(includeAllStatuses || includeOperatorActiveStatuses ? {} : { promotionStatus }),
     });
 
     return candidates
       .map((candidate) => buildLearningPromotionQueueItem(candidate))
       .filter(Boolean)
       .filter((item) => {
+        if (includeOperatorActiveStatuses && !['pending-review', 'approved', 'promoted'].includes(item.promotionStatus)) {
+          return false;
+        }
         if (filter.target && item.proposalTarget !== filter.target) {
           return false;
         }

@@ -3277,8 +3277,67 @@ async function handleApi(request, response, url) {
     }
     sendJson(response, 200, service.getActionInbox({
       missionId: String(url.searchParams.get('missionId') || '').trim(),
+      promotionStatus: String(url.searchParams.get('promotionStatus') || '').trim(),
       workspaceId,
     }));
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
+    pathParts[2] === 'learning-promotions' &&
+    pathParts[3] === 'expire'
+  ) {
+    const body = await readJsonBody(request);
+    const result = service.expireLearningPromotions({
+      before: String(body.before || '').trim(),
+      missionId: String(body.missionId || '').trim(),
+      note: String(body.note || '').trim(),
+      recordType: String(body.recordType || '').trim(),
+      scope: String(body.scope || '').trim(),
+      target: String(body.target || '').trim(),
+      workspaceId: String(body.workspaceId || '').trim(),
+    });
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
+    pathParts[2] === 'learning-promotions' &&
+    pathParts[3] &&
+    pathParts[4] === 'resolve'
+  ) {
+    const candidateId = decodePathSegment(pathParts[3]);
+    const body = await readJsonBody(request);
+    const result = service.resolveLearningPromotion(candidateId, {
+      decision: String(body.decision || '').trim(),
+      note: String(body.note || '').trim(),
+      scope: String(body.scope || '').trim(),
+      target: String(body.target || '').trim(),
+    });
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
+    pathParts[2] === 'learning-promotions' &&
+    pathParts[3] &&
+    pathParts[4] === 'rollback'
+  ) {
+    const candidateId = decodePathSegment(pathParts[3]);
+    const body = await readJsonBody(request);
+    const result = service.rollbackLearningPromotion(candidateId, {
+      note: String(body.note || '').trim(),
+    });
+    sendJson(response, 200, result);
     return;
   }
 

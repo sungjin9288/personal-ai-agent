@@ -15654,6 +15654,65 @@ function formatSpecialistFollowUpRoute(item) {
     .join(' · ');
 }
 
+function getLearningPromotionCandidateId(item) {
+  if (!item) {
+    return '';
+  }
+  if (item.learningCandidateId) {
+    return String(item.learningCandidateId);
+  }
+  return String(item.actionId || '').replace(/^learning-promotion:/, '');
+}
+
+function formatLearningPromotionDetails(item) {
+  if (item?.actionType !== 'learning-promotion') {
+    return '';
+  }
+
+  return [
+    item.promotionStatus ? `status ${item.promotionStatus}` : '',
+    item.proposalTarget ? `target ${item.proposalTarget}` : '',
+    item.scope ? `scope ${item.scope}` : '',
+    item.recordType ? `record ${item.recordType}` : '',
+    item.expirationPolicy?.status ? `expiration ${item.expirationPolicy.status}` : '',
+    item.expirationPolicy?.expiresAt ? `expires ${formatDate(item.expirationPolicy.expiresAt)}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
+}
+
+function renderLearningPromotionActionButtons(item) {
+  if (item?.actionType !== 'learning-promotion') {
+    return '';
+  }
+
+  const candidateId = getLearningPromotionCandidateId(item);
+  if (!candidateId) {
+    return '';
+  }
+
+  const buttons = [];
+  if (item.promotionStatus === 'pending-review') {
+    buttons.push(
+      `<button class="primary-button" type="button" data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="approve">학습 승인</button>`,
+    );
+    buttons.push(
+      `<button class="ghost-button" type="button" data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="reject">학습 반려</button>`,
+    );
+    buttons.push(
+      `<button class="danger-button" type="button" data-learning-promotion-expire="${escapeHtml(candidateId)}">대기 만료</button>`,
+    );
+  }
+
+  if (item.rollbackEligible) {
+    buttons.push(
+      `<button class="danger-button" type="button" data-learning-promotion-rollback="${escapeHtml(candidateId)}">학습 rollback</button>`,
+    );
+  }
+
+  return buttons.join('');
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     elements.actionSummary.innerHTML = emptyStateCard({
@@ -15728,6 +15787,26 @@ function renderMissionActions() {
               ? `<div class="item-meta mono">${escapeHtml(formatSpecialistFollowUpRoute(item))}</div>`
               : ''
           }
+          ${
+            item.actionType === 'learning-promotion' && formatLearningPromotionDetails(item)
+              ? `<div class="item-meta">${escapeHtml(formatLearningPromotionDetails(item))}</div>`
+              : ''
+          }
+          ${
+            item.actionType === 'learning-promotion' && item.resolveCommand
+              ? `<div class="item-meta mono">resolve: ${escapeHtml(item.resolveCommand)}</div>`
+              : ''
+          }
+          ${
+            item.actionType === 'learning-promotion' && item.expireCommand
+              ? `<div class="item-meta mono">expire: ${escapeHtml(item.expireCommand)}</div>`
+              : ''
+          }
+          ${
+            item.actionType === 'learning-promotion' && item.rollbackCommand
+              ? `<div class="item-meta mono">rollback: ${escapeHtml(item.rollbackCommand)}</div>`
+              : ''
+          }
           <div class="action-row">
             ${
               item.missionId
@@ -15755,10 +15834,11 @@ function renderMissionActions() {
                 : ''
             }
             ${
-              item.missionId && !['provider-attention', 'specialist-follow-up'].includes(item.actionType)
+              item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
                 ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}">권장 재실행</button>`
                 : ''
             }
+            ${renderLearningPromotionActionButtons(item)}
             ${
               item.actionType === 'reviewer-follow-up'
                 ? `<button class="ghost-button" type="button" data-action-resolve="${escapeHtml(item.actionId)}">후속 요청 해소</button>`
@@ -15861,6 +15941,103 @@ function renderMissionActions() {
       }
 
       await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-learning-promotion-resolve]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionResolve;
+      const decision = button.dataset.learningPromotionDecision || 'approve';
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt(
+        decision === 'approve' ? '학습 승인 메모를 입력하세요.' : '학습 반려 메모를 입력하세요.',
+        decision === 'approve' ? 'UI에서 검토 후 scoped learning promotion 승인' : 'UI에서 검토 후 learning promotion 반려',
+      );
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve`, {
+        body: JSON.stringify({
+          decision,
+          note,
+          scope: item.scope || 'mission',
+          target: item.proposalTarget || 'memory',
+        }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-learning-promotion-expire]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionExpire;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const confirmed = window.confirm('이 pending learning promotion을 만료 처리할까요?');
+      if (!confirmed) {
+        return;
+      }
+
+      const note = window.prompt('만료 메모를 입력하세요.', 'UI에서 pending learning promotion 만료');
+      if (!note) {
+        return;
+      }
+
+      await api('/api/actions/learning-promotions/expire', {
+        body: JSON.stringify({
+          before: item.expirationPolicy?.expiresAt || new Date().toISOString(),
+          missionId: item.missionId || '',
+          note,
+          recordType: item.recordType || '',
+          scope: item.scope || '',
+          target: item.proposalTarget || '',
+          workspaceId: item.workspaceId || '',
+        }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-learning-promotion-rollback]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionRollback;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt('rollback 메모를 입력하세요.', 'UI에서 promoted learning candidate rollback');
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
+        body: JSON.stringify({ note }),
         method: 'POST',
       });
 
@@ -16352,7 +16529,7 @@ async function selectMission(
   const [detail, timelinePayload, actionPayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),
     api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    api(`/api/actions?missionId=${encodeURIComponent(missionId)}`),
+    api(`/api/actions?missionId=${encodeURIComponent(missionId)}&promotionStatus=operator-active`),
   ]);
 
   state.missionDetail = detail;
@@ -16997,7 +17174,7 @@ async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } =
   const [detail, timelinePayload, actionPayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),
     api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    api(`/api/actions?missionId=${encodeURIComponent(missionId)}`),
+    api(`/api/actions?missionId=${encodeURIComponent(missionId)}&promotionStatus=operator-active`),
   ]);
 
   state.missionDetail = detail;
