@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T07:27:03.711Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T07:27:02.096Z
 - localDate: 2026-06-01
 - branch: codex/learning-promotion-rollback-expiration
 - commit: d61638ce985eecb89eae315e07913e0117d7f4a4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4](releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4](docs/releases/execution-v1/d61638ce985eecb89eae315e07913e0117d7f4a4)
 - visualArtifactSetSha256: f8b1069e9c0ab9366364a603d58537d8f065f63736f45cbc6faa1ae8da21d0dd
 - commitPushStatus: not pushed, origin/codex/learning-promotion-rollback-expiration not found
 
