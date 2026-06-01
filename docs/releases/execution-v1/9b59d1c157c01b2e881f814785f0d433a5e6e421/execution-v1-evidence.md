@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T18:33:30.321Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T18:33:02.597Z
 - branch: codex/gateway-event-audit-surface
 - commit: 9b59d1c157c01b2e881f814785f0d433a5e6e421
