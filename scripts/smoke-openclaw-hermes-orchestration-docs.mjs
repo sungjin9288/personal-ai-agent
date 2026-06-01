@@ -21,6 +21,10 @@ assert.equal(
   packageJson.scripts['smoke:gateway-event-learning-candidate'],
   'node scripts/smoke-gateway-event-learning-candidate.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:learning-promotion-queue'],
+  'node scripts/smoke-learning-promotion-queue.mjs',
+);
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-openclaw-hermes-orchestration-docs.mjs'),
   'reference adoption smoke list must include the OpenClaw/Hermes orchestration smoke',
@@ -28,6 +32,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-gateway-event-learning-candidate.mjs'),
   'reference adoption smoke list must include the gateway event and learning candidate smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
+  'reference adoption smoke list must include the scoped learning promotion smoke',
 );
 
 assertDocumentBasics(backbone, {
@@ -133,6 +141,7 @@ for (const heading of [
 
 for (const command of [
   'npm run smoke:gateway-event-learning-candidate',
+  'npm run smoke:learning-promotion-queue',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:memory-rerun',

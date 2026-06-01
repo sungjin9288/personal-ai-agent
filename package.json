@@ -124,6 +124,7 @@
     "smoke:reference-adoptions": "node scripts/smoke-reference-adoptions.mjs",
     "smoke:openclaw-hermes-orchestration-docs": "node scripts/smoke-openclaw-hermes-orchestration-docs.mjs",
     "smoke:gateway-event-learning-candidate": "node scripts/smoke-gateway-event-learning-candidate.mjs",
+    "smoke:learning-promotion-queue": "node scripts/smoke-learning-promotion-queue.mjs",
     "smoke:mission-attachments": "node scripts/smoke-mission-attachments.mjs",
     "smoke:ui-mission-attachments": "node scripts/smoke-ui-mission-attachments.mjs",
     "smoke:ui-agent-blueprints": "node scripts/smoke-ui-agent-blueprints.mjs",
