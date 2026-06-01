@@ -38,6 +38,10 @@ assert.equal(
   'node scripts/smoke-channel-adapter-seam.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:identity-session-context-records'],
+  'node scripts/smoke-identity-session-context-records.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -64,6 +68,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-channel-adapter-seam.mjs'),
   'reference adoption smoke list must include the channel adapter seam smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-identity-session-context-records.mjs'),
+  'reference adoption smoke list must include the identity/session context records smoke',
 );
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
@@ -97,6 +105,7 @@ for (const term of [
   'fallback policy',
   'stop reason',
   'channel adapter',
+  'identitySessionContext',
   'evidence routing',
 ]) {
   assertContains(backbone, term, `backbone must include ${term}`);
@@ -113,6 +122,7 @@ for (const heading of [
   '## Sandbox Decision Timelines',
   '## Provider Route Decisions',
   '## Channel Adapter Seam',
+  '## Identity Session Context Records',
   '## Backbone Interfaces',
   '## Required Commands',
   '## Acceptance Rule',
@@ -128,6 +138,7 @@ for (const command of [
   'npm run smoke:sandbox-decision-timelines',
   'npm run smoke:provider-fallback-route-decision',
   'npm run smoke:channel-adapter-seam',
+  'npm run smoke:identity-session-context-records',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',

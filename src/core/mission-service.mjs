@@ -55,6 +55,7 @@ import {
   summarizeGatewayEventForTimeline,
 } from './gateway-event-service.mjs';
 import { createId } from './id.mjs';
+import { summarizeIdentitySessionContextForTimeline } from './identity-session-context-service.mjs';
 import {
   buildProviderFallbackLearningEvidence,
   buildLearningCandidate,
@@ -2520,6 +2521,9 @@ function summarizeSpecialistFollowUpItems(items) {
 
 function summarizeOperatorTimeline(events) {
   const eventCounts = {};
+  const identitySessionContextBindingStatusCounts = {};
+  const identitySessionContextPolicyCounts = {};
+  const identitySessionContextSourceTypeCounts = {};
   const providerFallbackPolicyCounts = {};
   const providerFallbackStopReasonCounts = {};
   const providerRouteDecisionPolicyCounts = {};
@@ -2529,6 +2533,7 @@ function summarizeOperatorTimeline(events) {
   const workspaceCounts = {};
   const providerFallbackEvents = [];
   const providerFallbackUsedEvents = [];
+  const identitySessionContextEvents = [];
   const providerRouteDecisionEvents = [];
   const sandboxDecisionEvents = [];
 
@@ -2536,6 +2541,23 @@ function summarizeOperatorTimeline(events) {
     eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
     if (event.workspaceId) {
       workspaceCounts[event.workspaceId] = (workspaceCounts[event.workspaceId] || 0) + 1;
+    }
+    if (event.kind === 'identity-session-context-recorded') {
+      identitySessionContextEvents.push(event);
+      const bindingStatus = normalizeText(event.identitySessionBindingStatus);
+      if (bindingStatus) {
+        identitySessionContextBindingStatusCounts[bindingStatus] =
+          (identitySessionContextBindingStatusCounts[bindingStatus] || 0) + 1;
+      }
+      const policyId = normalizeText(event.identitySessionContextPolicyId);
+      if (policyId) {
+        identitySessionContextPolicyCounts[policyId] = (identitySessionContextPolicyCounts[policyId] || 0) + 1;
+      }
+      const sourceType = normalizeText(event.sourceType);
+      if (sourceType) {
+        identitySessionContextSourceTypeCounts[sourceType] =
+          (identitySessionContextSourceTypeCounts[sourceType] || 0) + 1;
+      }
     }
     if (event.kind === 'provider-fallback-attempted' || event.kind === 'provider-fallback-used') {
       providerFallbackEvents.push(event);
@@ -2579,6 +2601,11 @@ function summarizeOperatorTimeline(events) {
 
   return {
     eventCounts,
+    identitySessionContextBindingStatusCounts,
+    identitySessionContextCount: identitySessionContextEvents.length,
+    identitySessionContextPolicyCounts,
+    identitySessionContextSourceTypeCounts,
+    latestIdentitySessionContextEvent: getLatestItem(identitySessionContextEvents, 'at'),
     latestEvent: events.at(-1) || null,
     latestProviderFallbackEvent: getLatestItem(providerFallbackEvents, 'at'),
     latestProviderRouteDecisionEvent: getLatestItem(providerRouteDecisionEvents, 'at'),
@@ -2601,6 +2628,43 @@ function summarizeOperatorTimeline(events) {
     sandboxDecisionPolicyCounts,
     total: events.length,
     workspaceCounts,
+  };
+}
+
+function buildIdentitySessionContextTimelineEvent({ event, mission = null, workspace = null }) {
+  const identitySessionContext = event?.identitySessionContext || null;
+  if (!identitySessionContext) {
+    return null;
+  }
+
+  return {
+    actorType: identitySessionContext.actor?.actorType || event.identity?.actorType || null,
+    at: event.at,
+    channel: identitySessionContext.source?.channel || event.source?.channel || null,
+    channelAdapterId: identitySessionContext.source?.channelAdapterId || event.source?.channelAdapterId || null,
+    detail: summarizeIdentitySessionContextForTimeline(identitySessionContext),
+    gatewayEventId: event.id,
+    gatewayEventType: event.eventType,
+    identitySessionBindingStatus: identitySessionContext.bindingStatus || null,
+    identitySessionContext,
+    identitySessionContextId: identitySessionContext.id || event.identity?.identitySessionContextId || null,
+    identitySessionContextPolicyId: identitySessionContext.policyId || null,
+    kind: 'identity-session-context-recorded',
+    memoryLookupAfterBinding: identitySessionContext.scope?.memoryLookupAfterBinding === true,
+    memoryScope: identitySessionContext.scope?.memoryScope || null,
+    missionBound: identitySessionContext.subject?.missionBound === true,
+    missionId: mission?.id || event.bindings?.missionId || null,
+    missionTitle: mission?.title || null,
+    providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
+    route: event.route?.name || identitySessionContext.route?.name || null,
+    sessionBound: identitySessionContext.subject?.sessionBound === true,
+    sessionId: event.bindings?.sessionId || null,
+    sourceType: identitySessionContext.source?.sourceType || event.source?.sourceType || null,
+    status: identitySessionContext.status || event.status || 'recorded',
+    trustBoundary: identitySessionContext.actor?.trustBoundary || event.identity?.trustBoundary || null,
+    workspaceBound: identitySessionContext.subject?.workspaceBound === true,
+    workspaceId: workspace?.id || event.bindings?.workspaceId || mission?.workspaceId || null,
+    workspaceName: workspace?.name || null,
   };
 }
 
@@ -10066,11 +10130,13 @@ function summarizeProviderExecutions(executions) {
     const approvals = store.listApprovals({ missionId, sessionId: session.id });
     const artifacts = store.listArtifactsBySession(session.id);
     const gatewayEvents = store.listGatewayEvents({ sessionId: session.id });
+    const identitySessionContexts = gatewayEvents.map((event) => event.identitySessionContext).filter(Boolean);
     const sandboxDecisions = gatewayEvents.map((event) => event.sandboxDecision).filter(Boolean);
     const learningCandidates = store.listLearningCandidates({ sessionId: session.id });
     const latestApproval = getLatestItem(approvals, 'createdAt');
     const latestArtifact = getLatestItem(artifacts, 'createdAt');
     const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestIdentitySessionContext = getLatestItem(identitySessionContexts, 'at');
     const latestSandboxDecision = getLatestItem(sandboxDecisions, 'at');
     const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const reviewerRun = agentRuns.find((run) => run.role === 'reviewer') || null;
@@ -10086,6 +10152,12 @@ function summarizeProviderExecutions(executions) {
       gatewayEventCount: gatewayEvents.length,
       gatewayEventId: latestGatewayEvent?.id || session.sourceContext?.gatewayEventId || null,
       gatewayEventType: latestGatewayEvent?.eventType || session.sourceContext?.gatewayEventType || null,
+      identitySessionContextBindingStatusCounts: countByNormalizedField(identitySessionContexts, 'bindingStatus'),
+      identitySessionContextCount: identitySessionContexts.length,
+      identitySessionContextId:
+        latestIdentitySessionContext?.id || session.sourceContext?.gatewayIdentitySessionContextId || null,
+      identitySessionContextPolicyCounts: countByNormalizedField(identitySessionContexts, 'policyId'),
+      latestIdentitySessionContext,
       latestSandboxDecision,
       learningCandidateCount: learningCandidates.length,
       latestLearningCandidateId: latestLearningCandidate?.id || null,
@@ -10122,9 +10194,11 @@ function summarizeProviderExecutions(executions) {
     const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const gatewayEvents = store.listGatewayEvents({ missionId: mission.id });
+    const identitySessionContexts = gatewayEvents.map((event) => event.identitySessionContext).filter(Boolean);
     const sandboxDecisions = gatewayEvents.map((event) => event.sandboxDecision).filter(Boolean);
     const learningCandidates = store.listLearningCandidates({ missionId: mission.id });
     const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestIdentitySessionContext = getLatestItem(identitySessionContexts, 'at');
     const latestSandboxDecision = getLatestItem(sandboxDecisions, 'at');
     const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const missionAttachments = store.listMissionAttachments({ missionId: mission.id });
@@ -10175,7 +10249,11 @@ function summarizeProviderExecutions(executions) {
       id: mission.id,
       gatewayEventCount: gatewayEvents.length,
       gatewayEventTypeCounts: countByNormalizedField(gatewayEvents, 'eventType'),
+      identitySessionContextBindingStatusCounts: countByNormalizedField(identitySessionContexts, 'bindingStatus'),
+      identitySessionContextCount: identitySessionContexts.length,
+      identitySessionContextPolicyCounts: countByNormalizedField(identitySessionContexts, 'policyId'),
       latestGatewayEvent,
+      latestIdentitySessionContext,
       latestSandboxDecision,
       learningCandidateCount: learningCandidates.length,
       learningCandidateRecordTypeCounts: countByNormalizedField(learningCandidates, 'recordType'),
@@ -16440,12 +16518,17 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     for (const event of gatewayEvents) {
+      const identitySessionTimelineEvent = buildIdentitySessionContextTimelineEvent({ event, mission });
       const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission });
       timeline.push({
         at: event.at,
         detail: summarizeGatewayEventForTimeline(event),
         gatewayEventId: event.id,
         gatewayEventType: event.eventType,
+        identitySessionBindingStatus: event.identitySessionContext?.bindingStatus || null,
+        identitySessionContext: event.identitySessionContext || null,
+        identitySessionContextId: event.identitySessionContext?.id || event.identity?.identitySessionContextId || null,
+        identitySessionContextPolicyId: event.identitySessionContext?.policyId || null,
         kind: 'gateway-event-recorded',
         missionId: mission.id,
         permissionApprovalRequired: Boolean(event.permissionDecision?.approvalRequired),
@@ -16468,6 +16551,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         status: event.status || 'recorded',
         workspaceId: event.bindings?.workspaceId || mission.workspaceId,
       });
+
+      if (identitySessionTimelineEvent) {
+        timeline.push(identitySessionTimelineEvent);
+      }
 
       if (sandboxTimelineEvent) {
         timeline.push(sandboxTimelineEvent);
@@ -17070,6 +17157,11 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
       if (filter.workspaceId && workspace.id !== filter.workspaceId) {
         continue;
+      }
+
+      const identitySessionTimelineEvent = buildIdentitySessionContextTimelineEvent({ event, mission, workspace });
+      if (identitySessionTimelineEvent) {
+        events.push(identitySessionTimelineEvent);
       }
 
       const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission, workspace });

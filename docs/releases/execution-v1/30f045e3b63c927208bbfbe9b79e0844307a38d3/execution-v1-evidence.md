@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T17:36:08.738Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T17:35:54.727Z
 - branch: codex/identity-session-context-records
 - commit: 30f045e3b63c927208bbfbe9b79e0844307a38d3

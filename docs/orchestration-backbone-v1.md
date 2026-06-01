@@ -104,6 +104,12 @@ The first enabled adapters are local-only `cli` and `web`. `schedule`, `slack`, 
 
 The initial operator surface is `channel adapters`, which exposes the registry without creating any send, receive, webhook, or background delivery path. CLI mission create/run routes now attach the local adapter metadata to `gatewayEvent.source`, so existing gateway evidence keeps `channel/sourceType/surface` compatibility while also making the adapter policy visible.
 
+## Identity Session Context Records
+
+Gateway events now carry a policy-owned `identitySessionContext` record. The record uses `personal-ai-agent-identity-session-context/v1` and records actor, trust boundary, mission/workspace/session/provider bindings, source surface, channel adapter metadata, memory scope, session separation requirement, binding status, and no-secret evidence policy.
+
+The first reusable surface is local CLI mission ingress. `mission create` and `mission run` preserve the legacy `identity` compatibility fields while adding `identitySessionContext`, and mission run sessions also store `gatewayIdentitySessionContextId` in `sourceContext`. Mission, workspace, and global operator timelines emit `identity-session-context-recorded`, with summary counts by binding status, policy id, and source type so identity/session/workspace binding can be audited before memory lookup or promotion review.
+
 ## Backbone Interfaces
 
 | Interface | Purpose | Initial implementation posture |
@@ -124,6 +130,7 @@ npm run smoke:permission-decision-records
 npm run smoke:sandbox-decision-timelines
 npm run smoke:provider-fallback-route-decision
 npm run smoke:channel-adapter-seam
+npm run smoke:identity-session-context-records
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:orchestration-profiles
 npm run smoke:runtime-isolation
@@ -152,3 +159,4 @@ This document does not prove production readiness. Before any production or host
 3. Attach sandbox decisions to mission timelines and operator timelines. Gateway events now expose `sandboxDecision` records with policy id, mode, denied capability metadata, and no-secret evidence policy; mission, workspace, and operator timelines emit `sandbox-decision-recorded` evidence backed by `smoke:sandbox-decision-timelines`.
 4. Extend provider fallback events so the route can be inspected from mission, workspace, operator, and provider views. Provider fallback attempts now expose `providerRouteDecision` records with gateway event binding, route, provider set, fallback policy, stop reason, sanitized provider failure metadata, and no-secret evidence policy across mission/workspace/operator/provider surfaces, backed by `smoke:provider-fallback-route-decision`.
 5. Add an adapter seam for future channel connectors without enabling external messaging by default. Channel adapters now expose a disabled-by-default manifest registry, local CLI/web adapter metadata, external messaging stop reason, required enablement gates, and `gatewayEvent.source` adapter evidence backed by `smoke:channel-adapter-seam`.
+6. Promote identity/session binding to a policy-owned gateway record. Gateway events now expose `identitySessionContext` with mission/workspace/session/provider bindings, source/channel adapter metadata, memory scope, trust boundary, and no-secret evidence policy across mission/workspace/operator timelines, backed by `smoke:identity-session-context-records`.
