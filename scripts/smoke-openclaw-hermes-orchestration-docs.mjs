@@ -34,6 +34,10 @@ assert.equal(
   'node scripts/smoke-provider-fallback-route-decision.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:channel-adapter-seam'],
+  'node scripts/smoke-channel-adapter-seam.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -56,6 +60,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-provider-fallback-route-decision.mjs'),
   'reference adoption smoke list must include the provider fallback route decision smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-channel-adapter-seam.mjs'),
+  'reference adoption smoke list must include the channel adapter seam smoke',
 );
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
@@ -88,6 +96,7 @@ for (const term of [
   'provider routing',
   'fallback policy',
   'stop reason',
+  'channel adapter',
   'evidence routing',
 ]) {
   assertContains(backbone, term, `backbone must include ${term}`);
@@ -103,6 +112,7 @@ for (const heading of [
   '## Permission Decision Records',
   '## Sandbox Decision Timelines',
   '## Provider Route Decisions',
+  '## Channel Adapter Seam',
   '## Backbone Interfaces',
   '## Required Commands',
   '## Acceptance Rule',
@@ -117,6 +127,7 @@ for (const command of [
   'npm run smoke:permission-decision-records',
   'npm run smoke:sandbox-decision-timelines',
   'npm run smoke:provider-fallback-route-decision',
+  'npm run smoke:channel-adapter-seam',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',
@@ -215,6 +226,8 @@ for (const term of [
   'self-improvement-engine-v1.md',
   'OpenClaw as the orchestration backbone',
   'Hermes-style self-improvement engine',
+  'channel adapter seam',
+  'externalMessagingEnabled=false',
 ]) {
   assertContains(readme, term, `README must include ${term}`);
   assertContains(productPlan, term, `product plan must include ${term}`);

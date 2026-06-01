@@ -96,12 +96,21 @@ Provider fallback attempts now carry a route-owned `providerRouteDecision` recor
 
 The first reusable surface is mission-level provider fallback. `mission run --fallback-provider --fallback-policy` exposes the decision in the immediate `providerFallback.attempts[]` summary, and the same decision id appears in mission timeline, workspace timeline, global operator timeline, `provider events --family fallback`, and `overview providers`. This makes the provider route inspectable from control-plane and provider views without reconstructing fallback state from raw sessions.
 
+## Channel Adapter Seam
+
+The backbone now has a manifest-only channel adapter seam for local and future channel inputs. The registry uses `personal-ai-agent-channel-adapter-registry/v1` and records adapter id, channel, source type, surface, route name, enablement status, policy id, external messaging flag, stop reason, capability denial, enablement gates, and no-secret evidence policy.
+
+The first enabled adapters are local-only `cli` and `web`. `schedule`, `slack`, `telegram`, `whatsapp`, `discord`, and `email` are registry entries only and remain disabled by default. External messaging has `externalMessagingEnabled=false`, no ingress/egress capability, and `channel-adapter-disabled-by-default` as the stop reason until pairing, identity binding, workspace routing, retention boundary, permission policy, sandbox policy, support boundary, and operator approval are documented.
+
+The initial operator surface is `channel adapters`, which exposes the registry without creating any send, receive, webhook, or background delivery path. CLI mission create/run routes now attach the local adapter metadata to `gatewayEvent.source`, so existing gateway evidence keeps `channel/sourceType/surface` compatibility while also making the adapter policy visible.
+
 ## Backbone Interfaces
 
 | Interface | Purpose | Initial implementation posture |
 | --- | --- | --- |
 | `gatewayEvent` | Normalized input from CLI, web, schedules, and future message channels | Extend current mission/session metadata before adding new channels |
 | `identitySessionContext` | Identity, workspace, mission, role, and surface binding | Keep local-first and tenant-aware gates explicit |
+| `channelAdapter` | Manifest for local and future message-channel ingress with enablement policy and stop reason | Keep external messaging disabled by default and expose only registry/adapter evidence |
 | `permissionDecision` | Allow, deny, or approval-required outcome for tools and provider actions | Reuse approval/action/provider attention inbox patterns |
 | `sandboxDecision` | Execution mode, denied capabilities, and evidence note | Keep deterministic smoke coverage before expanding execution backends |
 | `providerRouteDecision` | Provider, model, fallback policy, retry lineage, stop reason, and telemetry key | Reuse provider fallback policy and provider events surfaces |
@@ -114,6 +123,7 @@ npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:permission-decision-records
 npm run smoke:sandbox-decision-timelines
 npm run smoke:provider-fallback-route-decision
+npm run smoke:channel-adapter-seam
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:orchestration-profiles
 npm run smoke:runtime-isolation
@@ -141,4 +151,4 @@ This document does not prove production readiness. Before any production or host
 2. Add a policy-owned permission decision record that can be reused by tools, provider remediation, and channel actions. Gateway events and provider attention remediation now expose `permissionDecision` records with policy id, decision result, approval requirement, route/resource bindings, capability metadata, and no-secret evidence policy, backed by `smoke:permission-decision-records`.
 3. Attach sandbox decisions to mission timelines and operator timelines. Gateway events now expose `sandboxDecision` records with policy id, mode, denied capability metadata, and no-secret evidence policy; mission, workspace, and operator timelines emit `sandbox-decision-recorded` evidence backed by `smoke:sandbox-decision-timelines`.
 4. Extend provider fallback events so the route can be inspected from mission, workspace, operator, and provider views. Provider fallback attempts now expose `providerRouteDecision` records with gateway event binding, route, provider set, fallback policy, stop reason, sanitized provider failure metadata, and no-secret evidence policy across mission/workspace/operator/provider surfaces, backed by `smoke:provider-fallback-route-decision`.
-5. Add an adapter seam for future channel connectors without enabling external messaging by default.
+5. Add an adapter seam for future channel connectors without enabling external messaging by default. Channel adapters now expose a disabled-by-default manifest registry, local CLI/web adapter metadata, external messaging stop reason, required enablement gates, and `gatewayEvent.source` adapter evidence backed by `smoke:channel-adapter-seam`.

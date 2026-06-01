@@ -30,7 +30,12 @@ function normalizeSourceContext(value = {}) {
 
   return {
     channel,
+    channelAdapterId: normalizeText(source.channelAdapterId) || null,
+    channelAdapterPolicyId: normalizeText(source.channelAdapterPolicyId) || null,
+    channelAdapterStatus: normalizeText(source.channelAdapterStatus) || null,
+    channelAdapterStopReason: normalizeText(source.channelAdapterStopReason) || null,
     command,
+    externalMessagingEnabled: source.externalMessagingEnabled === true,
     requestId: normalizeText(source.requestId) || null,
     route,
     sourceType,
