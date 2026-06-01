@@ -1,3 +1,8 @@
+import {
+  buildGatewayPermissionDecision,
+  summarizePermissionDecisionForTimeline,
+} from './permission-decision-service.mjs';
+
 export const GATEWAY_EVENT_SCHEMA_VERSION = 'personal-ai-agent-gateway-event/v1';
 
 function normalizeText(value, fallback = '') {
@@ -72,6 +77,18 @@ export function normalizeGatewayEvent({
   const normalizedRoute = normalizeText(route || source.route || normalizedEventType.replaceAll('-', '.'));
   const fallbackPolicy = normalizeText(sourceContext.providerFallbackPolicy) || null;
   const fallbackRequested = Boolean(sourceContext.providerFallbackRequested);
+  const permissionDecision = buildGatewayPermissionDecision({
+    at,
+    eventId: id,
+    eventType: normalizedEventType,
+    mission,
+    permissionPolicy,
+    providerId,
+    route: normalizedRoute,
+    session,
+    source,
+    workspace,
+  });
 
   return {
     at,
@@ -99,11 +116,14 @@ export function normalizeGatewayEvent({
       workspaceBound: Boolean(workspace?.id || mission?.workspaceId),
     },
     permissionPolicy: {
-      approvalRequired: Boolean(permissionPolicy.approvalRequired),
-      decision: normalizeText(permissionPolicy.decision, 'allow'),
-      deniedCapabilities: ensureArray(permissionPolicy.deniedCapabilities).map((item) => normalizeText(item)).filter(Boolean),
-      reason: normalizeText(permissionPolicy.reason, 'local-runtime-gateway-event'),
+      approvalRequired: permissionDecision.approvalRequired,
+      decision: permissionDecision.decision,
+      deniedCapabilities: permissionDecision.capabilities.deniedCapabilities,
+      permissionDecisionId: permissionDecision.id,
+      policyId: permissionDecision.policyId,
+      reason: permissionDecision.reason,
     },
+    permissionDecision,
     providerRoute: {
       fallbackAttempt: Number.isFinite(Number(sourceContext.providerFallbackAttempt))
         ? Number(sourceContext.providerFallbackAttempt)
@@ -144,6 +164,7 @@ export function attachGatewayEventToSourceContext(sourceContext = {}, gatewayEve
     ...source,
     ...normalizeProviderFallbackContext(sourceContext),
     gatewayEventId: gatewayEvent?.id || null,
+    gatewayPermissionDecisionId: gatewayEvent?.permissionDecision?.id || null,
     gatewayEventSchemaVersion: gatewayEvent?.schemaVersion || GATEWAY_EVENT_SCHEMA_VERSION,
     gatewayEventType: gatewayEvent?.eventType || null,
     gatewayEventRoute: gatewayEvent?.route?.name || source.route,
@@ -158,6 +179,8 @@ export function summarizeGatewayEventForTimeline(event) {
   const fallbackPolicy = normalizeText(event?.providerRoute?.policyId);
   const providerSuffix = providerId ? ` provider=${providerId}` : '';
   const fallbackSuffix = fallbackPolicy ? ` fallbackPolicy=${fallbackPolicy}` : '';
+  const permissionSummary = summarizePermissionDecisionForTimeline(event?.permissionDecision);
+  const permissionSuffix = permissionSummary ? ` ${permissionSummary}.` : '';
 
-  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}`;
+  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}${permissionSuffix}`;
 }

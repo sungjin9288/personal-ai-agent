@@ -22,6 +22,10 @@ assert.equal(
   'node scripts/smoke-gateway-event-learning-candidate.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:permission-decision-records'],
+  'node scripts/smoke-permission-decision-records.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -32,6 +36,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-gateway-event-learning-candidate.mjs'),
   'reference adoption smoke list must include the gateway event and learning candidate smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-permission-decision-records.mjs'),
+  'reference adoption smoke list must include the permission decision records smoke',
 );
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
@@ -87,6 +95,7 @@ for (const heading of [
 
 for (const command of [
   'npm run smoke:gateway-event-learning-candidate',
+  'npm run smoke:permission-decision-records',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',
