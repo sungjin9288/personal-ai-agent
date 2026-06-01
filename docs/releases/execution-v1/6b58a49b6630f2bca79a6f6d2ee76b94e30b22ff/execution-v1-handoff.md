@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T06:36:14.455Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T06:36:12.971Z
 - localDate: 2026-06-01
 - branch: codex/scoped-learning-promotion-queue
 - commit: 6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff](releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff](docs/releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff)
 - visualArtifactSetSha256: b8829835e73af1fe3efb4bc77bbb2781c323e9356416b1e09356706d0f82f5ad
 - commitPushStatus: not pushed, origin/codex/scoped-learning-promotion-queue not found
 

@@ -300,18 +300,19 @@ const inbox = runCli({
   args: ['action', 'inbox'],
 });
 
-assert.equal(inbox.summary.pendingActionCount, 8);
-assert.equal(inbox.summary.actionCounts.total, 8);
+assert.equal(inbox.summary.pendingActionCount, 13);
+assert.equal(inbox.summary.actionCounts.total, 13);
 assert.equal(inbox.summary.actionCounts.acceptedRiskMonitoring, 0);
 assert.equal(inbox.summary.actionCounts.approval, 1);
 assert.equal(inbox.summary.actionCounts.blockedFollowUp, 1);
+assert.equal(inbox.summary.actionCounts.learningPromotion, 5);
 assert.equal(inbox.summary.actionCounts.maintenanceSweep, 1);
 assert.equal(inbox.summary.actionCounts.ownerHandoff, 1);
 assert.equal(inbox.summary.actionCounts.providerHealthDrift, 2);
 assert.equal(inbox.summary.actionCounts.reviewerFollowUp, 1);
 assert.equal(inbox.summary.actionCounts.specialistFollowUp, 1);
-assert.equal(inbox.summary.actionClassCounts.total, 8);
-assert.equal(inbox.summary.actionClassCounts.awaitingHumanDecision, 1);
+assert.equal(inbox.summary.actionClassCounts.total, 13);
+assert.equal(inbox.summary.actionClassCounts.awaitingHumanDecision, 6);
 assert.equal(inbox.summary.actionClassCounts.blocked, 1);
 assert.equal(inbox.summary.actionClassCounts.handoffRequired, 1);
 assert.equal(inbox.summary.actionClassCounts.maintenanceRequired, 1);
@@ -319,11 +320,11 @@ assert.equal(inbox.summary.actionClassCounts.monitoringRequired, 0);
 assert.equal(inbox.summary.actionClassCounts.providerHealthDriftRequired, 2);
 assert.equal(inbox.summary.actionClassCounts.retryReady, 1);
 assert.equal(inbox.summary.actionClassCounts.specialistFollowUpRequired, 1);
-assert.equal(inbox.summary.priorityCounts.low, 0);
-assert.equal(inbox.summary.priorityCounts.medium, 4);
-assert.equal(inbox.summary.priorityCounts.high, 4);
+assert.equal(inbox.summary.priorityCounts.low, 2);
+assert.equal(inbox.summary.priorityCounts.medium, 5);
+assert.equal(inbox.summary.priorityCounts.high, 6);
 assert.equal(inbox.summary.priorityCounts.urgent, 0);
-assert.equal(inbox.summary.ownerCounts['human-approver'], 2);
+assert.equal(inbox.summary.ownerCounts['human-approver'], 7);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 4);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 2);
 assert.equal(inbox.summary.providerCounts.stub, 3);
@@ -331,15 +332,15 @@ assert.equal(inbox.summary.maintenanceMonthlyBucketCount, 0);
 assert.equal(inbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
 assert.equal(inbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
 assert.equal(inbox.summary.maintenanceLatestMonthlyBucketDelta, null);
-assert.equal(inbox.summary.reminderCounts.total, 8);
+assert.equal(inbox.summary.reminderCounts.total, 13);
 assert.equal(inbox.summary.reminderCounts.eligible, 2);
 assert.equal(inbox.summary.reminderCounts.needsReminder, 2);
 assert.equal(inbox.summary.reminderCounts.notNeeded, 0);
-assert.equal(inbox.summary.overdueCounts.total, 8);
+assert.equal(inbox.summary.overdueCounts.total, 13);
 assert.equal(inbox.summary.overdueCounts.overdue, 5);
-assert.equal(inbox.summary.overdueCounts.onTime, 3);
-assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 6);
-assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 2);
+assert.equal(inbox.summary.overdueCounts.onTime, 8);
+assert.equal(inbox.summary.workspaceCounts[workspaceOne.id], 10);
+assert.equal(inbox.summary.workspaceCounts[workspaceTwo.id], 3);
 assert.equal(inbox.summary.specialistFollowUpProviderCounts.stub, 1);
 assert.equal(inbox.summary.specialistFollowUpKindCounts.verification, 1);
 assert.equal(inbox.summary.specialistFollowUpStatusCounts.blocked, 1);
@@ -478,19 +479,36 @@ assert.match(specialistItem.commandHint, /action remediate-specialist-follow-up/
 assert.match(specialistItem.fallbackRecommendedCommand, /mission run/);
 assert.equal(specialistItem.remediationRoute.routeType, 'standard-branch-remediation');
 
+const learningPromotionItems = inbox.items.filter((item) => item.actionType === 'learning-promotion');
+assert.equal(learningPromotionItems.length, 5);
+assert.equal(learningPromotionItems.every((item) => item.actionClass === 'awaiting-human-decision'), true);
+assert.equal(learningPromotionItems.every((item) => item.recommendedOwner === 'human-approver'), true);
+assert.equal(
+  learningPromotionItems.some((item) => item.learningCandidateId === approvalRun.learningCandidateId),
+  true,
+);
+assert.equal(
+  learningPromotionItems.some((item) => item.learningCandidateId === reviewerRun.learningCandidateId),
+  true,
+);
+assert.equal(
+  learningPromotionItems.every((item) => /resolve-learning-promotion/.test(item.commandHint)),
+  true,
+);
+
 const workspaceFilteredInbox = runCli({
   rootDir: tempRoot,
   args: ['action', 'inbox', '--workspace', workspaceTwo.id],
 });
 
-assert.equal(workspaceFilteredInbox.summary.pendingActionCount, 2);
+assert.equal(workspaceFilteredInbox.summary.pendingActionCount, 3);
 assert.equal(workspaceFilteredInbox.summary.maintenanceMonthlyBucketCount, 0);
 assert.equal(workspaceFilteredInbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
 assert.equal(workspaceFilteredInbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
 assert.equal(workspaceFilteredInbox.summary.maintenanceLatestMonthlyBucketDelta, null);
 assert.deepEqual(
   workspaceFilteredInbox.items.map((item) => item.actionType).sort(),
-  ['provider-health-drift', 'reviewer-follow-up'],
+  ['learning-promotion', 'provider-health-drift', 'reviewer-follow-up'],
 );
 assert.equal(workspaceFilteredInbox.items.every((item) => item.workspaceId === workspaceTwo.id), true);
 
@@ -516,7 +534,7 @@ const highPriorityInbox = runCli({
   args: ['action', 'inbox', '--priority', 'high'],
 });
 
-assert.equal(highPriorityInbox.summary.pendingActionCount, 4);
+assert.equal(highPriorityInbox.summary.pendingActionCount, 6);
 assert.equal(highPriorityInbox.filters.priority, 'high');
 assert.equal(highPriorityInbox.items.every((item) => item.priority === 'high'), true);
 
@@ -525,12 +543,11 @@ const ownerFilteredInbox = runCli({
   args: ['action', 'inbox', '--owner', 'human-approver'],
 });
 
-assert.equal(ownerFilteredInbox.summary.pendingActionCount, 2);
+assert.equal(ownerFilteredInbox.summary.pendingActionCount, 7);
 assert.equal(ownerFilteredInbox.filters.owner, 'human-approver');
-assert.deepEqual(
-  ownerFilteredInbox.items.map((item) => item.actionType).sort(),
-  ['approval', 'owner-handoff'],
-);
+assert.equal(ownerFilteredInbox.items.filter((item) => item.actionType === 'learning-promotion').length, 5);
+assert.equal(ownerFilteredInbox.items.some((item) => item.actionType === 'approval'), true);
+assert.equal(ownerFilteredInbox.items.some((item) => item.actionType === 'owner-handoff'), true);
 
 const handoffRequiredInbox = runCli({
   rootDir: tempRoot,

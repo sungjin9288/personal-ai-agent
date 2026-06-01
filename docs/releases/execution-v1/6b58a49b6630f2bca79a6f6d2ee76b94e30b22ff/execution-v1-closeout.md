@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T06:36:14.455Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T06:36:06.097Z
 - branch: codex/scoped-learning-promotion-queue
 - commit: 6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6b58a49b6630f2bca79a6f6d2ee76b94e30b22ff/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

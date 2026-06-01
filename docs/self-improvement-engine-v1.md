@@ -100,6 +100,7 @@ observe
 ```bash
 npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:gateway-event-learning-candidate
+npm run smoke:learning-promotion-queue
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:memory-rerun
@@ -123,7 +124,7 @@ This document does not prove production readiness or continuous learning safety 
 ## Next Implementation Slices
 
 1. Add a `learningCandidate` artifact that can be emitted from mission closeout and reviewer feedback. Mission terminal states now emit review-only `learningCandidate` records and `learning-candidate.json` artifacts; promotion remains manual and scope-locked.
-2. Add a scoped promotion queue for memory, skill, template, provider policy, and automation proposals.
-3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration.
+2. Add a scoped promotion queue for memory, skill, template, provider policy, and automation proposals. Pending `learningCandidate` records now appear as human-decision queue items, and approve/reject decisions stay scope-locked.
+3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion and rejected promotion are covered; rollback execution and expiration policy remain future slices.
 4. Add provider fallback lesson extraction from provider events and stop-condition timelines.
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default.

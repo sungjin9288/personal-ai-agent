@@ -77,6 +77,9 @@ export const OWNER_HANDOFF_REMINDER_CADENCE_HOURS = {
 export const MAINTENANCE_RUN_OUTCOMES = ['effective', 'no-op', 'impactful'];
 export const REVIEWER_FOLLOW_UP_STATUSES = ['open', 'resolved'];
 export const REVIEWER_FOLLOW_UP_RESOLUTION_KINDS = ['rerun-fixed', 'superseded', 'scope-reduced', 'accepted-risk'];
+export const LEARNING_PROMOTION_DECISIONS = ['approve', 'reject'];
+export const LEARNING_PROMOTION_STATUSES = ['pending-review', 'approved', 'promoted', 'rejected'];
+export const LEARNING_PROMOTION_TARGETS = ['memory', 'skill', 'template', 'provider-policy', 'automation'];
 
 export const MEMORY_SCOPES = ['user', 'workspace', 'mission'];
 

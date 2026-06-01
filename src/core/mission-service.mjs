@@ -19,6 +19,9 @@ import {
   ESCALATION_TIERS,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
+  LEARNING_PROMOTION_DECISIONS,
+  LEARNING_PROMOTION_STATUSES,
+  LEARNING_PROMOTION_TARGETS,
   MAINTENANCE_RUN_OUTCOMES,
   MEMORY_KINDS,
   MEMORY_SCOPES,
@@ -1365,6 +1368,11 @@ function formatApprovalResolution(decision, reason) {
 
 function formatReviewerFailureMemory({ mission, findings }) {
   return `Reviewer failed ${mission.deliverableType} for mission ${mission.id}: ${findings.join(' | ')}`;
+}
+
+function formatLearningPromotionMemory({ candidate, note, target }) {
+  const noteSuffix = note ? ` note=${note}` : '';
+  return `Learning candidate promoted [${target}] for mission ${candidate.missionId}: ${candidate.summary}${noteSuffix}`;
 }
 
 function formatApprovalDecisionMemory({ mission, decision, reason }) {
@@ -3831,6 +3839,254 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...result,
       learningCandidate: attachProviderFallbackToLearningCandidate(result?.learningCandidate, providerFallback),
       providerFallback,
+    };
+  }
+
+  function normalizeLearningPromotionTarget(value, fallback = 'memory') {
+    const normalized = normalizeText(value, fallback).replaceAll('_', '-');
+    if (!LEARNING_PROMOTION_TARGETS.includes(normalized)) {
+      throw new Error(`Unsupported learning promotion target: ${normalized}`);
+    }
+
+    return normalized;
+  }
+
+  function normalizeLearningPromotionScope(value, fallback = 'mission') {
+    const normalized = normalizeText(value, fallback);
+    if (!MEMORY_SCOPES.includes(normalized)) {
+      throw new Error(`Unsupported learning promotion scope: ${normalized}`);
+    }
+
+    return normalized;
+  }
+
+  function defaultLearningPromotionTarget(candidate) {
+    const target = normalizeText(candidate?.proposal?.target, 'memory');
+    if (LEARNING_PROMOTION_TARGETS.includes(target)) {
+      return target;
+    }
+
+    if (target === 'skill-or-template') {
+      return 'skill';
+    }
+    if (target === 'template-or-memory') {
+      return 'template';
+    }
+
+    return 'memory';
+  }
+
+  function learningPromotionPriority(candidate) {
+    if (candidate.recordType === 'provider-lesson' || candidate.recordType === 'quality-regression') {
+      return 'high';
+    }
+    if (candidate.recordType === 'failure-pattern') {
+      return 'medium';
+    }
+    return 'low';
+  }
+
+  function resolveLearningPromotionScopeId(candidate, scope) {
+    if (scope === 'mission') {
+      return candidate.missionId;
+    }
+    if (scope === 'workspace') {
+      return candidate.workspaceId;
+    }
+    return GLOBAL_USER_SCOPE_ID;
+  }
+
+  function buildLearningPromotionQueueItem(candidate) {
+    const mission = store.getMission(candidate.missionId);
+    const workspace = mission ? store.getWorkspace(mission.workspaceId) : store.getWorkspace(candidate.workspaceId);
+
+    if (!mission || !workspace) {
+      return null;
+    }
+
+    const target = defaultLearningPromotionTarget(candidate);
+    const scope = normalizeText(candidate.scope, 'mission');
+    const resolveCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision <approve|reject> --target ${target} --scope ${scope} --note "<note>"`;
+
+    return addOperationalMetadata(
+      addDispatchMetadata(
+        {
+          actionClass: 'awaiting-human-decision',
+          actionId: `learning-promotion:${candidate.id}`,
+          actionType: 'learning-promotion',
+          createdAt: candidate.createdAt,
+          learningCandidateId: candidate.id,
+          missionId: mission.id,
+          missionStatus: mission.status,
+          missionTitle: mission.title,
+          mode: mission.mode,
+          promotionStatus: candidate.promotionStatus,
+          proposalTarget: target,
+          reason: candidate.summary,
+          recordType: candidate.recordType,
+          resolveCommand,
+          scope,
+          scopeId: candidate.scopeId,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          title: candidate.title,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        },
+        {
+          priority: learningPromotionPriority(candidate),
+          recommendedCommand: resolveCommand,
+          recommendedOwner: 'human-approver',
+        },
+      ),
+      {
+        escalationRule: 'If overdue, keep the candidate scoped and request an explicit approve or reject decision.',
+        slaHours: 72,
+      },
+    );
+  }
+
+  function buildLearningPromotionItems(filter = {}) {
+    const promotionStatus = normalizeText(filter.promotionStatus || filter.status, 'pending-review');
+    const includeAllStatuses = promotionStatus === 'all';
+    const candidates = store.listLearningCandidates({
+      missionId: filter.missionId,
+      recordType: filter.recordType,
+      workspaceId: filter.workspaceId,
+      ...(includeAllStatuses ? {} : { promotionStatus }),
+    });
+
+    return candidates
+      .map((candidate) => buildLearningPromotionQueueItem(candidate))
+      .filter(Boolean)
+      .filter((item) => {
+        if (filter.target && item.proposalTarget !== filter.target) {
+          return false;
+        }
+        if (filter.scope && item.scope !== filter.scope) {
+          return false;
+        }
+        return true;
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function summarizeLearningPromotionQueue(items) {
+    return {
+      pendingCount: items.filter((item) => item.promotionStatus === 'pending-review').length,
+      priorityCounts: countByNormalizedField(items, 'priority'),
+      recordTypeCounts: countByNormalizedField(items, 'recordType'),
+      scopeCounts: countByNormalizedField(items, 'scope'),
+      statusCounts: countByNormalizedField(items, 'promotionStatus'),
+      targetCounts: countByNormalizedField(items, 'proposalTarget'),
+      total: items.length,
+      workspaceCounts: countByNormalizedField(items, 'workspaceId'),
+    };
+  }
+
+  function getLearningPromotionQueue(filter = {}) {
+    const normalizedFilter = {
+      ...filter,
+      scope: filter.scope ? normalizeLearningPromotionScope(filter.scope) : '',
+      target: filter.target ? normalizeLearningPromotionTarget(filter.target) : '',
+    };
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.status && filter.status !== 'all' && !LEARNING_PROMOTION_STATUSES.includes(filter.status)) {
+      throw new Error(`Unsupported learning promotion status: ${filter.status}`);
+    }
+
+    const items = buildLearningPromotionItems(normalizedFilter);
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        recordType: filter.recordType || null,
+        scope: normalizedFilter.scope || null,
+        status: filter.status || filter.promotionStatus || 'pending-review',
+        target: normalizedFilter.target || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeLearningPromotionQueue(items),
+    };
+  }
+
+  function resolveLearningPromotion(candidateId, { decision = '', note = '', scope = '', target = '' } = {}) {
+    const candidate = store.getLearningCandidate(candidateId);
+    if (!candidate) {
+      throw new Error(`Learning candidate not found: ${candidateId}`);
+    }
+    if (candidate.promotionStatus !== 'pending-review') {
+      throw new Error(`Learning candidate ${candidateId} is not pending review.`);
+    }
+
+    const normalizedDecision = normalizeText(decision);
+    if (!LEARNING_PROMOTION_DECISIONS.includes(normalizedDecision)) {
+      throw new Error(`Unsupported learning promotion decision: ${normalizedDecision}`);
+    }
+
+    const normalizedTarget = normalizeLearningPromotionTarget(target, defaultLearningPromotionTarget(candidate));
+    const normalizedScope = normalizeLearningPromotionScope(scope, candidate.scope || 'mission');
+    if (normalizedScope !== normalizeText(candidate.scope, 'mission')) {
+      throw new Error(
+        `Learning candidate ${candidateId} is scope-locked to ${candidate.scope || 'mission'}; cross-scope promotion is not enabled.`,
+      );
+    }
+
+    const decidedAt = now();
+    const resolutionNote = normalizeText(note, 'Resolved without additional note.');
+    let memoryEntry = null;
+    let nextPromotionStatus = 'rejected';
+
+    if (normalizedDecision === 'approve') {
+      if (normalizedTarget === 'memory') {
+        memoryEntry = harness.addMemoryEntry({
+          scope: normalizedScope,
+          scopeId: resolveLearningPromotionScopeId(candidate, normalizedScope),
+          kind: 'decision',
+          content: formatLearningPromotionMemory({
+            candidate,
+            note: resolutionNote,
+            target: normalizedTarget,
+          }),
+        });
+        nextPromotionStatus = 'promoted';
+      } else {
+        nextPromotionStatus = 'approved';
+      }
+    }
+
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      promotionDecision: {
+        decidedAt,
+        decidedBy: 'local-operator',
+        decision: normalizedDecision,
+        memoryId: memoryEntry?.id || null,
+        note: resolutionNote,
+        rollback: {
+          action: memoryEntry ? 'delete-memory-entry' : 'ignore-learning-candidate-decision',
+          memoryId: memoryEntry?.id || null,
+        },
+        scope: normalizedScope,
+        scopeId: resolveLearningPromotionScopeId(candidate, normalizedScope),
+        target: normalizedTarget,
+      },
+      promotionStatus: nextPromotionStatus,
+      updatedAt: decidedAt,
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+
+    return {
+      learningCandidate: updatedCandidate,
+      memoryEntry,
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
     };
   }
 
@@ -12032,6 +12288,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       acceptedRiskMonitoring: 0,
       approval: 0,
       blockedFollowUp: 0,
+      learningPromotion: 0,
       maintenanceSweep: 0,
       ownerHandoff: 0,
       providerAttention: 0,
@@ -12076,6 +12333,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
       if (item.actionType === 'blocked-follow-up') {
         actionCounts.blockedFollowUp += 1;
+      }
+
+      if (item.actionType === 'learning-promotion') {
+        actionCounts.learningPromotion += 1;
       }
 
       if (item.actionType === 'maintenance-sweep') {
@@ -12404,6 +12665,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ...buildProviderAttentionItems(filter),
       ...buildProviderHealthDriftActionItems(filter),
       ...buildSpecialistFollowUpItems(filter),
+      ...buildLearningPromotionItems(filter),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
@@ -15702,6 +15964,26 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         status: candidate.status,
         workspaceId: candidate.workspaceId || mission.workspaceId,
       });
+
+      if (candidate.promotionDecision?.decidedAt) {
+        timeline.push({
+          at: candidate.promotionDecision.decidedAt,
+          detail: `${candidate.promotionDecision.decision} learning candidate promotion target=${candidate.promotionDecision.target} scope=${candidate.promotionDecision.scope}: ${candidate.promotionDecision.note}`,
+          kind:
+            candidate.promotionDecision.decision === 'approve'
+              ? 'learning-candidate-promotion-approved'
+              : 'learning-candidate-promotion-rejected',
+          learningCandidateId: candidate.id,
+          memoryId: candidate.promotionDecision.memoryId || null,
+          missionId: mission.id,
+          promotionStatus: candidate.promotionStatus || null,
+          recordType: candidate.recordType,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          target: candidate.promotionDecision.target,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
     }
 
     for (const execution of buildProviderExecutionTimeline(providerExecutions)) {
@@ -16996,6 +17278,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
+    getLearningPromotionQueue,
     getMaintenanceOverview,
     getOrchestrationProfilesOverview,
     getOwnerHandoffInbox,
@@ -17037,6 +17320,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     syncEscalations,
     resolveEscalation,
     resolveApproval,
+    resolveLearningPromotion,
     resolveReviewerFollowUp,
     probeProvider,
     remediateProviderAttention,
