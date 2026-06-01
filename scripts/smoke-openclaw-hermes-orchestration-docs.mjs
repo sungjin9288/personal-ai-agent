@@ -42,6 +42,10 @@ assert.equal(
   'node scripts/smoke-identity-session-context-records.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:identity-session-audit-surface'],
+  'node scripts/smoke-identity-session-audit-surface.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -72,6 +76,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-identity-session-context-records.mjs'),
   'reference adoption smoke list must include the identity/session context records smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-identity-session-audit-surface.mjs'),
+  'reference adoption smoke list must include the identity/session audit surface smoke',
 );
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
@@ -106,6 +114,7 @@ for (const term of [
   'stop reason',
   'channel adapter',
   'identitySessionContext',
+  'overview identity-sessions',
   'evidence routing',
 ]) {
   assertContains(backbone, term, `backbone must include ${term}`);
@@ -139,6 +148,7 @@ for (const command of [
   'npm run smoke:provider-fallback-route-decision',
   'npm run smoke:channel-adapter-seam',
   'npm run smoke:identity-session-context-records',
+  'npm run smoke:identity-session-audit-surface',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',

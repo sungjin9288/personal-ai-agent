@@ -23,6 +23,10 @@ const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packagePath));
 
 assert.equal(packageJson.scripts['smoke:identity-session-admin'], 'node scripts/smoke-identity-session-admin.mjs');
+assert.equal(
+  packageJson.scripts['smoke:identity-session-audit-surface'],
+  'node scripts/smoke-identity-session-audit-surface.mjs',
+);
 
 assert.match(identity, /^# Identity Session Administration v1$/m);
 assert.match(identity, /^- status: local-identity-session-admin-current$/m);
@@ -62,6 +66,7 @@ for (const packetItem of [
   'release label and deployment boundary',
   'identity mode and token source',
   'role assignment or revocation reason',
+  'identity/session audit packet from `overview identity-sessions` when gateway route evidence changed',
   'rollback or revocation step',
 ]) {
   assert.match(identity, new RegExp(`- ${escapeRegExp(packetItem)}`));
@@ -69,6 +74,7 @@ for (const packetItem of [
 
 for (const command of [
   'npm run smoke:identity-session-admin',
+  'npm run smoke:identity-session-audit-surface',
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:target-identity-session-operations',
   'npm run smoke:web-auth-rbac',
@@ -95,7 +101,7 @@ assert.match(readme, /npm run smoke:identity-session-admin/);
 console.log(
   JSON.stringify(
     {
-      auditPacketItemCount: 10,
+      auditPacketItemCount: 11,
       controlCount: 5,
       mode: 'identity-session-admin',
       ok: true,

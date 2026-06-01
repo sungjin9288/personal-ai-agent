@@ -32,6 +32,10 @@ assert.equal(
   packageJson.scripts['smoke:target-identity-session-operations'],
   'node scripts/smoke-target-identity-session-operations.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:identity-session-audit-surface'],
+  'node scripts/smoke-identity-session-audit-surface.mjs',
+);
 
 assert.match(targetIdentity, /^# Target Identity Session Operations v1$/m);
 assert.match(targetIdentity, /^- status: local-target-identity-session-operations-current$/m);
@@ -72,6 +76,7 @@ for (const control of [
 
 for (const packetItem of [
   /completed target identity\/session operations evidence capture template for the approved production-like or hosted boundary/,
+  /local gateway identity\/session audit packet from `overview identity-sessions` when comparing target evidence to pilot route evidence/,
   /customer IdP metadata alias, owner, issuer, audience, JWKS rotation owner, and fallback owner/,
   /user lifecycle evidence for provision, invitation, suspension, recovery, deprovision, tenant mapping, and orphan account review/,
   /session lifecycle evidence for login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth/,
@@ -156,6 +161,7 @@ assert.match(
 
 for (const command of [
   'npm run smoke:target-identity-session-operations',
+  'npm run smoke:identity-session-audit-surface',
   'npm run smoke:hosted-identity-session-architecture',
   'npm run smoke:identity-session-admin',
   'npm run smoke:web-auth-rbac',
@@ -202,12 +208,12 @@ console.log(
   JSON.stringify(
     {
       controlCount: 9,
-      identityPacketItemCount: 15,
+      identityPacketItemCount: 16,
       mode: 'target-identity-session-operations',
       ok: true,
       path: 'docs/target-identity-session-operations-v1.md',
       productionReadyClaim: false,
-      requiredCommandCount: 10,
+      requiredCommandCount: 11,
       targetCaptureTemplate: true,
     },
     null,

@@ -110,6 +110,8 @@ Gateway events now carry a policy-owned `identitySessionContext` record. The rec
 
 The first reusable surface is local CLI mission ingress. `mission create` and `mission run` preserve the legacy `identity` compatibility fields while adding `identitySessionContext`, and mission run sessions also store `gatewayIdentitySessionContextId` in `sourceContext`. Mission, workspace, and global operator timelines emit `identity-session-context-recorded`, with summary counts by binding status, policy id, and source type so identity/session/workspace binding can be audited before memory lookup or promotion review.
 
+`overview identity-sessions` now exposes the same records as an operator audit surface without requiring timeline reconstruction. It filters by workspace, mission, session, binding status, source type, and timestamp while preserving the no-raw-secrets/no-raw-customer-payload evidence policy and keeping target identity/session production claims blocked.
+
 ## Backbone Interfaces
 
 | Interface | Purpose | Initial implementation posture |
@@ -131,6 +133,7 @@ npm run smoke:sandbox-decision-timelines
 npm run smoke:provider-fallback-route-decision
 npm run smoke:channel-adapter-seam
 npm run smoke:identity-session-context-records
+npm run smoke:identity-session-audit-surface
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:orchestration-profiles
 npm run smoke:runtime-isolation
@@ -160,3 +163,4 @@ This document does not prove production readiness. Before any production or host
 4. Extend provider fallback events so the route can be inspected from mission, workspace, operator, and provider views. Provider fallback attempts now expose `providerRouteDecision` records with gateway event binding, route, provider set, fallback policy, stop reason, sanitized provider failure metadata, and no-secret evidence policy across mission/workspace/operator/provider surfaces, backed by `smoke:provider-fallback-route-decision`.
 5. Add an adapter seam for future channel connectors without enabling external messaging by default. Channel adapters now expose a disabled-by-default manifest registry, local CLI/web adapter metadata, external messaging stop reason, required enablement gates, and `gatewayEvent.source` adapter evidence backed by `smoke:channel-adapter-seam`.
 6. Promote identity/session binding to a policy-owned gateway record. Gateway events now expose `identitySessionContext` with mission/workspace/session/provider bindings, source/channel adapter metadata, memory scope, trust boundary, and no-secret evidence policy across mission/workspace/operator timelines, backed by `smoke:identity-session-context-records`.
+7. Add an operator audit surface for identity/session records. `overview identity-sessions` now summarizes `identitySessionContext` records by binding status, policy id, channel adapter status, source type, workspace, mission, provider, and memory scope with no-secret evidence policy counters, backed by `smoke:identity-session-audit-surface`.

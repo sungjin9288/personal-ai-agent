@@ -30,7 +30,7 @@ Production-ready remains blocked until the approved target environment proves pe
 | Role claim mapping | viewer token cannot escalate through spoofed role headers | persistent role assignment workflow with audit trail |
 | Shared-secret fallback | local shared-secret auth remains documented as pilot-only | disabled or replaced by target identity provider policy |
 | Session boundary | token expiry and missing/invalid token rejection are documented | logout, revocation, idle timeout, session expiry, and re-auth evidence |
-| Permission audit | release artifacts record gates and changed evidence status | admin audit log with actor, subject, role, timestamp, and reason |
+| Permission audit | release artifacts record gates and changed evidence status, and `overview identity-sessions` summarizes local gateway identity/session records without raw payloads | admin audit log with actor, subject, role, timestamp, and reason |
 
 ## Session Lifecycle
 
@@ -52,6 +52,7 @@ Every identity/session administration change must include:
 - affected subject, role, tenant, workspace, or mission class
 - role assignment or revocation reason
 - verification command and pass/fail result
+- identity/session audit packet from `overview identity-sessions` when gateway route evidence changed
 - artifact hygiene result
 - owner and approval record
 - rollback or revocation step
@@ -61,6 +62,7 @@ Every identity/session administration change must include:
 
 ```bash
 npm run smoke:identity-session-admin
+npm run smoke:identity-session-audit-surface
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:target-identity-session-operations
 npm run smoke:web-auth-rbac

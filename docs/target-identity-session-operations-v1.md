@@ -31,7 +31,7 @@ Production-ready remains blocked until the approved target environment proves cu
 | Session lifecycle | token expiry and invalid token rejection are documented | login, refresh, expiry, logout, revocation, idle timeout, device inventory, and re-auth proof are captured |
 | Role administration | local RBAC role claim enforcement and spoofing rejection pass | persistent role assignment, revocation, delegated admin, approval workflow, and separation-of-duties evidence are captured |
 | Permission propagation | local API checks enforce request roles and tenant binding | permission propagation, cache invalidation, stale permission denial, worker/agent subject propagation, and support surface checks are captured |
-| Audit export | release artifacts record local identity gate status | immutable audit export with actor, subject, tenant, role, session, reason, before/after state, and timestamp is captured |
+| Audit export | release artifacts record local identity gate status, and `overview identity-sessions` exposes gateway identity/session route records without raw payloads | immutable audit export with actor, subject, tenant, role, session, reason, before/after state, and timestamp is captured |
 | Break-glass access | emergency access requirements are documented without target proof | break-glass owner, approver, scope, expiry, monitoring, customer notification, revocation, and post-use review are captured |
 | Support impersonation | support operation gates define customer-safe requirements | support impersonation approval, scoped session, action log, customer-safe update, denial tests, and expiry evidence are captured |
 | Compliance and retention | retention/export/delete gates define identity evidence requirements | identity log retention, legal hold, audit export, privacy deletion, and customer handoff evidence are captured |
@@ -41,6 +41,7 @@ Production-ready remains blocked until the approved target environment proves cu
 Every target identity/session operations review must include:
 
 - completed target identity/session operations evidence capture template for the approved production-like or hosted boundary
+- local gateway identity/session audit packet from `overview identity-sessions` when comparing target evidence to pilot route evidence
 - branch and commit
 - release label and deployment boundary
 - customer IdP metadata alias, owner, issuer, audience, JWKS rotation owner, and fallback owner
@@ -96,6 +97,7 @@ The completed template is still not sufficient for `production-ready` by itself.
 
 ```bash
 npm run smoke:target-identity-session-operations
+npm run smoke:identity-session-audit-surface
 npm run smoke:hosted-identity-session-architecture
 npm run smoke:identity-session-admin
 npm run smoke:web-auth-rbac
