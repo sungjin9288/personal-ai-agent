@@ -35,6 +35,7 @@ for (const heading of [
   '## Decision Boundary',
   '## Secret Manager Controls',
   '## Rotation Evidence Packet',
+  '## Release Blocker Closure Linkage',
   '## Break-Glass Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -63,6 +64,24 @@ for (const packetItem of [
 ]) {
   assert.match(targetSecret, new RegExp(`- ${escapeRegExp(packetItem)}`));
 }
+
+assert.match(
+  targetSecret,
+  /\| Blocker \| Evidence Stop Condition \| Architecture Stop Condition \| Boundary Stop Condition \| Closure Verifications \| Required Proofs \| Required Commands \| Required Evidence Docs \| Production Claim \|/,
+);
+assert.match(
+  targetSecret,
+  /\| target secret manager \| target-secret-manager-evidence-missing \| target-secret-manager-architecture-missing \| target-secret-manager-boundary-missing-or-mismatched \| 3 \| 10 \| 7 \| 6 \| blocked \|/,
+);
+assert.match(targetSecret, /Target secret manager owns the target injection/);
+assert.match(targetSecret, /Target secret manager architecture owns the approved platform and secret manager decision proof/);
+assert.match(targetSecret, /Secret management owns the local redaction and artifact hygiene stop condition/);
+assert.match(targetSecret, /Target provider operations and target clean deployment operations own provider credential injection and clean deployment secret injection integration proof/);
+assert.match(targetSecret, /Target deployment contract and target environment evidence intake own the same-boundary secret manager evidence verification/);
+assert.match(
+  targetSecret,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target secret manager boundary/,
+);
 
 for (const command of [
   'npm run smoke:target-secret-manager',

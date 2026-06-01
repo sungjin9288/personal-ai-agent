@@ -47,6 +47,14 @@ Every target secret rotation or revocation must include:
 - artifact hygiene result
 - rollback, break-glass, or follow-up review date
 
+## Release Blocker Closure Linkage
+
+| Blocker | Evidence Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target secret manager | target-secret-manager-evidence-missing | target-secret-manager-architecture-missing | target-secret-manager-boundary-missing-or-mismatched | 3 | 10 | 7 | 6 | blocked |
+
+Target secret manager owns the target injection, scoped access policy, rotation and revocation packet, audit trail, break-glass governance, leakage review, rollback, and follow-up review evidence contract. Target secret manager architecture owns the approved platform and secret manager decision proof. Secret management owns the local redaction and artifact hygiene stop condition. Target provider operations and target clean deployment operations own provider credential injection and clean deployment secret injection integration proof. Target deployment contract and target environment evidence intake own the same-boundary secret manager evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target secret manager evidence packet proof, target secret manager architecture approval proof, secret injection proof, least-privilege access policy proof, rotation and revocation proof, secret access audit proof, break-glass governance proof, leakage review proof, credential containment proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target secret manager boundary.
+
 ## Break-Glass Rules
 
 - define one owner and one approver before emergency access is used

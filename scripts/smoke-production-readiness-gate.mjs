@@ -797,6 +797,15 @@ assert.match(targetSecretManager, /^- status: local-target-secret-manager-curren
 assert.match(targetSecretManager, /^- productionReadyClaim: false$/m);
 assert.match(targetSecretManager, /not target secret manager evidence/);
 assert.match(targetSecretManager, /Target secret manager readiness remains blocked for production-ready claims/);
+assert.match(targetSecretManager, /^## Release Blocker Closure Linkage$/m);
+assert.match(targetSecretManager, /target-secret-manager-evidence-missing/);
+assert.match(targetSecretManager, /target-secret-manager-architecture-missing/);
+assert.match(targetSecretManager, /target-secret-manager-boundary-missing-or-mismatched/);
+assert.match(targetSecretManager, /same-boundary secret manager evidence verification/);
+assert.match(
+  targetSecretManager,
+  /regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target secret manager boundary/,
+);
 assert.match(observabilityTelemetry, /^# Observability Telemetry v1$/m);
 assert.match(observabilityTelemetry, /^- status: local-observability-telemetry-current$/m);
 assert.match(observabilityTelemetry, /^- productionReadyClaim: false$/m);
