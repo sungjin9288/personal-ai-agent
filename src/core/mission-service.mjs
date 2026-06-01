@@ -56,8 +56,11 @@ import {
 } from './gateway-event-service.mjs';
 import { createId } from './id.mjs';
 import {
+  buildProviderFallbackLearningEvidence,
   buildLearningCandidate,
   formatLearningCandidateArtifactContent,
+  formatProviderFallbackLearningSummary,
+  hasProviderFallbackProviderFailure,
 } from './learning-candidate-service.mjs';
 import { buildRetrievalContext, summarizeMissionRetrievalPreview } from './retrieval-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
@@ -3812,22 +3815,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return candidate || null;
     }
 
+    const fallbackEvidence = buildProviderFallbackLearningEvidence(providerFallback);
+    const shouldPromoteAsProviderLesson = hasProviderFallbackProviderFailure(providerFallback);
+    const fallbackSummary = formatProviderFallbackLearningSummary(providerFallback);
     const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
       ...current,
       evidence: {
         ...current.evidence,
-        providerFallbackPolicy: normalizeText(providerFallback.policyId) || current.evidence?.providerFallbackPolicy || null,
-        providerFallbackStopReasonCounts: providerFallback.fallbackStopReasonCounts || {},
-        providerFallbackSummary: {
-          attemptedProviderIds: ensureArray(providerFallback.attemptedProviderIds),
-          enabled: Boolean(providerFallback.enabled),
-          fallbackUsed: Boolean(providerFallback.fallbackUsed),
-          finalStatus: normalizeText(providerFallback.finalStatus) || null,
-          policyId: normalizeText(providerFallback.policyId) || null,
-          primaryProviderId: normalizeText(providerFallback.primaryProviderId) || null,
-          selectedProviderId: normalizeText(providerFallback.selectedProviderId) || null,
-        },
+        ...fallbackEvidence,
       },
+      proposal: shouldPromoteAsProviderLesson
+        ? {
+            ...current.proposal,
+            target: 'provider-policy',
+          }
+        : current.proposal,
+      recordType: shouldPromoteAsProviderLesson ? 'provider-lesson' : current.recordType,
+      summary: shouldPromoteAsProviderLesson && fallbackSummary ? fallbackSummary : current.summary,
+      title: shouldPromoteAsProviderLesson ? `provider-lesson candidate for ${current.title.replace(/^.* candidate for /, '')}` : current.title,
       updatedAt: now(),
     }));
 
@@ -3836,9 +3841,22 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function attachProviderFallbackSummary(result, providerFallback) {
+    const updatedCandidates = new Map();
+    for (const attempt of ensureArray(providerFallback?.attempts)) {
+      const attemptCandidate = getLatestItem(store.listLearningCandidates({ sessionId: attempt.sessionId }), 'createdAt');
+      if (attemptCandidate) {
+        const updatedCandidate = attachProviderFallbackToLearningCandidate(attemptCandidate, providerFallback);
+        updatedCandidates.set(updatedCandidate.id, updatedCandidate);
+      }
+    }
+    const resultCandidate = result?.learningCandidate?.id
+      ? updatedCandidates.get(result.learningCandidate.id) ||
+        attachProviderFallbackToLearningCandidate(result.learningCandidate, providerFallback)
+      : null;
+
     return {
       ...result,
-      learningCandidate: attachProviderFallbackToLearningCandidate(result?.learningCandidate, providerFallback),
+      learningCandidate: resultCandidate,
       providerFallback,
     };
   }
@@ -16175,6 +16193,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         learningCandidateId: candidate.id,
         missionId: mission.id,
         promotionStatus: candidate.promotionStatus || null,
+        providerFallbackPolicy: candidate.evidence?.providerFallbackPolicy || null,
+        providerFallbackStopReasonCounts: candidate.evidence?.providerFallbackStopReasonCounts || {},
+        providerFallbackSummary: candidate.evidence?.providerFallbackSummary || null,
         recordType: candidate.recordType,
         sessionId: candidate.sessionId,
         status: candidate.status,
