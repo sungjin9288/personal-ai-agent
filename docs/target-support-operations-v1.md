@@ -55,6 +55,14 @@ Every target support operations review must include:
 - release artifact hygiene result, regenerated execution snapshot evidence, and production readiness gate result
 - residual support risk, decision owner, next review date, customer handoff decision, and missed-support containment plan
 
+## Release Blocker Closure Linkage
+
+| Blocker | Operations Stop Condition | Architecture Stop Condition | Boundary Stop Condition | Closure Verifications | Required Proofs | Required Commands | Required Evidence Docs | Production Claim |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| target support operations | target-support-operations-missing | target-support-architecture-missing | target-support-boundary-missing-or-mismatched | 3 | 12 | 11 | 7 | blocked |
+
+Target support operations owns the staffed support coverage, support queue routing, customer communication, ticket audit history, escalation ownership, incident review cadence, on-call handoff, support data handling, residual support risk, customer handoff decision, and missed-support containment evidence contract. Target support architecture owns the support decision proof. Customer support operations and support escalation review own the local pilot support stop conditions. Target deployment contract and target environment evidence intake own the same-boundary support evidence verification. Keep `productionReadyClaim: false` until linked closure verifications have target support operations evidence packet proof, target support architecture approval proof, staffed support coverage proof, support queue routing proof, customer communication proof, ticket audit history proof, escalation ownership proof, incident review cadence proof, on-call handoff proof, support data handling proof, residual support risk proof, release artifact hygiene result, production readiness gate result, and regenerated execution-v1 snapshot evidence from the same approved production-like or hosted target support boundary.
+
 ## Customer Support Rules
 
 - define support owner, incident commander, customer contact, queue owner, escalation owner, incident review owner, and evidence owner before target deployment is presented as production-like
