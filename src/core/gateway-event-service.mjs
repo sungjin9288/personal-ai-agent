@@ -3,6 +3,10 @@ import {
   summarizePermissionDecisionForTimeline,
 } from './permission-decision-service.mjs';
 import {
+  buildGatewayIdentitySessionContext,
+  summarizeIdentitySessionContextForTimeline,
+} from './identity-session-context-service.mjs';
+import {
   buildGatewaySandboxDecision,
   summarizeSandboxDecisionForTimeline,
 } from './sandbox-decision-service.mjs';
@@ -86,6 +90,17 @@ export function normalizeGatewayEvent({
   const normalizedRoute = normalizeText(route || source.route || normalizedEventType.replaceAll('-', '.'));
   const fallbackPolicy = normalizeText(sourceContext.providerFallbackPolicy) || null;
   const fallbackRequested = Boolean(sourceContext.providerFallbackRequested);
+  const identitySessionContext = buildGatewayIdentitySessionContext({
+    at,
+    eventId: id,
+    eventType: normalizedEventType,
+    mission,
+    providerId,
+    route: normalizedRoute,
+    session,
+    source,
+    workspace,
+  });
   const permissionDecision = buildGatewayPermissionDecision({
     at,
     eventId: id,
@@ -129,13 +144,15 @@ export function normalizeGatewayEvent({
     id,
     status: 'recorded',
     identity: {
-      actorType: 'local-operator',
-      missionBound: Boolean(mission?.id),
-      sessionBound: Boolean(session?.id),
-      startedBy: source.startedBy,
-      trustBoundary: 'local-first-runtime',
-      workspaceBound: Boolean(workspace?.id || mission?.workspaceId),
+      actorType: identitySessionContext.actor.actorType,
+      identitySessionContextId: identitySessionContext.id,
+      missionBound: identitySessionContext.subject.missionBound,
+      sessionBound: identitySessionContext.subject.sessionBound,
+      startedBy: identitySessionContext.actor.startedBy,
+      trustBoundary: identitySessionContext.actor.trustBoundary,
+      workspaceBound: identitySessionContext.subject.workspaceBound,
     },
+    identitySessionContext,
     permissionPolicy: {
       approvalRequired: permissionDecision.approvalRequired,
       decision: permissionDecision.decision,
@@ -188,6 +205,7 @@ export function attachGatewayEventToSourceContext(sourceContext = {}, gatewayEve
     ...source,
     ...normalizeProviderFallbackContext(sourceContext),
     gatewayEventId: gatewayEvent?.id || null,
+    gatewayIdentitySessionContextId: gatewayEvent?.identitySessionContext?.id || null,
     gatewayPermissionDecisionId: gatewayEvent?.permissionDecision?.id || null,
     gatewaySandboxDecisionId: gatewayEvent?.sandboxDecision?.id || null,
     gatewayEventSchemaVersion: gatewayEvent?.schemaVersion || GATEWAY_EVENT_SCHEMA_VERSION,
@@ -204,10 +222,12 @@ export function summarizeGatewayEventForTimeline(event) {
   const fallbackPolicy = normalizeText(event?.providerRoute?.policyId);
   const providerSuffix = providerId ? ` provider=${providerId}` : '';
   const fallbackSuffix = fallbackPolicy ? ` fallbackPolicy=${fallbackPolicy}` : '';
+  const identitySummary = summarizeIdentitySessionContextForTimeline(event?.identitySessionContext);
+  const identitySuffix = identitySummary ? ` ${identitySummary}.` : '';
   const permissionSummary = summarizePermissionDecisionForTimeline(event?.permissionDecision);
   const permissionSuffix = permissionSummary ? ` ${permissionSummary}.` : '';
   const sandboxSummary = summarizeSandboxDecisionForTimeline(event?.sandboxDecision);
   const sandboxSuffix = sandboxSummary ? ` ${sandboxSummary}.` : '';
 
-  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}${permissionSuffix}${sandboxSuffix}`;
+  return `${sourceType} gateway event routed through ${routeName}.${providerSuffix}${fallbackSuffix}${identitySuffix}${permissionSuffix}${sandboxSuffix}`;
 }
