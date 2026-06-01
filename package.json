@@ -145,6 +145,7 @@
     "smoke:provider-cost-telemetry": "node scripts/smoke-provider-cost-telemetry.mjs",
     "smoke:provider-retry-telemetry": "node scripts/smoke-provider-retry-telemetry.mjs",
     "smoke:provider-fallback-policy": "node scripts/smoke-provider-fallback-policy.mjs",
+    "smoke:provider-fallback-route-decision": "node scripts/smoke-provider-fallback-route-decision.mjs",
     "smoke:provider-fallback-learning-lessons": "node scripts/smoke-provider-fallback-learning-lessons.mjs",
     "smoke:output-compaction": "node scripts/smoke-output-compaction.mjs",
     "smoke:provider-capability-rate-guard": "node scripts/smoke-provider-capability-rate-guard.mjs",

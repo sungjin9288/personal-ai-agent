@@ -30,6 +30,10 @@ assert.equal(
   'node scripts/smoke-sandbox-decision-timelines.mjs',
 );
 assert.equal(
+  packageJson.scripts['smoke:provider-fallback-route-decision'],
+  'node scripts/smoke-provider-fallback-route-decision.mjs',
+);
+assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
@@ -48,6 +52,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-sandbox-decision-timelines.mjs'),
   'reference adoption smoke list must include the sandbox decision timeline smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-provider-fallback-route-decision.mjs'),
+  'reference adoption smoke list must include the provider fallback route decision smoke',
 );
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
@@ -94,6 +102,7 @@ for (const heading of [
   '## Permission And Sandbox Rules',
   '## Permission Decision Records',
   '## Sandbox Decision Timelines',
+  '## Provider Route Decisions',
   '## Backbone Interfaces',
   '## Required Commands',
   '## Acceptance Rule',
@@ -107,6 +116,7 @@ for (const command of [
   'npm run smoke:gateway-event-learning-candidate',
   'npm run smoke:permission-decision-records',
   'npm run smoke:sandbox-decision-timelines',
+  'npm run smoke:provider-fallback-route-decision',
   'npm run smoke:orchestration-profiles',
   'npm run smoke:runtime-isolation',
   'npm run smoke:provider-fallback-policy',
