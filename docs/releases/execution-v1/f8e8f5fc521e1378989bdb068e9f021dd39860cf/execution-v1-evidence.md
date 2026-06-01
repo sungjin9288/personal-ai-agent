@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-01T14:38:22.907Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-01T14:38:04.299Z
 - branch: codex/provider-fallback-route-inspection
 - commit: f8e8f5fc521e1378989bdb068e9f021dd39860cf

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T14:38:22.907Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T14:38:14.726Z
 - branch: codex/provider-fallback-route-inspection
 - commit: f8e8f5fc521e1378989bdb068e9f021dd39860cf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f8e8f5fc521e1378989bdb068e9f021dd39860cf/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
