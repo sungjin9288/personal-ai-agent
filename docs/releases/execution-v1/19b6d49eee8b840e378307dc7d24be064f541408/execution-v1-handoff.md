@@ -1,14 +1,17 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-01T05:51:48.625Z
+- archivedAt: 2026-06-01T05:41:38.314Z
+- sourcePath: docs/execution-v1-handoff.md
+
+- generatedAt: 2026-06-01T05:41:36.806Z
 - localDate: 2026-06-01
 - branch: codex/gateway-event-learning-candidate
-- commit: 9484ef2a792f3d89f237121edf230e883aa140e5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9484ef2a792f3d89f237121edf230e883aa140e5](releases/execution-v1/9484ef2a792f3d89f237121edf230e883aa140e5)
-- visualArtifactSetSha256: e36a0f0f7809ca05cf6e5d064100aaf75046db8254089f9e8076caf84277c370
-- commitPushStatus: not pushed, origin/codex/gateway-event-learning-candidate not found
+- commit: 19b6d49eee8b840e378307dc7d24be064f541408
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408)
+- visualArtifactSetSha256: 9930bd196174c350d14837aafcf2662abd724bd6fccd87b81582a90aa4eb32a9
+- commitPushStatus: pushed to origin/main
 
 ## Operational State
 
@@ -16,7 +19,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 17 scripts, ok=true, totalDuration=32.7s
+- reference adoption aggregate: ready, 17 scripts, ok=true, totalDuration=33.3s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +54,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 17 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: e36a0f0f7809ca05cf6e5d064100aaf75046db8254089f9e8076caf84277c370
+- visual artifact set: 9930bd196174c350d14837aafcf2662abd724bd6fccd87b81582a90aa4eb32a9
 
 ## Live Provider Handoff
 
@@ -79,7 +82,7 @@ Expected pre-live state:
 3. Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.
 4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+6. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 

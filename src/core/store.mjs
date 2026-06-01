@@ -19,6 +19,8 @@ const DEFAULT_STATE = {
   providerAttentionReminders: [],
   specialistFollowUpReminders: [],
   maintenanceRuns: [],
+  gatewayEvents: [],
+  learningCandidates: [],
   memoryEntries: [],
   factGraphNodes: [],
   factGraphEdges: [],
@@ -43,6 +45,8 @@ function cloneDefaultState() {
     providerAttentionReminders: [],
     specialistFollowUpReminders: [],
     maintenanceRuns: [],
+    gatewayEvents: [],
+    learningCandidates: [],
     memoryEntries: [],
     factGraphNodes: [],
     factGraphEdges: [],
@@ -112,6 +116,8 @@ export function createStore({ rootDir }) {
         ? state.specialistFollowUpReminders
         : [],
       maintenanceRuns: Array.isArray(state.maintenanceRuns) ? state.maintenanceRuns : [],
+      gatewayEvents: Array.isArray(state.gatewayEvents) ? state.gatewayEvents : [],
+      learningCandidates: Array.isArray(state.learningCandidates) ? state.learningCandidates : [],
       memoryEntries: Array.isArray(state.memoryEntries) ? state.memoryEntries : [],
       factGraphNodes: Array.isArray(state.factGraphNodes) ? state.factGraphNodes : [],
       factGraphEdges: Array.isArray(state.factGraphEdges) ? state.factGraphEdges : [],
@@ -194,6 +200,12 @@ export function createStore({ rootDir }) {
     },
     getEscalation(escalationId) {
       return getCollectionItem('escalations', escalationId);
+    },
+    getGatewayEvent(gatewayEventId) {
+      return getCollectionItem('gatewayEvents', gatewayEventId);
+    },
+    getLearningCandidate(learningCandidateId) {
+      return getCollectionItem('learningCandidates', learningCandidateId);
     },
     getMission(missionId) {
       return getCollectionItem('missions', missionId);
@@ -400,6 +412,50 @@ export function createStore({ rootDir }) {
         }),
       );
     },
+    listGatewayEvents(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('gatewayEvents').filter((event) => {
+          if (filter.eventType && event.eventType !== filter.eventType) {
+            return false;
+          }
+          if (filter.missionId && event.bindings?.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.sessionId && event.bindings?.sessionId !== filter.sessionId) {
+            return false;
+          }
+          if (filter.workspaceId && event.bindings?.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
+    listLearningCandidates(filter = {}) {
+      return sortByCreatedAt(
+        listCollection('learningCandidates').filter((candidate) => {
+          if (filter.recordType && candidate.recordType !== filter.recordType) {
+            return false;
+          }
+          if (filter.status && candidate.status !== filter.status) {
+            return false;
+          }
+          if (filter.promotionStatus && candidate.promotionStatus !== filter.promotionStatus) {
+            return false;
+          }
+          if (filter.missionId && candidate.missionId !== filter.missionId) {
+            return false;
+          }
+          if (filter.sessionId && candidate.sessionId !== filter.sessionId) {
+            return false;
+          }
+          if (filter.workspaceId && candidate.workspaceId !== filter.workspaceId) {
+            return false;
+          }
+          return true;
+        }),
+      );
+    },
     listArtifactsBySession(sessionId) {
       return sortByCreatedAt(listCollection('artifacts').filter((artifact) => artifact.sessionId === sessionId));
     },
@@ -562,6 +618,12 @@ export function createStore({ rootDir }) {
     saveMaintenanceRun(maintenanceRun) {
       return saveCollectionItem('maintenanceRuns', maintenanceRun);
     },
+    saveGatewayEvent(gatewayEvent) {
+      return saveCollectionItem('gatewayEvents', gatewayEvent);
+    },
+    saveLearningCandidate(learningCandidate) {
+      return saveCollectionItem('learningCandidates', learningCandidate);
+    },
     saveMemoryEntry(memoryEntry) {
       return saveCollectionItem('memoryEntries', memoryEntry);
     },
@@ -609,6 +671,9 @@ export function createStore({ rootDir }) {
     },
     updateProviderAttentionAcknowledgement(providerAttentionAcknowledgementId, updater) {
       return updateCollectionItem('providerAttentionAcknowledgements', providerAttentionAcknowledgementId, updater);
+    },
+    updateLearningCandidate(learningCandidateId, updater) {
+      return updateCollectionItem('learningCandidates', learningCandidateId, updater);
     },
     updateMemoryEntry(memoryEntryId, updater) {
       return updateCollectionItem('memoryEntries', memoryEntryId, updater);

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-06-01T05:51:41.804Z
+- archivedAt: 2026-06-01T05:41:38.314Z
+- sourcePath: docs/execution-v1-closeout.md
+
+- generatedAt: 2026-06-01T05:41:27.476Z
 - branch: codex/gateway-event-learning-candidate
-- commit: 9484ef2a792f3d89f237121edf230e883aa140e5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- commit: 19b6d49eee8b840e378307dc7d24be064f541408
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/19b6d49eee8b840e378307dc7d24be064f541408/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -493,6 +493,12 @@ async function main() {
         objective: readOption(rest, '--objective', 'Clarify the next best move.'),
         deliverableType: readOption(rest, '--deliverable', ''),
         constraints: parseConstraints(readOption(rest, '--constraints', '')),
+        sourceContext: {
+          channel: 'cli',
+          command: 'mission create',
+          route: 'mission.create',
+          sourceType: 'cli',
+        },
       }),
     );
     return;
@@ -526,6 +532,7 @@ async function main() {
       sourceContext: {
         channel: 'cli',
         command: commandParts.join(' '),
+        route: 'mission.run',
         sourceType: 'cli',
       },
     });
@@ -533,6 +540,8 @@ async function main() {
     printJson({
       approvalId: result.approval ? result.approval.id : null,
       artifactPath: result.artifactPath,
+      gatewayEventId: result.session.sourceContext?.gatewayEventId || null,
+      learningCandidateId: result.learningCandidate?.id || null,
       missionId: result.mission.id,
       provider: result.provider,
       providerFallback: result.providerFallback || null,

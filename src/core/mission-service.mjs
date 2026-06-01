@@ -45,7 +45,16 @@ import {
   normalizeExecutionManifest,
 } from './execution-utils.mjs';
 import { createFactGraphService } from './fact-graph-service.mjs';
+import {
+  attachGatewayEventToSourceContext,
+  normalizeGatewayEvent,
+  summarizeGatewayEventForTimeline,
+} from './gateway-event-service.mjs';
 import { createId } from './id.mjs';
+import {
+  buildLearningCandidate,
+  formatLearningCandidateArtifactContent,
+} from './learning-candidate-service.mjs';
 import { buildRetrievalContext, summarizeMissionRetrievalPreview } from './retrieval-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
@@ -86,6 +95,14 @@ function ensureArray(value) {
 
 function ensureObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function countByNormalizedField(items, fieldName) {
+  return ensureArray(items).reduce((counts, item) => {
+    const key = normalizeText(item?.[fieldName], 'unknown');
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
 }
 
 function formatDateUtc(value) {
@@ -3684,6 +3701,139 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return mission.mode === 'engineering' && isExecutionCapableWorkspace(workspace);
   }
 
+  function recordGatewayEvent({
+    eventType,
+    mission,
+    providerId = '',
+    route = '',
+    session = null,
+    sourceContext = {},
+    workspace,
+  }) {
+    const gatewayEvent = store.saveGatewayEvent(
+      normalizeGatewayEvent({
+        at: now(),
+        eventType,
+        id: createId('gatewayevent'),
+        mission,
+        providerId,
+        route,
+        session,
+        sourceContext,
+        workspace,
+      }),
+    );
+
+    const updatedSession = session?.id
+      ? harness.updateSession(session.id, {
+          sourceContext: attachGatewayEventToSourceContext(session.sourceContext || sourceContext, gatewayEvent),
+        })
+      : null;
+
+    return {
+      gatewayEvent,
+      session: updatedSession,
+    };
+  }
+
+  function writeUpdatedLearningCandidateArtifact(candidate) {
+    if (!candidate?.artifactPath) {
+      return;
+    }
+
+    fs.writeFileSync(candidate.artifactPath, formatLearningCandidateArtifactContent(candidate), 'utf8');
+  }
+
+  function emitLearningCandidate({
+    mission,
+    missionStatus = '',
+    outcomeReason = '',
+    providerFallback = null,
+    providerId = '',
+    reviewerVerdict = '',
+    session,
+    workspace,
+  }) {
+    const currentSession = store.getSession(session.id);
+    const existingCandidate = store.listLearningCandidates({ sessionId: currentSession.id }).at(-1);
+
+    if (existingCandidate) {
+      return existingCandidate;
+    }
+
+    const candidate = store.saveLearningCandidate(
+      buildLearningCandidate({
+        agentRuns: store.listAgentRunsBySession(currentSession.id),
+        artifacts: store.listArtifactsBySession(currentSession.id),
+        at: now(),
+        id: createId('learningcandidate'),
+        mission,
+        missionStatus: missionStatus || mission.status,
+        outcomeReason,
+        providerFallback,
+        providerFailure: getSessionProviderFailureSummary(currentSession.id),
+        providerId,
+        reviewerVerdict,
+        session: currentSession,
+        workspace,
+      }),
+    );
+    const artifact = harness.writeArtifact({
+      missionId: mission.id,
+      sessionId: currentSession.id,
+      role: 'reviewer',
+      kind: 'learning-candidate',
+      fileName: 'learning-candidate.json',
+      title: 'Learning Candidate',
+      content: formatLearningCandidateArtifactContent(candidate),
+    });
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      artifactId: artifact.id,
+      artifactPath: artifact.path,
+      updatedAt: now(),
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+    return updatedCandidate;
+  }
+
+  function attachProviderFallbackToLearningCandidate(candidate, providerFallback) {
+    if (!candidate || !providerFallback) {
+      return candidate || null;
+    }
+
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      evidence: {
+        ...current.evidence,
+        providerFallbackPolicy: normalizeText(providerFallback.policyId) || current.evidence?.providerFallbackPolicy || null,
+        providerFallbackStopReasonCounts: providerFallback.fallbackStopReasonCounts || {},
+        providerFallbackSummary: {
+          attemptedProviderIds: ensureArray(providerFallback.attemptedProviderIds),
+          enabled: Boolean(providerFallback.enabled),
+          fallbackUsed: Boolean(providerFallback.fallbackUsed),
+          finalStatus: normalizeText(providerFallback.finalStatus) || null,
+          policyId: normalizeText(providerFallback.policyId) || null,
+          primaryProviderId: normalizeText(providerFallback.primaryProviderId) || null,
+          selectedProviderId: normalizeText(providerFallback.selectedProviderId) || null,
+        },
+      },
+      updatedAt: now(),
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+    return updatedCandidate;
+  }
+
+  function attachProviderFallbackSummary(result, providerFallback) {
+    return {
+      ...result,
+      learningCandidate: attachProviderFallbackToLearningCandidate(result?.learningCandidate, providerFallback),
+      providerFallback,
+    };
+  }
+
   function getLatestExecutionSessionForMission(missionId) {
     return getLatestItem(store.listExecutionSessions({ missionId }), 'createdAt');
   }
@@ -5288,7 +5438,20 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       });
     }
 
-    return savedMission;
+    const { gatewayEvent } = recordGatewayEvent({
+      eventType: 'mission-create',
+      mission: savedMission,
+      route: normalizeText(input.sourceContext?.route, 'mission.create'),
+      sourceContext: input.sourceContext,
+      workspace,
+    });
+
+    return store.updateMission(savedMission.id, (current) => ({
+      ...current,
+      gatewayEventId: gatewayEvent.id,
+      gatewayEventSchemaVersion: gatewayEvent.schemaVersion,
+      updatedAt: now(),
+    }));
   }
 
   function normalizeAttachmentConversion(conversion) {
@@ -7934,10 +8097,21 @@ function summarizeProviderExecutions(executions) {
       endedAt: now(),
     });
     const failedMission = harness.touchMission(mission.id, 'failed');
+    const workspace = getWorkspace(mission.workspaceId);
+    const learningCandidate = emitLearningCandidate({
+      mission: failedMission,
+      missionStatus: failedMission.status,
+      outcomeReason: `Mission failed during ${currentStage}.`,
+      providerId,
+      reviewerVerdict,
+      session: store.getSession(session.id),
+      workspace,
+    });
 
     return {
       approval: null,
       artifactPath,
+      learningCandidate,
       mission: failedMission,
       provider: providerId,
       reviewerVerdict,
@@ -8427,11 +8601,21 @@ function summarizeProviderExecutions(executions) {
     const parallelSpecialistKinds = parallelPlan.effectiveKinds;
     const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
     const shouldRunParallelSpecialists = parallelSpecialistKinds.length >= 2;
-    const session = harness.startSession({
+    let session = harness.startSession({
       missionId: mission.id,
       provider: providerId,
       sourceContext: normalizeSessionSourceContext(options.sourceContext),
     });
+    const gatewayRecord = recordGatewayEvent({
+      eventType: 'mission-run',
+      mission,
+      providerId,
+      route: normalizeText(options.sourceContext?.route, 'mission.run'),
+      session,
+      sourceContext: options.sourceContext,
+      workspace,
+    });
+    session = gatewayRecord.session || session;
 
     const previousOutputs = {};
 
@@ -8777,14 +8961,24 @@ function summarizeProviderExecutions(executions) {
       });
       const failedMission = harness.touchMission(mission.id, 'failed');
       const failedSession = store.getSession(session.id);
+      const learningCandidate = emitLearningCandidate({
+        mission: failedMission,
+        missionStatus: failedMission.status,
+        outcomeReason: reviewerStage.run.outputSummary,
+        providerId,
+        reviewerVerdict: reviewerStage.output.verdict,
+        session: failedSession,
+        workspace,
+      });
 
       return {
         approval: null,
         artifactPath: executorArtifactPath,
+        learningCandidate,
         mission: failedMission,
         provider: providerId,
         reviewerVerdict: reviewerStage.output.verdict,
-        session: failedSession,
+        session: store.getSession(session.id),
       };
     }
 
@@ -8821,10 +9015,21 @@ function summarizeProviderExecutions(executions) {
         });
       }
 
+      const learningCandidate = emitLearningCandidate({
+        mission: reviewedMission,
+        missionStatus: reviewedMission.status,
+        outcomeReason: 'Mission review completed and execution manifest was prepared.',
+        providerId,
+        reviewerVerdict: reviewerStage.output.verdict,
+        session: store.getSession(session.id),
+        workspace,
+      });
+
       return {
         approval: null,
         artifactPath: executorArtifactPath,
         execution: buildExecutionContext(mission.id),
+        learningCandidate,
         mission: reviewedMission,
         provider: providerId,
         reviewerVerdict: reviewerStage.output.verdict,
@@ -8853,10 +9058,20 @@ function summarizeProviderExecutions(executions) {
         currentStage: 'reviewer',
         status: 'awaiting_approval',
       });
+      const learningCandidate = emitLearningCandidate({
+        mission: awaitingMission,
+        missionStatus: awaitingMission.status,
+        outcomeReason: risk.reason,
+        providerId,
+        reviewerVerdict: reviewerStage.output.verdict,
+        session: store.getSession(session.id),
+        workspace,
+      });
 
       return {
         approval,
         artifactPath: executorArtifactPath,
+        learningCandidate,
         mission: awaitingMission,
         provider: providerId,
         reviewerVerdict: reviewerStage.output.verdict,
@@ -8870,10 +9085,20 @@ function summarizeProviderExecutions(executions) {
       status: 'completed',
       endedAt: now(),
     });
+    const learningCandidate = emitLearningCandidate({
+      mission: completedMission,
+      missionStatus: completedMission.status,
+      outcomeReason: 'Mission completed successfully.',
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+      workspace,
+    });
 
     return {
       approval: null,
       artifactPath: executorArtifactPath,
+      learningCandidate,
       mission: completedMission,
       provider: providerId,
       reviewerVerdict: reviewerStage.output.verdict,
@@ -8936,29 +9161,29 @@ function summarizeProviderExecutions(executions) {
       });
 
       if (!fallbackPolicyDecision.eligible) {
-        return {
-          ...result,
-          providerFallback: buildProviderFallbackSummary({
+        return attachProviderFallbackSummary(
+          result,
+          buildProviderFallbackSummary({
             attempts,
             fallbackProviderIds: fallbackPlan.fallbackProviderIds,
             policyId: fallbackPlan.policyId,
             primaryProviderId: fallbackPlan.primaryProviderId,
             result,
           }),
-        };
+        );
       }
     }
 
-    return {
-      ...latestResult,
-      providerFallback: buildProviderFallbackSummary({
+    return attachProviderFallbackSummary(
+      latestResult,
+      buildProviderFallbackSummary({
         attempts,
         fallbackProviderIds: fallbackPlan.fallbackProviderIds,
         policyId: fallbackPlan.policyId,
         primaryProviderId: fallbackPlan.primaryProviderId,
         result: latestResult,
       }),
-    };
+    );
   }
 
   function ensureExecutionApproval(context) {
@@ -9169,8 +9394,12 @@ function summarizeProviderExecutions(executions) {
     const agentRuns = store.listAgentRunsBySession(session.id);
     const approvals = store.listApprovals({ missionId, sessionId: session.id });
     const artifacts = store.listArtifactsBySession(session.id);
+    const gatewayEvents = store.listGatewayEvents({ sessionId: session.id });
+    const learningCandidates = store.listLearningCandidates({ sessionId: session.id });
     const latestApproval = getLatestItem(approvals, 'createdAt');
     const latestArtifact = getLatestItem(artifacts, 'createdAt');
+    const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const reviewerRun = agentRuns.find((run) => run.role === 'reviewer') || null;
 
     return {
@@ -9181,6 +9410,12 @@ function summarizeProviderExecutions(executions) {
       id: session.id,
       latestApprovalStatus: latestApproval ? latestApproval.status : null,
       latestArtifactFileName: latestArtifact ? latestArtifact.fileName : null,
+      gatewayEventCount: gatewayEvents.length,
+      gatewayEventId: latestGatewayEvent?.id || session.sourceContext?.gatewayEventId || null,
+      gatewayEventType: latestGatewayEvent?.eventType || session.sourceContext?.gatewayEventType || null,
+      learningCandidateCount: learningCandidates.length,
+      latestLearningCandidateId: latestLearningCandidate?.id || null,
+      latestLearningCandidateRecordType: latestLearningCandidate?.recordType || null,
       provider: session.provider,
       reviewerStatus: reviewerRun ? reviewerRun.status : null,
       reviewerSummary: reviewerRun ? reviewerRun.outputSummary : null,
@@ -9210,6 +9445,10 @@ function summarizeProviderExecutions(executions) {
     const relatedMaintenanceRuns = listRelatedMaintenanceRunsForMission(mission.id);
     const latestRelatedMaintenanceRun = getLatestItem(relatedMaintenanceRuns, 'createdAt');
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
+    const gatewayEvents = store.listGatewayEvents({ missionId: mission.id });
+    const learningCandidates = store.listLearningCandidates({ missionId: mission.id });
+    const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
+    const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
     const missionAttachments = store.listMissionAttachments({ missionId: mission.id });
     const latestSession = sessions.at(-1) || null;
     const escalationSummary = summarizeEscalations(escalations);
@@ -9256,6 +9495,14 @@ function summarizeProviderExecutions(executions) {
       escalationReminderCountTotal: escalationSummary.reminderCountTotal,
       escalationTierCounts: escalationSummary.tierCounts,
       id: mission.id,
+      gatewayEventCount: gatewayEvents.length,
+      gatewayEventTypeCounts: countByNormalizedField(gatewayEvents, 'eventType'),
+      latestGatewayEvent,
+      learningCandidateCount: learningCandidates.length,
+      learningCandidateRecordTypeCounts: countByNormalizedField(learningCandidates, 'recordType'),
+      learningCandidateStatusCounts: countByNormalizedField(learningCandidates, 'status'),
+      learningCandidatePromotionStatusCounts: countByNormalizedField(learningCandidates, 'promotionStatus'),
+      latestLearningCandidate,
       latestEscalation: escalationSummary.latestEscalation,
       latestMaintenanceImpactRun: maintenanceImpactSummary.latestRun,
       latestMaintenanceImpactRunAt: maintenanceImpactSummary.latestRunAt,
@@ -9757,6 +10004,9 @@ function summarizeProviderExecutions(executions) {
     const missionMemoryEntries = store
       .listMemoryEntries({ scope: 'mission', scopeId: mission.id })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const learningCandidates = store
+      .listLearningCandidates({ missionId: mission.id })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
     const missionAttachments = store
       .listMissionAttachments({ missionId: mission.id })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -9945,6 +10195,12 @@ function summarizeProviderExecutions(executions) {
           latestReviewerStatus: summary.latestSession?.reviewerStatus || null,
           pendingActions: actionInbox.summary?.pendingActionCount || 0,
           pendingApprovals: summary.approvalCounts?.pending || 0,
+        },
+        learning: {
+          candidateCount: learningCandidates.length,
+          latestCandidateId: learningCandidates.at(-1)?.id || null,
+          latestRecordType: learningCandidates.at(-1)?.recordType || null,
+          pendingReviewCount: Number(summary.learningCandidatePromotionStatusCounts?.['pending-review'] || 0),
         },
       },
       memory: {
@@ -15330,6 +15586,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     const providerExecutions = buildProviderExecutionEntries({ missionId: mission.id });
     const providerAttentionAcknowledgements = store.listProviderAttentionAcknowledgements({ missionId: mission.id });
     const providerAttentionRecoveredItems = buildProviderAttentionRecoveredItems({ missionId: mission.id });
+    const gatewayEvents = store.listGatewayEvents({ missionId: mission.id });
+    const learningCandidates = store.listLearningCandidates({ missionId: mission.id });
     const memoryEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id });
     const timeline = [
       {
@@ -15411,6 +15669,39 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           status: followUp.status,
         });
       }
+    }
+
+    for (const event of gatewayEvents) {
+      timeline.push({
+        at: event.at,
+        detail: summarizeGatewayEventForTimeline(event),
+        gatewayEventId: event.id,
+        gatewayEventType: event.eventType,
+        kind: 'gateway-event-recorded',
+        missionId: mission.id,
+        providerFallbackPolicy: event.providerRoute?.policyId || null,
+        providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
+        route: event.route?.name || null,
+        sessionId: event.bindings?.sessionId || null,
+        sourceType: event.source?.sourceType || null,
+        status: event.status || 'recorded',
+        workspaceId: event.bindings?.workspaceId || mission.workspaceId,
+      });
+    }
+
+    for (const candidate of learningCandidates) {
+      timeline.push({
+        at: candidate.createdAt,
+        detail: candidate.summary || candidate.title,
+        kind: 'learning-candidate-created',
+        learningCandidateId: candidate.id,
+        missionId: mission.id,
+        promotionStatus: candidate.promotionStatus || null,
+        recordType: candidate.recordType,
+        sessionId: candidate.sessionId,
+        status: candidate.status,
+        workspaceId: candidate.workspaceId || mission.workspaceId,
+      });
     }
 
     for (const execution of buildProviderExecutionTimeline(providerExecutions)) {
@@ -16330,6 +16621,8 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       agentRuns: store.listAgentRunsBySession(session.id),
       approvals: store.listApprovals({ missionId: mission.id, sessionId: session.id }),
       artifacts: store.listArtifactsBySession(session.id),
+      gatewayEvents: store.listGatewayEvents({ sessionId: session.id }),
+      learningCandidates: store.listLearningCandidates({ sessionId: session.id }),
       mission,
       summary: summarizeSession(session, mission.id),
       session,
