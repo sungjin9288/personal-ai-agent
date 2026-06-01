@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-01T18:33:30.321Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-01T18:33:28.935Z
 - localDate: 2026-06-02
 - branch: codex/gateway-event-audit-surface
 - commit: 9b59d1c157c01b2e881f814785f0d433a5e6e421
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421](releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421](docs/releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421)
 - visualArtifactSetSha256: 77e473c56e9edb0fbbd45897f14c22b5841cac52597d91a773eaa9833b4a071f
 - commitPushStatus: not pushed, origin/codex/gateway-event-audit-surface not found
 

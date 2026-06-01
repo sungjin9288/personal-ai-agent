@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-01T18:33:30.321Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-01T18:33:21.909Z
 - branch: codex/gateway-event-audit-surface
 - commit: 9b59d1c157c01b2e881f814785f0d433a5e6e421
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9b59d1c157c01b2e881f814785f0d433a5e6e421/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -2845,6 +2845,236 @@ function summarizeIdentitySessionAudit(records, filter = {}) {
   };
 }
 
+function buildGatewayEventAuditRecord({ event, mission = null, workspace = null }) {
+  if (!event) {
+    return null;
+  }
+
+  const bindings = event.bindings || {};
+  const evidencePolicy = event.evidencePolicy || {};
+  const identitySessionContext = event.identitySessionContext || null;
+  const permissionDecision = event.permissionDecision || null;
+  const providerRoute = event.providerRoute || {};
+  const sandboxDecision = event.sandboxDecision || null;
+  const source = event.source || {};
+
+  const providerFallbackProviderIds = ensureArray(providerRoute.fallbackProviderIds)
+    .map((providerId) => normalizeText(providerId))
+    .filter(Boolean);
+
+  return {
+    at: event.at,
+    channel: source.channel || null,
+    channelAdapterId: source.channelAdapterId || null,
+    channelAdapterPolicyId: source.channelAdapterPolicyId || null,
+    channelAdapterStatus: source.channelAdapterStatus || null,
+    channelAdapterStopReason: source.channelAdapterStopReason || null,
+    detail: summarizeGatewayEventForTimeline(event),
+    eventType: event.eventType || null,
+    evidencePolicy: {
+      artifactEligible: evidencePolicy.artifactEligible === true,
+      noRawCustomerPayloads: evidencePolicy.noRawCustomerPayloads === true,
+      noRawSecrets: evidencePolicy.noRawSecrets === true,
+      rawPayloadIncluded: false,
+      routeVisibleInTimeline: evidencePolicy.routeVisibleInTimeline === true,
+    },
+    externalMessagingEnabled: source.externalMessagingEnabled === true,
+    gatewayEventId: event.id,
+    identityBindingStatus: identitySessionContext?.bindingStatus || null,
+    identitySessionContext,
+    identitySessionContextId: identitySessionContext?.id || event.identity?.identitySessionContextId || null,
+    identitySessionContextPolicyId: identitySessionContext?.policyId || null,
+    missionId: mission?.id || bindings.missionId || null,
+    missionTitle: mission?.title || null,
+    permissionApprovalRequired:
+      permissionDecision?.approvalRequired === true || event.permissionPolicy?.approvalRequired === true,
+    permissionDecision,
+    permissionDecisionId: permissionDecision?.id || event.permissionPolicy?.permissionDecisionId || null,
+    permissionDecisionResult: permissionDecision?.decision || event.permissionPolicy?.decision || null,
+    permissionPolicyId: permissionDecision?.policyId || event.permissionPolicy?.policyId || null,
+    providerFallbackAttempt: Number.isFinite(Number(providerRoute.fallbackAttempt))
+      ? Number(providerRoute.fallbackAttempt)
+      : null,
+    providerFallbackAttemptCount: Number.isFinite(Number(providerRoute.fallbackAttemptCount))
+      ? Number(providerRoute.fallbackAttemptCount)
+      : null,
+    providerFallbackPolicy: providerRoute.policyId || null,
+    providerFallbackPrimaryProviderId: providerRoute.primaryProviderId || null,
+    providerFallbackProviderIds,
+    providerFallbackRequested: providerRoute.fallbackRequested === true,
+    providerFallbackStopReason: providerRoute.stopReason || null,
+    providerId: providerRoute.providerId || bindings.providerId || null,
+    route: event.route?.name || source.route || null,
+    sandboxDecision,
+    sandboxDecisionId: sandboxDecision?.id || event.sandboxPolicy?.sandboxDecisionId || null,
+    sandboxMode: sandboxDecision?.mode || event.sandboxPolicy?.mode || null,
+    sandboxPolicyId: sandboxDecision?.policyId || event.sandboxPolicy?.policyId || null,
+    schemaVersion: event.schemaVersion || null,
+    sessionId: bindings.sessionId || null,
+    sourceType: source.sourceType || null,
+    status: event.status || 'recorded',
+    surface: source.surface || event.route?.surface || null,
+    workspaceId: workspace?.id || bindings.workspaceId || mission?.workspaceId || null,
+    workspaceName: workspace?.name || null,
+  };
+}
+
+function summarizeGatewayEventAudit(records, filter = {}) {
+  const channelAdapterStatusCounts = {};
+  const channelCounts = {};
+  const eventTypeCounts = {};
+  const identityBindingStatusCounts = {};
+  const missionCounts = {};
+  const permissionDecisionPolicyCounts = {};
+  const permissionDecisionResultCounts = {};
+  const providerCounts = {};
+  const providerFallbackPolicyCounts = {};
+  const providerFallbackStopReasonCounts = {};
+  const routeCounts = {};
+  const sandboxModeCounts = {};
+  const sandboxPolicyCounts = {};
+  const sourceTypeCounts = {};
+  const workspaceCounts = {};
+  let artifactEligibleCount = 0;
+  let externalMessagingEnabledCount = 0;
+  let identitySessionContextCount = 0;
+  let noRawCustomerPayloadsCount = 0;
+  let noRawSecretsCount = 0;
+  let permissionApprovalRequiredCount = 0;
+  let permissionDecisionCount = 0;
+  let providerFallbackRequestedCount = 0;
+  let routeVisibleInTimelineCount = 0;
+  let sandboxDecisionCount = 0;
+
+  for (const record of records) {
+    const channel = normalizeText(record.channel, 'unknown');
+    channelCounts[channel] = (channelCounts[channel] || 0) + 1;
+
+    const channelAdapterStatus = normalizeText(record.channelAdapterStatus, 'unknown');
+    channelAdapterStatusCounts[channelAdapterStatus] =
+      (channelAdapterStatusCounts[channelAdapterStatus] || 0) + 1;
+
+    const eventType = normalizeText(record.eventType, 'unknown');
+    eventTypeCounts[eventType] = (eventTypeCounts[eventType] || 0) + 1;
+
+    const identityBindingStatus = normalizeText(record.identityBindingStatus, 'unknown');
+    identityBindingStatusCounts[identityBindingStatus] =
+      (identityBindingStatusCounts[identityBindingStatus] || 0) + 1;
+
+    const missionId = normalizeText(record.missionId);
+    if (missionId) {
+      missionCounts[missionId] = (missionCounts[missionId] || 0) + 1;
+    }
+
+    const permissionDecisionResult = normalizeText(record.permissionDecisionResult, 'unknown');
+    permissionDecisionResultCounts[permissionDecisionResult] =
+      (permissionDecisionResultCounts[permissionDecisionResult] || 0) + 1;
+
+    const permissionPolicyId = normalizeText(record.permissionPolicyId, 'unknown');
+    permissionDecisionPolicyCounts[permissionPolicyId] =
+      (permissionDecisionPolicyCounts[permissionPolicyId] || 0) + 1;
+
+    const providerId = normalizeText(record.providerId, 'none');
+    providerCounts[providerId] = (providerCounts[providerId] || 0) + 1;
+
+    const providerFallbackPolicy = normalizeText(record.providerFallbackPolicy);
+    if (providerFallbackPolicy) {
+      providerFallbackPolicyCounts[providerFallbackPolicy] =
+        (providerFallbackPolicyCounts[providerFallbackPolicy] || 0) + 1;
+    }
+
+    const providerFallbackStopReason = normalizeText(record.providerFallbackStopReason);
+    if (providerFallbackStopReason) {
+      providerFallbackStopReasonCounts[providerFallbackStopReason] =
+        (providerFallbackStopReasonCounts[providerFallbackStopReason] || 0) + 1;
+    }
+
+    const route = normalizeText(record.route, 'unknown');
+    routeCounts[route] = (routeCounts[route] || 0) + 1;
+
+    const sandboxMode = normalizeText(record.sandboxMode, 'unknown');
+    sandboxModeCounts[sandboxMode] = (sandboxModeCounts[sandboxMode] || 0) + 1;
+
+    const sandboxPolicyId = normalizeText(record.sandboxPolicyId, 'unknown');
+    sandboxPolicyCounts[sandboxPolicyId] = (sandboxPolicyCounts[sandboxPolicyId] || 0) + 1;
+
+    const sourceType = normalizeText(record.sourceType, 'unknown');
+    sourceTypeCounts[sourceType] = (sourceTypeCounts[sourceType] || 0) + 1;
+
+    const workspaceId = normalizeText(record.workspaceId);
+    if (workspaceId) {
+      workspaceCounts[workspaceId] = (workspaceCounts[workspaceId] || 0) + 1;
+    }
+
+    if (record.evidencePolicy?.artifactEligible === true) {
+      artifactEligibleCount += 1;
+    }
+    if (record.externalMessagingEnabled === true) {
+      externalMessagingEnabledCount += 1;
+    }
+    if (record.identitySessionContextId) {
+      identitySessionContextCount += 1;
+    }
+    if (record.evidencePolicy?.noRawCustomerPayloads === true) {
+      noRawCustomerPayloadsCount += 1;
+    }
+    if (record.evidencePolicy?.noRawSecrets === true) {
+      noRawSecretsCount += 1;
+    }
+    if (record.permissionApprovalRequired === true) {
+      permissionApprovalRequiredCount += 1;
+    }
+    if (record.permissionDecisionId) {
+      permissionDecisionCount += 1;
+    }
+    if (record.providerFallbackRequested === true) {
+      providerFallbackRequestedCount += 1;
+    }
+    if (record.evidencePolicy?.routeVisibleInTimeline === true) {
+      routeVisibleInTimelineCount += 1;
+    }
+    if (record.sandboxDecisionId) {
+      sandboxDecisionCount += 1;
+    }
+  }
+
+  return {
+    channelAdapterStatusCounts,
+    channelCounts,
+    eventTypeCounts,
+    evidencePolicy: {
+      artifactEligibleCount,
+      noRawCustomerPayloadsCount,
+      noRawSecretsCount,
+      rawPayloadIncluded: false,
+      routeVisibleInTimelineCount,
+    },
+    externalMessagingEnabledCount,
+    filter,
+    identityBindingStatusCounts,
+    identitySessionContextCount,
+    latestRecord: getLatestItem(records, 'at'),
+    missionCounts,
+    permissionApprovalRequiredCount,
+    permissionDecisionCount,
+    permissionDecisionPolicyCounts,
+    permissionDecisionResultCounts,
+    productionReadyClaim: false,
+    providerCounts,
+    providerFallbackPolicyCounts,
+    providerFallbackRequestedCount,
+    providerFallbackStopReasonCounts,
+    recordCount: records.length,
+    routeCounts,
+    sandboxDecisionCount,
+    sandboxModeCounts,
+    sandboxPolicyCounts,
+    sourceTypeCounts,
+    stopReason: records.length ? '' : 'no-gateway-events',
+    workspaceCounts,
+  };
+}
+
 function buildSandboxDecisionTimelineEvent({ event, mission = null, workspace = null }) {
   const sandboxDecision = event?.sandboxDecision || null;
   if (!sandboxDecision) {
@@ -17812,6 +18042,84 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
+  function getGatewayEventAudit(filter = {}) {
+    const workspaceId = normalizeText(filter.workspaceId);
+    const missionId = normalizeText(filter.missionId);
+    const sessionId = normalizeText(filter.sessionId);
+    const eventType = normalizeText(filter.eventType);
+    const permissionDecision = normalizeText(filter.permissionDecision);
+    const route = normalizeText(filter.route);
+    const sandboxMode = normalizeText(filter.sandboxMode);
+    const sourceType = normalizeText(filter.sourceType);
+    const since = normalizeTimestampFilter(filter.since, 'gateway event audit since timestamp');
+
+    if (permissionDecision && !['allow', 'approval-required', 'deny'].includes(permissionDecision)) {
+      throw new Error(`Unsupported gateway event permission decision: ${permissionDecision}`);
+    }
+
+    const workspaceFilter = workspaceId ? getWorkspace(workspaceId) : null;
+    const missionFilter = missionId ? getMission(missionId) : null;
+    if (workspaceFilter && missionFilter && missionFilter.workspaceId !== workspaceFilter.id) {
+      throw new Error(`Mission ${missionFilter.id} does not belong to workspace ${workspaceFilter.id}.`);
+    }
+
+    const sessionFilter = sessionId ? store.getSession(sessionId) : null;
+    if (sessionId && !sessionFilter) {
+      throw new Error(`Session not found: ${sessionId}`);
+    }
+    if (sessionFilter && missionFilter && sessionFilter.missionId !== missionFilter.id) {
+      throw new Error(`Session ${sessionFilter.id} does not belong to mission ${missionFilter.id}.`);
+    }
+    if (sessionFilter && workspaceFilter) {
+      const sessionMission = getMission(sessionFilter.missionId);
+      if (sessionMission.workspaceId !== workspaceFilter.id) {
+        throw new Error(`Session ${sessionFilter.id} does not belong to workspace ${workspaceFilter.id}.`);
+      }
+    }
+
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+    const missionById = new Map(store.listMissions().map((mission) => [mission.id, mission]));
+    const records = store
+      .listGatewayEvents({
+        eventType,
+        missionId,
+        sessionId,
+        workspaceId: workspaceFilter?.id || missionFilter?.workspaceId || '',
+      })
+      .map((event) => {
+        const mission = event.bindings?.missionId ? missionById.get(event.bindings.missionId) : null;
+        const workspace = event.bindings?.workspaceId
+          ? workspaceById.get(event.bindings.workspaceId)
+          : mission
+            ? workspaceById.get(mission.workspaceId)
+            : null;
+        return buildGatewayEventAuditRecord({ event, mission, workspace });
+      })
+      .filter(Boolean)
+      .filter((record) => !since || String(record.at || '') >= since)
+      .filter((record) => !route || record.route === route)
+      .filter((record) => !sourceType || record.sourceType === sourceType)
+      .filter((record) => !permissionDecision || record.permissionDecisionResult === permissionDecision)
+      .filter((record) => !sandboxMode || record.sandboxMode === sandboxMode);
+
+    const normalizedFilter = {
+      eventType: eventType || null,
+      missionId: missionId || null,
+      permissionDecision: permissionDecision || null,
+      route: route || null,
+      sandboxMode: sandboxMode || null,
+      sessionId: sessionId || null,
+      since: since || null,
+      sourceType: sourceType || null,
+      workspaceId: workspaceId || null,
+    };
+
+    return {
+      records,
+      summary: summarizeGatewayEventAudit(records, normalizedFilter),
+    };
+  }
+
   function listSessions(missionId) {
     const mission = getMission(missionId);
     return store.listSessionsByMission(mission.id).map((session) => summarizeSession(session, mission.id));
@@ -18207,6 +18515,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     expireLearningPromotions,
     getActionInbox,
     getApprovalInbox,
+    getGatewayEventAudit,
     getGlobalOperatorTimeline,
     getEscalatedInbox,
     getGlobalOverview,
