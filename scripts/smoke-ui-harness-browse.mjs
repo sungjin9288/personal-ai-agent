@@ -1489,6 +1489,12 @@ try {
   assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-packet'), true);
+  assert.equal(appJs.includes('releaseBlockerApiLink:'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyIntakePacket'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-intake-packet'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-intake-packet'), true);
+  assert.equal(appJs.includes('provider-only target packet 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence packet'), true);
   assert.equal(appJs.includes('Submission packet checklist:'), true);
   assert.equal(appJs.includes('/api/providers/events?'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);

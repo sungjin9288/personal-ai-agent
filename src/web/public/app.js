@@ -2941,6 +2941,7 @@ function buildReleaseBlockerSliceSummaryText({
   });
   const apiLink = buildReleaseBlockerApiUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5269,6 +5270,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -5287,6 +5289,12 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5320,6 +5328,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const requiredCommandsPackage = buildReleaseTargetEvidenceRequiredCommandsText({
@@ -5327,6 +5336,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const productionGapGuard = buildReleaseTargetEvidenceProductionGapText({
@@ -5334,6 +5344,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const exceptionRegister = buildReleaseTargetEvidenceExceptionRegisterText({
@@ -5341,6 +5352,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const riskDecisionRegister = buildReleaseTargetEvidenceRiskDecisionRegisterText({
@@ -5348,6 +5360,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const providerEvidenceReferences = buildReleaseTargetEvidenceProviderEvidenceReferencesText({
@@ -5355,6 +5368,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const residualProductionBlockerGuard = buildReleaseTargetEvidenceResidualBlockersText({
@@ -5362,6 +5376,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const closureRulesGuard = buildReleaseTargetEvidenceClosureRulesText({
@@ -5369,6 +5384,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const submissionManifest = buildReleaseTargetEvidenceSubmissionManifestText({
@@ -5376,6 +5392,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const sanitizedEvidenceRegister = buildReleaseTargetEvidenceSanitizedRegisterText({
@@ -5383,6 +5400,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const boundaryConsistencyMap = buildReleaseTargetEvidenceBoundaryConsistencyMapText({
@@ -5390,6 +5408,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const commandRerunLog = buildReleaseTargetEvidenceCommandRerunLogText({
@@ -5397,6 +5416,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const reviewerDecisionRecord = buildReleaseTargetEvidenceReviewerDecisionRecordText({
@@ -5404,6 +5424,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const blockerDispositionRegister = buildReleaseTargetEvidenceBlockerDispositionRegisterText({
@@ -5411,6 +5432,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const releaseRefreshEvidence = buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
@@ -5418,6 +5440,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
     releaseStatus,
   }).trim();
   const closureMatrix = buildReleaseBlockerClosureMatrixPackageText({
@@ -5425,6 +5448,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   }).trim();
   const lines = [
     'Target environment evidence intake submission packet',
@@ -5433,12 +5457,14 @@ function buildReleaseTargetEvidenceIntakePacketText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
     `- targetDeploymentContractDoc: ${targetDeploymentContractDoc}`,
     `- targetProviderEvidenceIntakeDoc: ${targetProviderEvidenceDoc}`,
@@ -7959,6 +7985,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-intake-packet') {
+        void copyReleaseTargetEvidenceProviderOnlyIntakePacket();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-handoff') {
         void copyReleaseBlockerFilterHandoff();
         return;
@@ -9503,6 +9534,36 @@ async function copyReleaseTargetEvidenceIntakePacket({
     promptMessage: 'target evidence intake packet을 복사하세요.',
     shownNotice: 'target evidence intake packet을 표시했습니다.',
     successNotice: 'target evidence intake packet을 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyIntakePacket({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only target evidence packet은 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const packetText = buildReleaseTargetEvidenceIntakePacketText(copyScope);
+  if (!packetText) {
+    setUiNotice('복사할 provider-only target evidence packet이 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packetText, {
+    promptMessage: 'provider-only target evidence packet을 복사하세요.',
+    shownNotice: 'provider-only target evidence packet을 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence packet을 복사했습니다.`,
   });
 }
 
@@ -13946,6 +14007,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-packet="true"
                   data-ui-action="copy-release-target-evidence-intake-packet"
                 >target evidence packet 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-intake-packet="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-intake-packet"
+                    >provider-only target packet 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
