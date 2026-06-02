@@ -1594,6 +1594,11 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary-copy'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-summary'), true);
   assert.equal(appJs.includes('Release blocker slice summary'), true);
+  assert.equal(appJs.includes('buildReleaseBlockerApiUrl'), true);
+  assert.equal(appJs.includes('/api/execution-v1/release-blockers'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-api-link'), true);
+  assert.equal(appJs.includes('copy-release-blocker-api-link'), true);
+  assert.equal(appJs.includes('apiLink:'), true);
   assert.equal(appJs.includes('closureVerificationCount:'), true);
   assert.equal(appJs.includes('requiredProofCount:'), true);
   assert.equal(appJs.includes('closure verifications'), true);
