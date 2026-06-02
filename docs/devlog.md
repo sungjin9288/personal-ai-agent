@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Review Section Copy
+
+- added provider-only target evidence command rerun log and reviewer decision record copy actions so operators can split provider-specific command proof and review decisions from the shared provider-operations row
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in command and reviewer section headers, and passed provider-only scope through the full target evidence packet composition
+- kept normal command log and reviewer decision copy actions unchanged while extending UI harness coverage for the new provider-only review section contracts
+
 ## 2026-06-03 Provider-Only Target Evidence Section Copy
 
 - added provider-only target evidence submission manifest and blocker disposition copy actions so operators can split provider-specific closing evidence from the shared provider-operations row at section level

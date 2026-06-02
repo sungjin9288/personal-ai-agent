@@ -5425,6 +5425,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5433,6 +5434,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -6371,6 +6373,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -6389,6 +6392,12 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6489,6 +6498,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- commandCount: ${commandEntries.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6496,6 +6506,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Command rerun rows:',
     ...rerunRows,
@@ -6518,6 +6529,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -6536,6 +6548,12 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6589,12 +6607,14 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${sliceLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     `- targetEnvironmentEvidenceIntakeDoc: ${targetEnvironmentEvidenceDoc}`,
     `- releaseReadinessDoc: ${releaseReadinessDoc}`,
     '',
@@ -7990,8 +8010,18 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-command-rerun-log') {
+        void copyReleaseTargetEvidenceProviderOnlyCommandRerunLog();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-decision-record') {
         void copyReleaseTargetEvidenceDecisionRecord();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-decision-record') {
+        void copyReleaseTargetEvidenceProviderOnlyDecisionRecord();
         return;
       }
 
@@ -9521,6 +9551,36 @@ async function copyReleaseTargetEvidenceCommandRerunLog({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyCommandRerunLog({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only command log는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const rerunLogText = buildReleaseTargetEvidenceCommandRerunLogText(copyScope);
+  if (!rerunLogText) {
+    setUiNotice('복사할 provider-only target evidence command rerun log가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(rerunLogText, {
+    promptMessage: 'provider-only target evidence command rerun log를 복사하세요.',
+    shownNotice: 'provider-only target evidence command rerun log를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence command rerun log를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceDecisionRecord({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9537,6 +9597,36 @@ async function copyReleaseTargetEvidenceDecisionRecord({
     promptMessage: 'target evidence reviewer decision record를 복사하세요.',
     shownNotice: 'target evidence reviewer decision record를 표시했습니다.',
     successNotice: 'target evidence reviewer decision record를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyDecisionRecord({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only decision record는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const decisionText = buildReleaseTargetEvidenceReviewerDecisionRecordText(copyScope);
+  if (!decisionText) {
+    setUiNotice('복사할 provider-only target evidence reviewer decision record가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(decisionText, {
+    promptMessage: 'provider-only target evidence reviewer decision record를 복사하세요.',
+    shownNotice: 'provider-only target evidence reviewer decision record를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence reviewer decision record를 복사했습니다.`,
   });
 }
 
@@ -14083,12 +14173,32 @@ function renderReleaseStatus() {
                   data-release-target-evidence-command-rerun-log="true"
                   data-ui-action="copy-release-target-evidence-command-rerun-log"
                 >target command log 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-command-rerun-log="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-command-rerun-log"
+                    >provider-only command log 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
                   data-release-target-evidence-decision-record="true"
                   data-ui-action="copy-release-target-evidence-decision-record"
                 >target decision record 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-decision-record="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-decision-record"
+                    >provider-only decision 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
