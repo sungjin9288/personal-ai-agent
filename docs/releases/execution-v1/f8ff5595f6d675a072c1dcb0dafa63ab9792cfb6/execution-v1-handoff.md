@@ -1,14 +1,17 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-02T04:43:11.726Z
+- archivedAt: 2026-06-02T04:43:11.757Z
+- sourcePath: docs/execution-v1-handoff.md
+
+- generatedAt: 2026-06-02T04:23:31.929Z
 - localDate: 2026-06-02
-- branch: codex/web-action-inbox-reminder-filter
-- commit: f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6](releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6)
-- visualArtifactSetSha256: bb37483b9361cd43740e92ba643d3c5b9d7fe11051e74fdccadae0a60674dee2
-- commitPushStatus: not pushed, origin/codex/web-action-inbox-reminder-filter not found
+- branch: codex/ui-learning-promotion-stop-condition-reminders
+- commit: e6f461d60f18a0d97e8fe2dbe14663a00a620964
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6](docs/releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6)
+- visualArtifactSetSha256: 9d9e8bc78920a32a449003af75a5b5c649a085c827735e0551fbee3d07b5be7b
+- commitPushStatus: not pushed, origin/codex/ui-learning-promotion-stop-condition-reminders not found
 
 ## Operational State
 
@@ -16,7 +19,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=46.7s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +54,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: bb37483b9361cd43740e92ba643d3c5b9d7fe11051e74fdccadae0a60674dee2
+- visual artifact set: 9d9e8bc78920a32a449003af75a5b5c649a085c827735e0551fbee3d07b5be7b
 
 ## Live Provider Handoff
 

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T04:43:11.757Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T04:43:11.712Z
 - branch: codex/web-action-inbox-reminder-filter
 - commit: f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f8ff5595f6d675a072c1dcb0dafa63ab9792cfb6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
