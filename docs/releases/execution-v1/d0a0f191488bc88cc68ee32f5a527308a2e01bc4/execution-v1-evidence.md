@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T02:54:49.223Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T02:54:25.033Z
 - branch: codex/learning-promotion-stop-condition-inbox
 - commit: d0a0f191488bc88cc68ee32f5a527308a2e01bc4
