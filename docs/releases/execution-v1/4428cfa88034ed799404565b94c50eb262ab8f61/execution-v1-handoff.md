@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T08:36:03.313Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T08:36:01.871Z
 - localDate: 2026-06-02
 - branch: codex/release-blocker-handoff-api
 - commit: 4428cfa88034ed799404565b94c50eb262ab8f61
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61](releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61](docs/releases/execution-v1/4428cfa88034ed799404565b94c50eb262ab8f61)
 - visualArtifactSetSha256: d05fec46972f78702bc3f28df3dce48494cf5c2209b97cabdd0a654f8f44a6db
 - commitPushStatus: not pushed, origin/codex/release-blocker-handoff-api not found
 
