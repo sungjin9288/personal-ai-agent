@@ -22,6 +22,8 @@ const state = {
   harnessMemoryVisibleCount: 12,
   harnessAttachmentFocus: '',
   missionActions: null,
+  missionActionsFilter: 'all',
+  missionActionsView: null,
   missionDetail: null,
   missionTimeline: null,
   missions: [],
@@ -15729,6 +15731,35 @@ function renderLearningPromotionActionButtons(item) {
   return buttons.join('');
 }
 
+function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
+  if (filter === 'needs-reminder') {
+    return '재알림 필요';
+  }
+  if (filter === 'overdue') {
+    return '기한 초과';
+  }
+  return '전체';
+}
+
+function renderMissionActionsFilterButton(filter, label, count) {
+  const active = (state.missionActionsFilter || 'all') === filter;
+  return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}">${escapeHtml(label)} ${escapeHtml(String(count ?? 0))}</button>`;
+}
+
+function wireMissionActionsFilterControls() {
+  elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const nextFilter = button.dataset.actionInboxFilter || 'all';
+      if (state.missionActionsFilter === nextFilter) {
+        return;
+      }
+      state.missionActionsFilter = nextFilter;
+      await loadMissionActions(state.selectedMissionId);
+      renderMissionActions();
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     elements.actionSummary.innerHTML = emptyStateCard({
@@ -15748,19 +15779,34 @@ function renderMissionActions() {
     return;
   }
 
-  const summary = state.missionActions.summary || {};
+  const visibleActions = getVisibleMissionActionsPayload() || state.missionActions;
+  const summary = visibleActions.summary || {};
+  const fullSummary = state.missionActions.summary || summary;
   elements.actionSummary.innerHTML = `
-    <div class="summary-chip"><span>열린 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
-    <div class="summary-chip"><span>재실행 권장</span><strong>${escapeHtml(String(summary.actionClassCounts?.retryReady ?? 0))}</strong></div>
-    <div class="summary-chip"><span>기한 초과</span><strong>${escapeHtml(String(summary.overdueCounts?.overdue ?? 0))}</strong></div>
+    <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
+    <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
+    <div class="summary-chip"><span>재알림 필요</span><strong>${escapeHtml(String(fullSummary.reminderCounts?.needsReminder ?? 0))}</strong></div>
+    <div class="summary-chip"><span>기한 초과</span><strong>${escapeHtml(String(fullSummary.overdueCounts?.overdue ?? 0))}</strong></div>
+    <div class="action-row action-filter-row">
+      ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
+      ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
+      ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
+    </div>
   `;
+  wireMissionActionsFilterControls();
 
-  const items = state.missionActions.items || [];
+  const items = visibleActions.items || [];
   if (!items.length) {
     elements.actionList.innerHTML = emptyStateCard({
       icon: 'OK',
-      message: '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.',
-      title: '후속 작업 큐가 비어 있습니다',
+      message:
+        (state.missionActionsFilter || 'all') === 'all'
+          ? '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.'
+          : `${getMissionActionsFilterLabel()} 필터에 맞는 열린 후속 작업이 없습니다.`,
+      title:
+        (state.missionActionsFilter || 'all') === 'all'
+          ? '후속 작업 큐가 비어 있습니다'
+          : `${getMissionActionsFilterLabel()} 항목이 없습니다`,
     });
     return;
   }
@@ -15768,7 +15814,11 @@ function renderMissionActions() {
   const callout = `
     <div class="review-callout review-callout-action">
       <strong>후속 작업 ${escapeHtml(String(items.length))}건</strong>
-      <p>재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.</p>
+      <p>${escapeHtml(
+        (state.missionActionsFilter || 'all') === 'all'
+          ? '재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.'
+          : `${getMissionActionsFilterLabel()} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`,
+      )}</p>
     </div>
   `;
 
@@ -16525,6 +16575,7 @@ function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
   state.harnessMemoryResult = null;
   resetHarnessFilterState();
   state.missionActions = null;
+  state.missionActionsView = null;
   state.missionDetail = null;
   state.missionTimeline = null;
   state.selectedArtifactId = null;
@@ -16585,15 +16636,14 @@ async function selectMission(
   renderMissionList();
   renderSelectionBridge();
 
-  const [detail, timelinePayload, actionPayload] = await Promise.all([
+  const [detail, timelinePayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),
     api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    api(`/api/actions?missionId=${encodeURIComponent(missionId)}&promotionStatus=operator-active`),
+    loadMissionActions(missionId),
   ]);
 
   state.missionDetail = detail;
   state.missionTimeline = timelinePayload;
-  state.missionActions = actionPayload;
   await loadHarnessBrowsers(missionId);
   await loadExecutionStatus(missionId);
   ensureExecutionPolling();
@@ -17224,21 +17274,61 @@ async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
   return { documents, memory };
 }
 
+function buildMissionActionsUrl(missionId, { filter = 'all' } = {}) {
+  const params = new URLSearchParams({
+    missionId: String(missionId || ''),
+    promotionStatus: 'operator-active',
+  });
+
+  if (filter === 'needs-reminder') {
+    params.set('needsReminderOnly', 'true');
+  }
+
+  if (filter === 'overdue') {
+    params.set('overdueOnly', 'true');
+  }
+
+  return `/api/actions?${params.toString()}`;
+}
+
+async function loadMissionActions(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.missionActions = null;
+    state.missionActionsView = null;
+    return null;
+  }
+
+  const filter = state.missionActionsFilter || 'all';
+  const fullPayloadPromise = api(buildMissionActionsUrl(missionId, { filter: 'all' }));
+  const viewPayloadPromise =
+    filter === 'all' ? Promise.resolve(null) : api(buildMissionActionsUrl(missionId, { filter }));
+  const [fullPayload, viewPayload] = await Promise.all([fullPayloadPromise, viewPayloadPromise]);
+  state.missionActions = fullPayload;
+  state.missionActionsView = viewPayload;
+  return {
+    fullPayload,
+    viewPayload,
+  };
+}
+
+function getVisibleMissionActionsPayload() {
+  return state.missionActionsView || state.missionActions;
+}
+
 async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } = {}) {
   if (!state.selectedMissionId) {
     return;
   }
 
   const missionId = state.selectedMissionId;
-  const [detail, timelinePayload, actionPayload] = await Promise.all([
+  const [detail, timelinePayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),
     api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    api(`/api/actions?missionId=${encodeURIComponent(missionId)}&promotionStatus=operator-active`),
+    loadMissionActions(missionId),
   ]);
 
   state.missionDetail = detail;
   state.missionTimeline = timelinePayload;
-  state.missionActions = actionPayload;
   await loadExecutionStatus(missionId);
   ensureExecutionPolling();
 

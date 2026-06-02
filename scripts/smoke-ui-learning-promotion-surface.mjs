@@ -134,15 +134,21 @@ try {
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
   assert.equal(appJs.includes('data-learning-promotion-remind'), true);
+  assert.equal(appJs.includes('data-action-inbox-filter'), true);
   assert.equal(appJs.includes('stop-condition 반려'), true);
   assert.equal(appJs.includes('stop-condition 재알림'), true);
+  assert.equal(appJs.includes('재알림 필요'), true);
+  assert.equal(appJs.includes('표시 작업'), true);
+  assert.equal(appJs.includes('missionActionsView'), true);
   assert.equal(appJs.includes('stopConditionRejectCommand'), true);
   assert.equal(appJs.includes('remindCommand'), true);
+  assert.equal(appJs.includes('needsReminderOnly'), true);
+  assert.equal(appJs.includes('overdueOnly'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/expire'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind'), true);
-  assert.equal(appJs.includes('promotionStatus=operator-active'), true);
+  assert.equal(appJs.includes("promotionStatus: 'operator-active'"), true);
   assert.match(appJs, /\['provider-attention', 'specialist-follow-up', 'learning-promotion'\]/);
 
   const initialInbox = await fetchJson(
@@ -259,6 +265,29 @@ try {
   assert.equal(blockedItem.nextReminderAt, '2000-01-01T12:00:00.000Z');
   assert.equal(blockedItem.remindCommand.includes('remind-learning-promotion-stop-conditions'), true);
 
+  const needsReminderFilteredInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active&needsReminderOnly=true`,
+  );
+  assert.equal(needsReminderFilteredInbox.summary.pendingActionCount, 1);
+  assert.equal(needsReminderFilteredInbox.filters.needsReminderOnly, true);
+  assert.equal(needsReminderFilteredInbox.items[0].learningCandidateId, blockedRun.learningCandidateId);
+  assert.equal(needsReminderFilteredInbox.items[0].needsReminder, true);
+
+  const blockedNeedsReminderFilteredInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active&actionClass=blocked&needsReminderOnly=true`,
+  );
+  assert.equal(blockedNeedsReminderFilteredInbox.summary.pendingActionCount, 1);
+  assert.equal(blockedNeedsReminderFilteredInbox.filters.actionClass, 'blocked');
+  assert.equal(blockedNeedsReminderFilteredInbox.filters.needsReminderOnly, true);
+  assert.equal(blockedNeedsReminderFilteredInbox.items[0].learningCandidateId, blockedRun.learningCandidateId);
+
+  const overdueFilteredInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active&overdueOnly=true`,
+  );
+  assert.equal(overdueFilteredInbox.summary.pendingActionCount, 1);
+  assert.equal(overdueFilteredInbox.filters.overdueOnly, true);
+  assert.equal(overdueFilteredInbox.items[0].learningCandidateId, blockedRun.learningCandidateId);
+
   const reminderResult = await postJson(
     `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(blockedRun.learningCandidateId)}/remind`,
     {
@@ -286,6 +315,12 @@ try {
   assert.equal(remindedBlockedItem.reminderCount, 1);
   assert.equal(remindedBlockedItem.needsReminder, false);
   assert.ok(remindedBlockedItem.lastReminderAt);
+
+  const afterReminderFilteredInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active&needsReminderOnly=true`,
+  );
+  assert.equal(afterReminderFilteredInbox.summary.pendingActionCount, 0);
+  assert.equal(afterReminderFilteredInbox.filters.needsReminderOnly, true);
 
   const remindedState = readState();
   const remindedCandidate = remindedState.learningCandidates.find(

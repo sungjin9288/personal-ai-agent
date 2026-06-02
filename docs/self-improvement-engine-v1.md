@@ -107,6 +107,8 @@ node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note
 
 The web operator action inbox uses the same service contract through `/api/actions/learning-promotions/:learningCandidateId/resolve`, `/api/actions/learning-promotions/:learningCandidateId/rollback`, `/api/actions/learning-promotions/:learningCandidateId/remind`, and `/api/actions/learning-promotions/expire`. The UI intentionally keeps promotion manual: pending items expose approve, reject, and expire actions; promoted or approved items expose rollback only when `rollbackEligible` is true, and `verification-blocked` items expose stop-condition reminder and reject-only remediation actions. Resolved terminal states are excluded from the default operator surface through the `promotionStatus=operator-active` action inbox filter.
 
+The web `/api/actions` route also accepts the same action inbox triage filters used by the CLI, including `actionClass`, `needsReminderOnly=true`, and `overdueOnly=true`. The browser UI keeps the full action payload for global counts while showing a filtered action view for `all`, `needs-reminder`, or `overdue`, so reminder triage does not overwrite the mission's total open-action state.
+
 ## Learning Candidate Audit Surface
 
 `overview learning-candidates` exposes learning candidates as a read-only operator audit packet without enabling autonomous promotion. It filters by workspace, mission, session, promotion status, record type, proposed target, scope, provider, provider fallback policy, gateway event route, and timestamp.

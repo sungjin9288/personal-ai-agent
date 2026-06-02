@@ -3275,8 +3275,18 @@ async function handleApi(request, response, url) {
         return;
       }
     }
+    const needsReminderOnly =
+      parseOptionalBooleanQueryParam(url.searchParams, 'needsReminderOnly') ??
+      parseOptionalBooleanQueryParam(url.searchParams, 'needsReminder');
     sendJson(response, 200, service.getActionInbox({
+      actionClass: String(url.searchParams.get('actionClass') || '').trim(),
+      effectiveOwner: String(url.searchParams.get('effectiveOwner') || '').trim(),
       missionId: String(url.searchParams.get('missionId') || '').trim(),
+      needsReminderOnly,
+      overdueOnly: parseOptionalBooleanQueryParam(url.searchParams, 'overdueOnly'),
+      owner: String(url.searchParams.get('owner') || '').trim(),
+      priority: String(url.searchParams.get('priority') || '').trim(),
+      providerId: String(url.searchParams.get('providerId') || '').trim(),
       promotionStatus: String(url.searchParams.get('promotionStatus') || '').trim(),
       workspaceId,
     }));
