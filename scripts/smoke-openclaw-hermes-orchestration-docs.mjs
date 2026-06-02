@@ -201,6 +201,8 @@ for (const term of [
   'Provider lesson',
   'Quality regression',
   'promotionVerification',
+  'promotionStopCondition',
+  'verification-blocked',
   'overview learning-candidates',
 ]) {
   assertContains(engine, term, `engine must include ${term}`);
@@ -215,6 +217,7 @@ for (const heading of [
   '## Memory And Privacy Rules',
   '## Learning Candidate Audit Surface',
   '## Learning Promotion Verification Gate',
+  '## Learning Promotion Stop Conditions',
   '## Self-Improvement Safety Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -229,6 +232,7 @@ for (const command of [
   'npm run smoke:learning-promotion-queue',
   'npm run smoke:learning-candidate-audit-surface',
   'npm run smoke:learning-promotion-verification-gate',
+  'npm run smoke:learning-promotion-verification-stop-condition',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:memory-rerun',

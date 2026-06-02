@@ -83,6 +83,7 @@ export const LEARNING_PROMOTION_STATUSES = [
   'approved',
   'promoted',
   'rejected',
+  'verification-blocked',
   'expired',
   'rolled-back',
 ];
