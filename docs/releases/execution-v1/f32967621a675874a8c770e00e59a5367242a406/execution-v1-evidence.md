@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T00:13:41.619Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T00:13:08.750Z
 - branch: codex/learning-candidate-audit-surface
 - commit: f32967621a675874a8c770e00e59a5367242a406

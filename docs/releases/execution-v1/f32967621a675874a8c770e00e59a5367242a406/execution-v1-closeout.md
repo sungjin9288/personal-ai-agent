@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T00:13:41.619Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T00:13:33.030Z
 - branch: codex/learning-candidate-audit-surface
 - commit: f32967621a675874a8c770e00e59a5367242a406
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
