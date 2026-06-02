@@ -2134,10 +2134,12 @@ function buildReleaseBlockerSliceUrl({
 
 function buildReleaseBlockerApiUrl({
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const normalizedCategory = String(category || '').trim();
+  const shouldIncludeShared = includeShared !== false;
   const normalizedOwner = String(owner || '').trim();
   const normalizedProvider = String(provider || '').trim();
   const params = new URLSearchParams();
@@ -2149,6 +2151,9 @@ function buildReleaseBlockerApiUrl({
   }
   if (normalizedProvider) {
     params.set('provider', normalizedProvider);
+  }
+  if (!shouldIncludeShared) {
+    params.set('includeShared', 'false');
   }
   const query = params.toString();
   return getAbsoluteReleaseUrl(`/api/execution-v1/release-blockers${query ? `?${query}` : ''}`);
@@ -7759,6 +7764,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-provider-only-api-link') {
+        void copyReleaseBlockerProviderOnlyApiLink();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-package') {
         void copyReleaseBlockerFilterPackage();
         return;
@@ -8947,10 +8957,11 @@ async function copyReleaseBlockerFilterSummary({
 
 async function copyReleaseBlockerApiLink({
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const apiUrl = buildReleaseBlockerApiUrl({ category, owner, provider });
+  const apiUrl = buildReleaseBlockerApiUrl({ category, includeShared, owner, provider });
   if (!apiUrl) {
     setUiNotice('복사할 release blocker API 링크가 없습니다.');
     return;
@@ -8960,6 +8971,25 @@ async function copyReleaseBlockerApiLink({
     promptMessage: 'release blocker API 링크를 복사하세요.',
     shownNotice: 'release blocker API 링크를 표시했습니다.',
     successNotice: 'release blocker API 링크를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerProviderOnlyApiLink({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only API 링크는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  await copyReleaseBlockerApiLink({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
   });
 }
 
@@ -13923,6 +13953,16 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-api-link="true"
                   data-ui-action="copy-release-blocker-api-link"
                 >API 링크 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-current-open-blocker-provider-only-api-link="true"
+                      data-ui-action="copy-release-blocker-provider-only-api-link"
+                    >provider-only API 링크 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
