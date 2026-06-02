@@ -61,6 +61,7 @@ const state = {
   releaseAllPreflight: null,
   releaseBlockerCategoryFilter: '',
   releaseBlockerOwnerFilter: '',
+  releaseBlockerProviderFilter: '',
   releaseExpandedHistoryId: '',
   releaseFocusedBlockerId: '',
   releaseFocusedProductionBlockerIndex: '',
@@ -713,6 +714,7 @@ function parseUiStateFromUrl() {
     missionId: normalizeUiParam(params.get('mission')),
     releaseBlockerCategoryFilter: normalizeUiParam(params.get('rbcategory')),
     releaseBlockerOwnerFilter: normalizeUiParam(params.get('rbowner')),
+    releaseBlockerProviderFilter: normalizeUiParam(params.get('rbprovider')),
     releaseFocusedBlockerId: normalizeUiParam(params.get('rblocker')),
     releaseFocusedProductionBlockerIndex: normalizeReleaseProductionBlockerQueryIndex(params.get('rpblocker')),
     releaseFocusedProvider: normalizeUiParam(params.get('rcard')),
@@ -773,6 +775,10 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseBlockerOwnerFilter !== undefined
       ? normalizeUiParam(overrides.releaseBlockerOwnerFilter)
       : normalizeUiParam(state.releaseBlockerOwnerFilter);
+  const releaseBlockerProviderFilter =
+    overrides.releaseBlockerProviderFilter !== undefined
+      ? normalizeUiParam(overrides.releaseBlockerProviderFilter)
+      : normalizeUiParam(state.releaseBlockerProviderFilter);
   const releaseFocusedHistoryId =
     overrides.releaseFocusedHistoryId !== undefined
       ? normalizeUiParam(overrides.releaseFocusedHistoryId)
@@ -868,6 +874,11 @@ function buildUiStateUrl(overrides = {}) {
     } else {
       params.delete('rbowner');
     }
+    if (releaseBlockerProviderFilter) {
+      params.set('rbprovider', releaseBlockerProviderFilter);
+    } else {
+      params.delete('rbprovider');
+    }
     if (releaseFocusedBlockerId) {
       params.set('rblocker', releaseFocusedBlockerId);
     } else {
@@ -916,6 +927,7 @@ function buildUiStateUrl(overrides = {}) {
     params.delete('rpblocker');
     params.delete('rbcategory');
     params.delete('rbowner');
+    params.delete('rbprovider');
     params.delete('rcard');
     params.delete('rhistory');
     params.delete('rartifact');
@@ -2050,6 +2062,7 @@ function isReleaseBlockerActionVisibleForFilter(
   {
     category = state.releaseBlockerCategoryFilter,
     owner = state.releaseBlockerOwnerFilter,
+    provider = state.releaseBlockerProviderFilter,
   } = {},
 ) {
   if (!blockerAction) {
@@ -2057,10 +2070,16 @@ function isReleaseBlockerActionVisibleForFilter(
   }
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const actionCategory = String(blockerAction.category || '').trim();
   const actionOwner = String(blockerAction.owner || '').trim();
   return (!normalizedCategory || actionCategory === normalizedCategory)
-    && (!normalizedOwner || actionOwner === normalizedOwner);
+    && (!normalizedOwner || actionOwner === normalizedOwner)
+    && (
+      !normalizedProvider
+      || isReleaseSharedProviderBlockerAction(blockerAction)
+      || doesReleaseBlockerActionMatchProvider(blockerAction, normalizedProvider)
+    );
 }
 
 function getFilteredReleaseCurrentOpenBlockerActions(releaseStatus = state.releaseStatus) {
@@ -2093,16 +2112,19 @@ function getReleaseCountRecordEntries(record = {}) {
 function buildReleaseBlockerSliceUrl({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   return `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
     releaseBlockerCategoryFilter: normalizedCategory,
     releaseBlockerOwnerFilter: normalizedOwner,
+    releaseBlockerProviderFilter: normalizedProvider,
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex: '',
-    releaseFocusedProvider: '',
+    releaseFocusedProvider: normalizedProvider,
     releaseFocusedHistoryId: '',
     releaseHistoryOutcome: '',
     releaseHistoryProvider: '',
@@ -2170,6 +2192,7 @@ function buildReleaseProductionBlockerSummaryText({
     detailTab: 'release',
     releaseBlockerCategoryFilter: '',
     releaseBlockerOwnerFilter: '',
+    releaseBlockerProviderFilter: '',
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex: '',
     releaseFocusedProvider: '',
@@ -2229,6 +2252,7 @@ function buildReleaseProductionBlockerHandoffText({
     detailTab: 'release',
     releaseBlockerCategoryFilter: '',
     releaseBlockerOwnerFilter: '',
+    releaseBlockerProviderFilter: '',
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex,
     releaseFocusedProvider: '',
@@ -2279,6 +2303,7 @@ function buildReleaseProductionBlockerCommandText({
     detailTab: 'release',
     releaseBlockerCategoryFilter: '',
     releaseBlockerOwnerFilter: '',
+    releaseBlockerProviderFilter: '',
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex,
     releaseFocusedProvider: '',
@@ -2325,6 +2350,7 @@ function buildReleaseProductionBlockerPackageText({
     detailTab: 'release',
     releaseBlockerCategoryFilter: '',
     releaseBlockerOwnerFilter: '',
+    releaseBlockerProviderFilter: '',
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex,
     releaseFocusedProvider: '',
@@ -2532,6 +2558,7 @@ function buildReleaseProviderBlockerPackageLines(blockerActions = []) {
       detailTab: 'release',
       releaseBlockerCategoryFilter: '',
       releaseBlockerOwnerFilter: '',
+      releaseBlockerProviderFilter: '',
       releaseFocusedBlockerId: actionId,
       releaseFocusedProductionBlockerIndex: '',
       releaseFocusedProvider: actionProvider,
@@ -2604,6 +2631,7 @@ function buildReleaseProviderReadinessUrl(provider = '') {
     detailTab: 'release',
     releaseBlockerCategoryFilter: '',
     releaseBlockerOwnerFilter: '',
+    releaseBlockerProviderFilter: '',
     releaseFocusedBlockerId: '',
     releaseFocusedProductionBlockerIndex: '',
     releaseFocusedProvider: normalizedProvider,
@@ -2844,6 +2872,7 @@ function buildReleaseBlockerSliceSummaryText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -2853,6 +2882,7 @@ function buildReleaseBlockerSliceSummaryText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const sliceSummary = getReleaseBlockerSliceSummary({
     blockerActions: visibleActions,
     totalActions: allActions,
@@ -2860,6 +2890,7 @@ function buildReleaseBlockerSliceSummaryText({
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const topBlockerLabel = sliceSummary.topVisibleBlockerLabel
     ? `${sliceSummary.topVisibleBlockerId || 'unknown'}: ${sliceSummary.topVisibleBlockerLabel}`
@@ -2868,6 +2899,7 @@ function buildReleaseBlockerSliceSummaryText({
     'Release blocker slice summary',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- closureVerificationCount: ${sliceSummary.closureVerificationCount}`,
     `- targetBoundaryRequired: ${sliceSummary.targetBoundaryRequiredCount}/${sliceSummary.visibleCount}`,
@@ -3168,6 +3200,7 @@ function buildReleaseBlockerSliceHandoffText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -3177,9 +3210,11 @@ function buildReleaseBlockerSliceHandoffText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const topVisibleAction = visibleActions[0] || null;
   const formatEvidenceDoc = (doc = {}) => {
@@ -3221,6 +3256,7 @@ function buildReleaseBlockerSliceHandoffText({
     'Release blocker slice handoff',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
     `- releaseLink: ${sliceLink}`,
     `- topVisibleBlocker: ${topVisibleAction ? `${String(topVisibleAction.id || 'unknown').trim()}: ${String(topVisibleAction.blocker || topVisibleAction.stopReason || 'current open blocker').trim()}` : 'none'}`,
@@ -3237,6 +3273,7 @@ function buildReleaseBlockerSliceClosureChecklistText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -3246,9 +3283,11 @@ function buildReleaseBlockerSliceClosureChecklistText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const topVisibleAction = visibleActions[0] || null;
   const formatEvidenceDoc = (doc = {}) => {
@@ -3293,6 +3332,7 @@ function buildReleaseBlockerSliceClosureChecklistText({
     'Release blocker slice closure checklist',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
     `- closureVerificationCount: ${visibleActions.filter((item) => Boolean(getReleaseBlockerClosureVerification(item).id)).length}`,
     `- releaseLink: ${sliceLink}`,
@@ -3323,6 +3363,7 @@ function buildReleaseBlockerSliceCommandText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -3332,6 +3373,7 @@ function buildReleaseBlockerSliceCommandText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const commandEntries = visibleActions.flatMap((item) => {
     const actionId = String(item.id || '').trim();
     const blockerLabel = String(item.blocker || item.stopReason || 'current open blocker').trim();
@@ -3352,11 +3394,13 @@ function buildReleaseBlockerSliceCommandText({
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const lines = [
     'Release blocker slice commands',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
     `- commandCount: ${commandEntries.length}`,
     `- releaseLink: ${sliceLink}`,
@@ -3378,6 +3422,7 @@ function buildReleaseBlockerSliceEvidenceText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -3387,6 +3432,7 @@ function buildReleaseBlockerSliceEvidenceText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const evidenceByKey = new Map();
   visibleActions.forEach((item) => {
     const actionId = String(item.id || '').trim();
@@ -3428,11 +3474,13 @@ function buildReleaseBlockerSliceEvidenceText({
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const lines = [
     'Release blocker slice evidence',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
     `- evidenceDocCount: ${evidenceEntries.length}`,
     `- releaseLink: ${sliceLink}`,
@@ -3456,6 +3504,7 @@ function buildReleaseBlockerClosureMatrixPackageText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -3465,9 +3514,11 @@ function buildReleaseBlockerClosureMatrixPackageText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
     '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
@@ -3494,6 +3545,7 @@ function buildReleaseBlockerClosureMatrixPackageText({
           detailTab: 'release',
           releaseBlockerCategoryFilter: '',
           releaseBlockerOwnerFilter: '',
+          releaseBlockerProviderFilter: '',
           releaseFocusedBlockerId: actionId,
           releaseFocusedProductionBlockerIndex: '',
           releaseFocusedProvider: provider,
@@ -3531,6 +3583,7 @@ function buildReleaseBlockerClosureMatrixPackageText({
     'Target environment blocker closure matrix package',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleBlockers: ${visibleActions.length}/${allActions.length}`,
     `- closureVerificationCount: ${visibleActions.filter((item) => Boolean(getReleaseBlockerClosureVerification(item).id)).length}`,
     `- releaseLink: ${sliceLink}`,
@@ -3566,6 +3619,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -3576,6 +3630,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -3583,6 +3638,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -3678,6 +3734,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
     'Target evidence submission manifest',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -6339,6 +6396,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
           detailTab: 'release',
           releaseBlockerCategoryFilter: '',
           releaseBlockerOwnerFilter: '',
+          releaseBlockerProviderFilter: '',
           releaseFocusedBlockerId: actionId,
           releaseFocusedProductionBlockerIndex: '',
           releaseFocusedProvider: provider,
@@ -6630,16 +6688,24 @@ function focusReleaseProductionBlocker(blockerIndex = '', { historyMode = 'repla
 function setReleaseBlockerFilter({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   historyMode = 'replace',
 } = {}) {
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const actions = getReleaseCurrentOpenBlockerActions();
+  const providerReadiness = state.releaseStatus?.providerReadiness || [];
   const categoryIsValid = !normalizedCategory || actions.some((item) => String(item.category || '').trim() === normalizedCategory);
   const ownerIsValid = !normalizedOwner || actions.some((item) => String(item.owner || '').trim() === normalizedOwner);
+  const providerIsValid = !normalizedProvider || providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider);
 
   state.releaseBlockerCategoryFilter = categoryIsValid ? normalizedCategory : '';
   state.releaseBlockerOwnerFilter = ownerIsValid ? normalizedOwner : '';
+  state.releaseBlockerProviderFilter = providerIsValid ? normalizedProvider : '';
+  if (state.releaseBlockerProviderFilter) {
+    state.releaseFocusedProvider = state.releaseBlockerProviderFilter;
+  }
 
   if (
     state.releaseFocusedBlockerId
@@ -6712,6 +6778,7 @@ function clearReleaseProductionBlockerFocus({ historyMode = 'replace' } = {}) {
 function clearReleaseBlockerFilter({ historyMode = 'replace' } = {}) {
   state.releaseBlockerCategoryFilter = '';
   state.releaseBlockerOwnerFilter = '';
+  state.releaseBlockerProviderFilter = '';
   renderReleaseStatus();
   writeUiStateToUrl({ historyMode });
 }
@@ -6797,25 +6864,43 @@ function applyReleaseProductionBlockerUrlState(blockerIndex = '') {
 function applyReleaseBlockerFilterUrlState({
   category = '',
   owner = '',
+  provider = '',
 } = {}) {
   const actions = getReleaseCurrentOpenBlockerActions();
+  const providerReadiness = state.releaseStatus?.providerReadiness || [];
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   state.releaseBlockerCategoryFilter = actions.some((item) => String(item.category || '').trim() === normalizedCategory)
     ? normalizedCategory
     : '';
   state.releaseBlockerOwnerFilter = actions.some((item) => String(item.owner || '').trim() === normalizedOwner)
     ? normalizedOwner
     : '';
+  state.releaseBlockerProviderFilter = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
+    ? normalizedProvider
+    : '';
+  if (state.releaseBlockerProviderFilter && !state.releaseFocusedProvider) {
+    state.releaseFocusedProvider = state.releaseBlockerProviderFilter;
+  }
   renderReleaseStatus();
 }
 
 function applyReleaseProviderUrlState(provider = '') {
   const normalizedProvider = String(provider || '').trim();
   const providerReadiness = state.releaseStatus?.providerReadiness || [];
-  state.releaseFocusedProvider = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
-    ? normalizedProvider
-    : '';
+  if (!normalizedProvider) {
+    const normalizedFilterProvider = String(state.releaseBlockerProviderFilter || '').trim();
+    state.releaseFocusedProvider = providerReadiness.some(
+      (item) => String(item.provider || '').trim() === normalizedFilterProvider,
+    )
+      ? normalizedFilterProvider
+      : '';
+  } else {
+    state.releaseFocusedProvider = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
+      ? normalizedProvider
+      : '';
+  }
   renderReleaseStatus();
 }
 
@@ -7470,6 +7555,7 @@ function wireQuickActions(scope = document) {
           category: button.dataset.uiCategory || '',
           historyMode: 'push',
           owner: button.dataset.uiOwner || '',
+          provider: button.dataset.uiProvider || '',
         });
         setUiNotice('current open blocker 목록을 선택한 triage 기준으로 좁혔습니다.');
         return;
@@ -8575,6 +8661,7 @@ async function resetCurrentView() {
 async function copyReleaseTriageLink({
   blockerCategory = state.releaseBlockerCategoryFilter,
   blockerOwner = state.releaseBlockerOwnerFilter,
+  blockerProvider = state.releaseBlockerProviderFilter,
   focusedBlockerId = state.releaseFocusedBlockerId,
   focusedProductionBlockerIndex = state.releaseFocusedProductionBlockerIndex,
   focusedProvider = state.releaseFocusedProvider,
@@ -8588,6 +8675,7 @@ async function copyReleaseTriageLink({
     detailTab: 'release',
     releaseBlockerCategoryFilter: blockerCategory,
     releaseBlockerOwnerFilter: blockerOwner,
+    releaseBlockerProviderFilter: blockerProvider,
     releaseFocusedBlockerId: focusedBlockerId,
     releaseFocusedProductionBlockerIndex: focusedProductionBlockerIndex,
     releaseFocusedProvider: focusedProvider,
@@ -12847,11 +12935,13 @@ function renderReleaseStatus() {
   ).trim();
   const blockerCategoryFilter = String(state.releaseBlockerCategoryFilter || '').trim();
   const blockerOwnerFilter = String(state.releaseBlockerOwnerFilter || '').trim();
-  const hasBlockerFilter = Boolean(blockerCategoryFilter || blockerOwnerFilter);
+  const blockerProviderFilter = String(state.releaseBlockerProviderFilter || '').trim();
+  const hasBlockerFilter = Boolean(blockerCategoryFilter || blockerOwnerFilter || blockerProviderFilter);
   const visibleCurrentOpenBlockerActions = currentOpenBlockerActions.filter((item) =>
     isReleaseBlockerActionVisibleForFilter(item, {
       category: blockerCategoryFilter,
       owner: blockerOwnerFilter,
+      provider: blockerProviderFilter,
     }),
   );
   const hasEmptyBlockerFilter = hasBlockerFilter
@@ -13687,10 +13777,10 @@ function renderReleaseStatus() {
               <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
               <p>${escapeHtml(topPriorityBlockerId ? `Top priority ${topPriorityBlockerId}: ${topPriorityBlockerLabel}` : 'current open blocker triage summary가 없습니다.')}</p>
               ${hasBlockerFilter
-                ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')}</p>`
+                ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')} · provider ${escapeHtml(blockerProviderFilter || 'all')}</p>`
                 : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible</p>'}
               ${hasEmptyBlockerFilter
-                ? `<p class="item-meta" data-release-current-open-blocker-filter-empty="true">이 category/owner 조합에 해당하는 current open blocker가 없습니다. category 또는 owner 한쪽만 유지하거나 필터를 해제하세요.</p>`
+                ? `<p class="item-meta" data-release-current-open-blocker-filter-empty="true">이 category/owner/provider 조합에 해당하는 current open blocker가 없습니다. category, owner, provider 중 하나만 유지하거나 필터를 해제하세요.</p>`
                 : ''}
               <p class="item-meta" data-release-current-open-blocker-slice-summary="true">
                 slice metrics ·
@@ -13716,6 +13806,7 @@ function renderReleaseStatus() {
                           data-ui-action="filter-release-blockers"
                           data-ui-category="${escapeHtml(category)}"
                           data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                          data-ui-provider="${escapeHtml(blockerProviderFilter)}"
                           ${blockerCategoryFilter === category ? 'disabled' : ''}
                         >${escapeHtml(category)} ${escapeHtml(String(count))}</button>
                       `,
@@ -13733,6 +13824,7 @@ function renderReleaseStatus() {
                           data-ui-action="filter-release-blockers"
                           data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                           data-ui-owner="${escapeHtml(owner)}"
+                          data-ui-provider="${escapeHtml(blockerProviderFilter)}"
                           ${blockerOwnerFilter === owner ? 'disabled' : ''}
                         >${escapeHtml(owner)} ${escapeHtml(String(count))}</button>
                       `,
@@ -13743,10 +13835,16 @@ function renderReleaseStatus() {
                   ? currentOpenBlockerProviderEntries
                     .map(
                       ([provider, count]) => `
-                        <span
-                          class="mini-badge status-failed"
+                        <button
+                          class="ghost-button"
+                          type="button"
                           data-release-current-open-blocker-provider-count="${escapeHtml(provider)}"
-                        >${escapeHtml(provider)} ${escapeHtml(String(count))}</span>
+                          data-ui-action="filter-release-blockers"
+                          data-ui-category="${escapeHtml(blockerCategoryFilter)}"
+                          data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                          data-ui-provider="${escapeHtml(provider)}"
+                          ${blockerProviderFilter === provider ? 'disabled' : ''}
+                        >${escapeHtml(provider)} ${escapeHtml(String(count))}</button>
                       `,
                     )
                     .join('')
@@ -13904,6 +14002,7 @@ function renderReleaseStatus() {
                       data-ui-action="filter-release-blockers"
                       data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                       data-ui-owner=""
+                      data-ui-provider=""
                     >category만 유지</button>
                     <button
                       class="ghost-button"
@@ -13912,9 +14011,35 @@ function renderReleaseStatus() {
                       data-ui-action="filter-release-blockers"
                       data-ui-category=""
                       data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                      data-ui-provider=""
                     >owner만 유지</button>
+                    ${blockerProviderFilter
+                      ? `
+                        <button
+                          class="ghost-button"
+                          type="button"
+                          data-release-current-open-blocker-filter-empty-provider="true"
+                          data-ui-action="filter-release-blockers"
+                          data-ui-category=""
+                          data-ui-owner=""
+                          data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                        >provider만 유지</button>
+                      `
+                      : ''}
                   `
-                  : ''}
+                  : hasEmptyBlockerFilter && blockerProviderFilter
+                    ? `
+                      <button
+                        class="ghost-button"
+                        type="button"
+                        data-release-current-open-blocker-filter-empty-provider="true"
+                        data-ui-action="filter-release-blockers"
+                        data-ui-category=""
+                        data-ui-owner=""
+                        data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                      >provider만 유지</button>
+                    `
+                    : ''}
                 ${hasBlockerFilter
                   ? `<button class="ghost-button" type="button" data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}" data-ui-action="clear-release-blocker-filter">${hasEmptyBlockerFilter ? '조합 해제' : '필터 해제'}</button>`
                   : ''}
@@ -16871,6 +16996,7 @@ async function loadReleaseStatus({
   const previousReleaseState = {
     blockerCategoryFilter: state.releaseBlockerCategoryFilter,
     blockerOwnerFilter: state.releaseBlockerOwnerFilter,
+    blockerProviderFilter: state.releaseBlockerProviderFilter,
     focusedBlockerId: state.releaseFocusedBlockerId,
     focusedProductionBlockerIndex: state.releaseFocusedProductionBlockerIndex,
     focusedProvider: state.releaseFocusedProvider,
@@ -16918,6 +17044,17 @@ async function loadReleaseStatus({
     )
   ) {
     state.releaseBlockerOwnerFilter = '';
+  }
+  if (
+    state.releaseBlockerProviderFilter
+    && !payload.providerReadiness?.some(
+      (item) => String(item.provider || '').trim() === state.releaseBlockerProviderFilter,
+    )
+  ) {
+    state.releaseBlockerProviderFilter = '';
+  }
+  if (state.releaseBlockerProviderFilter && !state.releaseFocusedProvider) {
+    state.releaseFocusedProvider = state.releaseBlockerProviderFilter;
   }
   if (
     state.releaseFocusedBlockerId
@@ -16969,6 +17106,7 @@ async function loadReleaseStatus({
     || previousReleaseState.focusedProductionBlockerIndex !== state.releaseFocusedProductionBlockerIndex
     || previousReleaseState.blockerCategoryFilter !== state.releaseBlockerCategoryFilter
     || previousReleaseState.blockerOwnerFilter !== state.releaseBlockerOwnerFilter
+    || previousReleaseState.blockerProviderFilter !== state.releaseBlockerProviderFilter
     || previousReleaseState.focusedProvider !== state.releaseFocusedProvider
     || previousReleaseState.focusedHistoryId !== state.releaseFocusedHistoryId
     || previousReleaseState.historyFilterOutcome !== state.releaseHistoryFilterOutcome
@@ -17288,6 +17426,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
     applyReleaseBlockerFilterUrlState({
       category: urlState.releaseBlockerCategoryFilter,
       owner: urlState.releaseBlockerOwnerFilter,
+      provider: urlState.releaseBlockerProviderFilter,
     });
     applyReleaseBlockerUrlState(urlState.releaseFocusedBlockerId);
     applyReleaseProductionBlockerUrlState(urlState.releaseFocusedProductionBlockerIndex);

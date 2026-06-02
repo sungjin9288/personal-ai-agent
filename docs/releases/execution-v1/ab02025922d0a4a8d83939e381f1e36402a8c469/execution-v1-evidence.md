@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T05:35:47.709Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T05:35:30.317Z
 - branch: codex/release-blocker-provider-filter
 - commit: ab02025922d0a4a8d83939e381f1e36402a8c469
