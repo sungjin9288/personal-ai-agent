@@ -13,6 +13,7 @@ import {
 import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
+import { getReleaseBlockerHandoff } from '../core/release-readiness-service.mjs';
 import { resolveRootDir } from '../core/root.mjs';
 import { evaluateTenantAccess, extractTenantClaim, normalizeTenantMode } from '../core/tenant-policy.mjs';
 import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
@@ -2949,6 +2950,30 @@ async function handleApi(request, response, url) {
 
   if (request.method === 'GET' && pathname === '/api/execution-v1/status') {
     sendJson(response, 200, buildExecutionV1Status());
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/execution-v1/release-blockers') {
+    const includeSharedQuery =
+      parseOptionalBooleanQueryParam(url.searchParams, 'includeShared') ??
+      parseOptionalBooleanQueryParam(url.searchParams, 'include-shared');
+    const withoutSharedQuery =
+      parseOptionalBooleanQueryParam(url.searchParams, 'withoutShared') ??
+      parseOptionalBooleanQueryParam(url.searchParams, 'without-shared');
+    const includeShared = withoutSharedQuery === true ? false : includeSharedQuery !== false;
+
+    sendJson(
+      response,
+      200,
+      getReleaseBlockerHandoff({
+        category: String(url.searchParams.get('category') || '').trim(),
+        docHrefBase: '/api/execution-v1/release-doc?path=',
+        includeShared,
+        owner: String(url.searchParams.get('owner') || '').trim(),
+        provider: String(url.searchParams.get('provider') || '').trim(),
+        rootDir,
+      }),
+    );
     return;
   }
 
