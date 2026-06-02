@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T14:27:21.906Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T14:27:20.152Z
 - localDate: 2026-06-02
 - branch: codex/provider-only-blocker-api-link
 - commit: 732cf5cac8d062f068ce4fd10fadd1c65cd6f4db
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db](releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db](docs/releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db)
 - visualArtifactSetSha256: 4271e8cd1a5c4c22b02588f72e675f74133c58e9401ad22cf342e8040c861ba3
 - commitPushStatus: not pushed, origin/codex/provider-only-blocker-api-link not found
 

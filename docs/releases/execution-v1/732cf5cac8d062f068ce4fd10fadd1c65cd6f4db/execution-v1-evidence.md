@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T14:27:21.906Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T14:27:13.162Z
 - branch: codex/provider-only-blocker-api-link
 - commit: 732cf5cac8d062f068ce4fd10fadd1c65cd6f4db

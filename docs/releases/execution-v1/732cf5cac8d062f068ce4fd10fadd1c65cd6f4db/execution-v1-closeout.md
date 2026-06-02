@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T14:27:21.906Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T14:27:13.217Z
 - branch: codex/provider-only-blocker-api-link
 - commit: 732cf5cac8d062f068ce4fd10fadd1c65cd6f4db
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/732cf5cac8d062f068ce4fd10fadd1c65cd6f4db/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
