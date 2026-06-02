@@ -132,6 +132,7 @@
     "smoke:gateway-event-learning-candidate": "node scripts/smoke-gateway-event-learning-candidate.mjs",
     "smoke:learning-promotion-queue": "node scripts/smoke-learning-promotion-queue.mjs",
     "smoke:learning-candidate-audit-surface": "node scripts/smoke-learning-candidate-audit-surface.mjs",
+    "smoke:learning-promotion-verification-gate": "node scripts/smoke-learning-promotion-verification-gate.mjs",
     "smoke:ui-learning-promotion-surface": "node scripts/smoke-ui-learning-promotion-surface.mjs",
     "smoke:mission-attachments": "node scripts/smoke-mission-attachments.mjs",
     "smoke:ui-mission-attachments": "node scripts/smoke-ui-mission-attachments.mjs",

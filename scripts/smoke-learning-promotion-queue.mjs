@@ -87,6 +87,12 @@ assert.equal(promotionResult.learningCandidate.promotionDecision.decision, 'appr
 assert.equal(promotionResult.learningCandidate.promotionDecision.target, 'memory');
 assert.equal(promotionResult.learningCandidate.promotionDecision.scope, 'mission');
 assert.ok(promotionResult.memoryEntry.id);
+assert.equal(
+  promotionResult.learningCandidate.promotionDecision.verificationId,
+  promotionResult.learningCandidate.promotionVerification.id,
+);
+assert.equal(promotionResult.learningCandidate.promotionVerification.status, 'passed');
+assert.equal(promotionResult.learningCandidate.promotionVerification.rollbackTarget.memoryId, promotionResult.memoryEntry.id);
 assert.equal(promotionResult.memoryEntry.scope, 'mission');
 assert.equal(promotionResult.memoryEntry.scopeId, promotedMission.id);
 
@@ -143,7 +149,8 @@ assert.equal(
     (event) =>
       event.kind === 'learning-candidate-promotion-approved' &&
       event.learningCandidateId === promotedRun.learningCandidateId &&
-      event.memoryId === promotionResult.memoryEntry.id,
+      event.memoryId === promotionResult.memoryEntry.id &&
+      event.promotionVerificationStatus === 'passed',
   ),
   true,
 );
@@ -313,6 +320,12 @@ const rejectResult = runCli({
 
 assert.equal(rejectResult.learningCandidate.promotionStatus, 'rejected');
 assert.equal(rejectResult.learningCandidate.promotionDecision.decision, 'reject');
+assert.equal(
+  rejectResult.learningCandidate.promotionDecision.verificationId,
+  rejectResult.learningCandidate.promotionVerification.id,
+);
+assert.equal(rejectResult.learningCandidate.promotionVerification.status, 'passed');
+assert.equal(rejectResult.learningCandidate.promotionVerification.rollbackTarget.action, 'ignore-learning-candidate-decision');
 assert.equal(rejectResult.memoryEntry, null);
 
 const rejectedQueue = runCli({
@@ -331,6 +344,7 @@ assert.equal(
     (event) =>
       event.kind === 'learning-candidate-promotion-rejected' &&
       event.learningCandidateId === rejectedRun.learningCandidateId &&
+      event.promotionVerificationStatus === 'passed' &&
       /forced regression fixture/i.test(event.detail),
   ),
   true,
