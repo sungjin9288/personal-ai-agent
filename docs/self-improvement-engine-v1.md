@@ -112,6 +112,12 @@ The web operator action inbox uses the same service contract through `/api/actio
 
 The audit summary keeps Hermes-style self-improvement bounded by reporting promotion state, retention/expiration policy, rollback eligibility, provider fallback lesson evidence, provider failure taxonomy, gateway event bindings, scope-lock counters, approval-required counters, and no-raw-secrets/no-raw-customer-payload safety counters. It also keeps `autonomousPromotionEnabled=false` and `productionReadyClaim=false` so the overview remains an inspection surface, not a mutation path.
 
+## Learning Promotion Verification Gate
+
+Resolved learning promotions now write a deterministic `promotionVerification` packet to the `learningCandidate` record and artifact. The packet records `schemaVersion`, verification id, status, stop reason, check counts, verification type, target, scope, evidence bindings, `autonomousPromotionEnabled=false`, `productionReadyClaim=false`, and a concrete rollback target.
+
+The verification gate runs for both approve and reject decisions. Memory approval records `rollbackTarget.action=delete-memory-entry` with the generated memory id; non-memory approval and rejection record `rollbackTarget.action=ignore-learning-candidate-decision` so operators can audit why no state mutation must be undone. `overview learning-candidates` summarizes verification status/type/stop-reason counts, and mission timelines attach the verification id, status, type, and stop reason to promotion approval or rejection events.
+
 ## Memory And Privacy Rules
 
 1. Session memory, workspace memory, user preference, provider lesson, and global operating rule are separate stores or separately labeled records.
@@ -139,6 +145,7 @@ npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:learning-promotion-queue
 npm run smoke:learning-candidate-audit-surface
+npm run smoke:learning-promotion-verification-gate
 npm run smoke:ui-learning-promotion-surface
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
@@ -169,3 +176,4 @@ This document does not prove production readiness or continuous learning safety 
 4. Add provider fallback lesson extraction from provider events and stop-condition timelines. Provider fallback attempts with provider failure metadata now update learning candidates as provider-policy lessons with sanitized policy, stop reason, selected fallback provider, and recoverability evidence, backed by `smoke:provider-fallback-learning-lessons`.
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default. The web action inbox now renders learning candidates with manual approve, reject, expire, and rollback controls, backed by `smoke:ui-learning-promotion-surface`.
 6. Add a read-only operator audit surface for learning candidates. `overview learning-candidates` now summarizes promotion status, record type, target, scope, provider fallback lessons, retention/expiration policy, rollback eligibility, gateway event bindings, and safety counters without enabling autonomous promotion, backed by `smoke:learning-candidate-audit-surface`.
+7. Add a deterministic verification gate for resolved learning promotions. Approve and reject decisions now store `promotionVerification` with check counts, stop reason, evidence bindings, and rollback target, and expose that verification in audit records and mission timelines, backed by `smoke:learning-promotion-verification-gate`.
