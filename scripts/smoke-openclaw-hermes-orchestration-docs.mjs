@@ -203,6 +203,8 @@ for (const term of [
   'promotionVerification',
   'promotionStopCondition',
   'verification-blocked',
+  'stopConditionRejectCommand',
+  'learning-candidate-promotion-stop-condition-resolved',
   'overview learning-candidates',
 ]) {
   assertContains(engine, term, `engine must include ${term}`);
@@ -233,6 +235,9 @@ for (const command of [
   'npm run smoke:learning-candidate-audit-surface',
   'npm run smoke:learning-promotion-verification-gate',
   'npm run smoke:learning-promotion-verification-stop-condition',
+  'node src/cli.mjs action learning-promotions --mission <missionId> --status operator-active',
+  'action inbox --class blocked',
+  'node src/cli.mjs action resolve-learning-promotion <learningCandidateId> --decision reject',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:memory-rerun',

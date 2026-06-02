@@ -4663,13 +4663,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const promotionStatus = normalizeText(candidate.promotionStatus, 'pending-review');
     const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
     const resolveCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision <approve|reject> --target ${target} --scope ${scope} --note "<note>"`;
+    const stopConditionRejectCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision reject --target ${target} --scope ${scope} --note "<note>"`;
     const rollbackCommand = `node src/cli.mjs action rollback-learning-promotion ${candidate.id} --note "<note>"`;
     const expireCommand = `node src/cli.mjs action expire-learning-promotions --mission ${mission.id} --before ${expirationPolicy.expiresAt || '<iso-timestamp>'} --note "<note>"`;
     const isPending = promotionStatus === 'pending-review';
+    const isVerificationBlocked = promotionStatus === 'verification-blocked';
     const isRollbackEligible = ['approved', 'promoted'].includes(promotionStatus);
-    const actionClass = isPending ? 'awaiting-human-decision' : 'monitoring-required';
-    const recommendedCommand = isPending ? resolveCommand : isRollbackEligible ? rollbackCommand : null;
-    const recommendedOwner = isPending ? 'human-approver' : 'mission-owner';
+    const actionClass = isVerificationBlocked ? 'blocked' : isPending ? 'awaiting-human-decision' : 'monitoring-required';
+    const recommendedCommand = isPending
+      ? resolveCommand
+      : isVerificationBlocked
+        ? stopConditionRejectCommand
+        : isRollbackEligible
+          ? rollbackCommand
+          : null;
+    const recommendedOwner = isPending || isVerificationBlocked ? 'human-approver' : 'mission-owner';
+    const promotionStopReason =
+      candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null;
 
     return addOperationalMetadata(
       addDispatchMetadata(
@@ -4687,12 +4697,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           mode: mission.mode,
           promotionStatus,
           promotionStopCondition: candidate.promotionStopCondition || null,
-          promotionStopReason: candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null,
+          promotionStopReason,
           promotionVerificationId: candidate.promotionVerification?.id || null,
           promotionVerificationStatus: candidate.promotionVerification?.status || null,
           promotionVerificationStopReason: candidate.promotionVerification?.stopReason || null,
           proposalTarget: target,
-          reason: candidate.summary,
+          reason:
+            isVerificationBlocked && promotionStopReason
+              ? `${candidate.summary} Stop-condition reason: ${promotionStopReason}.`
+              : candidate.summary,
           recordType: candidate.recordType,
           resolveCommand,
           rollbackCommand,
@@ -4701,21 +4714,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           scopeId: candidate.scopeId,
           sessionId: candidate.sessionId,
           status: candidate.status,
+          stopConditionRejectCommand,
           title: candidate.title,
           workspaceId: workspace.id,
           workspaceName: workspace.name,
         },
         {
-          priority: learningPromotionPriority(candidate),
+          priority: isVerificationBlocked ? 'high' : learningPromotionPriority(candidate),
           recommendedCommand,
           recommendedOwner,
         },
       ),
       {
-        escalationRule: isPending
-          ? 'If overdue, expire the candidate or request an explicit approve or reject decision.'
-          : 'If promoted behavior regresses, rollback the promotion before broader reuse.',
-        slaHours: 72,
+        escalationRule: isVerificationBlocked
+          ? 'Reject the blocked promotion or create a corrected candidate; do not retry approval until verification evidence is fixed.'
+          : isPending
+            ? 'If overdue, expire the candidate or request an explicit approve or reject decision.'
+            : 'If promoted behavior regresses, rollback the promotion before broader reuse.',
+        slaHours: isVerificationBlocked ? 24 : 72,
       },
     );
   }
@@ -4735,7 +4751,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .map((candidate) => buildLearningPromotionQueueItem(candidate))
       .filter(Boolean)
       .filter((item) => {
-        if (includeOperatorActiveStatuses && !['pending-review', 'approved', 'promoted'].includes(item.promotionStatus)) {
+        if (
+          includeOperatorActiveStatuses &&
+          !['pending-review', 'approved', 'promoted', 'verification-blocked'].includes(item.promotionStatus)
+        ) {
           return false;
         }
         if (filter.target && item.proposalTarget !== filter.target) {
@@ -4824,6 +4843,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             decidedBy: promotionDecision.decidedBy || null,
             decision: promotionDecision.decision || null,
             memoryId: promotionDecision.memoryId || null,
+            remediationAt: promotionDecision.remediationAt || null,
+            remediationBy: promotionDecision.remediationBy || null,
+            remediationDecision: promotionDecision.remediationDecision || null,
             scope: promotionDecision.scope || null,
             scopeId: promotionDecision.scopeId || null,
             target: promotionDecision.target || null,
@@ -4852,6 +4874,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             id: promotionStopCondition.id || null,
             previousPromotionStatus: promotionStopCondition.previousPromotionStatus || null,
             reason: promotionStopCondition.reason || null,
+            resolution: promotionStopCondition.resolution || null,
+            resolutionNote: promotionStopCondition.resolutionNote || null,
+            resolvedAt: promotionStopCondition.resolvedAt || null,
+            resolvedBy: promotionStopCondition.resolvedBy || null,
             requestedDecision: promotionStopCondition.requestedDecision || null,
             scope: promotionStopCondition.scope || null,
             scopeId: promotionStopCondition.scopeId || null,
@@ -4860,6 +4886,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             verificationId: promotionStopCondition.verificationId || null,
           }
         : null,
+      promotionStopConditionResolution: candidate.promotionStopConditionResolution || null,
       promotionStopConditionReason: promotionStopCondition?.reason || null,
       promotionVerification: promotionVerification
         ? {
@@ -5156,7 +5183,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (filter.missionId) {
       getMission(filter.missionId);
     }
-    if (filter.status && filter.status !== 'all' && !LEARNING_PROMOTION_STATUSES.includes(filter.status)) {
+    if (
+      filter.status &&
+      !['all', 'operator-active'].includes(filter.status) &&
+      !LEARNING_PROMOTION_STATUSES.includes(filter.status)
+    ) {
       throw new Error(`Unsupported learning promotion status: ${filter.status}`);
     }
 
@@ -5255,13 +5286,90 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (!candidate) {
       throw new Error(`Learning candidate not found: ${candidateId}`);
     }
-    if (candidate.promotionStatus !== 'pending-review') {
-      throw new Error(`Learning candidate ${candidateId} is not pending review.`);
-    }
 
     const normalizedDecision = normalizeText(decision);
     if (!LEARNING_PROMOTION_DECISIONS.includes(normalizedDecision)) {
       throw new Error(`Unsupported learning promotion decision: ${normalizedDecision}`);
+    }
+
+    if (candidate.promotionStatus === 'verification-blocked') {
+      if (normalizedDecision !== 'reject') {
+        throw new Error(
+          `Learning candidate ${candidateId} is verification-blocked; only --decision reject can close the stop-condition.`,
+        );
+      }
+
+      const resolvedAt = now();
+      const resolutionNote = normalizeText(note, 'Rejected verification-blocked learning promotion.');
+      const fallbackScope = normalizeLearningPromotionScope(scope, candidate.scope || 'mission');
+      const fallbackScopeId = resolveLearningPromotionScopeId(candidate, fallbackScope);
+      const fallbackTarget = normalizeLearningPromotionTarget(target, defaultLearningPromotionTarget(candidate));
+      const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+        ...current,
+        promotionDecision: current.promotionDecision
+          ? {
+              ...current.promotionDecision,
+              remediationAt: resolvedAt,
+              remediationBy: 'local-operator',
+              remediationDecision: 'reject',
+              remediationNote: resolutionNote,
+            }
+          : {
+              decidedAt: resolvedAt,
+              decidedBy: 'local-operator',
+              decision: 'reject',
+              memoryId: null,
+              note: resolutionNote,
+              rollback: {
+                action: 'ignore-learning-candidate-decision',
+                memoryId: null,
+              },
+              scope: fallbackScope,
+              scopeId: fallbackScopeId,
+              target: fallbackTarget,
+              verificationId: current.promotionVerification?.id || null,
+            },
+        promotionStatus: 'rejected',
+        promotionStopCondition: {
+          ...(current.promotionStopCondition || {
+            blockedAt: current.promotionDecision?.decidedAt || resolvedAt,
+            blockedBy: current.promotionDecision?.decidedBy || 'local-operator',
+            id: `${candidate.id}:promotion-stop-condition:resolved-reject`,
+            previousPromotionStatus: 'verification-blocked',
+            reason: current.promotionVerification?.stopReason || 'learning-promotion-verification-failed',
+            requestedDecision: current.promotionDecision?.requestedDecision || 'approve',
+            scope: current.promotionDecision?.scope || fallbackScope,
+            scopeId: current.promotionDecision?.scopeId || fallbackScopeId,
+            target: current.promotionDecision?.target || fallbackTarget,
+            verificationId: current.promotionVerification?.id || null,
+          }),
+          resolution: 'rejected',
+          resolutionNote,
+          resolvedAt,
+          resolvedBy: 'local-operator',
+          status: 'resolved',
+        },
+        promotionStopConditionResolution: {
+          resolvedAt,
+          resolvedBy: 'local-operator',
+          resolution: 'rejected',
+          resolutionNote,
+          stopReason: current.promotionStopCondition?.reason || current.promotionVerification?.stopReason || null,
+        },
+        updatedAt: resolvedAt,
+      }));
+
+      writeUpdatedLearningCandidateArtifact(updatedCandidate);
+
+      return {
+        learningCandidate: updatedCandidate,
+        memoryEntry: null,
+        queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      };
+    }
+
+    if (candidate.promotionStatus !== 'pending-review') {
+      throw new Error(`Learning candidate ${candidateId} is not pending review.`);
     }
 
     const normalizedTarget = normalizeLearningPromotionTarget(target, defaultLearningPromotionTarget(candidate));
@@ -14276,7 +14384,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ...buildProviderAttentionItems(filter),
       ...buildProviderHealthDriftActionItems(filter),
       ...buildSpecialistFollowUpItems(filter),
-      ...buildLearningPromotionItems(filter),
+      ...buildLearningPromotionItems({ ...filter, promotionStatus: filter.promotionStatus || 'operator-active' }),
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
@@ -17694,6 +17802,31 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
           sessionId: candidate.sessionId,
           status: candidate.status,
           target: promotionDecision.target,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
+
+      if (candidate.promotionStopCondition?.resolvedAt) {
+        const stopCondition = candidate.promotionStopCondition;
+        timeline.push({
+          at: stopCondition.resolvedAt,
+          detail: `resolved learning candidate promotion stop-condition resolution=${stopCondition.resolution || 'unknown'} reason=${stopCondition.reason || 'unknown'}: ${stopCondition.resolutionNote || ''}`,
+          kind: 'learning-candidate-promotion-stop-condition-resolved',
+          learningCandidateId: candidate.id,
+          memoryId: null,
+          missionId: mission.id,
+          promotionStopCondition: stopCondition,
+          promotionStopReason: stopCondition.reason || null,
+          promotionStatus: candidate.promotionStatus || null,
+          promotionVerificationId: stopCondition.verificationId || candidate.promotionVerification?.id || null,
+          promotionVerificationStatus: candidate.promotionVerification?.status || null,
+          promotionVerificationStopReason: candidate.promotionVerification?.stopReason ?? null,
+          recordType: candidate.recordType,
+          requestedDecision: stopCondition.requestedDecision || null,
+          resolution: stopCondition.resolution || null,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          target: stopCondition.target || null,
           workspaceId: candidate.workspaceId || mission.workspaceId,
         });
       }

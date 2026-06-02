@@ -90,6 +90,7 @@ Operators can inspect the queue with:
 ```bash
 npm run smoke:learning-promotion-queue
 node src/cli.mjs action learning-promotions --mission <missionId>
+node src/cli.mjs action learning-promotions --mission <missionId> --status operator-active
 ```
 
 Operators can expire pending review items without promoting them:
@@ -122,7 +123,13 @@ The verification gate runs for both approve and reject decisions. Memory approva
 
 Promotion verification now runs before memory mutation. If a requested approve or reject decision fails verification, the candidate is recorded as `promotionStatus=verification-blocked`, `promotionDecision.decision=blocked`, and `promotionStopCondition.status=blocked` with the verification stop reason. Memory approval is not written until the pre-mutation verification passes, so safety failures such as `noRawSecrets=false`, missing evidence, missing review gates, or scope-lock drift become stop-conditions instead of partially promoted lessons.
 
-The stop-condition remains auditable through `overview learning-candidates`, `action learning-promotions --status verification-blocked`, `learning-candidate.json`, and mission timeline event `learning-candidate-promotion-verification-blocked`. The audit summary reports `promotionStopConditionCount`, stop-condition reason counts, failed verification counts, and verification stop-reason counts while keeping `autonomousPromotionEnabled=false` and `productionReadyClaim=false`.
+The stop-condition remains auditable through `overview learning-candidates`, `action learning-promotions --status verification-blocked`, `action inbox --class blocked`, `learning-candidate.json`, and mission timeline event `learning-candidate-promotion-verification-blocked`. `promotionStatus=operator-active` includes `verification-blocked` candidates so the CLI and web action inbox do not hide failed verification work. Blocked items are classified as `actionClass=blocked`, carry `promotionStopReason`, expose `stopConditionRejectCommand`, and recommend a reject-only remediation command:
+
+```bash
+node src/cli.mjs action resolve-learning-promotion <learningCandidateId> --decision reject --target <target> --scope <scope> --note "<reason>"
+```
+
+Rejecting a `verification-blocked` item closes the stop-condition without mutating memory. The candidate becomes `promotionStatus=rejected`, keeps the original blocked decision and failed `promotionVerification`, records `promotionStopCondition.status=resolved`, and adds timeline event `learning-candidate-promotion-stop-condition-resolved`. The audit summary reports `promotionStopConditionCount`, stop-condition reason counts, failed verification counts, and verification stop-reason counts while keeping `autonomousPromotionEnabled=false` and `productionReadyClaim=false`.
 
 ## Memory And Privacy Rules
 

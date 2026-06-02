@@ -54,6 +54,44 @@ const rejectedRun = runCli({
 assert.equal(rejectedRun.status, 'failed');
 assert.ok(rejectedRun.learningCandidateId);
 
+const blockedMission = createMission({
+  objective: 'Create a learning candidate that fails promotion verification and is closed from the web operator API.',
+  title: 'UI learning promotion stop-condition',
+});
+const blockedRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', blockedMission.id, '--provider', 'stub'],
+});
+assert.equal(blockedRun.status, 'completed');
+assert.ok(blockedRun.learningCandidateId);
+
+const unsafeState = readState();
+const unsafeCandidate = unsafeState.learningCandidates.find(
+  (candidate) => candidate.id === blockedRun.learningCandidateId,
+);
+assert.ok(unsafeCandidate);
+unsafeCandidate.safety.noRawSecrets = false;
+unsafeCandidate.summary = `${unsafeCandidate.summary} UI fixture intentionally marks noRawSecrets=false.`;
+writeState(unsafeState);
+
+const blockedResult = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'resolve-learning-promotion',
+    blockedRun.learningCandidateId,
+    '--decision',
+    'approve',
+    '--target',
+    'memory',
+    '--scope',
+    'mission',
+    '--note',
+    'Block unsafe memory promotion before the web operator resolves the stop-condition.',
+  ],
+});
+assert.equal(blockedResult.learningCandidate.promotionStatus, 'verification-blocked');
+
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
 const serverOutput = { stderr: '', stdout: '' };
@@ -83,6 +121,8 @@ try {
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
+  assert.equal(appJs.includes('stop-condition 반려'), true);
+  assert.equal(appJs.includes('stopConditionRejectCommand'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/expire'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback'), true);
@@ -186,11 +226,47 @@ try {
     false,
   );
 
+  const blockedActiveInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active`,
+  );
+  const blockedItem = findLearningItem(blockedActiveInbox, blockedRun.learningCandidateId);
+  assert.equal(blockedItem.actionClass, 'blocked');
+  assert.equal(blockedItem.priority, 'high');
+  assert.equal(blockedItem.promotionStatus, 'verification-blocked');
+  assert.equal(blockedItem.promotionVerificationStatus, 'failed');
+  assert.equal(blockedItem.promotionStopReason, 'learning-promotion-verification-no-raw-secrets');
+  assert.equal(blockedItem.recommendedCommand.includes('--decision reject'), true);
+  assert.equal(blockedItem.stopConditionRejectCommand.includes('--decision reject'), true);
+
+  const stopConditionRejectResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(blockedRun.learningCandidateId)}/resolve`,
+    {
+      decision: 'reject',
+      note: 'Reject blocked stop-condition from the web operator surface.',
+      scope: blockedItem.scope,
+      target: blockedItem.proposalTarget,
+    },
+  );
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionStatus, 'rejected');
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionDecision.decision, 'blocked');
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionDecision.remediationDecision, 'reject');
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionStopCondition.status, 'resolved');
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionStopCondition.resolution, 'rejected');
+
+  const closedBlockedActiveInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active`,
+  );
+  assert.equal(
+    closedBlockedActiveInbox.items.some((item) => item.learningCandidateId === blockedRun.learningCandidateId),
+    false,
+  );
+
   console.log(
     JSON.stringify(
       {
         mode: 'ui-learning-promotion-surface',
         ok: true,
+        blockedCandidateId: blockedRun.learningCandidateId,
         expiredCandidateId: expiredRun.learningCandidateId,
         promotedCandidateId: promotedRun.learningCandidateId,
         rejectedCandidateId: rejectedRun.learningCandidateId,
@@ -226,6 +302,14 @@ function createMission({ constraints = '', deliverable = 'decision-memo', object
     args.push('--constraints', constraints);
   }
   return runCli({ rootDir: tempRoot, args });
+}
+
+function readState() {
+  return JSON.parse(fs.readFileSync(path.join(tempRoot, 'var', 'state.json'), 'utf8'));
+}
+
+function writeState(state) {
+  fs.writeFileSync(path.join(tempRoot, 'var', 'state.json'), `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 }
 
 function findLearningItem(inbox, learningCandidateId) {
