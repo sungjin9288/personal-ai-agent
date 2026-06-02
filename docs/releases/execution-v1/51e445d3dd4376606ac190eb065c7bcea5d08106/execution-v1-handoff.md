@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T16:27:29.387Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T16:27:27.885Z
 - localDate: 2026-06-03
 - branch: codex/provider-only-target-evidence-packet
 - commit: 51e445d3dd4376606ac190eb065c7bcea5d08106
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106](releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106](docs/releases/execution-v1/51e445d3dd4376606ac190eb065c7bcea5d08106)
 - visualArtifactSetSha256: c7df0126ef006a6cf0169c1c4eecec98933e9c5d2e8da91f3ef0335adf680fb1
 - commitPushStatus: not pushed, origin/codex/provider-only-target-evidence-packet not found
 
