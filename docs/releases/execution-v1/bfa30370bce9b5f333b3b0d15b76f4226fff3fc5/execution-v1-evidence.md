@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T05:05:16.820Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T05:05:03.788Z
 - branch: codex/release-provider-closure-summary
 - commit: bfa30370bce9b5f333b3b0d15b76f4226fff3fc5
