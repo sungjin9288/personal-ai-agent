@@ -109,6 +109,7 @@
 - [x] Target provider fallback runtime audit gate implemented
 - [x] Provider attention fallback remediation path implemented
 - [x] Release blocker handoff CLI surface implemented
+- [x] Release blocker handoff API surface implemented
 - [x] Provider attention fallback command guidance implemented
 - [x] Target Hermes provider architecture gate implemented
 - [x] Target deployment contract gate implemented
@@ -256,7 +257,7 @@ Deferred models:
    - resolve Anthropic account billing/credit blocker
    - attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence
    - attach target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence
-   - inspect provider-scoped blocker handoff with `node src/cli.mjs overview release-blockers --provider hermes` or `node src/cli.mjs overview release-blockers --provider local` before attaching closing evidence, and use `--without-shared` only when the shared provider-operations closure row is intentionally handled elsewhere
+   - inspect provider-scoped blocker handoff with `node src/cli.mjs overview release-blockers --provider hermes`, `node src/cli.mjs overview release-blockers --provider local`, or `/api/execution-v1/release-blockers?provider=hermes` before attaching closing evidence, and use `--without-shared`, `withoutShared=true`, or `includeShared=false` only when the shared provider-operations closure row is intentionally handled elsewhere
    - run `npm run live:execution-v1:anthropic`
    - run `npm run live:execution-v1:local`
    - run `npm run live:execution-v1:hermes`

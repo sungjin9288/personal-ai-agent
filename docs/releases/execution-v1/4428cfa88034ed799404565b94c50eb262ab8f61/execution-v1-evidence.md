@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T08:36:03.313Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T08:35:45.811Z
 - branch: codex/release-blocker-handoff-api
 - commit: 4428cfa88034ed799404565b94c50eb262ab8f61

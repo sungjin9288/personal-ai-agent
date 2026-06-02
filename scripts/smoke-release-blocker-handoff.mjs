@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const repoDir = process.cwd();
 const cliPath = path.join(repoDir, 'src', 'cli.mjs');
+const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoDir, 'package.json'), 'utf8'));
 
 assert.equal(
@@ -141,11 +144,15 @@ assert.match(help, /overview release-blockers/);
 assert.match(help, /--without-shared/);
 assert.match(help, /productionReadyClaim=false policy/);
 
+const apiSmoke = await runReleaseBlockerHandoffApiSmoke();
+
 console.log(
   JSON.stringify(
     {
       mode: 'release-blocker-handoff-smoke',
       ok: true,
+      apiProviderScopedActionCount: apiSmoke.providerScopedActionCount,
+      apiWithoutSharedActionCount: apiSmoke.withoutSharedActionCount,
       providerScopedActionCount: hermesHandoff.summary.actionCount,
       totalActionCount: allBlockers.summary.actionCount,
     },
@@ -170,4 +177,163 @@ function runCliText(args) {
   }
 
   return String(result.stdout || '').trim();
+}
+
+async function runReleaseBlockerHandoffApiSmoke() {
+  const requestedPort = await getFreePort();
+  const serverOutput = { stderr: '', stdout: '' };
+  const serverProcess = spawn(process.execPath, [serverEntry], {
+    cwd: repoDir,
+    env: {
+      ...process.env,
+      PERSONAL_AI_AGENT_UI_HOST: '127.0.0.1',
+      PERSONAL_AI_AGENT_UI_PORT: String(requestedPort),
+    },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+
+  serverProcess.stdout.on('data', (chunk) => {
+    serverOutput.stdout += String(chunk);
+  });
+
+  serverProcess.stderr.on('data', (chunk) => {
+    serverOutput.stderr += String(chunk);
+  });
+
+  try {
+    const baseUrl = await waitForServer(serverProcess, serverOutput);
+    const hermesApiHandoff = await fetchJson(`${baseUrl}/api/execution-v1/release-blockers?provider=hermes`);
+
+    assert.equal(hermesApiHandoff.filters.provider, 'hermes');
+    assert.equal(hermesApiHandoff.filters.includeSharedProviderOperations, true);
+    assert.equal(hermesApiHandoff.summary.actionCount, 2);
+    assert.equal(hermesApiHandoff.summary.categoryCounts['provider-architecture'], 1);
+    assert.equal(hermesApiHandoff.summary.categoryCounts['provider-operations'], 1);
+    assert.equal(hermesApiHandoff.summary.providerCounts.hermes, 1);
+    assert.equal(hermesApiHandoff.releaseReadiness.productionReadyClaimAllowed, false);
+    assert.equal(hermesApiHandoff.releaseReadiness.productionReadyBlocked, true);
+
+    const hermesApiProviderAction = hermesApiHandoff.items.find((item) => item.provider === 'hermes');
+    assert.equal(Boolean(hermesApiProviderAction), true, JSON.stringify(hermesApiHandoff.items));
+    assert.equal(hermesApiProviderAction.category, 'provider-architecture');
+    assert.match(hermesApiProviderAction.stopReason, /Target Hermes provider architecture lacks endpoint ownership proof/);
+    assert.equal(
+      hermesApiProviderAction.closureVerification.requiredProofs.includes(
+        'provider endpoint or model architecture approval proof',
+      ),
+      true,
+      JSON.stringify(hermesApiProviderAction.closureVerification.requiredProofs),
+    );
+
+    const hermesApiEvidenceDoc = hermesApiProviderAction.evidenceDocs.find(
+      (doc) => doc.path === 'docs/target-hermes-provider-architecture-v1.md',
+    );
+    assert.equal(Boolean(hermesApiEvidenceDoc), true, JSON.stringify(hermesApiProviderAction.evidenceDocs));
+    assert.equal(hermesApiEvidenceDoc.exists, true, JSON.stringify(hermesApiEvidenceDoc));
+    assert.equal(
+      hermesApiEvidenceDoc.href,
+      '/api/execution-v1/release-doc?path=docs%2Ftarget-hermes-provider-architecture-v1.md',
+      JSON.stringify(hermesApiEvidenceDoc),
+    );
+
+    const hermesDocResponse = await fetch(`${baseUrl}${hermesApiEvidenceDoc.href}`);
+    assert.equal(hermesDocResponse.status, 200);
+    assert.match(hermesDocResponse.headers.get('content-type') || '', /^text\/markdown/);
+    assert.match(await hermesDocResponse.text(), /Target Hermes Provider Architecture/i);
+
+    const sharedApiAction = hermesApiHandoff.items.find((item) => item.category === 'provider-operations');
+    assert.equal(Boolean(sharedApiAction), true, JSON.stringify(hermesApiHandoff.items));
+    assert.equal(sharedApiAction.provider || '', '');
+    assert.match(sharedApiAction.stopReason, /recoverable-provider-failure-only stop reason/);
+
+    const hermesWithoutShared = await fetchJson(
+      `${baseUrl}/api/execution-v1/release-blockers?provider=hermes&withoutShared=true`,
+    );
+    assert.equal(hermesWithoutShared.filters.includeSharedProviderOperations, false);
+    assert.equal(hermesWithoutShared.summary.actionCount, 1);
+    assert.equal(hermesWithoutShared.items[0].provider, 'hermes');
+    assert.equal(hermesWithoutShared.items[0].category, 'provider-architecture');
+
+    const hermesIncludeSharedFalse = await fetchJson(
+      `${baseUrl}/api/execution-v1/release-blockers?provider=hermes&includeShared=false`,
+    );
+    assert.equal(hermesIncludeSharedFalse.filters.includeSharedProviderOperations, false);
+    assert.equal(hermesIncludeSharedFalse.summary.actionCount, 1);
+
+    const providerOpsOnly = await fetchJson(
+      `${baseUrl}/api/execution-v1/release-blockers?category=provider-operations&owner=provider-ops`,
+    );
+    assert.equal(providerOpsOnly.summary.actionCount, 1);
+    assert.equal(providerOpsOnly.items[0].category, 'provider-operations');
+    assert.equal(providerOpsOnly.items[0].owner, 'provider-ops');
+    assert.equal(
+      providerOpsOnly.items[0].commands.some(
+        (command) => command.kind === 'runtime-audit' && command.command === 'npm run smoke:provider-events',
+      ),
+      true,
+      JSON.stringify(providerOpsOnly.items[0].commands),
+    );
+
+    return {
+      providerScopedActionCount: hermesApiHandoff.summary.actionCount,
+      withoutSharedActionCount: hermesWithoutShared.summary.actionCount,
+    };
+  } finally {
+    serverProcess.kill('SIGTERM');
+    await waitForExit(serverProcess);
+  }
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`${url} failed with ${response.status}: ${await response.text()}`);
+  }
+  return response.json();
+}
+
+async function waitForServer(processHandle, serverOutput, { timeoutMs = 10_000 } = {}) {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    if (processHandle.exitCode !== null) {
+      throw new Error(`server exited early: ${serverOutput.stderr || serverOutput.stdout}`);
+    }
+
+    const match = serverOutput.stdout.match(/"url":\s*"([^"]+)"/);
+    if (match) {
+      return match[1];
+    }
+
+    await delay(100);
+  }
+
+  throw new Error(`server did not start: ${serverOutput.stderr || serverOutput.stdout}`);
+}
+
+async function waitForExit(processHandle, { timeoutMs = 5_000 } = {}) {
+  if (processHandle.exitCode !== null) {
+    return;
+  }
+
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    if (processHandle.exitCode !== null) {
+      return;
+    }
+    await delay(100);
+  }
+
+  processHandle.kill('SIGKILL');
+}
+
+async function getFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
 }

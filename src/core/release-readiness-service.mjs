@@ -27,6 +27,7 @@ const RELEASE_EVIDENCE_DOC_PATHS = new Set([
 
 export function getReleaseBlockerHandoff({
   category = '',
+  docHrefBase = '',
   includeShared = true,
   owner = '',
   provider = '',
@@ -35,7 +36,7 @@ export function getReleaseBlockerHandoff({
   const releaseReadinessPath = path.join(rootDir, 'docs', 'release-readiness-v1.md');
   const markdown = readOptionalFile(releaseReadinessPath);
   const releaseReadiness = buildReleaseReadinessSummary(markdown, {
-    docHrefBase: '',
+    docHrefBase,
     rootDir,
   });
   const normalizedProvider = normalizeText(provider);
