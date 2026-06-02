@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T07:23:57.735Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T07:23:49.398Z
 - branch: codex/operator-mobile-first-polish
 - commit: 7bbdcf06f62118d83223ace9e0270b867d5c6bc0
