@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Packet Copy
+
+- added a provider-only target evidence packet copy action so operators can submit provider-specific target evidence while intentionally excluding the shared provider-operations row
+- reused the release blocker copy scope helper with `includeShared=false` and recorded `includeSharedProviderOperations` plus the scoped release blocker API link in the target evidence packet scope
+- kept the existing target evidence packet behavior unchanged for normal provider-scoped handoff, while documenting that provider-only target packets should be used only when shared provider-operations evidence is handled separately
+
 ## 2026-06-03 Provider-Only Release Blocker Package Copy
 
 - added a provider-only release blocker package copy action so operators can copy a provider-specific closure bundle while intentionally excluding the shared provider-operations row
