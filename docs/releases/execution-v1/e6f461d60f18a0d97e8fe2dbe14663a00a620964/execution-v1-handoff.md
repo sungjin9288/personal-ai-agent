@@ -1,14 +1,17 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-02T04:23:31.929Z
+- archivedAt: 2026-06-02T04:23:31.948Z
+- sourcePath: docs/execution-v1-handoff.md
+
+- generatedAt: 2026-06-02T03:21:54.292Z
 - localDate: 2026-06-02
-- branch: codex/ui-learning-promotion-stop-condition-reminders
-- commit: e6f461d60f18a0d97e8fe2dbe14663a00a620964
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964](releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964)
-- visualArtifactSetSha256: 9d9e8bc78920a32a449003af75a5b5c649a085c827735e0551fbee3d07b5be7b
-- commitPushStatus: not pushed, origin/codex/ui-learning-promotion-stop-condition-reminders not found
+- branch: codex/learning-promotion-stop-condition-reminders
+- commit: c16fe22beb6591355d072ab1c31660a94c788a4e
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964](docs/releases/execution-v1/e6f461d60f18a0d97e8fe2dbe14663a00a620964)
+- visualArtifactSetSha256: db6c0baaf8cb188ef49bf276daeab27f14b7d87e1a3335c52edbde0677ef35a0
+- commitPushStatus: not pushed, origin/codex/learning-promotion-stop-condition-reminders not found
 
 ## Operational State
 
@@ -16,9 +19,9 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.6s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=44.9s
 - deterministic runtime summary: ready
-- snapshot portability: ready
+- snapshot portability: not archived
 - OpenAI live validation: passed
 - Anthropic live validation: failed (anthropic live mission run failed | rootDir=<temp>/personal-ai-agent-live-anthropic-S78A4H | workspaceId=workspace_20260505160104_ea885a | missionId=mission_20260505160104_5c9b4f | artifact=manager-prompt.md | sessionId=session_20260505160104_292515 | missionStatus=failed)
 - local provider live validation: passed
@@ -51,7 +54,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 9d9e8bc78920a32a449003af75a5b5c649a085c827735e0551fbee3d07b5be7b
+- visual artifact set: db6c0baaf8cb188ef49bf276daeab27f14b7d87e1a3335c52edbde0677ef35a0
 
 ## Live Provider Handoff
 
