@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T15:02:01.344Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T15:01:52.982Z
 - branch: codex/provider-scoped-release-copy-actions
 - commit: eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e

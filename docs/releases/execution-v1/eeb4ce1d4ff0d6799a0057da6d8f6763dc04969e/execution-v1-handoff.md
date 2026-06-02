@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T15:02:01.344Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T15:01:59.912Z
 - localDate: 2026-06-03
 - branch: codex/provider-scoped-release-copy-actions
 - commit: eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e](releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e](docs/releases/execution-v1/eeb4ce1d4ff0d6799a0057da6d8f6763dc04969e)
 - visualArtifactSetSha256: 3e6258985ba80ba185fc2ccd54d2cb8f19cabbe52949287bd40675f4c97fc7d5
 - commitPushStatus: not pushed, origin/codex/provider-scoped-release-copy-actions not found
 
