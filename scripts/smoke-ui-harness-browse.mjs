@@ -1447,6 +1447,11 @@ try {
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
   assert.equal(appJs.includes('data-release-target-evidence-submission-manifest'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlySubmissionManifest'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-submission-manifest'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-submission-manifest'), true);
+  assert.equal(appJs.includes('provider-only manifest 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence submission manifest'), true);
   assert.equal(appJs.includes('Submission manifest template:'), true);
   assert.equal(appJs.includes('Manifest fields:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSanitizedRegisterText'), true);
@@ -1477,6 +1482,11 @@ try {
   assert.equal(appJs.includes('Target evidence blocker disposition register'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-blocker-disposition'), true);
   assert.equal(appJs.includes('data-release-target-evidence-blocker-disposition'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-blocker-disposition'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-blocker-disposition'), true);
+  assert.equal(appJs.includes('provider-only disposition 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence blocker disposition register'), true);
   assert.equal(appJs.includes('Blocker disposition register template:'), true);
   assert.equal(appJs.includes('Disposition rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceReleaseRefreshEvidenceText'), true);

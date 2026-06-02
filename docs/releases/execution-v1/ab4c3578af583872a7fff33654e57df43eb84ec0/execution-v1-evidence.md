@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T16:55:51.884Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T16:55:39.882Z
 - branch: codex/provider-only-target-evidence-sections
 - commit: ab4c3578af583872a7fff33654e57df43eb84ec0

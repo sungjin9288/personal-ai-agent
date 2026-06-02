@@ -3673,6 +3673,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -3692,6 +3693,12 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3790,12 +3797,14 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Manifest fields:',
     ...manifestFields.map(([key, value]) => `- ${key}: ${value}`),
@@ -5391,6 +5400,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5431,6 +5441,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5726,6 +5737,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -5744,6 +5756,12 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5952,6 +5970,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- dispositionRowCount: ${dispositionDefinitions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -5959,6 +5978,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Disposition rows:',
     ...dispositionRows,
@@ -7950,6 +7970,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-submission-manifest') {
+        void copyReleaseTargetEvidenceProviderOnlySubmissionManifest();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-sanitized-register') {
         void copyReleaseTargetEvidenceSanitizedRegister();
         return;
@@ -7972,6 +7997,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-target-evidence-blocker-disposition') {
         void copyReleaseTargetEvidenceBlockerDispositionRegister();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-blocker-disposition') {
+        void copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister();
         return;
       }
 
@@ -9404,6 +9434,36 @@ async function copyReleaseTargetEvidenceSubmissionManifest({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlySubmissionManifest({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only submission manifest는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const manifestText = buildReleaseTargetEvidenceSubmissionManifestText(copyScope);
+  if (!manifestText) {
+    setUiNotice('복사할 provider-only target evidence submission manifest가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(manifestText, {
+    promptMessage: 'provider-only target evidence submission manifest를 복사하세요.',
+    shownNotice: 'provider-only target evidence submission manifest를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence submission manifest를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceSanitizedRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9496,6 +9556,36 @@ async function copyReleaseTargetEvidenceBlockerDispositionRegister({
     promptMessage: 'target evidence blocker disposition register를 복사하세요.',
     shownNotice: 'target evidence blocker disposition register를 표시했습니다.',
     successNotice: 'target evidence blocker disposition register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only disposition register는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const registerText = buildReleaseTargetEvidenceBlockerDispositionRegisterText(copyScope);
+  if (!registerText) {
+    setUiNotice('복사할 provider-only target evidence blocker disposition register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'provider-only target evidence blocker disposition register를 복사하세요.',
+    shownNotice: 'provider-only target evidence blocker disposition register를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence blocker disposition register를 복사했습니다.`,
   });
 }
 
@@ -13965,6 +14055,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-submission-manifest="true"
                   data-ui-action="copy-release-target-evidence-submission-manifest"
                 >target submission manifest 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-submission-manifest="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-submission-manifest"
+                    >provider-only manifest 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
@@ -13995,6 +14095,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-blocker-disposition="true"
                   data-ui-action="copy-release-target-evidence-blocker-disposition"
                 >target disposition register 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-blocker-disposition="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-blocker-disposition"
+                    >provider-only disposition 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
