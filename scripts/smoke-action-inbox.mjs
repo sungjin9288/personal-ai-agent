@@ -327,7 +327,7 @@ assert.equal(inbox.summary.priorityCounts.urgent, 0);
 assert.equal(inbox.summary.ownerCounts['human-approver'], 7);
 assert.equal(inbox.summary.ownerCounts['mission-owner'], 4);
 assert.equal(inbox.summary.ownerCounts['workspace-owner'], 2);
-assert.equal(inbox.summary.providerCounts.stub, 3);
+assert.equal(inbox.summary.providerCounts.stub, 8);
 assert.equal(inbox.summary.maintenanceMonthlyBucketCount, 0);
 assert.equal(inbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
 assert.equal(inbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
@@ -483,6 +483,11 @@ const learningPromotionItems = inbox.items.filter((item) => item.actionType === 
 assert.equal(learningPromotionItems.length, 5);
 assert.equal(learningPromotionItems.every((item) => item.actionClass === 'awaiting-human-decision'), true);
 assert.equal(learningPromotionItems.every((item) => item.recommendedOwner === 'human-approver'), true);
+assert.equal(learningPromotionItems.every((item) => item.providerId === 'stub'), true);
+assert.equal(learningPromotionItems.every((item) => item.gatewayEventRoute === 'mission.run'), true);
+assert.equal(learningPromotionItems.every((item) => item.autoPromotionAllowed === false), true);
+assert.equal(learningPromotionItems.every((item) => item.evidencePolicy?.scopeLocked === true), true);
+assert.equal(learningPromotionItems.every((item) => item.evidencePolicy?.promotionRequiresApproval === true), true);
 assert.equal(
   learningPromotionItems.some((item) => item.learningCandidateId === approvalRun.learningCandidateId),
   true,
@@ -591,8 +596,9 @@ const providerFilteredInbox = runCli({
 });
 
 assert.equal(providerFilteredInbox.filters.providerId, 'stub');
-assert.equal(providerFilteredInbox.summary.pendingActionCount, 3);
-assert.equal(providerFilteredInbox.summary.providerCounts.stub, 3);
+assert.equal(providerFilteredInbox.summary.pendingActionCount, 8);
+assert.equal(providerFilteredInbox.summary.providerCounts.stub, 8);
+assert.equal(providerFilteredInbox.summary.actionCounts.learningPromotion, 5);
 assert.equal(providerFilteredInbox.summary.maintenanceMonthlyBucketCount, 0);
 assert.equal(providerFilteredInbox.summary.maintenanceLatestMonthlyBucketStartDate, null);
 assert.equal(providerFilteredInbox.summary.maintenanceOldestMonthlyBucketStartDate, null);
@@ -601,7 +607,16 @@ assert.equal(Object.keys(providerFilteredInbox.summary.providerCounts).length, 1
 assert.equal(providerFilteredInbox.items.every((item) => item.providerId === 'stub'), true);
 assert.deepEqual(
   providerFilteredInbox.items.map((item) => item.actionType).sort(),
-  ['provider-health-drift', 'provider-health-drift', 'specialist-follow-up'],
+  [
+    'learning-promotion',
+    'learning-promotion',
+    'learning-promotion',
+    'learning-promotion',
+    'learning-promotion',
+    'provider-health-drift',
+    'provider-health-drift',
+    'specialist-follow-up',
+  ],
 );
 assert.equal(providerFilteredInbox.summary.specialistFollowUpProviderCounts.stub, 1);
 assert.equal(providerFilteredInbox.summary.specialistFollowUpKindCounts.verification, 1);

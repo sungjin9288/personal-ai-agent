@@ -134,6 +134,8 @@ assert.equal(inbox.summary.actionClassCounts.providerAttentionRequired, 1);
 assert.equal(inbox.summary.actionClassCounts.providerHealthDriftRequired, 1);
 assert.equal(inbox.summary.actionCounts.providerAttention, 1);
 assert.equal(inbox.summary.actionCounts.providerHealthDrift, 1);
+assert.equal(inbox.summary.actionCounts.learningPromotion, 1);
+assert.equal(inbox.summary.providerCounts.stub, 2);
 
 const stubInbox = runCli({
   rootDir: tempRoot,
@@ -141,9 +143,21 @@ const stubInbox = runCli({
 });
 
 assert.equal(stubInbox.filters.providerId, 'stub');
-assert.equal(stubInbox.items.length, 1);
-assert.equal(stubInbox.items[0].providerId, 'stub');
-assert.equal(stubInbox.items[0].actionType, 'provider-health-drift');
+assert.equal(stubInbox.items.length, 2);
+assert.equal(stubInbox.summary.providerCounts.stub, 2);
+assert.equal(stubInbox.summary.actionCounts.learningPromotion, 1);
+assert.equal(stubInbox.items.every((item) => item.providerId === 'stub'), true);
+assert.deepEqual(
+  stubInbox.items.map((item) => item.actionType).sort(),
+  ['learning-promotion', 'provider-health-drift'],
+);
+const stubLearningPromotion = stubInbox.items.find((item) => item.actionType === 'learning-promotion');
+assert.ok(stubLearningPromotion);
+assert.ok(stubLearningPromotion.learningCandidateId);
+assert.equal(stubLearningPromotion.gatewayEventRoute, 'mission.run');
+assert.equal(stubLearningPromotion.autoPromotionAllowed, false);
+assert.equal(stubLearningPromotion.evidencePolicy.scopeLocked, true);
+assert.equal(stubLearningPromotion.evidencePolicy.promotionRequiresApproval, true);
 
 const anthropicInbox = runCli({
   rootDir: tempRoot,

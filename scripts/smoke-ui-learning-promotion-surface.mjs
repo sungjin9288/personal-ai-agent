@@ -92,6 +92,25 @@ const blockedResult = runCli({
 });
 assert.equal(blockedResult.learningCandidate.promotionStatus, 'verification-blocked');
 
+const fallbackMission = createMission({
+  deliverable: 'checklist',
+  objective: 'Create provider fallback learning evidence and expose it through the web action audit package.',
+  title: 'UI learning promotion fallback audit package',
+});
+const fallbackRun = runCli({
+  rootDir: tempRoot,
+  env: {
+    ANTHROPIC_API_KEY: '',
+    ANTHROPIC_BASE_URL: '',
+    ANTHROPIC_MODEL: '',
+  },
+  args: ['mission', 'run', fallbackMission.id, '--provider', 'anthropic', '--fallback-provider', 'stub'],
+});
+assert.equal(fallbackRun.status, 'completed');
+assert.ok(fallbackRun.learningCandidateId);
+assert.equal(fallbackRun.providerFallback.fallbackUsed, true);
+assert.equal(fallbackRun.providerFallback.policyId, 'provider-failure-only');
+
 const agedBlockedState = readState();
 const agedBlockedCandidate = agedBlockedState.learningCandidates.find(
   (candidate) => candidate.id === blockedRun.learningCandidateId,
@@ -130,6 +149,14 @@ try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
 
   const appJs = await fetchText(`${baseUrl}/app.js`);
+  assert.equal(appJs.includes('data-learning-promotion-audit-copy'), true);
+  assert.equal(appJs.includes('copyLearningPromotionAuditPackage'), true);
+  assert.equal(appJs.includes('buildLearningPromotionAuditPackageText'), true);
+  assert.equal(appJs.includes('Learning promotion audit package'), true);
+  assert.equal(appJs.includes('providerFallbackPolicy'), true);
+  assert.equal(appJs.includes('gatewayEventRoute'), true);
+  assert.equal(appJs.includes('autoPromotionAllowed'), true);
+  assert.equal(appJs.includes('rollbackEligible'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
@@ -158,9 +185,35 @@ try {
   assert.equal(initialItem.actionType, 'learning-promotion');
   assert.equal(initialItem.actionClass, 'awaiting-human-decision');
   assert.equal(initialItem.promotionStatus, 'pending-review');
+  assert.equal(initialItem.gatewayEventRoute, 'mission.run');
+  assert.equal(initialItem.gatewayEventType, 'mission-run');
+  assert.equal(initialItem.providerId, 'stub');
+  assert.equal(initialItem.autoPromotion, false);
+  assert.equal(initialItem.autoPromotionAllowed, false);
+  assert.equal(initialItem.approvalRequired, true);
+  assert.equal(initialItem.evidencePolicy.scopeLocked, true);
+  assert.equal(initialItem.evidencePolicy.promotionRequiresApproval, true);
   assert.equal(initialItem.resolveCommand.includes('resolve-learning-promotion'), true);
   assert.equal(initialItem.expireCommand.includes('expire-learning-promotions'), true);
   assert.equal(initialItem.rollbackEligible, false);
+
+  const fallbackInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(fallbackMission.id)}&promotionStatus=all`,
+  );
+  const fallbackItem = findLearningItem(fallbackInbox, fallbackRun.learningCandidateId);
+  assert.equal(fallbackItem.recordType, 'provider-lesson');
+  assert.equal(fallbackItem.proposalTarget, 'provider-policy');
+  assert.equal(fallbackItem.gatewayEventRoute, 'mission.run');
+  assert.equal(fallbackItem.providerId, 'stub');
+  assert.equal(fallbackItem.providerFallbackPolicy, 'provider-failure-only');
+  assert.equal(fallbackItem.providerFallbackUsed, true);
+  assert.equal(fallbackItem.providerFallbackPrimaryProviderId, 'anthropic');
+  assert.equal(fallbackItem.providerFallbackSelectedProviderId, 'stub');
+  assert.equal(fallbackItem.providerFallbackStopReasonCounts['mission-status-completed'], 1);
+  assert.equal(fallbackItem.providerFailureKind, 'config');
+  assert.equal(fallbackItem.providerFailureRecoverable, false);
+  assert.equal(fallbackItem.autoPromotionAllowed, false);
+  assert.equal(fallbackItem.rollbackEligible, false);
 
   const promotionResult = await postJson(
     `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(promotedRun.learningCandidateId)}/resolve`,
@@ -372,6 +425,7 @@ try {
         ok: true,
         blockedCandidateId: blockedRun.learningCandidateId,
         expiredCandidateId: expiredRun.learningCandidateId,
+        fallbackCandidateId: fallbackRun.learningCandidateId,
         promotedCandidateId: promotedRun.learningCandidateId,
         rejectedCandidateId: rejectedRun.learningCandidateId,
         rolledBackCandidateId: promotedRun.learningCandidateId,

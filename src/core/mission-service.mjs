@@ -4676,6 +4676,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       return null;
     }
 
+    const providerFallbackSummary = candidate.evidence?.providerFallbackSummary || null;
+    const providerFailure = candidate.evidence?.providerFailure || null;
+    const providerFallbackFailureAttempt = ensureArray(providerFallbackSummary?.attempts).find((attempt) =>
+      Boolean(attempt?.providerFailureKind),
+    );
     const target = defaultLearningPromotionTarget(candidate);
     const scope = normalizeText(candidate.scope, 'mission');
     const promotionStatus = normalizeText(candidate.promotionStatus, 'pending-review');
@@ -4723,9 +4728,26 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           actionClass,
           actionId: `learning-promotion:${candidate.id}`,
           actionType: 'learning-promotion',
+          approvalRequired: candidate.proposal?.approvalRequired === true,
+          artifactCount: ensureArray(candidate.evidence?.artifactIds).length,
+          artifactKinds: candidate.evidence?.artifactKinds || {},
+          autoPromotion: candidate.autoPromotion === true,
+          autoPromotionAllowed: candidate.autoPromotion === true,
           createdAt: candidate.createdAt,
+          evidencePolicy: {
+            crossScopePromotionAllowed: candidate.safety?.crossScopePromotionAllowed === true,
+            noRawCustomerPayloads: candidate.safety?.noRawCustomerPayloads === true,
+            noRawSecrets: candidate.safety?.noRawSecrets === true,
+            promotionRequiresApproval: candidate.safety?.promotionRequiresApproval === true,
+            rawPayloadIncluded: false,
+            scopeLocked: candidate.safety?.scopeLocked === true,
+          },
           expirationPolicy,
           expireCommand,
+          gatewayEventId: candidate.evidence?.gatewayEventId || null,
+          gatewayEventRoute: candidate.evidence?.gatewayEventRoute || null,
+          gatewayEventSchemaVersion: candidate.evidence?.gatewayEventSchemaVersion || null,
+          gatewayEventType: candidate.evidence?.gatewayEventType || null,
           learningCandidateId: candidate.id,
           missionId: mission.id,
           missionStatus: mission.status,
@@ -4741,6 +4763,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           promotionVerificationStatus: candidate.promotionVerification?.status || null,
           promotionVerificationStopReason: candidate.promotionVerification?.stopReason || null,
           proposalTarget: target,
+          providerFallbackPolicy: candidate.evidence?.providerFallbackPolicy || providerFallbackSummary?.policyId || null,
+          providerFallbackPrimaryProviderId: providerFallbackSummary?.primaryProviderId || null,
+          providerFallbackSelectedProviderId: providerFallbackSummary?.selectedProviderId || null,
+          providerFallbackStopReasonCounts: candidate.evidence?.providerFallbackStopReasonCounts || {},
+          providerFallbackUsed: providerFallbackSummary?.fallbackUsed === true,
+          providerFailureKind: providerFailure?.failureKind || providerFallbackFailureAttempt?.providerFailureKind || null,
+          providerFailureRecoverable:
+            typeof providerFailure?.recoverable === 'boolean'
+              ? providerFailure.recoverable
+              : typeof providerFallbackFailureAttempt?.providerFailureRecoverable === 'boolean'
+                ? providerFallbackFailureAttempt.providerFailureRecoverable
+                : null,
+          providerId: candidate.evidence?.providerId || null,
           reason:
             isVerificationBlocked && promotionStopReason
               ? `${candidate.summary} Stop-condition reason: ${promotionStopReason}.`
@@ -4751,8 +4786,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           reminderCount: stopConditionReminders.length,
           reminderHistory: stopConditionReminders,
           resolveCommand,
+          reviewerRequired: candidate.proposal?.reviewerRequired === true,
+          reviewerVerdict: candidate.evidence?.reviewerVerdict || null,
           rollbackCommand,
           rollbackEligible: isRollbackEligible,
+          runCount: ensureArray(candidate.evidence?.runIds).length,
+          runStatusCounts: candidate.evidence?.runStatusCounts || {},
           scope,
           scopeId: candidate.scopeId,
           sessionId: candidate.sessionId,
