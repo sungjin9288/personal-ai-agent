@@ -4570,6 +4570,108 @@ select:focus {
 }
 
 @media (max-width: 640px) {
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+
+  .main-stage {
+    order: 1;
+    min-height: auto;
+    padding: 10px;
+  }
+
+  .nav-rail {
+    order: 2;
+    position: static;
+    max-height: none;
+    margin: 0 10px 10px;
+    padding: 10px;
+    overflow: visible;
+    border-right: 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .app-shell.is-output-focus.is-output-rail-collapsed .nav-rail {
+    display: none;
+  }
+
+  .brand-block {
+    padding: 0 2px 8px;
+  }
+
+  .brand-block h1 {
+    font-size: 1.18rem;
+  }
+
+  .brand-copy {
+    max-width: none;
+  }
+
+  .rail-card {
+    padding: 9px;
+  }
+
+  .rail-inline-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rail-inline-actions > button {
+    min-height: 42px;
+  }
+
+  .workspace-current-path {
+    max-height: 3.9em;
+    overflow: hidden;
+  }
+
+  .rail-queue {
+    max-height: 420px;
+    overflow: auto;
+  }
+
+  .mission-list {
+    max-height: 260px;
+  }
+
+  .command-header {
+    padding: 12px;
+  }
+
+  .command-overview h2 {
+    font-size: 1.3rem;
+  }
+
+  .command-statusbar {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-status-actions {
+    gap: 7px;
+  }
+
+  .flow-status-actions .primary-button,
+  .flow-status-actions .secondary-button,
+  .flow-status-actions .ghost-button,
+  .flow-status-actions .danger-button {
+    flex: 1 1 140px;
+  }
+
+  .flow-shell-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .flow-step {
+    min-height: 48px;
+  }
+
   .agent-blueprint-step {
     grid-template-columns: 1fr;
   }

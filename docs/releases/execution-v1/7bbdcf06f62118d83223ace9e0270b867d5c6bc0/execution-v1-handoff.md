@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T07:23:57.735Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T07:23:56.332Z
 - localDate: 2026-06-02
 - branch: codex/operator-mobile-first-polish
 - commit: 7bbdcf06f62118d83223ace9e0270b867d5c6bc0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0](releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0](docs/releases/execution-v1/7bbdcf06f62118d83223ace9e0270b867d5c6bc0)
 - visualArtifactSetSha256: 557f666f78b36212a095d4b57551f33a413ff4dc9715941037af6a58ec799b57
 - commitPushStatus: not pushed, origin/codex/operator-mobile-first-polish not found
 
