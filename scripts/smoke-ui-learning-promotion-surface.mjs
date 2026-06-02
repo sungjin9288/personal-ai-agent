@@ -92,6 +92,18 @@ const blockedResult = runCli({
 });
 assert.equal(blockedResult.learningCandidate.promotionStatus, 'verification-blocked');
 
+const agedBlockedState = readState();
+const agedBlockedCandidate = agedBlockedState.learningCandidates.find(
+  (candidate) => candidate.id === blockedRun.learningCandidateId,
+);
+assert.ok(agedBlockedCandidate);
+const agedReminderBaseAt = '2000-01-01T00:00:00.000Z';
+agedBlockedCandidate.createdAt = agedReminderBaseAt;
+agedBlockedCandidate.updatedAt = agedReminderBaseAt;
+agedBlockedCandidate.promotionDecision.decidedAt = agedReminderBaseAt;
+agedBlockedCandidate.promotionStopCondition.blockedAt = agedReminderBaseAt;
+writeState(agedBlockedState);
+
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
 const serverOutput = { stderr: '', stdout: '' };
@@ -121,11 +133,15 @@ try {
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
+  assert.equal(appJs.includes('data-learning-promotion-remind'), true);
   assert.equal(appJs.includes('stop-condition 반려'), true);
+  assert.equal(appJs.includes('stop-condition 재알림'), true);
   assert.equal(appJs.includes('stopConditionRejectCommand'), true);
+  assert.equal(appJs.includes('remindCommand'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/expire'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback'), true);
+  assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind'), true);
   assert.equal(appJs.includes('promotionStatus=operator-active'), true);
   assert.match(appJs, /\['provider-attention', 'specialist-follow-up', 'learning-promotion'\]/);
 
@@ -237,6 +253,46 @@ try {
   assert.equal(blockedItem.promotionStopReason, 'learning-promotion-verification-no-raw-secrets');
   assert.equal(blockedItem.recommendedCommand.includes('--decision reject'), true);
   assert.equal(blockedItem.stopConditionRejectCommand.includes('--decision reject'), true);
+  assert.equal(blockedItem.reminderCadenceHours, 12);
+  assert.equal(blockedItem.reminderCount, 0);
+  assert.equal(blockedItem.needsReminder, true);
+  assert.equal(blockedItem.nextReminderAt, '2000-01-01T12:00:00.000Z');
+  assert.equal(blockedItem.remindCommand.includes('remind-learning-promotion-stop-conditions'), true);
+
+  const reminderResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(blockedRun.learningCandidateId)}/remind`,
+    {
+      dueOnly: true,
+      missionId: blockedItem.missionId,
+      note: 'Remind approver from the web operator surface before rejecting the blocked stop-condition.',
+      workspaceId: blockedItem.workspaceId,
+    },
+  );
+  assert.equal(reminderResult.summary.dueCandidateCount, 1);
+  assert.equal(reminderResult.summary.remindedCount, 1);
+  assert.equal(reminderResult.items[0].learningCandidateId, blockedRun.learningCandidateId);
+  assert.equal(reminderResult.items[0].reminderCount, 1);
+  assert.equal(reminderResult.items[0].needsReminder, false);
+  assert.equal(
+    reminderResult.items[0].latestReminder.note,
+    'Remind approver from the web operator surface before rejecting the blocked stop-condition.',
+  );
+
+  const remindedBlockedInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active`,
+  );
+  const remindedBlockedItem = findLearningItem(remindedBlockedInbox, blockedRun.learningCandidateId);
+  assert.equal(remindedBlockedItem.promotionStatus, 'verification-blocked');
+  assert.equal(remindedBlockedItem.reminderCount, 1);
+  assert.equal(remindedBlockedItem.needsReminder, false);
+  assert.ok(remindedBlockedItem.lastReminderAt);
+
+  const remindedState = readState();
+  const remindedCandidate = remindedState.learningCandidates.find(
+    (candidate) => candidate.id === blockedRun.learningCandidateId,
+  );
+  assert.equal(remindedCandidate.promotionStopCondition.reminderCount, 1);
+  assert.equal(remindedCandidate.promotionStopCondition.reminders.length, 1);
 
   const stopConditionRejectResult = await postJson(
     `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(blockedRun.learningCandidateId)}/resolve`,
@@ -252,6 +308,7 @@ try {
   assert.equal(stopConditionRejectResult.learningCandidate.promotionDecision.remediationDecision, 'reject');
   assert.equal(stopConditionRejectResult.learningCandidate.promotionStopCondition.status, 'resolved');
   assert.equal(stopConditionRejectResult.learningCandidate.promotionStopCondition.resolution, 'rejected');
+  assert.equal(stopConditionRejectResult.learningCandidate.promotionStopCondition.reminderCount, 1);
 
   const closedBlockedActiveInbox = await fetchJson(
     `${baseUrl}/api/actions?missionId=${encodeURIComponent(blockedMission.id)}&promotionStatus=operator-active`,
@@ -260,6 +317,18 @@ try {
     closedBlockedActiveInbox.items.some((item) => item.learningCandidateId === blockedRun.learningCandidateId),
     false,
   );
+
+  const blockedTimeline = runCli({
+    rootDir: tempRoot,
+    args: ['mission', 'timeline', blockedMission.id],
+  });
+  const reminderTimelineEvent = blockedTimeline.timeline.find(
+    (event) =>
+      event.kind === 'learning-candidate-promotion-stop-condition-reminded' &&
+      event.learningCandidateId === blockedRun.learningCandidateId,
+  );
+  assert.ok(reminderTimelineEvent);
+  assert.equal(reminderTimelineEvent.promotionStopReason, 'learning-promotion-verification-no-raw-secrets');
 
   console.log(
     JSON.stringify(

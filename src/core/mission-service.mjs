@@ -5254,11 +5254,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function remindLearningPromotionStopConditions(filter = {}, note = '') {
+    const learningCandidateId = normalizeText(filter.learningCandidateId);
     if (filter.workspaceId) {
       getWorkspace(filter.workspaceId);
     }
     if (filter.missionId) {
       getMission(filter.missionId);
+    }
+    if (learningCandidateId && !store.getLearningCandidate(learningCandidateId)) {
+      throw new Error(`Learning candidate not found: ${learningCandidateId}`);
     }
     if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
       throw new Error(`Unsupported action owner: ${filter.owner}`);
@@ -5271,6 +5275,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       promotionStatus: 'verification-blocked',
       workspaceId: filter.workspaceId,
     })
+      .filter((item) => !learningCandidateId || item.learningCandidateId === learningCandidateId)
       .filter((item) => !filter.owner || item.recommendedOwner === filter.owner)
       .filter((item) => !filter.dueOnly || item.needsReminder)
       .filter((item) => !filter.overdueOnly || item.isOverdue);
@@ -5330,6 +5335,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         dueOnly: Boolean(filter.dueOnly),
+        learningCandidateId: learningCandidateId || null,
         missionId: filter.missionId || null,
         note: normalizedNote || null,
         owner: filter.owner || null,

@@ -105,7 +105,7 @@ Operators can rollback an approved or promoted item. For memory promotion, rollb
 node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note "<reason>"
 ```
 
-The web operator action inbox uses the same service contract through `/api/actions/learning-promotions/:learningCandidateId/resolve`, `/api/actions/learning-promotions/:learningCandidateId/rollback`, and `/api/actions/learning-promotions/expire`. The UI intentionally keeps promotion manual: pending items expose approve, reject, and expire actions; promoted or approved items expose rollback only when `rollbackEligible` is true. Resolved terminal states are excluded from the default operator surface through the `promotionStatus=operator-active` action inbox filter.
+The web operator action inbox uses the same service contract through `/api/actions/learning-promotions/:learningCandidateId/resolve`, `/api/actions/learning-promotions/:learningCandidateId/rollback`, `/api/actions/learning-promotions/:learningCandidateId/remind`, and `/api/actions/learning-promotions/expire`. The UI intentionally keeps promotion manual: pending items expose approve, reject, and expire actions; promoted or approved items expose rollback only when `rollbackEligible` is true, and `verification-blocked` items expose stop-condition reminder and reject-only remediation actions. Resolved terminal states are excluded from the default operator surface through the `promotionStatus=operator-active` action inbox filter.
 
 ## Learning Candidate Audit Surface
 
@@ -136,7 +136,7 @@ node src/cli.mjs action inbox --mission <missionId> --class blocked --needs-remi
 node src/cli.mjs action remind-learning-promotion-stop-conditions --mission <missionId> --due --note "<reason>"
 ```
 
-Each reminder is appended to `promotionStopCondition.reminders`, mirrored into `learning-candidate.json`, summarized in `overview learning-candidates`, and emitted as mission timeline event `learning-candidate-promotion-stop-condition-reminded`.
+Each reminder is appended to `promotionStopCondition.reminders`, mirrored into `learning-candidate.json`, summarized in `overview learning-candidates`, and emitted as mission timeline event `learning-candidate-promotion-stop-condition-reminded`. The web action inbox uses `/api/actions/learning-promotions/:learningCandidateId/remind` for the same candidate-scoped reminder path so one due stop-condition button does not remind every blocked item in the same mission.
 
 Rejecting a `verification-blocked` item closes the stop-condition without mutating memory. The candidate becomes `promotionStatus=rejected`, keeps the original blocked decision and failed `promotionVerification`, records `promotionStopCondition.status=resolved`, and adds timeline event `learning-candidate-promotion-stop-condition-resolved`. The audit summary reports `promotionStopConditionCount`, stop-condition reason counts, failed verification counts, and verification stop-reason counts while keeping `autonomousPromotionEnabled=false` and `productionReadyClaim=false`.
 

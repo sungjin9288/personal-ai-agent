@@ -15676,6 +15676,9 @@ function formatLearningPromotionDetails(item) {
     item.recordType ? `record ${item.recordType}` : '',
     item.promotionStopReason ? `stop ${item.promotionStopReason}` : '',
     item.promotionVerificationStatus ? `verification ${item.promotionVerificationStatus}` : '',
+    item.reminderCadenceHours ? `reminder ${item.reminderCadenceHours}h` : '',
+    item.needsReminder ? 'reminder due' : '',
+    Number(item.reminderCount || 0) ? `reminders ${item.reminderCount}` : '',
     item.expirationPolicy?.status ? `expiration ${item.expirationPolicy.status}` : '',
     item.expirationPolicy?.expiresAt ? `expires ${formatDate(item.expirationPolicy.expiresAt)}` : '',
   ]
@@ -15707,6 +15710,11 @@ function renderLearningPromotionActionButtons(item) {
   }
 
   if (item.promotionStatus === 'verification-blocked') {
+    if (item.needsReminder) {
+      buttons.push(
+        `<button class="secondary-button" type="button" data-learning-promotion-remind="${escapeHtml(candidateId)}">stop-condition 재알림</button>`,
+      );
+    }
     buttons.push(
       `<button class="danger-button" type="button" data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="reject">stop-condition 반려</button>`,
     );
@@ -15818,6 +15826,11 @@ function renderMissionActions() {
           ${
             item.actionType === 'learning-promotion' && item.stopConditionRejectCommand
               ? `<div class="item-meta mono">stop-condition: ${escapeHtml(item.stopConditionRejectCommand)}</div>`
+              : ''
+          }
+          ${
+            item.actionType === 'learning-promotion' && item.remindCommand
+              ? `<div class="item-meta mono">reminder: ${escapeHtml(item.remindCommand)}</div>`
               : ''
           }
           <div class="action-row">
@@ -16051,6 +16064,39 @@ function renderMissionActions() {
 
       await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
         body: JSON.stringify({ note }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-learning-promotion-remind]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionRemind;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt(
+        'stop-condition 재알림 메모를 입력하세요.',
+        'UI에서 blocked learning promotion stop-condition 후속 조치 재알림',
+      );
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind`, {
+        body: JSON.stringify({
+          dueOnly: true,
+          missionId: item.missionId || '',
+          note,
+          workspaceId: item.workspaceId || '',
+        }),
         method: 'POST',
       });
 

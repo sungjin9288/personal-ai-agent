@@ -206,6 +206,8 @@ for (const term of [
   'stopConditionRejectCommand',
   'reminderCadenceHours=12',
   'remind-learning-promotion-stop-conditions',
+  '/api/actions/learning-promotions/:learningCandidateId/remind',
+  'stop-condition reminder',
   'learning-candidate-promotion-stop-condition-reminded',
   'learning-candidate-promotion-stop-condition-resolved',
   'overview learning-candidates',

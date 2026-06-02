@@ -3310,6 +3310,30 @@ async function handleApi(request, response, url) {
     pathParts[1] === 'actions' &&
     pathParts[2] === 'learning-promotions' &&
     pathParts[3] &&
+    pathParts[4] === 'remind'
+  ) {
+    const candidateId = decodePathSegment(pathParts[3]);
+    const body = await readJsonBody(request);
+    const result = service.remindLearningPromotionStopConditions(
+      {
+        dueOnly: body.dueOnly !== false,
+        learningCandidateId: candidateId,
+        missionId: String(body.missionId || '').trim(),
+        overdueOnly: Boolean(body.overdueOnly),
+        workspaceId: String(body.workspaceId || '').trim(),
+      },
+      String(body.note || '').trim(),
+    );
+    sendJson(response, 200, result);
+    return;
+  }
+
+  if (
+    request.method === 'POST' &&
+    pathParts[0] === 'api' &&
+    pathParts[1] === 'actions' &&
+    pathParts[2] === 'learning-promotions' &&
+    pathParts[3] &&
     pathParts[4] === 'resolve'
   ) {
     const candidateId = decodePathSegment(pathParts[3]);
