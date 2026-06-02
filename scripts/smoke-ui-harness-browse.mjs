@@ -1603,6 +1603,14 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('provider-only API 링크 복사'), true);
+  assert.equal(appJs.includes('getReleaseBlockerFilteredCopyScope'), true);
+  assert.equal(appJs.includes('provider: normalizedProvider'), true);
+  assert.equal(
+    (appJs.match(/getReleaseBlockerFilteredCopyScope\(\{ category, owner, provider \}\)/g) || []).length >= 20,
+    true,
+  );
+  assert.equal((appJs.match(/`- provider: \$\{normalizedProvider \|\| 'all'\}`/g) || []).length >= 20, true);
+  assert.equal((appJs.match(/provider: normalizedProvider/g) || []).length >= 25, true);
   assert.equal(appJs.includes('apiLink:'), true);
   assert.equal(appJs.includes('closureVerificationCount:'), true);
   assert.equal(appJs.includes('requiredProofCount:'), true);

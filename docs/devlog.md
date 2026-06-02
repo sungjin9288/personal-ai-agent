@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-02 Provider-Scoped Release Blocker Copy Scope Alignment
+
+- added a shared provider-aware release blocker copy scope helper so release tab slice summary, package, closure checklist, closure matrix, target evidence packet, handoff, commands, and evidence copy actions all preserve the active provider filter
+- prevented Anthropic, Hermes, local, or OpenAI closure handoff bundles from accidentally mixing unrelated provider blockers when category or owner filters are also active
+- extended UI harness browse smoke coverage so provider-scoped copy actions remain tied to provider-aware scope filtering instead of drifting back to category/owner-only copy logic
+
 ## 2026-05-26 Target Environment Provider Closure Matrix Proof Detail Alignment
 
 - expanded target environment blocker disposition and blocker closure verification matrix provider rows so Anthropic, Hermes, and local provider closure evidence requires account/architecture owner fields, mission/session live validation provenance, fallback policy id, stop reason, recoverable-provider-failure-only stop evidence, provider operations proof, data transcript handling, remediation renewal, artifact hygiene, and snapshot details

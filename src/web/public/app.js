@@ -3814,6 +3814,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -3824,6 +3825,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -3831,6 +3833,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -3950,6 +3953,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     'Target evidence capture template',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -3989,6 +3993,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -3999,6 +4004,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4006,6 +4012,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -4225,6 +4232,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     'Target evidence required commands',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- requiredCommandCount: ${commandDefinitions.length}`,
@@ -4266,6 +4274,7 @@ function buildReleaseTargetEvidenceProductionGapText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -4276,6 +4285,7 @@ function buildReleaseTargetEvidenceProductionGapText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4283,6 +4293,7 @@ function buildReleaseTargetEvidenceProductionGapText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -4398,6 +4409,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     'Target evidence production gap guard',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionGapCount: ${gapDefinitions.length}`,
@@ -4437,6 +4449,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -4447,6 +4460,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4454,6 +4468,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -4550,6 +4565,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     'Target evidence accepted-scope exception register',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- exceptionRowCount: ${exceptionDefinitions.length}`,
@@ -4588,6 +4604,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -4598,6 +4615,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4605,6 +4623,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -4703,6 +4722,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
     'Target evidence accepted risk decision register',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -4748,6 +4768,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -4758,6 +4779,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4768,6 +4790,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -4879,6 +4902,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     'Target evidence provider evidence references',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -4927,6 +4951,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -4937,6 +4962,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -4944,6 +4970,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -5017,6 +5044,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
     'Target evidence residual production blocker guard',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5060,6 +5088,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -5070,6 +5099,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const snapshot = releaseStatus.snapshot || {};
@@ -5077,6 +5107,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const sourceCommit = String(summary.sourceCommit || releaseStatus.commit || snapshot.verifiedCommit || '<required source commit>').trim()
     || '<required source commit>';
@@ -5177,6 +5208,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
     'Target evidence closure rules guard',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5217,6 +5249,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -5227,12 +5260,14 @@ function buildReleaseTargetEvidenceIntakePacketText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
     '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
@@ -5376,6 +5411,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     'Scope:',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -5467,6 +5503,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -5477,12 +5514,14 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const docLink = (docPath) => {
     const normalizedPath = String(docPath || '').trim();
@@ -5604,6 +5643,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
     'Target evidence release refresh evidence',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- refreshArtifactCount: ${artifactRows.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -5640,6 +5680,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -5650,12 +5691,14 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const docLink = (docPath) => {
     const normalizedPath = String(docPath || '').trim();
@@ -5861,6 +5904,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
     'Target evidence blocker disposition register',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- dispositionRowCount: ${dispositionDefinitions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -5895,6 +5939,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -5905,12 +5950,14 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const docLink = (docPath) => {
     const normalizedPath = String(docPath || '').trim();
@@ -6077,6 +6124,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     'Target evidence boundary consistency map',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- boundaryDomainCount: ${domainRows.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6110,6 +6158,7 @@ function buildReleaseTargetEvidenceSanitizedRegisterText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -6120,12 +6169,14 @@ function buildReleaseTargetEvidenceSanitizedRegisterText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const evidenceByKey = new Map();
   const addEvidenceDoc = ({
@@ -6223,6 +6274,7 @@ function buildReleaseTargetEvidenceSanitizedRegisterText({
     'Target evidence sanitized register',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- evidenceRecordCount: ${evidenceEntries.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6253,6 +6305,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -6263,12 +6316,14 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const summary = releaseStatus.summary || {};
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const commandEntriesByValue = new Map();
   visibleActions.forEach((item) => {
@@ -6366,6 +6421,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
     'Target evidence command rerun log',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- commandCount: ${commandEntries.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6396,6 +6452,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -6406,12 +6463,14 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const summary = releaseStatus.summary || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const targetEnvironmentEvidenceDoc = getAbsoluteReleaseUrl(
     '/api/execution-v1/release-doc?path=docs%2Ftarget-environment-evidence-intake-v1.md',
@@ -6462,6 +6521,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
     'Target evidence reviewer decision record',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -6515,6 +6575,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
@@ -6525,6 +6586,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const releaseReadiness = releaseStatus.releaseReadiness || {};
   const summary = releaseStatus.summary || {};
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
@@ -6535,6 +6597,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   const providerCounts = visibleActions.reduce((counts, item) => {
     const provider = String(item.provider || '').trim();
@@ -6576,6 +6639,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
     'Target environment evidence intake summary',
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
+    `- provider: ${normalizedProvider || 'all'}`,
     `- visibleCurrentBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- commandCount: ${sliceSummary.commandCount}`,
     `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
@@ -8925,24 +8989,8 @@ async function copyReleaseBlockerFilterSummary({
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const normalizedProvider = String(provider || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-      provider: normalizedProvider,
-    }),
-  );
-  const summaryText = buildReleaseBlockerSliceSummaryText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-    provider: normalizedProvider,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const summaryText = buildReleaseBlockerSliceSummaryText(copyScope);
   if (!summaryText) {
     setUiNotice('복사할 release blocker slice summary가 없습니다.');
     return;
@@ -8993,7 +9041,7 @@ async function copyReleaseBlockerProviderOnlyApiLink({
   });
 }
 
-async function copyReleaseBlockerFilterPackage({
+function getReleaseBlockerFilteredCopyScope({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
@@ -9009,13 +9057,23 @@ async function copyReleaseBlockerFilterPackage({
       provider: normalizedProvider,
     }),
   );
-  const packageText = buildReleaseBlockerSlicePackageText({
+
+  return {
     blockerActions,
-    totalActions,
     category: normalizedCategory,
     owner: normalizedOwner,
     provider: normalizedProvider,
-  });
+    totalActions,
+  };
+}
+
+async function copyReleaseBlockerFilterPackage({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const packageText = buildReleaseBlockerSlicePackageText(copyScope);
   if (!packageText) {
     setUiNotice('복사할 release blocker slice package가 없습니다.');
     return;
@@ -9031,22 +9089,10 @@ async function copyReleaseBlockerFilterPackage({
 async function copyReleaseBlockerFilterClosureChecklist({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const checklistText = buildReleaseBlockerSliceClosureChecklistText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const checklistText = buildReleaseBlockerSliceClosureChecklistText(copyScope);
   if (!checklistText) {
     setUiNotice('복사할 release blocker slice closure checklist가 없습니다.');
     return;
@@ -9062,22 +9108,10 @@ async function copyReleaseBlockerFilterClosureChecklist({
 async function copyReleaseBlockerFilterClosureMatrixPackage({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const matrixText = buildReleaseBlockerClosureMatrixPackageText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const matrixText = buildReleaseBlockerClosureMatrixPackageText(copyScope);
   if (!matrixText) {
     setUiNotice('복사할 release blocker closure matrix package가 없습니다.');
     return;
@@ -9093,22 +9127,10 @@ async function copyReleaseBlockerFilterClosureMatrixPackage({
 async function copyReleaseTargetEvidenceIntakeSummary({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const summaryText = buildReleaseTargetEvidenceIntakeSummaryText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const summaryText = buildReleaseTargetEvidenceIntakeSummaryText(copyScope);
   if (!summaryText) {
     setUiNotice('복사할 target evidence intake summary가 없습니다.');
     return;
@@ -9124,22 +9146,10 @@ async function copyReleaseTargetEvidenceIntakeSummary({
 async function copyReleaseTargetEvidenceCaptureTemplate({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const templateText = buildReleaseTargetEvidenceCaptureTemplateText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const templateText = buildReleaseTargetEvidenceCaptureTemplateText(copyScope);
   if (!templateText) {
     setUiNotice('복사할 target evidence capture template가 없습니다.');
     return;
@@ -9155,22 +9165,10 @@ async function copyReleaseTargetEvidenceCaptureTemplate({
 async function copyReleaseTargetEvidenceRequiredCommands({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const commandText = buildReleaseTargetEvidenceRequiredCommandsText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const commandText = buildReleaseTargetEvidenceRequiredCommandsText(copyScope);
   if (!commandText) {
     setUiNotice('복사할 target evidence required commands가 없습니다.');
     return;
@@ -9186,22 +9184,10 @@ async function copyReleaseTargetEvidenceRequiredCommands({
 async function copyReleaseTargetEvidenceProductionGap({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const gapText = buildReleaseTargetEvidenceProductionGapText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const gapText = buildReleaseTargetEvidenceProductionGapText(copyScope);
   if (!gapText) {
     setUiNotice('복사할 target evidence production gap이 없습니다.');
     return;
@@ -9217,22 +9203,10 @@ async function copyReleaseTargetEvidenceProductionGap({
 async function copyReleaseTargetEvidenceExceptionRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const registerText = buildReleaseTargetEvidenceExceptionRegisterText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const registerText = buildReleaseTargetEvidenceExceptionRegisterText(copyScope);
   if (!registerText) {
     setUiNotice('복사할 target evidence exception register가 없습니다.');
     return;
@@ -9248,22 +9222,10 @@ async function copyReleaseTargetEvidenceExceptionRegister({
 async function copyReleaseTargetEvidenceRiskDecisionRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const registerText = buildReleaseTargetEvidenceRiskDecisionRegisterText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const registerText = buildReleaseTargetEvidenceRiskDecisionRegisterText(copyScope);
   if (!registerText) {
     setUiNotice('복사할 target evidence risk decision register가 없습니다.');
     return;
@@ -9279,22 +9241,10 @@ async function copyReleaseTargetEvidenceRiskDecisionRegister({
 async function copyReleaseTargetEvidenceProviderEvidenceReferences({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const referencesText = buildReleaseTargetEvidenceProviderEvidenceReferencesText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const referencesText = buildReleaseTargetEvidenceProviderEvidenceReferencesText(copyScope);
   if (!referencesText) {
     setUiNotice('복사할 target evidence provider references가 없습니다.');
     return;
@@ -9310,22 +9260,10 @@ async function copyReleaseTargetEvidenceProviderEvidenceReferences({
 async function copyReleaseTargetEvidenceResidualBlockers({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const blockersText = buildReleaseTargetEvidenceResidualBlockersText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const blockersText = buildReleaseTargetEvidenceResidualBlockersText(copyScope);
   if (!blockersText) {
     setUiNotice('복사할 target evidence residual blockers가 없습니다.');
     return;
@@ -9341,22 +9279,10 @@ async function copyReleaseTargetEvidenceResidualBlockers({
 async function copyReleaseTargetEvidenceClosureRules({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const rulesText = buildReleaseTargetEvidenceClosureRulesText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const rulesText = buildReleaseTargetEvidenceClosureRulesText(copyScope);
   if (!rulesText) {
     setUiNotice('복사할 target evidence closure rules가 없습니다.');
     return;
@@ -9372,22 +9298,10 @@ async function copyReleaseTargetEvidenceClosureRules({
 async function copyReleaseTargetEvidenceSubmissionManifest({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const manifestText = buildReleaseTargetEvidenceSubmissionManifestText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const manifestText = buildReleaseTargetEvidenceSubmissionManifestText(copyScope);
   if (!manifestText) {
     setUiNotice('복사할 target evidence submission manifest가 없습니다.');
     return;
@@ -9403,22 +9317,10 @@ async function copyReleaseTargetEvidenceSubmissionManifest({
 async function copyReleaseTargetEvidenceSanitizedRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const registerText = buildReleaseTargetEvidenceSanitizedRegisterText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const registerText = buildReleaseTargetEvidenceSanitizedRegisterText(copyScope);
   if (!registerText) {
     setUiNotice('복사할 target evidence sanitized register가 없습니다.');
     return;
@@ -9434,22 +9336,10 @@ async function copyReleaseTargetEvidenceSanitizedRegister({
 async function copyReleaseTargetEvidenceBoundaryMap({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const mapText = buildReleaseTargetEvidenceBoundaryConsistencyMapText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const mapText = buildReleaseTargetEvidenceBoundaryConsistencyMapText(copyScope);
   if (!mapText) {
     setUiNotice('복사할 target evidence boundary map이 없습니다.');
     return;
@@ -9465,22 +9355,10 @@ async function copyReleaseTargetEvidenceBoundaryMap({
 async function copyReleaseTargetEvidenceCommandRerunLog({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const rerunLogText = buildReleaseTargetEvidenceCommandRerunLogText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const rerunLogText = buildReleaseTargetEvidenceCommandRerunLogText(copyScope);
   if (!rerunLogText) {
     setUiNotice('복사할 target evidence command rerun log가 없습니다.');
     return;
@@ -9496,22 +9374,10 @@ async function copyReleaseTargetEvidenceCommandRerunLog({
 async function copyReleaseTargetEvidenceDecisionRecord({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const decisionText = buildReleaseTargetEvidenceReviewerDecisionRecordText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const decisionText = buildReleaseTargetEvidenceReviewerDecisionRecordText(copyScope);
   if (!decisionText) {
     setUiNotice('복사할 target evidence reviewer decision record가 없습니다.');
     return;
@@ -9527,22 +9393,10 @@ async function copyReleaseTargetEvidenceDecisionRecord({
 async function copyReleaseTargetEvidenceBlockerDispositionRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const registerText = buildReleaseTargetEvidenceBlockerDispositionRegisterText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const registerText = buildReleaseTargetEvidenceBlockerDispositionRegisterText(copyScope);
   if (!registerText) {
     setUiNotice('복사할 target evidence blocker disposition register가 없습니다.');
     return;
@@ -9558,22 +9412,10 @@ async function copyReleaseTargetEvidenceBlockerDispositionRegister({
 async function copyReleaseTargetEvidenceReleaseRefreshEvidence({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const evidenceText = buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const evidenceText = buildReleaseTargetEvidenceReleaseRefreshEvidenceText(copyScope);
   if (!evidenceText) {
     setUiNotice('복사할 target evidence release refresh evidence가 없습니다.');
     return;
@@ -9589,22 +9431,10 @@ async function copyReleaseTargetEvidenceReleaseRefreshEvidence({
 async function copyReleaseTargetEvidenceIntakePacket({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const packetText = buildReleaseTargetEvidenceIntakePacketText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const packetText = buildReleaseTargetEvidenceIntakePacketText(copyScope);
   if (!packetText) {
     setUiNotice('복사할 target evidence intake packet이 없습니다.');
     return;
@@ -9620,22 +9450,10 @@ async function copyReleaseTargetEvidenceIntakePacket({
 async function copyReleaseBlockerFilterHandoff({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const handoffText = buildReleaseBlockerSliceHandoffText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const handoffText = buildReleaseBlockerSliceHandoffText(copyScope);
   if (!handoffText) {
     setUiNotice('복사할 release blocker slice handoff가 없습니다.');
     return;
@@ -9651,22 +9469,10 @@ async function copyReleaseBlockerFilterHandoff({
 async function copyReleaseBlockerFilterCommands({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const commandText = buildReleaseBlockerSliceCommandText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const commandText = buildReleaseBlockerSliceCommandText(copyScope);
   if (!commandText) {
     setUiNotice('복사할 release blocker slice command가 없습니다.');
     return;
@@ -9682,22 +9488,10 @@ async function copyReleaseBlockerFilterCommands({
 async function copyReleaseBlockerFilterEvidence({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
-  const normalizedCategory = String(category || '').trim();
-  const normalizedOwner = String(owner || '').trim();
-  const totalActions = getReleaseCurrentOpenBlockerActions();
-  const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: normalizedCategory,
-      owner: normalizedOwner,
-    }),
-  );
-  const evidenceText = buildReleaseBlockerSliceEvidenceText({
-    blockerActions,
-    totalActions,
-    category: normalizedCategory,
-    owner: normalizedOwner,
-  });
+  const copyScope = getReleaseBlockerFilteredCopyScope({ category, owner, provider });
+  const evidenceText = buildReleaseBlockerSliceEvidenceText(copyScope);
   if (!evidenceText) {
     setUiNotice('복사할 release blocker slice evidence가 없습니다.');
     return;
