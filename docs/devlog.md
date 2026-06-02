@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Section Copy
+
+- added provider-only target evidence submission manifest and blocker disposition copy actions so operators can split provider-specific closing evidence from the shared provider-operations row at section level
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in the manifest and disposition register headers so copied section evidence carries its provider-only policy boundary
+- kept the normal target evidence section copy actions unchanged while extending UI harness coverage for the new provider-only manifest and disposition contracts
+
 ## 2026-06-03 Provider-Only Target Evidence Packet Copy
 
 - added a provider-only target evidence packet copy action so operators can submit provider-specific target evidence while intentionally excluding the shared provider-operations row
