@@ -15674,6 +15674,8 @@ function formatLearningPromotionDetails(item) {
     item.proposalTarget ? `target ${item.proposalTarget}` : '',
     item.scope ? `scope ${item.scope}` : '',
     item.recordType ? `record ${item.recordType}` : '',
+    item.promotionStopReason ? `stop ${item.promotionStopReason}` : '',
+    item.promotionVerificationStatus ? `verification ${item.promotionVerificationStatus}` : '',
     item.expirationPolicy?.status ? `expiration ${item.expirationPolicy.status}` : '',
     item.expirationPolicy?.expiresAt ? `expires ${formatDate(item.expirationPolicy.expiresAt)}` : '',
   ]
@@ -15701,6 +15703,12 @@ function renderLearningPromotionActionButtons(item) {
     );
     buttons.push(
       `<button class="danger-button" type="button" data-learning-promotion-expire="${escapeHtml(candidateId)}">대기 만료</button>`,
+    );
+  }
+
+  if (item.promotionStatus === 'verification-blocked') {
+    buttons.push(
+      `<button class="danger-button" type="button" data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="reject">stop-condition 반려</button>`,
     );
   }
 
@@ -15805,6 +15813,11 @@ function renderMissionActions() {
           ${
             item.actionType === 'learning-promotion' && item.rollbackCommand
               ? `<div class="item-meta mono">rollback: ${escapeHtml(item.rollbackCommand)}</div>`
+              : ''
+          }
+          ${
+            item.actionType === 'learning-promotion' && item.stopConditionRejectCommand
+              ? `<div class="item-meta mono">stop-condition: ${escapeHtml(item.stopConditionRejectCommand)}</div>`
               : ''
           }
           <div class="action-row">
