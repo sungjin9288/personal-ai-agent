@@ -2385,6 +2385,51 @@ function getReleaseProviderReadinessEntries({
   });
 }
 
+function getReleaseProviderClosureSummary(providerReadinessEntry = {}, providerBlockerActions = []) {
+  const summary = providerReadinessEntry?.blockerClosureVerification || {};
+  const blockerActions = Array.isArray(providerBlockerActions) ? providerBlockerActions : [];
+  const fallbackClosureIds = blockerActions
+    .map((action) => String(getReleaseBlockerClosureVerification(action).id || '').trim())
+    .filter(Boolean);
+  const fallbackCommands = blockerActions.flatMap((action) => getReleaseBlockerRequiredCommands(action));
+  const fallbackEvidenceDocs = new Set(
+    blockerActions
+      .flatMap((action) => getReleaseBlockerRequiredEvidenceDocs(action))
+      .map((doc) => String(doc?.href || doc?.path || doc?.label || '').trim())
+      .filter(Boolean),
+  );
+  const fallbackRequiredProofs = new Set(blockerActions.flatMap((action) => getReleaseBlockerRequiredProofs(action)));
+  const productionReadyBlockedCount = Number.isFinite(Number(summary.productionReadyBlockedCount))
+    ? Number(summary.productionReadyBlockedCount)
+    : blockerActions.filter((action) =>
+      getReleaseBlockerClosureVerification(action).productionReadyClaimAllowed === false,
+    ).length;
+  const targetBoundaryRequiredCount = Number.isFinite(Number(summary.targetBoundaryRequiredCount))
+    ? Number(summary.targetBoundaryRequiredCount)
+    : blockerActions.filter((action) =>
+      getReleaseBlockerClosureVerification(action).targetBoundaryRequired === true,
+    ).length;
+
+  return {
+    closureVerificationCount: Number.isFinite(Number(summary.closureVerificationCount))
+      ? Number(summary.closureVerificationCount)
+      : fallbackClosureIds.length,
+    commandCount: Number.isFinite(Number(summary.commandCount))
+      ? Number(summary.commandCount)
+      : fallbackCommands.length,
+    evidenceDocCount: Number.isFinite(Number(summary.evidenceDocCount))
+      ? Number(summary.evidenceDocCount)
+      : fallbackEvidenceDocs.size,
+    productionReadyBlockedCount,
+    productionReadyClaimAllowed: summary.productionReadyClaimAllowed === true
+      && productionReadyBlockedCount === 0,
+    requiredProofCount: Number.isFinite(Number(summary.requiredProofCount))
+      ? Number(summary.requiredProofCount)
+      : fallbackRequiredProofs.size,
+    targetBoundaryRequiredCount,
+  };
+}
+
 function getReleaseProviderBlockerNeedles(provider = '') {
   const normalizedProvider = String(provider || '').trim();
   const providerNeedles = {
@@ -12914,6 +12959,9 @@ function renderReleaseStatus() {
   const focusedProviderBlockerActions = focusedProvider
     ? getReleaseProviderBlockerActions({ provider: focusedProvider, releaseStatus: release })
     : [];
+  const focusedProviderClosureSummary = focusedProviderEntry
+    ? getReleaseProviderClosureSummary(focusedProviderEntry, focusedProviderBlockerActions)
+    : null;
   const focusedProviderTopBlocker = focusedProviderBlockerActions[0] || null;
   const focusedProviderTopBlockerId = String(focusedProviderTopBlocker?.id || '').trim();
   const focusedProviderHistory = focusedProvider
@@ -14428,6 +14476,24 @@ function renderReleaseStatus() {
                         ? ` · top ${escapeHtml(focusedProviderTopBlockerId || 'unknown')}: ${escapeHtml(String(focusedProviderTopBlocker.stopReason || focusedProviderTopBlocker.blocker || '').trim())}`
                         : ''}
                     </p>
+                    ${focusedProviderClosureSummary
+                      ? `
+                          <p class="item-meta" data-release-provider-closure-summary="${escapeHtml(focusedProvider)}">
+                            closure verifications ${escapeHtml(String(focusedProviderClosureSummary.closureVerificationCount))}
+                            · required proofs ${escapeHtml(String(focusedProviderClosureSummary.requiredProofCount))}
+                            · commands ${escapeHtml(String(focusedProviderClosureSummary.commandCount))}
+                            · evidence docs ${escapeHtml(String(focusedProviderClosureSummary.evidenceDocCount))}
+                          </p>
+                          <div class="release-history-filter-chips" data-release-provider-closure-metrics="${escapeHtml(focusedProvider)}">
+                            <span class="mini-badge status-failed" data-release-provider-closure-count="${escapeHtml(focusedProvider)}">${escapeHtml(`closure ${focusedProviderClosureSummary.closureVerificationCount}`)}</span>
+                            <span class="mini-badge status-running" data-release-provider-required-proof-count="${escapeHtml(focusedProvider)}">${escapeHtml(`proofs ${focusedProviderClosureSummary.requiredProofCount}`)}</span>
+                            <span class="mini-badge status-running" data-release-provider-command-count="${escapeHtml(focusedProvider)}">${escapeHtml(`commands ${focusedProviderClosureSummary.commandCount}`)}</span>
+                            <span class="mini-badge status-running" data-release-provider-evidence-doc-count="${escapeHtml(focusedProvider)}">${escapeHtml(`evidence ${focusedProviderClosureSummary.evidenceDocCount}`)}</span>
+                            <span class="mini-badge ${focusedProviderClosureSummary.productionReadyClaimAllowed ? 'status-completed' : 'status-failed'}" data-release-provider-production-ready-claim="${escapeHtml(focusedProvider)}">${escapeHtml(focusedProviderClosureSummary.productionReadyClaimAllowed ? 'claim allowed' : 'claim blocked')}</span>
+                            <span class="mini-badge ${focusedProviderClosureSummary.targetBoundaryRequiredCount ? 'status-failed' : 'status-completed'}" data-release-provider-target-boundary-count="${escapeHtml(focusedProvider)}">${escapeHtml(`target boundary ${focusedProviderClosureSummary.targetBoundaryRequiredCount}`)}</span>
+                          </div>
+                        `
+                      : ''}
                     ${focusedProviderLatestAction
                       ? `
                           <div class="item-meta">
@@ -14528,6 +14594,7 @@ function renderReleaseStatus() {
                       });
                       const providerTopBlocker = providerBlockerActions[0] || null;
                       const providerTopBlockerId = String(providerTopBlocker?.id || '').trim();
+                      const providerClosureSummary = getReleaseProviderClosureSummary(item, providerBlockerActions);
                       const preflightSummary = preflight
                         ? preflight.status === 'ready-for-live-validation'
                           ? `preflight 통과 · ${preflight.checks?.length || 0}개 smoke passed`
@@ -14550,6 +14617,14 @@ function renderReleaseStatus() {
                           class="mini-badge ${providerBlockerActions.length ? 'status-failed' : 'status-completed'}"
                           data-release-provider-blocker-count="${escapeHtml(item.provider)}"
                         >blockers ${escapeHtml(String(providerBlockerActions.length))}</span>
+                        <span
+                          class="mini-badge ${providerClosureSummary.productionReadyClaimAllowed ? 'status-completed' : 'status-failed'}"
+                          data-release-provider-closure-count="${escapeHtml(item.provider)}"
+                        >closure ${escapeHtml(String(providerClosureSummary.closureVerificationCount))}</span>
+                        <span
+                          class="mini-badge status-running"
+                          data-release-provider-required-proof-count="${escapeHtml(item.provider)}"
+                        >proofs ${escapeHtml(String(providerClosureSummary.requiredProofCount))}</span>
                       </div>
                       <div class="release-provider-meta">
                         <button
@@ -14629,6 +14704,9 @@ function renderReleaseStatus() {
                       </div>
                       <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${liveCommand}`)}</p>
                       <p class="item-meta">${escapeHtml(preflightSummary)}</p>
+                      <p class="item-meta" data-release-provider-closure-summary="${escapeHtml(item.provider)}">
+                        ${escapeHtml(`closure verifications ${providerClosureSummary.closureVerificationCount} · required proofs ${providerClosureSummary.requiredProofCount} · commands ${providerClosureSummary.commandCount} · evidence docs ${providerClosureSummary.evidenceDocCount} · target boundary ${providerClosureSummary.targetBoundaryRequiredCount}`)}
+                      </p>
                       ${providerTopBlocker
                         ? `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker · ${escapeHtml(providerTopBlockerId || 'unknown')} · ${escapeHtml(String(providerTopBlocker.stopReason || providerTopBlocker.blocker || '').trim())}</p>`
                         : `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker 없음</p>`}
