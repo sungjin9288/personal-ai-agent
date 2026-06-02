@@ -2082,6 +2082,25 @@ function isReleaseBlockerActionVisibleForFilter(
     );
 }
 
+function isReleaseBlockerActionVisibleForCopyScope(
+  blockerAction = null,
+  {
+    category = state.releaseBlockerCategoryFilter,
+    includeShared = true,
+    owner = state.releaseBlockerOwnerFilter,
+    provider = state.releaseBlockerProviderFilter,
+  } = {},
+) {
+  if (includeShared === false && isReleaseSharedProviderBlockerAction(blockerAction)) {
+    return false;
+  }
+  return isReleaseBlockerActionVisibleForFilter(blockerAction, {
+    category,
+    owner,
+    provider,
+  });
+}
+
 function getFilteredReleaseCurrentOpenBlockerActions(releaseStatus = state.releaseStatus) {
   return getReleaseCurrentOpenBlockerActions(releaseStatus).filter((item) =>
     isReleaseBlockerActionVisibleForFilter(item),
@@ -2898,6 +2917,7 @@ function buildReleaseBlockerSliceSummaryText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -2932,6 +2952,7 @@ function buildReleaseBlockerSliceSummaryText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- closureVerificationCount: ${sliceSummary.closureVerificationCount}`,
     `- targetBoundaryRequired: ${sliceSummary.targetBoundaryRequiredCount}/${sliceSummary.visibleCount}`,
@@ -7838,6 +7859,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-provider-only-package') {
+        void copyReleaseBlockerProviderOnlyPackage();
+        return;
+      }
+
       if (action === 'copy-release-blocker-filter-closure-checklist') {
         void copyReleaseBlockerFilterClosureChecklist();
         return;
@@ -9043,6 +9069,7 @@ async function copyReleaseBlockerProviderOnlyApiLink({
 
 function getReleaseBlockerFilteredCopyScope({
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -9051,8 +9078,9 @@ function getReleaseBlockerFilteredCopyScope({
   const normalizedProvider = String(provider || '').trim();
   const totalActions = getReleaseCurrentOpenBlockerActions();
   const blockerActions = totalActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
+    isReleaseBlockerActionVisibleForCopyScope(item, {
       category: normalizedCategory,
+      includeShared,
       owner: normalizedOwner,
       provider: normalizedProvider,
     }),
@@ -9061,6 +9089,7 @@ function getReleaseBlockerFilteredCopyScope({
   return {
     blockerActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     totalActions,
@@ -9083,6 +9112,36 @@ async function copyReleaseBlockerFilterPackage({
     promptMessage: 'release blocker slice package를 복사하세요.',
     shownNotice: 'release blocker slice package를 표시했습니다.',
     successNotice: 'release blocker slice package를 복사했습니다.',
+  });
+}
+
+async function copyReleaseBlockerProviderOnlyPackage({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only package는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const packageText = buildReleaseBlockerSlicePackageText(copyScope);
+  if (!packageText) {
+    setUiNotice('복사할 provider-only release blocker package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'provider-only release blocker package를 복사하세요.',
+    shownNotice: 'provider-only release blocker package를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only release blocker package를 복사했습니다.`,
   });
 }
 
@@ -13763,6 +13822,16 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-package="true"
                   data-ui-action="copy-release-blocker-filter-package"
                 >slice package 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-current-open-blocker-provider-only-package="true"
+                      data-ui-action="copy-release-blocker-provider-only-package"
+                    >provider-only package 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"

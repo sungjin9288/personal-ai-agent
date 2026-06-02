@@ -1603,7 +1603,9 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('provider-only API 링크 복사'), true);
+  assert.equal(appJs.includes('includeSharedProviderOperations:'), true);
   assert.equal(appJs.includes('getReleaseBlockerFilteredCopyScope'), true);
+  assert.equal(appJs.includes('isReleaseBlockerActionVisibleForCopyScope'), true);
   assert.equal(appJs.includes('provider: normalizedProvider'), true);
   assert.equal(
     (appJs.match(/getReleaseBlockerFilteredCopyScope\(\{ category, owner, provider \}\)/g) || []).length >= 20,
@@ -1619,6 +1621,10 @@ try {
   assert.equal(appJs.includes('buildReleaseBlockerSlicePackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-package'), true);
+  assert.equal(appJs.includes('copy-release-blocker-provider-only-package'), true);
+  assert.equal(appJs.includes('provider-only package 복사'), true);
+  assert.equal(appJs.includes('includeShared: false'), true);
   assert.equal(appJs.includes('Release blocker slice package'), true);
   assert.equal(appJs.includes('buildReleaseBlockerSliceClosureChecklistText(buildOptions)'), true);
   assert.equal(appJs.includes('buildReleaseBlockerSliceClosureChecklistText'), true);

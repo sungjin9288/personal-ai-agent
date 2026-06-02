@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Release Blocker Package Copy
+
+- added a provider-only release blocker package copy action so operators can copy a provider-specific closure bundle while intentionally excluding the shared provider-operations row
+- extended the release blocker copy scope helper with an `includeShared=false` path and recorded `includeSharedProviderOperations` in the copied slice summary
+- kept the existing provider-scoped package behavior unchanged for normal handoff, while making provider-only package copying match the API `includeShared=false` and CLI `--without-shared` semantics
+
 ## 2026-06-02 Provider-Scoped Release Blocker Copy Scope Alignment
 
 - added a shared provider-aware release blocker copy scope helper so release tab slice summary, package, closure checklist, closure matrix, target evidence packet, handoff, commands, and evidence copy actions all preserve the active provider filter
