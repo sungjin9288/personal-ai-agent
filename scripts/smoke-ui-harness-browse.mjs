@@ -297,6 +297,17 @@ try {
   assert.equal(appJs.includes('linkedClosureVerifications:'), true);
   assert.equal(appJs.includes('linkedRequiredProofCount:'), true);
   assert.equal(appJs.includes('sharedProviderBlocker:'), true);
+  assert.equal(appJs.includes('getReleaseProviderClosureSummary'), true);
+  assert.equal(appJs.includes('data-release-provider-closure-summary'), true);
+  assert.equal(appJs.includes('data-release-provider-closure-metrics'), true);
+  assert.equal(appJs.includes('data-release-provider-closure-count'), true);
+  assert.equal(appJs.includes('data-release-provider-required-proof-count'), true);
+  assert.equal(appJs.includes('data-release-provider-command-count'), true);
+  assert.equal(appJs.includes('data-release-provider-evidence-doc-count'), true);
+  assert.equal(appJs.includes('data-release-provider-production-ready-claim'), true);
+  assert.equal(appJs.includes('data-release-provider-target-boundary-count'), true);
+  assert.equal(appJs.includes('closure verifications'), true);
+  assert.equal(appJs.includes('target boundary'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-count'), true);
   assert.equal(appJs.includes('data-release-provider-blocker-package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-count'), true);
