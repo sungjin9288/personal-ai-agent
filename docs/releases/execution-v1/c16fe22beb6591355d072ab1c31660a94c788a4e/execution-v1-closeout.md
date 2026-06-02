@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T03:22:03.262Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T03:21:48.672Z
 - branch: codex/learning-promotion-stop-condition-reminders
 - commit: c16fe22beb6591355d072ab1c31660a94c788a4e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

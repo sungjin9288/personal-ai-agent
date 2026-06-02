@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T03:22:03.262Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T03:21:41.589Z
 - branch: codex/learning-promotion-stop-condition-reminders
 - commit: c16fe22beb6591355d072ab1c31660a94c788a4e
