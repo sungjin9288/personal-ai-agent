@@ -11,6 +11,7 @@ import {
 import { createId } from './core/id.mjs';
 import { createMissionService } from './core/mission-service.mjs';
 import { compactOutputFile } from './core/output-compaction-service.mjs';
+import { getReleaseBlockerHandoff } from './core/release-readiness-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
 import { createStore } from './core/store.mjs';
 
@@ -101,6 +102,7 @@ Commands:
   overview operator-timeline [--provider-since <iso-timestamp>]
   overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--adoption-drift-status <growing|steady|declining|unused>] [--adoption-drift-reason-code <mission-volume-growing|mission-volume-declining|workspace-footprint-growing|workspace-footprint-declining|unused-profile>] [--usage-trend <growing|steady|declining|unused>] [--workspace-usage-trend <growing|steady|declining|unused>] [--workspace-adoption-drift-status <growing|steady|declining|unused>] [--workspace-adoption-drift-reason-code <workspace-mission-volume-growing|workspace-mission-volume-declining|workspace-profile-footprint-growing|workspace-profile-footprint-declining|unused-workspace>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
   overview providers [--since <iso-timestamp>]
+  overview release-blockers [--provider <openai|anthropic|local|hermes>] [--category <provider-account|provider-architecture|provider-operations|target-deployment|release-decision|release-readiness>] [--owner <provider-ops|deployment-owner|release-owner>] [--without-shared]
 
   provider list
   provider check <stub|openai|anthropic|local|hermes>
@@ -243,6 +245,24 @@ Options:
 
 Audit policy:
   This command summarizes learningCandidate records, promotion state, retention/expiration policy, rollback eligibility, provider fallback lesson evidence, and no-secret safety counters without enabling autonomous promotion.
+`);
+    return true;
+  }
+
+  if (group === 'overview' && command === 'release-blockers') {
+    console.log(`Personal AI Agent
+
+Usage:
+  overview release-blockers [--provider <openai|anthropic|local|hermes>] [--category <provider-account|provider-architecture|provider-operations|target-deployment|release-decision|release-readiness>] [--owner <provider-ops|deployment-owner|release-owner>] [--without-shared]
+
+Options:
+  --provider <providerId>       Filter release blocker actions to one provider.
+  --category <category>         Filter by blocker action category.
+  --owner <owner>               Filter by accountable owner.
+  --without-shared              When provider is set, hide shared provider-operations blockers.
+
+Audit policy:
+  This command summarizes current release blocker handoff records, stop reasons, required closing evidence, required commands, evidence docs, closure rules, and productionReadyClaim=false policy without raw secrets or customer payloads.
 `);
     return true;
   }
@@ -495,6 +515,19 @@ async function main() {
     printJson(
       service.getProviderOverview({
         since: readOption(rest, '--since', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'overview' && command === 'release-blockers') {
+    printJson(
+      getReleaseBlockerHandoff({
+        category: readOption(rest, '--category', ''),
+        includeShared: !hasOption(rest, '--without-shared'),
+        owner: readOption(rest, '--owner', ''),
+        provider: readOption(rest, '--provider', ''),
+        rootDir,
       }),
     );
     return;
