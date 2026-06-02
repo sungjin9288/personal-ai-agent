@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T15:45:04.523Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T15:44:55.735Z
 - branch: codex/provider-only-release-copy-bundles
 - commit: 8c4229023b11c1dc577e406b9b11cdbd1888a472
