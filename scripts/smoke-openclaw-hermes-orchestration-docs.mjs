@@ -53,6 +53,10 @@ assert.equal(
   packageJson.scripts['smoke:learning-promotion-queue'],
   'node scripts/smoke-learning-promotion-queue.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:learning-candidate-audit-surface'],
+  'node scripts/smoke-learning-candidate-audit-surface.mjs',
+);
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-openclaw-hermes-orchestration-docs.mjs'),
   'reference adoption smoke list must include the OpenClaw/Hermes orchestration smoke',
@@ -92,6 +96,10 @@ assert.ok(
 assert.ok(
   referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-promotion-queue.mjs'),
   'reference adoption smoke list must include the scoped learning promotion smoke',
+);
+assert.ok(
+  referenceAdoptionSmokeScripts.includes('scripts/smoke-learning-candidate-audit-surface.mjs'),
+  'reference adoption smoke list must include the learning candidate audit surface smoke',
 );
 
 assertDocumentBasics(backbone, {
@@ -192,6 +200,7 @@ for (const term of [
   'retain or expire',
   'Provider lesson',
   'Quality regression',
+  'overview learning-candidates',
 ]) {
   assertContains(engine, term, `engine must include ${term}`);
 }
@@ -203,6 +212,7 @@ for (const heading of [
   '## Learning Record Types',
   '## Promotion Rules',
   '## Memory And Privacy Rules',
+  '## Learning Candidate Audit Surface',
   '## Self-Improvement Safety Rules',
   '## Required Commands',
   '## Acceptance Rule',
@@ -215,6 +225,7 @@ for (const heading of [
 for (const command of [
   'npm run smoke:gateway-event-learning-candidate',
   'npm run smoke:learning-promotion-queue',
+  'npm run smoke:learning-candidate-audit-surface',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:memory-rerun',

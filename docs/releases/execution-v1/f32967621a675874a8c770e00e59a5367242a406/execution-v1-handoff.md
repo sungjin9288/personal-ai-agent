@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T00:13:41.619Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T00:13:39.929Z
 - localDate: 2026-06-02
 - branch: codex/learning-candidate-audit-surface
 - commit: f32967621a675874a8c770e00e59a5367242a406
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406](releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406](docs/releases/execution-v1/f32967621a675874a8c770e00e59a5367242a406)
 - visualArtifactSetSha256: 0cf94c8ad337f4190c076bf2fb0b507ca2aa860d1b12bbe30c036991734db8f0
 - commitPushStatus: not pushed, origin/codex/learning-candidate-audit-surface not found
 

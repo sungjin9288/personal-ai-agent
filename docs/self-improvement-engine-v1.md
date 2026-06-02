@@ -106,6 +106,12 @@ node src/cli.mjs action rollback-learning-promotion <learningCandidateId> --note
 
 The web operator action inbox uses the same service contract through `/api/actions/learning-promotions/:learningCandidateId/resolve`, `/api/actions/learning-promotions/:learningCandidateId/rollback`, and `/api/actions/learning-promotions/expire`. The UI intentionally keeps promotion manual: pending items expose approve, reject, and expire actions; promoted or approved items expose rollback only when `rollbackEligible` is true. Resolved terminal states are excluded from the default operator surface through the `promotionStatus=operator-active` action inbox filter.
 
+## Learning Candidate Audit Surface
+
+`overview learning-candidates` exposes learning candidates as a read-only operator audit packet without enabling autonomous promotion. It filters by workspace, mission, session, promotion status, record type, proposed target, scope, provider, provider fallback policy, gateway event route, and timestamp.
+
+The audit summary keeps Hermes-style self-improvement bounded by reporting promotion state, retention/expiration policy, rollback eligibility, provider fallback lesson evidence, provider failure taxonomy, gateway event bindings, scope-lock counters, approval-required counters, and no-raw-secrets/no-raw-customer-payload safety counters. It also keeps `autonomousPromotionEnabled=false` and `productionReadyClaim=false` so the overview remains an inspection surface, not a mutation path.
+
 ## Memory And Privacy Rules
 
 1. Session memory, workspace memory, user preference, provider lesson, and global operating rule are separate stores or separately labeled records.
@@ -132,6 +138,7 @@ The web operator action inbox uses the same service contract through `/api/actio
 npm run smoke:openclaw-hermes-orchestration-docs
 npm run smoke:gateway-event-learning-candidate
 npm run smoke:learning-promotion-queue
+npm run smoke:learning-candidate-audit-surface
 npm run smoke:ui-learning-promotion-surface
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
@@ -161,3 +168,4 @@ This document does not prove production readiness or continuous learning safety 
 3. Add deterministic smoke coverage for memory promotion, rejected promotion, rollback, and expiration. Memory promotion, rejected promotion, rollback execution, and expiration policy are covered by `smoke:learning-promotion-queue`.
 4. Add provider fallback lesson extraction from provider events and stop-condition timelines. Provider fallback attempts with provider failure metadata now update learning candidates as provider-policy lessons with sanitized policy, stop reason, selected fallback provider, and recoverability evidence, backed by `smoke:provider-fallback-learning-lessons`.
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default. The web action inbox now renders learning candidates with manual approve, reject, expire, and rollback controls, backed by `smoke:ui-learning-promotion-surface`.
+6. Add a read-only operator audit surface for learning candidates. `overview learning-candidates` now summarizes promotion status, record type, target, scope, provider fallback lessons, retention/expiration policy, rollback eligibility, gateway event bindings, and safety counters without enabling autonomous promotion, backed by `smoke:learning-candidate-audit-surface`.

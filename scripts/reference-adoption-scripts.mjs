@@ -20,6 +20,7 @@ export const referenceAdoptionSmokeScripts = Object.freeze([
   'scripts/smoke-gateway-event-learning-candidate.mjs',
   'scripts/smoke-provider-fallback-route-decision.mjs',
   'scripts/smoke-learning-promotion-queue.mjs',
+  'scripts/smoke-learning-candidate-audit-surface.mjs',
   'scripts/smoke-orchestration-profiles.mjs',
   'scripts/smoke-ui-agent-blueprints.mjs',
   'scripts/smoke-parallel-specialists.mjs',
