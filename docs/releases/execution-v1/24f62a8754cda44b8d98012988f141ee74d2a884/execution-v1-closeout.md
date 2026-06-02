@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T01:26:54.239Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T01:26:39.335Z
 - branch: codex/learning-promotion-verification-gate
 - commit: 24f62a8754cda44b8d98012988f141ee74d2a884
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

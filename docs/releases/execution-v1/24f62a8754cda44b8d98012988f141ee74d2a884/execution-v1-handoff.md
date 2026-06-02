@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T01:26:54.239Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T01:26:45.344Z
 - localDate: 2026-06-02
 - branch: codex/learning-promotion-verification-gate
 - commit: 24f62a8754cda44b8d98012988f141ee74d2a884
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884](releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884](docs/releases/execution-v1/24f62a8754cda44b8d98012988f141ee74d2a884)
 - visualArtifactSetSha256: e62909911f39c2f5d3abc04d131eff4c358aee6b62e936d21c6c9d41c4ac0824
 - commitPushStatus: not pushed, origin/codex/learning-promotion-verification-gate not found
 

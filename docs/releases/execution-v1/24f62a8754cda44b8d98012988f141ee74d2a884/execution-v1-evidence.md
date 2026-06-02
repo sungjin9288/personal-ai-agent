@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T01:26:54.239Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T01:26:31.692Z
 - branch: codex/learning-promotion-verification-gate
 - commit: 24f62a8754cda44b8d98012988f141ee74d2a884
