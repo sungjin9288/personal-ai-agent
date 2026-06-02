@@ -15869,6 +15869,129 @@ function getLearningPromotionCandidateId(item) {
   return String(item.actionId || '').replace(/^learning-promotion:/, '');
 }
 
+function formatLearningPromotionAuditValue(value, fallback = '-') {
+  if (value === true) {
+    return 'true';
+  }
+  if (value === false) {
+    return 'false';
+  }
+  if (value === null || value === undefined || value === '') {
+    return fallback;
+  }
+  if (Array.isArray(value)) {
+    return value.length ? value.join(', ') : fallback;
+  }
+  if (typeof value === 'object') {
+    const entries = Object.entries(value)
+      .filter(([, entryValue]) => entryValue !== null && entryValue !== undefined && entryValue !== '')
+      .map(([key, entryValue]) => `${key}=${entryValue}`);
+    return entries.length ? entries.join(', ') : fallback;
+  }
+  return String(value);
+}
+
+function buildLearningPromotionAuditPackageText(item) {
+  if (item?.actionType !== 'learning-promotion') {
+    return '';
+  }
+
+  const candidateId = getLearningPromotionCandidateId(item);
+  if (!candidateId) {
+    return '';
+  }
+
+  const evidencePolicy = item.evidencePolicy || {};
+  const autoPromotionAllowed =
+    typeof item.autoPromotionAllowed === 'boolean' ? item.autoPromotionAllowed : item.autoPromotion === true;
+
+  return [
+    'Learning promotion audit package',
+    '',
+    '[Identity]',
+    `learningCandidateId: ${candidateId}`,
+    `actionId: ${formatLearningPromotionAuditValue(item.actionId)}`,
+    `missionId: ${formatLearningPromotionAuditValue(item.missionId)}`,
+    `workspaceId: ${formatLearningPromotionAuditValue(item.workspaceId)}`,
+    `workspaceName: ${formatLearningPromotionAuditValue(item.workspaceName)}`,
+    `sessionId: ${formatLearningPromotionAuditValue(item.sessionId)}`,
+    '',
+    '[Promotion]',
+    `promotionStatus: ${formatLearningPromotionAuditValue(item.promotionStatus)}`,
+    `promotionStopReason: ${formatLearningPromotionAuditValue(item.promotionStopReason)}`,
+    `promotionVerificationStatus: ${formatLearningPromotionAuditValue(item.promotionVerificationStatus)}`,
+    `promotionVerificationStopReason: ${formatLearningPromotionAuditValue(item.promotionVerificationStopReason)}`,
+    `proposalTarget: ${formatLearningPromotionAuditValue(item.proposalTarget)}`,
+    `scope: ${formatLearningPromotionAuditValue(item.scope)}`,
+    `scopeId: ${formatLearningPromotionAuditValue(item.scopeId)}`,
+    `recordType: ${formatLearningPromotionAuditValue(item.recordType)}`,
+    `reviewerVerdict: ${formatLearningPromotionAuditValue(item.reviewerVerdict)}`,
+    '',
+    '[Gateway and provider evidence]',
+    `gatewayEventId: ${formatLearningPromotionAuditValue(item.gatewayEventId)}`,
+    `gatewayEventRoute: ${formatLearningPromotionAuditValue(item.gatewayEventRoute)}`,
+    `gatewayEventType: ${formatLearningPromotionAuditValue(item.gatewayEventType)}`,
+    `providerId: ${formatLearningPromotionAuditValue(item.providerId)}`,
+    `providerFallbackPolicy: ${formatLearningPromotionAuditValue(item.providerFallbackPolicy)}`,
+    `providerFallbackUsed: ${formatLearningPromotionAuditValue(item.providerFallbackUsed)}`,
+    `providerFallbackPrimaryProviderId: ${formatLearningPromotionAuditValue(item.providerFallbackPrimaryProviderId)}`,
+    `providerFallbackSelectedProviderId: ${formatLearningPromotionAuditValue(item.providerFallbackSelectedProviderId)}`,
+    `providerFallbackStopReasonCounts: ${formatLearningPromotionAuditValue(item.providerFallbackStopReasonCounts)}`,
+    `providerFailureKind: ${formatLearningPromotionAuditValue(item.providerFailureKind)}`,
+    `providerFailureRecoverable: ${formatLearningPromotionAuditValue(item.providerFailureRecoverable)}`,
+    '',
+    '[Safety and approval]',
+    `approvalRequired: ${formatLearningPromotionAuditValue(item.approvalRequired)}`,
+    `reviewerRequired: ${formatLearningPromotionAuditValue(item.reviewerRequired)}`,
+    `autoPromotionAllowed: ${formatLearningPromotionAuditValue(autoPromotionAllowed)}`,
+    `rollbackEligible: ${formatLearningPromotionAuditValue(item.rollbackEligible)}`,
+    `productionReadyClaim: false`,
+    `scopeLocked: ${formatLearningPromotionAuditValue(evidencePolicy.scopeLocked)}`,
+    `promotionRequiresApproval: ${formatLearningPromotionAuditValue(evidencePolicy.promotionRequiresApproval)}`,
+    `crossScopePromotionAllowed: ${formatLearningPromotionAuditValue(evidencePolicy.crossScopePromotionAllowed)}`,
+    `noRawSecrets: ${formatLearningPromotionAuditValue(evidencePolicy.noRawSecrets)}`,
+    `noRawCustomerPayloads: ${formatLearningPromotionAuditValue(evidencePolicy.noRawCustomerPayloads)}`,
+    `rawPayloadIncluded: ${formatLearningPromotionAuditValue(evidencePolicy.rawPayloadIncluded)}`,
+    '',
+    '[Reminder and expiration]',
+    `needsReminder: ${formatLearningPromotionAuditValue(item.needsReminder)}`,
+    `reminderCadenceHours: ${formatLearningPromotionAuditValue(item.reminderCadenceHours)}`,
+    `reminderCount: ${formatLearningPromotionAuditValue(item.reminderCount)}`,
+    `lastReminderAt: ${formatLearningPromotionAuditValue(item.lastReminderAt)}`,
+    `nextReminderAt: ${formatLearningPromotionAuditValue(item.nextReminderAt)}`,
+    `expirationStatus: ${formatLearningPromotionAuditValue(item.expirationPolicy?.status)}`,
+    `expiresAt: ${formatLearningPromotionAuditValue(item.expirationPolicy?.expiresAt)}`,
+    '',
+    '[Commands]',
+    `recommendedCommand: ${formatLearningPromotionAuditValue(item.recommendedCommand)}`,
+    `resolveCommand: ${formatLearningPromotionAuditValue(item.resolveCommand)}`,
+    `expireCommand: ${formatLearningPromotionAuditValue(item.expireCommand)}`,
+    `rollbackCommand: ${formatLearningPromotionAuditValue(item.rollbackCommand)}`,
+    `stopConditionRejectCommand: ${formatLearningPromotionAuditValue(item.stopConditionRejectCommand)}`,
+    `remindCommand: ${formatLearningPromotionAuditValue(item.remindCommand)}`,
+    '',
+    '[Operator guardrails]',
+    '- Do not promote autonomously; keep learning promotion behind explicit human approval.',
+    '- Keep scope locked to the candidate scope unless a reviewer creates a new candidate.',
+    '- Reject or expire the candidate when verification evidence is missing or unsafe.',
+    '- Roll back promoted memory first if the promoted behavior regresses.',
+  ].join('\n');
+}
+
+async function copyLearningPromotionAuditPackage(item) {
+  const packageText = buildLearningPromotionAuditPackageText(item);
+  if (!packageText) {
+    setUiNotice('복사할 learning promotion audit package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'learning promotion audit package를 복사하세요.',
+    shownNotice: 'learning promotion audit package를 표시했습니다.',
+    successNotice: 'learning promotion audit package를 복사했습니다.',
+  });
+}
+
 function formatLearningPromotionDetails(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -15879,8 +16002,15 @@ function formatLearningPromotionDetails(item) {
     item.proposalTarget ? `target ${item.proposalTarget}` : '',
     item.scope ? `scope ${item.scope}` : '',
     item.recordType ? `record ${item.recordType}` : '',
+    item.gatewayEventRoute ? `gateway ${item.gatewayEventRoute}` : '',
+    item.providerId ? `provider ${item.providerId}` : '',
+    item.providerFallbackPolicy ? `fallback ${item.providerFallbackPolicy}` : '',
+    item.providerFallbackUsed ? 'fallback used' : '',
+    item.providerFailureKind ? `failure ${item.providerFailureKind}` : '',
     item.promotionStopReason ? `stop ${item.promotionStopReason}` : '',
     item.promotionVerificationStatus ? `verification ${item.promotionVerificationStatus}` : '',
+    item.autoPromotionAllowed === false || item.autoPromotion === false ? 'auto-promotion off' : '',
+    item.rollbackEligible ? 'rollback eligible' : '',
     item.reminderCadenceHours ? `reminder ${item.reminderCadenceHours}h` : '',
     item.needsReminder ? 'reminder due' : '',
     Number(item.reminderCount || 0) ? `reminders ${item.reminderCount}` : '',
@@ -15902,6 +16032,10 @@ function renderLearningPromotionActionButtons(item) {
   }
 
   const buttons = [];
+  buttons.push(
+    `<button class="ghost-button" type="button" data-learning-promotion-audit-copy="${escapeHtml(candidateId)}">audit package 복사</button>`,
+  );
+
   if (item.promotionStatus === 'pending-review') {
     buttons.push(
       `<button class="primary-button" type="button" data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="approve">학습 승인</button>`,
@@ -16261,6 +16395,14 @@ function renderMissionActions() {
       if (state.selectedMissionId) {
         await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
       }
+    });
+  });
+
+  elements.actionList.querySelectorAll('[data-learning-promotion-audit-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionAuditCopy;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      await copyLearningPromotionAuditPackage(item);
     });
   });
 
