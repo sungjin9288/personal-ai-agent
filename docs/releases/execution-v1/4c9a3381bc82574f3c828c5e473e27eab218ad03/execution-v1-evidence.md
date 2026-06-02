@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T06:47:25.590Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T06:47:17.166Z
 - branch: codex/operator-ui-polish
 - commit: 4c9a3381bc82574f3c828c5e473e27eab218ad03
