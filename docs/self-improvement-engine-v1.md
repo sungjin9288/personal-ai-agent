@@ -118,6 +118,12 @@ Resolved learning promotions now write a deterministic `promotionVerification` p
 
 The verification gate runs for both approve and reject decisions. Memory approval records `rollbackTarget.action=delete-memory-entry` with the generated memory id; non-memory approval and rejection record `rollbackTarget.action=ignore-learning-candidate-decision` so operators can audit why no state mutation must be undone. `overview learning-candidates` summarizes verification status/type/stop-reason counts, and mission timelines attach the verification id, status, type, and stop reason to promotion approval or rejection events.
 
+## Learning Promotion Stop Conditions
+
+Promotion verification now runs before memory mutation. If a requested approve or reject decision fails verification, the candidate is recorded as `promotionStatus=verification-blocked`, `promotionDecision.decision=blocked`, and `promotionStopCondition.status=blocked` with the verification stop reason. Memory approval is not written until the pre-mutation verification passes, so safety failures such as `noRawSecrets=false`, missing evidence, missing review gates, or scope-lock drift become stop-conditions instead of partially promoted lessons.
+
+The stop-condition remains auditable through `overview learning-candidates`, `action learning-promotions --status verification-blocked`, `learning-candidate.json`, and mission timeline event `learning-candidate-promotion-verification-blocked`. The audit summary reports `promotionStopConditionCount`, stop-condition reason counts, failed verification counts, and verification stop-reason counts while keeping `autonomousPromotionEnabled=false` and `productionReadyClaim=false`.
+
 ## Memory And Privacy Rules
 
 1. Session memory, workspace memory, user preference, provider lesson, and global operating rule are separate stores or separately labeled records.
@@ -146,6 +152,7 @@ npm run smoke:gateway-event-learning-candidate
 npm run smoke:learning-promotion-queue
 npm run smoke:learning-candidate-audit-surface
 npm run smoke:learning-promotion-verification-gate
+npm run smoke:learning-promotion-verification-stop-condition
 npm run smoke:ui-learning-promotion-surface
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
@@ -177,3 +184,4 @@ This document does not prove production readiness or continuous learning safety 
 5. Add an operator surface that shows learning candidates without enabling automatic promotion by default. The web action inbox now renders learning candidates with manual approve, reject, expire, and rollback controls, backed by `smoke:ui-learning-promotion-surface`.
 6. Add a read-only operator audit surface for learning candidates. `overview learning-candidates` now summarizes promotion status, record type, target, scope, provider fallback lessons, retention/expiration policy, rollback eligibility, gateway event bindings, and safety counters without enabling autonomous promotion, backed by `smoke:learning-candidate-audit-surface`.
 7. Add a deterministic verification gate for resolved learning promotions. Approve and reject decisions now store `promotionVerification` with check counts, stop reason, evidence bindings, and rollback target, and expose that verification in audit records and mission timelines, backed by `smoke:learning-promotion-verification-gate`.
+8. Add a stop-condition path for failed promotion verification. Unsafe or incomplete promotion decisions now become `verification-blocked` candidates before memory mutation, with `promotionStopCondition` evidence, audit summary counts, queue visibility, and mission timeline events, backed by `smoke:learning-promotion-verification-stop-condition`.

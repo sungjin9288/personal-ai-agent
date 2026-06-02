@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T01:58:00.516Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T01:57:59.056Z
 - localDate: 2026-06-02
 - branch: codex/learning-promotion-verification-stop-condition
 - commit: f26586dbf4aed0822f07cd485a89e6c738a5b194
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194](releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194](docs/releases/execution-v1/f26586dbf4aed0822f07cd485a89e6c738a5b194)
 - visualArtifactSetSha256: 1ca6ecf6eaab6a51df87fab43172fec9c128bff6a81005054f37da0736d10ed3
 - commitPushStatus: not pushed, origin/codex/learning-promotion-verification-stop-condition not found
 

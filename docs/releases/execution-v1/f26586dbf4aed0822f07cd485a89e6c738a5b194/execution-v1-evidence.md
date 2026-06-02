@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T01:58:00.516Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T01:57:49.152Z
 - branch: codex/learning-promotion-verification-stop-condition
 - commit: f26586dbf4aed0822f07cd485a89e6c738a5b194
