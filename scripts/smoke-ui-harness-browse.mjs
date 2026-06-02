@@ -1598,6 +1598,11 @@ try {
   assert.equal(appJs.includes('/api/execution-v1/release-blockers'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-api-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-api-link'), true);
+  assert.equal(appJs.includes('includeShared'), true);
+  assert.equal(appJs.includes("params.set('includeShared', 'false')"), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-api-link'), true);
+  assert.equal(appJs.includes('copy-release-blocker-provider-only-api-link'), true);
+  assert.equal(appJs.includes('provider-only API 링크 복사'), true);
   assert.equal(appJs.includes('apiLink:'), true);
   assert.equal(appJs.includes('closureVerificationCount:'), true);
   assert.equal(appJs.includes('requiredProofCount:'), true);
