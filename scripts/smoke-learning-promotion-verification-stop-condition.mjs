@@ -157,6 +157,11 @@ assert.equal(blockedQueue.items[0].promotionStopReason, 'learning-promotion-veri
 assert.equal(blockedQueue.items[0].rollbackEligible, false);
 assert.equal(blockedQueue.items[0].stopConditionRejectCommand.includes('resolve-learning-promotion'), true);
 assert.equal(blockedQueue.items[0].stopConditionRejectCommand.includes('--decision reject'), true);
+assert.equal(blockedQueue.items[0].reminderCadenceHours, 12);
+assert.equal(blockedQueue.items[0].reminderCount, 0);
+assert.equal(blockedQueue.items[0].needsReminder, false);
+assert.ok(blockedQueue.items[0].nextReminderAt);
+assert.equal(blockedQueue.items[0].remindCommand.includes('remind-learning-promotion-stop-conditions'), true);
 
 const operatorActiveQueue = runCli({
   rootDir: tempRoot,
@@ -177,6 +182,83 @@ assert.equal(blockedActionInbox.items[0].actionType, 'learning-promotion');
 assert.equal(blockedActionInbox.items[0].learningCandidateId, run.learningCandidateId);
 assert.equal(blockedActionInbox.items[0].promotionStatus, 'verification-blocked');
 
+const agedState = readState();
+const agedCandidate = agedState.learningCandidates.find((candidate) => candidate.id === run.learningCandidateId);
+assert.ok(agedCandidate);
+const agedReminderBaseAt = '2000-01-01T00:00:00.000Z';
+agedCandidate.createdAt = agedReminderBaseAt;
+agedCandidate.updatedAt = agedReminderBaseAt;
+agedCandidate.promotionDecision.decidedAt = agedReminderBaseAt;
+agedCandidate.promotionStopCondition.blockedAt = agedReminderBaseAt;
+writeState(agedState);
+
+const needsReminderInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--mission', mission.id, '--class', 'blocked', '--needs-reminder'],
+});
+assert.equal(needsReminderInbox.summary.pendingActionCount, 1);
+assert.equal(needsReminderInbox.summary.reminderCounts.eligible, 1);
+assert.equal(needsReminderInbox.summary.reminderCounts.needsReminder, 1);
+assert.equal(needsReminderInbox.items[0].learningCandidateId, run.learningCandidateId);
+assert.equal(needsReminderInbox.items[0].needsReminder, true);
+assert.equal(needsReminderInbox.items[0].isOverdue, true);
+assert.equal(needsReminderInbox.items[0].reminderCadenceHours, 12);
+assert.equal(needsReminderInbox.items[0].reminderCount, 0);
+assert.equal(needsReminderInbox.items[0].nextReminderAt, '2000-01-01T12:00:00.000Z');
+assert.equal(needsReminderInbox.items[0].remindCommand.includes('--due'), true);
+
+const reminderResult = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'remind-learning-promotion-stop-conditions',
+    '--mission',
+    mission.id,
+    '--due',
+    '--note',
+    'Reminder to reject or recreate the unsafe blocked learning candidate.',
+  ],
+});
+assert.equal(reminderResult.summary.dueCandidateCount, 1);
+assert.ok(reminderResult.summary.latestReminderAt);
+assert.equal(reminderResult.summary.remindedCount, 1);
+assert.equal(reminderResult.summary.overdueReminderCount, 1);
+assert.equal(reminderResult.summary.stopReasonCounts['learning-promotion-verification-no-raw-secrets'], 1);
+assert.equal(reminderResult.items[0].learningCandidateId, run.learningCandidateId);
+assert.equal(reminderResult.items[0].reminderCount, 1);
+assert.equal(reminderResult.items[0].needsReminder, false);
+assert.ok(reminderResult.items[0].lastReminderAt);
+assert.ok(Date.parse(reminderResult.items[0].nextReminderAt) > Date.parse(reminderResult.items[0].lastReminderAt));
+assert.equal(reminderResult.items[0].latestReminder.note, 'Reminder to reject or recreate the unsafe blocked learning candidate.');
+assert.equal(reminderResult.items[0].latestReminder.nextReminderAt, '2000-01-01T12:00:00.000Z');
+assert.equal(reminderResult.items[0].latestReminder.reminderCadenceHours, 12);
+assert.match(reminderResult.items[0].reminderDetail, /learning promotion stop-condition reminder/);
+
+const afterReminderInbox = runCli({
+  rootDir: tempRoot,
+  args: ['action', 'inbox', '--mission', mission.id, '--class', 'blocked', '--needs-reminder'],
+});
+assert.equal(afterReminderInbox.summary.pendingActionCount, 0);
+
+const remindedAudit = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'learning-candidates', '--mission', mission.id, '--status', 'verification-blocked'],
+});
+assert.equal(remindedAudit.records[0].promotionStopCondition.reminderCount, 1);
+assert.equal(remindedAudit.records[0].promotionStopCondition.reminders.length, 1);
+assert.equal(
+  remindedAudit.records[0].promotionStopCondition.reminders[0].promotionStopReason,
+  'learning-promotion-verification-no-raw-secrets',
+);
+
+const remindedArtifactPayload = JSON.parse(fs.readFileSync(blockedArtifact.path, 'utf8'));
+assert.equal(remindedArtifactPayload.promotionStopCondition.reminderCount, 1);
+assert.equal(remindedArtifactPayload.promotionStopCondition.reminders.length, 1);
+assert.equal(
+  remindedArtifactPayload.promotionStopCondition.reminders[0].note,
+  'Reminder to reject or recreate the unsafe blocked learning candidate.',
+);
+
 const blockedTimeline = runCli({
   rootDir: tempRoot,
   args: ['mission', 'timeline', mission.id],
@@ -191,6 +273,14 @@ assert.equal(blockedTimelineEvent.requestedDecision, 'approve');
 assert.equal(blockedTimelineEvent.memoryId, null);
 assert.equal(blockedTimelineEvent.promotionVerificationStatus, 'failed');
 assert.equal(blockedTimelineEvent.promotionStopReason, 'learning-promotion-verification-no-raw-secrets');
+const reminderTimelineEvent = blockedTimeline.timeline.find(
+  (event) =>
+    event.kind === 'learning-candidate-promotion-stop-condition-reminded' &&
+    event.learningCandidateId === run.learningCandidateId,
+);
+assert.ok(reminderTimelineEvent);
+assert.equal(reminderTimelineEvent.promotionStopReason, 'learning-promotion-verification-no-raw-secrets');
+assert.equal(reminderTimelineEvent.overdue, true);
 
 const stopConditionReject = runCli({
   rootDir: tempRoot,
@@ -219,6 +309,8 @@ assert.equal(
   stopConditionReject.learningCandidate.promotionStopCondition.reason,
   'learning-promotion-verification-no-raw-secrets',
 );
+assert.equal(stopConditionReject.learningCandidate.promotionStopCondition.reminderCount, 1);
+assert.equal(stopConditionReject.learningCandidate.promotionStopCondition.reminders.length, 1);
 
 const closedOperatorActiveQueue = runCli({
   rootDir: tempRoot,
@@ -243,6 +335,7 @@ assert.equal(rejectedAudit.summary.recordCount, 1);
 assert.equal(rejectedAudit.summary.promotionStatusCounts.rejected, 1);
 assert.equal(rejectedAudit.records[0].promotionStopCondition.status, 'resolved');
 assert.equal(rejectedAudit.records[0].promotionStopCondition.resolution, 'rejected');
+assert.equal(rejectedAudit.records[0].promotionStopCondition.reminderCount, 1);
 assert.equal(rejectedAudit.records[0].promotionDecision.remediationDecision, 'reject');
 
 const resolvedTimeline = runCli({

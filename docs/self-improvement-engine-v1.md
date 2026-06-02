@@ -129,6 +129,15 @@ The stop-condition remains auditable through `overview learning-candidates`, `ac
 node src/cli.mjs action resolve-learning-promotion <learningCandidateId> --decision reject --target <target> --scope <scope> --note "<reason>"
 ```
 
+Blocked learning promotion stop-conditions also carry `reminderCadenceHours=12`, `nextReminderAt`, `needsReminder`, `lastReminderAt`, and `reminderHistory` so failed verification work does not disappear from operator cadence. Due reminders are visible through the blocked inbox reminder filter and can be recorded without resolving the stop-condition:
+
+```bash
+node src/cli.mjs action inbox --mission <missionId> --class blocked --needs-reminder
+node src/cli.mjs action remind-learning-promotion-stop-conditions --mission <missionId> --due --note "<reason>"
+```
+
+Each reminder is appended to `promotionStopCondition.reminders`, mirrored into `learning-candidate.json`, summarized in `overview learning-candidates`, and emitted as mission timeline event `learning-candidate-promotion-stop-condition-reminded`.
+
 Rejecting a `verification-blocked` item closes the stop-condition without mutating memory. The candidate becomes `promotionStatus=rejected`, keeps the original blocked decision and failed `promotionVerification`, records `promotionStopCondition.status=resolved`, and adds timeline event `learning-candidate-promotion-stop-condition-resolved`. The audit summary reports `promotionStopConditionCount`, stop-condition reason counts, failed verification counts, and verification stop-reason counts while keeping `autonomousPromotionEnabled=false` and `productionReadyClaim=false`.
 
 ## Memory And Privacy Rules
@@ -160,6 +169,8 @@ npm run smoke:learning-promotion-queue
 npm run smoke:learning-candidate-audit-surface
 npm run smoke:learning-promotion-verification-gate
 npm run smoke:learning-promotion-verification-stop-condition
+node src/cli.mjs action inbox --mission <missionId> --class blocked --needs-reminder
+node src/cli.mjs action remind-learning-promotion-stop-conditions --mission <missionId> --due --note "<reason>"
 npm run smoke:ui-learning-promotion-surface
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory

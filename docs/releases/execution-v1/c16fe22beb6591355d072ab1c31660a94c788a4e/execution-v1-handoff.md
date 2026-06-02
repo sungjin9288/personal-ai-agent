@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-02T03:22:03.262Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-02T03:21:54.292Z
 - localDate: 2026-06-02
 - branch: codex/learning-promotion-stop-condition-reminders
 - commit: c16fe22beb6591355d072ab1c31660a94c788a4e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e](releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e](docs/releases/execution-v1/c16fe22beb6591355d072ab1c31660a94c788a4e)
 - visualArtifactSetSha256: db6c0baaf8cb188ef49bf276daeab27f14b7d87e1a3335c52edbde0677ef35a0
 - commitPushStatus: not pushed, origin/codex/learning-promotion-stop-condition-reminders not found
 

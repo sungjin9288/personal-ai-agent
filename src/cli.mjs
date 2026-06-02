@@ -150,6 +150,7 @@ Commands:
   action remind-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--tier <normal|warning|critical>] [--due] [--overdue] [--note <text>]
   action remind-owner-handoffs [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
   action remind-provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
+  action remind-learning-promotion-stop-conditions [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--due] [--overdue] [--note <text>]
   action remind-specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--due] [--overdue] [--note <text>]
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
@@ -1001,6 +1002,22 @@ async function main() {
           owner: readOption(rest, '--owner', ''),
           overdueOnly: hasOption(rest, '--overdue'),
           providerId: readOption(rest, '--provider', ''),
+          workspaceId: readOption(rest, '--workspace', ''),
+        },
+        readOption(rest, '--note', ''),
+      ),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'remind-learning-promotion-stop-conditions') {
+    printJson(
+      service.remindLearningPromotionStopConditions(
+        {
+          dueOnly: hasOption(rest, '--due'),
+          missionId: readOption(rest, '--mission', ''),
+          owner: readOption(rest, '--owner', ''),
+          overdueOnly: hasOption(rest, '--overdue'),
           workspaceId: readOption(rest, '--workspace', ''),
         },
         readOption(rest, '--note', ''),
