@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-02T13:52:04.661Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-02T13:51:56.056Z
 - branch: codex/provider-blocker-slice-copy-api
 - commit: 043aa2736e7218112a35a60777270008e9400ba6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/043aa2736e7218112a35a60777270008e9400ba6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

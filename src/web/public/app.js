@@ -2132,6 +2132,28 @@ function buildReleaseBlockerSliceUrl({
   })}`;
 }
 
+function buildReleaseBlockerApiUrl({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCategory = String(category || '').trim();
+  const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
+  const params = new URLSearchParams();
+  if (normalizedCategory) {
+    params.set('category', normalizedCategory);
+  }
+  if (normalizedOwner) {
+    params.set('owner', normalizedOwner);
+  }
+  if (normalizedProvider) {
+    params.set('provider', normalizedProvider);
+  }
+  const query = params.toString();
+  return getAbsoluteReleaseUrl(`/api/execution-v1/release-blockers${query ? `?${query}` : ''}`);
+}
+
 function getReleaseProductionBlockers(releaseStatus = state.releaseStatus) {
   const releaseReadiness = releaseStatus?.releaseReadiness || {};
   return Array.isArray(releaseReadiness.productionBlockers)
@@ -2892,6 +2914,11 @@ function buildReleaseBlockerSliceSummaryText({
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
+  const apiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
   const topBlockerLabel = sliceSummary.topVisibleBlockerLabel
     ? `${sliceSummary.topVisibleBlockerId || 'unknown'}: ${sliceSummary.topVisibleBlockerLabel}`
     : 'none';
@@ -2909,6 +2936,7 @@ function buildReleaseBlockerSliceSummaryText({
     `- requiredProofCount: ${sliceSummary.requiredProofCount}`,
     `- topVisibleBlocker: ${topBlockerLabel}`,
     `- releaseLink: ${sliceLink}`,
+    `- apiLink: ${apiLink}`,
   ];
 
   return `${lines.join('\n')}\n`;
@@ -6578,6 +6606,7 @@ function buildReleaseBlockerSlicePackageText({
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const visibleActions = Array.isArray(blockerActions) ? blockerActions : [];
   const allActions = Array.isArray(totalActions) ? totalActions : [];
@@ -6587,11 +6616,13 @@ function buildReleaseBlockerSlicePackageText({
 
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const buildOptions = {
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   };
   const sections = [
     buildReleaseBlockerSliceSummaryText(buildOptions),
@@ -7720,6 +7751,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-filter-summary') {
         void copyReleaseBlockerFilterSummary();
+        return;
+      }
+
+      if (action === 'copy-release-blocker-api-link') {
+        void copyReleaseBlockerApiLink();
         return;
       }
 
@@ -8877,14 +8913,17 @@ async function copyReleaseProviderReadinessPackage({
 async function copyReleaseBlockerFilterSummary({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const totalActions = getReleaseCurrentOpenBlockerActions();
   const blockerActions = totalActions.filter((item) =>
     isReleaseBlockerActionVisibleForFilter(item, {
       category: normalizedCategory,
       owner: normalizedOwner,
+      provider: normalizedProvider,
     }),
   );
   const summaryText = buildReleaseBlockerSliceSummaryText({
@@ -8892,6 +8931,7 @@ async function copyReleaseBlockerFilterSummary({
     totalActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   if (!summaryText) {
     setUiNotice('복사할 release blocker slice summary가 없습니다.');
@@ -8905,17 +8945,38 @@ async function copyReleaseBlockerFilterSummary({
   });
 }
 
+async function copyReleaseBlockerApiLink({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const apiUrl = buildReleaseBlockerApiUrl({ category, owner, provider });
+  if (!apiUrl) {
+    setUiNotice('복사할 release blocker API 링크가 없습니다.');
+    return;
+  }
+
+  await copyUiLink(apiUrl, {
+    promptMessage: 'release blocker API 링크를 복사하세요.',
+    shownNotice: 'release blocker API 링크를 표시했습니다.',
+    successNotice: 'release blocker API 링크를 복사했습니다.',
+  });
+}
+
 async function copyReleaseBlockerFilterPackage({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
 } = {}) {
   const normalizedCategory = String(category || '').trim();
   const normalizedOwner = String(owner || '').trim();
+  const normalizedProvider = String(provider || '').trim();
   const totalActions = getReleaseCurrentOpenBlockerActions();
   const blockerActions = totalActions.filter((item) =>
     isReleaseBlockerActionVisibleForFilter(item, {
       category: normalizedCategory,
       owner: normalizedOwner,
+      provider: normalizedProvider,
     }),
   );
   const packageText = buildReleaseBlockerSlicePackageText({
@@ -8923,6 +8984,7 @@ async function copyReleaseBlockerFilterPackage({
     totalActions,
     category: normalizedCategory,
     owner: normalizedOwner,
+    provider: normalizedProvider,
   });
   if (!packageText) {
     setUiNotice('복사할 release blocker slice package가 없습니다.');
@@ -13855,6 +13917,12 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-summary-copy="true"
                   data-ui-action="copy-release-blocker-filter-summary"
                 >slice 요약 복사</button>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-api-link="true"
+                  data-ui-action="copy-release-blocker-api-link"
+                >API 링크 복사</button>
                 <button
                   class="ghost-button"
                   type="button"

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-02T13:52:04.661Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-02T13:51:55.994Z
 - branch: codex/provider-blocker-slice-copy-api
 - commit: 043aa2736e7218112a35a60777270008e9400ba6
