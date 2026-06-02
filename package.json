@@ -21,6 +21,7 @@
     "smoke:execution-v1-handoff": "node scripts/smoke-execution-v1-handoff.mjs",
     "smoke:target-deployment-contract": "node scripts/smoke-target-deployment-contract.mjs",
     "smoke:production-readiness-gate": "node scripts/smoke-production-readiness-gate.mjs",
+    "smoke:release-blocker-handoff": "node scripts/smoke-release-blocker-handoff.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
     "smoke:hosted-saas-architecture-decision": "node scripts/smoke-hosted-saas-architecture-decision.mjs",
     "smoke:hosted-identity-session-architecture": "node scripts/smoke-hosted-identity-session-architecture.mjs",
