@@ -204,6 +204,9 @@ for (const term of [
   'promotionStopCondition',
   'verification-blocked',
   'stopConditionRejectCommand',
+  'reminderCadenceHours=12',
+  'remind-learning-promotion-stop-conditions',
+  'learning-candidate-promotion-stop-condition-reminded',
   'learning-candidate-promotion-stop-condition-resolved',
   'overview learning-candidates',
 ]) {
@@ -237,6 +240,8 @@ for (const command of [
   'npm run smoke:learning-promotion-verification-stop-condition',
   'node src/cli.mjs action learning-promotions --mission <missionId> --status operator-active',
   'action inbox --class blocked',
+  'node src/cli.mjs action inbox --mission <missionId> --class blocked --needs-reminder',
+  'node src/cli.mjs action remind-learning-promotion-stop-conditions --mission <missionId> --due',
   'node src/cli.mjs action resolve-learning-promotion <learningCandidateId> --decision reject',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',

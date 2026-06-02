@@ -1233,6 +1233,10 @@ function deriveSpecialistFollowUpReminderCadenceHours(status) {
   return SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS[status] || null;
 }
 
+function deriveLearningPromotionStopConditionReminderCadenceHours() {
+  return 12;
+}
+
 function resolveSpecialistFollowUpPolicy({ followUpSource = 'run-status', orchestrationProfile, specialistKind, status }) {
   const retryPolicy = normalizeText(orchestrationProfile?.retryPolicy) || 'resume-blocked-or-failed-branch';
   const normalizedSpecialistKind = normalizeText(specialistKind);
@@ -1431,6 +1435,20 @@ function formatSpecialistFollowUpReminderDetail(reminder) {
   const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
   const urgencyPrefix = reminder.remediationRoute?.routeUrgency === 'fast' ? '[fast] ' : '';
   return `${urgencyPrefix}${reminder.specialistKind}${overdueSuffix} specialist follow-up reminder: ${reminder.note || 'No explicit note recorded.'}`;
+}
+
+function buildLearningPromotionStopConditionReminderNote(item, note) {
+  const normalizedNote = normalizeText(note);
+  if (normalizedNote) {
+    return normalizedNote;
+  }
+
+  return `Reminder issued for blocked learning promotion stop-condition reason=${item.promotionStopReason || 'unknown'}.`;
+}
+
+function formatLearningPromotionStopConditionReminderDetail(reminder) {
+  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
+  return `${reminder.learningCandidateId}${overdueSuffix} learning promotion stop-condition reminder: ${reminder.note || 'No explicit note recorded.'}`;
 }
 
 function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
@@ -4680,6 +4698,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const recommendedOwner = isPending || isVerificationBlocked ? 'human-approver' : 'mission-owner';
     const promotionStopReason =
       candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null;
+    const stopConditionReminders = ensureArray(candidate.promotionStopCondition?.reminders);
+    const latestStopConditionReminder = getLatestItem(stopConditionReminders, 'remindedAt');
+    const reminderCadenceHours = isVerificationBlocked ? deriveLearningPromotionStopConditionReminderCadenceHours() : null;
+    const reminderBaseAt =
+      latestStopConditionReminder?.remindedAt ||
+      candidate.promotionStopCondition?.blockedAt ||
+      candidate.promotionDecision?.decidedAt ||
+      candidate.updatedAt ||
+      candidate.createdAt ||
+      '';
+    const reminderBaseMs = Date.parse(String(reminderBaseAt || ''));
+    const nextReminderAt =
+      isVerificationBlocked && reminderCadenceHours && Number.isFinite(reminderBaseMs)
+        ? new Date(reminderBaseMs + reminderCadenceHours * 60 * 60 * 1000).toISOString()
+        : null;
+    const nextReminderMs = Date.parse(String(nextReminderAt || ''));
+    const needsReminder =
+      isVerificationBlocked && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
 
     return addOperationalMetadata(
       addDispatchMetadata(
@@ -4695,6 +4731,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           missionStatus: mission.status,
           missionTitle: mission.title,
           mode: mission.mode,
+          lastReminderAt: latestStopConditionReminder?.remindedAt || null,
+          needsReminder,
+          nextReminderAt,
           promotionStatus,
           promotionStopCondition: candidate.promotionStopCondition || null,
           promotionStopReason,
@@ -4707,6 +4746,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               ? `${candidate.summary} Stop-condition reason: ${promotionStopReason}.`
               : candidate.summary,
           recordType: candidate.recordType,
+          remindCommand: `node src/cli.mjs action remind-learning-promotion-stop-conditions --mission ${mission.id} --due --note "<note>"`,
+          reminderCadenceHours,
+          reminderCount: stopConditionReminders.length,
+          reminderHistory: stopConditionReminders,
           resolveCommand,
           rollbackCommand,
           rollbackEligible: isRollbackEligible,
@@ -4872,8 +4915,11 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             blockedAt: promotionStopCondition.blockedAt || null,
             blockedBy: promotionStopCondition.blockedBy || null,
             id: promotionStopCondition.id || null,
+            latestReminderAt: promotionStopCondition.latestReminderAt || null,
             previousPromotionStatus: promotionStopCondition.previousPromotionStatus || null,
             reason: promotionStopCondition.reason || null,
+            reminderCount: Number(promotionStopCondition.reminderCount || ensureArray(promotionStopCondition.reminders).length),
+            reminders: ensureArray(promotionStopCondition.reminders),
             resolution: promotionStopCondition.resolution || null,
             resolutionNote: promotionStopCondition.resolutionNote || null,
             resolvedAt: promotionStopCondition.resolvedAt || null,
@@ -5204,6 +5250,107 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
       items,
       summary: summarizeLearningPromotionQueue(items),
+    };
+  }
+
+  function remindLearningPromotionStopConditions(filter = {}, note = '') {
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+
+    const reminderTimestamp = now();
+    const normalizedNote = normalizeText(note);
+    const candidates = buildLearningPromotionItems({
+      missionId: filter.missionId,
+      promotionStatus: 'verification-blocked',
+      workspaceId: filter.workspaceId,
+    })
+      .filter((item) => !filter.owner || item.recommendedOwner === filter.owner)
+      .filter((item) => !filter.dueOnly || item.needsReminder)
+      .filter((item) => !filter.overdueOnly || item.isOverdue);
+
+    const items = candidates
+      .map((item) => {
+        const updatedCandidate = store.updateLearningCandidate(item.learningCandidateId, (current) => {
+          const promotionStopCondition = current.promotionStopCondition || {};
+          const reminders = ensureArray(promotionStopCondition.reminders);
+          const reminderEntry = {
+            actionId: item.actionId,
+            createdAt: reminderTimestamp,
+            dueAt: item.dueAt,
+            id: createId('learning-promotion-stop-condition-reminder'),
+            learningCandidateId: item.learningCandidateId,
+            missionId: item.missionId,
+            nextReminderAt: item.nextReminderAt || null,
+            note: buildLearningPromotionStopConditionReminderNote(item, normalizedNote),
+            overdue: item.isOverdue,
+            priority: item.priority,
+            promotionStopReason: item.promotionStopReason || null,
+            recommendedCommand: item.recommendedCommand || null,
+            recommendedOwner: item.recommendedOwner || null,
+            remindedAt: reminderTimestamp,
+            reminderCadenceHours: item.reminderCadenceHours,
+            slaHours: item.slaHours,
+            target: item.proposalTarget || null,
+            title: item.title,
+            workspaceId: item.workspaceId || null,
+            workspaceName: item.workspaceName || null,
+          };
+
+          return {
+            ...current,
+            promotionStopCondition: {
+              ...promotionStopCondition,
+              latestReminderAt: reminderTimestamp,
+              reminderCount: reminders.length + 1,
+              reminders: [...reminders, reminderEntry],
+            },
+            updatedAt: reminderTimestamp,
+          };
+        });
+
+        writeUpdatedLearningCandidateArtifact(updatedCandidate);
+        const queueItem = buildLearningPromotionQueueItem(updatedCandidate);
+        const latestReminder = getLatestItem(queueItem?.reminderHistory || [], 'remindedAt');
+        return {
+          ...queueItem,
+          latestReminder,
+          reminderDetail: latestReminder ? formatLearningPromotionStopConditionReminderDetail(latestReminder) : null,
+        };
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.lastReminderAt || '').localeCompare(String(right.lastReminderAt || '')));
+
+    return {
+      filters: {
+        dueOnly: Boolean(filter.dueOnly),
+        missionId: filter.missionId || null,
+        note: normalizedNote || null,
+        owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: {
+        dueCandidateCount: candidates.filter((item) => item.needsReminder).length,
+        latestReminderAt:
+          [...items]
+            .map((item) => item.lastReminderAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(-1) || null,
+        overdueReminderCount: items.filter((item) => item.isOverdue).length,
+        reminderCountTotal: items.reduce((count, item) => count + Number(item.reminderCount || 0), 0),
+        remindedCount: items.length,
+        stopReasonCounts: countByNormalizedField(items, 'promotionStopReason'),
+        workspaceCounts: countByNormalizedField(items, 'workspaceId'),
+      },
     };
   }
 
@@ -17831,6 +17978,25 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         });
       }
 
+      for (const reminder of ensureArray(candidate.promotionStopCondition?.reminders)) {
+        timeline.push({
+          actionId: reminder.actionId || `learning-promotion:${candidate.id}`,
+          at: reminder.remindedAt || reminder.createdAt,
+          detail: formatLearningPromotionStopConditionReminderDetail(reminder),
+          kind: 'learning-candidate-promotion-stop-condition-reminded',
+          learningCandidateId: candidate.id,
+          missionId: mission.id,
+          overdue: reminder.overdue === true,
+          promotionStopReason: reminder.promotionStopReason || candidate.promotionStopCondition?.reason || null,
+          promotionStatus: candidate.promotionStatus || null,
+          reminderCadenceHours: reminder.reminderCadenceHours || null,
+          reminderId: reminder.id || null,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
+
       if (candidate.promotionExpiration?.expiredAt) {
         timeline.push({
           at: candidate.promotionExpiration.expiredAt,
@@ -19387,6 +19553,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     remindEscalations,
     remindOwnerHandoffs,
     remindProviderAttention,
+    remindLearningPromotionStopConditions,
     remindSpecialistFollowUps,
     syncEscalations,
     resolveEscalation,
