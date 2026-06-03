@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Release Blocker Slice Copy Guards
+
+- added provider-only release blocker closure checklist, closure matrix, slice handoff, slice command, and slice evidence copy actions so operators can split granular provider-specific handoff sections from the shared provider-operations row
+- reused the existing release blocker copy scope with `includeShared=false` for the new granular slice actions, keeping normal provider-scoped slice copies unchanged for shared operations handoff
+- extended UI harness smoke coverage and operator docs so provider-only granular copy actions stay aligned with the API `includeShared=false` and CLI `--without-shared` semantics
+
 ## 2026-06-03 Provider-Only Target Evidence Claim Closure Guard Copy
 
 - added provider-only target evidence production gap, accepted-scope exception, accepted risk decision, residual blocker, and closure rules copy actions so operators can split provider-specific claim and closure guard sections from the shared provider-operations row

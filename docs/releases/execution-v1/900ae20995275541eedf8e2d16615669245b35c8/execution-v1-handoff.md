@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-03T15:39:50.451Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-03T15:39:49.006Z
 - localDate: 2026-06-04
 - branch: codex/provider-only-slice-copy-guards
 - commit: 900ae20995275541eedf8e2d16615669245b35c8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8](releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8](docs/releases/execution-v1/900ae20995275541eedf8e2d16615669245b35c8)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-slice-copy-guards not found
 
