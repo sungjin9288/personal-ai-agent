@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Summary Template Copy Guards
+
+- added provider-only release blocker slice summary, target evidence intake summary, and target evidence capture template copy actions so provider-specific handoff manifests can exclude the shared provider-operations row at the planning/template layer too
+- reused the existing `includeShared=false` release blocker copy scope for the new summary/template actions, keeping the normal provider-scoped summary and capture template behavior unchanged
+- extended UI harness smoke coverage and operator docs so provider-only summary/template copy actions stay aligned with the API `includeShared=false` and CLI `--without-shared` semantics
+
 ## 2026-06-04 Provider-Only Release Blocker Slice Copy Guards
 
 - added provider-only release blocker closure checklist, closure matrix, slice handoff, slice command, and slice evidence copy actions so operators can split granular provider-specific handoff sections from the shared provider-operations row
