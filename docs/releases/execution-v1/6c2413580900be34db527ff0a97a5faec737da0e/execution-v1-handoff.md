@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-03T14:51:33.492Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-03T14:51:32.147Z
 - localDate: 2026-06-03
 - branch: codex/provider-only-claim-closure-guards
 - commit: 6c2413580900be34db527ff0a97a5faec737da0e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e](releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e](docs/releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-claim-closure-guards not found
 
