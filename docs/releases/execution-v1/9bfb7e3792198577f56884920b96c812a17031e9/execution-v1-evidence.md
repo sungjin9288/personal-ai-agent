@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-03T14:16:39.837Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-03T14:16:23.984Z
 - branch: codex/provider-only-required-provider-references
 - commit: 9bfb7e3792198577f56884920b96c812a17031e9
