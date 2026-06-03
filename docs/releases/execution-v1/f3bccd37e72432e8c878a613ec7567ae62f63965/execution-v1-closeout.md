@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-03T16:40:25.788Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-03T16:40:16.509Z
 - branch: codex/provider-only-copy-scope-regression-smoke
 - commit: f3bccd37e72432e8c878a613ec7567ae62f63965
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f3bccd37e72432e8c878a613ec7567ae62f63965/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

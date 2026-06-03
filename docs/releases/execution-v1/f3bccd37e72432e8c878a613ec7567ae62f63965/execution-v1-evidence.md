@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-03T16:40:25.788Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-03T16:40:11.909Z
 - branch: codex/provider-only-copy-scope-regression-smoke
 - commit: f3bccd37e72432e8c878a613ec7567ae62f63965
