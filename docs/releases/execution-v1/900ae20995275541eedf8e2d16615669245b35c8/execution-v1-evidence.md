@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-03T15:39:50.451Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-03T15:39:35.309Z
 - branch: codex/provider-only-slice-copy-guards
 - commit: 900ae20995275541eedf8e2d16615669245b35c8
