@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Release Refresh Copy
+
+- added provider-only target evidence release refresh copy action so operators can split provider-specific artifact refresh proof from the shared provider-operations row
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in release refresh evidence headers, and passed provider-only scope through the full target evidence packet composition
+- kept the normal release refresh evidence copy action unchanged while extending UI harness coverage for the new provider-only refresh evidence contract
+
 ## 2026-06-03 Provider-Only Target Evidence Review Section Copy
 
 - added provider-only target evidence command rerun log and reviewer decision record copy actions so operators can split provider-specific command proof and review decisions from the shared provider-operations row
