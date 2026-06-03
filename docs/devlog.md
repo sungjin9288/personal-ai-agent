@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Boundary Register Copy
+
+- added provider-only target evidence sanitized register and boundary consistency map copy actions so operators can split provider-specific evidence references and boundary checks from the shared provider-operations row
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in sanitized register and boundary map headers, and passed provider-only scope through the full target evidence packet composition
+- kept the normal sanitized register and boundary map copy actions unchanged while extending UI harness coverage for the new provider-only evidence section contracts
+
 ## 2026-06-03 Provider-Only Target Evidence Release Refresh Copy
 
 - added provider-only target evidence release refresh copy action so operators can split provider-specific artifact refresh proof from the shared provider-operations row
