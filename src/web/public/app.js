@@ -4313,6 +4313,7 @@ function buildReleaseTargetEvidenceProductionGapText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -4332,6 +4333,12 @@ function buildReleaseTargetEvidenceProductionGapText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4450,6 +4457,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionGapCount: ${gapDefinitions.length}`,
@@ -4458,6 +4466,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Production gap rows:',
     ...gapRows,
@@ -4488,6 +4497,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -4507,6 +4517,12 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4606,6 +4622,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- exceptionRowCount: ${exceptionDefinitions.length}`,
@@ -4614,6 +4631,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Accepted-scope exception rows:',
     ...exceptionRows,
@@ -4643,6 +4661,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -4662,6 +4681,12 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4763,6 +4788,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -4772,6 +4798,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Accepted risk decision rows:',
     ...riskRows,
@@ -4999,6 +5026,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -5018,6 +5046,12 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5094,6 +5128,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5102,6 +5137,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Residual production blocker rows:',
     ...residualRows,
@@ -5136,6 +5172,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -5155,6 +5192,12 @@ function buildReleaseTargetEvidenceClosureRulesText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5258,6 +5301,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5267,6 +5311,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Closure rule rows:',
     ...closureRuleRows,
@@ -5371,6 +5416,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5379,6 +5425,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5387,6 +5434,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5404,6 +5452,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5412,6 +5461,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -8015,13 +8065,28 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-production-gap') {
+        void copyReleaseTargetEvidenceProviderOnlyProductionGap();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-exception-register') {
         void copyReleaseTargetEvidenceExceptionRegister();
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-exception-register') {
+        void copyReleaseTargetEvidenceProviderOnlyExceptionRegister();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-risk-decision-register') {
         void copyReleaseTargetEvidenceRiskDecisionRegister();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-risk-decision-register') {
+        void copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister();
         return;
       }
 
@@ -8040,8 +8105,18 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-residual-blockers') {
+        void copyReleaseTargetEvidenceProviderOnlyResidualBlockers();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-closure-rules') {
         void copyReleaseTargetEvidenceClosureRules();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-closure-rules') {
+        void copyReleaseTargetEvidenceProviderOnlyClosureRules();
         return;
       }
 
@@ -9455,6 +9530,36 @@ async function copyReleaseTargetEvidenceProductionGap({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyProductionGap({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only production gap은 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const gapText = buildReleaseTargetEvidenceProductionGapText(copyScope);
+  if (!gapText) {
+    setUiNotice('복사할 provider-only target evidence production gap guard가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(gapText, {
+    promptMessage: 'provider-only target evidence production gap guard를 복사하세요.',
+    shownNotice: 'provider-only target evidence production gap guard를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence production gap guard를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceExceptionRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9474,6 +9579,36 @@ async function copyReleaseTargetEvidenceExceptionRegister({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyExceptionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only exception register는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const registerText = buildReleaseTargetEvidenceExceptionRegisterText(copyScope);
+  if (!registerText) {
+    setUiNotice('복사할 provider-only target evidence exception register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'provider-only target evidence exception register를 복사하세요.',
+    shownNotice: 'provider-only target evidence exception register를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence exception register를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceRiskDecisionRegister({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9490,6 +9625,36 @@ async function copyReleaseTargetEvidenceRiskDecisionRegister({
     promptMessage: 'target evidence risk decision register를 복사하세요.',
     shownNotice: 'target evidence risk decision register를 표시했습니다.',
     successNotice: 'target evidence risk decision register를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only risk decision register는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const registerText = buildReleaseTargetEvidenceRiskDecisionRegisterText(copyScope);
+  if (!registerText) {
+    setUiNotice('복사할 provider-only target evidence risk decision register가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(registerText, {
+    promptMessage: 'provider-only target evidence risk decision register를 복사하세요.',
+    shownNotice: 'provider-only target evidence risk decision register를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence risk decision register를 복사했습니다.`,
   });
 }
 
@@ -9561,6 +9726,36 @@ async function copyReleaseTargetEvidenceResidualBlockers({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyResidualBlockers({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only residual blockers는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const blockersText = buildReleaseTargetEvidenceResidualBlockersText(copyScope);
+  if (!blockersText) {
+    setUiNotice('복사할 provider-only target evidence residual blockers가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(blockersText, {
+    promptMessage: 'provider-only target evidence residual blockers를 복사하세요.',
+    shownNotice: 'provider-only target evidence residual blockers를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence residual blockers를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceClosureRules({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9577,6 +9772,36 @@ async function copyReleaseTargetEvidenceClosureRules({
     promptMessage: 'target evidence closure rules를 복사하세요.',
     shownNotice: 'target evidence closure rules를 표시했습니다.',
     successNotice: 'target evidence closure rules를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyClosureRules({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only closure rules는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const rulesText = buildReleaseTargetEvidenceClosureRulesText(copyScope);
+  if (!rulesText) {
+    setUiNotice('복사할 provider-only target evidence closure rules가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(rulesText, {
+    promptMessage: 'provider-only target evidence closure rules를 복사하세요.',
+    shownNotice: 'provider-only target evidence closure rules를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence closure rules를 복사했습니다.`,
   });
 }
 
@@ -14344,18 +14569,48 @@ function renderReleaseStatus() {
                   data-release-target-evidence-production-gap="true"
                   data-ui-action="copy-release-target-evidence-production-gap"
                 >target production gap 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-production-gap="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-production-gap"
+                    >provider-only gap 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
                   data-release-target-evidence-exception-register="true"
                   data-ui-action="copy-release-target-evidence-exception-register"
                 >target exception register 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-exception-register="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-exception-register"
+                    >provider-only exception 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
                   data-release-target-evidence-risk-decision-register="true"
                   data-ui-action="copy-release-target-evidence-risk-decision-register"
                 >target risk decision 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-risk-decision-register="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-risk-decision-register"
+                    >provider-only risk 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
@@ -14378,12 +14633,32 @@ function renderReleaseStatus() {
                   data-release-target-evidence-residual-blockers="true"
                   data-ui-action="copy-release-target-evidence-residual-blockers"
                 >target residual blockers 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-residual-blockers="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-residual-blockers"
+                    >provider-only residual 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
                   data-release-target-evidence-closure-rules="true"
                   data-ui-action="copy-release-target-evidence-closure-rules"
                 >target closure rules 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-closure-rules="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-closure-rules"
+                    >provider-only closure 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
