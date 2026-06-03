@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-03T14:51:33.492Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-03T14:51:18.775Z
 - branch: codex/provider-only-claim-closure-guards
 - commit: 6c2413580900be34db527ff0a97a5faec737da0e

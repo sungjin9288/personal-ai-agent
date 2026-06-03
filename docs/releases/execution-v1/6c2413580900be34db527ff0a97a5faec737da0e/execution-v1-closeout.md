@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-03T14:51:33.492Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-03T14:51:25.115Z
 - branch: codex/provider-only-claim-closure-guards
 - commit: 6c2413580900be34db527ff0a97a5faec737da0e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6c2413580900be34db527ff0a97a5faec737da0e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

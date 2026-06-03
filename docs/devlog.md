@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Claim Closure Guard Copy
+
+- added provider-only target evidence production gap, accepted-scope exception, accepted risk decision, residual blocker, and closure rules copy actions so operators can split provider-specific claim and closure guard sections from the shared provider-operations row
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in claim and closure guard section headers, and passed provider-only scope through the full target evidence packet composition
+- kept the normal claim and closure guard copy actions unchanged while extending UI harness coverage and operator docs for the new provider-only guard section contracts
+
 ## 2026-06-03 Provider-Only Target Evidence Command Reference Copy
 
 - added provider-only target evidence required commands and provider evidence references copy actions so operators can split provider-specific command requirements and provider reference handoff from the shared provider-operations row
