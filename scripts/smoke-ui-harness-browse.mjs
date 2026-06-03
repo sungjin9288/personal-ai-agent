@@ -2237,6 +2237,116 @@ async function fetchText(url) {
 }
 
 function assertProviderOnlyCopyScopeSource(appJs) {
+  const providerOnlyCopyActions = [
+    {
+      functionName: 'copyReleaseBlockerProviderOnlySummary',
+      expectedBuilder: 'buildReleaseBlockerSliceSummaryText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyApiLink',
+      expectedBuilder: 'copyReleaseBlockerApiLink({',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyPackage',
+      expectedBuilder: 'buildReleaseBlockerSlicePackageText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyClosureChecklist',
+      expectedBuilder: 'buildReleaseBlockerSliceClosureChecklistText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyClosureMatrixPackage',
+      expectedBuilder: 'buildReleaseBlockerClosureMatrixPackageText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyIntakeSummary',
+      expectedBuilder: 'buildReleaseTargetEvidenceIntakeSummaryText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyCaptureTemplate',
+      expectedBuilder: 'buildReleaseTargetEvidenceCaptureTemplateText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyRequiredCommands',
+      expectedBuilder: 'buildReleaseTargetEvidenceRequiredCommandsText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyProductionGap',
+      expectedBuilder: 'buildReleaseTargetEvidenceProductionGapText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyExceptionRegister',
+      expectedBuilder: 'buildReleaseTargetEvidenceExceptionRegisterText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister',
+      expectedBuilder: 'buildReleaseTargetEvidenceRiskDecisionRegisterText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences',
+      expectedBuilder: 'buildReleaseTargetEvidenceProviderEvidenceReferencesText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyResidualBlockers',
+      expectedBuilder: 'buildReleaseTargetEvidenceResidualBlockersText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyClosureRules',
+      expectedBuilder: 'buildReleaseTargetEvidenceClosureRulesText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlySubmissionManifest',
+      expectedBuilder: 'buildReleaseTargetEvidenceSubmissionManifestText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlySanitizedRegister',
+      expectedBuilder: 'buildReleaseTargetEvidenceSanitizedRegisterText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyBoundaryMap',
+      expectedBuilder: 'buildReleaseTargetEvidenceBoundaryConsistencyMapText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyCommandRerunLog',
+      expectedBuilder: 'buildReleaseTargetEvidenceCommandRerunLogText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyDecisionRecord',
+      expectedBuilder: 'buildReleaseTargetEvidenceReviewerDecisionRecordText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister',
+      expectedBuilder: 'buildReleaseTargetEvidenceBlockerDispositionRegisterText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence',
+      expectedBuilder: 'buildReleaseTargetEvidenceReleaseRefreshEvidenceText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseTargetEvidenceProviderOnlyIntakePacket',
+      expectedBuilder: 'buildReleaseTargetEvidenceIntakePacketText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyHandoff',
+      expectedBuilder: 'buildReleaseBlockerSliceHandoffText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyCommands',
+      expectedBuilder: 'buildReleaseBlockerSliceCommandText(copyScope)',
+    },
+    {
+      functionName: 'copyReleaseBlockerProviderOnlyEvidence',
+      expectedBuilder: 'buildReleaseBlockerSliceEvidenceText(copyScope)',
+    },
+  ];
+  assert.equal(providerOnlyCopyActions.length, 25);
+
+  for (const { expectedBuilder, functionName } of providerOnlyCopyActions) {
+    const actionSource = getFunctionSource(appJs, functionName);
+    assertSourceIncludes(actionSource, 'includeShared: false,', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, expectedBuilder, `${functionName} provider-only copy action`);
+  }
+
   const intakeSummaryBuilder = getSourceSlice(
     appJs,
     'function buildReleaseTargetEvidenceIntakeSummaryText({',
@@ -2306,41 +2416,6 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     'release blocker slice package builder',
   );
 
-  const providerOnlyPackageCopy = getSourceSlice(
-    appJs,
-    'async function copyReleaseBlockerProviderOnlyPackage(',
-    'async function copyReleaseBlockerFilterClosureChecklist(',
-  );
-  assertSourceIncludes(providerOnlyPackageCopy, 'includeShared: false,', 'provider-only package copy action');
-  assertSourceIncludes(
-    providerOnlyPackageCopy,
-    'buildReleaseBlockerSlicePackageText(copyScope)',
-    'provider-only package copy action',
-  );
-
-  const providerOnlyIntakeSummaryCopy = getSourceSlice(
-    appJs,
-    'async function copyReleaseTargetEvidenceProviderOnlyIntakeSummary(',
-    'async function copyReleaseTargetEvidenceCaptureTemplate(',
-  );
-  assertSourceIncludes(providerOnlyIntakeSummaryCopy, 'includeShared: false,', 'provider-only intake summary copy action');
-  assertSourceIncludes(
-    providerOnlyIntakeSummaryCopy,
-    'buildReleaseTargetEvidenceIntakeSummaryText(copyScope)',
-    'provider-only intake summary copy action',
-  );
-
-  const providerOnlyCaptureTemplateCopy = getSourceSlice(
-    appJs,
-    'async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate(',
-    'async function copyReleaseTargetEvidenceRequiredCommands(',
-  );
-  assertSourceIncludes(providerOnlyCaptureTemplateCopy, 'includeShared: false,', 'provider-only capture template copy action');
-  assertSourceIncludes(
-    providerOnlyCaptureTemplateCopy,
-    'buildReleaseTargetEvidenceCaptureTemplateText(copyScope)',
-    'provider-only capture template copy action',
-  );
 }
 
 function getSourceSlice(source, startMarker, endMarker) {
@@ -2349,6 +2424,33 @@ function getSourceSlice(source, startMarker, endMarker) {
   const end = source.indexOf(endMarker, start + startMarker.length);
   assert.notEqual(end, -1, `Missing source end marker after ${startMarker}: ${endMarker}`);
   return source.slice(start, end);
+}
+
+function getFunctionSource(source, functionName) {
+  const marker = `function ${functionName}`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `Missing function source: ${functionName}`);
+
+  const signatureEnd = source.indexOf(') {', start);
+  assert.notEqual(signatureEnd, -1, `Missing function signature end: ${functionName}`);
+
+  const bodyStart = source.indexOf('{', signatureEnd);
+  assert.notEqual(bodyStart, -1, `Missing function body start: ${functionName}`);
+
+  let depth = 0;
+  for (let index = bodyStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === '{') {
+      depth += 1;
+    } else if (char === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        return source.slice(start, index + 1);
+      }
+    }
+  }
+
+  throw new Error(`Missing function body end: ${functionName}`);
 }
 
 function assertSourceIncludes(source, expected, label) {

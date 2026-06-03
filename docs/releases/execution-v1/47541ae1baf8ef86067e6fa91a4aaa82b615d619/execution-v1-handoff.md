@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-03T17:23:27.621Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-03T17:23:25.739Z
 - localDate: 2026-06-04
 - branch: codex/provider-only-copy-action-regression-table
 - commit: 47541ae1baf8ef86067e6fa91a4aaa82b615d619
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619](releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619](docs/releases/execution-v1/47541ae1baf8ef86067e6fa91a4aaa82b615d619)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-copy-action-regression-table not found
 

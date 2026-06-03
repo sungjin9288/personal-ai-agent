@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Action Regression Table
+
+- expanded the UI harness smoke from targeted provider-only copy scope checks into a table-driven regression guard that covers every provider-only copy action
+- pinned each provider-only copy action to both `includeShared=false` and its expected builder call so future section additions cannot silently drift into shared provider-operations scope
+- kept runtime UI behavior unchanged while reducing the smoke gap between provider-only buttons, copy action handlers, and copied handoff builder contracts
+
 ## 2026-06-04 Provider-Only Copy Scope Regression Smoke
 
 - added source-slice regression assertions to the UI harness smoke so provider-only copy actions must pass `includeShared=false` into their scoped copy builders
