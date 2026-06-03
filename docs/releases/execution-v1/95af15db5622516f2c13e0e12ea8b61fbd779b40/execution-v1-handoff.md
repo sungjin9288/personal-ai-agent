@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-03T16:05:53.511Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-03T16:05:52.105Z
 - localDate: 2026-06-04
 - branch: codex/provider-only-summary-template-copy
 - commit: 95af15db5622516f2c13e0e12ea8b61fbd779b40
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40](releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40](docs/releases/execution-v1/95af15db5622516f2c13e0e12ea8b61fbd779b40)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-summary-template-copy not found
 

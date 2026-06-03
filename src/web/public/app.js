@@ -3844,6 +3844,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -3863,6 +3864,12 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3985,6 +3992,8 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6761,6 +6770,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -6783,6 +6793,12 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
   });
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6827,6 +6843,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- commandCount: ${sliceSummary.commandCount}`,
     `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
@@ -6838,6 +6855,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Provider blocker counts:',
     ...(providerCountLines.length ? providerCountLines : ['- none']),
@@ -6861,6 +6879,7 @@ function buildReleaseBlockerSlicePackageText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -6877,6 +6896,7 @@ function buildReleaseBlockerSlicePackageText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   };
@@ -8010,6 +8030,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-blocker-provider-only-summary') {
+        void copyReleaseBlockerProviderOnlySummary();
+        return;
+      }
+
       if (action === 'copy-release-blocker-api-link') {
         void copyReleaseBlockerApiLink();
         return;
@@ -8055,8 +8080,18 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-intake-summary') {
+        void copyReleaseTargetEvidenceProviderOnlyIntakeSummary();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-capture-template') {
         void copyReleaseTargetEvidenceCaptureTemplate();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-capture-template') {
+        void copyReleaseTargetEvidenceProviderOnlyCaptureTemplate();
         return;
       }
 
@@ -9295,6 +9330,36 @@ async function copyReleaseBlockerFilterSummary({
   });
 }
 
+async function copyReleaseBlockerProviderOnlySummary({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only summary는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const summaryText = buildReleaseBlockerSliceSummaryText(copyScope);
+  if (!summaryText) {
+    setUiNotice('복사할 provider-only release blocker slice summary가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(summaryText, {
+    promptMessage: 'provider-only release blocker slice summary를 복사하세요.',
+    shownNotice: 'provider-only release blocker slice summary를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only release blocker slice summary를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseBlockerApiLink({
   category = state.releaseBlockerCategoryFilter,
   includeShared = true,
@@ -9528,6 +9593,36 @@ async function copyReleaseTargetEvidenceIntakeSummary({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyIntakeSummary({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only target evidence summary는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const summaryText = buildReleaseTargetEvidenceIntakeSummaryText(copyScope);
+  if (!summaryText) {
+    setUiNotice('복사할 provider-only target evidence intake summary가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(summaryText, {
+    promptMessage: 'provider-only target evidence intake summary를 복사하세요.',
+    shownNotice: 'provider-only target evidence intake summary를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence intake summary를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceCaptureTemplate({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9544,6 +9639,36 @@ async function copyReleaseTargetEvidenceCaptureTemplate({
     promptMessage: 'target evidence capture template를 복사하세요.',
     shownNotice: 'target evidence capture template를 표시했습니다.',
     successNotice: 'target evidence capture template를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only capture template는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const templateText = buildReleaseTargetEvidenceCaptureTemplateText(copyScope);
+  if (!templateText) {
+    setUiNotice('복사할 provider-only target evidence capture template가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(templateText, {
+    promptMessage: 'provider-only target evidence capture template를 복사하세요.',
+    shownNotice: 'provider-only target evidence capture template를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence capture template를 복사했습니다.`,
   });
 }
 
@@ -14666,6 +14791,16 @@ function renderReleaseStatus() {
                   data-release-current-open-blocker-filter-summary-copy="true"
                   data-ui-action="copy-release-blocker-filter-summary"
                 >slice 요약 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-current-open-blocker-provider-only-summary-copy="true"
+                      data-ui-action="copy-release-blocker-provider-only-summary"
+                    >provider-only summary 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
@@ -14736,12 +14871,32 @@ function renderReleaseStatus() {
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
                 >target evidence summary 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-intake-summary="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-intake-summary"
+                    >provider-only target summary 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
                   data-release-target-evidence-capture-template="true"
                   data-ui-action="copy-release-target-evidence-capture-template"
                 >target capture template 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-capture-template="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-capture-template"
+                    >provider-only capture template 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
