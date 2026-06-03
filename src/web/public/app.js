@@ -4023,6 +4023,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -4042,6 +4043,12 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4264,6 +4271,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- requiredCommandCount: ${commandDefinitions.length}`,
@@ -4272,6 +4280,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Command rows:',
     ...commandRows,
@@ -4798,6 +4807,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -4820,6 +4830,12 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4934,6 +4950,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -4944,6 +4961,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Provider evidence reference rows:',
     ...providerRows,
@@ -5344,6 +5362,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5376,6 +5395,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -7985,6 +8005,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-required-commands') {
+        void copyReleaseTargetEvidenceProviderOnlyRequiredCommands();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-production-gap') {
         void copyReleaseTargetEvidenceProductionGap();
         return;
@@ -8002,6 +8027,11 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-target-evidence-provider-references') {
         void copyReleaseTargetEvidenceProviderEvidenceReferences();
+        return;
+      }
+
+      if (action === 'copy-release-target-evidence-provider-only-provider-references') {
+        void copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences();
         return;
       }
 
@@ -9376,6 +9406,36 @@ async function copyReleaseTargetEvidenceRequiredCommands({
   });
 }
 
+async function copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only required commands는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const commandText = buildReleaseTargetEvidenceRequiredCommandsText(copyScope);
+  if (!commandText) {
+    setUiNotice('복사할 provider-only target evidence required commands가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(commandText, {
+    promptMessage: 'provider-only target evidence required commands를 복사하세요.',
+    shownNotice: 'provider-only target evidence required commands를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence required commands를 복사했습니다.`,
+  });
+}
+
 async function copyReleaseTargetEvidenceProductionGap({
   category = state.releaseBlockerCategoryFilter,
   owner = state.releaseBlockerOwnerFilter,
@@ -9449,6 +9509,36 @@ async function copyReleaseTargetEvidenceProviderEvidenceReferences({
     promptMessage: 'target evidence provider references를 복사하세요.',
     shownNotice: 'target evidence provider references를 표시했습니다.',
     successNotice: 'target evidence provider references를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only provider refs는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const referencesText = buildReleaseTargetEvidenceProviderEvidenceReferencesText(copyScope);
+  if (!referencesText) {
+    setUiNotice('복사할 provider-only target evidence provider references가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(referencesText, {
+    promptMessage: 'provider-only target evidence provider references를 복사하세요.',
+    shownNotice: 'provider-only target evidence provider references를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence provider references를 복사했습니다.`,
   });
 }
 
@@ -14238,6 +14328,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-required-commands="true"
                   data-ui-action="copy-release-target-evidence-required-commands"
                 >target required commands 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-required-commands="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-required-commands"
+                    >provider-only commands 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
@@ -14262,6 +14362,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-provider-references="true"
                   data-ui-action="copy-release-target-evidence-provider-references"
                 >target provider refs 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-provider-references="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-provider-references"
+                    >provider-only refs 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"
