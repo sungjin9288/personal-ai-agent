@@ -331,6 +331,11 @@ try {
   assert.equal(appJs.includes('Target evidence required commands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyRequiredCommands'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-required-commands'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-required-commands'), true);
+  assert.equal(appJs.includes('provider-only commands 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence required commands'), true);
   assert.equal(appJs.includes('OpenAI account ownership proof'), true);
   assert.equal(appJs.includes('billing and quota proof'), true);
   assert.equal(appJs.includes('API key and secret injection proof'), true);
@@ -1427,6 +1432,11 @@ try {
   assert.equal(appJs.includes('Target evidence provider evidence references'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-references'), true);
   assert.equal(appJs.includes('data-release-target-evidence-provider-references'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-provider-references'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-provider-references'), true);
+  assert.equal(appJs.includes('provider-only refs 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence provider references'), true);
   assert.equal(appJs.includes('Provider evidence references:'), true);
   assert.equal(appJs.includes('Provider evidence reference rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceResidualBlockersText'), true);

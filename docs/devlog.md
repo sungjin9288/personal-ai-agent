@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-03 Provider-Only Target Evidence Command Reference Copy
+
+- added provider-only target evidence required commands and provider evidence references copy actions so operators can split provider-specific command requirements and provider reference handoff from the shared provider-operations row
+- recorded `includeSharedProviderOperations` and the scoped release blocker API link in required commands and provider references headers, and passed provider-only scope through the full target evidence packet composition
+- kept the normal required commands and provider references copy actions unchanged while extending UI harness coverage and operator docs for the new provider-only command/reference section contracts
+
 ## 2026-06-03 Provider-Only Target Evidence Boundary Register Copy
 
 - added provider-only target evidence sanitized register and boundary consistency map copy actions so operators can split provider-specific evidence references and boundary checks from the shared provider-operations row
