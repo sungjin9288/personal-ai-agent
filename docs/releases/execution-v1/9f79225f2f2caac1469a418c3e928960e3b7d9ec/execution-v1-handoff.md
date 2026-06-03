@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-03T13:38:37.766Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-03T13:38:36.345Z
 - localDate: 2026-06-03
 - branch: codex/provider-only-sanitized-boundary-evidence
 - commit: 9f79225f2f2caac1469a418c3e928960e3b7d9ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec](releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec](docs/releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-sanitized-boundary-evidence not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-03T13:38:37.766Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-03T13:38:19.908Z
 - branch: codex/provider-only-sanitized-boundary-evidence
 - commit: 9f79225f2f2caac1469a418c3e928960e3b7d9ec
