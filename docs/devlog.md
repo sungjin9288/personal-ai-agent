@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Scope Regression Smoke
+
+- added source-slice regression assertions to the UI harness smoke so provider-only copy actions must pass `includeShared=false` into their scoped copy builders
+- verified target evidence intake summary, target evidence capture template, and release blocker slice package builders now expose `includeSharedProviderOperations` and scoped release blocker API link metadata within the copied output contract
+- tightened the smoke around the previous package propagation drift so future copy action additions cannot rely on button-label checks alone
+
 ## 2026-06-04 Provider-Only Summary Template Copy Guards
 
 - added provider-only release blocker slice summary, target evidence intake summary, and target evidence capture template copy actions so provider-specific handoff manifests can exclude the shared provider-operations row at the planning/template layer too

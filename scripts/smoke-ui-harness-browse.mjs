@@ -235,6 +235,8 @@ try {
   const rootHtml = await fetchText(baseUrl);
   const appJs = await fetchText(`${baseUrl}/app.js`);
 
+  assertProviderOnlyCopyScopeSource(appJs);
+
   assert.equal(rootHtml.includes('data-detail-tab="harness"'), true);
   assert.equal(rootHtml.includes('data:image/svg+xml'), true);
   assert.equal(rootHtml.includes('id="run-fallback-provider-select"'), true);
@@ -2232,6 +2234,125 @@ async function fetchText(url) {
     throw new Error(`Request failed (${response.status}): ${url}`);
   }
   return await response.text();
+}
+
+function assertProviderOnlyCopyScopeSource(appJs) {
+  const intakeSummaryBuilder = getSourceSlice(
+    appJs,
+    'function buildReleaseTargetEvidenceIntakeSummaryText({',
+    'function buildReleaseBlockerSlicePackageText({',
+  );
+  assertSourceIncludes(intakeSummaryBuilder, 'includeShared = true,', 'target evidence intake summary builder');
+  assertSourceIncludes(
+    intakeSummaryBuilder,
+    'const releaseBlockerApiLink = buildReleaseBlockerApiUrl({',
+    'target evidence intake summary builder',
+  );
+  assertSourceIncludes(intakeSummaryBuilder, 'includeShared,', 'target evidence intake summary builder');
+  assertSourceIncludes(
+    intakeSummaryBuilder,
+    '`- includeSharedProviderOperations: ${String(includeShared !== false)}`',
+    'target evidence intake summary builder',
+  );
+  assertSourceIncludes(
+    intakeSummaryBuilder,
+    '`- releaseBlockerApiLink: ${releaseBlockerApiLink}`',
+    'target evidence intake summary builder',
+  );
+
+  const captureTemplateBuilder = getSourceSlice(
+    appJs,
+    'function buildReleaseTargetEvidenceCaptureTemplateText({',
+    'function buildReleaseTargetEvidenceRequiredCommandsText({',
+  );
+  assertSourceIncludes(captureTemplateBuilder, 'includeShared = true,', 'target evidence capture template builder');
+  assertSourceIncludes(
+    captureTemplateBuilder,
+    'const releaseBlockerApiLink = buildReleaseBlockerApiUrl({',
+    'target evidence capture template builder',
+  );
+  assertSourceIncludes(captureTemplateBuilder, 'includeShared,', 'target evidence capture template builder');
+  assertSourceIncludes(
+    captureTemplateBuilder,
+    '`- includeSharedProviderOperations: ${String(includeShared !== false)}`',
+    'target evidence capture template builder',
+  );
+  assertSourceIncludes(
+    captureTemplateBuilder,
+    '`- releaseBlockerApiLink: ${releaseBlockerApiLink}`',
+    'target evidence capture template builder',
+  );
+
+  const slicePackageBuilder = getSourceSlice(
+    appJs,
+    'function buildReleaseBlockerSlicePackageText({',
+    'function focusReleaseHistoryEntry(',
+  );
+  assertSourceIncludes(slicePackageBuilder, 'includeShared = true,', 'release blocker slice package builder');
+  assertSourceIncludes(slicePackageBuilder, 'includeShared,', 'release blocker slice package builder');
+  assertSourceIncludes(
+    slicePackageBuilder,
+    'buildReleaseBlockerSliceSummaryText(buildOptions)',
+    'release blocker slice package builder',
+  );
+  assertSourceIncludes(
+    slicePackageBuilder,
+    'buildReleaseBlockerSliceHandoffText(buildOptions)',
+    'release blocker slice package builder',
+  );
+  assertSourceIncludes(
+    slicePackageBuilder,
+    'buildReleaseBlockerClosureMatrixPackageText(buildOptions)',
+    'release blocker slice package builder',
+  );
+
+  const providerOnlyPackageCopy = getSourceSlice(
+    appJs,
+    'async function copyReleaseBlockerProviderOnlyPackage(',
+    'async function copyReleaseBlockerFilterClosureChecklist(',
+  );
+  assertSourceIncludes(providerOnlyPackageCopy, 'includeShared: false,', 'provider-only package copy action');
+  assertSourceIncludes(
+    providerOnlyPackageCopy,
+    'buildReleaseBlockerSlicePackageText(copyScope)',
+    'provider-only package copy action',
+  );
+
+  const providerOnlyIntakeSummaryCopy = getSourceSlice(
+    appJs,
+    'async function copyReleaseTargetEvidenceProviderOnlyIntakeSummary(',
+    'async function copyReleaseTargetEvidenceCaptureTemplate(',
+  );
+  assertSourceIncludes(providerOnlyIntakeSummaryCopy, 'includeShared: false,', 'provider-only intake summary copy action');
+  assertSourceIncludes(
+    providerOnlyIntakeSummaryCopy,
+    'buildReleaseTargetEvidenceIntakeSummaryText(copyScope)',
+    'provider-only intake summary copy action',
+  );
+
+  const providerOnlyCaptureTemplateCopy = getSourceSlice(
+    appJs,
+    'async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate(',
+    'async function copyReleaseTargetEvidenceRequiredCommands(',
+  );
+  assertSourceIncludes(providerOnlyCaptureTemplateCopy, 'includeShared: false,', 'provider-only capture template copy action');
+  assertSourceIncludes(
+    providerOnlyCaptureTemplateCopy,
+    'buildReleaseTargetEvidenceCaptureTemplateText(copyScope)',
+    'provider-only capture template copy action',
+  );
+}
+
+function getSourceSlice(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  assert.notEqual(start, -1, `Missing source start marker: ${startMarker}`);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.notEqual(end, -1, `Missing source end marker after ${startMarker}: ${endMarker}`);
+  return source.slice(start, end);
+}
+
+function assertSourceIncludes(source, expected, label) {
+  assert.equal(source.includes(expected), true, `${label} must include ${expected}`);
 }
 
 async function waitForServer(baseUrl, childProcess, { timeoutMs = 20_000 } = {}) {
