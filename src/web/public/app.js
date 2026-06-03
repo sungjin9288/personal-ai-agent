@@ -5452,6 +5452,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5562,6 +5563,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
   category = state.releaseBlockerCategoryFilter,
+  includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   releaseStatus = state.releaseStatus,
@@ -5580,6 +5582,12 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    owner: normalizedOwner,
+    provider: normalizedProvider,
+  });
+  const releaseBlockerApiLink = buildReleaseBlockerApiUrl({
+    category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5704,6 +5712,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
     `- category: ${normalizedCategory || 'all'}`,
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
+    `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- refreshArtifactCount: ${artifactRows.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -5711,6 +5720,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
     `- productionBlockerCount: ${summary.productionBlockerCount ?? releaseReadiness.productionBlockerCount ?? productionBlockers.length}`,
     `- productionReadyStopReason: ${summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || 'not recorded'}`,
     `- releaseLink: ${releaseLink}`,
+    `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     '',
     'Release refresh artifact rows:',
     ...artifactEvidenceRows,
@@ -8040,6 +8050,11 @@ function wireQuickActions(scope = document) {
         return;
       }
 
+      if (action === 'copy-release-target-evidence-provider-only-release-refresh') {
+        void copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence();
+        return;
+      }
+
       if (action === 'copy-release-target-evidence-intake-packet') {
         void copyReleaseTargetEvidenceIntakePacket();
         return;
@@ -9695,6 +9710,36 @@ async function copyReleaseTargetEvidenceReleaseRefreshEvidence({
     promptMessage: 'target evidence release refresh evidence를 복사하세요.',
     shownNotice: 'target evidence release refresh evidence를 표시했습니다.',
     successNotice: 'target evidence release refresh evidence를 복사했습니다.',
+  });
+}
+
+async function copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence({
+  category = state.releaseBlockerCategoryFilter,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    setUiNotice('provider-only refresh evidence는 provider 필터를 먼저 선택해야 복사할 수 있습니다.');
+    return;
+  }
+
+  const copyScope = getReleaseBlockerFilteredCopyScope({
+    category,
+    includeShared: false,
+    owner,
+    provider: normalizedProvider,
+  });
+  const evidenceText = buildReleaseTargetEvidenceReleaseRefreshEvidenceText(copyScope);
+  if (!evidenceText) {
+    setUiNotice('복사할 provider-only target evidence release refresh evidence가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(evidenceText, {
+    promptMessage: 'provider-only target evidence release refresh evidence를 복사하세요.',
+    shownNotice: 'provider-only target evidence release refresh evidence를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only target evidence release refresh evidence를 복사했습니다.`,
   });
 }
 
@@ -14221,6 +14266,16 @@ function renderReleaseStatus() {
                   data-release-target-evidence-release-refresh="true"
                   data-ui-action="copy-release-target-evidence-release-refresh"
                 >target refresh evidence 복사</button>
+                ${blockerProviderFilter
+                  ? `
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-release-target-evidence-provider-only-release-refresh="true"
+                      data-ui-action="copy-release-target-evidence-provider-only-release-refresh"
+                    >provider-only refresh 복사</button>
+                  `
+                  : ''}
                 <button
                   class="ghost-button"
                   type="button"

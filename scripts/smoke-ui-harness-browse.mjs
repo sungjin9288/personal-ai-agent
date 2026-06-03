@@ -1503,6 +1503,11 @@ try {
   assert.equal(appJs.includes('Target evidence release refresh evidence'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-release-refresh'), true);
   assert.equal(appJs.includes('data-release-target-evidence-release-refresh'), true);
+  assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence'), true);
+  assert.equal(appJs.includes('copy-release-target-evidence-provider-only-release-refresh'), true);
+  assert.equal(appJs.includes('data-release-target-evidence-provider-only-release-refresh'), true);
+  assert.equal(appJs.includes('provider-only refresh 복사'), true);
+  assert.equal(appJs.includes('provider-only target evidence release refresh evidence'), true);
   assert.equal(appJs.includes('Release refresh evidence template:'), true);
   assert.equal(appJs.includes('Release refresh artifact rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
