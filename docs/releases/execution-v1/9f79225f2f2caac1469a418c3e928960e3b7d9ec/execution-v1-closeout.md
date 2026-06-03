@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-03T13:38:37.766Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-03T13:38:28.545Z
 - branch: codex/provider-only-sanitized-boundary-evidence
 - commit: 9f79225f2f2caac1469a418c3e928960e3b7d9ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9f79225f2f2caac1469a418c3e928960e3b7d9ec/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
