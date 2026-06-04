@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-04T03:20:51.225Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-04T03:20:39.545Z
 - branch: codex/provider-only-copy-table-completeness-smoke
 - commit: 8801ae025583bfe0c8871e2f2daada8112612d10
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8801ae025583bfe0c8871e2f2daada8112612d10/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
