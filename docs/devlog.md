@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Provider-Only Copy Shared Scope Audit Lines
+
+- added shared provider-operations included/excluded count and excluded id lines to copied release blocker and target evidence handoff artifacts
+- reused release blocker UI filtering semantics to compute audit lines so provider-only copied text matches CLI/API shared scope audit behavior
+- extended UI harness smoke coverage for shared scope audit helpers and target evidence copied artifact builders
+
 ## 2026-06-05 Release Blocker Shared Scope Audit Counts
 
 - aligned CLI/API `includeShared=false` release blocker filtering with the release tab so shared provider-operations blockers are excluded even when no provider filter is selected
