@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Provider Guard Smoke
+
+- added UI harness smoke assertions that every provider-only copy handler normalizes the selected provider, blocks execution when no provider filter is selected, and passes `provider: normalizedProvider` into the scoped copy path
+- kept the existing action id, handler declaration, dispatch, `includeShared=false`, and builder/delegate checks while making the provider-required guard an explicit regression contract
+- kept runtime UI behavior unchanged while tightening protection against accidental all-provider provider-only copy output
+
 ## 2026-06-04 Provider-Only Copy Action Id Completeness Smoke
 
 - expanded the UI harness provider-only copy regression table with each rendered `data-ui-action` id so button wiring, dispatch action ids, handler declarations, scope policy, and builder linkage are validated together

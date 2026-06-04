@@ -2410,7 +2410,15 @@ function assertProviderOnlyCopyScopeSource(appJs) {
 
   for (const { expectedBuilder, functionName } of providerOnlyCopyActions) {
     const actionSource = getFunctionSource(appJs, functionName);
+    assertSourceIncludes(
+      actionSource,
+      "const normalizedProvider = String(provider || '').trim();",
+      `${functionName} provider-only copy action`,
+    );
+    assertSourceIncludes(actionSource, 'if (!normalizedProvider) {', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'provider 필터를 먼저 선택', `${functionName} provider-only copy action`);
     assertSourceIncludes(actionSource, 'includeShared: false,', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'provider: normalizedProvider', `${functionName} provider-only copy action`);
     assertSourceIncludes(actionSource, expectedBuilder, `${functionName} provider-only copy action`);
   }
 

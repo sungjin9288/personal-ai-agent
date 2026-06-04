@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-04T03:43:32.630Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-04T03:43:31.236Z
 - localDate: 2026-06-04
 - branch: codex/provider-only-copy-provider-guard-smoke
 - commit: 34131f476c83a209f9a3db5fa4347001596178c5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5](releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5](docs/releases/execution-v1/34131f476c83a209f9a3db5fa4347001596178c5)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-copy-provider-guard-smoke not found
 
