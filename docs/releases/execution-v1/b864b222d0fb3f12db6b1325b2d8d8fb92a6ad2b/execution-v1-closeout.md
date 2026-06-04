@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-04T15:44:03.795Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-04T15:43:53.971Z
 - branch: codex/release-blocker-api-shared-scope-audit
 - commit: b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

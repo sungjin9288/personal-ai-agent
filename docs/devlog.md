@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Release Blocker Shared Scope Audit Counts
+
+- aligned CLI/API `includeShared=false` release blocker filtering with the release tab so shared provider-operations blockers are excluded even when no provider filter is selected
+- added `sharedProviderOperationsIncludedCount`, `sharedProviderOperationsExcludedCount`, and `sharedProviderOperationsExcludedIds` to release blocker handoff filters for provider-only auditability
+- extended release blocker handoff smoke coverage for all-provider `--without-shared`, provider-only excluded ids, API `withoutShared=true`, and provider-operations zero-row exclusion behavior
+
 ## 2026-06-05 Release Blocker API Shared Scope Reason
 
 - added `sharedProviderOperationsScope` to release blocker handoff filters so CLI and API JSON responses explain whether shared provider-operations blockers are included or intentionally excluded

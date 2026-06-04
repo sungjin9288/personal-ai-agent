@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T15:44:03.795Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T15:43:47.757Z
 - branch: codex/release-blocker-api-shared-scope-audit
 - commit: b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b

@@ -19,6 +19,10 @@ const allBlockers = runCli(['overview', 'release-blockers']);
 assert.equal(allBlockers.releaseReadiness.productionReadyClaimAllowed, false);
 assert.equal(allBlockers.releaseReadiness.productionReadyBlocked, true);
 assert.equal(allBlockers.releaseReadiness.currentOpenBlockerActionCount, 7);
+assert.equal(allBlockers.filters.includeSharedProviderOperations, true);
+assert.equal(allBlockers.filters.sharedProviderOperationsExcludedCount, 0);
+assert.deepEqual(allBlockers.filters.sharedProviderOperationsExcludedIds, []);
+assert.equal(allBlockers.filters.sharedProviderOperationsIncludedCount, 1);
 assert.equal(allBlockers.summary.actionCount, 7);
 assert.equal(allBlockers.summary.categoryCounts['provider-account'], 2);
 assert.equal(allBlockers.summary.categoryCounts['provider-architecture'], 2);
@@ -49,6 +53,9 @@ for (const action of allBlockers.items) {
 const hermesHandoff = runCli(['overview', 'release-blockers', '--provider', 'hermes']);
 assert.equal(hermesHandoff.filters.provider, 'hermes');
 assert.equal(hermesHandoff.filters.includeSharedProviderOperations, true);
+assert.equal(hermesHandoff.filters.sharedProviderOperationsExcludedCount, 0);
+assert.deepEqual(hermesHandoff.filters.sharedProviderOperationsExcludedIds, []);
+assert.equal(hermesHandoff.filters.sharedProviderOperationsIncludedCount, 1);
 assert.equal(hermesHandoff.filters.sharedProviderOperationsScope, 'included with provider hermes handoff scope');
 assert.equal(hermesHandoff.summary.actionCount, 2);
 assert.equal(hermesHandoff.summary.categoryCounts['provider-architecture'], 1);
@@ -117,6 +124,9 @@ assert.equal(
 
 const hermesOnly = runCli(['overview', 'release-blockers', '--provider', 'hermes', '--without-shared']);
 assert.equal(hermesOnly.filters.includeSharedProviderOperations, false);
+assert.equal(hermesOnly.filters.sharedProviderOperationsExcludedCount, 1);
+assert.deepEqual(hermesOnly.filters.sharedProviderOperationsExcludedIds, [sharedProviderOperationsAction.id]);
+assert.equal(hermesOnly.filters.sharedProviderOperationsIncludedCount, 0);
 assert.equal(
   hermesOnly.filters.sharedProviderOperationsScope,
   'excluded for provider-only hermes handoff; handle shared provider-operations evidence separately',
@@ -126,6 +136,9 @@ assert.equal(hermesOnly.items[0].provider, 'hermes');
 assert.equal(hermesOnly.items[0].category, 'provider-architecture');
 
 const providerOpsOnly = runCli(['overview', 'release-blockers', '--category', 'provider-operations']);
+assert.equal(providerOpsOnly.filters.sharedProviderOperationsExcludedCount, 0);
+assert.deepEqual(providerOpsOnly.filters.sharedProviderOperationsExcludedIds, []);
+assert.equal(providerOpsOnly.filters.sharedProviderOperationsIncludedCount, 1);
 assert.equal(providerOpsOnly.filters.sharedProviderOperationsScope, 'included for full release blocker handoff scope');
 assert.equal(providerOpsOnly.summary.actionCount, 1);
 assert.equal(providerOpsOnly.summary.runtimeAuditCommandCount, 6);
@@ -137,6 +150,27 @@ assert.equal(
   true,
   JSON.stringify(providerOpsOnly.items[0].closureVerification.requiredCommands),
 );
+
+const allWithoutShared = runCli(['overview', 'release-blockers', '--without-shared']);
+assert.equal(allWithoutShared.filters.includeSharedProviderOperations, false);
+assert.equal(allWithoutShared.filters.sharedProviderOperationsExcludedCount, 1);
+assert.deepEqual(allWithoutShared.filters.sharedProviderOperationsExcludedIds, [sharedProviderOperationsAction.id]);
+assert.equal(allWithoutShared.filters.sharedProviderOperationsIncludedCount, 0);
+assert.equal(allWithoutShared.summary.actionCount, 6);
+assert.equal(allWithoutShared.summary.categoryCounts['provider-operations'] || 0, 0);
+
+const providerOpsWithoutShared = runCli([
+  'overview',
+  'release-blockers',
+  '--category',
+  'provider-operations',
+  '--without-shared',
+]);
+assert.equal(providerOpsWithoutShared.filters.includeSharedProviderOperations, false);
+assert.equal(providerOpsWithoutShared.filters.sharedProviderOperationsExcludedCount, 1);
+assert.deepEqual(providerOpsWithoutShared.filters.sharedProviderOperationsExcludedIds, [sharedProviderOperationsAction.id]);
+assert.equal(providerOpsWithoutShared.filters.sharedProviderOperationsIncludedCount, 0);
+assert.equal(providerOpsWithoutShared.summary.actionCount, 0);
 
 const providerOpsOwner = runCli(['overview', 'release-blockers', '--owner', 'provider-ops']);
 assert.equal(providerOpsOwner.summary.actionCount, 5);
@@ -157,6 +191,7 @@ console.log(
     {
       mode: 'release-blocker-handoff-smoke',
       ok: true,
+      apiAllWithoutSharedActionCount: apiSmoke.allWithoutSharedActionCount,
       apiProviderScopedActionCount: apiSmoke.providerScopedActionCount,
       apiWithoutSharedActionCount: apiSmoke.withoutSharedActionCount,
       providerScopedActionCount: hermesHandoff.summary.actionCount,
@@ -212,6 +247,9 @@ async function runReleaseBlockerHandoffApiSmoke() {
 
     assert.equal(hermesApiHandoff.filters.provider, 'hermes');
     assert.equal(hermesApiHandoff.filters.includeSharedProviderOperations, true);
+    assert.equal(hermesApiHandoff.filters.sharedProviderOperationsExcludedCount, 0);
+    assert.deepEqual(hermesApiHandoff.filters.sharedProviderOperationsExcludedIds, []);
+    assert.equal(hermesApiHandoff.filters.sharedProviderOperationsIncludedCount, 1);
     assert.equal(hermesApiHandoff.filters.sharedProviderOperationsScope, 'included with provider hermes handoff scope');
     assert.equal(hermesApiHandoff.summary.actionCount, 2);
     assert.equal(hermesApiHandoff.summary.categoryCounts['provider-architecture'], 1);
@@ -253,10 +291,21 @@ async function runReleaseBlockerHandoffApiSmoke() {
     assert.equal(sharedApiAction.provider || '', '');
     assert.match(sharedApiAction.stopReason, /recoverable-provider-failure-only stop reason/);
 
+    const apiWithoutShared = await fetchJson(`${baseUrl}/api/execution-v1/release-blockers?withoutShared=true`);
+    assert.equal(apiWithoutShared.filters.includeSharedProviderOperations, false);
+    assert.equal(apiWithoutShared.filters.sharedProviderOperationsExcludedCount, 1);
+    assert.deepEqual(apiWithoutShared.filters.sharedProviderOperationsExcludedIds, [sharedApiAction.id]);
+    assert.equal(apiWithoutShared.filters.sharedProviderOperationsIncludedCount, 0);
+    assert.equal(apiWithoutShared.summary.actionCount, 6);
+    assert.equal(apiWithoutShared.summary.categoryCounts['provider-operations'] || 0, 0);
+
     const hermesWithoutShared = await fetchJson(
       `${baseUrl}/api/execution-v1/release-blockers?provider=hermes&withoutShared=true`,
     );
     assert.equal(hermesWithoutShared.filters.includeSharedProviderOperations, false);
+    assert.equal(hermesWithoutShared.filters.sharedProviderOperationsExcludedCount, 1);
+    assert.deepEqual(hermesWithoutShared.filters.sharedProviderOperationsExcludedIds, [sharedApiAction.id]);
+    assert.equal(hermesWithoutShared.filters.sharedProviderOperationsIncludedCount, 0);
     assert.equal(
       hermesWithoutShared.filters.sharedProviderOperationsScope,
       'excluded for provider-only hermes handoff; handle shared provider-operations evidence separately',
@@ -269,6 +318,9 @@ async function runReleaseBlockerHandoffApiSmoke() {
       `${baseUrl}/api/execution-v1/release-blockers?provider=hermes&includeShared=false`,
     );
     assert.equal(hermesIncludeSharedFalse.filters.includeSharedProviderOperations, false);
+    assert.equal(hermesIncludeSharedFalse.filters.sharedProviderOperationsExcludedCount, 1);
+    assert.deepEqual(hermesIncludeSharedFalse.filters.sharedProviderOperationsExcludedIds, [sharedApiAction.id]);
+    assert.equal(hermesIncludeSharedFalse.filters.sharedProviderOperationsIncludedCount, 0);
     assert.equal(
       hermesIncludeSharedFalse.filters.sharedProviderOperationsScope,
       'excluded for provider-only hermes handoff; handle shared provider-operations evidence separately',
@@ -278,6 +330,9 @@ async function runReleaseBlockerHandoffApiSmoke() {
     const providerOpsOnly = await fetchJson(
       `${baseUrl}/api/execution-v1/release-blockers?category=provider-operations&owner=provider-ops`,
     );
+    assert.equal(providerOpsOnly.filters.sharedProviderOperationsExcludedCount, 0);
+    assert.deepEqual(providerOpsOnly.filters.sharedProviderOperationsExcludedIds, []);
+    assert.equal(providerOpsOnly.filters.sharedProviderOperationsIncludedCount, 1);
     assert.equal(
       providerOpsOnly.filters.sharedProviderOperationsScope,
       'included for full release blocker handoff scope',
@@ -294,6 +349,7 @@ async function runReleaseBlockerHandoffApiSmoke() {
     );
 
     return {
+      allWithoutSharedActionCount: apiWithoutShared.summary.actionCount,
       providerScopedActionCount: hermesApiHandoff.summary.actionCount,
       withoutSharedActionCount: hermesWithoutShared.summary.actionCount,
     };
