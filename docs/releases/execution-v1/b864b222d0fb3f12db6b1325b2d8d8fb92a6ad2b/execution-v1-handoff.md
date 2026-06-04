@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-04T15:44:03.795Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-04T15:44:02.404Z
 - localDate: 2026-06-05
 - branch: codex/release-blocker-api-shared-scope-audit
 - commit: b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b](releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b](docs/releases/execution-v1/b864b222d0fb3f12db6b1325b2d8d8fb92a6ad2b)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-blocker-api-shared-scope-audit not found
 
