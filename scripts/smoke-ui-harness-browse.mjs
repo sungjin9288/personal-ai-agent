@@ -2427,6 +2427,34 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     assertSourceIncludes(actionSource, expectedBuilder, `${functionName} provider-only copy action`);
   }
 
+  const providerOnlyTargetEvidenceApiLinkBuilders = providerOnlyCopyActions
+    .map(({ expectedBuilder }) => {
+      const match = expectedBuilder.match(/^(buildReleaseTargetEvidence[A-Za-z0-9]*Text)\(copyScope\)$/);
+      return match?.[1] || '';
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right));
+  assert.equal(
+    providerOnlyTargetEvidenceApiLinkBuilders.length >= 17,
+    true,
+    'provider-only target evidence copy table must keep target evidence API link builder coverage',
+  );
+  for (const builderName of providerOnlyTargetEvidenceApiLinkBuilders) {
+    const builderSource = getFunctionSource(appJs, builderName);
+    assertSourceIncludes(builderSource, 'includeShared = true,', `${builderName} target evidence builder`);
+    assertSourceIncludes(
+      builderSource,
+      'const releaseBlockerApiLink = buildReleaseBlockerApiUrl({',
+      `${builderName} target evidence builder`,
+    );
+    assertSourceIncludes(builderSource, 'includeShared,', `${builderName} target evidence builder`);
+    assertSourceIncludes(
+      builderSource,
+      '`- releaseBlockerApiLink: ${releaseBlockerApiLink}`',
+      `${builderName} target evidence builder`,
+    );
+  }
+
   const intakeSummaryBuilder = getSourceSlice(
     appJs,
     'function buildReleaseTargetEvidenceIntakeSummaryText({',
