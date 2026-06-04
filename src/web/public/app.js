@@ -60,6 +60,7 @@ const state = {
   releaseLiveConfirmProvider: '',
   releaseAllPreflight: null,
   releaseBlockerCategoryFilter: '',
+  releaseBlockerIncludeSharedProviderOperations: true,
   releaseBlockerOwnerFilter: '',
   releaseBlockerProviderFilter: '',
   releaseExpandedHistoryId: '',
@@ -713,6 +714,7 @@ function parseUiStateFromUrl() {
     detailTab: getSanitizedDetailTab(params.get('tab')),
     missionId: normalizeUiParam(params.get('mission')),
     releaseBlockerCategoryFilter: normalizeUiParam(params.get('rbcategory')),
+    releaseBlockerIncludeSharedProviderOperations: params.get('rbshared') !== 'false',
     releaseBlockerOwnerFilter: normalizeUiParam(params.get('rbowner')),
     releaseBlockerProviderFilter: normalizeUiParam(params.get('rbprovider')),
     releaseFocusedBlockerId: normalizeUiParam(params.get('rblocker')),
@@ -771,6 +773,10 @@ function buildUiStateUrl(overrides = {}) {
     overrides.releaseBlockerCategoryFilter !== undefined
       ? normalizeUiParam(overrides.releaseBlockerCategoryFilter)
       : normalizeUiParam(state.releaseBlockerCategoryFilter);
+  const releaseBlockerIncludeSharedProviderOperations =
+    overrides.releaseBlockerIncludeSharedProviderOperations !== undefined
+      ? overrides.releaseBlockerIncludeSharedProviderOperations !== false
+      : state.releaseBlockerIncludeSharedProviderOperations !== false;
   const releaseBlockerOwnerFilter =
     overrides.releaseBlockerOwnerFilter !== undefined
       ? normalizeUiParam(overrides.releaseBlockerOwnerFilter)
@@ -869,6 +875,11 @@ function buildUiStateUrl(overrides = {}) {
     } else {
       params.delete('rbcategory');
     }
+    if (releaseBlockerIncludeSharedProviderOperations === false) {
+      params.set('rbshared', 'false');
+    } else {
+      params.delete('rbshared');
+    }
     if (releaseBlockerOwnerFilter) {
       params.set('rbowner', releaseBlockerOwnerFilter);
     } else {
@@ -926,6 +937,7 @@ function buildUiStateUrl(overrides = {}) {
     params.delete('rblocker');
     params.delete('rpblocker');
     params.delete('rbcategory');
+    params.delete('rbshared');
     params.delete('rbowner');
     params.delete('rbprovider');
     params.delete('rcard');
@@ -2061,11 +2073,15 @@ function isReleaseBlockerActionVisibleForFilter(
   blockerAction = null,
   {
     category = state.releaseBlockerCategoryFilter,
+    includeShared = state.releaseBlockerIncludeSharedProviderOperations,
     owner = state.releaseBlockerOwnerFilter,
     provider = state.releaseBlockerProviderFilter,
   } = {},
 ) {
   if (!blockerAction) {
+    return false;
+  }
+  if (includeShared === false && isReleaseSharedProviderBlockerAction(blockerAction)) {
     return false;
   }
   const normalizedCategory = String(category || '').trim();
@@ -2086,16 +2102,14 @@ function isReleaseBlockerActionVisibleForCopyScope(
   blockerAction = null,
   {
     category = state.releaseBlockerCategoryFilter,
-    includeShared = true,
+    includeShared = state.releaseBlockerIncludeSharedProviderOperations,
     owner = state.releaseBlockerOwnerFilter,
     provider = state.releaseBlockerProviderFilter,
   } = {},
 ) {
-  if (includeShared === false && isReleaseSharedProviderBlockerAction(blockerAction)) {
-    return false;
-  }
   return isReleaseBlockerActionVisibleForFilter(blockerAction, {
     category,
+    includeShared,
     owner,
     provider,
   });
@@ -2130,6 +2144,7 @@ function getReleaseCountRecordEntries(record = {}) {
 
 function buildReleaseBlockerSliceUrl({
   category = state.releaseBlockerCategoryFilter,
+  includeShared = state.releaseBlockerIncludeSharedProviderOperations,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -2139,6 +2154,7 @@ function buildReleaseBlockerSliceUrl({
   return `${window.location.origin}${buildUiStateUrl({
     detailTab: 'release',
     releaseBlockerCategoryFilter: normalizedCategory,
+    releaseBlockerIncludeSharedProviderOperations: includeShared !== false,
     releaseBlockerOwnerFilter: normalizedOwner,
     releaseBlockerProviderFilter: normalizedProvider,
     releaseFocusedBlockerId: '',
@@ -2936,6 +2952,7 @@ function buildReleaseBlockerSliceSummaryText({
   });
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3268,6 +3285,7 @@ function buildReleaseBlockerSliceHandoffText({
   const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3341,6 +3359,7 @@ function buildReleaseBlockerSliceClosureChecklistText({
   const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3448,6 +3467,7 @@ function buildReleaseBlockerSliceCommandText({
 
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3528,6 +3548,7 @@ function buildReleaseBlockerSliceEvidenceText({
 
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3572,6 +3593,7 @@ function buildReleaseBlockerClosureMatrixPackageText({
   const normalizedProvider = String(provider || '').trim();
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3693,6 +3715,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -3864,6 +3887,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4052,6 +4076,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4342,6 +4367,7 @@ function buildReleaseTargetEvidenceProductionGapText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4526,6 +4552,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4690,6 +4717,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -4866,6 +4894,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5055,6 +5084,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5201,6 +5231,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5370,6 +5401,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5663,6 +5695,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -5849,6 +5882,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6117,6 +6151,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6345,6 +6380,7 @@ function buildReleaseTargetEvidenceSanitizedRegisterText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6501,6 +6537,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6657,6 +6694,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const sliceLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6793,6 +6831,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
   });
   const releaseLink = buildReleaseBlockerSliceUrl({
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   });
@@ -6994,6 +7033,7 @@ function focusReleaseProductionBlocker(blockerIndex = '', { historyMode = 'repla
 
 function setReleaseBlockerFilter({
   category = state.releaseBlockerCategoryFilter,
+  includeShared = state.releaseBlockerIncludeSharedProviderOperations,
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
   historyMode = 'replace',
@@ -7008,6 +7048,7 @@ function setReleaseBlockerFilter({
   const providerIsValid = !normalizedProvider || providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider);
 
   state.releaseBlockerCategoryFilter = categoryIsValid ? normalizedCategory : '';
+  state.releaseBlockerIncludeSharedProviderOperations = includeShared !== false;
   state.releaseBlockerOwnerFilter = ownerIsValid ? normalizedOwner : '';
   state.releaseBlockerProviderFilter = providerIsValid ? normalizedProvider : '';
   if (state.releaseBlockerProviderFilter) {
@@ -7084,6 +7125,7 @@ function clearReleaseProductionBlockerFocus({ historyMode = 'replace' } = {}) {
 
 function clearReleaseBlockerFilter({ historyMode = 'replace' } = {}) {
   state.releaseBlockerCategoryFilter = '';
+  state.releaseBlockerIncludeSharedProviderOperations = true;
   state.releaseBlockerOwnerFilter = '';
   state.releaseBlockerProviderFilter = '';
   renderReleaseStatus();
@@ -7170,6 +7212,7 @@ function applyReleaseProductionBlockerUrlState(blockerIndex = '') {
 
 function applyReleaseBlockerFilterUrlState({
   category = '',
+  includeShared = true,
   owner = '',
   provider = '',
 } = {}) {
@@ -7181,6 +7224,7 @@ function applyReleaseBlockerFilterUrlState({
   state.releaseBlockerCategoryFilter = actions.some((item) => String(item.category || '').trim() === normalizedCategory)
     ? normalizedCategory
     : '';
+  state.releaseBlockerIncludeSharedProviderOperations = includeShared !== false;
   state.releaseBlockerOwnerFilter = actions.some((item) => String(item.owner || '').trim() === normalizedOwner)
     ? normalizedOwner
     : '';
@@ -18335,6 +18379,7 @@ async function loadReleaseStatus({
 } = {}) {
   const previousReleaseState = {
     blockerCategoryFilter: state.releaseBlockerCategoryFilter,
+    blockerIncludeSharedProviderOperations: state.releaseBlockerIncludeSharedProviderOperations,
     blockerOwnerFilter: state.releaseBlockerOwnerFilter,
     blockerProviderFilter: state.releaseBlockerProviderFilter,
     focusedBlockerId: state.releaseFocusedBlockerId,
@@ -18445,6 +18490,7 @@ async function loadReleaseStatus({
     previousReleaseState.focusedBlockerId !== state.releaseFocusedBlockerId
     || previousReleaseState.focusedProductionBlockerIndex !== state.releaseFocusedProductionBlockerIndex
     || previousReleaseState.blockerCategoryFilter !== state.releaseBlockerCategoryFilter
+    || previousReleaseState.blockerIncludeSharedProviderOperations !== state.releaseBlockerIncludeSharedProviderOperations
     || previousReleaseState.blockerOwnerFilter !== state.releaseBlockerOwnerFilter
     || previousReleaseState.blockerProviderFilter !== state.releaseBlockerProviderFilter
     || previousReleaseState.focusedProvider !== state.releaseFocusedProvider
@@ -18765,6 +18811,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
     });
     applyReleaseBlockerFilterUrlState({
       category: urlState.releaseBlockerCategoryFilter,
+      includeShared: urlState.releaseBlockerIncludeSharedProviderOperations,
       owner: urlState.releaseBlockerOwnerFilter,
       provider: urlState.releaseBlockerProviderFilter,
     });

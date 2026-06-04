@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T06:08:37.991Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T06:08:20.414Z
 - branch: codex/provider-only-release-link-scope-state
 - commit: 70c0bea1c34c49a13cb0829ddde5b6c654c3c2d4

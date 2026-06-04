@@ -2370,6 +2370,39 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   const expectedProviderOnlyFunctionNames = providerOnlyCopyActions
     .map(({ functionName }) => functionName)
     .sort((left, right) => left.localeCompare(right));
+  assertSourceIncludes(
+    appJs,
+    "releaseBlockerIncludeSharedProviderOperations: params.get('rbshared') !== 'false'",
+    'release blocker shared scope URL parser',
+  );
+  assertSourceIncludes(appJs, "params.set('rbshared', 'false')", 'release blocker shared scope URL builder');
+  assertSourceIncludes(
+    appJs,
+    "params.delete('rbshared')",
+    'release blocker shared scope URL cleanup',
+  );
+  const blockerFilterSource = getFunctionSource(appJs, 'isReleaseBlockerActionVisibleForFilter');
+  assertSourceIncludes(
+    blockerFilterSource,
+    'includeShared = state.releaseBlockerIncludeSharedProviderOperations',
+    'release blocker filter source',
+  );
+  assertSourceIncludes(
+    blockerFilterSource,
+    'includeShared === false && isReleaseSharedProviderBlockerAction(blockerAction)',
+    'release blocker filter source',
+  );
+  const sliceUrlSource = getFunctionSource(appJs, 'buildReleaseBlockerSliceUrl');
+  assertSourceIncludes(
+    sliceUrlSource,
+    'includeShared = state.releaseBlockerIncludeSharedProviderOperations',
+    'release blocker slice URL builder',
+  );
+  assertSourceIncludes(
+    sliceUrlSource,
+    'releaseBlockerIncludeSharedProviderOperations: includeShared !== false',
+    'release blocker slice URL builder',
+  );
   const renderedProviderOnlyActionNames = getUniqueSortedMatches(
     appJs,
     /data-ui-action="(copy-release-[^"]*provider-only[^"]*)"/g,
@@ -2442,6 +2475,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   for (const builderName of providerOnlyTargetEvidenceApiLinkBuilders) {
     const builderSource = getFunctionSource(appJs, builderName);
     assertSourceIncludes(builderSource, 'includeShared = true,', `${builderName} target evidence builder`);
+    assertSourceIncludes(
+      builderSource,
+      'buildReleaseBlockerSliceUrl({',
+      `${builderName} target evidence builder`,
+    );
     assertSourceIncludes(
       builderSource,
       'const releaseBlockerApiLink = buildReleaseBlockerApiUrl({',
