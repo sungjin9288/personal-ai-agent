@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T06:34:29.942Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T06:34:15.856Z
 - branch: codex/provider-only-shared-scope-reason-copy
 - commit: aac96e0d280dfa3fdd4081c28b7e070d9c9d34ac
