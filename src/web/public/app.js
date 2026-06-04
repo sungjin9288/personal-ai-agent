@@ -2929,6 +2929,23 @@ function getReleaseBlockerSliceSummary({
   };
 }
 
+function getReleaseSharedProviderOperationsScopeReason({
+  includeShared = true,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (includeShared === false && normalizedProvider) {
+    return `excluded for provider-only ${normalizedProvider} handoff; handle shared provider-operations evidence separately`;
+  }
+  if (includeShared === false) {
+    return 'excluded for scoped handoff; handle shared provider-operations evidence separately';
+  }
+  if (normalizedProvider) {
+    return `included with provider ${normalizedProvider} handoff scope`;
+  }
+  return 'included for full release blocker handoff scope';
+}
+
 function buildReleaseBlockerSliceSummaryText({
   blockerActions = getFilteredReleaseCurrentOpenBlockerActions(),
   totalActions = getReleaseCurrentOpenBlockerActions(),
@@ -2971,6 +2988,7 @@ function buildReleaseBlockerSliceSummaryText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- closureVerificationCount: ${sliceSummary.closureVerificationCount}`,
     `- targetBoundaryRequired: ${sliceSummary.targetBoundaryRequiredCount}/${sliceSummary.visibleCount}`,
@@ -3821,6 +3839,7 @@ function buildReleaseTargetEvidenceSubmissionManifestText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -4017,6 +4036,7 @@ function buildReleaseTargetEvidenceCaptureTemplateText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- releaseBlockerApiLink: ${releaseBlockerApiLink}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -4306,6 +4326,7 @@ function buildReleaseTargetEvidenceRequiredCommandsText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- requiredCommandCount: ${commandDefinitions.length}`,
@@ -4493,6 +4514,7 @@ function buildReleaseTargetEvidenceProductionGapText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionGapCount: ${gapDefinitions.length}`,
@@ -4659,6 +4681,7 @@ function buildReleaseTargetEvidenceExceptionRegisterText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- exceptionRowCount: ${exceptionDefinitions.length}`,
@@ -4826,6 +4849,7 @@ function buildReleaseTargetEvidenceRiskDecisionRegisterText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5016,6 +5040,7 @@ function buildReleaseTargetEvidenceProviderEvidenceReferencesText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5168,6 +5193,7 @@ function buildReleaseTargetEvidenceResidualBlockersText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5342,6 +5368,7 @@ function buildReleaseTargetEvidenceClosureRulesText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- sourceCommit: ${sourceCommit}`,
     `- generatedArtifactCommit: ${generatedArtifactCommit}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
@@ -5440,6 +5467,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
     releaseStatus,
@@ -5574,6 +5602,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     blockerActions: visibleActions,
     totalActions: allActions,
     category: normalizedCategory,
+    includeShared,
     owner: normalizedOwner,
     provider: normalizedProvider,
   }).trim();
@@ -5585,6 +5614,7 @@ function buildReleaseTargetEvidenceIntakePacketText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -5827,6 +5857,7 @@ function buildReleaseTargetEvidenceReleaseRefreshEvidenceText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- refreshArtifactCount: ${artifactRows.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6098,6 +6129,7 @@ function buildReleaseTargetEvidenceBlockerDispositionRegisterText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- dispositionRowCount: ${dispositionDefinitions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6328,6 +6360,7 @@ function buildReleaseTargetEvidenceBoundaryConsistencyMapText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- boundaryDomainCount: ${domainRows.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6488,6 +6521,7 @@ function buildReleaseTargetEvidenceSanitizedRegisterText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- evidenceRecordCount: ${evidenceEntries.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6645,6 +6679,7 @@ function buildReleaseTargetEvidenceCommandRerunLogText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- commandCount: ${commandEntries.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
@@ -6755,6 +6790,7 @@ function buildReleaseTargetEvidenceReviewerDecisionRecordText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${visibleActions.length}/${allActions.length}`,
     `- productionReadyStatus: ${summary.productionReadyStatus || releaseReadiness.productionReadyStatus || 'not tracked'}`,
     `- productionReadyBlocked: ${String(Boolean(summary.productionReadyBlocked ?? releaseReadiness.productionReadyBlocked ?? true))}`,
@@ -6883,6 +6919,7 @@ function buildReleaseTargetEvidenceIntakeSummaryText({
     `- owner: ${normalizedOwner || 'all'}`,
     `- provider: ${normalizedProvider || 'all'}`,
     `- includeSharedProviderOperations: ${String(includeShared !== false)}`,
+    `- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`,
     `- visibleCurrentBlockers: ${sliceSummary.visibleCount}/${sliceSummary.totalCount}`,
     `- commandCount: ${sliceSummary.commandCount}`,
     `- evidenceDocCount: ${sliceSummary.evidenceDocCount}`,
