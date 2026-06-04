@@ -42,23 +42,24 @@ export function getReleaseBlockerHandoff({
   const normalizedProvider = normalizeText(provider);
   const normalizedCategory = normalizeText(category);
   const normalizedOwner = normalizeText(owner);
-  const actions = releaseReadiness.currentOpenBlockerActions.filter((action) => {
-    if (normalizedCategory && action.category !== normalizedCategory) {
+  const scopedActions = releaseReadiness.currentOpenBlockerActions.filter((action) => {
+    if (!isReleaseBlockerActionInHandoffScope(action, {
+      category: normalizedCategory,
+      owner: normalizedOwner,
+      provider: normalizedProvider,
+    })) {
       return false;
     }
-    if (normalizedOwner && action.owner !== normalizedOwner) {
+    return true;
+  });
+  const excludedSharedProviderOperations = includeShared === false
+    ? scopedActions.filter((action) => isSharedProviderBlockerAction(action))
+    : [];
+  const actions = scopedActions.filter((action) => {
+    if (includeShared === false && isSharedProviderBlockerAction(action)) {
       return false;
     }
-    if (!normalizedProvider) {
-      return true;
-    }
-    if (String(action.provider || '').trim() === normalizedProvider) {
-      return true;
-    }
-    if (includeShared && isSharedProviderBlockerAction(action)) {
-      return true;
-    }
-    return false;
+    return true;
   });
 
   return {
@@ -67,6 +68,11 @@ export function getReleaseBlockerHandoff({
       includeSharedProviderOperations: Boolean(includeShared),
       owner: normalizedOwner || null,
       provider: normalizedProvider || null,
+      sharedProviderOperationsExcludedCount: excludedSharedProviderOperations.length,
+      sharedProviderOperationsExcludedIds: excludedSharedProviderOperations
+        .map((action) => String(action.id || '').trim())
+        .filter(Boolean),
+      sharedProviderOperationsIncludedCount: actions.filter((action) => isSharedProviderBlockerAction(action)).length,
       sharedProviderOperationsScope: getSharedProviderOperationsScopeReason({
         includeShared,
         provider: normalizedProvider,
@@ -105,6 +111,29 @@ export function getSharedProviderOperationsScopeReason({
     return `included with provider ${normalizedProvider} handoff scope`;
   }
   return 'included for full release blocker handoff scope';
+}
+
+function isReleaseBlockerActionInHandoffScope(
+  action = {},
+  {
+    category = '',
+    owner = '',
+    provider = '',
+  } = {},
+) {
+  if (category && action.category !== category) {
+    return false;
+  }
+  if (owner && action.owner !== owner) {
+    return false;
+  }
+  if (!provider) {
+    return true;
+  }
+  if (String(action.provider || '').trim() === provider) {
+    return true;
+  }
+  return isSharedProviderBlockerAction(action);
 }
 
 export function buildReleaseReadinessSummary(markdown = '', { docHrefBase = '', rootDir = process.cwd() } = {}) {
