@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T04:15:29.490Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T04:15:02.899Z
 - branch: codex/provider-only-copy-notice-context-smoke
 - commit: 48a5119b368c6bed50a856baecb28d321d668426
