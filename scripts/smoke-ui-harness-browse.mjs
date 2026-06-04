@@ -2239,109 +2239,145 @@ async function fetchText(url) {
 function assertProviderOnlyCopyScopeSource(appJs) {
   const providerOnlyCopyActions = [
     {
+      actionName: 'copy-release-blocker-provider-only-summary',
       functionName: 'copyReleaseBlockerProviderOnlySummary',
       expectedBuilder: 'buildReleaseBlockerSliceSummaryText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-api-link',
       functionName: 'copyReleaseBlockerProviderOnlyApiLink',
       expectedBuilder: 'copyReleaseBlockerApiLink({',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-package',
       functionName: 'copyReleaseBlockerProviderOnlyPackage',
       expectedBuilder: 'buildReleaseBlockerSlicePackageText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-closure-checklist',
       functionName: 'copyReleaseBlockerProviderOnlyClosureChecklist',
       expectedBuilder: 'buildReleaseBlockerSliceClosureChecklistText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-closure-matrix',
       functionName: 'copyReleaseBlockerProviderOnlyClosureMatrixPackage',
       expectedBuilder: 'buildReleaseBlockerClosureMatrixPackageText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-intake-summary',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyIntakeSummary',
       expectedBuilder: 'buildReleaseTargetEvidenceIntakeSummaryText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-capture-template',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyCaptureTemplate',
       expectedBuilder: 'buildReleaseTargetEvidenceCaptureTemplateText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-required-commands',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyRequiredCommands',
       expectedBuilder: 'buildReleaseTargetEvidenceRequiredCommandsText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-production-gap',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyProductionGap',
       expectedBuilder: 'buildReleaseTargetEvidenceProductionGapText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-exception-register',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyExceptionRegister',
       expectedBuilder: 'buildReleaseTargetEvidenceExceptionRegisterText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-risk-decision-register',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister',
       expectedBuilder: 'buildReleaseTargetEvidenceRiskDecisionRegisterText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-provider-references',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences',
       expectedBuilder: 'buildReleaseTargetEvidenceProviderEvidenceReferencesText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-residual-blockers',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyResidualBlockers',
       expectedBuilder: 'buildReleaseTargetEvidenceResidualBlockersText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-closure-rules',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyClosureRules',
       expectedBuilder: 'buildReleaseTargetEvidenceClosureRulesText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-submission-manifest',
       functionName: 'copyReleaseTargetEvidenceProviderOnlySubmissionManifest',
       expectedBuilder: 'buildReleaseTargetEvidenceSubmissionManifestText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-sanitized-register',
       functionName: 'copyReleaseTargetEvidenceProviderOnlySanitizedRegister',
       expectedBuilder: 'buildReleaseTargetEvidenceSanitizedRegisterText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-boundary-map',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyBoundaryMap',
       expectedBuilder: 'buildReleaseTargetEvidenceBoundaryConsistencyMapText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-command-rerun-log',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyCommandRerunLog',
       expectedBuilder: 'buildReleaseTargetEvidenceCommandRerunLogText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-decision-record',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyDecisionRecord',
       expectedBuilder: 'buildReleaseTargetEvidenceReviewerDecisionRecordText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-blocker-disposition',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister',
       expectedBuilder: 'buildReleaseTargetEvidenceBlockerDispositionRegisterText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-release-refresh',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence',
       expectedBuilder: 'buildReleaseTargetEvidenceReleaseRefreshEvidenceText(copyScope)',
     },
     {
+      actionName: 'copy-release-target-evidence-provider-only-intake-packet',
       functionName: 'copyReleaseTargetEvidenceProviderOnlyIntakePacket',
       expectedBuilder: 'buildReleaseTargetEvidenceIntakePacketText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-handoff',
       functionName: 'copyReleaseBlockerProviderOnlyHandoff',
       expectedBuilder: 'buildReleaseBlockerSliceHandoffText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-commands',
       functionName: 'copyReleaseBlockerProviderOnlyCommands',
       expectedBuilder: 'buildReleaseBlockerSliceCommandText(copyScope)',
     },
     {
+      actionName: 'copy-release-blocker-provider-only-evidence',
       functionName: 'copyReleaseBlockerProviderOnlyEvidence',
       expectedBuilder: 'buildReleaseBlockerSliceEvidenceText(copyScope)',
     },
   ];
+  const expectedProviderOnlyActionNames = providerOnlyCopyActions
+    .map(({ actionName }) => actionName)
+    .sort((left, right) => left.localeCompare(right));
   const expectedProviderOnlyFunctionNames = providerOnlyCopyActions
     .map(({ functionName }) => functionName)
     .sort((left, right) => left.localeCompare(right));
+  const renderedProviderOnlyActionNames = getUniqueSortedMatches(
+    appJs,
+    /data-ui-action="(copy-release-[^"]*provider-only[^"]*)"/g,
+  );
+  const dispatchedProviderOnlyActionNames = getUniqueSortedMatches(
+    appJs,
+    /if \(action === '(copy-release-[^']*provider-only[^']*)'\)/g,
+  );
   const declaredProviderOnlyFunctionNames = getUniqueSortedMatches(
     appJs,
     /\basync function (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(/g,
@@ -2351,6 +2387,16 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\);/g,
   );
 
+  assert.deepEqual(
+    expectedProviderOnlyActionNames,
+    renderedProviderOnlyActionNames,
+    'provider-only copy action table must cover every rendered provider-only button action',
+  );
+  assert.deepEqual(
+    expectedProviderOnlyActionNames,
+    dispatchedProviderOnlyActionNames,
+    'provider-only copy action table must cover every dispatched provider-only action id',
+  );
   assert.deepEqual(
     expectedProviderOnlyFunctionNames,
     declaredProviderOnlyFunctionNames,
