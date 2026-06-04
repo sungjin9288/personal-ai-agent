@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Shared Scope Reason Copy
+
+- added copied handoff scope reason metadata next to `includeSharedProviderOperations` so provider-only artifacts explain why shared provider-operations evidence is excluded
+- reused the active provider and `includeShared` copy scope across release blocker summaries, target evidence builders, and package text instead of adding a separate handoff-only flag
+- fixed the target evidence intake packet capture-template delegation so nested provider-only packets preserve the shared-provider exclusion scope
+- extended UI harness smoke coverage for the shared scope reason helper, copied `sharedProviderOperationsScope` lines, and nested packet scope propagation
+
 ## 2026-06-04 Provider-Only Shared Scope Toggle UI
 
 - surfaced the current release blocker shared provider-operations scope in the open blocker triage summary so operators can see whether shared provider ops are included or excluded

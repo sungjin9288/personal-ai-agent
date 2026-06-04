@@ -329,6 +329,9 @@ try {
   assert.equal(appJs.includes('provider-only target evidence intake summary'), true);
   assert.equal(appJs.includes('releaseBlockerApiLink:'), true);
   assert.equal(appJs.includes('This summary is triage manifest only'), true);
+  assert.equal(appJs.includes('getReleaseSharedProviderOperationsScopeReason'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsScope:'), true);
+  assert.equal(appJs.includes('handle shared provider-operations evidence separately'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceCaptureTemplateText'), true);
   assert.equal(appJs.includes('Target evidence capture template'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-capture-template'), true);
@@ -1706,6 +1709,7 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('provider-only API 링크 복사'), true);
   assert.equal(appJs.includes('includeSharedProviderOperations:'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsScope:'), true);
   assert.equal(appJs.includes('getReleaseBlockerFilteredCopyScope'), true);
   assert.equal(appJs.includes('isReleaseBlockerActionVisibleForCopyScope'), true);
   assert.equal(appJs.includes('provider: normalizedProvider'), true);
@@ -2388,6 +2392,17 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     "params.delete('rbshared')",
     'release blocker shared scope URL cleanup',
   );
+  const sharedScopeReasonSource = getFunctionSource(appJs, 'getReleaseSharedProviderOperationsScopeReason');
+  assertSourceIncludes(
+    sharedScopeReasonSource,
+    'handle shared provider-operations evidence separately',
+    'release blocker shared provider operations scope reason helper',
+  );
+  assertSourceIncludes(
+    sharedScopeReasonSource,
+    'included for full release blocker handoff scope',
+    'release blocker shared provider operations scope reason helper',
+  );
   const blockerFilterSource = getFunctionSource(appJs, 'isReleaseBlockerActionVisibleForFilter');
   assertSourceIncludes(
     blockerFilterSource,
@@ -2508,6 +2523,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       '`- releaseBlockerApiLink: ${releaseBlockerApiLink}`',
       `${builderName} target evidence builder`,
     );
+    assertSourceIncludes(
+      builderSource,
+      '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
+      `${builderName} target evidence builder`,
+    );
   }
 
   const intakeSummaryBuilder = getSourceSlice(
@@ -2525,6 +2545,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   assertSourceIncludes(
     intakeSummaryBuilder,
     '`- includeSharedProviderOperations: ${String(includeShared !== false)}`',
+    'target evidence intake summary builder',
+  );
+  assertSourceIncludes(
+    intakeSummaryBuilder,
+    '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
     'target evidence intake summary builder',
   );
   assertSourceIncludes(
@@ -2548,6 +2573,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   assertSourceIncludes(
     captureTemplateBuilder,
     '`- includeSharedProviderOperations: ${String(includeShared !== false)}`',
+    'target evidence capture template builder',
+  );
+  assertSourceIncludes(
+    captureTemplateBuilder,
+    '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
     'target evidence capture template builder',
   );
   assertSourceIncludes(
@@ -2577,6 +2607,17 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     slicePackageBuilder,
     'buildReleaseBlockerClosureMatrixPackageText(buildOptions)',
     'release blocker slice package builder',
+  );
+
+  const intakePacketCaptureTemplateScope = getSourceSlice(
+    appJs,
+    'const targetEvidenceCaptureTemplate = buildReleaseTargetEvidenceCaptureTemplateText({',
+    'const requiredCommandsPackage = buildReleaseTargetEvidenceRequiredCommandsText({',
+  );
+  assertSourceIncludes(
+    intakePacketCaptureTemplateScope,
+    'includeShared,',
+    'target evidence intake packet capture template scope propagation',
   );
 
 }
