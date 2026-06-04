@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Action Id Completeness Smoke
+
+- expanded the UI harness provider-only copy regression table with each rendered `data-ui-action` id so button wiring, dispatch action ids, handler declarations, scope policy, and builder linkage are validated together
+- added source-derived completeness checks for rendered provider-only button actions and dispatched provider-only action ids, preventing new provider-only UI buttons from bypassing the regression table
+- kept runtime UI behavior unchanged while tightening the smoke around provider-only copy action id drift and handler/table alignment
+
 ## 2026-06-04 Provider-Only Copy Table Completeness Smoke
 
 - added UI harness smoke assertions that compare the provider-only copy action regression table against every declared and dispatched provider-only copy handler in the served app bundle
