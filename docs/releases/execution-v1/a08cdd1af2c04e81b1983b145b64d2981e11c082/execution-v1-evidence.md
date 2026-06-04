@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T05:35:35.229Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T05:35:19.401Z
 - branch: codex/provider-only-api-link-builder-smoke
 - commit: a08cdd1af2c04e81b1983b145b64d2981e11c082

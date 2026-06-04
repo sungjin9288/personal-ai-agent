@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only API Link Builder Smoke
+
+- added UI harness smoke assertions that every provider-only target evidence copy builder preserves `includeShared`, builds a release blocker API link with that scope, and emits `releaseBlockerApiLink` in the copied artifact
+- derived the builder coverage from the provider-only copy action regression table so new target evidence copy actions cannot skip API deep-link scope validation
+- kept runtime UI behavior unchanged while tightening handoff reproducibility for provider-only copy artifacts that claim `includeSharedProviderOperations=false`
+
 ## 2026-06-04 Provider-Only Copy Notice Context Smoke
 
 - added UI harness smoke assertions that every provider-only copy handler keeps provider-only prompt, shown, and success notices with the selected provider in the success path
