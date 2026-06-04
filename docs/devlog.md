@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Release Blocker API Shared Scope Reason
+
+- added `sharedProviderOperationsScope` to release blocker handoff filters so CLI and API JSON responses explain whether shared provider-operations blockers are included or intentionally excluded
+- reused the provider-only handoff wording from copied artifacts for `overview release-blockers --without-shared` and `/api/execution-v1/release-blockers?withoutShared=true`
+- extended release blocker handoff smoke coverage for CLI and API included/excluded shared-provider scope reasons
+
 ## 2026-06-04 Provider-Only Shared Scope Reason Copy
 
 - added copied handoff scope reason metadata next to `includeSharedProviderOperations` so provider-only artifacts explain why shared provider-operations evidence is excluded

@@ -67,6 +67,10 @@ export function getReleaseBlockerHandoff({
       includeSharedProviderOperations: Boolean(includeShared),
       owner: normalizedOwner || null,
       provider: normalizedProvider || null,
+      sharedProviderOperationsScope: getSharedProviderOperationsScopeReason({
+        includeShared,
+        provider: normalizedProvider,
+      }),
     },
     items: actions,
     releaseReadiness: {
@@ -84,6 +88,23 @@ export function getReleaseBlockerHandoff({
     },
     summary: buildCurrentOpenBlockerActionSummary(actions),
   };
+}
+
+export function getSharedProviderOperationsScopeReason({
+  includeShared = true,
+  provider = '',
+} = {}) {
+  const normalizedProvider = normalizeText(provider);
+  if (includeShared === false && normalizedProvider) {
+    return `excluded for provider-only ${normalizedProvider} handoff; handle shared provider-operations evidence separately`;
+  }
+  if (includeShared === false) {
+    return 'excluded for scoped handoff; handle shared provider-operations evidence separately';
+  }
+  if (normalizedProvider) {
+    return `included with provider ${normalizedProvider} handoff scope`;
+  }
+  return 'included for full release blocker handoff scope';
 }
 
 export function buildReleaseReadinessSummary(markdown = '', { docHrefBase = '', rootDir = process.cwd() } = {}) {
