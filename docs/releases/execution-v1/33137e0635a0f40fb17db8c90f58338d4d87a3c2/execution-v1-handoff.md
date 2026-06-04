@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-04T06:20:23.901Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-04T06:20:22.510Z
 - localDate: 2026-06-04
 - branch: codex/provider-only-shared-scope-toggle-ui
 - commit: 33137e0635a0f40fb17db8c90f58338d4d87a3c2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2](releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2](docs/releases/execution-v1/33137e0635a0f40fb17db8c90f58338d4d87a3c2)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-only-shared-scope-toggle-ui not found
 
