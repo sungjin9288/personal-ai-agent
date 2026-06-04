@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T18:53:04.755Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T18:52:45.393Z
 - branch: codex/provider-only-copy-shared-scope-audit-lines
 - commit: f9d38b8fa6ecd65bfcd4f39d4fb5c6a7aa1d8a2a
