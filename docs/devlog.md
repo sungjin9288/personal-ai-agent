@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Release Link Scope State
+
+- added `rbshared=false` release URL state so provider-only copied release links can reopen the release tab without reintroducing shared provider-operations blockers
+- wired the shared-provider blocker scope through release blocker filtering, URL parsing/building, and every copied target evidence `releaseLink` builder that already reports `includeSharedProviderOperations`
+- extended UI harness smoke coverage for the `rbshared` parser/builder cleanup path, release blocker filter exclusion rule, slice URL scope propagation, and provider-only target evidence release link builders
+
 ## 2026-06-04 Provider-Only API Link Builder Smoke
 
 - added UI harness smoke assertions that every provider-only target evidence copy builder preserves `includeShared`, builds a release blocker API link with that scope, and emits `releaseBlockerApiLink` in the copied artifact
