@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Notice Context Smoke
+
+- added UI harness smoke assertions that every provider-only copy handler keeps provider-only prompt, shown, and success notices with the selected provider in the success path
+- updated provider-only release blocker API link copying to pass provider-specific notice overrides through the shared API link copy helper while keeping the normal API link copy defaults unchanged
+- kept the provider-only scope, action id, handler declaration, dispatch, provider guard, and builder/delegate checks intact while preventing generic copy notices from leaking into provider-only flows
+
 ## 2026-06-04 Provider-Only Copy Provider Guard Smoke
 
 - added UI harness smoke assertions that every provider-only copy handler normalizes the selected provider, blocks execution when no provider filter is selected, and passes `provider: normalizedProvider` into the scoped copy path

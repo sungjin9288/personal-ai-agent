@@ -9364,7 +9364,10 @@ async function copyReleaseBlockerApiLink({
   category = state.releaseBlockerCategoryFilter,
   includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
+  promptMessage = 'release blocker API 링크를 복사하세요.',
   provider = state.releaseBlockerProviderFilter,
+  shownNotice = 'release blocker API 링크를 표시했습니다.',
+  successNotice = 'release blocker API 링크를 복사했습니다.',
 } = {}) {
   const apiUrl = buildReleaseBlockerApiUrl({ category, includeShared, owner, provider });
   if (!apiUrl) {
@@ -9373,9 +9376,9 @@ async function copyReleaseBlockerApiLink({
   }
 
   await copyUiLink(apiUrl, {
-    promptMessage: 'release blocker API 링크를 복사하세요.',
-    shownNotice: 'release blocker API 링크를 표시했습니다.',
-    successNotice: 'release blocker API 링크를 복사했습니다.',
+    promptMessage,
+    shownNotice,
+    successNotice,
   });
 }
 
@@ -9394,7 +9397,10 @@ async function copyReleaseBlockerProviderOnlyApiLink({
     category,
     includeShared: false,
     owner,
+    promptMessage: 'provider-only release blocker API 링크를 복사하세요.',
     provider: normalizedProvider,
+    shownNotice: 'provider-only release blocker API 링크를 표시했습니다.',
+    successNotice: `${normalizedProvider} provider-only release blocker API 링크를 복사했습니다.`,
   });
 }
 
