@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T03:20:51.225Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T03:20:33.220Z
 - branch: codex/provider-only-copy-table-completeness-smoke
 - commit: 8801ae025583bfe0c8871e2f2daada8112612d10
