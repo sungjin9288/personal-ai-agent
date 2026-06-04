@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Copy Table Completeness Smoke
+
+- added UI harness smoke assertions that compare the provider-only copy action regression table against every declared and dispatched provider-only copy handler in the served app bundle
+- removed the hardcoded table-size guard in favor of source-derived completeness checks so newly added provider-only handlers must be added to the regression table with their expected builder contract
+- kept runtime UI behavior unchanged while tightening provider-only copy action coverage around handler declaration, dispatch wiring, scope policy, and builder linkage
+
 ## 2026-06-04 Provider-Only Copy Action Regression Table
 
 - expanded the UI harness smoke from targeted provider-only copy scope checks into a table-driven regression guard that covers every provider-only copy action

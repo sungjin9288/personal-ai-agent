@@ -2339,7 +2339,28 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       expectedBuilder: 'buildReleaseBlockerSliceEvidenceText(copyScope)',
     },
   ];
-  assert.equal(providerOnlyCopyActions.length, 25);
+  const expectedProviderOnlyFunctionNames = providerOnlyCopyActions
+    .map(({ functionName }) => functionName)
+    .sort((left, right) => left.localeCompare(right));
+  const declaredProviderOnlyFunctionNames = getUniqueSortedMatches(
+    appJs,
+    /\basync function (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(/g,
+  );
+  const dispatchedProviderOnlyFunctionNames = getUniqueSortedMatches(
+    appJs,
+    /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\);/g,
+  );
+
+  assert.deepEqual(
+    expectedProviderOnlyFunctionNames,
+    declaredProviderOnlyFunctionNames,
+    'provider-only copy action table must cover every declared provider-only copy handler',
+  );
+  assert.deepEqual(
+    expectedProviderOnlyFunctionNames,
+    dispatchedProviderOnlyFunctionNames,
+    'provider-only copy action table must cover every dispatched provider-only copy handler',
+  );
 
   for (const { expectedBuilder, functionName } of providerOnlyCopyActions) {
     const actionSource = getFunctionSource(appJs, functionName);
@@ -2455,6 +2476,12 @@ function getFunctionSource(source, functionName) {
 
 function assertSourceIncludes(source, expected, label) {
   assert.equal(source.includes(expected), true, `${label} must include ${expected}`);
+}
+
+function getUniqueSortedMatches(source, regex) {
+  return Array.from(new Set(Array.from(source.matchAll(regex), (match) => match[1]))).sort((left, right) =>
+    left.localeCompare(right),
+  );
 }
 
 async function waitForServer(baseUrl, childProcess, { timeoutMs = 20_000 } = {}) {
