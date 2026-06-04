@@ -2419,6 +2419,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     assertSourceIncludes(actionSource, 'provider 필터를 먼저 선택', `${functionName} provider-only copy action`);
     assertSourceIncludes(actionSource, 'includeShared: false,', `${functionName} provider-only copy action`);
     assertSourceIncludes(actionSource, 'provider: normalizedProvider', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'promptMessage:', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'shownNotice:', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'successNotice:', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, 'provider-only', `${functionName} provider-only copy action`);
+    assertSourceIncludes(actionSource, '${normalizedProvider}', `${functionName} provider-only copy action`);
     assertSourceIncludes(actionSource, expectedBuilder, `${functionName} provider-only copy action`);
   }
 
