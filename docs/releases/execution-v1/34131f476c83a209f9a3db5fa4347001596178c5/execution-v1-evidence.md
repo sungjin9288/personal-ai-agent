@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T03:43:32.630Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T03:43:17.819Z
 - branch: codex/provider-only-copy-provider-guard-smoke
 - commit: 34131f476c83a209f9a3db5fa4347001596178c5
