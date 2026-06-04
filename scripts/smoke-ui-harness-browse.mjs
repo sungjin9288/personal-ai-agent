@@ -1670,6 +1670,13 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-owner'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-empty-clear'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-summary'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-shared-scope'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-shared-scope-toggle'), true);
+  assert.equal(appJs.includes('data-ui-include-shared'), true);
+  assert.equal(appJs.includes('shared provider ops included'), true);
+  assert.equal(appJs.includes("blockerIncludeSharedProviderOperations ? 'included' : 'excluded'"), true);
+  assert.equal(appJs.includes('shared provider ops 제외'), true);
+  assert.equal(appJs.includes('shared provider ops 포함'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-closure-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-required-proof-count'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-slice-command-count'), true);
@@ -2391,6 +2398,16 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     blockerFilterSource,
     'includeShared === false && isReleaseSharedProviderBlockerAction(blockerAction)',
     'release blocker filter source',
+  );
+  assertSourceIncludes(
+    appJs,
+    'const includeSharedValue = button.dataset.uiIncludeShared;',
+    'release blocker filter dispatch',
+  );
+  assertSourceIncludes(
+    appJs,
+    'includeSharedValue === undefined',
+    'release blocker filter dispatch',
   );
   const sliceUrlSource = getFunctionSource(appJs, 'buildReleaseBlockerSliceUrl');
   assertSourceIncludes(

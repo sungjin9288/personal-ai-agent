@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-04 Provider-Only Shared Scope Toggle UI
+
+- surfaced the current release blocker shared provider-operations scope in the open blocker triage summary so operators can see whether shared provider ops are included or excluded
+- added a release blocker shared-scope toggle that preserves the active category, owner, and provider filters while switching the `rbshared` URL state
+- extended UI harness smoke coverage for the shared scope badge, toggle button, `data-ui-include-shared` dispatch path, and included/excluded copy text
+
 ## 2026-06-04 Provider-Only Release Link Scope State
 
 - added `rbshared=false` release URL state so provider-only copied release links can reopen the release tab without reintroducing shared provider-operations blockers

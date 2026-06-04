@@ -7902,9 +7902,13 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'filter-release-blockers') {
+        const includeSharedValue = button.dataset.uiIncludeShared;
         setReleaseBlockerFilter({
           category: button.dataset.uiCategory || '',
           historyMode: 'push',
+          includeShared: includeSharedValue === undefined
+            ? state.releaseBlockerIncludeSharedProviderOperations
+            : includeSharedValue !== 'false',
           owner: button.dataset.uiOwner || '',
           provider: button.dataset.uiProvider || '',
         });
@@ -13920,12 +13924,16 @@ function renderReleaseStatus() {
       || 'current open blocker',
   ).trim();
   const blockerCategoryFilter = String(state.releaseBlockerCategoryFilter || '').trim();
+  const blockerIncludeSharedProviderOperations = state.releaseBlockerIncludeSharedProviderOperations !== false;
   const blockerOwnerFilter = String(state.releaseBlockerOwnerFilter || '').trim();
   const blockerProviderFilter = String(state.releaseBlockerProviderFilter || '').trim();
-  const hasBlockerFilter = Boolean(blockerCategoryFilter || blockerOwnerFilter || blockerProviderFilter);
+  const hasBlockerFilter = Boolean(
+    blockerCategoryFilter || blockerOwnerFilter || blockerProviderFilter || !blockerIncludeSharedProviderOperations,
+  );
   const visibleCurrentOpenBlockerActions = currentOpenBlockerActions.filter((item) =>
     isReleaseBlockerActionVisibleForFilter(item, {
       category: blockerCategoryFilter,
+      includeShared: blockerIncludeSharedProviderOperations,
       owner: blockerOwnerFilter,
       provider: blockerProviderFilter,
     }),
@@ -14763,8 +14771,8 @@ function renderReleaseStatus() {
               <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
               <p>${escapeHtml(topPriorityBlockerId ? `Top priority ${topPriorityBlockerId}: ${topPriorityBlockerLabel}` : 'current open blocker triage summary가 없습니다.')}</p>
               ${hasBlockerFilter
-                ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')} · provider ${escapeHtml(blockerProviderFilter || 'all')}</p>`
-                : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible</p>'}
+                ? `<p class="item-meta" data-release-current-open-blocker-filter-summary="true">filtered ${escapeHtml(String(visibleCurrentOpenBlockerActions.length))}/${escapeHtml(String(currentOpenBlockerActions.length))} · category ${escapeHtml(blockerCategoryFilter || 'all')} · owner ${escapeHtml(blockerOwnerFilter || 'all')} · provider ${escapeHtml(blockerProviderFilter || 'all')} · shared provider ops ${escapeHtml(blockerIncludeSharedProviderOperations ? 'included' : 'excluded')}</p>`
+                : '<p class="item-meta" data-release-current-open-blocker-filter-summary="true">all current open blockers visible · shared provider ops included</p>'}
               ${hasEmptyBlockerFilter
                 ? `<p class="item-meta" data-release-current-open-blocker-filter-empty="true">이 category/owner/provider 조합에 해당하는 current open blocker가 없습니다. category, owner, provider 중 하나만 유지하거나 필터를 해제하세요.</p>`
                 : ''}
@@ -14835,6 +14843,20 @@ function renderReleaseStatus() {
                     )
                     .join('')
                   : '<span class="mini-badge status-running">provider blocker 없음</span>'}
+                <span
+                  class="mini-badge ${blockerIncludeSharedProviderOperations ? 'status-running' : 'status-blocked'}"
+                  data-release-current-open-blocker-shared-scope="${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}"
+                >shared provider ops ${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}</span>
+                <button
+                  class="ghost-button"
+                  type="button"
+                  data-release-current-open-blocker-shared-scope-toggle="true"
+                  data-ui-action="filter-release-blockers"
+                  data-ui-category="${escapeHtml(blockerCategoryFilter)}"
+                  data-ui-include-shared="${blockerIncludeSharedProviderOperations ? 'false' : 'true'}"
+                  data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
+                  data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                >${blockerIncludeSharedProviderOperations ? 'shared provider ops 제외' : 'shared provider ops 포함'}</button>
                 <button
                   class="ghost-button"
                   type="button"
