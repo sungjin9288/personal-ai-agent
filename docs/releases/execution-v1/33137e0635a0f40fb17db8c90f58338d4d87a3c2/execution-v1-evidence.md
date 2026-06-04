@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T06:20:23.901Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T06:20:05.461Z
 - branch: codex/provider-only-shared-scope-toggle-ui
 - commit: 33137e0635a0f40fb17db8c90f58338d4d87a3c2
