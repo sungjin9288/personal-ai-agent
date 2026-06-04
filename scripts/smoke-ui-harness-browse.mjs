@@ -331,6 +331,10 @@ try {
   assert.equal(appJs.includes('This summary is triage manifest only'), true);
   assert.equal(appJs.includes('getReleaseSharedProviderOperationsScopeReason'), true);
   assert.equal(appJs.includes('sharedProviderOperationsScope:'), true);
+  assert.equal(appJs.includes('getReleaseSharedProviderOperationsScopeAudit'), true);
+  assert.equal(appJs.includes('buildReleaseSharedProviderOperationsScopeAuditLines'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsExcludedCount:'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsExcludedIds:'), true);
   assert.equal(appJs.includes('handle shared provider-operations evidence separately'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceCaptureTemplateText'), true);
   assert.equal(appJs.includes('Target evidence capture template'), true);
@@ -1710,6 +1714,9 @@ try {
   assert.equal(appJs.includes('provider-only API 링크 복사'), true);
   assert.equal(appJs.includes('includeSharedProviderOperations:'), true);
   assert.equal(appJs.includes('sharedProviderOperationsScope:'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsIncludedCount:'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsExcludedCount:'), true);
+  assert.equal(appJs.includes('sharedProviderOperationsExcludedIds:'), true);
   assert.equal(appJs.includes('getReleaseBlockerFilteredCopyScope'), true);
   assert.equal(appJs.includes('isReleaseBlockerActionVisibleForCopyScope'), true);
   assert.equal(appJs.includes('provider: normalizedProvider'), true);
@@ -2403,6 +2410,28 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     'included for full release blocker handoff scope',
     'release blocker shared provider operations scope reason helper',
   );
+  const sharedScopeAuditSource = getFunctionSource(appJs, 'getReleaseSharedProviderOperationsScopeAudit');
+  assertSourceIncludes(
+    sharedScopeAuditSource,
+    'includeShared: true',
+    'release blocker shared provider operations scope audit helper',
+  );
+  assertSourceIncludes(
+    sharedScopeAuditSource,
+    'excludedIds:',
+    'release blocker shared provider operations scope audit helper',
+  );
+  const sharedScopeAuditLineSource = getFunctionSource(appJs, 'buildReleaseSharedProviderOperationsScopeAuditLines');
+  assertSourceIncludes(
+    sharedScopeAuditLineSource,
+    '`- sharedProviderOperationsIncludedCount: ${scopeAudit.includedCount}`',
+    'release blocker shared provider operations scope audit line helper',
+  );
+  assertSourceIncludes(
+    sharedScopeAuditLineSource,
+    "`- sharedProviderOperationsExcludedIds: ${scopeAudit.excludedIds.join(', ') || 'none'}`",
+    'release blocker shared provider operations scope audit line helper',
+  );
   const blockerFilterSource = getFunctionSource(appJs, 'isReleaseBlockerActionVisibleForFilter');
   assertSourceIncludes(
     blockerFilterSource,
@@ -2528,6 +2557,12 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
       `${builderName} target evidence builder`,
     );
+    assertSourceIncludes(
+      builderSource,
+      '...buildReleaseSharedProviderOperationsScopeAuditLines({',
+      `${builderName} target evidence builder`,
+    );
+    assertSourceIncludes(builderSource, 'totalActions: allActions,', `${builderName} target evidence builder`);
   }
 
   const intakeSummaryBuilder = getSourceSlice(
@@ -2550,6 +2585,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   assertSourceIncludes(
     intakeSummaryBuilder,
     '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
+    'target evidence intake summary builder',
+  );
+  assertSourceIncludes(
+    intakeSummaryBuilder,
+    '...buildReleaseSharedProviderOperationsScopeAuditLines({',
     'target evidence intake summary builder',
   );
   assertSourceIncludes(
@@ -2578,6 +2618,11 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   assertSourceIncludes(
     captureTemplateBuilder,
     '`- sharedProviderOperationsScope: ${getReleaseSharedProviderOperationsScopeReason({ includeShared, provider: normalizedProvider })}`',
+    'target evidence capture template builder',
+  );
+  assertSourceIncludes(
+    captureTemplateBuilder,
+    '...buildReleaseSharedProviderOperationsScopeAuditLines({',
     'target evidence capture template builder',
   );
   assertSourceIncludes(
