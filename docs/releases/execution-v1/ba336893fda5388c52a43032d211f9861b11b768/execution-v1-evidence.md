@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-04T15:24:44.265Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-04T15:24:27.806Z
 - branch: codex/release-blocker-api-shared-scope-reason
 - commit: ba336893fda5388c52a43032d211f9861b11b768

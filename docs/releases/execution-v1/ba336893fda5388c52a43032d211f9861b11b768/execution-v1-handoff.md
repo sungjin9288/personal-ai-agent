@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-04T15:24:44.265Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-04T15:24:42.885Z
 - localDate: 2026-06-05
 - branch: codex/release-blocker-api-shared-scope-reason
 - commit: ba336893fda5388c52a43032d211f9861b11b768
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768](releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768](docs/releases/execution-v1/ba336893fda5388c52a43032d211f9861b11b768)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-blocker-api-shared-scope-reason not found
 
