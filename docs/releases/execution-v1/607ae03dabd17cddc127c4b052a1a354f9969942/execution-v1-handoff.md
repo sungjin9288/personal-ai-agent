@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T10:38:49.094Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T10:38:47.515Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-filter-button-label-detail
 - commit: 607ae03dabd17cddc127c4b052a1a354f9969942
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942](releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942](docs/releases/execution-v1/607ae03dabd17cddc127c4b052a1a354f9969942)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-filter-button-label-detail not found
 

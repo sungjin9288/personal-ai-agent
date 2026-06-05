@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Filter Button Detailed Label
+
+- added count and selected-state details to the action inbox status filter button title and aria-label metadata
+- kept the existing visible label, count, and aria-pressed behavior unchanged while making the accessible name self-contained
+- extended UI learning promotion smoke coverage for the detailed filter button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Stop Filter Reset Disabled Label
 
 - added contextual title and aria-label metadata to the action inbox fallback stop reset button so the disabled no-stop-filter state explains why reset is unavailable

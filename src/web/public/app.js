@@ -17618,7 +17618,9 @@ function hasActiveMissionActionsFilter() {
 
 function renderMissionActionsFilterButton(filter, label, count) {
   const active = (state.missionActionsFilter || 'all') === filter;
-  return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}" aria-pressed="${active ? 'true' : 'false'}" title="${escapeHtml(`${label} action 필터`)}">${escapeHtml(label)} ${escapeHtml(String(count ?? 0))}</button>`;
+  const countLabel = String(count ?? 0);
+  const filterButtonTitle = `${label} action 필터, ${countLabel}건, ${active ? '선택됨' : '선택 안 됨'}`;
+  return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}" aria-label="${escapeHtml(filterButtonTitle)}" aria-pressed="${active ? 'true' : 'false'}" title="${escapeHtml(filterButtonTitle)}">${escapeHtml(label)} ${escapeHtml(countLabel)}</button>`;
 }
 
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
