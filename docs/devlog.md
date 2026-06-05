@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Reset Disabled State
+
+- disabled the stop-reason reset control when no fallback stop reason is active
+- disabled the clear-all action inbox filter reset when the queue is already showing the unfiltered view
+- extended UI learning promotion smoke coverage for reset control disabled-state rendering
+
 ## 2026-06-05 Action Inbox Clear All Filters
 
 - added a one-click action inbox filter reset so operators can clear both action status filters and fallback stop reason filters together
