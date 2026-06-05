@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T04:56:49.427Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T04:56:33.338Z
 - branch: codex/action-inbox-stop-reason-empty-label
 - commit: b972b33e1308f2cd411407b8a078884873461677

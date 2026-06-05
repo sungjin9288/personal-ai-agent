@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T04:56:49.427Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T04:56:48.011Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-stop-reason-empty-label
 - commit: b972b33e1308f2cd411407b8a078884873461677
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677](releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677](docs/releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-stop-reason-empty-label not found
 
