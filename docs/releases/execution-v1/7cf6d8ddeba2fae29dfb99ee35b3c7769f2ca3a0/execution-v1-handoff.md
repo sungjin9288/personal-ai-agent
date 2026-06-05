@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T16:46:42.047Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T16:46:40.737Z
 - localDate: 2026-06-06
 - branch: codex/memory-browse-action-labels
 - commit: 7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0](releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0](docs/releases/execution-v1/7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/memory-browse-action-labels not found
 

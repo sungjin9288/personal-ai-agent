@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Memory Browse Button Labels
+
+- added memory-aware title and aria-label metadata to memory browse reset, mission/workspace load, mission/workspace delete, previous page, and next page buttons so repeated controls expose their target memory or page context
+- kept existing memory ids, scopes, browse filters, pagination handlers, delete routing, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the memory browse button accessibility rendering contract
+
 ## 2026-06-06 Document Browse Button Labels
 
 - added document-aware title and aria-label metadata to document browse reset, load, delete, previous page, and next page buttons so repeated controls expose their target document or page context
