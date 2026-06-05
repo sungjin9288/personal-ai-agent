@@ -173,6 +173,7 @@ try {
   assert.equal(appJs.includes('필터 전체 초기화'), true);
   assert.equal(appJs.includes("${fallbackStopReasonFilter ? '' : 'disabled'}"), true);
   assert.equal(appJs.includes("${hasActiveFilter ? '' : 'disabled'}"), true);
+  assert.equal(appJs.includes("${hasSelectedMission ? '' : 'disabled'}"), true);
   assert.equal(appJs.includes('현재 action 링크 복사'), true);
   assert.equal(appJs.includes('현재 action inbox 링크를 복사했습니다.'), true);
   assert.equal(appJs.includes("detailTab: 'reviews'"), true);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Copy Link Disabled State
+
+- disabled the action inbox copy-link control when no mission is selected so shared queue links are only presented from a valid mission context
+- kept the existing copy handler notice as a defensive fallback while aligning the visible button affordance with reset controls
+- extended UI learning promotion smoke coverage for the copy-link disabled-state rendering contract
+
 ## 2026-06-05 Action Inbox Reset Disabled State
 
 - disabled the stop-reason reset control when no fallback stop reason is active
