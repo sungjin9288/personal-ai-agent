@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T07:11:39.822Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T07:11:38.378Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-stop-select-aria-label
 - commit: 647049adfb7097552c189c93c3c12c1f45e80170
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170](releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170](docs/releases/execution-v1/647049adfb7097552c189c93c3c12c1f45e80170)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-stop-select-aria-label not found
 

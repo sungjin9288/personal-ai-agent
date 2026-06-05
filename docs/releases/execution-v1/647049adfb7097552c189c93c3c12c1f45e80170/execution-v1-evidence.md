@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T07:11:39.822Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T07:11:19.920Z
 - branch: codex/action-inbox-stop-select-aria-label
 - commit: 647049adfb7097552c189c93c3c12c1f45e80170
