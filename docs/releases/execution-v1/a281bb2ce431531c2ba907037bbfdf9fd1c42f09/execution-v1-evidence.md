@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T11:30:36.852Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T11:30:17.349Z
 - branch: codex/action-inbox-open-mission-button-label
 - commit: a281bb2ce431531c2ba907037bbfdf9fd1c42f09
