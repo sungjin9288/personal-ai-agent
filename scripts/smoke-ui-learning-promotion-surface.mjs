@@ -169,6 +169,12 @@ try {
   assert.equal(appJs.includes('전문가 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-action-resolve'), true);
   assert.equal(appJs.includes('후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('data-approval-open'), true);
+  assert.equal(appJs.includes('미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}'), true);
+  assert.equal(appJs.includes('data-approval-approve'), true);
+  assert.equal(appJs.includes('승인: ${item.title || item.approvalId || item.missionId}'), true);
+  assert.equal(appJs.includes('data-approval-reject'), true);
+  assert.equal(appJs.includes('반려: ${item.title || item.approvalId || item.missionId}'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
