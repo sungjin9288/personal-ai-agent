@@ -705,9 +705,16 @@ function getSanitizedRetrievalSourceType(sourceType) {
   return normalized === 'memory' || normalized === 'attachment' ? normalized : null;
 }
 
+function getSanitizedMissionActionsFilter(filter) {
+  const normalized = normalizeUiParam(filter);
+  return normalized === 'needs-reminder' || normalized === 'overdue' ? normalized : 'all';
+}
+
 function parseUiStateFromUrl() {
   const params = new URL(window.location.href).searchParams;
   return {
+    actionInboxFilter: getSanitizedMissionActionsFilter(params.get('afilter')),
+    actionInboxFallbackStopReason: normalizeUiParam(params.get('afstop')),
     artifactId: normalizeUiParam(params.get('artifact')),
     releaseHandoffPreviewId: normalizeUiParam(params.get('rartifact')),
     retrievalSourceLabel: normalizeUiParam(params.get('hsource')),
@@ -758,6 +765,14 @@ function buildUiStateUrl(overrides = {}) {
     overrides.artifactId !== undefined
       ? normalizeUiParam(overrides.artifactId)
       : normalizeUiParam(state.selectedArtifactId);
+  const actionInboxFilter =
+    overrides.actionInboxFilter !== undefined
+      ? getSanitizedMissionActionsFilter(overrides.actionInboxFilter)
+      : getSanitizedMissionActionsFilter(state.missionActionsFilter);
+  const actionInboxFallbackStopReason =
+    overrides.actionInboxFallbackStopReason !== undefined
+      ? normalizeUiParam(overrides.actionInboxFallbackStopReason)
+      : normalizeUiParam(state.missionActionsFallbackStopReasonFilter);
   const releaseFocusedProvider =
     overrides.releaseFocusedProvider !== undefined
       ? normalizeUiParam(overrides.releaseFocusedProvider)
@@ -850,12 +865,24 @@ function buildUiStateUrl(overrides = {}) {
       params.delete('hstype');
       params.delete('hsource');
     }
+    if (actionInboxFilter && actionInboxFilter !== 'all') {
+      params.set('afilter', actionInboxFilter);
+    } else {
+      params.delete('afilter');
+    }
+    if (actionInboxFallbackStopReason) {
+      params.set('afstop', actionInboxFallbackStopReason);
+    } else {
+      params.delete('afstop');
+    }
   } else {
     params.delete('mission');
     params.delete('session');
     params.delete('artifact');
     params.delete('hstype');
     params.delete('hsource');
+    params.delete('afilter');
+    params.delete('afstop');
 
     if (stepId && stepId !== 'step-setup') {
       params.set('step', stepId);
@@ -17550,6 +17577,11 @@ function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
   return '전체';
 }
 
+function applyMissionActionsFilterUrlState({ actionInboxFilter = 'all', actionInboxFallbackStopReason = '' } = {}) {
+  state.missionActionsFilter = getSanitizedMissionActionsFilter(actionInboxFilter);
+  state.missionActionsFallbackStopReasonFilter = normalizeUiParam(actionInboxFallbackStopReason);
+}
+
 function getMissionActionsVisibleFilterLabel() {
   const filter = state.missionActionsFilter || 'all';
   const baseLabel = getMissionActionsFilterLabel(filter);
@@ -17609,6 +17641,7 @@ function wireMissionActionsFilterControls() {
       state.missionActionsFilter = nextFilter;
       await loadMissionActions(state.selectedMissionId);
       renderMissionActions();
+      writeUiStateToUrl();
     });
   });
   elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]')?.addEventListener('change', async (event) => {
@@ -17619,6 +17652,7 @@ function wireMissionActionsFilterControls() {
     state.missionActionsFallbackStopReasonFilter = nextFilter;
     await loadMissionActions(state.selectedMissionId);
     renderMissionActions();
+    writeUiStateToUrl();
   });
   elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-reset]')?.addEventListener('click', async () => {
     if (!state.missionActionsFallbackStopReasonFilter) {
@@ -17627,6 +17661,7 @@ function wireMissionActionsFilterControls() {
     state.missionActionsFallbackStopReasonFilter = '';
     await loadMissionActions(state.selectedMissionId);
     renderMissionActions();
+    writeUiStateToUrl();
   });
 }
 
@@ -19081,6 +19116,11 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
     urlState.missionId && visibleMission.some(({ mission }) => mission.id === urlState.missionId)
       ? urlState.missionId
       : visibleMission[0]?.mission?.id || null;
+
+  applyMissionActionsFilterUrlState({
+    actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason,
+    actionInboxFilter: urlState.actionInboxFilter,
+  });
 
   if (targetMissionId) {
     await selectMission(targetMissionId, {

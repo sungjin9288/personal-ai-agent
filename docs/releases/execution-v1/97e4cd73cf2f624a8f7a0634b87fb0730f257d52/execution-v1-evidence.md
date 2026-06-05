@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T05:12:06.498Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T05:11:48.245Z
 - branch: codex/action-inbox-stop-reason-url-state
 - commit: 97e4cd73cf2f624a8f7a0634b87fb0730f257d52
