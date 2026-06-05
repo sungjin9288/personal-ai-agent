@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T16:15:36.298Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T16:15:34.954Z
 - localDate: 2026-06-06
 - branch: codex/document-browse-action-labels
 - commit: 69b831d8392ae1af4301856eb25348e2633a358e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e](releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e](docs/releases/execution-v1/69b831d8392ae1af4301856eb25348e2633a358e)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/document-browse-action-labels not found
 
