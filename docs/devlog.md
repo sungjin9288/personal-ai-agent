@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Learning Promotion Action Button Labels
+
+- added shared title and aria-label metadata for learning-promotion action buttons so each action names the target learning candidate
+- kept existing action ids, decisions, button classes, and visible labels unchanged while centralizing button markup through a small helper
+- extended UI learning promotion smoke coverage for the learning-promotion action button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Filter Button Detailed Label
 
 - added count and selected-state details to the action inbox status filter button title and aria-label metadata
