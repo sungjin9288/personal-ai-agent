@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T08:34:08.548Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T08:33:47.611Z
 - branch: codex/action-inbox-clear-filters-disabled-label
 - commit: 00ec5cb25337c36280e48142048971803f617426
