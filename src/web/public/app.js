@@ -17734,8 +17734,8 @@ function renderMissionActions() {
         <option value="">fallback stop 전체</option>
         ${fallbackStopReasonOptions}
       </select>
-      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true">stop 필터 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true">필터 전체 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
       <button class="ghost-button" type="button" data-action-inbox-copy-link="true">현재 action 링크 복사</button>
     </div>
   `;
