@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T15:41:01.338Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T15:40:40.898Z
 - branch: codex/approval-list-action-labels
 - commit: 9b6695ae5eeb40aeb23c13658c77259559e310d9
