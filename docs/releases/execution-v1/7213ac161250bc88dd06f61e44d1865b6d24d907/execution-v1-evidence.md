@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T12:54:17.426Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T12:54:00.655Z
 - branch: codex/action-inbox-rerun-button-label
 - commit: 7213ac161250bc88dd06f61e44d1865b6d24d907

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T12:54:17.426Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T12:54:15.441Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-rerun-button-label
 - commit: 7213ac161250bc88dd06f61e44d1865b6d24d907
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907](releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907](docs/releases/execution-v1/7213ac161250bc88dd06f61e44d1865b6d24d907)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-rerun-button-label not found
 

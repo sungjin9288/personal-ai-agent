@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Rerun Button Label
+
+- added action-aware title and aria-label metadata to the action inbox recommended rerun button so the target action context is exposed beyond the generic visible label
+- kept the existing rerun confirmation, provider inference, and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the recommended rerun button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Open Mission Button Label
 
 - added action-aware title and aria-label metadata to the action inbox mission-open button so the target action context is exposed beyond the generic visible label
