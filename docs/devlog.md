@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason Empty Label
+
+- added a combined action inbox filter label so fallback stop reason filters remain visible in empty states and filtered callouts
+- kept the unfiltered action queue empty copy unchanged while showing `fallback stop <reason>` when only the stop reason selector is active
+- extended UI learning promotion smoke coverage for the active filter label helper and stop reason empty-state copy
+
 ## 2026-06-05 Learning Promotion Stop Reason UI Filter
 
 - added a fallback stop reason selector to the mission action inbox so operators can filter learning-promotion provider lessons from the web UI

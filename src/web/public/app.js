@@ -17550,6 +17550,24 @@ function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
   return '전체';
 }
 
+function getMissionActionsVisibleFilterLabel() {
+  const filter = state.missionActionsFilter || 'all';
+  const baseLabel = getMissionActionsFilterLabel(filter);
+  const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
+  if (!fallbackStopReasonFilter) {
+    return baseLabel;
+  }
+  const fallbackStopLabel = `fallback stop ${fallbackStopReasonFilter}`;
+  return filter === 'all' ? fallbackStopLabel : `${baseLabel} · ${fallbackStopLabel}`;
+}
+
+function hasActiveMissionActionsFilter() {
+  return (
+    (state.missionActionsFilter || 'all') !== 'all' ||
+    Boolean(String(state.missionActionsFallbackStopReasonFilter || '').trim())
+  );
+}
+
 function renderMissionActionsFilterButton(filter, label, count) {
   const active = (state.missionActionsFilter || 'all') === filter;
   return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}">${escapeHtml(label)} ${escapeHtml(String(count ?? 0))}</button>`;
@@ -17636,6 +17654,8 @@ function renderMissionActions() {
   const fullSummary = state.missionActions.summary || summary;
   const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
   const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
+  const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
+  const hasActiveFilter = hasActiveMissionActionsFilter();
   elements.actionSummary.innerHTML = `
     <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
@@ -17664,13 +17684,13 @@ function renderMissionActions() {
     elements.actionList.innerHTML = emptyStateCard({
       icon: 'OK',
       message:
-        (state.missionActionsFilter || 'all') === 'all'
+        !hasActiveFilter
           ? '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.'
-          : `${getMissionActionsFilterLabel()} 필터에 맞는 열린 후속 작업이 없습니다.`,
+          : `${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.`,
       title:
-        (state.missionActionsFilter || 'all') === 'all'
+        !hasActiveFilter
           ? '후속 작업 큐가 비어 있습니다'
-          : `${getMissionActionsFilterLabel()} 항목이 없습니다`,
+          : `${visibleFilterLabel} 항목이 없습니다`,
     });
     return;
   }
@@ -17679,9 +17699,9 @@ function renderMissionActions() {
     <div class="review-callout review-callout-action">
       <strong>후속 작업 ${escapeHtml(String(items.length))}건</strong>
       <p>${escapeHtml(
-        (state.missionActionsFilter || 'all') === 'all'
+        !hasActiveFilter
           ? '재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.'
-          : `${getMissionActionsFilterLabel()} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`,
+          : `${visibleFilterLabel} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`,
       )}</p>
     </div>
   `;
