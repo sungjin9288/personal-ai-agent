@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T05:20:59.746Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T05:20:58.356Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-filter-link-copy
 - commit: 8a8651b91bb365cb203db878a0c052b76615050d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d](releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d](docs/releases/execution-v1/8a8651b91bb365cb203db878a0c052b76615050d)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-filter-link-copy not found
 

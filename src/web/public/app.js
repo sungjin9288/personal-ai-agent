@@ -17582,6 +17582,22 @@ function applyMissionActionsFilterUrlState({ actionInboxFilter = 'all', actionIn
   state.missionActionsFallbackStopReasonFilter = normalizeUiParam(actionInboxFallbackStopReason);
 }
 
+async function copyMissionActionsViewLink() {
+  if (!state.selectedMissionId) {
+    setUiNotice('복사할 action inbox 링크가 없습니다.');
+    return;
+  }
+  const actionInboxUrl = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'reviews',
+    stepId: 'step-review',
+  })}`;
+  await copyUiLink(actionInboxUrl, {
+    promptMessage: '현재 action inbox 링크를 복사하세요.',
+    shownNotice: '현재 action inbox 링크를 표시했습니다.',
+    successNotice: '현재 action inbox 링크를 복사했습니다.',
+  });
+}
+
 function getMissionActionsVisibleFilterLabel() {
   const filter = state.missionActionsFilter || 'all';
   const baseLabel = getMissionActionsFilterLabel(filter);
@@ -17663,6 +17679,9 @@ function wireMissionActionsFilterControls() {
     renderMissionActions();
     writeUiStateToUrl();
   });
+  elements.actionSummary.querySelector('[data-action-inbox-copy-link]')?.addEventListener('click', () => {
+    void copyMissionActionsViewLink();
+  });
 }
 
 function renderMissionActions() {
@@ -17706,6 +17725,7 @@ function renderMissionActions() {
         ${fallbackStopReasonOptions}
       </select>
       <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true">stop 필터 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-copy-link="true">현재 action 링크 복사</button>
     </div>
   `;
   const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
