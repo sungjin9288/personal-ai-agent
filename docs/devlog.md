@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Document Browse Button Labels
+
+- added document-aware title and aria-label metadata to document browse reset, load, delete, previous page, and next page buttons so repeated controls expose their target document or page context
+- kept existing document ids, browse filters, pagination handlers, delete routing, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the document browse button accessibility rendering contract
+
 ## 2026-06-06 Approval List Button Labels
 
 - added approval-aware title and aria-label metadata to approval list mission-open, approve, and reject buttons so each control exposes the target approval or mission context
