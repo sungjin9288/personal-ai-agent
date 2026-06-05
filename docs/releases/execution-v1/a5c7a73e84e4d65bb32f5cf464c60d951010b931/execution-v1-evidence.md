@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T08:45:52.648Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T08:45:28.658Z
 - branch: codex/action-inbox-stop-reset-disabled-label
 - commit: a5c7a73e84e4d65bb32f5cf464c60d951010b931

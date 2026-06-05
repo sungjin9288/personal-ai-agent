@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Filter Reset Disabled Label
+
+- added contextual title and aria-label metadata to the action inbox fallback stop reset button so the disabled no-stop-filter state explains why reset is unavailable
+- kept the existing fallback stop reset behavior and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the fallback stop reset disabled-state accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Clear Filters Disabled Label
 
 - added contextual title and aria-label metadata to the action inbox clear-all filters button so the disabled no-active-filter state explains why reset is unavailable
