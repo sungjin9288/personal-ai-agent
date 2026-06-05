@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T06:51:14.732Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T06:50:54.144Z
 - branch: codex/action-inbox-stop-select-title
 - commit: 79474154f59e4c48953cec84c167c8dc53fc0711

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason Select Title
+
+- added a contextual title to the fallback stop reason select so disabled controls explain that no fallback stop reason options are available
+- kept the enabled title focused on choosing a fallback stop reason filter while preserving the existing disabled-state and active `afstop` option behavior
+- extended UI learning promotion smoke coverage for the fallback stop reason select title rendering contract
+
 ## 2026-06-05 Action Inbox Stop Reason Select Disabled State
 
 - disabled the fallback stop reason select when the selected mission has no fallback stop reason options to choose from
