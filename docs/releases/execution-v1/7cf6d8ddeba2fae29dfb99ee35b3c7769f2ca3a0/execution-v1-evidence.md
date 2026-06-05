@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T16:46:42.047Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T16:46:27.644Z
 - branch: codex/memory-browse-action-labels
 - commit: 7cf6d8ddeba2fae29dfb99ee35b3c7769f2ca3a0
