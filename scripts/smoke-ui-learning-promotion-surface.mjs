@@ -215,6 +215,23 @@ try {
   assert.equal(fallbackItem.autoPromotionAllowed, false);
   assert.equal(fallbackItem.rollbackEligible, false);
 
+  const fallbackStopReasonInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(fallbackMission.id)}&promotionStatus=all&providerFallbackStopReason=mission-status-completed`,
+  );
+  assert.equal(fallbackStopReasonInbox.filters.providerFallbackStopReason, 'mission-status-completed');
+  assert.equal(fallbackStopReasonInbox.items.length, 2);
+  assert.ok(
+    fallbackStopReasonInbox.items.every(
+      (item) => item.providerFallbackStopReasonCounts['mission-status-completed'] > 0,
+    ),
+  );
+
+  const emptyFallbackStopReasonInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(fallbackMission.id)}&promotionStatus=all&providerFallbackStopReason=unknown-stop-reason`,
+  );
+  assert.equal(emptyFallbackStopReasonInbox.filters.providerFallbackStopReason, 'unknown-stop-reason');
+  assert.equal(emptyFallbackStopReasonInbox.items.length, 0);
+
   const promotionResult = await postJson(
     `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(promotedRun.learningCandidateId)}/resolve`,
     {

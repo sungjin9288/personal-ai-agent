@@ -4820,6 +4820,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function buildLearningPromotionItems(filter = {}) {
     const promotionStatus = normalizeText(filter.promotionStatus || filter.status, 'pending-review');
+    const providerFallbackStopReason = normalizeText(filter.providerFallbackStopReason || filter.fallbackStopReason);
     const includeAllStatuses = promotionStatus === 'all';
     const includeOperatorActiveStatuses = promotionStatus === 'operator-active';
     const candidates = store.listLearningCandidates({
@@ -4843,6 +4844,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
           return false;
         }
         if (filter.scope && item.scope !== filter.scope) {
+          return false;
+        }
+        if (
+          providerFallbackStopReason &&
+          Number(item.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) <= 0
+        ) {
           return false;
         }
         return true;
@@ -5281,6 +5288,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     return {
       filters: {
         missionId: filter.missionId || null,
+        providerFallbackStopReason: normalizedFilter.providerFallbackStopReason || normalizedFilter.fallbackStopReason || null,
         recordType: filter.recordType || null,
         scope: normalizedFilter.scope || null,
         status: filter.status || filter.promotionStatus || 'pending-review',
@@ -14549,6 +14557,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
   }
 
   function getActionInbox(filter = {}) {
+    const providerFallbackStopReason = normalizeText(filter.providerFallbackStopReason || filter.fallbackStopReason);
     if (filter.providerId) {
       providerRegistry.getProviderStatus(filter.providerId);
     }
@@ -14610,6 +14619,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         if (filter.overdueOnly && !item.isOverdue) {
           return false;
         }
+        if (
+          providerFallbackStopReason &&
+          Number(item.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) <= 0
+        ) {
+          return false;
+        }
         return true;
       })
       .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
@@ -14643,6 +14658,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         owner: filter.owner || null,
         overdueOnly: Boolean(filter.overdueOnly),
         providerId: filter.providerId || null,
+        providerFallbackStopReason: providerFallbackStopReason || null,
         priority: filter.priority || null,
         workspaceId: filter.workspaceId || null,
       },

@@ -172,6 +172,55 @@ assert.equal(
 assert.equal(recoverableStopCandidate.evidence.providerFallbackSummary.attempts[0].providerFailureKind, 'config');
 assert.equal(recoverableStopCandidate.evidence.providerFallbackSummary.attempts[0].providerFailureRecoverable, false);
 
+const recoverableStopPromotionQueue = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'learning-promotions',
+    '--mission',
+    recoverableStopMission.id,
+    '--status',
+    'all',
+    '--provider-fallback-stop-reason',
+    'non-recoverable-provider-failure',
+  ],
+});
+assert.equal(recoverableStopPromotionQueue.filters.providerFallbackStopReason, 'non-recoverable-provider-failure');
+assert.equal(recoverableStopPromotionQueue.items.length, 1);
+assert.equal(recoverableStopPromotionQueue.items[0].learningCandidateId, recoverableStopCandidate.id);
+assert.equal(
+  recoverableStopPromotionQueue.items[0].providerFallbackStopReasonCounts['non-recoverable-provider-failure'],
+  1,
+);
+
+const recoverableStopInbox = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'inbox',
+    '--mission',
+    recoverableStopMission.id,
+    '--provider-fallback-stop-reason',
+    'non-recoverable-provider-failure',
+  ],
+});
+assert.equal(recoverableStopInbox.filters.providerFallbackStopReason, 'non-recoverable-provider-failure');
+assert.equal(recoverableStopInbox.items.length, 1);
+assert.equal(recoverableStopInbox.items[0].learningCandidateId, recoverableStopCandidate.id);
+
+const emptyRecoverableStopInbox = runCli({
+  rootDir: tempRoot,
+  args: [
+    'action',
+    'inbox',
+    '--mission',
+    recoverableStopMission.id,
+    '--provider-fallback-stop-reason',
+    'eligible-provider-failure',
+  ],
+});
+assert.equal(emptyRecoverableStopInbox.items.length, 0);
+
 const deterministicFailureMission = runCli({
   rootDir: tempRoot,
   args: [

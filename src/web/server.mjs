@@ -3312,6 +3312,11 @@ async function handleApi(request, response, url) {
       owner: String(url.searchParams.get('owner') || '').trim(),
       priority: String(url.searchParams.get('priority') || '').trim(),
       providerId: String(url.searchParams.get('providerId') || '').trim(),
+      providerFallbackStopReason: String(
+        url.searchParams.get('providerFallbackStopReason') ||
+          url.searchParams.get('provider-fallback-stop-reason') ||
+          '',
+      ).trim(),
       promotionStatus: String(url.searchParams.get('promotionStatus') || '').trim(),
       workspaceId,
     }));

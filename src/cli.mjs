@@ -137,11 +137,11 @@ Commands:
   session show <missionId>
   session show <missionId> --session <sessionId>
 
-  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|provider-health-drift-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--provider <stub|openai|anthropic|local|hermes>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
+  action inbox [--workspace <workspaceId>] [--mission <missionId>] [--class <retry-ready|blocked|awaiting-human-decision|provider-attention-required|provider-health-drift-required|specialist-follow-up-required|monitoring-required|handoff-required|maintenance-required>] [--provider <stub|openai|anthropic|local|hermes>] [--provider-fallback-stop-reason <reason>] [--priority <low|medium|high|urgent>] [--owner <human-approver|mission-owner|workspace-owner>] [--effective-owner <human-approver|mission-owner|workspace-owner>] [--needs-reminder] [--overdue]
   action provider-attention [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <pending|acknowledged|resolved|recovered>] [--needs-reminder] [--overdue]
   action provider-health-drift [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--overdue]
   action specialist-follow-ups [--provider <stub|openai|anthropic|local|hermes>] [--workspace <workspaceId>] [--mission <missionId>] [--status <blocked|failed>] [--needs-reminder] [--overdue]
-  action learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--status <pending-review|approved|promoted|rejected|verification-blocked|expired|rolled-back|operator-active|all>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>]
+  action learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--status <pending-review|approved|promoted|rejected|verification-blocked|expired|rolled-back|operator-active|all>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--provider-fallback-stop-reason <reason>]
   action expire-learning-promotions [--workspace <workspaceId>] [--mission <missionId>] [--before <iso-timestamp>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--note <text>]
   action maintenance-history [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   action reviewer-followups [--workspace <workspaceId>] [--mission <missionId>] [--status <open|resolved>] [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>]
@@ -829,6 +829,7 @@ async function main() {
         owner: readOption(rest, '--owner', ''),
         overdueOnly: hasOption(rest, '--overdue'),
         providerId: readOption(rest, '--provider', ''),
+        providerFallbackStopReason: readOption(rest, '--provider-fallback-stop-reason', ''),
         priority: readOption(rest, '--priority', ''),
         workspaceId: readOption(rest, '--workspace', ''),
       }),
@@ -880,6 +881,7 @@ async function main() {
     printJson(
       service.getLearningPromotionQueue({
         missionId: readOption(rest, '--mission', ''),
+        providerFallbackStopReason: readOption(rest, '--provider-fallback-stop-reason', ''),
         recordType: readOption(rest, '--record-type', ''),
         scope: readOption(rest, '--scope', ''),
         status: readOption(rest, '--status', ''),
