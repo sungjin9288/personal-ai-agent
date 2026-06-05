@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Copy Link Disabled Label
+
+- added contextual title and aria-label metadata to the action inbox copy-link button so the disabled no-mission state explains why the link cannot be copied
+- kept the existing selected-mission copy link behavior and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the copy-link disabled-state accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Filter Button Aria Pressed
 
 - added `aria-pressed` to the action inbox status filter buttons so the active filter state is exposed beyond visual button styling
