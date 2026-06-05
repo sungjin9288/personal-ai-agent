@@ -17720,6 +17720,7 @@ function renderMissionActions() {
   const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
+  const hasSelectedMission = Boolean(state.selectedMissionId);
   elements.actionSummary.innerHTML = `
     <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
@@ -17736,7 +17737,7 @@ function renderMissionActions() {
       </select>
       <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
       <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-copy-link="true">현재 action 링크 복사</button>
+      <button class="ghost-button" type="button" data-action-inbox-copy-link="true" ${hasSelectedMission ? '' : 'disabled'}>현재 action 링크 복사</button>
     </div>
   `;
   const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
