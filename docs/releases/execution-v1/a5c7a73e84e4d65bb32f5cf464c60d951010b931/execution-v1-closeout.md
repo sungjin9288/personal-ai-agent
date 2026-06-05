@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T08:45:52.648Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T08:45:35.126Z
 - branch: codex/action-inbox-stop-reset-disabled-label
 - commit: a5c7a73e84e4d65bb32f5cf464c60d951010b931
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a5c7a73e84e4d65bb32f5cf464c60d951010b931/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
