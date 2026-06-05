@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T10:48:14.834Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T10:48:13.186Z
 - localDate: 2026-06-05
 - branch: codex/learning-promotion-action-button-label
 - commit: 0ac241074a03043a67b256a49d08d565cdb89d1b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b](releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b](docs/releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/learning-promotion-action-button-label not found
 

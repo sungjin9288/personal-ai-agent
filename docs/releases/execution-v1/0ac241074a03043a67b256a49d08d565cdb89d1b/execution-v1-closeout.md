@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T10:48:14.834Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T10:48:03.033Z
 - branch: codex/learning-promotion-action-button-label
 - commit: 0ac241074a03043a67b256a49d08d565cdb89d1b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0ac241074a03043a67b256a49d08d565cdb89d1b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
