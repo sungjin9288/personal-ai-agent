@@ -18229,9 +18229,9 @@ function renderApprovals() {
           <div class="item-subtitle">${escapeHtml(item.missionTitle || item.missionId || '')}</div>
           <div class="item-meta">${escapeHtml(item.reason || '')}</div>
           <div class="action-row">
-            <button class="secondary-button" type="button" data-approval-open="${escapeHtml(item.missionId || '')}">미션 열기</button>
-            <button class="primary-button" type="button" data-approval-approve="${escapeHtml(item.approvalId)}">승인</button>
-            <button class="ghost-button" type="button" data-approval-reject="${escapeHtml(item.approvalId)}">반려</button>
+            <button class="secondary-button" type="button" data-approval-open="${escapeHtml(item.missionId || '')}" aria-label="${escapeHtml(`미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}`)}" title="${escapeHtml(`미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}`)}">미션 열기</button>
+            <button class="primary-button" type="button" data-approval-approve="${escapeHtml(item.approvalId)}" aria-label="${escapeHtml(`승인: ${item.title || item.approvalId || item.missionId}`)}" title="${escapeHtml(`승인: ${item.title || item.approvalId || item.missionId}`)}">승인</button>
+            <button class="ghost-button" type="button" data-approval-reject="${escapeHtml(item.approvalId)}" aria-label="${escapeHtml(`반려: ${item.title || item.approvalId || item.missionId}`)}" title="${escapeHtml(`반려: ${item.title || item.approvalId || item.missionId}`)}">반려</button>
           </div>
         </div>
       `,

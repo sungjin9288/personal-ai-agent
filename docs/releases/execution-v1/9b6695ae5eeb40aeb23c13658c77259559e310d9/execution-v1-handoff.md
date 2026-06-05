@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T15:41:01.338Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T15:40:59.872Z
 - localDate: 2026-06-06
 - branch: codex/approval-list-action-labels
 - commit: 9b6695ae5eeb40aeb23c13658c77259559e310d9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9](releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9](docs/releases/execution-v1/9b6695ae5eeb40aeb23c13658c77259559e310d9)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/approval-list-action-labels not found
 
