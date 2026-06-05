@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T11:33:36.071Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T11:33:34.683Z
 - localDate: 2026-06-05
 - branch: main
 - commit: 0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e](releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e](docs/releases/execution-v1/0e2ff6ca16ddb3b3bf420f00e937c053bd6db27e)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: pushed to origin/main
 
