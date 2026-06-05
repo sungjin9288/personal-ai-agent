@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason Select Aria Label
+
+- aligned the fallback stop reason select `aria-label` with the contextual title so assistive technology receives the same enabled or disabled-state meaning
+- preserved the existing title, placeholder, disabled-state, and active `afstop` zero-count option behavior
+- extended UI learning promotion smoke coverage for the fallback stop reason select aria-label rendering contract
+
 ## 2026-06-05 Action Inbox Stop Reason Select Placeholder
 
 - changed the fallback stop reason select placeholder to show `fallback stop 없음` when the selected mission has no stop reason options

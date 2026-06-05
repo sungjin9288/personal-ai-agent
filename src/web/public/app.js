@@ -17740,7 +17740,7 @@ function renderMissionActions() {
       ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
       ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
       ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
-      <select data-action-inbox-fallback-stop-filter="true" aria-label="fallback stop reason filter" title="${escapeHtml(fallbackStopReasonSelectTitle)}" ${hasFallbackStopReasonOptions ? '' : 'disabled'}>
+      <select data-action-inbox-fallback-stop-filter="true" aria-label="${escapeHtml(fallbackStopReasonSelectTitle)}" title="${escapeHtml(fallbackStopReasonSelectTitle)}" ${hasFallbackStopReasonOptions ? '' : 'disabled'}>
         <option value="">${escapeHtml(fallbackStopReasonPlaceholder)}</option>
         ${fallbackStopReasonOptions}
       </select>
