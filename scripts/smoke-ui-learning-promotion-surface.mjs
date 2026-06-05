@@ -164,11 +164,13 @@ try {
   assert.equal(appJs.includes('data-action-inbox-filter'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-filter'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-reset'), true);
+  assert.equal(appJs.includes('data-action-inbox-clear-filters'), true);
   assert.equal(appJs.includes('data-action-inbox-copy-link'), true);
   assert.equal(appJs.includes('copyMissionActionsViewLink'), true);
   assert.equal(appJs.includes('providerFallbackStopReason'), true);
   assert.equal(appJs.includes('fallback stop 전체'), true);
   assert.equal(appJs.includes('stop 필터 초기화'), true);
+  assert.equal(appJs.includes('필터 전체 초기화'), true);
   assert.equal(appJs.includes('현재 action 링크 복사'), true);
   assert.equal(appJs.includes('현재 action inbox 링크를 복사했습니다.'), true);
   assert.equal(appJs.includes("detailTab: 'reviews'"), true);
@@ -183,6 +185,9 @@ try {
   assert.equal(appJs.includes("params.get('afstop')"), true);
   assert.equal(appJs.includes("params.set('afilter', actionInboxFilter)"), true);
   assert.equal(appJs.includes("params.set('afstop', actionInboxFallbackStopReason)"), true);
+  assert.equal(appJs.includes("state.missionActionsFilter = 'all'"), true);
+  assert.equal(appJs.includes("params.delete('afilter')"), true);
+  assert.equal(appJs.includes("params.delete('afstop')"), true);
   assert.equal(appJs.includes('stop-condition 반려'), true);
   assert.equal(appJs.includes('stop-condition 재알림'), true);
   assert.equal(appJs.includes('재알림 필요'), true);

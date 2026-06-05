@@ -17679,6 +17679,16 @@ function wireMissionActionsFilterControls() {
     renderMissionActions();
     writeUiStateToUrl();
   });
+  elements.actionSummary.querySelector('[data-action-inbox-clear-filters]')?.addEventListener('click', async () => {
+    if ((state.missionActionsFilter || 'all') === 'all' && !state.missionActionsFallbackStopReasonFilter) {
+      return;
+    }
+    state.missionActionsFilter = 'all';
+    state.missionActionsFallbackStopReasonFilter = '';
+    await loadMissionActions(state.selectedMissionId);
+    renderMissionActions();
+    writeUiStateToUrl();
+  });
   elements.actionSummary.querySelector('[data-action-inbox-copy-link]')?.addEventListener('click', () => {
     void copyMissionActionsViewLink();
   });
@@ -17725,6 +17735,7 @@ function renderMissionActions() {
         ${fallbackStopReasonOptions}
       </select>
       <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true">stop 필터 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true">필터 전체 초기화</button>
       <button class="ghost-button" type="button" data-action-inbox-copy-link="true">현재 action 링크 복사</button>
     </div>
   `;

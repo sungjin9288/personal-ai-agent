@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T05:33:54.930Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T05:33:34.869Z
 - branch: codex/action-inbox-clear-all-filters
 - commit: feb324aa50ea8ffeed54acda4f210915477e5c4e

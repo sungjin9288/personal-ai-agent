@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Clear All Filters
+
+- added a one-click action inbox filter reset so operators can clear both action status filters and fallback stop reason filters together
+- synchronized the full reset with URL state so `afilter` and `afstop` are removed from copied or refreshed action inbox views
+- extended UI learning promotion smoke coverage for the clear-all control, state reset, and URL parameter cleanup hooks
+
 ## 2026-06-05 Action Inbox Filter Link Copy
 
 - added a current action inbox link copy control so operators can share the selected mission action queue with active `afilter` and `afstop` URL state
