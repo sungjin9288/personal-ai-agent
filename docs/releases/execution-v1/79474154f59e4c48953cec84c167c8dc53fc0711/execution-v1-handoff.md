@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T06:51:14.732Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T06:51:13.140Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-stop-select-title
 - commit: 79474154f59e4c48953cec84c167c8dc53fc0711
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711](releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711](docs/releases/execution-v1/79474154f59e4c48953cec84c167c8dc53fc0711)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-stop-select-title not found
 
