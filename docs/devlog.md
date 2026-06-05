@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Release Surface Action Button Labels
+
+- added release-aware title and aria-label metadata to release status refresh, aggregate preflight, command copy, current surface regeneration, release snapshot, stage navigation, and readiness package buttons
+- kept existing release action ids, command values, confirmation flow, disabled-state rules, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the release surface action button accessibility rendering contract
+
 ## 2026-06-06 Stage Summary Tab Button Labels
 
 - added mission/artifact-aware title and aria-label metadata to run, review, and output stage summary tab navigation buttons so repeated controls expose the target mission or artifact context

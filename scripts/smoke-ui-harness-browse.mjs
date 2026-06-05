@@ -1620,6 +1620,18 @@ try {
   assert.equal(appJs.includes('결과물 열기: ${outputStageTargetLabel}'), true);
   assert.equal(appJs.includes('실행 기록 보기: ${outputStageTargetLabel}'), true);
   assert.equal(appJs.includes('검토 상태 보기: ${outputStageTargetLabel}'), true);
+  assert.equal(appJs.includes('releaseActionLabel'), true);
+  assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('전체 preflight 실행: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('전체 preflight 명령 복사: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('current surface 재생성: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('current surface 재생성 확인: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('current surface 재생성 취소: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('release snapshot 고정: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('release snapshot 고정 확인: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('하네스 보기: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('전체 readiness package 복사: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('document-log-search'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
   assert.equal(appJs.includes('문서 필터 초기화: ${documentFilterLabel}'), true);
