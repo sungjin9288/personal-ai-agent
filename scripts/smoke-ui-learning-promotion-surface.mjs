@@ -162,6 +162,11 @@ try {
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
   assert.equal(appJs.includes('data-learning-promotion-remind'), true);
   assert.equal(appJs.includes('data-action-inbox-filter'), true);
+  assert.equal(appJs.includes('data-action-inbox-fallback-stop-filter'), true);
+  assert.equal(appJs.includes('data-action-inbox-fallback-stop-reset'), true);
+  assert.equal(appJs.includes('providerFallbackStopReason'), true);
+  assert.equal(appJs.includes('fallback stop 전체'), true);
+  assert.equal(appJs.includes('stop 필터 초기화'), true);
   assert.equal(appJs.includes('stop-condition 반려'), true);
   assert.equal(appJs.includes('stop-condition 재알림'), true);
   assert.equal(appJs.includes('재알림 필요'), true);

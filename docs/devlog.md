@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Learning Promotion Stop Reason UI Filter
+
+- added a fallback stop reason selector to the mission action inbox so operators can filter learning-promotion provider lessons from the web UI
+- kept full action summary counts unfiltered while loading a filtered action view with `providerFallbackStopReason` for the selected stop condition
+- extended UI learning promotion smoke coverage for the new stop reason filter controls and reset action
+
 ## 2026-06-05 Learning Promotion Stop Reason Queue Filter
 
 - added provider fallback stop reason filtering to `action learning-promotions` and `action inbox` so operator queues can isolate provider lessons by fallback stop condition

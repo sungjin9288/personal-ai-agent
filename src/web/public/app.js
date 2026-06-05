@@ -23,6 +23,7 @@ const state = {
   harnessAttachmentFocus: '',
   missionActions: null,
   missionActionsFilter: 'all',
+  missionActionsFallbackStopReasonFilter: '',
   missionActionsView: null,
   missionDetail: null,
   missionTimeline: null,
@@ -17554,6 +17555,32 @@ function renderMissionActionsFilterButton(filter, label, count) {
   return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}">${escapeHtml(label)} ${escapeHtml(String(count ?? 0))}</button>`;
 }
 
+function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
+  return (payload?.items || []).reduce((counts, item) => {
+    Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
+      const normalizedReason = String(reason || '').trim();
+      if (!normalizedReason) {
+        return;
+      }
+      counts[normalizedReason] = (counts[normalizedReason] || 0) + Number(count || 0);
+    });
+    return counts;
+  }, {});
+}
+
+function renderMissionActionsFallbackStopReasonOptions() {
+  const counts = getMissionActionsFallbackStopReasonCounts(state.missionActions);
+  return Object.entries(counts)
+    .sort(([leftReason, leftCount], [rightReason, rightCount]) =>
+      Number(rightCount || 0) - Number(leftCount || 0) || leftReason.localeCompare(rightReason),
+    )
+    .map(
+      ([reason, count]) =>
+        `<option value="${escapeHtml(reason)}">${escapeHtml(reason)} (${escapeHtml(String(count))})</option>`,
+    )
+    .join('');
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -17565,6 +17592,23 @@ function wireMissionActionsFilterControls() {
       await loadMissionActions(state.selectedMissionId);
       renderMissionActions();
     });
+  });
+  elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]')?.addEventListener('change', async (event) => {
+    const nextFilter = String(event.target.value || '').trim();
+    if (state.missionActionsFallbackStopReasonFilter === nextFilter) {
+      return;
+    }
+    state.missionActionsFallbackStopReasonFilter = nextFilter;
+    await loadMissionActions(state.selectedMissionId);
+    renderMissionActions();
+  });
+  elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-reset]')?.addEventListener('click', async () => {
+    if (!state.missionActionsFallbackStopReasonFilter) {
+      return;
+    }
+    state.missionActionsFallbackStopReasonFilter = '';
+    await loadMissionActions(state.selectedMissionId);
+    renderMissionActions();
   });
 }
 
@@ -17590,17 +17634,29 @@ function renderMissionActions() {
   const visibleActions = getVisibleMissionActionsPayload() || state.missionActions;
   const summary = visibleActions.summary || {};
   const fullSummary = state.missionActions.summary || summary;
+  const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
+  const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
   elements.actionSummary.innerHTML = `
     <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>재알림 필요</span><strong>${escapeHtml(String(fullSummary.reminderCounts?.needsReminder ?? 0))}</strong></div>
     <div class="summary-chip"><span>기한 초과</span><strong>${escapeHtml(String(fullSummary.overdueCounts?.overdue ?? 0))}</strong></div>
+    <div class="summary-chip"><span>fallback stop</span><strong>${escapeHtml(fallbackStopReasonFilter || 'all')}</strong></div>
     <div class="action-row action-filter-row">
       ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
       ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
       ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
+      <select data-action-inbox-fallback-stop-filter="true" aria-label="fallback stop reason filter">
+        <option value="">fallback stop 전체</option>
+        ${fallbackStopReasonOptions}
+      </select>
+      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true">stop 필터 초기화</button>
     </div>
   `;
+  const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
+  if (fallbackStopSelect) {
+    fallbackStopSelect.value = fallbackStopReasonFilter;
+  }
   wireMissionActionsFilterControls();
 
   const items = visibleActions.items || [];
@@ -19107,7 +19163,7 @@ async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
   return { documents, memory };
 }
 
-function buildMissionActionsUrl(missionId, { filter = 'all' } = {}) {
+function buildMissionActionsUrl(missionId, { filter = 'all', includeFallbackStopReason = true } = {}) {
   const params = new URLSearchParams({
     missionId: String(missionId || ''),
     promotionStatus: 'operator-active',
@@ -19121,6 +19177,13 @@ function buildMissionActionsUrl(missionId, { filter = 'all' } = {}) {
     params.set('overdueOnly', 'true');
   }
 
+  const fallbackStopReason = includeFallbackStopReason
+    ? String(state.missionActionsFallbackStopReasonFilter || '').trim()
+    : '';
+  if (fallbackStopReason) {
+    params.set('providerFallbackStopReason', fallbackStopReason);
+  }
+
   return `/api/actions?${params.toString()}`;
 }
 
@@ -19132,9 +19195,12 @@ async function loadMissionActions(missionId = state.selectedMissionId) {
   }
 
   const filter = state.missionActionsFilter || 'all';
-  const fullPayloadPromise = api(buildMissionActionsUrl(missionId, { filter: 'all' }));
+  const fallbackStopReason = String(state.missionActionsFallbackStopReasonFilter || '').trim();
+  const fullPayloadPromise = api(buildMissionActionsUrl(missionId, { filter: 'all', includeFallbackStopReason: false }));
   const viewPayloadPromise =
-    filter === 'all' ? Promise.resolve(null) : api(buildMissionActionsUrl(missionId, { filter }));
+    filter === 'all' && !fallbackStopReason
+      ? Promise.resolve(null)
+      : api(buildMissionActionsUrl(missionId, { filter }));
   const [fullPayload, viewPayload] = await Promise.all([fullPayloadPromise, viewPayloadPromise]);
   state.missionActions = fullPayload;
   state.missionActionsView = viewPayload;
