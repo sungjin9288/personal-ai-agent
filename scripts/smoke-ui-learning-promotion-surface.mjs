@@ -161,6 +161,10 @@ try {
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
   assert.equal(appJs.includes('data-learning-promotion-remind'), true);
+  assert.equal(appJs.includes('renderLearningPromotionActionButton'), true);
+  assert.equal(appJs.includes('${label}: learning candidate ${candidateId}'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('data-action-inbox-filter'), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);

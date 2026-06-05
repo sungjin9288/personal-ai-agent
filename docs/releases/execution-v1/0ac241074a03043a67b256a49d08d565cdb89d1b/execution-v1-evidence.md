@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T10:48:14.834Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T10:47:55.709Z
 - branch: codex/learning-promotion-action-button-label
 - commit: 0ac241074a03043a67b256a49d08d565cdb89d1b
