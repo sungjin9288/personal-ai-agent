@@ -12921,6 +12921,8 @@ function renderExecutionConsole() {
   const policy = execution?.policy || { allowedCount: 0, warningCount: 0, blockedCount: 0 };
   const verification = executionSession?.verification || null;
   const rollback = executionSession?.rollback || null;
+  const executionMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
+  const executionSessionLabel = executionSession?.id || latestLease?.id || executionMissionLabel;
   const mutationAuditCount = Array.isArray(executionSession?.mutationAudits) ? executionSession.mutationAudits.length : 0;
   const rollbackAvailable = Boolean(
     executionSession?.id &&
@@ -12931,21 +12933,21 @@ function renderExecutionConsole() {
   const rollbackActions = rollbackAvailable
     ? `
       <div class="action-row">
-        <button class="ghost-button" type="button" data-ui-action="execution-rollback-preview">rollback preview</button>
-        <button class="danger-button" type="button" data-ui-action="execution-rollback">rollback 실행</button>
+        <button class="ghost-button" type="button" data-ui-action="execution-rollback-preview" aria-label="${escapeHtml(`rollback preview: ${executionSessionLabel}`)}" title="${escapeHtml(`rollback preview: ${executionSessionLabel}`)}">rollback preview</button>
+        <button class="danger-button" type="button" data-ui-action="execution-rollback" aria-label="${escapeHtml(`rollback 실행: ${executionSessionLabel}`)}" title="${escapeHtml(`rollback 실행: ${executionSessionLabel}`)}">rollback 실행</button>
       </div>
     `
     : rollback?.status
       ? `<p class="summary-note">${escapeHtml(rollback.summary || `rollback ${rollback.status}`)}</p>`
       : '';
   const primaryAction = execution?.currentLease
-    ? '<button class="primary-button" type="button" data-ui-action="execution-start">실행 시작</button>'
+    ? `<button class="primary-button" type="button" data-ui-action="execution-start" aria-label="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}">실행 시작</button>`
     : execution?.latestApproval?.status === 'pending'
-      ? '<button class="secondary-button" type="button" disabled>승인 대기 중</button>'
-      : '<button class="primary-button" type="button" data-ui-action="execution-preflight" data-ui-value="request-approval">실행 승인 요청</button>';
+      ? `<button class="secondary-button" type="button" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" title="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" disabled>승인 대기 중</button>`
+      : `<button class="primary-button" type="button" data-ui-action="execution-preflight" data-ui-value="request-approval" aria-label="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}">실행 승인 요청</button>`;
   const secondaryAction = executionSession?.status === 'running'
-    ? '<button class="ghost-button" type="button" data-ui-action="execution-stop">실행 중단</button>'
-    : '<button class="ghost-button" type="button" data-ui-action="execution-preflight">preflight 새로고침</button>';
+    ? `<button class="ghost-button" type="button" data-ui-action="execution-stop" aria-label="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}" title="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}">실행 중단</button>`
+    : `<button class="ghost-button" type="button" data-ui-action="execution-preflight" aria-label="${escapeHtml(`preflight 새로고침: ${executionMissionLabel}`)}" title="${escapeHtml(`preflight 새로고침: ${executionMissionLabel}`)}">preflight 새로고침</button>`;
   const manifestSteps = Array.isArray(execution?.manifest?.steps) ? execution.manifest.steps : [];
   const blockedList = (execution?.blockedReasons || []).slice(0, 3);
   const changedFiles = (executionSession?.changedFiles || []).slice(0, 5);

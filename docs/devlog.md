@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Execution Console Button Labels
+
+- added mission/session-aware title and aria-label metadata to execution console start, approval waiting, approval request, stop, preflight refresh, rollback preview, and rollback execution buttons
+- kept existing execution action ids, approval request routing, stop/start handlers, rollback handlers, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the execution console button accessibility rendering contract
+
 ## 2026-06-06 Memory Browse Button Labels
 
 - added memory-aware title and aria-label metadata to memory browse reset, mission/workspace load, mission/workspace delete, previous page, and next page buttons so repeated controls expose their target memory or page context

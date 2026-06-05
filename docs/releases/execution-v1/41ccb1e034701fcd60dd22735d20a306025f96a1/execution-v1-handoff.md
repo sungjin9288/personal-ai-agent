@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T17:18:12.739Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T17:18:11.209Z
 - localDate: 2026-06-06
 - branch: codex/execution-console-action-labels
 - commit: 41ccb1e034701fcd60dd22735d20a306025f96a1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1](releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1](docs/releases/execution-v1/41ccb1e034701fcd60dd22735d20a306025f96a1)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/execution-console-action-labels not found
 
