@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T00:07:05.516Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T00:07:04.088Z
 - localDate: 2026-06-05
 - branch: codex/release-blocker-without-shared-help-docs
 - commit: 5b550c29523ea009677674e3fe771b5d92d433c4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4](releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4](docs/releases/execution-v1/5b550c29523ea009677674e3fe771b5d92d433c4)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-blocker-without-shared-help-docs not found
 
