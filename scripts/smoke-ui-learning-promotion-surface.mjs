@@ -168,6 +168,7 @@ try {
   assert.equal(appJs.includes('data-action-inbox-copy-link'), true);
   assert.equal(appJs.includes('copyMissionActionsViewLink'), true);
   assert.equal(appJs.includes('providerFallbackStopReason'), true);
+  assert.equal(appJs.includes('counts[activeReason] = 0'), true);
   assert.equal(appJs.includes('fallback stop 전체'), true);
   assert.equal(appJs.includes('stop 필터 초기화'), true);
   assert.equal(appJs.includes('필터 전체 초기화'), true);
