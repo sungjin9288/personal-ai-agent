@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T04:56:49.427Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T04:56:40.881Z
 - branch: codex/action-inbox-stop-reason-empty-label
 - commit: b972b33e1308f2cd411407b8a078884873461677
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b972b33e1308f2cd411407b8a078884873461677/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
