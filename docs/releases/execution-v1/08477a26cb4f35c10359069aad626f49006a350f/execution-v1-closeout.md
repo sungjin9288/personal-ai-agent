@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T06:15:19.114Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T06:15:09.924Z
 - branch: codex/action-inbox-active-stop-option
 - commit: 08477a26cb4f35c10359069aad626f49006a350f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/08477a26cb4f35c10359069aad626f49006a350f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
