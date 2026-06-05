@@ -259,7 +259,7 @@ Options:
   --provider <providerId>       Filter release blocker actions to one provider.
   --category <category>         Filter by blocker action category.
   --owner <owner>               Filter by accountable owner.
-  --without-shared              When provider is set, hide shared provider-operations blockers.
+  --without-shared              Hide shared provider-operations blockers and report excluded shared blocker ids.
 
 Audit policy:
   This command summarizes current release blocker handoff records, stop reasons, required closing evidence, required commands, evidence docs, closure rules, and productionReadyClaim=false policy without raw secrets or customer payloads.

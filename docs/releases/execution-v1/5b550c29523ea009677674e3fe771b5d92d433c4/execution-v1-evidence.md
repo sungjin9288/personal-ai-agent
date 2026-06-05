@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T00:07:05.516Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T00:06:25.970Z
 - branch: codex/release-blocker-without-shared-help-docs
 - commit: 5b550c29523ea009677674e3fe771b5d92d433c4

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Release Blocker Without-Shared Help Docs
+
+- updated `overview release-blockers --without-shared` help text so it no longer implies a provider filter is required before shared provider-operations blockers can be excluded
+- documented that provider-only handoff acceptance should check `sharedProviderOperationsExcludedCount` and `sharedProviderOperationsExcludedIds` in CLI/API filters or copied handoff headers
+- extended release blocker handoff smoke coverage so stale `--without-shared` help wording cannot regress
+
 ## 2026-06-05 Provider-Only Copy Shared Scope Audit Lines
 
 - added shared provider-operations included/excluded count and excluded id lines to copied release blocker and target evidence handoff artifacts

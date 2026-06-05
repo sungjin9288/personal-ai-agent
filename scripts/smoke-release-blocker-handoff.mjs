@@ -182,6 +182,8 @@ assert.equal(providerOpsOwner.summary.categoryCounts['provider-operations'], 1);
 const help = runCliText(['overview', 'release-blockers', '--help']);
 assert.match(help, /overview release-blockers/);
 assert.match(help, /--without-shared/);
+assert.match(help, /Hide shared provider-operations blockers and report excluded shared blocker ids/);
+assert.doesNotMatch(help, /When provider is set, hide shared provider-operations blockers/);
 assert.match(help, /productionReadyClaim=false policy/);
 
 const apiSmoke = await runReleaseBlockerHandoffApiSmoke();
