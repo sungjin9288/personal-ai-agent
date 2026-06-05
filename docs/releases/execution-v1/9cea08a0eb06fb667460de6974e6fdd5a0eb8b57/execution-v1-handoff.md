@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T04:45:39.143Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T04:45:37.760Z
 - localDate: 2026-06-05
 - branch: codex/learning-promotion-stop-reason-ui-filter
 - commit: 9cea08a0eb06fb667460de6974e6fdd5a0eb8b57
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57](releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/learning-promotion-stop-reason-ui-filter not found
 
