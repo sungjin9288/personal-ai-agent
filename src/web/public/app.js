@@ -13961,7 +13961,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-memory-action="reset-browse" ${isMemoryBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
+          <button class="ghost-button" type="button" data-memory-action="reset-browse" aria-label="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" title="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" ${isMemoryBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       <div class="harness-list">
@@ -13976,8 +13976,8 @@ function renderHarnessPanel() {
               <div class="harness-row-meta">
                 <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
                 <div class="inline-actions">
-                  <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission">불러오기</button>
-                  <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission">삭제</button>
+                  <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission" aria-label="${escapeHtml(`미션 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`)}" title="${escapeHtml(`미션 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`)}">불러오기</button>
+                  <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="mission" aria-label="${escapeHtml(`미션 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`)}" title="${escapeHtml(`미션 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`)}">삭제</button>
                 </div>
               </div>
             </div>
@@ -14002,8 +14002,8 @@ function renderHarnessPanel() {
                       <div class="harness-row-meta">
                         <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
                         <div class="inline-actions">
-                          <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace">불러오기</button>
-                          <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace">삭제</button>
+                          <button class="ghost-button" type="button" data-memory-action="edit" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace" aria-label="${escapeHtml(`워크스페이스 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`)}" title="${escapeHtml(`워크스페이스 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`)}">불러오기</button>
+                          <button class="danger-button" type="button" data-memory-action="delete" data-memory-id="${escapeHtml(entry.id)}" data-memory-scope="workspace" aria-label="${escapeHtml(`워크스페이스 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`)}" title="${escapeHtml(`워크스페이스 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`)}">삭제</button>
                         </div>
                       </div>
                     </div>
@@ -14020,8 +14020,8 @@ function renderHarnessPanel() {
             <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
             <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-memory-action="prev-page" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(memoryPageSize))}건</button>
-              <button class="ghost-button" type="button" data-memory-action="next-page" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(memoryPageSize))}건</button>
+              <button class="ghost-button" type="button" data-memory-action="prev-page" aria-label="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(memoryPageSize))}건</button>
+              <button class="ghost-button" type="button" data-memory-action="next-page" aria-label="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(memoryPageSize))}건</button>
             </div>
           </div>`
         : ''
