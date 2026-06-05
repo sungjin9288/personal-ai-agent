@@ -12857,6 +12857,7 @@ function renderRunStageSummary() {
   const latestSession = state.missionDetail.summary?.latestSession || null;
   const execution = getExecutionStatusPayload();
   const flow = getFlowState();
+  const runStageMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
   elements.runStageSummary.innerHTML = `
     <div class="stage-summary-card">
       <p class="summary-label">현재 안내</p>
@@ -12891,7 +12892,7 @@ function renderRunStageSummary() {
         }
       </div>
       <div class="action-row">
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}">실행 기록 보기</button>
       </div>
     </div>
   `;
@@ -13055,6 +13056,7 @@ function renderReviewStageSummary() {
   const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
   const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
   const flow = getFlowState();
+  const reviewStageMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
   const primaryDecision =
     pendingApprovalCount > 0
       ? `승인 ${pendingApprovalCount}건부터 처리하세요`
@@ -13099,9 +13101,9 @@ function renderReviewStageSummary() {
       <p class="summary-note review-priority-copy">${escapeHtml(decisionCopy)}</p>
       <p class="summary-note">${escapeHtml(latestExecutionSession?.verification?.summary || latestSession?.reviewerSummary || flow.copy)}</p>
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">승인 항목 보기</button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">후속 작업 보기</button>
-        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
+        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}">승인 항목 보기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`후속 작업 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`후속 작업 보기: ${reviewStageMissionLabel}`)}">후속 작업 보기</button>
+        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${reviewStageMissionLabel}`)}">실행 기록 보기</button>
       </div>
     </div>
   `;
@@ -13136,6 +13138,7 @@ function renderOutputStageSummary() {
   }
 
   const artifactLabel = getArtifactLabel(latestArtifact);
+  const outputStageTargetLabel = artifactLabel || state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
   const artifactPath = latestArtifact?.path || latestArtifact?.fileName || '결과 파일 경로가 아직 없습니다.';
   const resultStateLabel = latestArtifact ? '결과 확정 가능' : '결과 준비 중';
   const resultSummary = latestSession?.reviewerSummary || flow.copy;
@@ -13164,7 +13167,7 @@ function renderOutputStageSummary() {
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="toggle-output-support">지원 패널 펼치기</button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
           ${
             latestRetrievalArtifact
               ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거</button>`
@@ -13255,9 +13258,9 @@ function renderOutputStageSummary() {
       }
       ${renderRetrievalCompareCallout(retrieval, { includeAction: false })}
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts">결과물 열기</button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
-        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews">검토 상태 보기</button>
+        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
+        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${outputStageTargetLabel}`)}">실행 기록 보기</button>
+        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}">검토 상태 보기</button>
         ${
           latestRetrievalArtifact
             ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거 열기</button>`

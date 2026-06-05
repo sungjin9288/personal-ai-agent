@@ -1610,6 +1610,16 @@ try {
   assert.equal(appJs.includes('rollback preview: ${executionSessionLabel}'), true);
   assert.equal(appJs.includes('data-ui-action="execution-rollback"'), true);
   assert.equal(appJs.includes('rollback 실행: ${executionSessionLabel}'), true);
+  assert.equal(appJs.includes('runStageMissionLabel'), true);
+  assert.equal(appJs.includes('reviewStageMissionLabel'), true);
+  assert.equal(appJs.includes('outputStageTargetLabel'), true);
+  assert.equal(appJs.includes('실행 기록 보기: ${runStageMissionLabel}'), true);
+  assert.equal(appJs.includes('승인 항목 보기: ${reviewStageMissionLabel}'), true);
+  assert.equal(appJs.includes('후속 작업 보기: ${reviewStageMissionLabel}'), true);
+  assert.equal(appJs.includes('실행 기록 보기: ${reviewStageMissionLabel}'), true);
+  assert.equal(appJs.includes('결과물 열기: ${outputStageTargetLabel}'), true);
+  assert.equal(appJs.includes('실행 기록 보기: ${outputStageTargetLabel}'), true);
+  assert.equal(appJs.includes('검토 상태 보기: ${outputStageTargetLabel}'), true);
   assert.equal(appJs.includes('document-log-search'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
   assert.equal(appJs.includes('문서 필터 초기화: ${documentFilterLabel}'), true);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Stage Summary Tab Button Labels
+
+- added mission/artifact-aware title and aria-label metadata to run, review, and output stage summary tab navigation buttons so repeated controls expose the target mission or artifact context
+- kept existing switch-tab actions, tab values, quick action routing, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the stage summary tab button accessibility rendering contract
+
 ## 2026-06-06 Execution Console Button Labels
 
 - added mission/session-aware title and aria-label metadata to execution console start, approval waiting, approval request, stop, preflight refresh, rollback preview, and rollback execution buttons
