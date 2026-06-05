@@ -179,6 +179,9 @@ try {
   assert.equal(appJs.includes('fallback stop 전체'), true);
   assert.equal(appJs.includes('fallback stop 없음'), true);
   assert.equal(appJs.includes('stop 필터 초기화'), true);
+  assert.equal(appJs.includes('fallbackStopResetTitle'), true);
+  assert.equal(appJs.includes('초기화할 fallback stop 필터가 없습니다'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackStopResetTitle)}"'), true);
   assert.equal(appJs.includes('필터 전체 초기화'), true);
   assert.equal(appJs.includes("${fallbackStopReasonFilter ? '' : 'disabled'}"), true);
   assert.equal(appJs.includes("${hasActiveFilter ? '' : 'disabled'}"), true);
