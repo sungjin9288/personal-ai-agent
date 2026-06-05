@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T17:52:13.475Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T17:51:56.980Z
 - branch: codex/stage-summary-tab-labels
 - commit: a5834eb57d3d2fa4dd206964759b5dfdbdc132ef
