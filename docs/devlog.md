@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Learning Candidate Fallback Stop Reason Audit
+
+- added `--provider-fallback-stop-reason` to `overview learning-candidates` so operator review can isolate provider lessons by fallback stop condition
+- wired the learning candidate audit filter to provider fallback stop reason counts while preserving existing provider fallback policy filtering
+- extended learning candidate audit smoke coverage for help text, positive stop reason filtering, and empty stop reason filter results
+
 ## 2026-06-05 Release Blocker Without-Shared Help Docs
 
 - updated `overview release-blockers --without-shared` help text so it no longer implies a provider filter is required before shared provider-operations blockers can be excluded

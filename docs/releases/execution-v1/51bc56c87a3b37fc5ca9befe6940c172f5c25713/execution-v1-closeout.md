@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T03:45:28.573Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T03:45:20.139Z
 - branch: codex/learning-candidate-fallback-stop-reason-audit
 - commit: 51bc56c87a3b37fc5ca9befe6940c172f5c25713
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51bc56c87a3b37fc5ca9befe6940c172f5c25713/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
