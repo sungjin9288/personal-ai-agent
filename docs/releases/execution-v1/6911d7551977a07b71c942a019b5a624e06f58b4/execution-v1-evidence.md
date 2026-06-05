@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T03:56:28.837Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T03:56:09.815Z
 - branch: codex/learning-promotion-stop-reason-queue-filter
 - commit: 6911d7551977a07b71c942a019b5a624e06f58b4

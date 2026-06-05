@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T03:56:28.837Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T03:56:20.886Z
 - branch: codex/learning-promotion-stop-reason-queue-filter
 - commit: 6911d7551977a07b71c942a019b5a624e06f58b4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6911d7551977a07b71c942a019b5a624e06f58b4/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
