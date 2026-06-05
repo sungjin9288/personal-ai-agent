@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T07:29:26.787Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T07:29:12.749Z
 - branch: codex/action-inbox-filter-aria-pressed
 - commit: d35a0162effab86b9bfe9757b2b35f4645d5c64a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d35a0162effab86b9bfe9757b2b35f4645d5c64a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

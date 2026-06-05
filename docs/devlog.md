@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Filter Button Aria Pressed
+
+- added `aria-pressed` to the action inbox status filter buttons so the active filter state is exposed beyond visual button styling
+- added concise filter button titles for the 전체, 재알림 필요, and 기한 초과 action filters
+- extended UI learning promotion smoke coverage for the action inbox filter button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Stop Reason Select Aria Label
 
 - aligned the fallback stop reason select `aria-label` with the contextual title so assistive technology receives the same enabled or disabled-state meaning
