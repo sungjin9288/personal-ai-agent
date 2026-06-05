@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T10:38:49.094Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T10:38:30.517Z
 - branch: codex/action-inbox-filter-button-label-detail
 - commit: 607ae03dabd17cddc127c4b052a1a354f9969942
