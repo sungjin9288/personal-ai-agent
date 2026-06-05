@@ -17920,7 +17920,7 @@ function renderMissionActions() {
             }
             ${
               item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
-                ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}">권장 재실행</button>`
+                ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`권장 재실행: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`권장 재실행: ${item.title || item.actionId || item.id || item.missionId}`)}">권장 재실행</button>`
                 : ''
             }
             ${renderLearningPromotionActionButtons(item)}
