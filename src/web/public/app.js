@@ -17900,17 +17900,17 @@ function renderMissionActions() {
             }
             ${
               item.actionType === 'provider-attention'
-                ? `<button class="primary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="primary">제공자 복구</button>`
+                ? `<button class="primary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="primary" aria-label="${escapeHtml(`제공자 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`제공자 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">제공자 복구</button>`
                 : ''
             }
             ${
               item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
-                ? `<button class="secondary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="fallback">fallback 복구</button>`
+                ? `<button class="secondary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="fallback" aria-label="${escapeHtml(`fallback 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`fallback 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">fallback 복구</button>`
                 : ''
             }
             ${
               item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
-                ? `<button class="ghost-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="recoverable-fallback">복구성 fallback</button>`
+                ? `<button class="ghost-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="recoverable-fallback" aria-label="${escapeHtml(`복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}`)}">복구성 fallback</button>`
                 : ''
             }
             ${

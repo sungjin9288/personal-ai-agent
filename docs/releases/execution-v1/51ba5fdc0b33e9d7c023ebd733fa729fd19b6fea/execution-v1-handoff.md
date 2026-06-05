@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T13:53:04.808Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T13:53:03.424Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-provider-remediate-label
 - commit: 51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea](releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea](docs/releases/execution-v1/51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-provider-remediate-label not found
 

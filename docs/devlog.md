@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Provider Remediate Button Labels
+
+- added action-aware title and aria-label metadata to provider-attention remediation buttons so primary, fallback, and recoverable fallback recovery controls expose their target action context
+- kept the existing remediation modes, action ids, command routing, and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the provider-attention remediation button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Rerun Button Label
 
 - added action-aware title and aria-label metadata to the action inbox recommended rerun button so the target action context is exposed beyond the generic visible label

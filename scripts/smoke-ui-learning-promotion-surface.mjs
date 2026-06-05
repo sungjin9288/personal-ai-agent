@@ -161,6 +161,10 @@ try {
   assert.equal(appJs.includes('미션 열기: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-action-rerun'), true);
   assert.equal(appJs.includes('권장 재실행: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('data-provider-attention-remediate'), true);
+  assert.equal(appJs.includes('제공자 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('fallback 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
