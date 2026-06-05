@@ -1,8 +1,11 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-06-05T04:47:31.049Z
+- archivedAt: 2026-06-05T04:45:39.143Z
+- sourcePath: docs/execution-v1-evidence.md
+
+- generatedAt: 2026-06-05T04:45:22.421Z
 - branch: codex/learning-promotion-stop-reason-ui-filter
-- commit: 55a97f38f561510ee6ed47fb0878443af3f5c3b9
+- commit: 9cea08a0eb06fb667460de6974e6fdd5a0eb8b57
 - mode: execution-v1-verification
 - liveFlags: --live-openai, --live-anthropic, --live-local
 

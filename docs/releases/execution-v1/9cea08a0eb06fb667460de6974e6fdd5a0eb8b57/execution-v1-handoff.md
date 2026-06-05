@@ -1,14 +1,17 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-05T04:47:38.672Z
+- archivedAt: 2026-06-05T04:45:39.143Z
+- sourcePath: docs/execution-v1-handoff.md
+
+- generatedAt: 2026-06-05T04:45:37.760Z
 - localDate: 2026-06-05
 - branch: codex/learning-promotion-stop-reason-ui-filter
-- commit: 55a97f38f561510ee6ed47fb0878443af3f5c3b9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/55a97f38f561510ee6ed47fb0878443af3f5c3b9](releases/execution-v1/55a97f38f561510ee6ed47fb0878443af3f5c3b9)
+- commit: 9cea08a0eb06fb667460de6974e6fdd5a0eb8b57
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57](docs/releases/execution-v1/9cea08a0eb06fb667460de6974e6fdd5a0eb8b57)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
-- commitPushStatus: pushed to origin/codex/learning-promotion-stop-reason-ui-filter
+- commitPushStatus: not pushed, origin/codex/learning-promotion-stop-reason-ui-filter not found
 
 ## Operational State
 
@@ -79,7 +82,7 @@ Expected pre-live state:
 3. Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.
 4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-6. Current verified commit is already contained in `origin/codex/learning-promotion-stop-reason-ui-filter`; only commit/push again after intentionally changing release artifacts.
+6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
 
 ## Completion Boundary
 

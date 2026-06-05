@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T04:47:40.127Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T04:47:31.049Z
 - branch: codex/learning-promotion-stop-reason-ui-filter
 - commit: 55a97f38f561510ee6ed47fb0878443af3f5c3b9
