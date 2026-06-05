@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T17:18:12.739Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T17:17:56.983Z
 - branch: codex/execution-console-action-labels
 - commit: 41ccb1e034701fcd60dd22735d20a306025f96a1
