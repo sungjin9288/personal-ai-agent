@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T18:23:21.152Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T18:23:19.748Z
 - localDate: 2026-06-06
 - branch: codex/release-surface-action-labels
 - commit: 778e8a0ac445b6c82fcce8820d607bbc9762a22c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c](releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c](docs/releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-surface-action-labels not found
 

@@ -14315,6 +14315,13 @@ function renderReleaseStatus() {
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
   const snapshotEligibility = release.snapshotEligibility || { allowed: false, reason: 'snapshot 상태를 확인할 수 없습니다.' };
+  const releaseActionLabel = summary.commit
+    || snapshot?.verifiedCommit
+    || snapshot?.commit
+    || handoff?.commit
+    || evidence?.commit
+    || values?.commit
+    || 'execution-v1 release';
   const baseline = release.baseline || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
@@ -14530,19 +14537,19 @@ function renderReleaseStatus() {
             : ''}
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="refresh-release-status">상태 다시 읽기</button>
-          <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all">전체 preflight 실행</button>
-          <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all">전체 preflight 명령 복사</button>
-          <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
+          <button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}" title="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}">상태 다시 읽기</button>
+          <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
+          <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all" aria-label="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}">전체 preflight 명령 복사</button>
+          <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface" aria-label="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}" title="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
           ${regenerationConfirmArmed
-            ? '<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface">현재 재생성 취소</button>'
+            ? `<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface" aria-label="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}">현재 재생성 취소</button>`
             : ''}
-          <button class="${snapshotConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="archive-release-snapshot" ${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'disabled' : ''}>${snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정'}</button>
+          <button class="${snapshotConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="archive-release-snapshot" aria-label="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" title="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" ${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'disabled' : ''}>${snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정'}</button>
           ${snapshotConfirmArmed
-            ? '<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot">현재 snapshot 고정 취소</button>'
+            ? `<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot" aria-label="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}">현재 snapshot 고정 취소</button>`
             : ''}
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs">실행 기록 보기</button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">하네스 보기</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${releaseActionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${releaseActionLabel}`)}">실행 기록 보기</button>
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness" aria-label="${escapeHtml(`하네스 보기: ${releaseActionLabel}`)}" title="${escapeHtml(`하네스 보기: ${releaseActionLabel}`)}">하네스 보기</button>
         </div>
       </section>
 
@@ -16202,9 +16209,9 @@ function renderReleaseStatus() {
                 <span class="mini-badge ${releaseAllPreflight?.blockedCount ? 'status-failed' : 'status-completed'}">${escapeHtml(aggregatePreflightBlockedLabel)}</span>
               </div>
               <div class="release-history-focus-actions">
-                <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all">전체 preflight 실행</button>
-                <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all">전체 preflight 명령 복사</button>
-                <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-release-provider-readiness-package="true">전체 readiness package 복사</button>
+                <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
+                <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all" aria-label="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}">전체 preflight 명령 복사</button>
+                <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-release-provider-readiness-package="true" aria-label="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}">전체 readiness package 복사</button>
               </div>
             </div>
             <div class="release-provider-grid">

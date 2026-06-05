@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T18:23:21.152Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T18:23:05.668Z
 - branch: codex/release-surface-action-labels
 - commit: 778e8a0ac445b6c82fcce8820d607bbc9762a22c

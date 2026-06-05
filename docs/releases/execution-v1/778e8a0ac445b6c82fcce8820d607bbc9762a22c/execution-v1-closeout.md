@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T18:23:21.152Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T18:23:11.594Z
 - branch: codex/release-surface-action-labels
 - commit: 778e8a0ac445b6c82fcce8820d607bbc9762a22c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/778e8a0ac445b6c82fcce8820d607bbc9762a22c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
