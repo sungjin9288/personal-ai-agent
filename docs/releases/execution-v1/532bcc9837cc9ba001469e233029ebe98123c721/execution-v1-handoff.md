@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T07:00:15.498Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T07:00:13.989Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-stop-select-placeholder
 - commit: 532bcc9837cc9ba001469e233029ebe98123c721
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721](releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721](docs/releases/execution-v1/532bcc9837cc9ba001469e233029ebe98123c721)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-stop-select-placeholder not found
 

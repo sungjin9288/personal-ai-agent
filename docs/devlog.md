@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason Select Placeholder
+
+- changed the fallback stop reason select placeholder to show `fallback stop 없음` when the selected mission has no stop reason options
+- kept `fallback stop 전체` for interactive filter states and preserved active `afstop` zero-count option behavior
+- extended UI learning promotion smoke coverage for the fallback stop reason select placeholder rendering contract
+
 ## 2026-06-05 Action Inbox Stop Reason Select Title
 
 - added a contextual title to the fallback stop reason select so disabled controls explain that no fallback stop reason options are available

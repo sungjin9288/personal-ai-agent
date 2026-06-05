@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T07:00:15.498Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T06:59:53.982Z
 - branch: codex/action-inbox-stop-select-placeholder
 - commit: 532bcc9837cc9ba001469e233029ebe98123c721

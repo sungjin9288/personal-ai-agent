@@ -172,7 +172,9 @@ try {
   assert.equal(appJs.includes("${hasFallbackStopReasonOptions ? '' : 'disabled'}"), true);
   assert.equal(appJs.includes('fallbackStopReasonSelectTitle'), true);
   assert.equal(appJs.includes('선택 가능한 fallback stop reason이 없습니다'), true);
+  assert.equal(appJs.includes('fallbackStopReasonPlaceholder'), true);
   assert.equal(appJs.includes('fallback stop 전체'), true);
+  assert.equal(appJs.includes('fallback stop 없음'), true);
   assert.equal(appJs.includes('stop 필터 초기화'), true);
   assert.equal(appJs.includes('필터 전체 초기화'), true);
   assert.equal(appJs.includes("${fallbackStopReasonFilter ? '' : 'disabled'}"), true);
