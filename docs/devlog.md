@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Active Stop Reason Option
+
+- preserved the active fallback stop reason as a zero-count select option when a shared `afstop` link targets a reason that is absent from the current action counts
+- kept the existing summary chip and empty-state label behavior while making the select control reflect the active URL state directly
+- extended UI learning promotion smoke coverage for the active stop reason option preservation contract
+
 ## 2026-06-05 Action Inbox Copy Link Disabled State
 
 - disabled the action inbox copy-link control when no mission is selected so shared queue links are only presented from a valid mission context

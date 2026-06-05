@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T06:15:19.114Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T06:15:04.223Z
 - branch: codex/action-inbox-active-stop-option
 - commit: 08477a26cb4f35c10359069aad626f49006a350f

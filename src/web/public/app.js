@@ -17636,6 +17636,10 @@ function getMissionActionsFallbackStopReasonCounts(payload = state.missionAction
 
 function renderMissionActionsFallbackStopReasonOptions() {
   const counts = getMissionActionsFallbackStopReasonCounts(state.missionActions);
+  const activeReason = String(state.missionActionsFallbackStopReasonFilter || '').trim();
+  if (activeReason && counts[activeReason] === undefined) {
+    counts[activeReason] = 0;
+  }
   return Object.entries(counts)
     .sort(([leftReason, leftCount], [rightReason, rightCount]) =>
       Number(rightCount || 0) - Number(leftCount || 0) || leftReason.localeCompare(rightReason),
