@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Learning Promotion Stop Reason Queue Filter
+
+- added provider fallback stop reason filtering to `action learning-promotions` and `action inbox` so operator queues can isolate provider lessons by fallback stop condition
+- passed `providerFallbackStopReason` through `/api/actions` for UI/API parity with the CLI learning candidate audit
+- extended provider fallback learning and UI learning promotion smoke coverage for positive and empty stop reason queue filters
+
 ## 2026-06-05 Learning Candidate Fallback Stop Reason Audit
 
 - added `--provider-fallback-stop-reason` to `overview learning-candidates` so operator review can isolate provider lessons by fallback stop condition
