@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason Select Disabled State
+
+- disabled the fallback stop reason select when the selected mission has no fallback stop reason options to choose from
+- kept shared `afstop` links interactive by preserving the active stop reason as a zero-count option before computing the select disabled state
+- extended UI learning promotion smoke coverage for the fallback stop reason select disabled-state rendering contract
+
 ## 2026-06-05 Action Inbox Active Stop Reason Option
 
 - preserved the active fallback stop reason as a zero-count select option when a shared `afstop` link targets a reason that is absent from the current action counts

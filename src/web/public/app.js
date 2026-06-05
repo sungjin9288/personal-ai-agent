@@ -17722,6 +17722,7 @@ function renderMissionActions() {
   const fullSummary = state.missionActions.summary || summary;
   const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
   const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
+  const hasFallbackStopReasonOptions = Boolean(fallbackStopReasonOptions.trim());
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
   const hasSelectedMission = Boolean(state.selectedMissionId);
@@ -17735,7 +17736,7 @@ function renderMissionActions() {
       ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
       ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
       ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
-      <select data-action-inbox-fallback-stop-filter="true" aria-label="fallback stop reason filter">
+      <select data-action-inbox-fallback-stop-filter="true" aria-label="fallback stop reason filter" ${hasFallbackStopReasonOptions ? '' : 'disabled'}>
         <option value="">fallback stop 전체</option>
         ${fallbackStopReasonOptions}
       </select>
