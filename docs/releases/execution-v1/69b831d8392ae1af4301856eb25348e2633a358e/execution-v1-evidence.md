@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T16:15:36.298Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T16:15:19.670Z
 - branch: codex/document-browse-action-labels
 - commit: 69b831d8392ae1af4301856eb25348e2633a358e

@@ -1597,6 +1597,16 @@ try {
   assert.equal(appJs.includes('formatSpecialistFollowUpRoute'), true);
   assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
   assert.equal(appJs.includes('document-log-search'), true);
+  assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
+  assert.equal(appJs.includes('문서 필터 초기화: ${documentFilterLabel}'), true);
+  assert.equal(appJs.includes('data-document-action="edit"'), true);
+  assert.equal(appJs.includes('문서 불러오기: ${entry.title || entry.id || entry.path}'), true);
+  assert.equal(appJs.includes('data-document-action="delete"'), true);
+  assert.equal(appJs.includes('문서 삭제: ${entry.title || entry.id || entry.path}'), true);
+  assert.equal(appJs.includes('data-document-action="prev-page"'), true);
+  assert.equal(appJs.includes('이전 문서 ${documentPageSize}건'), true);
+  assert.equal(appJs.includes('data-document-action="next-page"'), true);
+  assert.equal(appJs.includes('다음 문서 ${documentPageSize}건'), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
   assert.equal(appJs.includes('loadRuntimeRequests'), true);
   assert.equal(appJs.includes('loadRuntimeJobs'), true);

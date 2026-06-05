@@ -13782,7 +13782,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-document-action="reset-browse" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
+          <button class="ghost-button" type="button" data-document-action="reset-browse" aria-label="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" title="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       ${
@@ -13801,8 +13801,8 @@ function renderHarnessPanel() {
                           <div class="harness-row-meta">
                             <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
                             <div class="inline-actions">
-                              <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}">불러오기</button>
-                              <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}">삭제</button>
+                              <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}" aria-label="${escapeHtml(`문서 불러오기: ${entry.title || entry.id || entry.path}`)}" title="${escapeHtml(`문서 불러오기: ${entry.title || entry.id || entry.path}`)}">불러오기</button>
+                              <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}" aria-label="${escapeHtml(`문서 삭제: ${entry.title || entry.id || entry.path}`)}" title="${escapeHtml(`문서 삭제: ${entry.title || entry.id || entry.path}`)}">삭제</button>
                             </div>
                           </div>
                         </div>
@@ -13819,8 +13819,8 @@ function renderHarnessPanel() {
                       <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
                       <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="prev-page" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
-                        <button class="ghost-button" type="button" data-document-action="next-page" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
+                        <button class="ghost-button" type="button" data-document-action="prev-page" aria-label="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
+                        <button class="ghost-button" type="button" data-document-action="next-page" aria-label="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
                       </div>
                     </div>`
                   : ''
