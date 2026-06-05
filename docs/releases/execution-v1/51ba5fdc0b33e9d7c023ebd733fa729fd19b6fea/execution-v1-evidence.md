@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T13:53:04.808Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T13:52:47.111Z
 - branch: codex/action-inbox-provider-remediate-label
 - commit: 51ba5fdc0b33e9d7c023ebd733fa729fd19b6fea
