@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Stop Reason URL State
+
+- added URL state for action inbox filters so `afilter` and `afstop` links can reopen the same operator queue view
+- restored action inbox filter state before mission selection so the first action load honors shared fallback stop reason links
+- extended UI learning promotion smoke coverage for action inbox filter URL parsing, writing, and restoration hooks
+
 ## 2026-06-05 Action Inbox Stop Reason Empty Label
 
 - added a combined action inbox filter label so fallback stop reason filters remain visible in empty states and filtered callouts

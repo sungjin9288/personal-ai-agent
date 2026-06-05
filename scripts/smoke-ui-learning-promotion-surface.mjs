@@ -172,6 +172,11 @@ try {
   assert.equal(appJs.includes('fallback stop ${fallbackStopReasonFilter}'), true);
   assert.equal(appJs.includes('${visibleFilterLabel} 항목이 없습니다'), true);
   assert.equal(appJs.includes('${visibleFilterLabel} 필터로 표시 중입니다'), true);
+  assert.equal(appJs.includes('applyMissionActionsFilterUrlState'), true);
+  assert.equal(appJs.includes("params.get('afilter')"), true);
+  assert.equal(appJs.includes("params.get('afstop')"), true);
+  assert.equal(appJs.includes("params.set('afilter', actionInboxFilter)"), true);
+  assert.equal(appJs.includes("params.set('afstop', actionInboxFallbackStopReason)"), true);
   assert.equal(appJs.includes('stop-condition 반려'), true);
   assert.equal(appJs.includes('stop-condition 재알림'), true);
   assert.equal(appJs.includes('재알림 필요'), true);
