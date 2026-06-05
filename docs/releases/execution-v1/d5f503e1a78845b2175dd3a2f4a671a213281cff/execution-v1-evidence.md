@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T15:10:46.481Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T15:10:30.129Z
 - branch: codex/action-inbox-follow-up-action-labels
 - commit: d5f503e1a78845b2175dd3a2f4a671a213281cff

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Action Inbox Follow-up Button Labels
+
+- added action-aware title and aria-label metadata to specialist follow-up remediation and reviewer follow-up resolve buttons so each control exposes its target action context
+- kept existing action ids, route handlers, resolution behavior, and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the follow-up action button accessibility rendering contract
+
 ## 2026-06-05 Action Inbox Provider Remediate Button Labels
 
 - added action-aware title and aria-label metadata to provider-attention remediation buttons so primary, fallback, and recoverable fallback recovery controls expose their target action context

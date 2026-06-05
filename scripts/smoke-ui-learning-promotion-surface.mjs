@@ -165,6 +165,10 @@ try {
   assert.equal(appJs.includes('제공자 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('fallback 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
+  assert.equal(appJs.includes('전문가 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('data-action-resolve'), true);
+  assert.equal(appJs.includes('후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);

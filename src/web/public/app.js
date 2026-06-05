@@ -17915,7 +17915,7 @@ function renderMissionActions() {
             }
             ${
               item.actionType === 'specialist-follow-up'
-                ? `<button class="primary-button" type="button" data-specialist-follow-up-remediate="${escapeHtml(item.actionId)}">전문가 복구</button>`
+                ? `<button class="primary-button" type="button" data-specialist-follow-up-remediate="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`전문가 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`전문가 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">전문가 복구</button>`
                 : ''
             }
             ${
@@ -17926,7 +17926,7 @@ function renderMissionActions() {
             ${renderLearningPromotionActionButtons(item)}
             ${
               item.actionType === 'reviewer-follow-up'
-                ? `<button class="ghost-button" type="button" data-action-resolve="${escapeHtml(item.actionId)}">후속 요청 해소</button>`
+                ? `<button class="ghost-button" type="button" data-action-resolve="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}`)}">후속 요청 해소</button>`
                 : ''
             }
           </div>
