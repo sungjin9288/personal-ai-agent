@@ -22,6 +22,7 @@ const help = spawnSync(process.execPath, [cliPath, 'overview', 'learning-candida
 });
 assert.equal(help.status, 0);
 assert.match(help.stdout, /overview learning-candidates/);
+assert.match(help.stdout, /--provider-fallback-stop-reason <reason>/);
 assert.match(help.stdout, /learningCandidate records/);
 assert.match(help.stdout, /retention\/expiration policy/);
 assert.match(help.stdout, /without enabling autonomous promotion/);
@@ -251,6 +252,35 @@ assert.equal(providerLessonFiltered.summary.filter.recordType, 'provider-lesson'
 assert.equal(providerLessonFiltered.summary.filter.target, 'provider-policy');
 assert.equal(providerLessonFiltered.summary.filter.providerFallbackPolicy, 'provider-failure-only');
 
+const providerFallbackStopReasonFiltered = runCli({
+  rootDir: tempRoot,
+  args: [
+    'overview',
+    'learning-candidates',
+    '--record-type',
+    'provider-lesson',
+    '--provider-fallback-stop-reason',
+    'eligible-provider-failure',
+    '--status',
+    'all',
+  ],
+});
+assert.equal(providerFallbackStopReasonFiltered.summary.recordCount, 2);
+assert.equal(providerFallbackStopReasonFiltered.summary.filter.recordType, 'provider-lesson');
+assert.equal(
+  providerFallbackStopReasonFiltered.summary.filter.providerFallbackStopReason,
+  'eligible-provider-failure',
+);
+assert.equal(
+  providerFallbackStopReasonFiltered.summary.providerFallbackStopReasonCounts['eligible-provider-failure'],
+  2,
+);
+assert.ok(
+  providerFallbackStopReasonFiltered.records.every(
+    (record) => record.providerFallbackStopReasonCounts['eligible-provider-failure'] > 0,
+  ),
+);
+
 const promotedFiltered = runCli({
   rootDir: tempRoot,
   args: ['overview', 'learning-candidates', '--status', 'promoted', '--scope', 'mission'],
@@ -264,6 +294,14 @@ const emptySince = runCli({
 });
 assert.equal(emptySince.summary.recordCount, 0);
 assert.equal(emptySince.summary.stopReason, 'no-learning-candidates');
+
+const emptyFallbackStopReason = runCli({
+  rootDir: tempRoot,
+  args: ['overview', 'learning-candidates', '--provider-fallback-stop-reason', 'unknown-stop-reason'],
+});
+assert.equal(emptyFallbackStopReason.summary.recordCount, 0);
+assert.equal(emptyFallbackStopReason.summary.filter.providerFallbackStopReason, 'unknown-stop-reason');
+assert.equal(emptyFallbackStopReason.summary.stopReason, 'no-learning-candidates');
 
 console.log(
   JSON.stringify(

@@ -97,7 +97,7 @@ Commands:
   overview global [--provider-since <iso-timestamp>]
   overview gateway-events [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--event-type <mission-create|mission-run>] [--route <route>] [--source-type <cli|web|service>] [--permission-decision <allow|approval-required|deny>] [--sandbox-mode <mode>] [--since <iso-timestamp>]
   overview identity-sessions [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--binding-status <bound|partial>] [--source-type <cli|web|service>] [--since <iso-timestamp>]
-  overview learning-candidates [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--status <pending-review|approved|promoted|rejected|expired|rolled-back|all>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--provider <providerId>] [--provider-fallback-policy <policyId>] [--gateway-event-route <route>] [--since <iso-timestamp>]
+  overview learning-candidates [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--status <pending-review|approved|promoted|rejected|expired|rolled-back|all>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--provider <providerId>] [--provider-fallback-policy <policyId>] [--provider-fallback-stop-reason <reason>] [--gateway-event-route <route>] [--since <iso-timestamp>]
   overview maintenance [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--outcome <effective|no-op|impactful>] [--since <iso-timestamp>]
   overview operator-timeline [--provider-since <iso-timestamp>]
   overview profiles [--workspace <workspaceId>] [--mode <engineering|knowledge>] [--used-only] [--status <stable|watch|follow-up-required>] [--reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--adoption-drift-status <growing|steady|declining|unused>] [--adoption-drift-reason-code <mission-volume-growing|mission-volume-declining|workspace-footprint-growing|workspace-footprint-declining|unused-profile>] [--usage-trend <growing|steady|declining|unused>] [--workspace-usage-trend <growing|steady|declining|unused>] [--workspace-adoption-drift-status <growing|steady|declining|unused>] [--workspace-adoption-drift-reason-code <workspace-mission-volume-growing|workspace-mission-volume-declining|workspace-profile-footprint-growing|workspace-profile-footprint-declining|unused-workspace>] [--drift-only] [--workspace-status <stable|watch|follow-up-required>] [--workspace-reason-code <quality-gate-blocked|specialist-follow-up-open|specialist-follow-up-overdue|specialist-follow-up-needs-reminder>] [--workspace-drift-only]
@@ -228,7 +228,7 @@ Audit policy:
     console.log(`Personal AI Agent
 
 Usage:
-  overview learning-candidates [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--status <pending-review|approved|promoted|rejected|expired|rolled-back|all>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--provider <providerId>] [--provider-fallback-policy <policyId>] [--gateway-event-route <route>] [--since <iso-timestamp>]
+  overview learning-candidates [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--status <pending-review|approved|promoted|rejected|expired|rolled-back|all>] [--record-type <success-pattern|quality-regression|failure-pattern|provider-lesson>] [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--provider <providerId>] [--provider-fallback-policy <policyId>] [--provider-fallback-stop-reason <reason>] [--gateway-event-route <route>] [--since <iso-timestamp>]
 
 Options:
   --workspace <workspaceId>             Filter learningCandidate records to one workspace.
@@ -240,6 +240,7 @@ Options:
   --scope <scope>                       Filter by candidate scope.
   --provider <providerId>               Filter by provider id in candidate evidence.
   --provider-fallback-policy <policyId> Filter by provider fallback policy in candidate evidence.
+  --provider-fallback-stop-reason <reason> Filter by provider fallback stop reason in candidate evidence.
   --gateway-event-route <route>         Filter by gateway event route in candidate evidence.
   --since <iso-timestamp>               Include records updated at or after this timestamp.
 
@@ -466,6 +467,7 @@ async function main() {
         gatewayEventRoute: readOption(rest, '--gateway-event-route', ''),
         missionId: readOption(rest, '--mission', ''),
         providerFallbackPolicy: readOption(rest, '--provider-fallback-policy', ''),
+        providerFallbackStopReason: readOption(rest, '--provider-fallback-stop-reason', ''),
         providerId: readOption(rest, '--provider', ''),
         recordType: readOption(rest, '--record-type', ''),
         scope: readOption(rest, '--scope', ''),

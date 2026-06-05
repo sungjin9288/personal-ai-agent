@@ -5410,6 +5410,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const providerId = normalizeText(filter.providerId);
     const gatewayEventRoute = normalizeText(filter.gatewayEventRoute || filter.route);
     const providerFallbackPolicy = normalizeText(filter.providerFallbackPolicy);
+    const providerFallbackStopReason = normalizeText(filter.providerFallbackStopReason || filter.fallbackStopReason);
     const since = normalizeTimestampFilter(filter.since, 'learning candidate audit since timestamp');
 
     if (promotionStatus && promotionStatus !== 'all' && !LEARNING_PROMOTION_STATUSES.includes(promotionStatus)) {
@@ -5451,13 +5452,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       .filter((record) => !scope || record.scope === scope)
       .filter((record) => !providerId || record.providerId === providerId)
       .filter((record) => !gatewayEventRoute || record.gatewayEventRoute === gatewayEventRoute)
-      .filter((record) => !providerFallbackPolicy || record.providerFallbackPolicy === providerFallbackPolicy);
+      .filter((record) => !providerFallbackPolicy || record.providerFallbackPolicy === providerFallbackPolicy)
+      .filter(
+        (record) =>
+          !providerFallbackStopReason ||
+          Number(record.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) > 0,
+      );
 
     const normalizedFilter = {
       gatewayEventRoute: gatewayEventRoute || null,
       missionId: missionId || null,
       promotionStatus: promotionStatus || null,
       providerFallbackPolicy: providerFallbackPolicy || null,
+      providerFallbackStopReason: providerFallbackStopReason || null,
       providerId: providerId || null,
       recordType: recordType || null,
       scope: scope || null,
