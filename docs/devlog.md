@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Filter Link Copy
+
+- added a current action inbox link copy control so operators can share the selected mission action queue with active `afilter` and `afstop` URL state
+- routed the copied action inbox link to the review step and reviews detail tab while preserving the selected mission and action filters
+- extended UI learning promotion smoke coverage for the action inbox copy control, copy helper, and copied review URL target
+
 ## 2026-06-05 Action Inbox Stop Reason URL State
 
 - added URL state for action inbox filters so `afilter` and `afstop` links can reopen the same operator queue view

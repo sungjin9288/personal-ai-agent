@@ -164,9 +164,15 @@ try {
   assert.equal(appJs.includes('data-action-inbox-filter'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-filter'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-reset'), true);
+  assert.equal(appJs.includes('data-action-inbox-copy-link'), true);
+  assert.equal(appJs.includes('copyMissionActionsViewLink'), true);
   assert.equal(appJs.includes('providerFallbackStopReason'), true);
   assert.equal(appJs.includes('fallback stop 전체'), true);
   assert.equal(appJs.includes('stop 필터 초기화'), true);
+  assert.equal(appJs.includes('현재 action 링크 복사'), true);
+  assert.equal(appJs.includes('현재 action inbox 링크를 복사했습니다.'), true);
+  assert.equal(appJs.includes("detailTab: 'reviews'"), true);
+  assert.equal(appJs.includes("stepId: 'step-review'"), true);
   assert.equal(appJs.includes('getMissionActionsVisibleFilterLabel'), true);
   assert.equal(appJs.includes('hasActiveMissionActionsFilter'), true);
   assert.equal(appJs.includes('fallback stop ${fallbackStopReasonFilter}'), true);
