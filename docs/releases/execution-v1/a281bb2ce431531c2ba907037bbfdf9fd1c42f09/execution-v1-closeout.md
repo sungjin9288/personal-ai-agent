@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-05T11:30:36.852Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-05T11:30:26.400Z
 - branch: codex/action-inbox-open-mission-button-label
 - commit: a281bb2ce431531c2ba907037bbfdf9fd1c42f09
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a281bb2ce431531c2ba907037bbfdf9fd1c42f09/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

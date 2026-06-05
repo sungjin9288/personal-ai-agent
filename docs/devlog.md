@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-05 Action Inbox Open Mission Button Label
+
+- added action-aware title and aria-label metadata to the action inbox mission-open button so the target action context is exposed beyond the generic visible label
+- kept the existing mission selection behavior, review tab routing, and visible button copy unchanged
+- extended UI learning promotion smoke coverage for the mission-open button accessibility rendering contract
+
 ## 2026-06-05 Learning Promotion Action Button Labels
 
 - added shared title and aria-label metadata for learning-promotion action buttons so each action names the target learning candidate
