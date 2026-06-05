@@ -17730,6 +17730,9 @@ function renderMissionActions() {
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
   const hasSelectedMission = Boolean(state.selectedMissionId);
+  const clearFiltersTitle = hasActiveFilter
+    ? 'action inbox 필터 전체 초기화'
+    : '초기화할 action inbox 필터가 없습니다';
   const copyLinkTitle = hasSelectedMission
     ? '현재 action inbox 링크 복사'
     : '선택된 mission이 없어 action inbox 링크를 복사할 수 없습니다';
@@ -17748,7 +17751,7 @@ function renderMissionActions() {
         ${fallbackStopReasonOptions}
       </select>
       <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
       <button class="ghost-button" type="button" data-action-inbox-copy-link="true" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>현재 action 링크 복사</button>
     </div>
   `;
