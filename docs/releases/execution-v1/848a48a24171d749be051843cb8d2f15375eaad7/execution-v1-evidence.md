@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T05:48:30.294Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T05:48:08.299Z
 - branch: codex/action-inbox-reset-disabled-state
 - commit: 848a48a24171d749be051843cb8d2f15375eaad7
