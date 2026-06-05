@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T08:24:45.756Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T08:24:44.045Z
 - localDate: 2026-06-05
 - branch: codex/action-inbox-copy-link-disabled-label
 - commit: 985bd6dc79a23f86cd07c16bc839fcbb6919f8a4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4](releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4](docs/releases/execution-v1/985bd6dc79a23f86cd07c16bc839fcbb6919f8a4)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-copy-link-disabled-label not found
 

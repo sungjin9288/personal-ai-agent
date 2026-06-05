@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-05T08:24:45.756Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-05T08:24:23.393Z
 - branch: codex/action-inbox-copy-link-disabled-label
 - commit: 985bd6dc79a23f86cd07c16bc839fcbb6919f8a4
