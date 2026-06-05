@@ -157,6 +157,8 @@ try {
   assert.equal(appJs.includes('gatewayEventRoute'), true);
   assert.equal(appJs.includes('autoPromotionAllowed'), true);
   assert.equal(appJs.includes('rollbackEligible'), true);
+  assert.equal(appJs.includes('data-action-open'), true);
+  assert.equal(appJs.includes('미션 열기: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);

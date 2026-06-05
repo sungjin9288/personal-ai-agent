@@ -17895,7 +17895,7 @@ function renderMissionActions() {
           <div class="action-row">
             ${
               item.missionId
-                ? `<button class="secondary-button" type="button" data-action-open="${escapeHtml(item.missionId)}">미션 열기</button>`
+                ? `<button class="secondary-button" type="button" data-action-open="${escapeHtml(item.missionId)}" aria-label="${escapeHtml(`미션 열기: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`미션 열기: ${item.title || item.actionId || item.id || item.missionId}`)}">미션 열기</button>`
                 : ''
             }
             ${
