@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-05T17:52:13.475Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-05T17:52:12.156Z
 - localDate: 2026-06-06
 - branch: codex/stage-summary-tab-labels
 - commit: a5834eb57d3d2fa4dd206964759b5dfdbdc132ef
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef](releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef](docs/releases/execution-v1/a5834eb57d3d2fa4dd206964759b5dfdbdc132ef)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/stage-summary-tab-labels not found
 
