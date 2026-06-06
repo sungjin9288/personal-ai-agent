@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T01:08:29.273Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T01:08:27.871Z
 - localDate: 2026-06-06
 - branch: codex/release-triage-action-labels
 - commit: 4fe4192388aadc7ada415d18599b541884e1481f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f](releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f](docs/releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-triage-action-labels not found
 

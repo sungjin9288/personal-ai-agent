@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-06T01:08:29.273Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-06T01:08:17.518Z
 - branch: codex/release-triage-action-labels
 - commit: 4fe4192388aadc7ada415d18599b541884e1481f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4fe4192388aadc7ada415d18599b541884e1481f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

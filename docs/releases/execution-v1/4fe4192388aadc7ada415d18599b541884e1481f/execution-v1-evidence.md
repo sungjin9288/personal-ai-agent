@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T01:08:29.273Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T01:08:09.859Z
 - branch: codex/release-triage-action-labels
 - commit: 4fe4192388aadc7ada415d18599b541884e1481f

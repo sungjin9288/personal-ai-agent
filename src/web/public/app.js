@@ -1430,6 +1430,80 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;');
 }
 
+function getReleaseActionButtonContext(button, context = {}) {
+  const action = String(button?.dataset?.uiAction || '').trim();
+  const provider = String(button?.dataset?.uiProvider || '').trim();
+  const blocker = String(button?.dataset?.uiBlocker || '').trim();
+  const category = String(button?.dataset?.uiCategory || '').trim();
+  const owner = String(button?.dataset?.uiOwner || '').trim();
+  const index = String(button?.dataset?.uiIndex || '').trim();
+  const label = String(button?.dataset?.uiLabel || '').trim();
+  const href = String(button?.dataset?.uiHref || '').trim();
+  const parts = [];
+
+  if (provider) {
+    parts.push(`provider ${provider}`);
+  }
+  if (blocker) {
+    parts.push(`blocker ${blocker}`);
+  }
+  if (index) {
+    parts.push(`production blocker #${Number(index) + 1}`);
+  }
+  if (label) {
+    parts.push(label);
+  }
+  if (href && !label) {
+    parts.push(href);
+  }
+  if (action === 'filter-release-blockers') {
+    parts.push(`category ${category || 'all'}`);
+    parts.push(`owner ${owner || 'all'}`);
+    parts.push(`provider ${provider || 'all'}`);
+    if (button?.dataset?.uiIncludeShared) {
+      parts.push(`shared provider ops ${button.dataset.uiIncludeShared === 'true' ? 'included' : 'excluded'}`);
+    }
+  } else if (action.includes('target-evidence-provider-only')) {
+    parts.push(`provider-only ${context.blockerProviderLabel || provider || 'provider'}`);
+  } else if (action.includes('target-evidence')) {
+    parts.push('target evidence intake');
+  } else if (action.includes('blocker-provider-only')) {
+    parts.push(`provider-only ${context.blockerProviderLabel || provider || 'provider'}`);
+  } else if (action.includes('blocker-filter')) {
+    parts.push(`triage slice ${context.blockerFilterLabel || 'all current blockers'}`);
+  } else if (action.includes('production-blocker')) {
+    parts.push('production-ready blocker');
+  } else if (action.includes('release-blocker')) {
+    parts.push(`current blocker ${context.focusedBlockerLabel || context.blockerFilterLabel || 'release blocker'}`);
+  }
+
+  return parts.filter(Boolean).join(' · ') || context.releaseActionLabel || 'release';
+}
+
+function applyReleaseActionButtonLabels(root, context = {}) {
+  if (!root) {
+    return;
+  }
+  root.querySelectorAll('button[data-ui-action]').forEach((button) => {
+    const hasLabel = String(button.getAttribute('aria-label') || '').trim();
+    const hasTitle = String(button.getAttribute('title') || '').trim();
+    if (hasLabel && hasTitle) {
+      return;
+    }
+    const visibleLabel = String(button.textContent || button.dataset.uiAction || 'release action')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const contextLabel = getReleaseActionButtonContext(button, context);
+    const actionLabel = `${visibleLabel}: ${contextLabel}`;
+    if (!hasLabel) {
+      button.setAttribute('aria-label', actionLabel);
+    }
+    if (!hasTitle) {
+      button.setAttribute('title', actionLabel);
+    }
+  });
+}
+
 function formatDate(value) {
   if (!value) {
     return '-';
@@ -14329,6 +14403,16 @@ function renderReleaseStatus() {
     || evidence?.commit
     || values?.commit
     || 'execution-v1 release';
+  const blockerFilterLabel = [
+    `category ${blockerCategoryFilter || 'all'}`,
+    `owner ${blockerOwnerFilter || 'all'}`,
+    `provider ${blockerProviderFilter || 'all'}`,
+    `shared provider ops ${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}`,
+  ].join(' · ');
+  const blockerProviderLabel = blockerProviderFilter || focusedProvider || 'provider';
+  const focusedBlockerLabel = focusedBlockerEntry
+    ? `${focusedBlockerId || 'blocker'} · ${focusedBlockerEntry.blocker || focusedBlockerEntry.stopReason || 'current open blocker'}`
+    : focusedBlockerId || '';
   const baseline = release.baseline || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
@@ -16943,6 +17027,12 @@ function renderReleaseStatus() {
       </div>
     </div>
   `;
+  applyReleaseActionButtonLabels(elements.releaseStatus, {
+    blockerFilterLabel,
+    blockerProviderLabel,
+    focusedBlockerLabel,
+    releaseActionLabel,
+  });
   wireQuickActions(elements.releaseStatus);
   elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight"]').forEach((button) => {
     button.addEventListener('click', async () => {
