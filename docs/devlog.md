@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Remaining Action Button Labels
+
+- added target-aware title and aria-label metadata to output closeout tab jumps, release handoff preview/copy controls, and compact artifact path toggles
+- kept switch-tab, handoff preview, handoff link copy, summary copy, command copy, and artifact meta toggle routing unchanged
+- extended UI harness browse smoke coverage for the remaining action button accessibility rendering contract
+
 ## 2026-06-06 Empty State Action Button Labels
 
 - added action-aware title and aria-label metadata to the shared empty state quick action button template
