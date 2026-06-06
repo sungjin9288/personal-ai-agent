@@ -11989,6 +11989,24 @@ function renderProviderFallbackEventAudit() {
   const timeline = Array.isArray(payload?.timeline) ? payload.timeline : [];
   const latestEvents = timeline.slice().reverse().slice(0, 5);
   const filtered = Boolean(state.providerEventFallbackPolicyFilter || state.providerEventFallbackStopReasonFilter);
+  const fallbackPolicyFilterLabel = state.providerEventFallbackPolicyFilter
+    ? `fallback policy 필터 변경: 현재 ${state.providerEventFallbackPolicyFilter}`
+    : 'fallback policy 필터 선택: 모든 fallback policy';
+  const fallbackStopReasonFilterLabel = state.providerEventFallbackStopReasonFilter
+    ? `fallback stop reason 필터 변경: 현재 ${state.providerEventFallbackStopReasonFilter}`
+    : 'fallback stop reason 필터 선택: 모든 stop reason';
+  const fallbackEventFilterSummary = [
+    state.providerEventFallbackPolicyFilter ? `policy ${state.providerEventFallbackPolicyFilter}` : '',
+    state.providerEventFallbackStopReasonFilter ? `stop reason ${state.providerEventFallbackStopReasonFilter}` : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
+  const fallbackEventResetLabel = filtered
+    ? `provider fallback event 필터 초기화: ${fallbackEventFilterSummary}`
+    : 'provider fallback event 필터 초기화: 적용된 필터 없음';
+  const fallbackEventPackageLabel = filtered
+    ? `provider fallback event audit package 복사: ${fallbackEventFilterSummary}`
+    : 'provider fallback event audit package 복사: 전체 fallback events';
 
   return `
     <section class="provider-item provider-event-audit" data-provider-fallback-event-audit="true">
@@ -12001,22 +12019,22 @@ function renderProviderFallbackEventAudit() {
       <div class="item-title">Provider fallback event audit</div>
       <div class="item-meta">policy와 stop reason 기준으로 target provider operations의 fallback runtime audit 근거를 확인합니다.</div>
       <div class="dispatch-controls provider-event-filter-controls">
-        <select data-provider-fallback-event-policy-filter="true" aria-label="fallback policy filter">
+        <select data-provider-fallback-event-policy-filter="true" aria-label="${escapeHtml(fallbackPolicyFilterLabel)}" title="${escapeHtml(fallbackPolicyFilterLabel)}">
           ${renderProviderFallbackEventSelectOptions(
             PROVIDER_FALLBACK_POLICY_FILTER_OPTIONS,
             state.providerEventFallbackPolicyFilter,
             '모든 fallback policy',
           )}
         </select>
-        <select data-provider-fallback-event-stop-filter="true" aria-label="fallback stop reason filter">
+        <select data-provider-fallback-event-stop-filter="true" aria-label="${escapeHtml(fallbackStopReasonFilterLabel)}" title="${escapeHtml(fallbackStopReasonFilterLabel)}">
           ${renderProviderFallbackEventSelectOptions(
             PROVIDER_FALLBACK_STOP_REASON_FILTER_OPTIONS,
             state.providerEventFallbackStopReasonFilter,
             '모든 stop reason',
           )}
         </select>
-        <button class="ghost-button" type="button" data-provider-fallback-event-reset="true">필터 초기화</button>
-        <button class="secondary-button" type="button" data-provider-fallback-event-package="true">audit package 복사</button>
+        <button class="ghost-button" type="button" data-provider-fallback-event-reset="true" aria-label="${escapeHtml(fallbackEventResetLabel)}" title="${escapeHtml(fallbackEventResetLabel)}">필터 초기화</button>
+        <button class="secondary-button" type="button" data-provider-fallback-event-package="true" aria-label="${escapeHtml(fallbackEventPackageLabel)}" title="${escapeHtml(fallbackEventPackageLabel)}">audit package 복사</button>
       </div>
       <div class="quick-actions provider-event-counts">
         <div class="summary-chip" data-provider-fallback-event-total="true">

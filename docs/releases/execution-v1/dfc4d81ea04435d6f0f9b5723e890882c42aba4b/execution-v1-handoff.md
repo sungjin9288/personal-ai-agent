@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T03:16:17.350Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T03:16:16.015Z
 - localDate: 2026-06-06
 - branch: codex/provider-fallback-event-control-labels
 - commit: dfc4d81ea04435d6f0f9b5723e890882c42aba4b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b](releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b](docs/releases/execution-v1/dfc4d81ea04435d6f0f9b5723e890882c42aba4b)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-fallback-event-control-labels not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T03:16:17.350Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T03:16:03.487Z
 - branch: codex/provider-fallback-event-control-labels
 - commit: dfc4d81ea04435d6f0f9b5723e890882c42aba4b

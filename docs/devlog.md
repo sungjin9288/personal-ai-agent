@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Provider Fallback Event Control Labels
+
+- added policy/stop-reason-aware title and aria-label metadata to provider fallback event audit filters, reset, and audit package copy controls
+- kept fallback event filter state, reset behavior, audit package copy behavior, and visible control text unchanged
+- extended UI harness browse smoke coverage for the provider fallback event audit control accessibility rendering contract
+
 ## 2026-06-06 Agent Blueprint Selection Button Labels
 
 - added template/playbook/intent/blueprint-aware title and aria-label metadata to mission template chips, playbook cards, agent intent pills, and agent blueprint cards
