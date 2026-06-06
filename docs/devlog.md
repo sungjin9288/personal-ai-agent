@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Stage Navigation Action Button Labels
+
+- added mission/stage-aware title and aria-label metadata to mission summary setup jumps, selection bridge step jumps, and setup harness primary/secondary navigation actions
+- kept jump-step, switch-tab, harness recommendation routing, active stage state, and visible button text unchanged
+- extended UI harness browse smoke coverage for the stage navigation action accessibility rendering contract
+
 ## 2026-06-06 Harness Source Action Button Labels
 
 - added source/action-aware title and aria-label metadata to legacy devlog migration and mission attachment upload controls

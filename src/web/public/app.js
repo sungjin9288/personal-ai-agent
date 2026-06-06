@@ -12643,6 +12643,7 @@ function renderMissionSummary() {
       : '아직 실행 전';
     const learningLabel = `첨부 ${summary?.attachmentCounts?.total ?? 0} · 메모 ${summary?.memoryCounts?.total ?? 0}`;
     const missionSummaryTargetLabel = mission.title || mission.id || state.selectedMissionId || '선택된 미션';
+    const missionSummarySetupLabel = `입력 다시 보기: ${missionSummaryTargetLabel}`;
     const reviewLabel =
       summary?.approvalCounts?.pending
         ? `승인 ${summary.approvalCounts.pending}건 대기`
@@ -12688,7 +12689,7 @@ function renderMissionSummary() {
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
               요약 펼치기
             </button>
-            <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+            <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
               입력 다시 보기
             </button>
           </div>
@@ -12715,7 +12716,7 @@ function renderMissionSummary() {
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
               요약 접기
             </button>
-            <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
+            <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
               입력 다시 보기
             </button>
           </div>
@@ -12834,7 +12835,7 @@ function renderMissionSummary() {
         </div>
         <p class="summary-note">${escapeHtml(flow.copy)}</p>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
+          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(`${flow.buttonLabel}: ${mission.title || mission.id || state.selectedMissionId || '선택된 미션'}`)}" title="${escapeHtml(`${flow.buttonLabel}: ${mission.title || mission.id || state.selectedMissionId || '선택된 미션'}`)}">
             ${escapeHtml(flow.buttonLabel)}
           </button>
         </div>
@@ -12896,6 +12897,7 @@ function renderSelectionBridge() {
   const learningLabel = state.missionDetail?.summary
     ? `첨부 ${state.missionDetail.summary.attachmentCounts?.total || 0} · 메모 ${state.missionDetail.summary.memoryCounts?.total || 0}`
     : `첨부 0 · 메모 ${harnessState.memoryTotalCount}개`;
+  const selectionBridgeStepLabel = `${getStepLabel(flow.recommendedStep, { short: true })}: ${mission.title || mission.id || '선택한 미션'}`;
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main selection-bridge-main-compact">
@@ -12906,7 +12908,7 @@ function renderSelectionBridge() {
       </div>
       <div class="selection-bridge-actions">
         <span class="mini-badge">${escapeHtml(latestExecutionLabel)}</span>
-        <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
+        <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(selectionBridgeStepLabel)}" title="${escapeHtml(selectionBridgeStepLabel)}">
           ${escapeHtml(getStepLabel(flow.recommendedStep, { short: true }))}
         </button>
       </div>
@@ -12965,15 +12967,16 @@ function renderSetupHarnessSummary() {
       };
   const secondaryButton = topRecommendation?.code
     ? `
-      <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.secondaryAction)}" data-ui-value="${escapeHtml(topHarnessAction.secondaryValue)}">
+      <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.secondaryAction)}" data-ui-value="${escapeHtml(topHarnessAction.secondaryValue)}" aria-label="${escapeHtml(`${topHarnessAction.secondaryLabel}: 하네스 준비 상태`)}" title="${escapeHtml(`${topHarnessAction.secondaryLabel}: 하네스 준비 상태`)}">
         ${escapeHtml(topHarnessAction.secondaryLabel)}
       </button>
     `
     : `
-      <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness">
+      <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness" aria-label="하네스 탭 열기: 하네스 준비 상태" title="하네스 탭 열기: 하네스 준비 상태">
         하네스 탭 열기
       </button>
     `;
+  const setupHarnessPrimaryLabel = `${topRecommendation ? topHarnessAction.label : '2단계 실행 열기'}: 하네스 준비 상태`;
 
   elements.setupHarnessSummary.innerHTML = `
     <div class="stage-summary-card harness-prep-card">
@@ -12996,7 +12999,7 @@ function renderSetupHarnessSummary() {
         <p>${escapeHtml(topRecommendation?.title || '문서 source-of-record, memory, 운영 루프가 현재 안정 상태입니다. 실행 전 세부 기준만 마지막으로 확인하면 됩니다.')}</p>
       </div>
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}">
+        <button class="primary-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}" aria-label="${escapeHtml(setupHarnessPrimaryLabel)}" title="${escapeHtml(setupHarnessPrimaryLabel)}">
           ${escapeHtml(topRecommendation ? topHarnessAction.label : '2단계 실행 열기')}
         </button>
         ${secondaryButton}
