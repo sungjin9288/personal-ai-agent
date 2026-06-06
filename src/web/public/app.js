@@ -13838,6 +13838,9 @@ function renderHarnessPanel() {
   if (memoryQuery) {
     memoryFilterChips.unshift({ label: '검색', value: memoryQuery });
   }
+  const selectedHarnessMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
+  const legacyDevlogMigrationLabel = `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`;
+  const missionAttachmentUploadLabel = `첨부 업로드: ${selectedHarnessMissionLabel}`;
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">
@@ -13852,7 +13855,7 @@ function renderHarnessPanel() {
             <strong>기존 개발 로그 ${escapeHtml(String(documentSummary.legacyDevlogCount || 0))}건이 아직 tracked entry가 아닙니다.</strong>
             <p>예전 append-only 섹션을 편집 가능한 문서 기록으로 한 번에 전환합니다. 전환 후에는 하네스에서 바로 수정/삭제할 수 있습니다.</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-document-action="migrate-legacy">기존 개발 로그 전환</button>
+              <button class="ghost-button" type="button" data-document-action="migrate-legacy" aria-label="${escapeHtml(legacyDevlogMigrationLabel)}" title="${escapeHtml(legacyDevlogMigrationLabel)}">기존 개발 로그 전환</button>
             </div>
           </div>`
         : ''
@@ -13901,7 +13904,7 @@ function renderHarnessPanel() {
           />
         </label>
         <div class="action-row">
-          <button class="ghost-button" type="submit">첨부 업로드</button>
+          <button class="ghost-button" type="submit" aria-label="${escapeHtml(missionAttachmentUploadLabel)}" title="${escapeHtml(missionAttachmentUploadLabel)}">첨부 업로드</button>
         </div>
       </form>
       ${

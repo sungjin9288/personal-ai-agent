@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Harness Source Action Button Labels
+
+- added source/action-aware title and aria-label metadata to legacy devlog migration and mission attachment upload controls
+- kept legacy migration routing, attachment form submit behavior, file input handling, and visible button text unchanged
+- extended UI harness browse and UI mission attachments smoke coverage for the harness source action accessibility rendering contract
+
 ## 2026-06-06 Mission Session Timeline Selector Button Labels
 
 - added mission/session/artifact/timeline-aware title and aria-label metadata to mission list rows, session history rows, artifact selector rows, and timeline event rows

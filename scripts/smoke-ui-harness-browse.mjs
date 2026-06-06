@@ -246,6 +246,14 @@ try {
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
+  assert.equal(appJs.includes('legacyDevlogMigrationLabel'), true);
+  assert.equal(appJs.includes('missionAttachmentUploadLabel'), true);
+  assert.equal(appJs.includes('기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건'), true);
+  assert.equal(appJs.includes('첨부 업로드: ${selectedHarnessMissionLabel}'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(legacyDevlogMigrationLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(legacyDevlogMigrationLabel)}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
   assert.equal(appJs.includes('missionSelectionLabel'), true);
   assert.equal(appJs.includes('sessionSelectionLabel'), true);
   assert.equal(appJs.includes('artifactSelectionLabel'), true);
