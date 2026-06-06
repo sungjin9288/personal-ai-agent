@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-06T03:03:04.273Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-06T03:02:53.796Z
 - branch: codex/agent-blueprint-selection-labels
 - commit: d265c2e7e1ffc491e92bdcb02e35175b5bf8858d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
