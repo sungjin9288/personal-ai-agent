@@ -11335,6 +11335,15 @@ function renderFlowState() {
   const isOutputFocus = state.activeStep === 'step-output';
   const flowActionTargetLabel =
     state.missionDetail?.mission?.title || state.selectedMissionId || flow.currentStepLabel || '현재 흐름';
+  const flowPrimaryActionLabel = `${flow.buttonLabel}: ${flow.currentStepLabel} · ${flowActionTargetLabel}`;
+  const flowSecondaryActionLabel = `${flow.secondaryActionLabel}: ${flowActionTargetLabel}`;
+  const flowHarnessActionLabel = topHarnessAction
+    ? `${topHarnessAction.label}: ${flowActionTargetLabel}`
+    : '';
+  const flowCopyViewLabel = `현재 보기 링크 복사: ${flowActionTargetLabel}`;
+  const flowResetViewLabel = hasMissionSelection
+    ? `보기 초기화: ${flowActionTargetLabel}`
+    : '초기 상태로 되돌리기';
 
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
@@ -11345,16 +11354,16 @@ function renderFlowState() {
           <p class="flow-status-copy">${escapeHtml(flow.copy)}</p>
         </div>
         <div class="flow-status-actions">
-          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}">
+          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(flowPrimaryActionLabel)}" title="${escapeHtml(flowPrimaryActionLabel)}">
             ${escapeHtml(flow.buttonLabel)}
           </button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}">
+          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}" aria-label="${escapeHtml(flowSecondaryActionLabel)}" title="${escapeHtml(flowSecondaryActionLabel)}">
             ${escapeHtml(flow.secondaryActionLabel)}
           </button>
           ${
             hasHarnessRecommendation
               ? `
-                <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}">
+                <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}" aria-label="${escapeHtml(flowHarnessActionLabel)}" title="${escapeHtml(flowHarnessActionLabel)}">
                   ${escapeHtml(topHarnessAction.label)}
                 </button>
               `
@@ -11364,10 +11373,10 @@ function renderFlowState() {
             isOutputFocus
               ? ''
               : `
-                <button class="ghost-button" type="button" data-ui-action="copy-view-link">
+                <button class="ghost-button" type="button" data-ui-action="copy-view-link" aria-label="${escapeHtml(flowCopyViewLabel)}" title="${escapeHtml(flowCopyViewLabel)}">
                   현재 링크 복사
                 </button>
-                <button class="ghost-button" type="button" data-ui-action="reset-view">
+                <button class="ghost-button" type="button" data-ui-action="reset-view" aria-label="${escapeHtml(flowResetViewLabel)}" title="${escapeHtml(flowResetViewLabel)}">
                   ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}
                 </button>
               `

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Flow Status Action Button Labels
+
+- added mission/step-aware title and aria-label metadata to flow status primary step, secondary tab, harness recommendation, current view link copy, and view reset buttons
+- kept jump-step, switch-tab, harness recommendation action routing, copy-view-link, reset-view behavior, and visible button text unchanged
+- extended UI harness browse smoke coverage for the flow status action button accessibility rendering contract
+
 ## 2026-06-06 Output Detail Toolbar Button Labels
 
 - added mission-aware title and aria-label metadata to output detail primary tab, secondary tab, support panel, tab list, tools, sidebar, mission summary, and output shell toggle buttons

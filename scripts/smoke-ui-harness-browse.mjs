@@ -1636,6 +1636,17 @@ try {
   assert.equal(appJs.includes('결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('flowActionTargetLabel'), true);
+  assert.equal(appJs.includes('flowPrimaryActionLabel'), true);
+  assert.equal(appJs.includes('flowSecondaryActionLabel'), true);
+  assert.equal(appJs.includes('flowHarnessActionLabel'), true);
+  assert.equal(appJs.includes('flowCopyViewLabel'), true);
+  assert.equal(appJs.includes('flowResetViewLabel'), true);
+  assert.equal(appJs.includes('${flow.buttonLabel}: ${flow.currentStepLabel} · ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('${flow.secondaryActionLabel}: ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('${topHarnessAction.label}: ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('현재 보기 링크 복사: ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('보기 초기화: ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('초기 상태로 되돌리기'), true);
   assert.equal(appJs.includes('missionSummaryTargetLabel'), true);
   assert.equal(appJs.includes('결과 사이드바 펼치기: ${flowActionTargetLabel}'), true);
   assert.equal(appJs.includes('결과 사이드바 접기: ${flowActionTargetLabel}'), true);
