@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T02:23:01.373Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T02:22:46.136Z
 - branch: codex/output-detail-toolbar-labels
 - commit: a48f33d0ba431af357a1ef891e6a4e410edb4595

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T02:23:01.373Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T02:23:00.031Z
 - localDate: 2026-06-06
 - branch: codex/output-detail-toolbar-labels
 - commit: a48f33d0ba431af357a1ef891e6a4e410edb4595
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595](releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595](docs/releases/execution-v1/a48f33d0ba431af357a1ef891e6a4e410edb4595)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/output-detail-toolbar-labels not found
 
