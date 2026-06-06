@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Release Triage Action Button Labels
+
+- added a release action button label pass that fills missing title and aria-label metadata for release triage, target evidence, provider-only slice, production blocker, and current blocker controls
+- kept existing explicit release/provider labels, visible button copy, data-ui-action routing, filter state, copy payloads, and blocker focus behavior unchanged
+- extended UI harness browse smoke coverage for the release triage action button accessibility rendering contract
+
 ## 2026-06-06 Release Provider Action Button Labels
 
 - added provider-aware title and aria-label metadata to release recommendation provider actions, focused provider actions, and provider-card release actions including preflight, live validation, package copy, blocker handoff, flow focus/link, provider link, and triage link controls
