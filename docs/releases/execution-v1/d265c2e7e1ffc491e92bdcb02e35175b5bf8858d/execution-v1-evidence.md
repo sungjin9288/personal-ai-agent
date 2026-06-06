@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T03:03:04.273Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T03:02:47.044Z
 - branch: codex/agent-blueprint-selection-labels
 - commit: d265c2e7e1ffc491e92bdcb02e35175b5bf8858d

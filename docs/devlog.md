@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Agent Blueprint Selection Button Labels
+
+- added template/playbook/intent/blueprint-aware title and aria-label metadata to mission template chips, playbook cards, agent intent pills, and agent blueprint cards
+- kept template apply, playbook autofill, agent blueprint selection routing, selected-state classes, and visible button text unchanged
+- extended UI agent blueprints smoke coverage for the agent blueprint selection accessibility rendering contract
+
 ## 2026-06-06 Flow Status Action Button Labels
 
 - added mission/step-aware title and aria-label metadata to flow status primary step, secondary tab, harness recommendation, current view link copy, and view reset buttons

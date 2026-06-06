@@ -11474,7 +11474,7 @@ function renderTemplates() {
   elements.templateList.innerHTML = missionTemplates
     .map(
       (template, index) => `
-        <button type="button" class="template-chip" data-template-index="${index}">
+        <button type="button" class="template-chip" data-template-index="${index}" aria-label="${escapeHtml(`템플릿 적용: ${template.title}`)}" title="${escapeHtml(`템플릿 적용: ${template.title}`)}">
           <strong>${escapeHtml(template.title)}</strong>
           <span>${escapeHtml(template.subtitle)}</span>
         </button>
@@ -11518,7 +11518,7 @@ function renderPlaybooks() {
   elements.playbookList.innerHTML = missionPlaybooks
     .map(
       (playbook) => `
-        <button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbook.id)}">
+        <button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbook.id)}" aria-label="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}" title="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}">
           <div class="status-row">
             <span class="mini-badge">${escapeHtml(playbook.origin)}</span>
           </div>
@@ -11627,6 +11627,8 @@ function renderAgentBlueprintBuilder() {
                 type="button"
                 class="agent-intent-pill ${active ? 'is-active' : ''}"
                 data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"
+                aria-label="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
+                title="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
               >
                 <strong>${escapeHtml(intent.label)}</strong>
                 <span>${escapeHtml(intent.description)}</span>
@@ -11675,6 +11677,8 @@ function renderAgentBlueprintBuilder() {
                 type="button"
                 class="agent-blueprint-card ${blueprint.id === selectedBlueprint?.id ? 'is-active' : ''}"
                 data-agent-blueprint-id="${escapeHtml(blueprint.id)}"
+                aria-label="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
+                title="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
               >
                 <div class="agent-blueprint-card-top">
                   <span class="mini-badge">${escapeHtml(blueprint.emphasis)}</span>

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T03:03:04.273Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T03:03:02.861Z
 - localDate: 2026-06-06
 - branch: codex/agent-blueprint-selection-labels
 - commit: d265c2e7e1ffc491e92bdcb02e35175b5bf8858d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d](releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d](docs/releases/execution-v1/d265c2e7e1ffc491e92bdcb02e35175b5bf8858d)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/agent-blueprint-selection-labels not found
 
