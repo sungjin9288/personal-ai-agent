@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-06T03:49:02.831Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-06T03:48:52.947Z
 - branch: codex/stage-navigation-action-labels
 - commit: cfa2bbca4babfbab8e15ec690e76b666905ade46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

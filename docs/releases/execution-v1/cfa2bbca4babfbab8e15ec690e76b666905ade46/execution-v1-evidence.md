@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T03:49:02.831Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T03:48:46.731Z
 - branch: codex/stage-navigation-action-labels
 - commit: cfa2bbca4babfbab8e15ec690e76b666905ade46
