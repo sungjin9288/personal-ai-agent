@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T04:05:54.615Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T04:05:38.742Z
 - branch: codex/empty-state-action-labels
 - commit: 529824279aecf84ef855ac30190bce94ba0c7c18
