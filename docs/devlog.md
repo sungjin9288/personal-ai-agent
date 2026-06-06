@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Output Detail Toolbar Button Labels
+
+- added mission-aware title and aria-label metadata to output detail primary tab, secondary tab, support panel, tab list, tools, sidebar, mission summary, and output shell toggle buttons
+- kept tab switching, output shell collapsed/expanded state, quick action routing, sidebar routing, mission summary routing, and visible button text unchanged
+- extended UI harness browse smoke coverage for the output detail toolbar and output shell accessibility rendering contract
+
 ## 2026-06-06 Retrieval Source Button Labels
 
 - added source/artifact-aware title and aria-label metadata to retrieval source focus chips, retrieval source link copy buttons, active source clear buttons, and retrieval evidence open buttons

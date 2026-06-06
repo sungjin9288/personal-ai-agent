@@ -9220,6 +9220,25 @@ function renderDetailToolbarActions() {
   const primaryTabs = detailTabMeta.tabs.filter((tab) => tab.isPrimary);
   const secondaryTabs = detailTabMeta.tabs.filter((tab) => tab.isSecondary);
   const supportCollapsed = !state.outputSupportExpanded;
+  const outputToolbarTargetLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
+  const outputSupportToggleLabel = state.outputSupportExpanded
+    ? `지원 패널 접기: ${outputToolbarTargetLabel}`
+    : `지원 패널 펼치기: ${outputToolbarTargetLabel}`;
+  const outputPrimaryTabsToggleLabel = state.outputPrimaryTabsExpanded
+    ? `결과 주 탭 목록 닫기: ${outputToolbarTargetLabel}`
+    : `결과 주 탭 목록 열기: ${outputToolbarTargetLabel}`;
+  const outputSecondaryTabsToggleLabel = state.outputSecondaryTabsExpanded
+    ? `결과 보조 탭 목록 숨기기: ${outputToolbarTargetLabel}`
+    : `결과 보조 탭 목록 보기: ${outputToolbarTargetLabel}`;
+  const outputToolbarToolsToggleLabel = state.outputToolbarToolsExpanded
+    ? `결과 도구 목록 닫기: ${outputToolbarTargetLabel}`
+    : `결과 도구 목록 열기: ${outputToolbarTargetLabel}`;
+  const outputRailToggleLabel = state.outputRailCollapsed
+    ? `결과 사이드바 펼치기: ${outputToolbarTargetLabel}`
+    : `결과 사이드바 접기: ${outputToolbarTargetLabel}`;
+  const outputMissionSummaryToggleLabel = state.outputMissionSummaryExpanded
+    ? `결과 미션 요약 접기: ${outputToolbarTargetLabel}`
+    : `결과 미션 요약 펼치기: ${outputToolbarTargetLabel}`;
   const visiblePrimaryTabs =
     supportCollapsed && !state.outputPrimaryTabsExpanded ? primaryTabs.filter((tab) => tab.isActive) : primaryTabs;
   elements.detailToolbarActions.classList.add('is-visible');
@@ -9251,6 +9270,8 @@ function renderDetailToolbarActions() {
               class="detail-primary-nav-button${tab.isActive ? ' is-active' : ''}"
               type="button"
               data-output-primary-tab="${escapeHtml(tab.id)}"
+              aria-label="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
+              title="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
             >
               ${escapeHtml(tab.label)}
             </button>
@@ -9262,27 +9283,27 @@ function renderDetailToolbarActions() {
       ${
         supportCollapsed
           ? `
-            <button class="primary-button" type="button" data-ui-action="toggle-output-support">
+            <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
               패널
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs" aria-label="${escapeHtml(outputPrimaryTabsToggleLabel)}" title="${escapeHtml(outputPrimaryTabsToggleLabel)}">
               ${escapeHtml(state.outputPrimaryTabsExpanded ? '탭 닫기' : '탭')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools" aria-label="${escapeHtml(outputToolbarToolsToggleLabel)}" title="${escapeHtml(outputToolbarToolsToggleLabel)}">
               ${escapeHtml(state.outputToolbarToolsExpanded ? '도구 닫기' : '도구')}
             </button>
           `
           : `
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
               ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(outputMissionSummaryToggleLabel)}" title="${escapeHtml(outputMissionSummaryToggleLabel)}">
               ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
               ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-support">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
               지원 패널 접기
             </button>
           `
@@ -9292,10 +9313,10 @@ function renderDetailToolbarActions() {
       supportCollapsed && state.outputToolbarToolsExpanded
         ? `
           <div class="detail-toolbar-aux">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
               보조 탭
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
               사이드바
             </button>
           </div>
@@ -9313,6 +9334,8 @@ function renderDetailToolbarActions() {
                     class="detail-secondary-nav-button${tab.isActive ? ' is-active' : ''}"
                     type="button"
                     data-output-secondary-tab="${escapeHtml(tab.id)}"
+                    aria-label="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
+                    title="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
                   >
                     ${escapeHtml(tab.label)}
                   </button>
@@ -11310,6 +11333,8 @@ function renderFlowState() {
   const topHarnessAction = harnessState.recommendationAction;
   const hasMissionSelection = Boolean(state.selectedMissionId);
   const isOutputFocus = state.activeStep === 'step-output';
+  const flowActionTargetLabel =
+    state.missionDetail?.mission?.title || state.selectedMissionId || flow.currentStepLabel || '현재 흐름';
 
   if (elements.flowStatus) {
     elements.flowStatus.innerHTML = `
@@ -11350,7 +11375,7 @@ function renderFlowState() {
           ${
             isOutputFocus
               ? `
-                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail">
+                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}" title="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}">
                   ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
                 </button>
               `
@@ -12583,6 +12608,7 @@ function renderMissionSummary() {
       ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}`
       : '아직 실행 전';
     const learningLabel = `첨부 ${summary?.attachmentCounts?.total ?? 0} · 메모 ${summary?.memoryCounts?.total ?? 0}`;
+    const missionSummaryTargetLabel = mission.title || mission.id || state.selectedMissionId || '선택된 미션';
     const reviewLabel =
       summary?.approvalCounts?.pending
         ? `승인 ${summary.approvalCounts.pending}건 대기`
@@ -12625,7 +12651,7 @@ function renderMissionSummary() {
               .join('')}
           </div>
           <div class="action-row">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
               요약 펼치기
             </button>
             <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
@@ -12652,7 +12678,7 @@ function renderMissionSummary() {
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
           <div class="action-row action-row-compact">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
               요약 접기
             </button>
             <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup">
@@ -13279,7 +13305,7 @@ function renderOutputStageSummary() {
           <span>${escapeHtml(`검토 · ${flow.blocker}`)}</span>
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="toggle-output-support">지원 패널 펼치기</button>
+          <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}">지원 패널 펼치기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
           ${
             latestRetrievalArtifact
