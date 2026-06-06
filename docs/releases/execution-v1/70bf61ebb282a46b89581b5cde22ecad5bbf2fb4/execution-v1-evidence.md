@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T04:37:35.447Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T04:37:21.521Z
 - branch: codex/remaining-action-labels
 - commit: 70bf61ebb282a46b89581b5cde22ecad5bbf2fb4
