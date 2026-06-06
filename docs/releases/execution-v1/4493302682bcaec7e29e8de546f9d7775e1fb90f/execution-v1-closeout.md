@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-06T02:36:39.072Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-06T02:36:28.458Z
 - branch: codex/flow-status-action-labels
 - commit: 4493302682bcaec7e29e8de546f9d7775e1fb90f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4493302682bcaec7e29e8de546f9d7775e1fb90f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
