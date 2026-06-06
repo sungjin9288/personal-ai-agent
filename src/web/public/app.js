@@ -8072,6 +8072,7 @@ function markdownToHtml(markdown = '') {
 }
 
 function emptyStateCard({ icon = '01', title, message, actionLabel = '', action = '', actionValue = '' }) {
+  const emptyActionLabel = actionValue ? `${actionLabel}: ${actionValue}` : actionLabel;
   return `
     <div class="empty-card">
       <div class="empty-icon">${escapeHtml(icon)}</div>
@@ -8082,7 +8083,7 @@ function emptyStateCard({ icon = '01', title, message, actionLabel = '', action 
       ${
         actionLabel
           ? `<div class="empty-actions">
-              <button class="ghost-button" type="button" data-ui-action="${escapeHtml(action)}" data-ui-value="${escapeHtml(actionValue)}">
+              <button class="ghost-button" type="button" data-ui-action="${escapeHtml(action)}" data-ui-value="${escapeHtml(actionValue)}" aria-label="${escapeHtml(emptyActionLabel)}" title="${escapeHtml(emptyActionLabel)}">
                 ${escapeHtml(actionLabel)}
               </button>
             </div>`
