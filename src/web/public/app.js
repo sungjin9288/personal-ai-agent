@@ -1029,6 +1029,19 @@ function getRetrievalSourceKey(sourceType = '', sourceLabel = '') {
   return `${normalizedType}:${normalizedLabel}`;
 }
 
+function getRetrievalSourceActionLabel(actionLabel = 'retrieval source', sourceType = '', sourceLabel = '') {
+  const sourceTitle = formatRetrievalSourceLabel({ sourceLabel, sourceType });
+  return `${String(actionLabel || 'retrieval source').trim()}: ${sourceTitle}`;
+}
+
+function getRetrievalArtifactTargetLabel(artifact = {}) {
+  return String(artifact.path || artifact.fileName || artifact.id || 'retrieval evidence').trim();
+}
+
+function getRetrievalArtifactOpenLabel(artifact = {}, actionLabel = 'retrieval 근거 열기') {
+  return `${String(actionLabel || 'retrieval 근거 열기').trim()}: ${getRetrievalArtifactTargetLabel(artifact)}`;
+}
+
 function isCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
   return state.retrievalCopiedSourceKey === getRetrievalSourceKey(sourceType, sourceLabel);
 }
@@ -7840,10 +7853,20 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
   const renderRetrievalSourceChip = (entry, prefixLabel) => {
     const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
     const isCopied = isCopiedRetrievalSource(entry.sourceType, entry.sourceLabel);
+    const sourceFocusLabel = getRetrievalSourceActionLabel(
+      isActive ? '현재 retrieval source 보기' : 'retrieval source 보기',
+      entry.sourceType,
+      entry.sourceLabel,
+    );
+    const sourceCopyLabel = getRetrievalSourceActionLabel(
+      isCopied ? 'retrieval source 링크 복사됨' : 'retrieval source 링크 복사',
+      entry.sourceType,
+      entry.sourceLabel,
+    );
     return `
       <span class="retrieval-source-chip">
-        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
-        <button class="tag tag-ghost retrieval-source-copy-button ${isCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true">${escapeHtml(isCopied ? '복사됨' : '링크')}</button>
+        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}" aria-label="${escapeHtml(sourceFocusLabel)}" title="${escapeHtml(sourceFocusLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
+        <button class="tag tag-ghost retrieval-source-copy-button ${isCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true" aria-label="${escapeHtml(sourceCopyLabel)}" title="${escapeHtml(sourceCopyLabel)}">${escapeHtml(isCopied ? '복사됨' : '링크')}</button>
       </span>
     `;
   };
@@ -7853,6 +7876,19 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
   ]
     .slice(0, 4)
     .join('');
+  const latestArtifactOpenLabel = getRetrievalArtifactOpenLabel(latestArtifact);
+  const activeFocusCopyLabel = activeFocus
+    ? getRetrievalSourceActionLabel(
+        isCopiedRetrievalSource(activeFocus.type, activeFocus.label)
+          ? '현재 source 링크 복사됨'
+          : '현재 source 링크 복사',
+        activeFocus.type,
+        activeFocus.label,
+      )
+    : '';
+  const activeFocusClearLabel = activeFocus
+    ? getRetrievalSourceActionLabel('현재 source 해제', activeFocus.type, activeFocus.label)
+    : '';
 
   return `
     <div class="harness-callout">
@@ -7869,13 +7905,13 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
           ? `<div class="inline-actions">
               ${
                 includeAction
-                  ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}">retrieval 근거 열기</button>`
+                  ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}" aria-label="${escapeHtml(latestArtifactOpenLabel)}" title="${escapeHtml(latestArtifactOpenLabel)}">retrieval 근거 열기</button>`
                   : ''
               }
               ${
                 activeFocus
-                  ? `<button class="ghost-button ${isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeFocus.type)}" data-ui-source-label="${escapeHtml(activeFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
-                     <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">현재 source 해제</button>`
+                  ? `<button class="ghost-button ${isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeFocus.type)}" data-ui-source-label="${escapeHtml(activeFocus.label)}" aria-label="${escapeHtml(activeFocusCopyLabel)}" title="${escapeHtml(activeFocusCopyLabel)}">${escapeHtml(isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
+                     <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeFocusClearLabel)}" title="${escapeHtml(activeFocusClearLabel)}">현재 source 해제</button>`
                   : ''
               }
             </div>`
@@ -13193,6 +13229,9 @@ function renderOutputStageSummary() {
   const latestSession = state.missionDetail?.summary?.latestSession || null;
   const retrieval = state.missionDetail?.harness?.retrieval || null;
   const latestRetrievalArtifact = retrieval?.latestArtifact || null;
+  const latestRetrievalArtifactOpenLabel = latestRetrievalArtifact
+    ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
+    : '';
   const execution = getExecutionStatusPayload();
   const latestExecutionSession = execution?.latestExecutionSession || null;
   const flow = getFlowState();
@@ -13244,7 +13283,7 @@ function renderOutputStageSummary() {
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
           ${
             latestRetrievalArtifact
-              ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거</button>`
+              ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거</button>`
               : ''
           }
         </div>
@@ -13337,7 +13376,7 @@ function renderOutputStageSummary() {
         <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}">검토 상태 보기</button>
         ${
           latestRetrievalArtifact
-            ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거 열기</button>`
+            ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거 열기</button>`
             : ''
         }
       </div>
@@ -13655,6 +13694,21 @@ function renderHarnessPanel() {
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
   const latestRetrievalArtifact = retrieval.latestArtifact || null;
   const activeRetrievalSourceFocus = getActiveRetrievalSourceFocus();
+  const latestRetrievalArtifactOpenLabel = latestRetrievalArtifact
+    ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
+    : '';
+  const activeRetrievalSourceCopyLabel = activeRetrievalSourceFocus
+    ? getRetrievalSourceActionLabel(
+        isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label)
+          ? '현재 source 링크 복사됨'
+          : '현재 source 링크 복사',
+        activeRetrievalSourceFocus.type,
+        activeRetrievalSourceFocus.label,
+      )
+    : '';
+  const activeRetrievalSourceClearLabel = activeRetrievalSourceFocus
+    ? getRetrievalSourceActionLabel('retrieval source focus 해제', activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label)
+    : '';
   const visibleDocumentEntries = documentBrowse.entries || [];
   const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
   const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
@@ -13761,8 +13815,8 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
-              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
-              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
+              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}" aria-label="${escapeHtml(activeRetrievalSourceCopyLabel)}" title="${escapeHtml(activeRetrievalSourceCopyLabel)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
+              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeRetrievalSourceClearLabel)}" title="${escapeHtml(activeRetrievalSourceClearLabel)}">focus 해제</button>
             </div>
           </div>`
         : ''
@@ -13931,8 +13985,8 @@ function renderHarnessPanel() {
             </div>
             <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
             <div class="inline-actions">
-              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
-              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus">focus 해제</button>
+              <button class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(activeRetrievalSourceFocus.type)}" data-ui-source-label="${escapeHtml(activeRetrievalSourceFocus.label)}" aria-label="${escapeHtml(activeRetrievalSourceCopyLabel)}" title="${escapeHtml(activeRetrievalSourceCopyLabel)}">${escapeHtml(isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? '현재 source 링크 복사됨' : '현재 source 링크 복사')}</button>
+              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeRetrievalSourceClearLabel)}" title="${escapeHtml(activeRetrievalSourceClearLabel)}">focus 해제</button>
             </div>
           </div>`
         : ''
@@ -13948,7 +14002,7 @@ function renderHarnessPanel() {
               <strong>최근 실행 retrieval evidence</strong>
               <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
               <div class="inline-actions">
-                <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}">retrieval 근거 열기</button>
+                <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거 열기</button>
               </div>
             </div>`
           : ''
